@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8305,7 +8364,10 @@ body {
           <p class="ladder-q"><span class="lang-en">Two students evaluate 2 × 3² and (2 × 3)². One says both equal 36. Find each value, showing the steps in order, and explain in a sentence what the parentheses change.</span><span class="lang-es" lang="es">Dos estudiantes evalúan 2 × 3² y (2 × 3)². Uno dice que los dos dan 36. Halla cada valor mostrando los pasos en orden, y explica en una oración qué cambian los paréntesis.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">2 × 3²: the power comes first, 3² = 9, then 2 × 9 = 18. (2 × 3)²: the grouping comes first, 2 × 3 = 6, then 6² = 36. Only the second equals 36. The parentheses make the multiplication happen BEFORE the power, so the exponent applies to 6 instead of to 3 alone.</span><span class="lang-es" lang="es">2 × 3²: la potencia va primero, 3² = 9, luego 2 × 9 = 18. (2 × 3)²: la agrupación va primero, 2 × 3 = 6, luego 6² = 36. Solo la segunda da 36. Los paréntesis hacen que la multiplicación ocurra ANTES de la potencia, así que el exponente se aplica al 6 y no solo al 3.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8585,6 +8647,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>19</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">2² = 4, then 4 × 4 = 16, then 3 + 16 = 19. 80 adds first (5² × 4 = 100 would be the other add-first error); 35 treats 2² as 2 × 2 × 4 wrongly; 100 adds 3 + 2 before squaring.</span><span class="lang-es" lang="es">2² = 4, luego 4 × 4 = 16, luego 3 + 16 = 19. 80 suma primero; 35 sale de un cálculo fuera de orden; 100 suma 3 + 2 antes de elevar al cuadrado.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8686,6 +8760,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>15</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">(5 − 2) = 3, 3² = 9, 9 + 6 = 15. 27 squares 5 and subtracts 2 (25 − 2 = 23 would be another version); 9 forgets the + 6; 20 adds 3 + 6 and then doubles.</span><span class="lang-es" lang="es">(5 − 2) = 3, 3² = 9, 9 + 6 = 15. 27 no respeta el paréntesis; 9 olvida el + 6; 20 sale de sumar fuera de orden.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8787,6 +8873,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>16</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Grouping, power, multiply, add: 4 + 3 × 4 = 4 + 12 = 16. 28 adds 4 + 3 first; 49 squares (4 + 3); 22 uses 2 × 3 for the power.</span><span class="lang-es" lang="es">Agrupación, potencia, multiplicación, suma: 4 + 3 × 4 = 4 + 12 = 16. 28 suma 4 + 3 primero; 49 eleva (4 + 3) al cuadrado; 22 usa 2 × 3 para la potencia.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8891,6 +8989,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">2 × 3²: the power comes first, 3² = 9, then 2 × 9 = 18. (2 × 3)²: the grouping comes first, 2 × 3 = 6, then 6² = 36. Only the second equals 36. The parentheses make the multiplication happen BEFORE the power, so the exponent applies to 6 instead of to 3 alone.</span><span class="lang-es" lang="es">2 × 3²: la potencia va primero, 3² = 9, luego 2 × 9 = 18. (2 × 3)²: la agrupación va primero, 2 × 3 = 6, luego 6² = 36. Solo la segunda da 36. Los paréntesis hacen que la multiplicación ocurra ANTES de la potencia, así que el exponente se aplica al 6 y no solo al 3.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8992,6 +9102,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>14</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">30 ÷ 5 = 6 and 2³ = 8, so 6 + 8 = 14. 12 uses 2³ = 6; 2 divides 30 by (5 + 8 + …) out of order; 3 adds 5 + 8 = 13 before dividing (30 ÷ 13 is not 3, but that is the error&#039;s shape).</span><span class="lang-es" lang="es">30 ÷ 5 = 6 y 2³ = 8, así que 6 + 8 = 14. 12 usa 2³ = 6; 2 y 3 salen de dividir fuera de orden.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9093,6 +9215,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>11</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">20 ÷ 4 = 5 and 3 × 2 = 6, so 5 + 6 = 11. 26 adds 5 + 3 before multiplying by 2 (8 × 2 = 16 is that error; 26 comes from 20 ÷ 2 = 10 + 16); 70 works strictly left to right ignoring the power; 16 adds before multiplying.</span><span class="lang-es" lang="es">20 ÷ 4 = 5 y 3 × 2 = 6, así que 5 + 6 = 11. 26 y 16 suman antes de multiplicar; 70 trabaja de izquierda a derecha ignorando la potencia.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

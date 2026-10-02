@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8338,7 +8397,10 @@ body {
           <p class="ladder-q"><span class="lang-en">Explain why testing with just ONE value of x is not enough to PROVE two expressions are equivalent, but one value CAN prove they are NOT equivalent. Use 3x + 2 and 5x (which agree at x = 1) as your example, and test a second value.</span><span class="lang-es" lang="es">Explica por qué probar con UN solo valor de x no basta para PROBAR que dos expresiones son equivalentes, pero un valor SÍ puede probar que NO lo son. Usa 3x + 2 y 5x (que coinciden en x = 1) como ejemplo, y prueba un segundo valor.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Equivalent expressions give the same value for EVERY x. At x = 1, 3x + 2 = 5 and 5x = 5 — they agree, but that checks only one of infinitely many values, so it proves nothing. At x = 2, 3x + 2 = 8 and 5x = 10 — they disagree, and one disagreement is enough to show they are not equal for every x. So a match is only evidence, while a mismatch is a proof.</span><span class="lang-es" lang="es">Las expresiones equivalentes dan el mismo valor para TODA x. En x = 1, 3x + 2 = 5 y 5x = 5 — coinciden, pero eso revisa solo uno de infinitos valores, así que no prueba nada. En x = 2, 3x + 2 = 8 y 5x = 10 — difieren, y una sola diferencia basta para mostrar que no son iguales para toda x. Así que una coincidencia es solo evidencia, mientras que una diferencia es una prueba.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8618,6 +8680,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Both give 5 at x = 1, but that one match does NOT prove equivalence — try x = 2: 8 and 10.</span><span class="lang-es" lang="es">Los dos dan 5 en x = 1, pero esa sola coincidencia NO prueba la equivalencia — prueba x = 2: 8 y 10.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">At x = 1 both equal 5, but at x = 2 they give 8 and 10 — one counterexample proves they are NOT equivalent. A single match can be a coincidence, and 3x + 2 cannot be combined into 5x because 3x and 2 are not like terms.</span><span class="lang-es" lang="es">En x = 1 los dos dan 5, pero en x = 2 dan 8 y 10 — un contraejemplo prueba que NO son equivalentes. Una sola coincidencia puede ser casualidad, y 3x + 2 no se puede combinar en 5x porque 3x y 2 no son términos semejantes.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8719,6 +8793,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Both give 32; they are equivalent because 2(y + 7) distributes to 2y + 14 for every y.</span><span class="lang-es" lang="es">Los dos dan 32; son equivalentes porque 2(y + 7) se distribuye a 2y + 14 para toda y.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Both equal 32 at y = 9. The test agrees, and the distributive property explains WHY it will agree for every y: 2(y + 7) = 2y + 2 × 7 = 2y + 14. A match alone is evidence, not proof; the property is the proof. 23 forgets to double the 7; 16 forgets to double the 9.</span><span class="lang-es" lang="es">Los dos dan 32 en y = 9. La prueba coincide, y la propiedad distributiva explica POR QUÉ coincidirá para toda y: 2(y + 7) = 2y + 2 × 7 = 2y + 14. Una coincidencia sola es evidencia, no prueba; la propiedad es la prueba. 23 olvida duplicar el 7; 16 olvida duplicar el 9.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8820,6 +8906,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Try another value: at x = 3 they give 6 and 9, so they are NOT equivalent — x = 2 was a coincidence.</span><span class="lang-es" lang="es">Prueba otro valor: en x = 3 dan 6 y 9, así que NO son equivalentes — x = 2 fue una casualidad.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">x + x doubles x; x² multiplies x by itself. They happen to agree at x = 2 (and at x = 0), but at x = 3 they give 6 and 9, so they are not equivalent. Two matches are still not a proof; one mismatch is a disproof. &#039;Two x&#039;s&#039; describes both expressions but they use the x&#039;s differently.</span><span class="lang-es" lang="es">x + x duplica x; x² multiplica x por sí misma. Coinciden por casualidad en x = 2 (y en x = 0), pero en x = 3 dan 6 y 9, así que no son equivalentes. Dos coincidencias siguen sin ser prueba; una diferencia sí es una refutación. &#039;Dos x&#039; describe las dos expresiones pero usan las x de manera distinta.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8924,6 +9022,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">Equivalent expressions give the same value for EVERY x. At x = 1, 3x + 2 = 5 and 5x = 5 — they agree, but that checks only one of infinitely many values, so it proves nothing. At x = 2, 3x + 2 = 8 and 5x = 10 — they disagree, and one disagreement is enough to show they are not equal for every x. So a match is only evidence, while a mismatch is a proof.</span><span class="lang-es" lang="es">Las expresiones equivalentes dan el mismo valor para TODA x. En x = 1, 3x + 2 = 5 y 5x = 5 — coinciden, pero eso revisa solo uno de infinitos valores, así que no prueba nada. En x = 2, 3x + 2 = 8 y 5x = 10 — difieren, y una sola diferencia basta para mostrar que no son iguales para toda x. Así que una coincidencia es solo evidencia, mientras que una diferencia es una prueba.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9025,6 +9135,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">No — 4(20 + 3) = 92 but 4 × 20 + 3 = 83.</span><span class="lang-es" lang="es">No — 4(20 + 3) = 92 pero 4 × 20 + 3 = 83.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">4(20 + 3) = 92 and 4 × 20 + 3 = 83. They differ, so they are not equivalent — the 4 must multiply the 3 too. One mismatch DOES settle it; it is one MATCH that is not enough.</span><span class="lang-es" lang="es">4(20 + 3) = 92 y 4 × 20 + 3 = 83. Son distintos, así que no son equivalentes — el 4 debe multiplicar también al 3. Una diferencia SÍ lo resuelve; lo que no basta es una sola COINCIDENCIA.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9126,6 +9248,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">14 and 14 — they match.</span><span class="lang-es" lang="es">14 y 14 — coinciden.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">2(4 + 3) = 14 and 2 × 4 + 6 = 14. They match at x = 4 (and at every value, because 2(x + 3) = 2x + 6 by the distributive property). 11 comes from 2 × 4 + 3, forgetting to distribute the 2 to the 3; 10 comes from 4 + 6.</span><span class="lang-es" lang="es">2(4 + 3) = 14 y 2 × 4 + 6 = 14. Coinciden en x = 4 (y en todo valor, porque 2(x + 3) = 2x + 6 por la propiedad distributiva). 11 viene de 2 × 4 + 3, olvidando distribuir el 2 al 3; 10 viene de 4 + 6.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

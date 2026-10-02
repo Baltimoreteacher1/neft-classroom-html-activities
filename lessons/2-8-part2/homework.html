@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8267,7 +8326,10 @@ body {
           <p class="ladder-q"><span class="lang-en">Ava has read 30, 45 and 60 pages on three days. She wants her mean to be 50 pages a day over five days. How many pages must she read in total over the last two days? Explain in words how the target mean turns into a target total, and why the missing amount is a subtraction.</span><span class="lang-es" lang="es">Ava leyó 30, 45 y 60 páginas en tres días. Quiere que su media sea de 50 páginas al día en cinco días. ¿Cuántas páginas debe leer en total en los últimos dos días? Explica con palabras cómo la media meta se convierte en un total meta, y por qué la cantidad que falta es una resta.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">A mean of 50 over 5 days is a total of 50 × 5 = 250 pages, because the mean is the total shared equally across the days. She has read 30 + 45 + 60 = 135 pages. The missing amount is 250 − 135 = 115 pages over the last two days — a subtraction because the target total already includes the pages she has, so only the difference is still needed.</span><span class="lang-es" lang="es">Una media de 50 en 5 días es un total de 50 × 5 = 250 páginas, porque la media es el total repartido por igual entre los días. Ha leído 30 + 45 + 60 = 135 páginas. Lo que falta es 250 − 135 = 115 páginas en los últimos dos días — una resta porque el total meta ya incluye las páginas que tiene, así que solo se necesita la diferencia.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8547,6 +8609,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>20</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">16 × 5 = 80 target total; 12 + 18 + 14 + 16 = 60 so far; 80 − 60 = 20 points needed. 60 and 80 are totals, not a game score, and 16 would leave her mean at 15.2.</span><span class="lang-es" lang="es">16 × 5 = 80 de total meta; 12 + 18 + 14 + 16 = 60 hasta ahora; 80 − 60 = 20 puntos necesarios. 60 y 80 son totales, no el puntaje de un partido, y 16 dejaría su media en 15.2.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8648,6 +8722,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">No — his total so far is 396 and he needs 560, so he needs 164.</span><span class="lang-es" lang="es">No — su total hasta ahora es 396 y necesita 560, así que necesita 164.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">He needs 560 − 396 = 164 — well above 140, because his first three games were below the target and the fourth has to make up the gap. 132 is his current mean and 560 is the total for all four games, not a single score.</span><span class="lang-es" lang="es">Necesita 560 − 396 = 164 — muy por encima de 140, porque sus tres primeros juegos estuvieron por debajo de la meta y el cuarto tiene que compensar la diferencia. 132 es su media actual y 560 es el total de los cuatro juegos, no un solo puntaje.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8749,6 +8835,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>97</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Target total: 90 × 4 = 360. Current total: 85 + 90 + 88 = 263. She needs 360 − 263 = 97. Scoring 90 would leave the mean below 90; 87.7 is her current mean; 263 is the total so far.</span><span class="lang-es" lang="es">Total meta: 90 × 4 = 360. Total actual: 85 + 90 + 88 = 263. Necesita 360 − 263 = 97. Sacar 90 dejaría la media por debajo de 90; 87.7 es su media actual; 263 es el total hasta ahora.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8853,6 +8951,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">A mean of 50 over 5 days is a total of 50 × 5 = 250 pages, because the mean is the total shared equally across the days. She has read 30 + 45 + 60 = 135 pages. The missing amount is 250 − 135 = 115 pages over the last two days — a subtraction because the target total already includes the pages she has, so only the difference is still needed.</span><span class="lang-es" lang="es">Una media de 50 en 5 días es un total de 50 × 5 = 250 páginas, porque la media es el total repartido por igual entre los días. Ha leído 30 + 45 + 60 = 135 páginas. Lo que falta es 250 − 135 = 115 páginas en los últimos dos días — una resta porque el total meta ya incluye las páginas que tiene, así que solo se necesita la diferencia.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8954,6 +9064,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>89</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">86 × 4 = 344; 78 + 85 + 92 = 255; 344 − 255 = 89. Check: (78 + 85 + 92 + 89) ÷ 4 = 86. Scoring 86 gives a mean of 85, 85 is the current mean, and 344 is the target total.</span><span class="lang-es" lang="es">86 × 4 = 344; 78 + 85 + 92 = 255; 344 − 255 = 89. Comprueba: (78 + 85 + 92 + 89) ÷ 4 = 86. Sacar 86 da una media de 85, 85 es la media actual, y 344 es el total meta.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9055,6 +9177,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>13</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The four numbers must total 12 × 4 = 48; the three known ones total 35, so the fourth is 48 − 35 = 13. The fourth number is not simply the mean; 35 is the partial total and 48 is the target total.</span><span class="lang-es" lang="es">Los cuatro números deben sumar 12 × 4 = 48; los tres conocidos suman 35, así que el cuarto es 48 − 35 = 13. El cuarto número no es simplemente la media; 35 es el total parcial y 48 es el total meta.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

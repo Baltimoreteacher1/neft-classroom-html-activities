@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8236,7 +8295,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A shipping company offers two crates: Crate X is 2.5 ft × 2 ft × 2 ft and Crate Y is 3 ft × 1.5 ft × 2.5 ft. A customer needs at least 11 cubic feet. Find both volumes, say which crate(s) meet the requirement, and explain what would go wrong if someone rounded 2.5 to 3 and 1.5 to 2 before multiplying.</span><span class="lang-es" lang="es">Una empresa de envíos ofrece dos cajones: el Cajón X mide 2.5 pies × 2 pies × 2 pies y el Cajón Y mide 3 pies × 1.5 pies × 2.5 pies. Un cliente necesita al menos 11 pies cúbicos. Halla los dos volúmenes, di qué cajón o cajones cumplen el requisito y explica qué saldría mal si alguien redondeara 2.5 a 3 y 1.5 a 2 antes de multiplicar.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Crate X: 2.5 × 2 × 2 = 10 cubic feet — short of 11. Crate Y: 3 × 1.5 × 2.5 = 11.25 cubic feet — meets the requirement. Only Crate Y works. Rounding first would give X: 3 × 2 × 2 = 12 and Y: 3 × 2 × 3 = 18, making Crate X look like it holds 12 cubic feet when it really holds 10 — the customer would buy a crate that is too small. Small rounding on each edge multiplies into a large error in the volume.</span><span class="lang-es" lang="es">Cajón X: 2.5 × 2 × 2 = 10 pies cúbicos — no llega a 11. Cajón Y: 3 × 1.5 × 2.5 = 11.25 pies cúbicos — cumple el requisito. Solo el Cajón Y funciona. Redondear primero daría X: 3 × 2 × 2 = 12 e Y: 3 × 2 × 3 = 18, haciendo parecer que el Cajón X contiene 12 pies cúbicos cuando en realidad contiene 10 — el cliente compraría un cajón demasiado pequeño. Un pequeño redondeo en cada arista se multiplica hasta ser un error grande en el volumen.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8516,6 +8578,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">9 cubic feet</span><span class="lang-es" lang="es">9 pies cúbicos</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">1½ × 2 × 3 = 3 × 3 = 9 cubic feet. 6 rounds 1½ down to 1; 6.5 adds the edges; 12 rounds 1½ up to 2.</span><span class="lang-es" lang="es">1½ × 2 × 3 = 3 × 3 = 9 pies cúbicos. 6 redondea 1½ hacia abajo a 1; 6.5 suma las aristas; 12 redondea 1½ hacia arriba a 2.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8617,6 +8691,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Large — its volume is 6 cubic feet, the only one that is at least 5.</span><span class="lang-es" lang="es">La grande — su volumen es 6 pies cúbicos, la única que tiene al menos 5.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">2 × 2 × 1.5 = 6 cubic feet, and 6 ≥ 5, so the Large box works; Small (2) and Medium (3) do not. 4 comes from rounding 1.5 down; &#039;close enough&#039; does not meet a minimum requirement.</span><span class="lang-es" lang="es">2 × 2 × 1.5 = 6 pies cúbicos, y 6 ≥ 5, así que la caja grande funciona; la pequeña (2) y la mediana (3) no. 4 viene de redondear 1.5 hacia abajo; &#039;suficientemente cerca&#039; no cumple un requisito mínimo.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8718,6 +8804,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">2 cubic feet</span><span class="lang-es" lang="es">2 pies cúbicos</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">2 × 1 × 1 = 2 cubic feet. 4 adds the edges; 3 adds two of them; square feet measures area, not volume.</span><span class="lang-es" lang="es">2 × 1 × 1 = 2 pies cúbicos. 4 suma las aristas; 3 suma dos de ellas; los pies cuadrados miden área, no volumen.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8822,6 +8920,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">Crate X: 2.5 × 2 × 2 = 10 cubic feet — short of 11. Crate Y: 3 × 1.5 × 2.5 = 11.25 cubic feet — meets the requirement. Only Crate Y works. Rounding first would give X: 3 × 2 × 2 = 12 and Y: 3 × 2 × 3 = 18, making Crate X look like it holds 12 cubic feet when it really holds 10 — the customer would buy a crate that is too small. Small rounding on each edge multiplies into a large error in the volume.</span><span class="lang-es" lang="es">Cajón X: 2.5 × 2 × 2 = 10 pies cúbicos — no llega a 11. Cajón Y: 3 × 1.5 × 2.5 = 11.25 pies cúbicos — cumple el requisito. Solo el Cajón Y funciona. Redondear primero daría X: 3 × 2 × 2 = 12 e Y: 3 × 2 × 3 = 18, haciendo parecer que el Cajón X contiene 12 pies cúbicos cuando en realidad contiene 10 — el cliente compraría un cajón demasiado pequeño. Un pequeño redondeo en cada arista se multiplica hasta ser un error grande en el volumen.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8923,6 +9033,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Both — A is exactly 4.5 and B is 5.</span><span class="lang-es" lang="es">Los dos — A es exactamente 4.5 y B es 5.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A: 3 × 1.5 × 1 = 4.5 cubic feet — meets it exactly. B: 2 × 2 × 1.25 = 5 cubic feet — meets it with 0.5 to spare. Both work. 3 and 4 come from rounding 1.5 and 1.25 down to 1 before multiplying.</span><span class="lang-es" lang="es">A: 3 × 1.5 × 1 = 4.5 pies cúbicos — lo cumple exactamente. B: 2 × 2 × 1.25 = 5 pies cúbicos — lo cumple con 0.5 de sobra. Los dos funcionan. 3 y 4 vienen de redondear 1.5 y 1.25 hacia abajo a 1 antes de multiplicar.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9024,6 +9146,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">3 cubic feet</span><span class="lang-es" lang="es">3 pies cúbicos</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">2 × 1.5 × 1 = 3 cubic feet. 2 comes from rounding 1.5 to 1 first — the mistake this lesson warns about; 4.5 adds the edges; 4 rounds 1.5 up to 2.</span><span class="lang-es" lang="es">2 × 1.5 × 1 = 3 pies cúbicos. 2 viene de redondear 1.5 a 1 primero — el error del que advierte esta lección; 4.5 suma las aristas; 4 redondea 1.5 hacia arriba a 2.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

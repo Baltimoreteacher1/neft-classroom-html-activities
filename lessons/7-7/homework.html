@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8598,6 +8657,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>Plot each ordered pair, then connect them in order with segments</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Graph the points on the plane and connect them in order — the closed figure that appears is the polygon.</span><span class="lang-es" lang="es">Ubica los puntos en el plano y conéctalos en orden — la figura cerrada que aparece es el polígono.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8701,6 +8772,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>9.5 units</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">They differ only in x: |5 − (−4.5)| = 5 + 4.5 = 9.5 units.</span><span class="lang-es" lang="es">Solo se diferencian en x: |5 − (−4.5)| = 5 + 4.5 = 9.5 unidades.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8804,6 +8887,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>6.75 units</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">They differ only in y: |3 − (−3.75)| = 3 + 3.75 = 6.75 units.</span><span class="lang-es" lang="es">Solo se diferencian en y: |3 − (−3.75)| = 3 + 3.75 = 6.75 unidades.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8923,6 +9018,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>Subtract the y-coordinates and take the absolute value</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Same x means the side is vertical, and |(b + s) − b| = |s| — subtraction with absolute value works for every case.</span><span class="lang-es" lang="es">La misma x significa que el lado es vertical, y |(b + s) − b| = |s| — la resta con valor absoluto funciona en todos los casos.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9026,6 +9133,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>(2, -4) and (5, -4)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">8 units below y = 4 is y = 4 − 8 = −4, keeping each x the same: (2, −4) and (5, −4).</span><span class="lang-es" lang="es">8 unidades debajo de y = 4 es y = 4 − 8 = −4, manteniendo igual cada x: (2, −4) y (5, −4).</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9129,6 +9248,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>20 units</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Width |4 − (−3)| = 7, height |2 − (−1)| = 3, so P = 2(7) + 2(3) = 20 units.</span><span class="lang-es" lang="es">Ancho |4 − (−3)| = 7, alto |2 − (−1)| = 3, así que P = 2(7) + 2(3) = 20 unidades.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9243,6 +9374,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>32.5 units</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Perimeter = 2(9.5) + 2(6.75) = 19 + 13.5 = 32.5 units.</span><span class="lang-es" lang="es">Perímetro = 2(9.5) + 2(6.75) = 19 + 13.5 = 32.5 unidades.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9346,6 +9489,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>A rectangle&#039;s opposite sides are equal, so each length appears on two sides</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The two 9.5 sides and the two 6.75 sides each come in pairs — that is what the 2 counts.</span><span class="lang-es" lang="es">Los dos lados de 9.5 y los dos de 6.75 vienen en pares — eso es lo que cuenta el 2.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9519,6 +9674,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Vertical side (same x): (5, 3) and (5, −3), (−2, 1) and (−2, 6), (4, −1) and (4, 7)</span><span class="lang-es" lang="es">Lado vertical (misma x): (5, 3) y (5, −3), (−2, 1) y (−2, 6), (4, −1) y (4, 7)</span></li><li><span class="lang-en">Horizontal side (same y): (−4, 3) and (5, 3), (0, −2) and (6, −2), (−3, 5) and (2, 5)</span><span class="lang-es" lang="es">Lado horizontal (misma y): (−4, 3) y (5, 3), (0, −2) y (6, −2), (−3, 5) y (2, 5)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">When the x-coordinate repeats — (5, 3) and (5, −3) — the points differ only vertically, so the side is vertical. When the y-coordinate repeats — (−4, 3) and (5, 3) — the points differ only horizontally. Spotting the repeated coordinate is the first step to finding any side length on the grid.</span><span class="lang-es" lang="es">Cuando la coordenada x se repite — (5, 3) y (5, −3) — los puntos solo difieren verticalmente, así que el lado es vertical. Cuando la y se repite — (−4, 3) y (5, 3) — solo difieren horizontalmente. Detectar la coordenada repetida es el primer paso para hallar cualquier longitud de lado en la cuadrícula.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9622,6 +9789,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>12 units</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Same x, so distance = |6 − (−6)| = 12 units.</span><span class="lang-es" lang="es">La misma x, así que la distancia = |6 − (−6)| = 12 unidades.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9712,6 +9891,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>From (1, 2) to (6, 2): |6 − 1| = 5 units. A square has four equal sides, so the perimeter is 4 × 5 = 20 units.</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Answers will vary. Check that the reasoning is explained in a complete sentence.</span><span class="lang-es" lang="es">Las respuestas varían. Revisen que el razonamiento se explique en una oración completa.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9802,6 +9993,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>My park has area 60,000 sq ft with each unit = 100 ft. I mark vertices at (1, 5) and (3, 5) — 2 units apart, so width 200 ft. Length = 60,000 ÷ 200 = 300 ft = 3 units, so the other vertices go at (1, 2) and (3, 2), 3 units below.</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Answers will vary. Check that the reasoning is explained in a complete sentence.</span><span class="lang-es" lang="es">Las respuestas varían. Revisen que el razonamiento se explique en una oración completa.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9905,6 +10108,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>300 feet</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">3 units × 100 feet per unit = 300 feet.</span><span class="lang-es" lang="es">3 unidades × 100 pies por unidad = 300 pies.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9995,6 +10210,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>Instead of walking the sides, I can use the formula P = 2(l + w): 2(9.5 + 6.75) = 2(16.25) = 32.5 units. Both methods must agree, which is what makes it a check.</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Answers will vary. Check that the reasoning is explained in a complete sentence.</span><span class="lang-es" lang="es">Las respuestas varían. Revisen que el razonamiento se explique en una oración completa.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

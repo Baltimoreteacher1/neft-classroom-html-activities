@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8283,7 +8342,10 @@ body {
           <p class="ladder-q"><span class="lang-en">Explain why you can&#039;t compare two percents directly without knowing what number each is a percent OF. Use Store A (30% off $60) and Store B (20% off $80) as your example.</span><span class="lang-es" lang="es">Explica por qué no puedes comparar dos porcentajes directamente sin saber de qué número es porcentaje cada uno. Usa la Tienda A (30% de descuento en $60) y la Tienda B (20% de descuento en $80) como ejemplo.</span></p>
 
           <input type="text" id="ladder_3" name="ladder_3" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 4" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">A percent by itself only tells you a RATE, not an amount — 30% and 20% can&#039;t be compared until you know what whole each is taken of. 30% of $60 is $18, but 20% of $80 is $16, so the bigger percent (30%) does give the bigger discount here — but only because we actually computed it. If the prices were reversed, the smaller percent could easily win, which is why the percent alone never settles the comparison.</span><span class="lang-es" lang="es">Un porcentaje por sí solo solo te dice una TASA, no una cantidad — 30% y 20% no se pueden comparar hasta saber de qué entero es cada uno. El 30% de $60 es $18, pero el 20% de $80 es $16, así que el porcentaje más grande (30%) sí da el descuento más grande aquí, pero solo porque en verdad lo calculamos. Si los precios estuvieran al revés, el porcentaje más pequeño fácilmente podría ganar, por eso el porcentaje solo nunca resuelve la comparación.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8563,6 +8625,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">27/30 is higher — it&#039;s 90%, and 44/50 is 88%.</span><span class="lang-es" lang="es">27/30 es más alto — es 90%, y 44/50 es 88%.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">27/30 simplifies to 9/10, which is 90%. 44/50 scales to 88/100, which is 88%. Since 90% &gt; 88%, the first quiz score is higher. Comparing 44 and 27 directly ignores that the scores are out of different totals — a bigger numerator doesn&#039;t mean a bigger percent.</span><span class="lang-es" lang="es">27/30 se simplifica a 9/10, que es 90%. 44/50 se escala a 88/100, que es 88%. Como 90% &gt; 88%, el primer puntaje es más alto. Comparar 44 y 27 directamente ignora que los puntajes son sobre totales distintos: un numerador más grande no significa un porcentaje más grande.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8664,6 +8738,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Store A: 30% of $60 = $18, which is greater than Store B&#039;s 20% of $80 = $16.</span><span class="lang-es" lang="es">Tienda A: 30% de $60 = $18, que es mayor que el 20% de $80 de la Tienda B = $16.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">30% of $60 = 0.30 × 60 = $18. 20% of $80 = 0.20 × 80 = $16. Since $18 &gt; $16, Store A&#039;s discount is greater. There&#039;s no shortcut rule that always favors the higher price or the higher percent — you have to compute both. Reading &#039;30% off&#039; as &#039;$30 off&#039; confuses a percent rate with a flat dollar amount.</span><span class="lang-es" lang="es">30% de $60 = 0.30 × 60 = $18. 20% de $80 = 0.20 × 80 = $16. Como $18 &gt; $16, el descuento de la Tienda A es mayor. No hay una regla rápida que siempre favorezca el precio más alto o el porcentaje más alto: hay que calcular ambos. Leer &#039;30% de descuento&#039; como &#039;$30 de descuento&#039; confunde una tasa porcentual con una cantidad fija en dólares.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8765,6 +8851,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">25% of 90 is greater: 22.5 &gt; 20.</span><span class="lang-es" lang="es">El 25% de 90 es mayor: 22.5 &gt; 20.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">40% of 50 = 0.40 × 50 = 20. 25% of 90 = 0.25 × 90 = 22.5. Since 22.5 &gt; 20, 25% of 90 is greater — even though 40% is the bigger PERCENT, it&#039;s applied to a smaller base. Comparing the percents alone ignores the base number entirely, and multiplying the percent as a whole number instead of a decimal is off by a factor of 100.</span><span class="lang-es" lang="es">40% de 50 = 0.40 × 50 = 20. 25% de 90 = 0.25 × 90 = 22.5. Como 22.5 &gt; 20, el 25% de 90 es mayor, aunque 40% sea el PORCENTAJE más grande, se aplica a una base más pequeña. Comparar solo los porcentajes ignora por completo el número base, y multiplicar el porcentaje como número entero en lugar de decimal está mal por un factor de 100.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8869,6 +8967,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">A percent by itself only tells you a RATE, not an amount — 30% and 20% can&#039;t be compared until you know what whole each is taken of. 30% of $60 is $18, but 20% of $80 is $16, so the bigger percent (30%) does give the bigger discount here — but only because we actually computed it. If the prices were reversed, the smaller percent could easily win, which is why the percent alone never settles the comparison.</span><span class="lang-es" lang="es">Un porcentaje por sí solo solo te dice una TASA, no una cantidad — 30% y 20% no se pueden comparar hasta saber de qué entero es cada uno. El 30% de $60 es $18, pero el 20% de $80 es $16, así que el porcentaje más grande (30%) sí da el descuento más grande aquí, pero solo porque en verdad lo calculamos. Si los precios estuvieran al revés, el porcentaje más pequeño fácilmente podría ganar, por eso el porcentaje solo nunca resuelve la comparación.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8970,6 +9080,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">15% of 200 = 30, which is greater than 30% of 90 = 27.</span><span class="lang-es" lang="es">El 15% de 200 = 30, que es mayor que el 30% de 90 = 27.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">15% of 200 = 30 and 30% of 90 = 27, so the smaller percent of the bigger number wins here. A bigger percent is not automatically a bigger amount — it depends on the whole.</span><span class="lang-es" lang="es">El 15% de 200 = 30 y el 30% de 90 = 27, así que aquí gana el porcentaje menor del número mayor. Un porcentaje mayor no es automáticamente una cantidad mayor — depende del todo.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9071,6 +9193,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Team A — 75% versus 70%.</span><span class="lang-es" lang="es">El equipo A — 75% contra 70%.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">18/24 = 75% and 21/30 = 70%, so Team A did better even though Team B has more wins — the teams played different numbers of games, so only the percent compares fairly.</span><span class="lang-es" lang="es">18/24 = 75% y 21/30 = 70%, así que al equipo A le fue mejor aunque el equipo B tenga más victorias — los equipos jugaron distintos números de partidos, así que solo el porcentaje compara de forma justa.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

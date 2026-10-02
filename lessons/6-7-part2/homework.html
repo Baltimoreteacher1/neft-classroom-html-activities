@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8373,7 +8432,10 @@ body {
           <p class="ladder-q"><span class="lang-en">List the first six multiples of 4 and the first six multiples of 6, then use the lists to find the LCM of 4 and 6. Explain why 24 is a common multiple but is NOT the answer, and describe a real situation where you would need the LCM rather than the GCF.</span><span class="lang-es" lang="es">Escribe los primeros seis múltiplos de 4 y los primeros seis múltiplos de 6, y luego usa las listas para hallar el mcm de 4 y 6. Explica por qué 24 es un múltiplo común pero NO es la respuesta, y describe una situación real en la que necesitarías el mcm y no el MCD.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Multiples of 4: 4, 8, 12, 16, 20, 24. Multiples of 6: 6, 12, 18, 24, 30, 36. Both 12 and 24 appear in both lists, so both are common multiples — but the LEAST common multiple is the smallest one, 12. A real LCM situation: hot dogs in packs of 4 and buns in packs of 6 — the LCM tells the fewest of each you can buy with none left over (12). The GCF would answer a splitting question instead, like the largest equal groups you can make.</span><span class="lang-es" lang="es">Múltiplos de 4: 4, 8, 12, 16, 20, 24. Múltiplos de 6: 6, 12, 18, 24, 30, 36. Tanto 12 como 24 aparecen en las dos listas, así que los dos son múltiplos comunes — pero el MÍNIMO común múltiplo es el más pequeño, 12. Una situación real de mcm: salchichas en paquetes de 4 y panes en paquetes de 6 — el mcm dice la menor cantidad de cada uno que puedes comprar sin que sobre nada (12). El MCD respondería una pregunta de repartir, como los grupos iguales más grandes que puedes formar.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8653,6 +8715,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">60 minutes</span><span class="lang-es" lang="es">60 minutos</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">They line up again at the LCM of 12 and 15, which is 60 minutes. 180 (12 × 15) is a common multiple but not the first; 3 is the GCF, which answers a different question; 27 is the sum.</span><span class="lang-es" lang="es">Se alinean de nuevo en el mcm de 12 y 15, que es 60 minutos. 180 (12 × 15) es un múltiplo común pero no el primero; 3 es el MCD, que responde otra pregunta; 27 es la suma.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8754,6 +8828,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>4, 8, 12, 16, 20, 24</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Skip-counting by 4 gives 4, 8, 12, 16, 20, 24. 1, 2, 4 are the FACTORS of 4, not multiples; the list starting at 0 counts zero as the first multiple; 4, 6, 8, … counts by 2.</span><span class="lang-es" lang="es">Contar salteado de 4 da 4, 8, 12, 16, 20, 24. 1, 2, 4 son los FACTORES de 4, no múltiplos; la lista que empieza en 0 cuenta el cero como primer múltiplo; 4, 6, 8, … cuenta de 2 en 2.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8855,6 +8941,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>12</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">12 is the first number in both lists, so LCM(4, 6) = 12. 24 is a common multiple but not the least; 2 is the greatest common FACTOR; 10 is the sum.</span><span class="lang-es" lang="es">12 es el primer número en las dos listas, así que mcm(4, 6) = 12. 24 es un múltiplo común pero no el mínimo; 2 es el máximo común DIVISOR; 10 es la suma.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8959,6 +9057,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">Multiples of 4: 4, 8, 12, 16, 20, 24. Multiples of 6: 6, 12, 18, 24, 30, 36. Both 12 and 24 appear in both lists, so both are common multiples — but the LEAST common multiple is the smallest one, 12. A real LCM situation: hot dogs in packs of 4 and buns in packs of 6 — the LCM tells the fewest of each you can buy with none left over (12). The GCF would answer a splitting question instead, like the largest equal groups you can make.</span><span class="lang-es" lang="es">Múltiplos de 4: 4, 8, 12, 16, 20, 24. Múltiplos de 6: 6, 12, 18, 24, 30, 36. Tanto 12 como 24 aparecen en las dos listas, así que los dos son múltiplos comunes — pero el MÍNIMO común múltiplo es el más pequeño, 12. Una situación real de mcm: salchichas en paquetes de 4 y panes en paquetes de 6 — el mcm dice la menor cantidad de cada uno que puedes comprar sin que sobre nada (12). El MCD respondería una pregunta de repartir, como los grupos iguales más grandes que puedes formar.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9060,6 +9170,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>18</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">18 appears first in both lists. 54 is 6 × 9, a common multiple but not the least; 3 is the GCF; 36 is a later common multiple.</span><span class="lang-es" lang="es">18 aparece primero en las dos listas. 54 es 6 × 9, un múltiplo común pero no el mínimo; 3 es el MCD; 36 es un múltiplo común posterior.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9161,6 +9283,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>40</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">40 is the first shared multiple, so LCM(8, 10) = 40. 80 (8 × 10) is a common multiple but twice too big; 2 is the GCF; 18 is the sum.</span><span class="lang-es" lang="es">40 es el primer múltiplo compartido, así que mcm(8, 10) = 40. 80 (8 × 10) es un múltiplo común pero el doble de grande; 2 es el MCD; 18 es la suma.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

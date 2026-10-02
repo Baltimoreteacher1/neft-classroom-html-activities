@@ -424,9 +424,24 @@ function ladderCard(prob) {
   if (prob.type === "open-response") {
     const q = prob.prompt || prob.question || prob.stem || "";
     if (!q) return null;
-    const a = prob.sampleAnswer || prob.answer || prob.exemplar || "";
+    // `modelAnswer` is the field most lesson configs actually author (202 of
+    // 344 open-response items), and the rest state the answer inside
+    // `explanation`; without both fallbacks the ladder showed no reveal at all.
+    const a =
+      prob.modelAnswer ||
+      prob.sampleAnswer ||
+      prob.answer ||
+      prob.exemplar ||
+      prob.explanation ||
+      "";
     const qEs = prob.promptEs || prob.questionEs || prob.stemEs || "";
-    const aEs = prob.sampleAnswerEs || prob.answerEs || prob.exemplarEs || "";
+    const aEs =
+      prob.modelAnswerEs ||
+      prob.sampleAnswerEs ||
+      prob.answerEs ||
+      prob.exemplarEs ||
+      prob.explanationEs ||
+      "";
     return { q, qEs, a: String(a), aEs: String(aEs) };
   }
   return null;
@@ -11799,12 +11814,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 

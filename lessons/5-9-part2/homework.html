@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8234,7 +8293,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A regular octagon (8 sides) sign is made of 8 congruent triangles, each with base 6 inches and height 7 inches. Paint costs $0.50 per square inch. Find the area of the sign and the cost of the paint. Then explain why you MULTIPLY one triangle&#039;s area by 8 instead of adding 8.</span><span class="lang-es" lang="es">Un letrero con forma de octágono regular (8 lados) está formado por 8 triángulos congruentes, cada uno con base 6 pulgadas y altura 7 pulgadas. La pintura cuesta $0.50 por pulgada cuadrada. Halla el área del letrero y el costo de la pintura. Luego explica por qué MULTIPLICAS el área de un triángulo por 8 en vez de sumar 8.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">One triangle: ½ × 6 × 7 = 21 square inches. The octagon is 8 of those, so 21 × 8 = 168 square inches. Paint: 168 × $0.50 = $84. You multiply by 8 because the sign is made of 8 copies of the same 21-square-inch triangle — 21 + 21 + … eight times. Adding 8 to 21 would mix a COUNT of triangles with an AREA, giving 29 square inches, which is not even as big as two triangles.</span><span class="lang-es" lang="es">Un triángulo: ½ × 6 × 7 = 21 pulgadas cuadradas. El octágono son 8 de esos, así que 21 × 8 = 168 pulgadas cuadradas. Pintura: 168 × $0.50 = $84. Multiplicas por 8 porque el letrero está hecho de 8 copias del mismo triángulo de 21 pulgadas cuadradas — 21 + 21 + … ocho veces. Sumar 8 a 21 mezclaría un CONTEO de triángulos con un ÁREA, dando 29 pulgadas cuadradas, que ni siquiera es tanto como dos triángulos.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8516,6 +8578,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">7 square feet</span><span class="lang-es" lang="es">7 pies cuadrados</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">½ × 4 × 3.5 = 7 square feet. 14 forgets the ½; 7.5 adds 4 + 3.5; 42 is the whole patio, not one triangle.</span><span class="lang-es" lang="es">½ × 4 × 3.5 = 7 pies cuadrados. 14 olvida el ½; 7.5 suma 4 + 3.5; 42 es todo el patio, no un triángulo.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8619,6 +8693,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>168 cm²</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">½ × 8 × 7 = 28 cm² per triangle, and 28 × 6 = 168 cm². 336 forgets the ½; 28 is one triangle; 34 adds 6 to 28.</span><span class="lang-es" lang="es">½ × 8 × 7 = 28 cm² por triángulo, y 28 × 6 = 168 cm². 336 olvida el ½; 28 es un triángulo; 34 suma 6 a 28.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8722,6 +8808,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>$300</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">6 × 10 = 60 square feet, and 60 × $5 = $300. $600 forgets the ½ in the triangle formula; $30 prices only one triangle; $80 adds 10 to 6 before pricing.</span><span class="lang-es" lang="es">6 × 10 = 60 pies cuadrados, y 60 × $5 = $300. $600 olvida el ½ de la fórmula del triángulo; $30 cobra solo un triángulo; $80 suma 10 a 6 antes de cobrar.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8828,6 +8926,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">One triangle: ½ × 6 × 7 = 21 square inches. The octagon is 8 of those, so 21 × 8 = 168 square inches. Paint: 168 × $0.50 = $84. You multiply by 8 because the sign is made of 8 copies of the same 21-square-inch triangle — 21 + 21 + … eight times. Adding 8 to 21 would mix a COUNT of triangles with an AREA, giving 29 square inches, which is not even as big as two triangles.</span><span class="lang-es" lang="es">Un triángulo: ½ × 6 × 7 = 21 pulgadas cuadradas. El octágono son 8 de esos, así que 21 × 8 = 168 pulgadas cuadradas. Pintura: 168 × $0.50 = $84. Multiplicas por 8 porque el letrero está hecho de 8 copias del mismo triángulo de 21 pulgadas cuadradas — 21 + 21 + … ocho veces. Sumar 8 a 21 mezclaría un CONTEO de triángulos con un ÁREA, dando 29 pulgadas cuadradas, que ni siquiera es tanto como dos triángulos.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8931,6 +9041,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">$336 — a price PER square foot multiplies the area; adding treats $8 as a one-time fee.</span><span class="lang-es" lang="es">$336 — un precio POR pie cuadrado multiplica el área; sumar trata los $8 como una cuota única.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Every one of the 42 square feet costs $8, so the total is 42 × 8 = $336. Adding, subtracting or dividing all misread &#039;per square foot&#039;, which is a rate that multiplies.</span><span class="lang-es" lang="es">Cada uno de los 42 pies cuadrados cuesta $8, así que el total es 42 × 8 = $336. Sumar, restar o dividir malinterpretan &#039;por pie cuadrado&#039;, que es una tasa que multiplica.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9034,6 +9156,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">42 square feet</span><span class="lang-es" lang="es">42 pies cuadrados</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">7 × 6 = 42 square feet. 13 ADDS the number of sides to the area — mixing a count with an area; 7 is one triangle; 36 is 6².</span><span class="lang-es" lang="es">7 × 6 = 42 pies cuadrados. 13 SUMA el número de lados al área — mezcla un conteo con un área; 7 es un triángulo; 36 es 6².</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

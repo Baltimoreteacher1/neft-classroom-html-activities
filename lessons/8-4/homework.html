@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8336,7 +8395,10 @@ body {
           <p class="ladder-q"><span class="lang-en">Write two different real-world situations: one that uses &gt; and one that uses ≥. Explain why the situations need different symbols even though both mean &#039;bigger.&#039;</span><span class="lang-es" lang="es">Escribe dos situaciones diferentes de la vida real: una que use &gt; y otra que use ≥. Explica por qué las situaciones necesitan símbolos distintos aunque las dos signifiquen &#039;más grande&#039;.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">The only difference between &gt; and ≥ is whether the boundary number itself is allowed. A rule like &quot;score more than 10 points to win&quot; leaves 10 out, so it needs &gt;, while &quot;you must be at least 13 to watch&quot; lets exactly 13 count, so it needs ≥. Testing the boundary number in your own situation is the quickest way to check which symbol fits.</span><span class="lang-es" lang="es">La única diferencia entre &gt; y ≥ es si el número del límite está permitido. Una regla como &quot;anota más de 10 puntos para ganar&quot; deja fuera el 10, así que necesita &gt;, mientras que &quot;debes tener al menos 13 años para verla&quot; permite exactamente 13, así que necesita ≥. Probar el número del límite en tu propia situación es la manera más rápida de saber cuál símbolo va.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8726,6 +8788,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">&gt; (greater than): The getaway driver was going more than 70 mph, More than 6 fingerprints were on the safe</span><span class="lang-es" lang="es">&gt; (mayor que): El conductor de escape iba a más de 70 mph, Había más de 6 huellas en la caja fuerte</span></li><li><span class="lang-en">&lt; (less than): The ransom note was written under 3 minutes ago, Fewer than 9 cars left the parking lot</span><span class="lang-es" lang="es">&lt; (menor que): La nota de rescate se escribió hace menos de 3 minutos, Menos de 9 carros salieron del estacionamiento</span></li><li><span class="lang-en">≥ (greater than or equal to): At least 30 dollars in coins was stolen, No fewer than 4 witnesses saw the suspect</span><span class="lang-es" lang="es">≥ (mayor o igual que): Se robaron al menos 30 dólares en monedas, No menos de 4 testigos vieron al sospechoso</span></li><li><span class="lang-en">≤ (less than or equal to): At most 14 footprints were found in the mud, No more than 7 keys can open the vault</span><span class="lang-es" lang="es">≤ (menor o igual que): Se encontraron a lo más 14 huellas en el lodo, No más de 7 llaves pueden abrir la bóveda</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each clue names a boundary and also says whether that boundary is included. &quot;More than 70 mph&quot; and &quot;more than 6 fingerprints&quot; shut their numbers out (&gt;), &quot;under 3 minutes&quot; and &quot;fewer than 9 cars&quot; stay below theirs (&lt;), &quot;at least 30 dollars&quot; and &quot;no fewer than 4 witnesses&quot; include theirs going up (≥), and &quot;at most 14 footprints&quot; and &quot;no more than 7 keys&quot; include theirs going down (≤).</span><span class="lang-es" lang="es">Cada pista nombra un límite y también dice si ese límite se incluye. &quot;Más de 70 mph&quot; y &quot;más de 6 huellas digitales&quot; dejan fuera sus números (&gt;), &quot;menos de 3 minutos&quot; y &quot;menos de 9 carros&quot; quedan por debajo de los suyos (&lt;), &quot;al menos 30 dólares&quot; y &quot;no menos de 4 testigos&quot; incluyen los suyos hacia arriba (≥), y &quot;a lo más 14 huellas de zapato&quot; y &quot;no más de 7 llaves&quot; incluyen los suyos hacia abajo (≤).</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8844,6 +8918,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">at least → ≥</span><span class="lang-es" lang="es">al menos → ≥</span></li><li><span class="lang-en">at most → ≤</span><span class="lang-es" lang="es">a lo más → ≤</span></li><li><span class="lang-en">more than → &gt;</span><span class="lang-es" lang="es">más que → &gt;</span></li><li><span class="lang-en">fewer than → &lt;</span><span class="lang-es" lang="es">menos que → &lt;</span></li><li><span class="lang-en">no more than → ≤</span><span class="lang-es" lang="es">no más de → ≤</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each phrase maps to one symbol, and the &quot;or equal to&quot; bar appears whenever the boundary number itself is allowed: &quot;at least&quot; is ≥, while &quot;at most&quot; and &quot;no more than&quot; are both ≤ because each one caps the amount. &quot;More than&quot; and &quot;fewer than&quot; leave the boundary out, so they match &gt; and &lt;.</span><span class="lang-es" lang="es">Cada frase corresponde a un símbolo, y la barra de &quot;o igual a&quot; aparece siempre que el número del límite está permitido: &quot;al menos&quot; es ≥, mientras que &quot;a lo más&quot; y &quot;no más de&quot; son ≤ porque las dos ponen un tope a la cantidad. &quot;Más de&quot; y &quot;menos de&quot; dejan fuera el límite, así que corresponden a &gt; y &lt;.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9061,6 +9147,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Example — A package weighs less than 50 pounds. · Key Phrase: less than</span><span class="lang-es" lang="es">Ejemplo — Un paquete pesa menos de 50 libras. · Frase clave: menos que</span></li><li><span class="lang-en">Example — A package weighs less than 50 pounds. · Symbol: &lt;</span><span class="lang-es" lang="es">Ejemplo — Un paquete pesa menos de 50 libras. · Símbolo: &lt;</span></li><li><span class="lang-en">Example — A package weighs less than 50 pounds. · Inequality: w &lt; 50</span><span class="lang-es" lang="es">Ejemplo — Un paquete pesa menos de 50 libras. · Desigualdad: w &lt; 50</span></li><li><span class="lang-en">Example — You need at least $25 to buy the game. · Key Phrase: at least</span><span class="lang-es" lang="es">Ejemplo — Necesitas al menos $25 para comprar el juego. · Frase clave: al menos</span></li><li><span class="lang-en">Example — You need at least $25 to buy the game. · Symbol: ≥</span><span class="lang-es" lang="es">Ejemplo — Necesitas al menos $25 para comprar el juego. · Símbolo: ≥</span></li><li><span class="lang-en">Example — You need at least $25 to buy the game. · Inequality: m ≥ 25</span><span class="lang-es" lang="es">Ejemplo — Necesitas al menos $25 para comprar el juego. · Desigualdad: m ≥ 25</span></li><li><span class="lang-en">Example — No more than 30 students can join the club. · Key Phrase: no more than</span><span class="lang-es" lang="es">Ejemplo — No pueden unirse al club más de 30 estudiantes. · Frase clave: no más de</span></li><li><span class="lang-en">Example — No more than 30 students can join the club. · Symbol: ≤</span><span class="lang-es" lang="es">Ejemplo — No pueden unirse al club más de 30 estudiantes. · Símbolo: ≤</span></li><li><span class="lang-en">Example — No more than 30 students can join the club. · Inequality: s ≤ 30</span><span class="lang-es" lang="es">Ejemplo — No pueden unirse al club más de 30 estudiantes. · Desigualdad: s ≤ 30</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Every row uses the same three moves: find the key phrase, swap it for a symbol, then attach the variable and the number. &quot;Less than&quot; is strict, so the package row is w &lt; 50, while &quot;at least&quot; and &quot;no more than&quot; both include their boundary, giving m ≥ 25 and s ≤ 30.</span><span class="lang-es" lang="es">Cada fila usa los mismos tres pasos: encuentra la frase clave, cámbiala por un símbolo y luego une la variable con el número. &quot;Menos de&quot; es estricto, así que la fila del paquete es w &lt; 50, mientras que &quot;al menos&quot; y &quot;no más de&quot; incluyen su límite, lo que da m ≥ 25 y s ≤ 30.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9255,6 +9353,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Example — A detective has exactly 12 cases. · Model: c = 12</span><span class="lang-es" lang="es">Ejemplo — Un detective tiene exactamente 12 casos. · Modelo: c = 12</span></li><li><span class="lang-en">Example — A detective has exactly 12 cases. · Why?: &#039;Exactly&#039; means one specific value → equation</span><span class="lang-es" lang="es">Ejemplo — Un detective tiene exactamente 12 casos. · ¿Por qué?: &#039;Exactamente&#039; significa un valor específico → ecuación</span></li><li><span class="lang-en">Example — A detective has more than 12 cases. · Model: c &gt; 12</span><span class="lang-es" lang="es">Ejemplo — Un detective tiene más de 12 casos. · Modelo: c &gt; 12</span></li><li><span class="lang-en">Example — A detective has more than 12 cases. · Why?: &#039;More than&#039; means many possible values → inequality</span><span class="lang-es" lang="es">Ejemplo — Un detective tiene más de 12 casos. · ¿Por qué?: &#039;Más de&#039; significa muchos valores posibles → desigualdad</span></li><li><span class="lang-en">Example — A detective has at most 12 cases. · Model: c ≤ 12</span><span class="lang-es" lang="es">Ejemplo — Un detective tiene como máximo 12 casos. · Modelo: c ≤ 12</span></li><li><span class="lang-en">Example — A detective has at most 12 cases. · Why?: &#039;At most&#039; means 12 or fewer → inequality with ≤</span><span class="lang-es" lang="es">Ejemplo — Un detective tiene como máximo 12 casos. · ¿Por qué?: &#039;Como máximo&#039; significa 12 o menos → desigualdad con ≤</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">An equation pins down one exact value while an inequality covers a whole range of them. &quot;Exactly 12 cases&quot; can only be 12, so it is c = 12; &quot;more than 12&quot; allows 13, 14, and beyond, so it is c &gt; 12; and &quot;at most 12&quot; allows 12 plus everything below it, so it is c ≤ 12.</span><span class="lang-es" lang="es">Una ecuación fija un solo valor exacto, mientras que una desigualdad abarca todo un rango de valores. &quot;Exactamente 12 casos&quot; solo puede ser 12, así que es c = 12; &quot;más de 12&quot; permite 13, 14 y más, así que es c &gt; 12; y &quot;a lo más 12&quot; permite 12 y todo lo que esté por debajo, así que es c ≤ 12.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9358,6 +9468,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: greater than, at least, equal to, included, not included, boundary.</span><span class="lang-es" lang="es">Una buena respuesta usa: greater than, at least, equal to, included, not included, boundary.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The only difference between &gt; and ≥ is whether the boundary number itself is allowed. A rule like &quot;score more than 10 points to win&quot; leaves 10 out, so it needs &gt;, while &quot;you must be at least 13 to watch&quot; lets exactly 13 count, so it needs ≥. Testing the boundary number in your own situation is the quickest way to check which symbol fits.</span><span class="lang-es" lang="es">La única diferencia entre &gt; y ≥ es si el número del límite está permitido. Una regla como &quot;anota más de 10 puntos para ganar&quot; deja fuera el 10, así que necesita &gt;, mientras que &quot;debes tener al menos 13 años para verla&quot; permite exactamente 13, así que necesita ≥. Probar el número del límite en tu propia situación es la manera más rápida de saber cuál símbolo va.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9461,6 +9583,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>t &gt; 2</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">&#039;More than 2 hours&#039; means strictly greater than: t &gt; 2. Exactly 2 hours is not charged.</span><span class="lang-es" lang="es">&#039;Más de 2 horas&#039; significa estrictamente mayor que: t &gt; 2. Exactamente 2 horas no se cobra.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9575,6 +9709,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>h ≥ 48</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">&#039;At least&#039; means greater than or equal to, so h ≥ 48.</span><span class="lang-es" lang="es">&#039;Al menos&#039; significa mayor que o igual a, así que h ≥ 48.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9678,6 +9824,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>s &gt; 25</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">&#039;More than&#039; means strictly greater than, so s &gt; 25.</span><span class="lang-es" lang="es">&#039;Más de&#039; significa estrictamente mayor que, así que s &gt; 25.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9781,6 +9939,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>t &lt; 40</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">&#039;Less than&#039; means &lt;, so the inequality is t &lt; 40.</span><span class="lang-es" lang="es">&#039;Menor que&#039; significa &lt;, así que la desigualdad es t &lt; 40.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9884,6 +10054,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>p ≤ 75</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">&#039;No more than&#039; means less than or equal to, so p ≤ 75.</span><span class="lang-es" lang="es">&#039;No más de&#039; significa menor que o igual a, así que p ≤ 75.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9987,6 +10169,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>n &lt; 5</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">&#039;Fewer than 5&#039; does not include 5, so n &lt; 5.</span><span class="lang-es" lang="es">&#039;Menos de 5&#039; no incluye el 5, así que n &lt; 5.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10160,6 +10354,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">x = 10 IS a solution: x ≥ 10, x ≤ 15, x &gt; 8</span><span class="lang-es" lang="es">x = 10 SÍ es una solución: x ≥ 10, x ≤ 15, x &gt; 8</span></li><li><span class="lang-en">x = 10 is NOT a solution: x &gt; 10, x &lt; 10, x ≤ 5</span><span class="lang-es" lang="es">x = 10 NO es una solución: x &gt; 10, x &lt; 10, x ≤ 5</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Substituting 10 for x tests each inequality: 10 ≥ 10, 10 ≤ 15, and 10 &gt; 8 are all true, so 10 is a solution to those three. But 10 &gt; 10, 10 &lt; 10, and 10 ≤ 5 are false, which shows that a strict symbol shuts the boundary value out while ≥ and ≤ let it in.</span><span class="lang-es" lang="es">Sustituir x por 10 pone a prueba cada desigualdad: 10 ≥ 10, 10 ≤ 15 y 10 &gt; 8 son verdaderas, así que 10 es solución de esas tres. Pero 10 &gt; 10, 10 &lt; 10 y 10 ≤ 5 son falsas, lo que muestra que un símbolo estricto deja fuera el valor del límite mientras que ≥ y ≤ lo incluyen.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10263,6 +10469,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>g ≥ 12</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">&#039;At least 12&#039; includes 12 and any number above it, so g ≥ 12.</span><span class="lang-es" lang="es">&#039;Al menos 12&#039; incluye el 12 y cualquier número mayor, así que g ≥ 12.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

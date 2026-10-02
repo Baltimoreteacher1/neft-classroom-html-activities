@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8280,7 +8339,10 @@ body {
           <p class="ladder-q"><span class="lang-en">Write one statistical question and one non-statistical question about your school&#039;s cafeteria. Explain why each question is or is not statistical, and describe what the data would look like for the statistical question.</span><span class="lang-es" lang="es">Escribe una pregunta estadística y una pregunta no estadística sobre la cafetería de tu escuela. Explica por qué cada pregunta es o no es estadística y describe cómo se verían los datos de la pregunta estadística.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">A strong statistical cafeteria question asks about each person, such as &#039;How many minutes does each student wait in the lunch line?&#039; — the data would be a spread of values like 2, 5, 7, and 11 minutes. A non-statistical one, such as &#039;How many tables are in the cafeteria?&#039;, has a single fixed answer, so there is nothing to collect or compare.</span><span class="lang-es" lang="es">Una buena pregunta estadística sobre la cafetería pregunta por cada persona, como &#039;¿Cuántos minutos espera cada estudiante en la fila del almuerzo?&#039;: los datos serían valores variados como 2, 5, 7 y 11 minutos. Una no estadística, como &#039;¿Cuántas mesas hay en la cafetería?&#039;, tiene una sola respuesta fija, así que no hay nada que recolectar ni comparar.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8686,6 +8748,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Statistical: How many push-ups can each player on the team do in one minute?, How many points does each starter average per game?, How many seconds does each player take to sprint the court?, How many free throws did each teammate make in practice?</span><span class="lang-es" lang="es">Estadística: ¿Cuántas lagartijas puede hacer cada jugador del equipo en un minuto?, ¿Cuántos puntos promedia cada titular por juego?, ¿Cuántos segundos tarda cada jugador en cruzar la cancha?, ¿Cuántos tiros libres anotó cada compañero en la práctica?</span></li><li><span class="lang-en">Not Statistical: How many players are allowed on the court at once?, What is the diameter of an official basketball hoop?, How many quarters are played in one game?</span><span class="lang-es" lang="es">No estadística: ¿Cuántos jugadores se permiten en la cancha a la vez?, ¿Cuál es el diámetro de un aro oficial de baloncesto?, ¿Cuántos cuartos se juegan en un partido?</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The four statistical cards all measure something for each player — push-ups, points averaged, sprint seconds, free throws made — so the answers form a set of different values. The other three ask about rules or equipment: players allowed on the court, hoop diameter, and quarters per game each have one fixed answer.</span><span class="lang-es" lang="es">Las cuatro tarjetas estadísticas miden algo de cada jugador —lagartijas, promedio de puntos, segundos de velocidad, tiros libres encestados—, así que las respuestas forman un conjunto de valores distintos. Las otras tres preguntan por reglas o equipo: los jugadores permitidos en la cancha, el diámetro del aro y los cuartos por partido tienen cada uno una sola respuesta fija.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8862,6 +8936,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">How many push-ups can each student do in one minute? · Statistical?: Yes</span><span class="lang-es" lang="es">¿Cuántas lagartijas puede hacer cada estudiante en un minuto? · ¿Estadística?: Sí</span></li><li><span class="lang-en">Example — How many push-ups can each student do in one minute? · Why?: Different students can do different amounts — there is variability.</span><span class="lang-es" lang="es">Ejemplo — ¿Cuántas lagartijas puede hacer cada estudiante en un minuto? · ¿Por qué?: Distintos estudiantes pueden hacer cantidades diferentes; hay variabilidad.</span></li><li><span class="lang-en">How many sides does a basketball court have? · Statistical?: No</span><span class="lang-es" lang="es">¿Cuántos lados tiene una cancha de baloncesto? · ¿Estadística?: No</span></li><li><span class="lang-en">Example — How many sides does a basketball court have? · Why?: There is one fixed answer (4 sides) — no variability.</span><span class="lang-es" lang="es">Ejemplo — ¿Cuántos lados tiene una cancha de baloncesto? · ¿Por qué?: Hay una sola respuesta fija (4 lados); no hay variabilidad.</span></li><li><span class="lang-en">How far does each player kick the ball? · Statistical?: Yes</span><span class="lang-es" lang="es">¿Qué distancia patea la pelota cada jugador? · ¿Estadística?: Sí</span></li><li><span class="lang-en">Example — How far does each player kick the ball? · Why?: Different players kick different distances — the data varies.</span><span class="lang-es" lang="es">Ejemplo — ¿Qué distancia patea la pelota cada jugador? · ¿Por qué?: Distintos jugadores patean a distancias diferentes; los datos varían.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Rows 1 and 3 ask about each student and each player, so the push-up counts and kick distances differ from person to person — that variability makes both statistical. Row 2 asks how many sides a basketball court has, which is always 4, so there is nothing to vary and the answer is No.</span><span class="lang-es" lang="es">Las filas 1 y 3 preguntan por cada estudiante y por cada jugador, así que la cantidad de lagartijas y las distancias de las patadas cambian de una persona a otra; esa variabilidad hace que las dos sean estadísticas. La fila 2 pregunta cuántos lados tiene una cancha de básquetbol, que siempre son 4, así que no hay nada que varíe y la respuesta es No.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8963,6 +9049,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Because the answers will vary from athlete to athlete</span><span class="lang-es" lang="es">Porque las respuestas variarán de un atleta a otro</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A statistical question anticipates variability. Different athletes sleep different amounts, so the data collected will vary.</span><span class="lang-es" lang="es">Una pregunta estadística anticipa variabilidad. Distintos atletas duermen cantidades distintas, así que los datos recolectados van a variar.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9080,6 +9178,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">The answers vary from student to student</span><span class="lang-es" lang="es">Las respuestas varían de un estudiante a otro</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Statistical questions anticipate variability in the data collected across many people.</span><span class="lang-es" lang="es">Las preguntas estadísticas anticipan variabilidad en los datos recolectados entre muchas personas.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9181,6 +9291,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">How many rebounds does each player grab per game?</span><span class="lang-es" lang="es">¿Cuántos rebotes atrapa cada jugador por partido?</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">&quot;How many rebounds does each player grab per game?&quot; anticipates variability — different players grab different numbers of rebounds, so you must collect data. The other three each have one fixed answer.</span><span class="lang-es" lang="es">«¿Cuántos rebotes atrapa cada jugador por partido?» anticipa variabilidad: distintos jugadores atrapan distintos números de rebotes, así que hay que recolectar datos. Las otras tres tienen una sola respuesta fija.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9282,6 +9404,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Because the warm-up times will vary from one athlete to another</span><span class="lang-es" lang="es">Porque los tiempos de calentamiento varían de un atleta a otro</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A statistical question anticipates variability. Different athletes warm up for different amounts of time, so the data you collect will vary.</span><span class="lang-es" lang="es">Una pregunta estadística anticipa variabilidad. Distintos atletas calientan durante tiempos distintos, así que los datos que recolectes van a variar.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9400,6 +9534,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">How many players are on the roster? → How many minutes does each player on the roster play per game?</span><span class="lang-es" lang="es">¿Cuántos jugadores hay en la plantilla? → ¿Cuántos minutos juega cada jugador de la plantilla por partido?</span></li><li><span class="lang-en">What time does the game start? → What time does each fan arrive at the arena?</span><span class="lang-es" lang="es">¿A qué hora empieza el partido? → ¿A qué hora llega cada aficionado a la arena?</span></li><li><span class="lang-en">How long is the basketball court? → How far from the hoop does each player shoot most often?</span><span class="lang-es" lang="es">¿Cuánto mide la cancha de baloncesto? → ¿Desde qué distancia del aro tira cada jugador con más frecuencia?</span></li><li><span class="lang-en">How many points did the team score in total? → How many points did each player score in the game?</span><span class="lang-es" lang="es">¿Cuántos puntos anotó el equipo en total? → ¿Cuántos puntos anotó cada jugador en el partido?</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each weak question has one fixed answer, and its stronger partner keeps the topic but measures every person or moment: roster size becomes minutes played by each player, the game&#039;s start time becomes each fan&#039;s arrival time, the court&#039;s length becomes each player&#039;s usual shooting distance, and the team total becomes points scored by each player.</span><span class="lang-es" lang="es">Cada pregunta débil tiene una sola respuesta fija, y su versión más fuerte mantiene el tema pero mide a cada persona o momento: el tamaño de la plantilla se convierte en los minutos que juega cada jugador, la hora de inicio del partido en la hora de llegada de cada aficionado, el largo de la cancha en la distancia desde la que suele tirar cada jugador, y el total del equipo en los puntos que anotó cada jugador.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9501,6 +9647,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: variability, different answers, one answer, data, varies, fixed.</span><span class="lang-es" lang="es">Una buena respuesta usa: variability, different answers, one answer, data, varies, fixed.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A strong statistical cafeteria question asks about each person, such as &#039;How many minutes does each student wait in the lunch line?&#039; — the data would be a spread of values like 2, 5, 7, and 11 minutes. A non-statistical one, such as &#039;How many tables are in the cafeteria?&#039;, has a single fixed answer, so there is nothing to collect or compare.</span><span class="lang-es" lang="es">Una buena pregunta estadística sobre la cafetería pregunta por cada persona, como &#039;¿Cuántos minutos espera cada estudiante en la fila del almuerzo?&#039;: los datos serían valores variados como 2, 5, 7 y 11 minutos. Una no estadística, como &#039;¿Cuántas mesas hay en la cafetería?&#039;, tiene una sola respuesta fija, así que no hay nada que recolectar ni comparar.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9602,6 +9760,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">How many siblings does each student in the class have?</span><span class="lang-es" lang="es">¿Cuántos hermanos tiene cada estudiante del salón?</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Number of siblings varies from student to student, so the collected data will vary — that makes it statistical. The others each have one fixed answer.</span><span class="lang-es" lang="es">El número de hermanos varía de un estudiante a otro, así que los datos recolectados van a variar, y eso la hace estadística. Las demás tienen una sola respuesta fija.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9703,6 +9873,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">How many innings are in a baseball game?</span><span class="lang-es" lang="es">¿Cuántas entradas tiene un partido de béisbol?</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">&quot;How many innings are in a baseball game?&quot; has one fixed answer (9) — no variability. The other questions all produce different answers for different people.</span><span class="lang-es" lang="es">«¿Cuántas entradas tiene un partido de béisbol?» tiene una sola respuesta fija (9): no hay variabilidad. Las otras preguntas dan respuestas distintas para distintas personas.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9804,6 +9986,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Because different students got different amounts of sleep</span><span class="lang-es" lang="es">Porque distintos estudiantes durmieron cantidades distintas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A statistical question anticipates variability — different students slept different amounts, so the data will vary.</span><span class="lang-es" lang="es">Una pregunta estadística anticipa variabilidad: distintos estudiantes durmieron cantidades distintas, así que los datos van a variar.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9917,6 +10111,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Original: &#039;How many students are in 6th grade?&#039;: Rewritten: &#039;How many hours does each 6th grader study per week?&#039;</span><span class="lang-es" lang="es">Original: &#039;¿Cuántos estudiantes hay en 6.º grado?&#039;: Reescrita: &#039;¿Cuántas horas estudia cada estudiante de 6.º por semana?&#039;</span></li><li><span class="lang-en">Original: &#039;What time does school start?&#039;: Rewritten: &#039;What time does each student arrive at school?&#039;</span><span class="lang-es" lang="es">Original: &#039;¿A qué hora empieza la escuela?&#039;: Reescrita: &#039;¿A qué hora llega cada estudiante a la escuela?&#039;</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each rewrite keeps the same topic but shifts the question to &#039;each&#039; person, which is what creates variability. Counting 6th graders gives one number, but the hours each 6th grader studies differ; the school&#039;s start time is fixed, but the time each student arrives differs.</span><span class="lang-es" lang="es">Cada versión reescrita mantiene el mismo tema, pero cambia la pregunta a &#039;cada&#039; persona, que es lo que crea variabilidad. Contar a los estudiantes de sexto grado da un solo número, pero las horas que estudia cada estudiante de sexto son distintas; la hora de entrada de la escuela es fija, pero la hora en que llega cada estudiante es distinta.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10063,6 +10269,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Example — How many players are on the team? · Rewritten as Statistical: How many minutes does each player on the team play per game?</span><span class="lang-es" lang="es">Ejemplo — ¿Cuántos jugadores hay en el equipo? · Reescrita como pregunta estadística: ¿Cuántos minutos juega cada integrante del equipo por partido?</span></li><li><span class="lang-en">Example — How many players are on the team? · What Variability Exists?: Different players get different amounts of playing time.</span><span class="lang-es" lang="es">Ejemplo — ¿Cuántos jugadores hay en el equipo? · ¿Qué variabilidad hay?: Distintos jugadores juegan diferentes cantidades de tiempo.</span></li><li><span class="lang-en">Example — What sport does this league play? · Rewritten as Statistical: How many games does each team in this league win per season?</span><span class="lang-es" lang="es">Ejemplo — ¿Qué deporte se juega en esta liga? · Reescrita como pregunta estadística: ¿Cuántos partidos gana cada equipo de esta liga por temporada?</span></li><li><span class="lang-en">Example — What sport does this league play? · What Variability Exists?: Different teams win different numbers of games.</span><span class="lang-es" lang="es">Ejemplo — ¿Qué deporte se juega en esta liga? · ¿Qué variabilidad hay?: Distintos equipos ganan diferentes cantidades de partidos.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each rewrite trades a one-answer count for a measurement taken on every member of the group. &#039;How many players are on the team?&#039; becomes minutes played per game, which varies because starters play more than bench players, and the league&#039;s sport becomes wins per team, which varies because some teams win more games than others.</span><span class="lang-es" lang="es">Cada versión reescrita cambia un conteo de una sola respuesta por una medición tomada a cada integrante del grupo. &#039;¿Cuántos jugadores hay en el equipo?&#039; se convierte en los minutos jugados por partido, que varían porque los titulares juegan más que los suplentes, y el deporte de la liga se convierte en los partidos ganados por equipo, que varían porque algunos equipos ganan más que otros.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10164,6 +10382,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>How many points did each player score this season?</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">&quot;How many points did each player score?&quot; is statistical because different players will have different scores — there is variability in the data.</span><span class="lang-es" lang="es">«¿Cuántos puntos anotó cada jugador?» es estadística porque distintos jugadores tendrán puntajes distintos: hay variabilidad en los datos.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

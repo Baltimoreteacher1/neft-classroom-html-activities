@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8438,7 +8497,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A parallelogram has a base of 12 cm. If you double the height, the area doubles too. Explain why this happens using the formula, and give a specific example with numbers.</span><span class="lang-es" lang="es">Un paralelogramo tiene una base de 12 cm. Si duplicas la altura, el área también se duplica. Explica por qué pasa esto usando la fórmula y da un ejemplo específico con números.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">In A = b × h the base of 12 cm is a fixed factor, so the area is just 12 times whatever the height is. With h = 5, A = 12 × 5 = 60 sq cm; doubling to h = 10 gives A = 12 × 10 = 120 sq cm, exactly double, because doubling one factor doubles the product.</span><span class="lang-es" lang="es">En A = b × h la base de 12 cm es un factor fijo, así que el área es simplemente 12 veces la altura que tengas. Con h = 5, A = 12 × 5 = 60 sq cm; al duplicar a h = 10 queda A = 12 × 10 = 120 sq cm, exactamente el doble, porque duplicar un factor duplica el producto.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8720,6 +8782,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A rectangle with the same base and height, so its area equals base x height</span><span class="lang-es" lang="es">Un rectángulo con la misma base y la misma altura, así que su área es igual a base × altura</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Sliding the cut triangle turns the parallelogram into a rectangle that keeps the same base and height. A rectangle&#039;s area is base x height, so the parallelogram&#039;s area is base x height too.</span><span class="lang-es" lang="es">Deslizar el triángulo cortado convierte el paralelogramo en un rectángulo que conserva la misma base y la misma altura. El área de un rectángulo es base × altura, así que el área del paralelogramo también es base × altura.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8893,6 +8967,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Is the height: A dashed line straight up from the base, making a 90 degree angle, The perpendicular distance from the base to the top side, The straight-up distance measured at a right angle to the base</span><span class="lang-es" lang="es">SÍ es la altura: Una línea punteada recta hacia arriba desde la base, formando un ángulo de 90 grados, La distancia perpendicular desde la base hasta el lado superior, La distancia vertical medida en ángulo recto con la base</span></li><li><span class="lang-en">Is NOT the height: The slanted left edge of the parallelogram, The long tilted side that connects the bottom to the top, The leaning side that is longer than the perpendicular gap</span><span class="lang-es" lang="es">NO es la altura: El lado izquierdo inclinado del paralelogramo, El lado largo inclinado que conecta la parte de abajo con la de arriba, El lado inclinado que es más largo que la distancia perpendicular</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The three cards that mention a 90 degree angle, a perpendicular distance, or a straight-up measurement to the top all describe the height. The slanted left edge, the long tilted side, and the leaning side longer than the perpendicular gap are sides of the figure, not the height — a slanted segment is always longer than the true straight-up distance.</span><span class="lang-es" lang="es">Las tres tarjetas que mencionan un ángulo de 90 grados, una distancia perpendicular o una medida vertical hasta la parte de arriba describen la altura. El borde izquierdo inclinado, el lado largo ladeado y el lado inclinado más largo que la separación perpendicular son lados de la figura, no la altura: un segmento inclinado siempre es más largo que la distancia vertical real.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8996,6 +9082,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Equal: both are 10 x 6 = 60 sq ft because area depends on base and height, not the slant</span><span class="lang-es" lang="es">Iguales: los dos son 10 × 6 = 60 pies cuadrados, porque el área depende de la base y la altura, no de la inclinación</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Area = base x height. Both have base 10 ft and height 6 ft, so both areas are 10 x 6 = 60 sq ft. Tilting the shape changes the slanted side but not the perpendicular height, so the area stays the same.</span><span class="lang-es" lang="es">Área = base × altura. Ambos tienen base 10 ft y altura 6 ft, así que ambas áreas son 10 × 6 = 60 pies cuadrados. Inclinar la figura cambia el lado inclinado, pero no la altura perpendicular, así que el área se mantiene igual.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9141,6 +9239,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Triangle 8×6 → 24 sq units</span><span class="lang-es" lang="es">Triángulo 8×6 → 24 unidades cuadradas</span></li><li><span class="lang-en">Parallelogram 5×4 → 20 sq units</span><span class="lang-es" lang="es">Paralelogramo 5×4 → 20 unidades cuadradas</span></li><li><span class="lang-en">Rectangle 7×3 → 21 sq units</span><span class="lang-es" lang="es">Rectángulo 7×3 → 21 unidades cuadradas</span></li><li><span class="lang-en">Triangle 10×8 → 40 sq units</span><span class="lang-es" lang="es">Triángulo 10×8 → 40 unidades cuadradas</span></li><li><span class="lang-en">Square side 6 → 36 sq units</span><span class="lang-es" lang="es">Cuadrado de lado 6 → 36 unidades cuadradas</span></li><li><span class="lang-en">Parallelogram 9×2 → 18 sq units</span><span class="lang-es" lang="es">Paralelogramo 9×2 → 18 unidades cuadradas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The shape name decides the rule. Parallelogram 5×4 = 20, Rectangle 7×3 = 21, Square side 6 = 36, and Parallelogram 9×2 = 18 all just multiply, while the triangles take half: Triangle 8×6 = 24 and Triangle 10×8 = 40.</span><span class="lang-es" lang="es">El nombre de la figura decide la regla. Paralelogramo 5×4 = 20, Rectángulo 7×3 = 21, Cuadrado de lado 6 = 36 y Paralelogramo 9×2 = 18 solo multiplican, mientras que los triángulos toman la mitad: Triángulo 8×6 = 24 y Triángulo 10×8 = 40.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9244,6 +9354,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: formula, base, height, double, multiply, proportional.</span><span class="lang-es" lang="es">Una buena respuesta usa: formula, base, height, double, multiply, proportional.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">In A = b × h the base of 12 cm is a fixed factor, so the area is just 12 times whatever the height is. With h = 5, A = 12 × 5 = 60 sq cm; doubling to h = 10 gives A = 12 × 10 = 120 sq cm, exactly double, because doubling one factor doubles the product.</span><span class="lang-es" lang="es">En A = b × h la base de 12 cm es un factor fijo, así que el área es simplemente 12 veces la altura que tengas. Con h = 5, A = 12 × 5 = 60 sq cm; al duplicar a h = 10 queda A = 12 × 10 = 120 sq cm, exactamente el doble, porque duplicar un factor duplica el producto.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9347,6 +9469,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>40 sq ft</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Area = base x height = 8 x 5 = 40 sq ft. The 7 ft slanted side is not used; only the perpendicular height belongs in the formula.</span><span class="lang-es" lang="es">Área = base × altura = 8 × 5 = 40 pies cuadrados. El lado inclinado de 7 ft no se usa; solo la altura perpendicular entra en la fórmula.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9461,6 +9595,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">The perpendicular distance between the base and the opposite side</span><span class="lang-es" lang="es">La distancia perpendicular entre la base y el lado opuesto</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The height is always the perpendicular (straight up-and-down) distance between the base and the opposite side, not the slanted side.</span><span class="lang-es" lang="es">La altura siempre es la distancia perpendicular (recta, de arriba abajo) entre la base y el lado opuesto, no el lado inclinado.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9583,6 +9729,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Patio X · Area: 24 sq ft</span><span class="lang-es" lang="es">Patio X · Área: 24 pies²</span></li><li><span class="lang-en">Patio Y · Area: 33 sq ft</span><span class="lang-es" lang="es">Patio Y · Área: 33 pies²</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each row already gives a base and a perpendicular height, so A = b × h finishes it: Patio X is 6 × 4 = 24 sq ft and Patio Y is 11 × 3 = 33 sq ft. Feet times feet gives square feet, which is why the area column carries sq ft.</span><span class="lang-es" lang="es">Cada fila ya te da una base y una altura perpendicular, así que A = b × h lo resuelve: el Patio X da 6 × 4 = 24 sq ft y el Patio Y da 11 × 3 = 33 sq ft. Pies por pies da pies cuadrados, por eso la columna de área lleva sq ft.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9756,6 +9914,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Area &gt; 50 sq units: b = 12, h = 5, b = 10, h = 8, b = 11, h = 7</span><span class="lang-es" lang="es">Área &gt; 50 unidades cuadradas: b = 12, h = 5, b = 10, h = 8, b = 11, h = 7</span></li><li><span class="lang-en">Area ≤ 50 sq units: b = 7, h = 6, b = 9, h = 4, b = 5, h = 10</span><span class="lang-es" lang="es">Área ≤ 50 unidades cuadradas: b = 7, h = 6, b = 9, h = 4, b = 5, h = 10</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each card already shows its area, so you compare it to 50: 60, 80, and 77 are greater than 50, while 42, 36, and 50 are not. The card b = 5, h = 10 lands on exactly 50, and since &#039;greater than&#039; means strictly more, it belongs in the &#039;Area ≤ 50 sq units&#039; group.</span><span class="lang-es" lang="es">Cada tarjeta ya muestra su área, así que la comparas con 50: 60, 80 y 77 son mayores que 50, mientras que 42, 36 y 50 no lo son. La tarjeta b = 5, h = 10 cae exactamente en 50, y como «mayor que» significa estrictamente más, va en el grupo «Área ≤ 50 unidades cuadradas».</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9863,6 +10033,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">base 6 ft, height 7 ft → 42 sq ft</span><span class="lang-es" lang="es">base 6 ft, altura 7 ft → 42 sq ft</span></li><li><span class="lang-en">base 13 ft, height 2 ft → 26 sq ft</span><span class="lang-es" lang="es">base 13 ft, altura 2 ft → 26 sq ft</span></li><li><span class="lang-en">base 4 ft, height 11 ft → 44 sq ft</span><span class="lang-es" lang="es">base 4 ft, altura 11 ft → 44 sq ft</span></li><li><span class="lang-en">base 15 ft, height 4 ft → 60 sq ft</span><span class="lang-es" lang="es">base 15 ft, altura 4 ft → 60 sq ft</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Multiply base by height on each card: 6 × 7 = 42 sq ft, 13 × 2 = 26 sq ft, 4 × 11 = 44 sq ft, and 15 × 4 = 60 sq ft. Notice 6 × 7 and 4 × 11 give close totals, so read both numbers carefully before you commit to a match.</span><span class="lang-es" lang="es">Multiplica base por altura en cada tarjeta: 6 × 7 = 42 sq ft, 13 × 2 = 26 sq ft, 4 × 11 = 44 sq ft y 15 × 4 = 60 sq ft. Fíjate en que 6 × 7 y 4 × 11 dan totales parecidos, así que lee bien los dos números antes de decidir la pareja.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9966,6 +10148,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>70 sq cm</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A = b × h = 10 × 7 = 70 square centimeters.</span><span class="lang-es" lang="es">A = b × h = 10 × 7 = 70 centímetros cuadrados.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10069,6 +10263,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>6 ft</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> A = b × h → 54 = 9 × h → h = 54 ÷ 9 = 6 ft.</p>
+        </div>
+      </details>
     </section>
 
 
@@ -10172,6 +10378,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>45 sq cm</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A = b × h = 9 × 5 = 45 square centimeters.</span><span class="lang-es" lang="es">A = b × h = 9 × 5 = 45 centímetros cuadrados.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10328,6 +10546,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Patio A · Area: 126 sq ft</span><span class="lang-es" lang="es">Patio A · Área: 126 pies²</span></li><li><span class="lang-en">Patio B · Height: 7 ft</span><span class="lang-es" lang="es">Patio B · Altura: 7 pies</span></li><li><span class="lang-en">Patio C · Base: 8 ft</span><span class="lang-es" lang="es">Patio C · Base: 8 pies</span></li><li><span class="lang-en">Patio D · Area: 90 sq ft</span><span class="lang-es" lang="es">Patio D · Área: 90 pies²</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Patios A and D give both measurements, so multiply: 14 × 9 = 126 sq ft and 15 × 6 = 90 sq ft. Patios B and C give the area and one measurement, so divide to undo the multiplication: 56 ÷ 8 = 7 ft of height and 96 ÷ 12 = 8 ft of base.</span><span class="lang-es" lang="es">Los Patios A y D dan las dos medidas, así que multiplicas: 14 × 9 = 126 sq ft y 15 × 6 = 90 sq ft. Los Patios B y C dan el área y una medida, así que divides para deshacer la multiplicación: 56 ÷ 8 = 7 ft de altura y 96 ÷ 12 = 8 ft de base.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8298,7 +8357,10 @@ body {
           <p class="ladder-q"><span class="lang-en">Two boxes have the same volume of 60 in³. Box A is 5 × 4 × 3. Box B is 10 × 6 × 1. Which box uses less wrapping paper (has less surface area)? Show your calculations and explain why a more cube-like shape might use less material.</span><span class="lang-es" lang="es">Dos cajas tienen el mismo volumen de 60 in³. La caja A mide 5 × 4 × 3. La caja B mide 10 × 6 × 1. ¿Cuál caja usa menos papel de envolver (tiene menos área superficial)? Muestra tus cálculos y explica por qué una forma más parecida a un cubo puede usar menos material.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Both boxes hold 60 in³, but wrapping paper is measured by surface area. Box A: 2(20) + 2(15) + 2(12) = 94 in². Box B: 2(60) + 2(10) + 2(6) = 152 in². Box A uses less paper because its dimensions are closer to a cube — flattening the same volume into 10 × 6 × 1 creates two huge 60 in² faces and a lot of extra covering.</span><span class="lang-es" lang="es">Las dos cajas contienen 60 in³, pero el papel de regalo se mide con el área de superficie. Box A: 2(20) + 2(15) + 2(12) = 94 in². Box B: 2(60) + 2(10) + 2(6) = 152 in². Box A usa menos papel porque sus dimensiones se parecen más a un cubo; aplanar el mismo volumen hasta 10 × 6 × 1 crea dos caras enormes de 60 in² y mucho más que cubrir.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8606,6 +8668,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Cube → Net of 6 equal squares</span><span class="lang-es" lang="es">Cubo → Red de 6 cuadrados iguales</span></li><li><span class="lang-en">Rectangular prism → Net of 6 rectangles (3 matching pairs)</span><span class="lang-es" lang="es">Prisma rectangular → Red de 6 rectángulos (3 pares iguales)</span></li><li><span class="lang-en">Triangular prism → Net of 2 triangles and 3 rectangles</span><span class="lang-es" lang="es">Prisma triangular → Red de 2 triángulos y 3 rectángulos</span></li><li><span class="lang-en">Square pyramid → Net of 1 square and 4 triangles</span><span class="lang-es" lang="es">Pirámide cuadrada → Red de 1 cuadrado y 4 triángulos</span></li><li><span class="lang-en">Faces on any rectangular prism → 6 faces</span><span class="lang-es" lang="es">Caras de cualquier prisma rectangular → 6 caras</span></li><li><span class="lang-en">Square units (in², cm²) → How surface area is measured</span><span class="lang-es" lang="es">Unidades cuadradas (in², cm²) → Cómo se mide el área de superficie</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A net shows exactly the flat faces a solid folds up from. A cube needs 6 equal squares; a rectangular prism needs 6 rectangles in 3 matching pairs; a triangular prism needs its 2 triangular ends plus 3 rectangles; a square pyramid needs 1 square base plus 4 triangles. Because every net is made of flat faces, surface area is always reported in square units such as in² or cm².</span><span class="lang-es" lang="es">Un patrón muestra exactamente las caras planas con las que se arma un cuerpo geométrico. Un cubo necesita 6 cuadrados iguales; un prisma rectangular necesita 6 rectángulos en 3 pares iguales; un prisma triangular necesita sus 2 bases triangulares más 3 rectángulos; una pirámide cuadrada necesita 1 base cuadrada más 4 triángulos. Como todo patrón está hecho de caras planas, el área de superficie siempre se expresa en unidades cuadradas como in² o cm².</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8707,6 +8781,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>6</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A rectangular prism has 6 faces — top, bottom, front, back, left, and right — so its net shows 6 faces.</span><span class="lang-es" lang="es">Un prisma rectangular tiene 6 caras —arriba, abajo, adelante, atrás, izquierda y derecha—, así que su desarrollo plano muestra 6 caras.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8880,6 +8966,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Valid net (folds into a closed box): Six rectangles arranged in a cross shape, Six rectangles in a T shape (3 matching pairs), Two squares and four rectangles for a box</span><span class="lang-es" lang="es">Red válida (se pliega en una caja cerrada): Seis rectángulos en forma de cruz, Seis rectángulos en forma de T (3 pares iguales), Dos cuadrados y cuatro rectángulos para una caja</span></li><li><span class="lang-en">Not a complete net: Four rectangles in a straight row (top and bottom missing), A single rectangle by itself, Seven rectangles (one extra face)</span><span class="lang-es" lang="es">No es una red completa: Cuatro rectángulos en una fila (faltan la tapa y el fondo), Un solo rectángulo, Siete rectángulos (una cara de más)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A valid net has exactly the 6 faces of a closed box — no more and no fewer — arranged so they fold up without overlapping. The cross layout, the T layout, and the two-squares-plus-four-rectangles layout each have 6 faces in 3 matching pairs. Four rectangles in a row leaves the top and bottom open, a single rectangle is only one face, and seven rectangles has an extra face that would overlap.</span><span class="lang-es" lang="es">Un patrón válido tiene exactamente las 6 caras de una caja cerrada, ni más ni menos, acomodadas de modo que se doblen sin encimarse. El patrón en cruz, el patrón en T y el de dos cuadrados con cuatro rectángulos tienen cada uno 6 caras en 3 pares iguales. Cuatro rectángulos en fila dejan abiertos el techo y el fondo, un solo rectángulo es apenas una cara, y siete rectángulos tienen una cara de más que se encimaría.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8997,6 +9095,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>52 in²</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">From the net: SA = 2(2×3) + 2(2×4) + 2(3×4) = 12 + 16 + 24 = 52 in².</span><span class="lang-es" lang="es">Del desarrollo plano: área de la superficie = 2(2×3) + 2(2×4) + 2(3×4) = 12 + 16 + 24 = 52 in².</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9098,6 +9208,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>150 cm²</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A cube has 6 identical faces. Each face: 5 × 5 = 25 cm². Total SA = 6 × 25 = 150 cm².</span><span class="lang-es" lang="es">Un cubo tiene 6 caras idénticas. Cada cara: 5 × 5 = 25 cm². Área total de la superficie = 6 × 25 = 150 cm².</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9199,6 +9321,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>24 cm²</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A cube net has 6 equal square faces. With each face 4 cm², the surface area is 6 × 4 = 24 cm².</span><span class="lang-es" lang="es">El desarrollo plano de un cubo tiene 6 caras cuadradas iguales. Con cada cara de 4 cm², el área de la superficie es 6 × 4 = 24 cm².</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9339,6 +9473,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Top &amp; Bottom faces → l × w (two of them)</span><span class="lang-es" lang="es">Caras superior e inferior → l × w (dos de ellas)</span></li><li><span class="lang-en">Front &amp; Back faces → l × h (two of them)</span><span class="lang-es" lang="es">Caras frontal y trasera → l × h (dos de ellas)</span></li><li><span class="lang-en">Left &amp; Right faces → w × h (two of them)</span><span class="lang-es" lang="es">Caras izquierda y derecha → w × h (dos de ellas)</span></li><li><span class="lang-en">Surface area formula → SA = 2lw + 2lh + 2wh</span><span class="lang-es" lang="es">Fórmula del área de superficie → SA = 2lw + 2lh + 2wh</span></li><li><span class="lang-en">Volume formula → V = l × w × h</span><span class="lang-es" lang="es">Fórmula del volumen → V = l × w × h</span></li><li><span class="lang-en">Number of faces → 6 faces total</span><span class="lang-es" lang="es">Número de caras → 6 caras en total</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A rectangular prism has 6 faces in 3 matching pairs, and each pair uses two of the three dimensions: top and bottom are l × w, front and back are l × h, and left and right are w × h. Adding all six faces gives SA = 2lw + 2lh + 2wh, while volume multiplies all three dimensions at once: V = l × w × h.</span><span class="lang-es" lang="es">Un prisma rectangular tiene 6 caras en 3 pares iguales, y cada par usa dos de las tres dimensiones: arriba y abajo son l × w, el frente y el fondo son l × h, y la izquierda y la derecha son w × h. Sumar las seis caras da SA = 2lw + 2lh + 2wh, mientras que el volumen multiplica las tres dimensiones a la vez: V = l × w × h.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9440,6 +9586,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>88 in²</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">SA = 2(6×4) + 2(6×2) + 2(4×2) = 48 + 24 + 16 = 88 in².</span><span class="lang-es" lang="es">Área de la superficie = 2(6×4) + 2(6×2) + 2(4×2) = 48 + 24 + 16 = 88 in².</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9553,6 +9711,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>1. Identify the three face pairs: 5×3, 5×2, 3×2</li><li>2. Find area of each: 15, 10, 6</li><li>3. Multiply each by 2: 30, 20, 12</li><li>4. Add all pairs: 30 + 20 + 12</li><li>5. SA = 62 in²</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">You cannot measure a face until you know which faces exist, so the steps run in this order: identify the three face pairs 5×3, 5×2, 3×2; find each area (15, 10, 6); double each one because every face has a twin (30, 20, 12); add them (30 + 20 + 12); and state SA = 62 in².</span><span class="lang-es" lang="es">No puedes medir una cara hasta saber cuáles caras existen, así que los pasos van en este orden: identificar los tres pares de caras 5×3, 5×2, 3×2; hallar el área de cada uno (15, 10, 6); duplicar cada uno porque toda cara tiene su gemela (30, 20, 12); sumarlos (30 + 20 + 12); y escribir SA = 62 in².</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9654,6 +9824,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: surface area, volume, same, less, cube, efficient, wrapping paper, 94, 152.</span><span class="lang-es" lang="es">Una buena respuesta usa: surface area, volume, same, less, cube, efficient, wrapping paper, 94, 152.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Both boxes hold 60 in³, but wrapping paper is measured by surface area. Box A: 2(20) + 2(15) + 2(12) = 94 in². Box B: 2(60) + 2(10) + 2(6) = 152 in². Box A uses less paper because its dimensions are closer to a cube — flattening the same volume into 10 × 6 × 1 creates two huge 60 in² faces and a lot of extra covering.</span><span class="lang-es" lang="es">Las dos cajas contienen 60 in³, pero el papel de regalo se mide con el área de superficie. Box A: 2(20) + 2(15) + 2(12) = 94 in². Box B: 2(60) + 2(10) + 2(6) = 152 in². Box A usa menos papel porque sus dimensiones se parecen más a un cubo; aplanar el mismo volumen hasta 10 × 6 × 1 crea dos caras enormes de 60 in² y mucho más que cubrir.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9755,6 +9937,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Square units (in², cm², ft²)</span><span class="lang-es" lang="es">Unidades cuadradas (in², cm², ft²)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Surface area measures flat surfaces, so it uses square units. Volume uses cubic units.</span><span class="lang-es" lang="es">El área de la superficie mide superficies planas, así que usa unidades cuadradas. El volumen usa unidades cúbicas.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9892,6 +10086,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Box A · Surface Area: 248 in²</span><span class="lang-es" lang="es">Caja A · Área superficial: 248 pulg²</span></li><li><span class="lang-en">Box B · Surface Area: 182 cm²</span><span class="lang-es" lang="es">Caja B · Área superficial: 182 cm²</span></li><li><span class="lang-en">Box C · Surface Area: 188 ft²</span><span class="lang-es" lang="es">Caja C · Área superficial: 188 pies²</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Surface area adds all six faces, so use SA = 2lw + 2lh + 2wh in every row. Box A: 2(60) + 2(40) + 2(24) = 248 in². Box B: 2(49) + 2(21) + 2(21) = 182 cm². Box C: 2(60) + 2(24) + 2(10) = 188 ft². The answers carry square units because you are covering the outside, not filling the inside.</span><span class="lang-es" lang="es">El área de superficie suma las seis caras, así que usa SA = 2lw + 2lh + 2wh en cada fila. Box A: 2(60) + 2(40) + 2(24) = 248 in². Box B: 2(49) + 2(21) + 2(21) = 182 cm². Box C: 2(60) + 2(24) + 2(10) = 188 ft². Las respuestas llevan unidades cuadradas porque estás cubriendo el exterior, no llenando el interior.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10005,6 +10211,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>1. 2 × 2 × 2</li><li>2. 10 × 1 × 1</li><li>3. 3 × 3 × 3</li><li>4. 6 × 4 × 2</li><li>5. 5 × 4 × 3</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Sorting by the SA values printed on the cards gives 24, 42, 54, 88, 94 — that is 2 × 2 × 2, then 10 × 1 × 1, then 3 × 3 × 3, then 6 × 4 × 2, then 5 × 4 × 3. Notice that the long, skinny 10 × 1 × 1 prism has more surface area than the small cube: stretching a shape out exposes more outside surface.</span><span class="lang-es" lang="es">Ordenar por los valores de SA impresos en las tarjetas da 24, 42, 54, 88, 94; es decir, 2 × 2 × 2, luego 10 × 1 × 1, luego 3 × 3 × 3, luego 6 × 4 × 2 y por último 5 × 4 × 3. Fíjate en que el prisma largo y delgado 10 × 1 × 1 tiene más área de superficie que el cubo pequeño: estirar una figura deja más superficie expuesta.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10220,6 +10438,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">2 × 2 × 2 · Volume (cubic units): 8</span><span class="lang-es" lang="es">2 × 2 × 2 · Volumen (unidades cúbicas): 8</span></li><li><span class="lang-en">2 × 2 × 2 · Surface Area (square units): 24</span><span class="lang-es" lang="es">2 × 2 × 2 · Área superficial (unidades cuadradas): 24</span></li><li><span class="lang-en">2 × 2 × 2 · Which is numerically larger?: SA</span><span class="lang-es" lang="es">2 × 2 × 2 · ¿Cuál es numéricamente mayor?: Área superficial</span></li><li><span class="lang-en">5 × 5 × 5 · Volume (cubic units): 125</span><span class="lang-es" lang="es">5 × 5 × 5 · Volumen (unidades cúbicas): 125</span></li><li><span class="lang-en">5 × 5 × 5 · Surface Area (square units): 150</span><span class="lang-es" lang="es">5 × 5 × 5 · Área superficial (unidades cuadradas): 150</span></li><li><span class="lang-en">5 × 5 × 5 · Which is numerically larger?: SA</span><span class="lang-es" lang="es">5 × 5 × 5 · ¿Cuál es numéricamente mayor?: Área superficial</span></li><li><span class="lang-en">10 × 10 × 10 · Volume (cubic units): 1000</span><span class="lang-es" lang="es">10 × 10 × 10 · Volumen (unidades cúbicas): 1000</span></li><li><span class="lang-en">10 × 10 × 10 · Surface Area (square units): 600</span><span class="lang-es" lang="es">10 × 10 × 10 · Área superficial (unidades cuadradas): 600</span></li><li><span class="lang-en">10 × 10 × 10 · Which is numerically larger?: Volume</span><span class="lang-es" lang="es">10 × 10 × 10 · ¿Cuál es numéricamente mayor?: Volumen</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">For a cube, volume is edge × edge × edge and surface area is 6 × (edge × edge). The 2 × 2 × 2 cube gives V = 8 and SA = 24, so SA is larger; the 5 × 5 × 5 cube gives V = 125 and SA = 150, so SA is still larger; but the 10 × 10 × 10 cube gives V = 1000 and SA = 600, so volume takes over. Volume grows faster than surface area as a cube gets bigger.</span><span class="lang-es" lang="es">En un cubo, el volumen es arista × arista × arista y el área de superficie es 6 × (arista × arista). El cubo de 2 × 2 × 2 da V = 8 y SA = 24, así que SA es mayor; el cubo de 5 × 5 × 5 da V = 125 y SA = 150, así que SA sigue siendo mayor; pero el cubo de 10 × 10 × 10 da V = 1000 y SA = 600, así que el volumen se adelanta. El volumen crece más rápido que el área de superficie cuando el cubo se hace más grande.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8378,7 +8437,10 @@ body {
           <p class="ladder-q"><span class="lang-en">Write a real-world situation that can be modeled by the equation n / 5 = 9. Explain what n represents and verify your equation makes sense.</span><span class="lang-es" lang="es">Escribe una situación de la vida real que se pueda modelar con la ecuación n / 5 = 9. Explica qué representa n y comprueba que tu ecuación tiene sentido.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">The equation n / 5 = 9 describes one amount being shared into 5 equal groups with 9 in each group, so a matching story could be n stickers split evenly among 5 friends with each friend getting 9. Since 5 groups of 9 rebuild the whole, n = 9 × 5 = 45, and 45 ÷ 5 = 9 checks the story.</span><span class="lang-es" lang="es">La ecuación n / 5 = 9 describe una cantidad que se reparte en 5 grupos iguales con 9 en cada grupo, así que una historia que encaja podría ser n calcomanías repartidas entre 5 amigos y cada uno recibe 9. Como 5 grupos de 9 reconstruyen el total, n = 9 × 5 = 45, y 45 ÷ 5 = 9 comprueba la historia.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8703,6 +8765,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Example — A box holds some files. After removing 5, there are 13 left. · Variable Represents: Number of files in the box</span><span class="lang-es" lang="es">Ejemplo — Una caja contiene varios archivos. Después de sacar 5, quedan 13. · La variable representa: Cantidad de archivos en la caja</span></li><li><span class="lang-en">Example — A box holds some files. After removing 5, there are 13 left. · Equation: n − 5 = 13</span><span class="lang-es" lang="es">Ejemplo — Una caja contiene varios archivos. Después de sacar 5, quedan 13. · Ecuación: n − 5 = 13</span></li><li><span class="lang-en">Example — A detective split 48 photos equally into folders. Each folder has 6 photos. · Variable Represents: Number of folders</span><span class="lang-es" lang="es">Ejemplo — Un detective repartió 48 fotos por igual en carpetas. Cada carpeta tiene 6 fotos. · La variable representa: Cantidad de carpetas</span></li><li><span class="lang-en">Example — A detective split 48 photos equally into folders. Each folder has 6 photos. · Equation: 48 / n = 6</span><span class="lang-es" lang="es">Ejemplo — Un detective repartió 48 fotos por igual en carpetas. Cada carpeta tiene 6 fotos. · Ecuación: 48 / n = 6</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">In row 1 the unknown is how many files the box started with, and removing 5 leaves 13, so n − 5 = 13. In row 2 the 48 photos are known and the unknown is how many folders they were split into, so n stands for the number of folders and the equation is 48 / n = 6.</span><span class="lang-es" lang="es">En la fila 1 lo desconocido es cuántos archivos había al principio en la caja, y al quitar 5 quedan 13, así que n − 5 = 13. En la fila 2 las 48 fotos son conocidas y lo desconocido es en cuántas carpetas se repartieron, así que n representa el número de carpetas y la ecuación es 48 / n = 6.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8804,6 +8878,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>No, because 3 + 5 = 8, which does not equal 9</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Substitute the value and check whether the statement is true: 3 + 5 = 8, and 8 ≠ 9, so 3 is not a solution.</span><span class="lang-es" lang="es">Sustituye el valor y revisa si el enunciado es verdadero: 3 + 5 = 8, y 8 ≠ 9, así que 3 no es una solución.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9075,6 +9161,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Addition (+): more than, increased by, sum of</span><span class="lang-es" lang="es">Suma (+): más que, aumentado en, la suma de</span></li><li><span class="lang-en">Subtraction (−): less than, decreased by, fewer than</span><span class="lang-es" lang="es">Resta (−): menos que, disminuido en, menos cantidad que</span></li><li><span class="lang-en">Multiplication (×): times, product of, twice</span><span class="lang-es" lang="es">Multiplicación (×): veces, el producto de, el doble</span></li><li><span class="lang-en">Division (÷): divided by, split equally, quotient of</span><span class="lang-es" lang="es">División (÷): dividido entre, repartido por igual, el cociente de</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each phrase names one operation by describing what happens to the amount: &#039;more than&#039;, &#039;increased by&#039;, and &#039;sum of&#039; all combine, while &#039;less than&#039;, &#039;decreased by&#039;, and &#039;fewer than&#039; all take away. &#039;Times&#039;, &#039;product of&#039;, and &#039;twice&#039; build equal groups, and &#039;divided by&#039;, &#039;split equally&#039;, and &#039;quotient of&#039; break an amount into equal shares.</span><span class="lang-es" lang="es">Cada frase nombra una operación al describir lo que le pasa a la cantidad: &#039;more than&#039;, &#039;increased by&#039; y &#039;sum of&#039; combinan, mientras que &#039;less than&#039;, &#039;decreased by&#039; y &#039;fewer than&#039; quitan. &#039;Times&#039;, &#039;product of&#039; y &#039;twice&#039; forman grupos iguales, y &#039;divided by&#039;, &#039;split equally&#039; y &#039;quotient of&#039; reparten una cantidad en partes iguales.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9192,6 +9290,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: equation, variable, represents, divided, equal, 45.</span><span class="lang-es" lang="es">Una buena respuesta usa: equation, variable, represents, divided, equal, 45.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The equation n / 5 = 9 describes one amount being shared into 5 equal groups with 9 in each group, so a matching story could be n stickers split evenly among 5 friends with each friend getting 9. Since 5 groups of 9 rebuild the whole, n = 9 × 5 = 45, and 45 ÷ 5 = 9 checks the story.</span><span class="lang-es" lang="es">La ecuación n / 5 = 9 describe una cantidad que se reparte en 5 grupos iguales con 9 en cada grupo, así que una historia que encaja podría ser n calcomanías repartidas entre 5 amigos y cada uno recibe 9. Como 5 grupos de 9 reconstruyen el total, n = 9 × 5 = 45, y 45 ÷ 5 = 9 comprueba la historia.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9338,6 +9448,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Example — 5n = 35 · Situation That MATCHES: Five identical bags hold 35 clues total.</span><span class="lang-es" lang="es">Ejemplo — 5n = 35 · Situación que SÍ corresponde: Cinco bolsas iguales contienen 35 pistas en total.</span></li><li><span class="lang-en">Example — 5n = 35 · Situation That Does NOT Match: A detective has 5 more clues than 35.</span><span class="lang-es" lang="es">Ejemplo — 5n = 35 · Situación que NO corresponde: Un detective tiene 5 pistas más que 35.</span></li><li><span class="lang-en">Example — n − 8 = 12 · Situation That MATCHES: After giving away 8 items, a detective has 12 left.</span><span class="lang-es" lang="es">Ejemplo — n − 8 = 12 · Situación que SÍ corresponde: Después de regalar 8 artículos, a un detective le quedan 12.</span></li><li><span class="lang-en">Example — n − 8 = 12 · Situation That Does NOT Match: A detective collected 8 items and then 12 more.</span><span class="lang-es" lang="es">Ejemplo — n − 8 = 12 · Situación que NO corresponde: Un detective reunió 8 artículos y luego 12 más.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">5n = 35 needs 5 equal groups, which the five identical bags provide; &#039;5 more clues than 35&#039; only adds, so it would be 35 + 5, not multiplication. In the same way n − 8 = 12 needs 8 taken away from an unknown start, which giving away 8 does; collecting 8 and then 12 more is addition, so it does not fit the equation.</span><span class="lang-es" lang="es">5n = 35 necesita 5 grupos iguales, que es justo lo que dan las cinco bolsas idénticas; &#039;5 pistas más que 35&#039; solo suma, así que sería 35 + 5 y no una multiplicación. De la misma forma, n − 8 = 12 necesita que se quiten 8 de un inicio desconocido, que es lo que hace regalar 8; juntar 8 y luego 12 más es una suma, así que no encaja con la ecuación.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9519,6 +9641,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Addition (+): increased by 7, sum of clues</span><span class="lang-es" lang="es">Suma (+): aumentado en 7, la suma de las pistas</span></li><li><span class="lang-en">Subtraction (−): 13 fewer than, decreased by 8</span><span class="lang-es" lang="es">Resta (−): 13 menos que, disminuido en 8</span></li><li><span class="lang-en">Multiplication (×): triple the tips</span><span class="lang-es" lang="es">Multiplicación (×): el triple de las propinas</span></li><li><span class="lang-en">Division (÷): split equally among</span><span class="lang-es" lang="es">División (÷): repartido por igual entre</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">&#039;Increased by 7&#039; and &#039;sum of clues&#039; both grow the amount, so they are addition, while &#039;13 fewer than&#039; and &#039;decreased by 8&#039; both shrink it, so they are subtraction. &#039;Triple the tips&#039; means three equal copies, which is multiplication, and &#039;split equally among&#039; shares one amount into equal groups, which is division.</span><span class="lang-es" lang="es">&#039;Increased by 7&#039; y &#039;sum of clues&#039; aumentan la cantidad, así que son suma, mientras que &#039;13 fewer than&#039; y &#039;decreased by 8&#039; la reducen, así que son resta. &#039;Triple the tips&#039; significa tres copias iguales, lo cual es multiplicación, y &#039;split equally among&#039; reparte una cantidad en grupos iguales, lo cual es división.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9631,6 +9765,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>n + 12 = 30</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">&#039;Plus&#039; means addition, so the equation is n + 12 = 30.</span><span class="lang-es" lang="es">&#039;Más&#039; significa suma, así que la ecuación es n + 12 = 30.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9732,6 +9878,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>3n = 21</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">&#039;Three times&#039; means multiply by 3, so the equation is 3n = 21.</span><span class="lang-es" lang="es">&#039;Tres veces&#039; significa multiplicar por 3, así que la ecuación es 3n = 21.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9833,6 +9991,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>n / 4 = 8</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">&#039;Divided by 4&#039; means division: n / 4 = 8.</span><span class="lang-es" lang="es">&#039;Dividido entre 4&#039; significa división: n / 4 = 8.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9934,6 +10104,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>5b = 35</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">&#039;5 times the number&#039; means 5 times b, so 5b = 35. Check: 5 × 7 = 35.</span><span class="lang-es" lang="es">&#039;5 veces el número&#039; significa 5 por b, así que 5b = 35. Comprueba: 5 × 7 = 35.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10035,6 +10217,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>n − 7 = 18</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">&#039;Seven less than a number&#039; means start with the number and subtract 7: n − 7 = 18.</span><span class="lang-es" lang="es">&#039;Siete menos que un número&#039; significa empezar con el número y restar 7: n − 7 = 18.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10136,6 +10330,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>f + 14 = 30</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The detective&#039;s Monday fingerprints (f) plus 14 more equals 30: f + 14 = 30.</span><span class="lang-es" lang="es">Las huellas del lunes (f) más 14 más es igual a 30: f + 14 = 30.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10243,6 +10449,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A number d of door codes plus 4 equals 17. → d + 4 = 17</span><span class="lang-es" lang="es">Un número d de códigos de puerta más 4 es igual a 17. → d + 4 = 17</span></li><li><span class="lang-en">6 times the number of tips t equals 42. → 6t = 42</span><span class="lang-es" lang="es">6 veces el número de pistas t es igual a 42. → 6t = 42</span></li><li><span class="lang-en">A pile of files f, after losing 11, equals 20. → f − 11 = 20</span><span class="lang-es" lang="es">Una pila de expedientes f, después de perder 11, es igual a 20. → f − 11 = 20</span></li><li><span class="lang-en">A number of suspects s split into 5 vans equals 8 per van. → s / 5 = 8</span><span class="lang-es" lang="es">Un número de sospechosos s repartido en 5 camionetas da 8 por camioneta. → s / 5 = 8</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each clue names its variable and one action, which fixes the equation: adding 4 to d gives d + 4 = 17, six groups of t gives 6t = 42, losing 11 from f gives f − 11 = 20, and splitting s into 5 vans gives s / 5 = 8. Reading the action word — plus, times, losing, split — is enough to identify each match.</span><span class="lang-es" lang="es">Cada pista nombra su variable y una acción, y eso fija la ecuación: sumar 4 a d da d + 4 = 17, seis grupos de t dan 6t = 42, perder 11 de f da f − 11 = 20, y repartir s en 5 camionetas da s / 5 = 8. Leer la palabra de acción —más, veces, perder, repartir— basta para identificar cada pareja.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10344,6 +10562,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>c + 6 = 19</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">&#039;Plus 6 more&#039; means + 6 and &#039;equals 19&#039; means = 19, so c + 6 = 19. Check: 13 + 6 = 19.</span><span class="lang-es" lang="es">&#039;Más 6 más&#039; significa + 6 y &#039;es igual a 19&#039; significa = 19, así que c + 6 = 19. Comprueba: 13 + 6 = 19.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

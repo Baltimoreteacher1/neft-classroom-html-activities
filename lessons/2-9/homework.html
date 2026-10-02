@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8280,7 +8339,10 @@ body {
           <p class="ladder-q"><span class="lang-en">Two basketball teams both average 75 points per game. Team A&#039;s last 5 scores: 73, 76, 74, 77, 75. Team B&#039;s last 5 scores: 60, 90, 65, 85, 75. Calculate the MAD for each team and explain which team a coach would prefer if they need predictable scoring.</span><span class="lang-es" lang="es">Dos equipos de baloncesto promedian 75 puntos por partido. Últimos 5 puntajes del equipo A: 73, 76, 74, 77, 75. Últimos 5 puntajes del equipo B: 60, 90, 65, 85, 75. Calcula la DMA de cada equipo y explica cuál preferiría un entrenador que necesita anotación predecible.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Both teams average 75, so compare their MADs. Team A&#039;s distances from 75 are 2, 1, 1, 2, 0, totaling 6, so its MAD is 6 ÷ 5 = 1.2 points. Team B&#039;s distances are 15, 15, 10, 10, 0, totaling 50, so its MAD is 50 ÷ 5 = 10 points. A coach seeking consistency would prefer Team A because its recorded scores have the smaller average distance from 75. MAD describes an average distance, not a maximum distance for every game.</span><span class="lang-es" lang="es">Ambos equipos promedian 75, así que compara sus MAD. Las distancias del equipo A a 75 son 2, 1, 1, 2, 0, que suman 6; su MAD es 6 ÷ 5 = 1.2 puntos. Las distancias del equipo B son 15, 15, 10, 10, 0, que suman 50; su MAD es 50 ÷ 5 = 10 puntos. Un entrenador que busca consistencia preferiría al equipo A porque sus puntajes registrados tienen la menor distancia promedio a 75. La MAD describe una distancia promedio, no una distancia máxima para cada partido.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8605,6 +8667,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">MAD = 1.5 → Very consistent data</span><span class="lang-es" lang="es">DAM = 1.5 → Datos muy consistentes</span></li><li><span class="lang-en">MAD = 8.0 → Very spread out data</span><span class="lang-es" lang="es">DAM = 8.0 → Datos muy dispersos</span></li><li><span class="lang-en">MAD = 0 → All values are identical</span><span class="lang-es" lang="es">DAM = 0 → Todos los valores son idénticos</span></li><li><span class="lang-en">MAD = 4.2 → Moderate spread</span><span class="lang-es" lang="es">DAM = 4.2 → Dispersión moderada</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">MAD answers &quot;on average, how far do the values sit from the mean,&quot; so the size of the number is the whole story. MAD = 0 means no value is ever away from the mean, so all values are identical. MAD = 1.5 is a small average distance, so the data is very consistent; MAD = 4.2 is a moderate spread; and MAD = 8.0 is a large average distance, so that data is very spread out.</span><span class="lang-es" lang="es">El MAD responde &quot;en promedio, ¿qué tan lejos están los valores de la media?&quot;, así que el tamaño del número lo dice todo. MAD = 0 significa que ningún valor se aleja de la media, así que todos los valores son idénticos. MAD = 1.5 es una distancia promedio pequeña, así que los datos son muy consistentes; MAD = 4.2 es una dispersión moderada; y MAD = 8.0 es una distancia promedio grande, así que esos datos están muy dispersos.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8701,6 +8775,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Bench: 8, 10, 12, 14 → MAD = 2 points</span><span class="lang-es" lang="es">Banca: 8, 10, 12, 14 → DAM = 2 puntos</span></li><li><span class="lang-en">Rookie: 4, 4, 4, 4 → MAD = 0 points</span><span class="lang-es" lang="es">Novato: 4, 4, 4, 4 → DAM = 0 puntos</span></li><li><span class="lang-en">Starter: 5, 15, 5, 15 → MAD = 5 points</span><span class="lang-es" lang="es">Titular: 5, 15, 5, 15 → DAM = 5 puntos</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Find each player&#039;s mean, then average the distances. Bench (8, 10, 12, 14) has a mean of 11 and distances 3, 1, 1, 3, so MAD = 8 ÷ 4 = 2 points. Rookie (4, 4, 4, 4) has a mean of 4 and every distance is 0, so MAD = 0 points. Starter (5, 15, 5, 15) has a mean of 10 and every distance is 5, so MAD = 5 points — the widest swing of the three.</span><span class="lang-es" lang="es">Encuentra la media de cada jugador y luego promedia las distancias. Bench (8, 10, 12, 14) tiene media 11 y distancias 3, 1, 1, 3, así que MAD = 8 ÷ 4 = 2 puntos. Rookie (4, 4, 4, 4) tiene media 4 y todas las distancias son 0, así que MAD = 0 puntos. Starter (5, 15, 5, 15) tiene media 10 y todas las distancias son 5, así que MAD = 5 puntos, la variación más amplia de las tres.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8802,6 +8888,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>4</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Deviation = 11 − 15 = −4. Absolute deviation = |−4| = 4.</span><span class="lang-es" lang="es">Desviación = 11 − 15 = −4. Desviación absoluta = |−4| = 4.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8946,6 +9044,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Want LOW MAD (consistent): A factory making bolts that must be exactly 5 cm long, A bus schedule where arrival times should be reliable</span><span class="lang-es" lang="es">Se quiere DAM BAJA (consistencia): Una fábrica de tornillos que deben medir exactamente 5 cm, Un horario de autobús con llegadas confiables</span></li><li><span class="lang-en">Want HIGH MAD (lots of spread): A game show where contestants try to score as many different point values as possible</span><span class="lang-es" lang="es">Se quiere DAM ALTA (mucha dispersión): Un concurso donde los participantes intentan lograr la mayor variedad de puntajes posible</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Bolts that must be exactly 5 cm and buses that should arrive on schedule both depend on results staying close to the target, so a low MAD is what you want — a large one would mean unusable bolts or unreliable buses. The game show is the opposite: its whole point is variety in the point values, so a high MAD is desirable there.</span><span class="lang-es" lang="es">Los tornillos que deben medir exactamente 5 cm y los autobuses que deben llegar a tiempo dependen de que los resultados se mantengan cerca del objetivo, así que lo que quieres es un MAD bajo; uno grande significaría tornillos inservibles o autobuses poco confiables. El programa de concursos es lo contrario: su objetivo es la variedad en los valores de puntos, así que ahí un MAD alto sí conviene.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9047,6 +9157,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>2</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Add the distances: 3 + 1 + 1 + 3 = 8. Divide by the 4 games: 8 ÷ 4 = 2. The MAD is 2 points.</span><span class="lang-es" lang="es">Suma las distancias: 3 + 1 + 1 + 3 = 8. Divide entre los 4 partidos: 8 ÷ 4 = 2. La MAD es 2 puntos.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9148,6 +9270,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Shooter A, because a smaller MAD means scores stay closer to the average</span><span class="lang-es" lang="es">Tirador A, porque una DMA más pequeña significa que los puntajes se mantienen cerca del promedio</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A smaller MAD means a smaller average distance from the mean. Shooter A&#039;s MAD of 2 is smaller than Shooter B&#039;s 6, so Shooter A is more consistent in these data.</span><span class="lang-es" lang="es">Una MAD menor significa una menor distancia promedio a la media. La MAD de 2 del tirador A es menor que la de 6 del tirador B, así que el tirador A es más consistente en estos datos.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9260,6 +9394,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Team A — lower MAD means scores are closer to the mean</span><span class="lang-es" lang="es">Equipo A — una DMA menor significa que los puntajes están más cerca de la media</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Lower MAD means less spread — Team A&#039;s scores stay closer to their average, making them more consistent.</span><span class="lang-es" lang="es">Una MAD menor significa menos dispersión: los puntajes del equipo A se mantienen más cerca de su promedio, lo que los hace más consistentes.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9403,6 +9549,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">More consistent (small MAD): Player with MAD = 1 point, Player with MAD = 0 points</span><span class="lang-es" lang="es">Más consistente (DAM pequeña): Jugador con DAM = 1 punto, Jugador con DAM = 0 puntos</span></li><li><span class="lang-en">Less consistent (large MAD): Player with MAD = 9 points, Player with MAD = 12 points</span><span class="lang-es" lang="es">Menos consistente (DAM grande): Jugador con DAM = 9 puntos, Jugador con DAM = 12 puntos</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A small MAD means a player&#039;s points stay close to their own average, so the players with MAD = 1 and MAD = 0 belong in the consistent bucket — the MAD = 0 player scores the exact same amount every game. A MAD of 9 or 12 points means the scores swing far from the average, so those two players are the less consistent ones.</span><span class="lang-es" lang="es">Un MAD pequeño significa que los puntos de un jugador se mantienen cerca de su propio promedio, así que los jugadores con MAD = 1 y MAD = 0 van en el grupo consistente; el de MAD = 0 anota exactamente lo mismo en cada partido. Un MAD de 9 o 12 puntos significa que los puntajes se alejan mucho del promedio, así que esos dos jugadores son los menos consistentes.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9504,6 +9662,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>6</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Deviation = 26 − 20 = 6. Absolute deviation = |6| = 6.</span><span class="lang-es" lang="es">Desviación = 26 − 20 = 6. Desviación absoluta = |6| = 6.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9628,6 +9798,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Least to most spread out: Set A: 9, 10, 10, 11 (MAD ≈ 0.5), Set B: 5, 10, 10, 15 (MAD = 2.5), Set C: 1, 10, 10, 19 (MAD = 4.5)</span><span class="lang-es" lang="es">De menor a mayor dispersión: Set A: 9, 10, 10, 11 (MAD ≈ 0.5), Set B: 5, 10, 10, 15 (MAD = 2.5), Set C: 1, 10, 10, 19 (MAD = 4.5)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">All three sets center on 10, so only the spread separates them. Set A (9, 10, 10, 11) barely moves from the mean, giving a MAD of about 0.5. Set B (5, 10, 10, 15) reaches 5 away on each end for a MAD of 2.5, and Set C (1, 10, 10, 19) reaches 9 away on each end for a MAD of 4.5. Ranking least to most spread out gives A, then B, then C.</span><span class="lang-es" lang="es">Los tres conjuntos se centran en 10, así que solo la dispersión los diferencia. El conjunto A (9, 10, 10, 11) casi no se aleja de la media y da un MAD de aproximadamente 0.5. El conjunto B (5, 10, 10, 15) llega a 5 de distancia en cada extremo, con un MAD de 2.5, y el conjunto C (1, 10, 10, 19) llega a 9 de distancia en cada extremo, con un MAD de 4.5. De menos a más disperso el orden es A, luego B, luego C.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9729,6 +9911,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: MAD, consistent, spread, lower, higher, predictable, absolute deviation.</span><span class="lang-es" lang="es">Una buena respuesta usa: MAD, consistent, spread, lower, higher, predictable, absolute deviation.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Both teams average 75, so compare their MADs. Team A&#039;s distances from 75 are 2, 1, 1, 2, 0, totaling 6, so its MAD is 6 ÷ 5 = 1.2 points. Team B&#039;s distances are 15, 15, 10, 10, 0, totaling 50, so its MAD is 50 ÷ 5 = 10 points. A coach seeking consistency would prefer Team A because its recorded scores have the smaller average distance from 75. MAD describes an average distance, not a maximum distance for every game.</span><span class="lang-es" lang="es">Ambos equipos promedian 75, así que compara sus MAD. Las distancias del equipo A a 75 son 2, 1, 1, 2, 0, que suman 6; su MAD es 6 ÷ 5 = 1.2 puntos. Las distancias del equipo B son 15, 15, 10, 10, 0, que suman 50; su MAD es 50 ÷ 5 = 10 puntos. Un entrenador que busca consistencia preferiría al equipo A porque sus puntajes registrados tienen la menor distancia promedio a 75. La MAD describe una distancia promedio, no una distancia máxima para cada partido.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9830,6 +10024,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>3</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Sum of absolute deviations = 3 + 1 + 5 + 2 + 4 = 15. MAD = 15 ÷ 5 = 3.</span><span class="lang-es" lang="es">Suma de las desviaciones absolutas = 3 + 1 + 5 + 2 + 4 = 15. MAD = 15 ÷ 5 = 3.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10066,6 +10272,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">12 · Deviation (Score − Mean): 2</span><span class="lang-es" lang="es">12 · Desviación (puntuación − media): 2</span></li><li><span class="lang-en">12 · Absolute Deviation: 2</span><span class="lang-es" lang="es">12 · Desviación absoluta: 2</span></li><li><span class="lang-en">8 · Deviation (Score − Mean): -2</span><span class="lang-es" lang="es">8 · Desviación (puntuación − media): -2</span></li><li><span class="lang-en">8 · Absolute Deviation: 2</span><span class="lang-es" lang="es">8 · Desviación absoluta: 2</span></li><li><span class="lang-en">10 · Deviation (Score − Mean): 0</span><span class="lang-es" lang="es">10 · Desviación (puntuación − media): 0</span></li><li><span class="lang-en">10 · Absolute Deviation: 0</span><span class="lang-es" lang="es">10 · Desviación absoluta: 0</span></li><li><span class="lang-en">14 · Deviation (Score − Mean): 4</span><span class="lang-es" lang="es">14 · Desviación (puntuación − media): 4</span></li><li><span class="lang-en">14 · Absolute Deviation: 4</span><span class="lang-es" lang="es">14 · Desviación absoluta: 4</span></li><li><span class="lang-en">6 · Deviation (Score − Mean): -4</span><span class="lang-es" lang="es">6 · Desviación (puntuación − media): -4</span></li><li><span class="lang-en">6 · Absolute Deviation: 4</span><span class="lang-es" lang="es">6 · Desviación absoluta: 4</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Subtract the mean of 10 from each score to fill the middle column: 12 gives 2, 8 gives −2, 10 gives 0, 14 gives 4, and 6 gives −4. The third column drops the signs, giving distances of 2, 2, 0, 4, and 4. Adding those gives 12, and dividing by the 5 scores gives a MAD of 2.4 — on average, each score sits 2.4 away from 10.</span><span class="lang-es" lang="es">Resta la media de 10 a cada puntaje para llenar la columna del medio: 12 da 2, 8 da −2, 10 da 0, 14 da 4 y 6 da −4. La tercera columna quita los signos y deja distancias de 2, 2, 0, 4 y 4. Al sumarlas se obtiene 12, y al dividir entre los 5 puntajes se obtiene un MAD de 2.4: en promedio, cada puntaje está a 2.4 de 10.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10167,6 +10385,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Runner A — lower MAD means more consistent times</span><span class="lang-es" lang="es">Corredor A — una DMA menor significa tiempos más consistentes</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Runner A&#039;s MAD of 1.2 seconds means the average distance of the recorded times from the 60-second mean is 1.2 seconds. Runner B has a larger average distance from the same mean, so A was more consistent in these data. MAD does not guarantee how many times fall within 1.2 seconds of the mean.</span><span class="lang-es" lang="es">La DAM del corredor A, de 1.2 segundos, indica que la distancia promedio de sus tiempos a la media de 60 segundos es 1.2 segundos. El corredor B tiene una distancia promedio mayor a la misma media, así que A fue más constante en estos datos. La DAM no garantiza cuántos tiempos están a menos de 1.2 segundos de la media.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8248,7 +8307,10 @@ body {
           <p class="ladder-q"><span class="lang-en">You start with $50.00. You buy a snack for $3.45 and a book for $12.99, then a friend pays you back $8.50. How much money do you have now? Show each step with a running total, and explain why you had to line up the decimal points rather than the right-hand digits.</span><span class="lang-es" lang="es">Empiezas con $50.00. Compras un bocadillo por $3.45 y un libro por $12.99, y luego un amigo te devuelve $8.50. ¿Cuánto dinero tienes ahora? Muestra cada paso con un total parcial, y explica por qué tuviste que alinear los puntos decimales y no los dígitos de la derecha.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">50.00 − 3.45 = 46.55; 46.55 − 12.99 = 33.56; 33.56 + 8.50 = 42.06. You have $42.06. The decimal points have to line up so that each digit is added or subtracted with the digit of the same place value — ones with ones, tenths with tenths; lining up the right-hand digits would add $8.50 as if it were $0.85.</span><span class="lang-es" lang="es">50.00 − 3.45 = 46.55; 46.55 − 12.99 = 33.56; 33.56 + 8.50 = 42.06. Tienes $42.06. Los puntos decimales deben alinearse para que cada dígito se sume o reste con el dígito del mismo valor posicional — unidades con unidades, décimas con décimas; alinear los dígitos de la derecha sumaría $8.50 como si fuera $0.85.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8613,6 +8675,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">16.15 is right; 12.775 lined up the right edges instead of the decimal points.</span><span class="lang-es" lang="es">16.15 es correcto; 12.775 alineó los bordes derechos en vez de los puntos decimales.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">12.40 + 3.75 = 16.15. Lining up the right edges (the 4 under the 5) shifts 3.75 to 0.375 and produces 12.775 — the classic error this lesson is about. Estimate to catch it: 12 + 4 is about 16, not about 13.</span><span class="lang-es" lang="es">12.40 + 3.75 = 16.15. Alinear los bordes derechos (el 4 debajo del 5) corre 3.75 a 0.375 y produce 12.775 — el error clásico de esta lección. Estima para detectarlo: 12 + 4 es cerca de 16, no cerca de 13.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8714,6 +8788,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">32.65 liters</span><span class="lang-es" lang="es">32.65 litros</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">45.50 − 12.85 = 32.65 liters. 33.35 comes from a regrouping slip; 44.215 lines up the right edges instead of the decimal points (45.5 − 1.285); 58.35 adds instead of subtracting.</span><span class="lang-es" lang="es">45.50 − 12.85 = 32.65 litros. 33.35 viene de un error al reagrupar; 44.215 alinea los bordes derechos en vez de los puntos decimales (45.5 − 1.285); 58.35 suma en vez de restar.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8815,6 +8901,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">39.85 liters</span><span class="lang-es" lang="es">39.85 litros</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">32.65 + 7.20 = 39.85 liters. 33.37 lines up the right edges (32.65 + 0.72); 25.45 subtracts instead of adding; 104.65 treats 7.2 as 72.</span><span class="lang-es" lang="es">32.65 + 7.20 = 39.85 litros. 33.37 alinea los bordes derechos (32.65 + 0.72); 25.45 resta en vez de sumar; 104.65 trata 7.2 como 72.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8919,6 +9017,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">50.00 − 3.45 = 46.55; 46.55 − 12.99 = 33.56; 33.56 + 8.50 = 42.06. You have $42.06. The decimal points have to line up so that each digit is added or subtracted with the digit of the same place value — ones with ones, tenths with tenths; lining up the right-hand digits would add $8.50 as if it were $0.85.</span><span class="lang-es" lang="es">50.00 − 3.45 = 46.55; 46.55 − 12.99 = 33.56; 33.56 + 8.50 = 42.06. Tienes $42.06. Los puntos decimales deben alinearse para que cada dígito se sume o reste con el dígito del mismo valor posicional — unidades con unidades, décimas con décimas; alinear los dígitos de la derecha sumaría $8.50 como si fuera $0.85.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9020,6 +9130,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>270.25 kg</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">342.60 − 128.75 = 213.85, then 213.85 + 56.40 = 270.25 kg. 157.45 subtracts both amounts; 527.75 adds both; 342.6 forgets to do anything. The final weight is less than the start because more was unloaded than loaded.</span><span class="lang-es" lang="es">342.60 − 128.75 = 213.85, luego 213.85 + 56.40 = 270.25 kg. 157.45 resta las dos cantidades; 527.75 suma las dos; 342.6 no hace nada. El peso final es menor que el inicial porque se descargó más de lo que se cargó.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9121,6 +9243,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">1.2 km short</span><span class="lang-es" lang="es">Le faltan 1.2 km</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">3.75 + 4.20 + 2.85 = 10.80 km, and 12.00 − 10.80 = 1.20 km short. 0.8 forgets the 0.4 tenths in 4.2; 1.29 misaligns a decimal; the total is below 12, so she has not passed the goal.</span><span class="lang-es" lang="es">3.75 + 4.20 + 2.85 = 10.80 km, y 12.00 − 10.80 = 1.20 km le faltan. 0.8 olvida las 0.4 décimas de 4.2; 1.29 desalinea un decimal; el total está por debajo de 12, así que no pasó la meta.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

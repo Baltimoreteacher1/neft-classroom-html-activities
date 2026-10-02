@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8290,7 +8349,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A trail mix uses 5 cups of nuts for every 2 cups of raisins. For a big batch you have 8 cups of raisins. How many cups of nuts do you need? Show the scale factor, apply it, and check that your new ratio simplifies back to 5 : 2. Then explain why &#039;add 6 to both&#039; (which turns 2 into 8) would change the recipe.</span><span class="lang-es" lang="es">Una mezcla de frutos secos usa 5 tazas de nueces por cada 2 tazas de pasas. Para una tanda grande tienes 8 tazas de pasas. ¿Cuántas tazas de nueces necesitas? Muestra el factor de escala, aplícalo y comprueba que tu nueva razón se simplifica de vuelta a 5 : 2. Luego explica por qué &#039;sumar 6 a los dos&#039; (que convierte 2 en 8) cambiaría la receta.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">The raisins went from 2 to 8, so the scale factor is 4. Nuts: 5 × 4 = 20 cups. Check: 20 : 8 divided by 4 is 5 : 2. ✓ Adding 6 to both would give 11 : 8, and 11 ÷ 8 ≈ 1.4 nuts per cup of raisins instead of 5 ÷ 2 = 2.5 — a much less nutty mix. Equivalent ratios come from multiplying BOTH terms by the same number, never from adding.</span><span class="lang-es" lang="es">Las pasas pasaron de 2 a 8, así que el factor de escala es 4. Nueces: 5 × 4 = 20 tazas. Comprueba: 20 : 8 dividido entre 4 es 5 : 2. ✓ Sumar 6 a los dos daría 11 : 8, y 11 ÷ 8 ≈ 1.4 nueces por taza de pasas en vez de 5 ÷ 2 = 2.5 — una mezcla con muchas menos nueces. Las razones equivalentes salen de multiplicar LOS DOS términos por el mismo número, nunca de sumar.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8643,6 +8705,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>7</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">2 × 7 = 14, so the scale factor is 7. 12 is what was ADDED to 2, not multiplied; 6 and 2 do not turn 2 into 14.</span><span class="lang-es" lang="es">2 × 7 = 14, así que el factor de escala es 7. 12 es lo que se SUMÓ a 2, no lo que se multiplicó; 6 y 2 no convierten 2 en 14.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8744,6 +8818,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>21</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">3 × 7 = 21 cups of milk, and 14 : 21 reduces to 2 : 3. 15 adds 12 to the milk (the additive slip); 10 adds 7; 42 doubles the correct amount.</span><span class="lang-es" lang="es">3 × 7 = 21 tazas de leche, y 14 : 21 se reduce a 2 : 3. 15 suma 12 a la leche (el error aditivo); 10 suma 7; 42 duplica la cantidad correcta.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8845,6 +8931,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">12 cups</span><span class="lang-es" lang="es">12 tazas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The scale factor is 6 (3 × 6 = 18), so juice is 2 × 6 = 12 cups. 17 adds 15 to the juice; 27 multiplies the wrong term (18 × 1.5); 8 adds 6.</span><span class="lang-es" lang="es">El factor de escala es 6 (3 × 6 = 18), así que el jugo es 2 × 6 = 12 tazas. 17 suma 15 al jugo; 27 multiplica el término equivocado (18 × 1.5); 8 suma 6.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8949,6 +9047,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">The raisins went from 2 to 8, so the scale factor is 4. Nuts: 5 × 4 = 20 cups. Check: 20 : 8 divided by 4 is 5 : 2. ✓ Adding 6 to both would give 11 : 8, and 11 ÷ 8 ≈ 1.4 nuts per cup of raisins instead of 5 ÷ 2 = 2.5 — a much less nutty mix. Equivalent ratios come from multiplying BOTH terms by the same number, never from adding.</span><span class="lang-es" lang="es">Las pasas pasaron de 2 a 8, así que el factor de escala es 4. Nueces: 5 × 4 = 20 tazas. Comprueba: 20 : 8 dividido entre 4 es 5 : 2. ✓ Sumar 6 a los dos daría 11 : 8, y 11 ÷ 8 ≈ 1.4 nueces por taza de pasas en vez de 5 ÷ 2 = 2.5 — una mezcla con muchas menos nueces. Las razones equivalentes salen de multiplicar LOS DOS términos por el mismo número, nunca de sumar.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9050,6 +9160,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>$120</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">$45 ÷ 3 = $15 per hour, and 8 × $15 = $120. $50 adds 5 extra dollars for 5 extra hours; $360 multiplies 45 by 8; $135 is 9 hours.</span><span class="lang-es" lang="es">$45 ÷ 3 = $15 por hora, y 8 × $15 = $120. $50 suma 5 dólares extra por 5 horas extra; $360 multiplica 45 por 8; $135 son 9 horas.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9151,6 +9273,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>x = 10</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">10 × 2.5 = 25, so x = 4 × 2.5 = 10, and both ratios equal 0.4. 19 adds 15 to the 4; 6.25 divides 25 by 4; 100 is the cross-product 4 × 25 without dividing by 10.</span><span class="lang-es" lang="es">10 × 2.5 = 25, así que x = 4 × 2.5 = 10, y las dos razones son 0.4. 19 suma 15 al 4; 6.25 divide 25 entre 4; 100 es el producto cruzado 4 × 25 sin dividir entre 10.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

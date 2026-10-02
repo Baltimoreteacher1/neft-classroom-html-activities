@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8298,7 +8357,10 @@ body {
           <p class="ladder-q"><span class="lang-en">Compare two closed containers: a rectangular prism (8 × 6 × 4 in) and a triangular prism whose ends are right triangles with perpendicular legs 6 in and 8 in and hypotenuse 10 in. The triangular prism is 8 in long. Which uses less protective film to cover every face? Show your work.</span><span class="lang-es" lang="es">Compara dos recipientes cerrados: un prisma rectangular (8 × 6 × 4 pulgadas) y un prisma triangular cuyas bases son triángulos rectángulos con catetos perpendiculares de 6 y 8 pulgadas e hipotenusa de 10 pulgadas. El prisma triangular mide 8 pulgadas de largo. ¿Cuál necesita menos película protectora para cubrir todas las caras? Muestra tu trabajo.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">The rectangular prism has surface area 2(8 × 6) + 2(8 × 4) + 2(6 × 4) = 208 in². The triangular prism has two ends totaling 2(½ × 6 × 8) = 48 in² and three rectangles totaling (6 + 8 + 10) × 8 = 192 in². Its total is 240 in². The rectangular prism uses 32 in² less film.</span><span class="lang-es" lang="es">El prisma rectangular tiene área superficial 2(8 × 6) + 2(8 × 4) + 2(6 × 4) = 208 pulg². Las dos bases del prisma triangular suman 2(½ × 6 × 8) = 48 pulg² y sus tres rectángulos suman (6 + 8 + 10) × 8 = 192 pulg². Su total es 240 pulg². El prisma rectangular usa 32 pulg² menos de película.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8631,6 +8693,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Steps in order (first → last): Find the area of one triangular base, Multiply the triangle area by 2 (two bases), Find the area of each rectangular lateral face, Add all three rectangle areas together, Add the two triangle areas + all rectangle areas = SA</span><span class="lang-es" lang="es">Pasos en orden (primero → último): Find the area of one triangular base, Multiply the triangle area by 2 (two bases), Find the area of each rectangular lateral face, Add all three rectangle areas together, Add the two triangle areas + all rectangle areas = SA</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A triangular prism has 5 faces, so the steps go triangles first, then rectangles, then a total: find one triangular base, double it for the two bases, find each rectangular lateral face, add those three rectangles, and finally add the triangles and rectangles together. Doubling the triangle before moving on keeps the two identical bases from being forgotten.</span><span class="lang-es" lang="es">Un prisma triangular tiene 5 caras, así que los pasos van primero con los triángulos, luego con los rectángulos y al final con el total: halla una base triangular, duplícala para las dos bases, halla el área de cada cara rectangular lateral, suma esos tres rectángulos y al final suma los triángulos y los rectángulos. Duplicar el triángulo antes de seguir evita que olvides una de las dos bases iguales.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8760,6 +8834,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Rectangular prism → 6 faces (all rectangles)</span><span class="lang-es" lang="es">Prisma rectangular → 6 caras (todas rectángulos)</span></li><li><span class="lang-en">Triangular prism → 5 faces (2 triangles + 3 rectangles)</span><span class="lang-es" lang="es">Prisma triangular → 5 caras (2 triángulos + 3 rectángulos)</span></li><li><span class="lang-en">Cube → 6 identical square faces</span><span class="lang-es" lang="es">Cubo → 6 caras cuadradas idénticas</span></li><li><span class="lang-en">Surface area → Uses square units (in²)</span><span class="lang-es" lang="es">Área de superficie → Usa unidades cuadradas (in²)</span></li><li><span class="lang-en">Volume → Uses cubic units (in³)</span><span class="lang-es" lang="es">Volumen → Usa unidades cúbicas (in³)</span></li><li><span class="lang-en">Net → 2D pattern that folds into 3D</span><span class="lang-es" lang="es">Red → Patrón 2D que se pliega en 3D</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The matches come from counting faces and reading units: a rectangular prism and a cube both have 6 faces (the cube&#039;s are 6 identical squares), a triangular prism has 5 (2 triangles + 3 rectangles), a net is the flat 2D pattern that folds into the solid, and surface area is measured in square units (in²) while volume uses cubic units (in³).</span><span class="lang-es" lang="es">Las parejas salen de contar caras y leer las unidades: un prisma rectangular y un cubo tienen 6 caras (las del cubo son 6 cuadrados idénticos), un prisma triangular tiene 5 (2 triángulos + 3 rectángulos), una red es el patrón plano en 2D que se dobla para formar el sólido, y el área de superficie se mide en unidades cuadradas (in²) mientras que el volumen usa unidades cúbicas (in³).</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8861,6 +8947,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>134 cm²</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">SA = 2(12) + 30 + 40 + 40 = 24 + 110 = 134 cm².</span><span class="lang-es" lang="es">Área de superficie = 2(12) + 30 + 40 + 40 = 24 + 110 = 134 cm².</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8978,6 +9076,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>184 in²</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Triangular bases: 2 × (½ × 6 × 4) = 24 in². Three rectangular faces: 6(10) + 5(10) + 5(10) = 60 + 50 + 50 = 160 in². SA = 24 + 160 = 184 in².</span><span class="lang-es" lang="es">Bases triangulares: 2 × (½ × 6 × 4) = 24 in². Tres caras rectangulares: 6(10) + 5(10) + 5(10) = 60 + 50 + 50 = 160 in². Área de superficie = 24 + 160 = 184 in².</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9124,6 +9234,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Rect prism: 6×4×3 · Surface Area: 108</span><span class="lang-es" lang="es">Prisma rectangular: 6×4×3 · Área superficial: 108</span></li><li><span class="lang-en">Rect prism: 6×4×3 · Volume: 72</span><span class="lang-es" lang="es">Prisma rectangular: 6×4×3 · Volumen: 72</span></li><li><span class="lang-en">Tri prism: base=6, h=4, length=3, sides=5 · Surface Area: 72</span><span class="lang-es" lang="es">Prisma triangular: base=6, h=4, longitud=3, lados=5 · Área superficial: 72</span></li><li><span class="lang-en">Tri prism: base=6, h=4, length=3, sides=5 · Volume: 36</span><span class="lang-es" lang="es">Prisma triangular: base=6, h=4, longitud=3, lados=5 · Volumen: 36</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">For the 6×4×3 rectangular prism, SA = 2(24) + 2(18) + 2(12) = 108 and V = 6 × 4 × 3 = 72. For the triangular prism, the triangle area is ½ × 6 × 4 = 12, so SA = 2(12) + (6×3) + (5×3) + (5×3) = 24 + 48 = 72 and V = 12 × 3 = 36. Both of the triangular prism&#039;s measures are half the rectangular prism&#039;s because its base is half the rectangle&#039;s base.</span><span class="lang-es" lang="es">Para el prisma rectangular de 6×4×3, SA = 2(24) + 2(18) + 2(12) = 108 y V = 6 × 4 × 3 = 72. Para el prisma triangular, el área del triángulo es ½ × 6 × 4 = 12, así que SA = 2(12) + (6×3) + (5×3) + (5×3) = 24 + 48 = 72 y V = 12 × 3 = 36. Las dos medidas del prisma triangular son la mitad de las del prisma rectangular porque su base es la mitad de la base del rectángulo.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9225,6 +9347,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>288 in²</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Two triangle ends: 2 × (½ × 8 × 6) = 48 in². Three rectangles: (8 + 6 + 10) × 10 = 24 × 10 = 240 in². SA = 48 + 240 = 288 in².</span><span class="lang-es" lang="es">Dos extremos triangulares: 2 × (½ × 8 × 6) = 48 in². Tres rectángulos: (8 + 6 + 10) × 10 = 24 × 10 = 240 in². Área de superficie = 48 + 240 = 288 in².</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9337,6 +9471,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: surface area, rectangular, triangular, compare, less, film, face, area.</span><span class="lang-es" lang="es">Una buena respuesta usa: surface area, rectangular, triangular, compare, less, film, face, area.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The rectangular prism has surface area 2(8 × 6) + 2(8 × 4) + 2(6 × 4) = 208 in². The triangular prism has two ends totaling 2(½ × 6 × 8) = 48 in² and three rectangles totaling (6 + 8 + 10) × 8 = 192 in². Its total is 240 in². The rectangular prism uses 32 in² less film.</span><span class="lang-es" lang="es">El prisma rectangular tiene área superficial 2(8 × 6) + 2(8 × 4) + 2(6 × 4) = 208 pulg². Las dos bases del prisma triangular suman 2(½ × 6 × 8) = 48 pulg² y sus tres rectángulos suman (6 + 8 + 10) × 8 = 192 pulg². Su total es 240 pulg². El prisma rectangular usa 32 pulg² menos de película.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9474,6 +9620,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Capsule E · Surface Area: 392 in²</span><span class="lang-es" lang="es">Cápsula E · Área superficial: 392 pulg²</span></li><li><span class="lang-en">Capsule F · Surface Area: 288 cm²</span><span class="lang-es" lang="es">Cápsula F · Área superficial: 288 cm²</span></li><li><span class="lang-en">Capsule G · Surface Area: 234 ft²</span><span class="lang-es" lang="es">Cápsula G · Área superficial: 234 pies²</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each capsule is wrapped on all six faces, so use SA = 2lw + 2lh + 2wh. Capsule E gives 2(96) + 2(60) + 2(40) = 392 in², Capsule F gives 2(54) + 2(54) + 2(36) = 288 cm², and Capsule G gives 2(60) + 2(45) + 2(12) = 234 ft² — and each answer keeps the square units of its row.</span><span class="lang-es" lang="es">Cada cápsula se envuelve por sus seis caras, así que usa SA = 2lw + 2lh + 2wh. La cápsula E da 2(96) + 2(60) + 2(40) = 392 in², la cápsula F da 2(54) + 2(54) + 2(36) = 288 cm² y la cápsula G da 2(60) + 2(45) + 2(12) = 234 ft², y cada respuesta conserva las unidades cuadradas de su fila.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9617,6 +9775,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">96 in² of paper or less: Rect capsule 3×4×5, Cube capsule 4×4×4</span><span class="lang-es" lang="es">96 in² de papel o menos: Cápsula rect. 3×4×5: SA = 94 in², Cápsula cúbica 4×4×4: SA = 96 in²</span></li><li><span class="lang-en">More than 96 in²: Rect capsule 6×5×4, Tri capsule (ends 8×6, length 10)</span><span class="lang-es" lang="es">Más de 96 in²: Cápsula rect. 6×5×4: SA = 148 in², Cápsula tri. (bases 8×6, largo 10): SA = 288 in²</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Paper wraps the outside, so compare each surface area to 96 in². The 3×4×5 capsule needs 94 in² and the 4×4×4 cube needs exactly 96 in², so both fit in the first bin, while the 6×5×4 capsule at 148 in² and the triangular capsule at 288 in² are over 96 in².</span><span class="lang-es" lang="es">El papel envuelve el exterior, así que compara cada área de superficie con 96 in². La cápsula de 3×4×5 necesita 94 in² y el cubo de 4×4×4 necesita exactamente 96 in², así que las dos van en el primer grupo, mientras que la cápsula de 6×5×4 con 148 in² y la cápsula triangular con 288 in² pasan de 96 in².</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9718,6 +9888,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>94 cm²</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">SA = 2(5×4) + 2(5×3) + 2(4×3) = 40 + 30 + 24 = 94 cm².</span><span class="lang-es" lang="es">Área de superficie = 2(5×4) + 2(5×3) + 2(4×3) = 40 + 30 + 24 = 94 cm².</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9857,6 +10039,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Least → Greatest surface area: Cube 3×3×3: SA = 54, Rect prism 5×4×3: SA = 94, Rect prism 8×5×3: SA = 158, Rect prism 10×6×4: SA = 248</span><span class="lang-es" lang="es">De menor → a mayor área de superficie: Cube 3×3×3: SA = 54, Rect prism 5×4×3: SA = 94, Rect prism 8×5×3: SA = 158, Rect prism 10×6×4: SA = 248</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each card already states its surface area, so ordering the cards just means ordering those numbers: 54, then 94, then 158, then 248. The cube 3×3×3 has the least surface area and the 10×6×4 prism has the greatest, because bigger dimensions create bigger faces to cover.</span><span class="lang-es" lang="es">Cada tarjeta ya indica su área de superficie, así que ordenar las tarjetas es ordenar esos números: 54, luego 94, luego 158 y luego 248. El cubo de 3×3×3 tiene la menor área de superficie y el prisma de 10×6×4 la mayor, porque unas dimensiones más grandes crean caras más grandes que cubrir.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9958,6 +10152,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>5</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A triangular prism has 5 faces: 2 triangular bases and 3 rectangular lateral faces.</span><span class="lang-es" lang="es">Un prisma triangular tiene 5 caras: 2 bases triangulares y 3 caras laterales rectangulares.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10059,6 +10265,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>94 in²</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">SA = 2(lw + lh + wh) = 2(3×4 + 3×5 + 4×5) = 2(12 + 15 + 20) = 2(47) = 94 in².</span><span class="lang-es" lang="es">Área de superficie = 2(lw + lh + wh) = 2(3×4 + 3×5 + 4×5) = 2(12 + 15 + 20) = 2(47) = 94 in².</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10160,6 +10378,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>148 cm²</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">SA = 2(6×5) + 2(6×4) + 2(5×4) = 60 + 48 + 40 = 148 cm².</span><span class="lang-es" lang="es">Área de superficie = 2(6×5) + 2(6×4) + 2(5×4) = 60 + 48 + 40 = 148 cm².</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

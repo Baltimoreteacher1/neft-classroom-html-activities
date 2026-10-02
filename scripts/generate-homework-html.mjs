@@ -47,7 +47,9 @@ import { getUnitTheme, renderUnitThemeCss } from "./homework-themes.mjs";
 import { renderVisualMathLab, VISUAL_LABS_CSS, VISUAL_LABS_JS } from "./homework-visual-labs.mjs";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 import {
+  answerKeyLines,
   matchingPairs,
+  normalizeDragSort,
   questionGuide,
   spanishChoiceFeedback,
   tableModel,
@@ -287,109 +289,6 @@ function buildVocabGlossary(vocab) {
   });
 
   return { entries, match: { regexSource: matcher.regexSource, lookup: matcher.lookup } };
-}
-
-function slugId(label, idx) {
-  return (
-    String(label || `cat-${idx}`)
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "") || `cat-${idx}`
-  );
-}
-
-// Normalize drag-sort configs (ordering, nested categories, string categories).
-function normalizeDragSort(it) {
-  const rawItems = it.items || [];
-  const hasStringItems =
-    Array.isArray(rawItems) && rawItems.length > 0 && typeof rawItems[0] === "string";
-  const hasCorrectOrder = Array.isArray(it.correctOrder) && it.correctOrder.length > 0;
-  const hasCategoryItems =
-    Array.isArray(rawItems) &&
-    rawItems.length > 0 &&
-    typeof rawItems[0] === "object" &&
-    rawItems[0]?.category;
-
-  if (hasStringItems && (hasCorrectOrder || !hasCategoryItems)) {
-    const steps = rawItems.map(String);
-    const correctOrder = (it.correctOrder || steps).map(String);
-    return {
-      kind: "order",
-      steps,
-      correctOrder,
-      label: it.label || it.instructions || "Put the steps in the correct order.",
-      labelEs:
-        it.labelEs ||
-        it.instructionsEs ||
-        (it.label || it.instructions ? "" : "Pon los pasos en el orden correcto."),
-      hints: it.hints || [],
-      hintsEs: it.hintsEs || [],
-    };
-  }
-
-  let categories = Array.isArray(it.categories) ? [...it.categories] : [];
-  let items = Array.isArray(it.items) ? [...it.items] : [];
-
-  categories = categories.map((cat, idx) => {
-    if (typeof cat === "string") {
-      const id = slugId(cat, idx);
-      return { id, label: cat, labelEs: it.categoriesEs?.[idx] };
-    }
-    if (cat && typeof cat === "object") {
-      const label = cat.label || cat.id || `Group ${idx + 1}`;
-      const id = cat.id || slugId(label, idx);
-      return { id, label, labelEs: cat.labelEs, items: cat.items, itemsEs: cat.itemsEs };
-    }
-    return { id: `cat-${idx}`, label: `Group ${idx + 1}` };
-  });
-
-  if (!items.length && categories.some((c) => Array.isArray(c.items))) {
-    items = categories.flatMap((cat) =>
-      (cat.items || []).map((text, index) => ({
-        text: String(text),
-        textEs: cat.itemsEs?.[index],
-        category: cat.id,
-      })),
-    );
-    categories = categories.map(({ id, label, labelEs }) => ({ id, label, labelEs }));
-  }
-
-  if (!items.length && Array.isArray(it.cards) && categories.length) {
-    const normCats = categories.map((cat, idx) => {
-      if (typeof cat === "string") return { id: slugId(cat, idx), label: cat };
-      const label = cat.label || cat.id || `Group ${idx + 1}`;
-      return { id: cat.id || slugId(label, idx), label, labelEs: cat.labelEs };
-    });
-    categories = normCats;
-    items = it.cards.map((card) => ({
-      text: String(card.text || ""),
-      textEs: card.textEs,
-      category: normCats[card.correct]?.id || normCats[0]?.id || "",
-    }));
-  }
-
-  items = items.map((item) => {
-    if (typeof item === "string") return { text: item, category: "" };
-    return {
-      text: String(item.text || item.label || ""),
-      textEs: item.textEs || item.labelEs,
-      category: String(item.category || ""),
-    };
-  });
-
-  return {
-    kind: "sort",
-    categories,
-    items,
-    label: it.label || it.instructions || "Sort the items into the correct groups.",
-    labelEs:
-      it.labelEs ||
-      it.instructionsEs ||
-      (it.label || it.instructions ? "" : "Clasifica los elementos en los grupos correctos."),
-    hints: it.hints || [],
-    hintsEs: it.hintsEs || [],
-  };
 }
 
 const FAMILY_TIPS_BY_TYPE = {
@@ -668,6 +567,42 @@ function renderWorkspace(pIdx, g, topic) {
           <textarea id="work_${pIdx}" name="work_${pIdx}" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
         </div>
       </div>`;
+}
+
+/* The family answer key. Every practice problem ends with a closed
+   <details> a parent can open to CHECK the work — the whole reason a family
+   page exists is that someone at the kitchen table can say "yes, that's it"
+   or "look again", and until now only multiple-choice ever showed its answer
+   (after three misses), while matching, sorting, ordering, tables and
+   open-response only ever said ✓ or ✗. The block is closed by default so the
+   student still works first, and it prints closed so a paper copy stays a
+   worksheet. The lines come from answerKeyLines() in lib/homework-problems.mjs,
+   the same normalized models the problem itself renders from, so the key can
+   never disagree with the auto-checker. */
+function renderAnswerKey(it, pIdx) {
+  const { lines, note } = answerKeyLines(it, { translate: tableEs });
+  if (!lines.length && !note) return "";
+  const lineHtml = lines.map((line) => `<li>${bi(line.en, line.es)}</li>`).join("");
+  // With no answer line above it, the note IS the answer (an open-response
+  // whose worked reasoning lives in `explanation`), so call it that.
+  const noteLabel = lines.length
+    ? bi("Why:", "Por qué:")
+    : bi("Sample answer:", "Respuesta de ejemplo:");
+  const noteHtml = note
+    ? `<p class="hw-answer-key-note"><strong>${noteLabel}</strong> ${bi(note.en, note.es)}</p>`
+    : "";
+  return `
+      <details class="hw-answer-key" id="answer_key_${pIdx}">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label">${bi("Answer key for families — compare, then talk about why.", "Clave de respuestas para la familia — comparen y hablen del porqué.")}</p>
+          ${lineHtml ? `<ul class="hw-answer-key-lines">${lineHtml}</ul>` : ""}
+          ${noteHtml}
+        </div>
+      </details>`;
 }
 
 function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
@@ -1047,6 +982,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
         </button>
         <div class="problem-check-result" id="problem_result_${pIdx}" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+      ${renderAnswerKey(it, pIdx)}
     </section>
   `;
 }
@@ -1798,6 +1734,65 @@ header.homework-header h1 {
   align-self: flex-start;
   min-height: 44px;
   font-size: 14px;
+}
+
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
 }
 
 .problem-check-result {
@@ -3425,10 +3420,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);

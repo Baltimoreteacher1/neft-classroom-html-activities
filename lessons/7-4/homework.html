@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8338,7 +8397,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A student says: &#039;Negative numbers are always less than positive numbers, so -100 is less than 1.&#039; Is this correct? Now the student says: &#039;-100 is less than -1 because 100 is greater than 1.&#039; Is THIS correct? Explain the difference.</span><span class="lang-es" lang="es">Un estudiante dice: &#039;Los números negativos siempre son menores que los positivos, así que -100 es menor que 1.&#039; ¿Es correcto? Ahora el estudiante dice: &#039;-100 es menor que -1 porque 100 es mayor que 1.&#039; ¿Es correcto ESTO? Explica la diferencia.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">The first statement is true: -100 is negative and 1 is positive, so -100 sits left of 1 on the number line and is less. The second answer, -100 &lt; -1, is also true, but the reason given is wrong — it is not because 100 &gt; 1, it is because -100 lies 100 units below zero while -1 lies only 1 unit below, putting -100 farther left.</span><span class="lang-es" lang="es">El primer enunciado es verdadero: -100 es negativo y 1 es positivo, así que -100 queda a la izquierda de 1 en la recta numérica y es menor. La segunda respuesta, -100 &lt; -1, también es verdadera, pero la razón que da es incorrecta: no es porque 100 &gt; 1, sino porque -100 está 100 unidades por debajo de cero mientras que -1 está solo 1 unidad por debajo, lo que deja a -100 más a la izquierda.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8639,6 +8701,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>1. -6</li><li>2. -4</li><li>3. -1</li><li>4. 0</li><li>5. 3</li><li>6. 5</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Least to greatest matches left to right on a number line, so every negative comes before 0 and every positive comes after it. Among the negatives, -6 sits farthest below zero and -1 sits closest, giving the order -6, -4, -1, 0, 3, 5.</span><span class="lang-es" lang="es">De menor a mayor coincide con izquierda a derecha en una recta numérica, así que todos los negativos van antes del 0 y todos los positivos van después. Entre los negativos, -6 está más abajo de cero y -1 está más cerca, lo que da el orden -6, -4, -1, 0, 3, 5.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8761,6 +8835,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>1. 8</li><li>2. 5</li><li>3. 0</li><li>4. -2</li><li>5. -6</li><li>6. -10</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Greatest to least reads the number line from right to left, so the positives lead with 8 then 5, then 0, then the negatives. Among the negatives, -2 is closest to zero and -10 is farthest below it, giving 8, 5, 0, -2, -6, -10.</span><span class="lang-es" lang="es">De mayor a menor se lee la recta numérica de derecha a izquierda, así que los positivos van primero con 8 y luego 5, después el 0 y luego los negativos. Entre los negativos, -2 es el más cercano a cero y -10 el más lejano por debajo, lo que da 8, 5, 0, -2, -6, -10.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8864,6 +8950,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>-7, -3, 0, 2</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The deepest spot is the cave at -7 (farthest left), then the tide pool -3, then the boat deck 0, then the flag at 2. Least to greatest: -7, -3, 0, 2.</span><span class="lang-es" lang="es">El lugar más profundo es la cueva en -7 (el más a la izquierda), luego la poza de marea -3, luego la cubierta del barco 0, y luego la bandera en 2. De menor a mayor: -7, -3, 0, 2.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8983,6 +9081,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: negative, positive, less than, greater than, number line, left, right, closer to zero, farther.</span><span class="lang-es" lang="es">Una buena respuesta usa: negative, positive, less than, greater than, number line, left, right, closer to zero, farther.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The first statement is true: -100 is negative and 1 is positive, so -100 sits left of 1 on the number line and is less. The second answer, -100 &lt; -1, is also true, but the reason given is wrong — it is not because 100 &gt; 1, it is because -100 lies 100 units below zero while -1 lies only 1 unit below, putting -100 farther left.</span><span class="lang-es" lang="es">El primer enunciado es verdadero: -100 es negativo y 1 es positivo, así que -100 queda a la izquierda de 1 en la recta numérica y es menor. La segunda respuesta, -100 &lt; -1, también es verdadera, pero la razón que da es incorrecta: no es porque 100 &gt; 1, sino porque -100 está 100 unidades por debajo de cero mientras que -1 está solo 1 unidad por debajo, lo que deja a -100 más a la izquierda.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9156,6 +9266,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Less than 0 (below sea level): -6 m shipwreck, -1 m anchor, -12 m trench chest</span><span class="lang-es" lang="es">Menor que 0 (bajo el nivel del mar): -6 m naufragio, -1 m ancla, -12 m cofre de la fosa</span></li><li><span class="lang-en">Greater than 0 (above sea level): 4 m cliff nest, 7 m crow&#039;s nest, 3 m palm flag</span><span class="lang-es" lang="es">Mayor que 0 (sobre el nivel del mar): 4 m nido del acantilado, 7 m puesto de vigía, 3 m bandera en la palmera</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The sign on each marker tells you which side of sea level it belongs on: -6, -1, and -12 are all less than 0, so the shipwreck, the anchor, and the trench chest go below sea level. The markers at 4, 7, and 3 are greater than 0, so the cliff nest, the crow&#039;s nest, and the palm flag go above.</span><span class="lang-es" lang="es">El signo de cada marca te dice de qué lado del nivel del mar va: -6, -1 y -12 son menores que 0, así que el naufragio, el ancla y el cofre de la fosa van bajo el nivel del mar. Las marcas en 4, 7 y 3 son mayores que 0, así que el nido del acantilado, la cofa y la bandera de la palmera van arriba.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9278,6 +9400,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>1. -100 withdrawal</li><li>2. -25 withdrawal</li><li>3. -5 fee</li><li>4. 0 no change</li><li>5. +10 deposit</li><li>6. +50 deposit</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Ranking the changes is the same as ordering the integers from least to greatest, since the most negative change is the worst for the account: -100, -25, -5, 0, +10, +50. The -100 withdrawal is worst because it is farthest below zero, and the +50 deposit is best because it is farthest above it.</span><span class="lang-es" lang="es">Ordenar los cambios es lo mismo que ordenar los enteros de menor a mayor, ya que el cambio más negativo es el peor para la cuenta: -100, -25, -5, 0, +10, +50. El retiro de -100 es el peor porque está más abajo de cero, y el depósito de +50 es el mejor porque está más arriba.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9392,6 +9526,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>-8</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">-8 is farthest to the left on the number line, making it the least (smallest) integer.</span><span class="lang-es" lang="es">-8 está más a la izquierda en la recta numérica, lo que lo hace el entero menor (más pequeño).</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9565,6 +9711,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">-4 · Comparison (&lt; , &gt; , or =): &lt;</span><span class="lang-es" lang="es">-4 · Comparación (&lt; , &gt; , o =): &lt;</span></li><li><span class="lang-en">-7 · Comparison (&lt; , &gt; , or =): &lt;</span><span class="lang-es" lang="es">-7 · Comparación (&lt; , &gt; , o =): &lt;</span></li><li><span class="lang-en">0 · Comparison (&lt; , &gt; , or =): &gt;</span><span class="lang-es" lang="es">0 · Comparación (&lt; , &gt; , o =): &gt;</span></li><li><span class="lang-en">-1 · Comparison (&lt; , &gt; , or =): =</span><span class="lang-es" lang="es">-1 · Comparación (&lt; , &gt; , o =): =</span></li><li><span class="lang-en">6 · Comparison (&lt; , &gt; , or =): &gt;</span><span class="lang-es" lang="es">6 · Comparación (&lt; , &gt; , o =): &gt;</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each row compares positions on a number line, so -4 &lt; 2 and 0 &gt; -5 because any negative is left of zero and every positive is right of it. Between two negatives the one closer to zero wins, giving -7 &lt; -3, while 6 &gt; -9 and -1 = -1 since the same integer occupies the same point.</span><span class="lang-es" lang="es">Cada fila compara posiciones en una recta numérica, así que -4 &lt; 2 y 0 &gt; -5 porque cualquier negativo está a la izquierda del cero y cualquier positivo a la derecha. Entre dos negativos gana el que está más cerca de cero, lo que da -7 &lt; -3, mientras que 6 &gt; -9 y -1 = -1 porque el mismo entero ocupa el mismo punto.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9668,6 +9826,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>-4 m</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Closer to zero means greater for negatives. -4 is only 4 below the surface, so -4 is the greatest of -9, -4, and -15.</span><span class="lang-es" lang="es">Estar más cerca de cero significa ser mayor entre los negativos. -4 está solo 4 debajo de la superficie, así que -4 es el mayor de -9, -4 y -15.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9771,6 +9941,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>-5 &lt; -2</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">-5 is farther to the left on the number line than -2, so -5 &lt; -2 is true.</span><span class="lang-es" lang="es">-5 está más a la izquierda en la recta numérica que -2, así que -5 &lt; -2 es verdadero.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9874,6 +10056,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>3°F</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">3°F is the greatest because it is farthest to the right on the number line. The order from coldest to warmest is -12, -5, 3.</span><span class="lang-es" lang="es">3°F es la mayor porque está más a la derecha en la recta numérica. El orden del más frío al más cálido es -12, -5, 3.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9977,6 +10171,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>&lt;</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">-8 is farther left (deeper) than -3, so -8 is less than -3. The symbol is &lt;.</span><span class="lang-es" lang="es">-8 está más a la izquierda (más profundo) que -3, así que -8 es menor que -3. El símbolo es &lt;.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10080,6 +10286,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>8</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Absolute value is distance from 0, never negative (zero is allowed). |−8| = 8.</span><span class="lang-es" lang="es">El valor absoluto es la distancia desde 0 y nunca es negativo (puede ser cero). |−8| = 8.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10187,6 +10405,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>-6 ___ -2 → &lt;</li><li>5 ___ -9 → &gt;</li><li>-4 ___ -11 → &gt;</li><li>-7 ___ 0 → &lt;</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each comparison is settled by position on the number line: -6 &lt; -2 and -7 &lt; 0 because those numbers sit farther left, while 5 &gt; -9 because any positive beats any negative. In -4 ___ -11 the greater number is the one closer to zero, so -4 &gt; -11.</span><span class="lang-es" lang="es">Cada comparación se decide por la posición en la recta numérica: -6 &lt; -2 y -7 &lt; 0 porque esos números quedan más a la izquierda, mientras que 5 &gt; -9 porque cualquier positivo supera a cualquier negativo. En -4 ___ -11 el número mayor es el que está más cerca de cero, así que -4 &gt; -11.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8474,7 +8533,7 @@ body {
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
           <details class="ladder-answer">
              <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
-             <p class="ladder-answer-text">Part-to-part: red to blue = 8:6. Part-to-whole: green to total = 4:18. The difference is that part-to-part compares two individual groups, while part-to-whole compares one group to the entire collection (8 + 6 + 4 = 18).</p>
+             <p class="ladder-answer-text"><span class="lang-en">Part-to-part: red to blue = 8:6. Part-to-whole: green to total = 4:18. The difference is that part-to-part compares two individual groups, while part-to-whole compares one group to the entire collection (8 + 6 + 4 = 18).</span><span class="lang-es" lang="es">Una razón parte a parte compara dos grupos entre sí, por ejemplo rojas a azules, 8:6. Una razón parte a todo compara un grupo con el total de 8 + 6 + 4 = 18 canicas, por ejemplo verdes a todas las canicas, 4:18. La diferencia está en lo que representa el segundo número: otra parte o el conjunto completo.</span></p>
            </details>
         </li></ol>
     </div>
@@ -8907,6 +8966,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Part-to-Part: 6 cups of broth to 5 cups of noodles, 8 forks to 3 spoons on the prep table, 7 savory bites to 5 sweet bites</span><span class="lang-es" lang="es">Parte a parte: 6 tazas de caldo a 5 tazas de fideos, 8 tenedores a 3 cucharas en la mesa de preparación, 7 bocados salados a 5 bocados dulces</span></li><li><span class="lang-en">Part-to-Whole: 6 spicy dishes out of 11 total dishes, 3 burnt cookies out of 12 total cookies, 4 vegetarian plates out of 10 total plates</span><span class="lang-es" lang="es">Parte al todo: 6 platos picantes de 11 platos en total, 3 galletas quemadas de 12 galletas en total, 4 platos vegetarianos de 10 platos en total</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The phrase &#039;out of ... total&#039; marks a part-to-whole ratio: 6 spicy dishes out of 11, 3 burnt cookies out of 12, and 4 vegetarian plates out of 10 each compare one piece to the entire group. The other three cards compare one piece to another piece — broth to noodles, forks to spoons, savory bites to sweet bites — so they are part-to-part.</span><span class="lang-es" lang="es">La frase &#039;out of ... total&#039; marca una razón parte a todo: 6 platillos picantes de 11, 3 galletas quemadas de 12 y 4 platos vegetarianos de 10 comparan una porción con el grupo completo. Las otras tres tarjetas comparan una porción con otra porción (caldo con fideos, tenedores con cucharas, bocados salados con bocados dulces), así que son parte a parte.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9080,6 +9151,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Part-to-Part: 3 boys to 5 girls in cooking class, 2 cups sugar to 3 cups flour, 7 savory items to 3 sweet items</span><span class="lang-es" lang="es">Parte a parte: 3 niños a 5 niñas en la clase de cocina, 2 tazas de azúcar a 3 tazas de harina, 7 platillos salados a 3 dulces</span></li><li><span class="lang-en">Part-to-Whole: 5 girls out of 8 students total, 4 vegetarian dishes out of 10 total dishes, 3 sweet items out of 10 total items</span><span class="lang-es" lang="es">Parte al todo: 5 niñas de 8 estudiantes en total, 4 platos vegetarianos de 10 platos en total, 3 platillos dulces de 10 en total</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A part-to-part ratio compares one piece of a group to another piece: 3 boys to 5 girls, 2 cups sugar to 3 cups flour, and 7 savory items to 3 sweet items. A part-to-whole ratio compares one piece to the entire group, and the phrase &#039;out of ... total&#039; gives it away: 5 girls out of 8 students, 4 vegetarian dishes out of 10, and 3 sweet items out of 10.</span><span class="lang-es" lang="es">Una razón parte a parte compara una porción del grupo con otra porción: 3 niños a 5 niñas, 2 tazas de azúcar a 3 tazas de harina, y 7 platillos salados a 3 dulces. Una razón parte a todo compara una porción con el grupo completo, y la frase &#039;out of ... total&#039; lo delata: 5 niñas de 8 estudiantes, 4 platillos vegetarianos de 10 y 3 postres de 10.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9187,6 +9270,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">4 lemons for every 3 limes → 4:3</span><span class="lang-es" lang="es">4 limones amarillos por cada 3 limones verdes → 4:3</span></li><li><span class="lang-en">5 plain rolls out of 9 total rolls → 5:9</span><span class="lang-es" lang="es">5 panecillos simples de 9 en total → 5:9</span></li><li><span class="lang-en">8 clean pans to 1 dirty pan → 8:1</span><span class="lang-es" lang="es">8 sartenes limpias a 1 sartén sucia → 8:1</span></li><li><span class="lang-en">2 grilled skewers out of 7 total skewers → 2:7</span><span class="lang-es" lang="es">2 brochetas asadas de 7 en total → 2:7</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each match keeps the numbers in the order the words name them, written with a colon: 4 lemons for every 3 limes is 4:3, 5 plain rolls out of 9 total rolls is 5:9, 8 clean pans to 1 dirty pan is 8:1, and 2 grilled skewers out of 7 total skewers is 2:7. Two of these compare a part to the whole, but colon form is written exactly the same way.</span><span class="lang-es" lang="es">Cada emparejamiento mantiene los números en el orden en que los nombran las palabras, escritos con dos puntos: 4 limones por cada 3 limas es 4:3, 5 panecillos simples de 9 panecillos en total es 5:9, 8 sartenes limpias a 1 sartén sucia es 8:1, y 2 brochetas asadas de 7 brochetas en total es 2:7. Dos de estas comparan una parte con el todo, pero la forma con dos puntos se escribe exactamente igual.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9298,6 +9393,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>Part-to-part: red to blue = 8:6. Part-to-whole: green to total = 4:18. The difference is that part-to-part compares two individual groups, while part-to-whole compares one group to the entire collection (8 + 6 + 4 = 18).</li><li><span class="lang-en">A strong answer uses: part-to-part, part-to-whole, 18, total, compare, individual.</span><span class="lang-es" lang="es">Una buena respuesta usa: part-to-part, part-to-whole, 18, total, compare, individual.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A part-to-part ratio compares two groups to each other, such as red to blue, 8:6. A part-to-whole ratio compares one group to the total of 8 + 6 + 4 = 18 marbles, such as green to all marbles, 4:18. The difference is what the second number stands for: another part, or the entire set.</span><span class="lang-es" lang="es">Una razón parte a parte compara dos grupos entre sí, por ejemplo rojas a azules, 8:6. Una razón parte a todo compara un grupo con el total de 8 + 6 + 4 = 18 canicas, por ejemplo verdes a todas las canicas, 4:18. La diferencia está en lo que representa el segundo número: otra parte o el conjunto completo.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9441,6 +9548,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Correct Ratio: Boys to girls = 12:8, Girls to total = 8:20</span><span class="lang-es" lang="es">Razón correcta: Niños a niñas = 12:8, Niñas al total = 8:20</span></li><li><span class="lang-en">Incorrect Ratio: Boys to total = 12:8, Girls to boys = 12:8</span><span class="lang-es" lang="es">Razón incorrecta: Niños al total = 12:8, Niñas a niños = 12:8</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">With 12 boys and 8 girls, the class total is 20. &#039;Boys to girls = 12:8&#039; is correct because boys are named first and there are 12 of them, and &#039;Girls to total = 8:20&#039; correctly compares a part to the whole. &#039;Boys to total = 12:8&#039; uses the girls instead of the 20-student total, and &#039;Girls to boys = 12:8&#039; has the numbers reversed — it should be 8:12.</span><span class="lang-es" lang="es">Con 12 niños y 8 niñas, el total de la clase es 20. &#039;Boys to girls = 12:8&#039; es correcta porque los niños se nombran primero y son 12, y &#039;Girls to total = 8:20&#039; compara bien una parte con el todo. &#039;Boys to total = 12:8&#039; usa a las niñas en vez del total de 20 estudiantes, y &#039;Girls to boys = 12:8&#039; tiene los números invertidos: debería ser 8:12.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9617,6 +9736,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">9 red out of 15 total · Word Form: 9 to 15</span><span class="lang-es" lang="es">9 rojos de 15 en total · Forma con palabras: 9 a 15</span></li><li><span class="lang-en">9 red out of 15 total · Colon Form: 9:15</span><span class="lang-es" lang="es">9 rojos de 15 en total · Forma con dos puntos: 9:15</span></li><li><span class="lang-en">9 red out of 15 total · Fraction Form: 9/15</span><span class="lang-es" lang="es">9 rojos de 15 en total · Forma de fracción: 9/15</span></li><li><span class="lang-en">5 wins to 3 losses · Word Form: 5 to 3</span><span class="lang-es" lang="es">5 victorias por cada 3 derrotas · Forma con palabras: 5 a 3</span></li><li><span class="lang-en">5 wins to 3 losses · Colon Form: 5:3</span><span class="lang-es" lang="es">5 victorias por cada 3 derrotas · Forma con dos puntos: 5:3</span></li><li><span class="lang-en">5 wins to 3 losses · Fraction Form: 5/3</span><span class="lang-es" lang="es">5 victorias por cada 3 derrotas · Forma de fracción: 5/3</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The same ratio can wear three costumes without changing value: word form uses &#039;to&#039;, colon form uses a colon, and fraction form uses a fraction bar. The numbers and their order stay identical across the row, so &#039;9 red out of 15 total&#039; becomes 9 to 15, 9:15, and 9/15, and &#039;5 wins to 3 losses&#039; becomes 5 to 3, 5:3, and 5/3.</span><span class="lang-es" lang="es">La misma razón puede vestirse de tres formas sin cambiar de valor: en palabras se usa &#039;to&#039;, en la forma de dos puntos se usan los dos puntos, y en la forma de fracción se usa la barra de fracción. Los números y su orden se mantienen iguales en toda la fila, así que &#039;9 red out of 15 total&#039; se escribe 9 to 15, 9:15 y 9/15, y &#039;5 wins to 3 losses&#039; se escribe 5 to 3, 5:3 y 5/3.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9729,6 +9860,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>12:18</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Boys = 30 − 18 = 12. Part-to-part ratio of boys to girls = 12:18. (Order matters!)</span><span class="lang-es" lang="es">Niños = 30 − 18 = 12. La razón parte a parte de niños a niñas = 12:18. (¡El orden importa!)</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9830,6 +9973,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>5:12</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The whole class is 5 + 7 = 12 students. Part-to-whole compares one part to the total, so chefs to whole class is 5:12.</span><span class="lang-es" lang="es">La clase completa son 5 + 7 = 12 estudiantes. Parte a todo compara una parte con el total, así que chefs a la clase completa es 5:12.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9931,6 +10086,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>2:8</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Total fruit = 6 + 2 = 8. The part-to-whole ratio of bananas to total fruit is 2:8.</span><span class="lang-es" lang="es">Fruta total = 6 + 2 = 8. La razón parte a todo de plátanos a fruta total es 2:8.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10032,6 +10199,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>6:16</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Total vehicles = 10 + 6 = 16. The ratio of trucks to total is 6:16.</span><span class="lang-es" lang="es">Total de vehículos = 10 + 6 = 16. La razón de camionetas al total es 6:16.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10133,6 +10312,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>9:4</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">“For every 9 honey to 4 lemon” is a part-to-part comparison. In colon notation, honey to lemon is 9:4.</span><span class="lang-es" lang="es">«Por cada 9 de miel a 4 de limón» es una comparación parte a parte. En notación con dos puntos, miel a limón es 9:4.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10234,6 +10425,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>7:4</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Part-to-part compares the two ingredients in the order named. Flour to water = 7 to 4, written 7:4.</span><span class="lang-es" lang="es">Parte a parte compara los dos ingredientes en el orden en que se nombran. Harina a agua = 7 a 4, escrito 7:4.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10377,6 +10580,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">IS a Ratio: 7 pencils for every 3 erasers, 10 red beads to 4 blue beads</span><span class="lang-es" lang="es">SÍ es una razón: 7 lápices por cada 3 borradores, 10 cuentas rojas a 4 cuentas azules</span></li><li><span class="lang-en">NOT a Ratio: There are 15 chairs in the room, The pizza was delicious</span><span class="lang-es" lang="es">NO es una razón: Hay 15 sillas en el salón, La pizza estaba deliciosa</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A ratio compares two quantities, so &#039;7 pencils for every 3 erasers&#039; and &#039;10 red beads to 4 blue beads&#039; are ratios — each names two amounts, joined by the words &#039;for every&#039; and &#039;to&#039;. &#039;There are 15 chairs in the room&#039; reports a single count with nothing to compare it to, and &#039;The pizza was delicious&#039; is an opinion with no quantities at all.</span><span class="lang-es" lang="es">Una razón compara dos cantidades, así que &#039;7 pencils for every 3 erasers&#039; y &#039;10 red beads to 4 blue beads&#039; sí son razones: cada una nombra dos cantidades, unidas por las palabras &#039;for every&#039; y &#039;to&#039;. &#039;There are 15 chairs in the room&#039; informa una sola cantidad y no la compara con nada, y &#039;The pizza was delicious&#039; es una opinión sin ninguna cantidad.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10478,6 +10693,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>4:1</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A ratio compares quantities in the order given. Milk to cream = 4 to 1, or 4:1.</span><span class="lang-es" lang="es">Una razón compara cantidades en el orden que se indica. Leche a crema = 4 a 1, o 4:1.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

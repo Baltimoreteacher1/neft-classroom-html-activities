@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8337,7 +8396,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A bakery packed muffins into boxes of 8. They made 96 muffins total. Write an equation, solve it, and explain why your answer is reasonable. Then write a different situation that uses division and has the same answer.</span><span class="lang-es" lang="es">Una panadería empacó panecillos en cajas de 8. Hicieron 96 panecillos en total. Escribe una ecuación, resuélvela y explica por qué tu respuesta es razonable. Después escribe una situación diferente que use división y tenga la misma respuesta.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Eight muffins per box times an unknown number of boxes equals 96, so the equation is 8x = 96. Dividing both sides by 8 gives x = 12 boxes, and it is reasonable because 12 boxes × 8 muffins rebuilds all 96. A division situation with the same answer works too, such as 60 stickers shared equally by 5 students.</span><span class="lang-es" lang="es">Ocho panquecitos por caja por un número desconocido de cajas es igual a 96, así que la ecuación es 8x = 96. Dividir ambos lados entre 8 da x = 12 cajas, y es razonable porque 12 cajas × 8 panquecitos reconstruyen los 96. También sirve una situación de división con la misma respuesta, como 60 calcomanías repartidas en partes iguales entre 5 estudiantes.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8689,6 +8751,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Divide both sides: 4x = 32, 7n = 56, 10p = 80</span><span class="lang-es" lang="es">Divide ambos lados: 4x = 32, 7n = 56, 10p = 80</span></li><li><span class="lang-en">Multiply both sides: x / 6 = 3, m / 2 = 15, y / 9 = 4</span><span class="lang-es" lang="es">Multiplica ambos lados: x / 6 = 3, m / 2 = 15, y / 9 = 4</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Look at what is being done to the variable and undo it. In 4x = 32, 7n = 56, and 10p = 80 the variable is multiplied, so you divide both sides. In x / 6 = 3, m / 2 = 15, and y / 9 = 4 the variable is divided, so you multiply both sides.</span><span class="lang-es" lang="es">Mira qué le están haciendo a la variable y deshazlo. En 4x = 32, 7n = 56 y 10p = 80 la variable está multiplicada, así que divides ambos lados. En x / 6 = 3, m / 2 = 15 y y / 9 = 4 la variable está dividida, así que multiplicas ambos lados.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8832,6 +8906,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Divide both sides: 6x = 48, 9k = 27</span><span class="lang-es" lang="es">Divide ambos lados: 6x = 48, 9k = 27</span></li><li><span class="lang-en">Multiply both sides: x / 8 = 2, n / 4 = 5</span><span class="lang-es" lang="es">Multiplica ambos lados: x / 8 = 2, n / 4 = 5</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Sort by what the equation is doing to the variable. In 6x = 48 and 9k = 27 the variable is multiplied, so you divide both sides to unlock it. In x / 8 = 2 and n / 4 = 5 the variable is divided, so you multiply both sides.</span><span class="lang-es" lang="es">Clasifica según lo que la ecuación le hace a la variable. En 6x = 48 y 9k = 27 la variable está multiplicada, así que divides ambos lados para liberarla. En x / 8 = 2 y n / 4 = 5 la variable está dividida, así que multiplicas ambos lados.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8933,6 +9019,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>c = 6</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Divide both sides by 9: c = 54 ÷ 9 = 6 clues per file.</span><span class="lang-es" lang="es">Divide ambos lados entre 9: c = 54 ÷ 9 = 6 pistas por expediente.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9050,6 +9148,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: 8x = 96, divide, 12, reasonable, inverse, boxes.</span><span class="lang-es" lang="es">Una buena respuesta usa: 8x = 96, divide, 12, reasonable, inverse, boxes.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Eight muffins per box times an unknown number of boxes equals 96, so the equation is 8x = 96. Dividing both sides by 8 gives x = 12 boxes, and it is reasonable because 12 boxes × 8 muffins rebuilds all 96. A division situation with the same answer works too, such as 60 stickers shared equally by 5 students.</span><span class="lang-es" lang="es">Ocho panquecitos por caja por un número desconocido de cajas es igual a 96, así que la ecuación es 8x = 96. Dividir ambos lados entre 8 da x = 12 cajas, y es razonable porque 12 cajas × 8 panquecitos reconstruyen los 96. También sirve una situación de división con la misma respuesta, como 60 calcomanías repartidas en partes iguales entre 5 estudiantes.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9196,6 +9306,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">4x = 36 · Solution: x = 9</span><span class="lang-es" lang="es">4x = 36 · Solución: x = 9</span></li><li><span class="lang-en">4x = 36 · Related Solution: x = 9</span><span class="lang-es" lang="es">4x = 36 · Solución relacionada: x = 9</span></li><li><span class="lang-en">x / 7 = 8 · Solution: x = 56</span><span class="lang-es" lang="es">x / 7 = 8 · Solución: x = 56</span></li><li><span class="lang-en">x / 7 = 8 · Related Solution: x = 8</span><span class="lang-es" lang="es">x / 7 = 8 · Solución relacionada: x = 8</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Multiplication and division equations built from the same three numbers form a fact family. From 4x = 36 you get x = 36 ÷ 4 = 9, and the related equation 36 / x = 4 uses the same trio, so x = 9 again. From x / 7 = 8 you get x = 8 × 7 = 56, and the related form 56 / 7 = x gives x = 8.</span><span class="lang-es" lang="es">Las ecuaciones de multiplicación y de división formadas con los mismos tres números son una familia de operaciones. De 4x = 36 sale x = 36 ÷ 4 = 9, y la ecuación relacionada 36 / x = 4 usa el mismo trío, así que x = 9 otra vez. De x / 7 = 8 sale x = 8 × 7 = 56, y la forma relacionada 56 / 7 = x da x = 8.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9333,6 +9455,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">8m = 56 · Solution: m = 7</span><span class="lang-es" lang="es">8m = 56 · Solución: m = 7</span></li><li><span class="lang-en">y / 6 = 11 · Solution: y = 66</span><span class="lang-es" lang="es">y / 6 = 11 · Solución: y = 66</span></li><li><span class="lang-en">12k = 96 · Solution: k = 8</span><span class="lang-es" lang="es">12k = 96 · Solución: k = 8</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each row undoes whatever is being done to the variable and then verifies it. 8m = 56 multiplies, so divide: 56 ÷ 8 = 7, checked by 8 × 7 = 56. y / 6 = 11 divides, so multiply: 11 × 6 = 66, checked by 66 / 6 = 11. And 12k = 96 gives 96 ÷ 12 = 8, checked by 12 × 8 = 96.</span><span class="lang-es" lang="es">Cada fila deshace lo que se le está haciendo a la variable y luego lo comprueba. 8m = 56 multiplica, así que se divide: 56 ÷ 8 = 7, comprobado con 8 × 7 = 56. y / 6 = 11 divide, así que se multiplica: 11 × 6 = 66, comprobado con 66 / 6 = 11. Y 12k = 96 da 96 ÷ 12 = 8, comprobado con 12 × 8 = 96.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9451,6 +9585,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>7x = 56 → x = 8</li><li>x / 5 = 4 → x = 20</li><li>11m = 33 → m = 3</li><li>p / 2 = 9 → p = 18</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each vault opens with the inverse operation: 7x = 56 divides to x = 8 and 11m = 33 divides to m = 3, while x / 5 = 4 multiplies to x = 20 and p / 2 = 9 multiplies to p = 18. Substituting each solution back rebuilds the original equation, which proves the match.</span><span class="lang-es" lang="es">Cada bóveda se abre con la operación inversa: 7x = 56 se divide y da x = 8, y 11m = 33 se divide y da m = 3, mientras que x / 5 = 4 se multiplica y da x = 20, y p / 2 = 9 se multiplica y da p = 18. Sustituir cada solución de regreso reconstruye la ecuación original, y eso comprueba la pareja.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9552,6 +9698,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>x = 7</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Divide both sides by 6: x = 42 ÷ 6 = 7. Check: 6 × 7 = 42 ✓</span><span class="lang-es" lang="es">Divide ambos lados entre 6: x = 42 ÷ 6 = 7. Comprobación: 6 × 7 = 42 ✓</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9653,6 +9811,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>n = 24</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Multiply both sides by 3: n = 8 × 3 = 24. Check: 24 / 3 = 8 ✓</span><span class="lang-es" lang="es">Multiplica ambos lados por 3: n = 8 × 3 = 24. Comprobación: 24 / 3 = 8 ✓</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9754,6 +9924,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>m = 7</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Divide both sides by 9: m = 63 ÷ 9 = 7. Check: 9 × 7 = 63 ✓</span><span class="lang-es" lang="es">Divide ambos lados entre 9: m = 63 ÷ 9 = 7. Comprobación: 9 × 7 = 63 ✓</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9855,6 +10037,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>y = 35</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Multiply both sides by 7: y = 5 × 7 = 35. Check: 35 / 7 = 5 ✓</span><span class="lang-es" lang="es">Multiplica ambos lados por 7: y = 5 × 7 = 35. Comprobación: 35 / 7 = 5 ✓</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9956,6 +10150,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>x = 8</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The 4 is multiplying x, so divide both sides by 4: x = 32 / 4 = 8. Check: 4 x 8 = 32.</span><span class="lang-es" lang="es">El 4 está multiplicando a x, así que divide ambos lados entre 4: x = 32 / 4 = 8. Comprobación: 4 x 8 = 32.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10057,6 +10263,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>x = 18</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">x is divided by 3, so multiply both sides by 3: x = 6 x 3 = 18. Check: 18 / 3 = 6.</span><span class="lang-es" lang="es">x está dividida entre 3, así que multiplica ambos lados por 3: x = 6 x 3 = 18. Comprobación: 18 / 3 = 6.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10158,6 +10376,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>n = 9</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The 5 is multiplying n, so divide both sides by 5: n = 45 / 5 = 9. Check: 5 x 9 = 45.</span><span class="lang-es" lang="es">El 5 está multiplicando a n, así que divide ambos lados entre 5: n = 45 / 5 = 9. Comprobación: 5 x 9 = 45.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

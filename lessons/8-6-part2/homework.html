@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8268,7 +8327,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A phone plan allows at most 60 GB of data a month, and 38 GB have been used. Write an inequality for the additional data d, solve it, describe the graph (circle type and direction), and explain why the graph should show the SOLVED inequality rather than the original one.</span><span class="lang-es" lang="es">Un plan de teléfono permite como máximo 60 GB de datos al mes, y ya se usaron 38 GB. Escribe una desigualdad para los datos adicionales d, resuélvela, describe la gráfica (tipo de círculo y dirección) y explica por qué la gráfica debe mostrar la desigualdad RESUELTA y no la original.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">38 + d ≤ 60. Subtract 38 from both sides: d ≤ 22. Graph: a closed circle at 22 (exactly 22 more GB is allowed) with shading to the left, and since data cannot be negative, the useful range is 0 to 22. The graph shows the solved inequality because the number line is showing the possible values of d itself — the original, 38 + d ≤ 60, describes a total, not the variable, and its boundary 60 is not a value d can reach.</span><span class="lang-es" lang="es">38 + d ≤ 60. Resta 38 de ambos lados: d ≤ 22. Gráfica: un círculo cerrado en 22 (se permiten exactamente 22 GB más) con sombreado a la izquierda, y como los datos no pueden ser negativos, el rango útil es de 0 a 22. La gráfica muestra la desigualdad resuelta porque la recta numérica muestra los valores posibles de d misma — la original, 38 + d ≤ 60, describe un total, no la variable, y su frontera 60 no es un valor que d pueda alcanzar.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8550,6 +8612,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">g ≤ 33; closed circle at 33, shaded left.</span><span class="lang-es" lang="es">g ≤ 33; círculo cerrado en 33, sombreado a la izquierda.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">g ≤ 33: closed circle at 33 (she may spend exactly $33 more), shaded left toward 0. 137 adds instead of subtracting; ≥ points the wrong way; an open circle would wrongly exclude 33.</span><span class="lang-es" lang="es">g ≤ 33: círculo cerrado en 33 (puede gastar exactamente $33 más), sombreado a la izquierda hacia el 0. 137 suma en vez de restar; ≥ apunta en la dirección equivocada; un círculo abierto excluiría el 33 incorrectamente.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8653,6 +8727,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">No — 5 + 4 = 9, and 9 &gt; 12 is false. Solving gives x &gt; 8.</span><span class="lang-es" lang="es">No — 5 + 4 = 9, y 9 &gt; 12 es falso. Al resolver, x &gt; 8.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">5 + 4 = 9, and 9 &gt; 12 is false, so 5 is not a solution; solving gives x &gt; 8, and 5 is not greater than 8. 5 &gt; 12 − 4 = 8 is false, not true; comparing 9 with 5 or 5 with 12 is not the test the inequality asks for.</span><span class="lang-es" lang="es">5 + 4 = 9, y 9 &gt; 12 es falso, así que 5 no es solución; al resolver, x &gt; 8, y 5 no es mayor que 8. 5 &gt; 12 − 4 = 8 es falso, no verdadero; comparar 9 con 5 o 5 con 12 no es la prueba que pide la desigualdad.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8756,6 +8842,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">t ≤ 14; 10 works (26 + 10 = 36 ≤ 40) and 16 does not (42 &gt; 40).</span><span class="lang-es" lang="es">t ≤ 14; 10 sirve (26 + 10 = 36 ≤ 40) y 16 no (42 &gt; 40).</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">t ≤ 14. Testing in the original: 26 + 10 = 36 ≤ 40 is true, so 10 works; 26 + 16 = 42 ≤ 40 is false, so 16 does not. 66 adds instead of subtracting; ≥ points the wrong way and would let the team exceed 40 hours.</span><span class="lang-es" lang="es">t ≤ 14. Probando en la original: 26 + 10 = 36 ≤ 40 es verdadero, así que 10 sirve; 26 + 16 = 42 ≤ 40 es falso, así que 16 no. 66 suma en vez de restar; ≥ apunta en la dirección equivocada y dejaría al equipo pasarse de 40 horas.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8862,6 +8960,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">38 + d ≤ 60. Subtract 38 from both sides: d ≤ 22. Graph: a closed circle at 22 (exactly 22 more GB is allowed) with shading to the left, and since data cannot be negative, the useful range is 0 to 22. The graph shows the solved inequality because the number line is showing the possible values of d itself — the original, 38 + d ≤ 60, describes a total, not the variable, and its boundary 60 is not a value d can reach.</span><span class="lang-es" lang="es">38 + d ≤ 60. Resta 38 de ambos lados: d ≤ 22. Gráfica: un círculo cerrado en 22 (se permiten exactamente 22 GB más) con sombreado a la izquierda, y como los datos no pueden ser negativos, el rango útil es de 0 a 22. La gráfica muestra la desigualdad resuelta porque la recta numérica muestra los valores posibles de d misma — la original, 38 + d ≤ 60, describe un total, no la variable, y su frontera 60 no es un valor que d pueda alcanzar.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8965,6 +9075,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>n &gt; 15</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">n − 6 + 6 &gt; 9 + 6 gives n &gt; 15. n &gt; 3 subtracts again; n &lt; 15 flips the symbol for no reason; 54 multiplies.</span><span class="lang-es" lang="es">n − 6 + 6 &gt; 9 + 6 da n &gt; 15. n &gt; 3 vuelve a restar; n &lt; 15 voltea el símbolo sin razón; 54 multiplica.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9068,6 +9190,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>52 + g ≤ 85</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The total spent, 52 + g, can be 85 or less: 52 + g ≤ 85. ≥ would let her go over budget; g − 52 subtracts money she already spent; &lt; would forbid spending exactly $85, which &#039;at most&#039; allows.</span><span class="lang-es" lang="es">El total gastado, 52 + g, puede ser 85 o menos: 52 + g ≤ 85. ≥ le permitiría pasarse del presupuesto; g − 52 resta dinero que ya gastó; &lt; prohibiría gastar exactamente $85, que &#039;como máximo&#039; permite.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8612,6 +8671,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">1/6 of the bag</span><span class="lang-es" lang="es">1/6 de la bolsa</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">This is 5/6 ÷ 5. Put a 1 under the 5, then Keep, Change, Flip: 5/6 × 1/5 = 5/30 = 1/6 of the whole bag per bed.</span><span class="lang-es" lang="es">Esto es 5/6 ÷ 5. Pon un 1 debajo del 5 y luego Conserva, Cambia, Voltea: 5/6 × 1/5 = 5/30 = 1/6 de la bolsa entera.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8713,6 +8784,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">2/9 of the pizza</span><span class="lang-es" lang="es">2/9 de la pizza</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">This is 2/3 ÷ 3. Put a 1 under the 3, then Keep, Change, Flip: 2/3 × 1/3 = 2/9 of the whole pizza each.</span><span class="lang-es" lang="es">Esto es 2/3 ÷ 3. Pon un 1 debajo del 3 y luego Conserva, Cambia, Voltea: 2/3 × 1/3 = 2/9 de la pizza entera.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8814,6 +8897,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">12 boxes</span><span class="lang-es" lang="es">12 cajas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">This is 4 ÷ 1/3. Put a 1 under the 4, then Keep, Change, Flip: 4/1 × 3/1 = 12 boxes.</span><span class="lang-es" lang="es">Esto es 4 ÷ 1/3. Pon un 1 debajo del 4 y luego Conserva, Cambia, Voltea: 4/1 × 3/1 = 12 cajas.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8931,6 +9026,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">18 pieces</span><span class="lang-es" lang="es">18 piezas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">First: 6 3/4 ÷ 3/4 = 27/4 × 4/3 = 108/12 = 9 pieces. Then every one of those 9 is cut in half: 9 × 2 = 18 final pieces.</span><span class="lang-es" lang="es">Primero: 6 3/4 ÷ 3/4 = 27/4 × 4/3 = 108/12 = 9 piezas. Luego cada una de esas 9 se corta a la mitad: 9 × 2 = 18 piezas finales.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9032,6 +9139,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: reciprocal, flip, 5/2, 10.</span><span class="lang-es" lang="es">Una buena respuesta usa: reciprocal, flip, 5/2, 10.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Priya forgot to flip the divisor — she multiplied by 2/5 instead of its reciprocal, 5/2. The correct work is 4/1 × 5/2 = 20/2 = 10.</span><span class="lang-es" lang="es">Priya olvidó voltear el divisor — multiplicó por 2/5 en lugar de su recíproco, 5/2. El trabajo correcto es 4/1 × 5/2 = 20/2 = 10.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9133,6 +9252,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">12 pieces</span><span class="lang-es" lang="es">12 piezas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">First: 4 1/2 ÷ 3/4 = 9/2 × 4/3 = 36/6 = 6 pieces. Then every one of those 6 is cut in half: 6 × 2 = 12 final pieces.</span><span class="lang-es" lang="es">Primero: 4 1/2 ÷ 3/4 = 9/2 × 4/3 = 36/6 = 6 piezas. Luego cada una de esas 6 se corta a la mitad: 6 × 2 = 12 piezas finales.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9245,6 +9376,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">5/12 of the bag</span><span class="lang-es" lang="es">5/12 de la bolsa</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">This is 5/6 ÷ 2. Put a 1 under the 2, then Keep, Change, Flip: 5/6 × 1/2 = 5/12 of the whole bag.</span><span class="lang-es" lang="es">Esto es 5/6 ÷ 2. Pon un 1 debajo del 2 y luego Conserva, Cambia, Voltea: 5/6 × 1/2 = 5/12 de la bolsa entera.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9346,6 +9489,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: reciprocal, flip, 3/2, 15/2, 7 1/2.</span><span class="lang-es" lang="es">Una buena respuesta usa: reciprocal, flip, 3/2, 15/2, 7 1/2.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Marcus forgot to flip the divisor — he multiplied by 2/3 instead of its reciprocal, 3/2. The correct work is 5/1 × 3/2 = 15/2 = 7 1/2.</span><span class="lang-es" lang="es">Marcus olvidó voltear el divisor — multiplicó por 2/3 en lugar de su recíproco, 3/2. El trabajo correcto es 5/1 × 3/2 = 15/2 = 7 1/2.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9447,6 +9602,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">3 ÷ 1/6 = 18 pieces</span><span class="lang-es" lang="es">3 ÷ 1/6 = 18 piezas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each of the 3 feet holds six 1/6-foot pieces, so the model shows 18 pieces in all. Written as an expression that is 3 ÷ 1/6. Put a 1 under the 3, then Keep, Change, Flip: 3/1 × 6/1 = 18.</span><span class="lang-es" lang="es">Cada uno de los 3 pies contiene seis piezas de 1/6 de pie, así que el modelo muestra 18 piezas en total. Escrito como expresión es 3 ÷ 1/6. Pon un 1 debajo del 3 y luego Conserva, Cambia, Voltea: 3/1 × 6/1 = 18.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9548,6 +9715,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">5 ÷ 1/2 = 10 segments</span><span class="lang-es" lang="es">5 ÷ 1/2 = 10 segmentos</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each of the 5 feet holds two 1/2-foot segments, so the model shows 10 segments in all. Written as an expression that is 5 ÷ 1/2. Put a 1 under the 5, then Keep, Change, Flip: 5/1 × 2/1 = 10.</span><span class="lang-es" lang="es">Cada uno de los 5 pies contiene dos segmentos de 1/2 pie, así que el modelo muestra 10 segmentos en total. Escrito como expresión es 5 ÷ 1/2. Pon un 1 debajo del 5 y luego Conserva, Cambia, Voltea: 5/1 × 2/1 = 10.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9649,6 +9828,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">6 ÷ 3/4 = 8 sections</span><span class="lang-es" lang="es">6 ÷ 3/4 = 8 secciones</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Using quarters as the shared unit, 6 feet is 24 quarters and each 3/4-foot section is 3 quarters, so there are 24 ÷ 3 = 8 sections. Written as an expression that is 6 ÷ 3/4. Keep, Change, Flip: 6/1 × 4/3 = 24/3 = 8.</span><span class="lang-es" lang="es">Usando cuartos como unidad compartida, 6 pies son 24 cuartos y cada sección de 3/4 de pie son 3 cuartos, así que hay 24 ÷ 3 = 8 secciones. Escrito como expresión es 6 ÷ 3/4. Conserva, Cambia, Voltea: 6/1 × 4/3 = 24/3 = 8.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9750,6 +9941,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">3/4 ÷ 1/8 = 6 pieces</span><span class="lang-es" lang="es">3/4 ÷ 1/8 = 6 piezas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">3/4 yard is the same as six 1/8-yard pieces, so the model shows 6 pieces. Written as an expression that is 3/4 ÷ 1/8. Keep, Change, Flip: 3/4 × 8/1 = 24/4 = 6.</span><span class="lang-es" lang="es">3/4 de yarda equivale a seis piezas de 1/8 de yarda, así que el modelo muestra 6 piezas. Escrito como expresión es 3/4 ÷ 1/8. Conserva, Cambia, Voltea: 3/4 × 8/1 = 24/4 = 6.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9851,6 +10054,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">4 batches</span><span class="lang-es" lang="es">4 tandas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">This is 6 ÷ 1 1/2. Rewrite 1 1/2 as 3/2, then Keep, Change, Flip: 6/1 × 2/3 = 12/3 = 4 batches.</span><span class="lang-es" lang="es">Esto es 6 ÷ 1 1/2. Reescribe 1 1/2 como 3/2, y luego Conserva, Cambia, Voltea: 6/1 × 2/3 = 12/3 = 4 tandas.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9952,6 +10167,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">5/6 ÷ 1/12 = 10 points</span><span class="lang-es" lang="es">5/6 ÷ 1/12 = 10 puntos</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">5/6 mile is the same as ten 1/12-mile stretches, so the model shows 10 rest points. Written as an expression that is 5/6 ÷ 1/12. Keep, Change, Flip: 5/6 × 12/1 = 60/6 = 10.</span><span class="lang-es" lang="es">5/6 de milla equivale a diez tramos de 1/12 de milla, así que el modelo muestra 10 puntos de descanso. Escrito como expresión es 5/6 ÷ 1/12. Conserva, Cambia, Voltea: 5/6 × 12/1 = 60/6 = 10.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

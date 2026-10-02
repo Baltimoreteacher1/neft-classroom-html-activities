@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8510,6 +8569,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">The medium, at $0.25 per ounce</span><span class="lang-es" lang="es">La mediana, a $0.25 por onza</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Small: 3.60/12 = $0.30 per ounce. Medium: 5.00/20 = $0.25 per ounce. $0.25 is less per ounce, so the medium popcorn is the better value even though it costs more in total.</span><span class="lang-es" lang="es">Pequeña: 3.60/12 = $0.30 por onza. Mediana: 5.00/20 = $0.25 por onza. $0.25 es menos por onza, así que la mediana es el mejor valor aunque cueste más en total.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8611,6 +8682,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">McDonald&#039;s, at $1.29 per hamburger</span><span class="lang-es" lang="es">McDonald&#039;s, a $1.29 por hamburguesa</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">McDonald&#039;s: 14.19/11 = $1.29 per hamburger. Wendy&#039;s: 5.98/2 = $2.99 per hamburger. $1.29 is less, so McDonald&#039;s is the better value per hamburger.</span><span class="lang-es" lang="es">McDonald&#039;s: 14.19/11 = $1.29 por hamburguesa. Wendy&#039;s: 5.98/2 = $2.99 por hamburguesa. $1.29 es menos, así que McDonald&#039;s es el mejor valor por hamburguesa.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8712,6 +8795,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: unit rate, 16, 6, better value.</span><span class="lang-es" lang="es">Una buena respuesta usa: unit rate, 16, 6, better value.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Store A&#039;s ratio is 48/3, so its unit rate is $16 per shirt. Store B&#039;s ratio is 96/16, so its unit rate is $6 per shirt. Store B is the better value because one shirt costs $10 less there, even though Store B&#039;s total price is twice as large.</span><span class="lang-es" lang="es">La razón de la tienda A es 48/3, así que su tasa unitaria es $16 por camiseta. La razón de la tienda B es 96/16, así que su tasa unitaria es $6 por camiseta. La tienda B es el mejor valor porque una camiseta cuesta $10 menos ahí, aunque el precio total de la tienda B sea el doble.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8829,6 +8924,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">She compared totals for different numbers of tickets instead of the cost of one ticket</span><span class="lang-es" lang="es">Comparó totales de números distintos de boletos en vez del costo de un boleto</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Maya compared two totals that buy different numbers of tickets, so the comparison was never fair. Dividing gives 15/3 = $5 per ticket and 20/5 = $4 per ticket — Theater B is the better value even though its total is higher.</span><span class="lang-es" lang="es">Maya comparó dos totales que compran números distintos de boletos, así que la comparación nunca fue justa. Al dividir: 15/3 = $5 por boleto y 20/5 = $4 por boleto. El cine B es el mejor valor aunque su total sea mayor.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8930,6 +9037,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: 0.24, 0.23, per ounce, better value.</span><span class="lang-es" lang="es">Una buena respuesta usa: 0.24, 0.23, per ounce, better value.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The 12-ounce size is 2.88/12 = $0.24 per ounce. The 18-ounce size is 4.14/18 = $0.23 per ounce. The 18-ounce size is the better value because one ounce costs a penny less, so every ounce you buy is cheaper.</span><span class="lang-es" lang="es">El tamaño de 12 onzas es 2.88/12 = $0.24 por onza. El de 18 onzas es 4.14/18 = $0.23 por onza. El de 18 onzas es el mejor valor porque una onza cuesta un centavo menos, así que cada onza que compras es más barata.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9031,6 +9150,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">McDonald&#039;s, at about $0.30 per ounce</span><span class="lang-es" lang="es">McDonald&#039;s, a unos $0.30 por onza</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">McDonald&#039;s: 1.29/4.3 = $0.30 per ounce. Wendy&#039;s: 2.99/6.5 = about $0.46 per ounce. $0.30 is less per ounce, so McDonald&#039;s is the better value by weight. A decimal amount changes nothing about the method — still cost divided by amount.</span><span class="lang-es" lang="es">McDonald&#039;s: 1.29/4.3 = $0.30 por onza. Wendy&#039;s: 2.99/6.5 = unos $0.46 por onza. $0.30 es menos por onza, así que McDonald&#039;s es el mejor valor por peso. Una cantidad decimal no cambia el método: sigue siendo costo dividido entre cantidad.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9188,6 +9319,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>Theater A · Ratio as a Fraction: 15/3</li><li><span class="lang-en">Theater A · Unit Rate: 5</span><span class="lang-es" lang="es">Theater A · Tasa unitaria: 5</span></li><li>Theater B · Ratio as a Fraction: 20/5</li><li><span class="lang-en">Theater B · Unit Rate: 4</span><span class="lang-es" lang="es">Theater B · Tasa unitaria: 4</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Theater A: 15/3 = $5 per ticket. Theater B: 20/5 = $4 per ticket. Theater B charges less for ONE ticket, so Theater B is the better value — even though $20 is the bigger total.</span><span class="lang-es" lang="es">Cine A: 15/3 = $5 por boleto. Cine B: 20/5 = $4 por boleto. El cine B cobra menos por UN boleto, así que el cine B es el mejor valor, aunque $20 sea el total mayor.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9289,6 +9432,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Laundromat A, at $2.00 per load</span><span class="lang-es" lang="es">La lavandería A, a $2.00 por carga</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A: 12.00/6 = $2.00 per load. B: 9.00/3 = $3.00 per load. $2.00 is less per load, so Laundromat A is the better value — here the bigger total price is also the better deal.</span><span class="lang-es" lang="es">A: 12.00/6 = $2.00 por carga. B: 9.00/3 = $3.00 por carga. $2.00 es menos por carga, así que la lavandería A es el mejor valor; aquí el precio total mayor también es la mejor oferta.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9409,6 +9564,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Tide · Unit Rate: 0.19</span><span class="lang-es" lang="es">Tide · Tasa unitaria: 0.19</span></li><li><span class="lang-en">Gain · Unit Rate: 0.21</span><span class="lang-es" lang="es">Gain · Tasa unitaria: 0.21</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Tide: 12.16/64 = $0.19 per load. Gain: 21.00/100 = $0.21 per load. Tide costs less per load, so Tide is the better value — the big bottle with the bigger price tag is not automatically the deal.</span><span class="lang-es" lang="es">Tide: 12.16/64 = $0.19 por carga. Gain: 21.00/100 = $0.21 por carga. Tide cuesta menos por carga, así que Tide es el mejor valor; la botella grande con el precio mayor no es automáticamente la oferta.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9510,6 +9677,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Store B, at $1.09 per candy bar</span><span class="lang-es" lang="es">La tienda B, a $1.09 por barra</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Store A: 3.45/3 = $1.15 per bar. Store B: 5.45/5 = $1.09 per bar. $1.09 is less, so Store B is the better value by 6 cents a bar.</span><span class="lang-es" lang="es">Tienda A: 3.45/3 = $1.15 por barra. Tienda B: 5.45/5 = $1.09 por barra. $1.09 es menos, así que la tienda B es el mejor valor por 6 centavos por barra.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9611,6 +9790,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">$16 per shirt</span><span class="lang-es" lang="es">$16 por camiseta</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">48/3 = $16 per shirt. Check by multiplying back: 3 shirts × $16 = $48.</span><span class="lang-es" lang="es">48/3 = $16 por camiseta. Comprueba multiplicando: 3 camisetas × $16 = $48.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

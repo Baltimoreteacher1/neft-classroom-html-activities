@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8249,7 +8308,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A point starts in Quadrant I at (4, 6). Describe a move that puts it in Quadrant III. What must happen to both coordinates? Can you give the exact new coordinates after your move?</span><span class="lang-es" lang="es">Un punto empieza en el cuadrante I en (4, 6). Describe un movimiento que lo lleve al cuadrante III. ¿Qué debe pasar con las dos coordenadas? ¿Puedes dar las coordenadas nuevas exactas después de tu movimiento?</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Quadrant III is the bottom-left region, so both coordinates have to end up negative. Starting at (4, 6), you need to move more than 4 units left to push x below 0 and more than 6 units down to push y below 0. Moving 6 left and 8 down, for example, lands on (-2, -2), which is Quadrant III because x and y are both negative.</span><span class="lang-es" lang="es">El Cuadrante III es la región inferior izquierda, así que las dos coordenadas deben terminar negativas. Empezando en (4, 6), necesitas moverte más de 4 unidades a la izquierda para llevar x por debajo de 0 y más de 6 unidades hacia abajo para llevar y por debajo de 0. Por ejemplo, moverte 6 a la izquierda y 8 hacia abajo cae en (-2, -2), que está en el Cuadrante III porque x y y son negativas.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8595,6 +8657,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Quadrant IV</span><span class="lang-es" lang="es">Cuadrante IV</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Positive x (right) and negative y (down) = Quadrant IV (bottom-right).</span><span class="lang-es" lang="es">x positiva (derecha) y y negativa (abajo) = cuadrante IV (abajo a la derecha).</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8717,6 +8791,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>1. (5, 1)</li><li>2. (4, 3)</li><li>3. (-1, 4)</li><li>4. (-3, -2)</li><li>5. (-5, -7)</li><li>6. (2, -6)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The order is (5, 1), (4, 3), (−1, 4), (−3, −2), (−5, −7), (2, −6). The first two points are in I, then one in II, two in III, and one in IV. Within I and III, the greater x-coordinate comes first: 5 before 4 and −3 before −5.</span><span class="lang-es" lang="es">El orden es (5, 1), (4, 3), (−1, 4), (−3, −2), (−5, −7), (2, −6). Los dos primeros están en I, luego uno en II, dos en III y uno en IV. Dentro de I y III va primero la coordenada x mayor: 5 antes de 4 y −3 antes de −5.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8820,6 +8906,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>(4, -2)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Right is +x and down is -y, so the point is (4, -2).</span><span class="lang-es" lang="es">A la derecha es +x y hacia abajo es -y, así que el punto es (4, -2).</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8939,6 +9037,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: negative, quadrant, left, down, x-coordinate, y-coordinate, sign change.</span><span class="lang-es" lang="es">Una buena respuesta usa: negative, quadrant, left, down, x-coordinate, y-coordinate, sign change.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Quadrant III is the bottom-left region, so both coordinates have to end up negative. Starting at (4, 6), you need to move more than 4 units left to push x below 0 and more than 6 units down to push y below 0. Moving 6 left and 8 down, for example, lands on (-2, -2), which is Quadrant III because x and y are both negative.</span><span class="lang-es" lang="es">El Cuadrante III es la región inferior izquierda, así que las dos coordenadas deben terminar negativas. Empezando en (4, 6), necesitas moverte más de 4 unidades a la izquierda para llevar x por debajo de 0 y más de 6 unidades hacia abajo para llevar y por debajo de 0. Por ejemplo, moverte 6 a la izquierda y 8 hacia abajo cae en (-2, -2), que está en el Cuadrante III porque x y y son negativas.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9090,6 +9200,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Quadrant I: (3, 2)</span><span class="lang-es" lang="es">Cuadrante I: (3, 2)</span></li><li><span class="lang-en">Quadrant II: (-4, 1)</span><span class="lang-es" lang="es">Cuadrante II: (-4, 1)</span></li><li><span class="lang-en">Quadrant III: (-2, -5)</span><span class="lang-es" lang="es">Cuadrante III: (-2, -5)</span></li><li><span class="lang-en">Quadrant IV: (6, -3)</span><span class="lang-es" lang="es">Cuadrante IV: (6, -3)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Read the signs of each ship&#039;s coordinates and drop it in the matching region: (3, 2) is (+, +) for Quadrant I, (-4, 1) is (-, +) for Quadrant II, (-2, -5) is (-, -) for Quadrant III, and (6, -3) is (+, -) for Quadrant IV.</span><span class="lang-es" lang="es">Lee los signos de las coordenadas de cada nave y colócala en la región que le corresponde: (3, 2) es (+, +) para el Cuadrante I, (-4, 1) es (-, +) para el Cuadrante II, (-2, -5) es (-, -) para el Cuadrante III y (6, -3) es (+, -) para el Cuadrante IV.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9193,6 +9315,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>(3, 6)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Reflecting across the x-axis negates the y-coordinate: (3, -6) → (3, 6).</span><span class="lang-es" lang="es">Reflejar sobre el eje x cambia el signo de la coordenada y: (3, -6) → (3, 6).</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9333,6 +9467,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">(3, 4) → Quadrant I</span><span class="lang-es" lang="es">(3, 4) → Cuadrante I</span></li><li><span class="lang-en">(-2, 5) → Quadrant II</span><span class="lang-es" lang="es">(-2, 5) → Cuadrante II</span></li><li><span class="lang-en">(-6, -1) → Quadrant III</span><span class="lang-es" lang="es">(-6, -1) → Cuadrante III</span></li><li><span class="lang-en">(1, -3) → Quadrant IV</span><span class="lang-es" lang="es">(1, -3) → Cuadrante IV</span></li><li><span class="lang-en">(-4, 2) → Quadrant II</span><span class="lang-es" lang="es">(-4, 2) → Cuadrante II</span></li><li><span class="lang-en">(5, -6) → Quadrant IV</span><span class="lang-es" lang="es">(5, -6) → Cuadrante IV</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The signs alone decide the quadrant: (+, +) is I, (-, +) is II, (-, -) is III, and (+, -) is IV. So (3, 4) is Quadrant I, (-2, 5) and (-4, 2) are both Quadrant II, (-6, -1) is Quadrant III, and (1, -3) and (5, -6) are Quadrant IV. How big the numbers are never matters — only whether each one is positive or negative.</span><span class="lang-es" lang="es">Solo los signos deciden el cuadrante: (+, +) es I, (-, +) es II, (-, -) es III y (+, -) es IV. Así, (3, 4) está en el Cuadrante I, (-2, 5) y (-4, 2) están en el Cuadrante II, (-6, -1) está en el Cuadrante III, y (1, -3) y (5, -6) están en el Cuadrante IV. El tamaño de los números nunca importa, solo si cada uno es positivo o negativo.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9636,6 +9782,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">(6, -2) · x sign: +</span><span class="lang-es" lang="es">(6, -2) · signo de x: +</span></li><li><span class="lang-en">(6, -2) · y sign: -</span><span class="lang-es" lang="es">(6, -2) · signo de y: -</span></li><li><span class="lang-en">(6, -2) · Quadrant or Axis: IV</span><span class="lang-es" lang="es">(6, -2) · Cuadrante o eje: IV</span></li><li><span class="lang-en">(-3, -5) · x sign: -</span><span class="lang-es" lang="es">(-3, -5) · signo de x: -</span></li><li><span class="lang-en">(-3, -5) · y sign: -</span><span class="lang-es" lang="es">(-3, -5) · signo de y: -</span></li><li><span class="lang-en">(-3, -5) · Quadrant or Axis: III</span><span class="lang-es" lang="es">(-3, -5) · Cuadrante o eje: III</span></li><li><span class="lang-en">(0, 7) · x sign: 0</span><span class="lang-es" lang="es">(0, 7) · signo de x: 0</span></li><li><span class="lang-en">(0, 7) · y sign: +</span><span class="lang-es" lang="es">(0, 7) · signo de y: +</span></li><li><span class="lang-en">(0, 7) · Quadrant or Axis: y-axis</span><span class="lang-es" lang="es">(0, 7) · Cuadrante o eje: eje y</span></li><li><span class="lang-en">(-1, 8) · x sign: -</span><span class="lang-es" lang="es">(-1, 8) · signo de x: -</span></li><li><span class="lang-en">(-1, 8) · y sign: +</span><span class="lang-es" lang="es">(-1, 8) · signo de y: +</span></li><li><span class="lang-en">(-1, 8) · Quadrant or Axis: II</span><span class="lang-es" lang="es">(-1, 8) · Cuadrante o eje: II</span></li><li><span class="lang-en">(4, 0) · x sign: +</span><span class="lang-es" lang="es">(4, 0) · signo de x: +</span></li><li><span class="lang-en">(4, 0) · y sign: 0</span><span class="lang-es" lang="es">(4, 0) · signo de y: 0</span></li><li><span class="lang-en">(4, 0) · Quadrant or Axis: x-axis</span><span class="lang-es" lang="es">(4, 0) · Cuadrante o eje: eje x</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Write each coordinate&#039;s sign, then read the pair off the map: (6, -2) is (+, -) so Quadrant IV, (-3, -5) is (-, -) so Quadrant III, and (-1, 8) is (-, +) so Quadrant II. A zero means the point sits on an axis instead of inside a quadrant — (0, 7) is on the y-axis and (4, 0) is on the x-axis.</span><span class="lang-es" lang="es">Escribe el signo de cada coordenada y luego busca la pareja en el mapa: (6, -2) es (+, -), así que Cuadrante IV; (-3, -5) es (-, -), así que Cuadrante III; y (-1, 8) es (-, +), así que Cuadrante II. Un cero significa que el punto está sobre un eje y no dentro de un cuadrante: (0, 7) está en el eje y y (4, 0) está en el eje x.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9765,6 +9923,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Quadrant I → (+, +)</span><span class="lang-es" lang="es">Cuadrante I → (+, +)</span></li><li><span class="lang-en">Quadrant II → (-, +)</span><span class="lang-es" lang="es">Cuadrante II → (-, +)</span></li><li><span class="lang-en">Quadrant III → (-, -)</span><span class="lang-es" lang="es">Cuadrante III → (-, -)</span></li><li><span class="lang-en">Quadrant IV → (+, -)</span><span class="lang-es" lang="es">Cuadrante IV → (+, -)</span></li><li><span class="lang-en">x-axis → y = 0</span><span class="lang-es" lang="es">Eje x → y = 0</span></li><li><span class="lang-en">y-axis → x = 0</span><span class="lang-es" lang="es">Eje y → x = 0</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Quadrants are numbered counterclockwise from the top-right, so Quadrant I is (+, +), Quadrant II is (-, +), Quadrant III is (-, -), and Quadrant IV is (+, -). The two axis cards work differently: a point on the x-axis has no vertical move, so y = 0, and a point on the y-axis has no horizontal move, so x = 0.</span><span class="lang-es" lang="es">Los cuadrantes se numeran en sentido contrario a las manecillas del reloj empezando arriba a la derecha, así que el Cuadrante I es (+, +), el II es (-, +), el III es (-, -) y el IV es (+, -). Las dos tarjetas de ejes funcionan distinto: un punto sobre el eje x no tiene movimiento vertical, así que y = 0, y un punto sobre el eje y no tiene movimiento horizontal, así que x = 0.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9868,6 +10038,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>(3, 3)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Moving right means adding to the x-coordinate: -5 + 8 = 3. The y stays the same. New point: (3, 3).</span><span class="lang-es" lang="es">Moverse a la derecha significa sumar a la coordenada x: -5 + 8 = 3. La y se queda igual. Punto nuevo: (3, 3).</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9975,6 +10157,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">(7, 5) → Quadrant I</span><span class="lang-es" lang="es">(7, 5) → Cuadrante I</span></li><li><span class="lang-en">(-6, 2) → Quadrant II</span><span class="lang-es" lang="es">(-6, 2) → Cuadrante II</span></li><li><span class="lang-en">(-1, -8) → Quadrant III</span><span class="lang-es" lang="es">(-1, -8) → Cuadrante III</span></li><li><span class="lang-en">(4, -7) → Quadrant IV</span><span class="lang-es" lang="es">(4, -7) → Cuadrante IV</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Only the signs matter, not how far away the ship is: (7, 5) has both coordinates positive, so Quadrant I; (-6, 2) is negative then positive, so Quadrant II; (-1, -8) is both negative, so Quadrant III; and (4, -7) is positive then negative, so Quadrant IV.</span><span class="lang-es" lang="es">Solo importan los signos, no qué tan lejos esté la nave: (7, 5) tiene las dos coordenadas positivas, así que Cuadrante I; (-6, 2) es negativa y luego positiva, así que Cuadrante II; (-1, -8) tiene las dos negativas, así que Cuadrante III; y (4, -7) es positiva y luego negativa, así que Cuadrante IV.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10078,6 +10272,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Quadrant II</span><span class="lang-es" lang="es">Cuadrante II</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The x-coordinate is negative (left) and the y-coordinate is positive (up). Left and up is Quadrant II.</span><span class="lang-es" lang="es">La coordenada x es negativa (izquierda) y la coordenada y es positiva (arriba). Izquierda y arriba es el cuadrante II.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10181,6 +10387,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Quadrant II</span><span class="lang-es" lang="es">Cuadrante II</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Negative x with positive y places the point in Quadrant II.</span><span class="lang-es" lang="es">Una x negativa con una y positiva coloca el punto en el cuadrante II.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10284,6 +10502,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>(-, +)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Quadrant II is up and to the left of the origin, so x is negative and y is positive: (-, +).</span><span class="lang-es" lang="es">El cuadrante II está arriba y a la izquierda del origen, así que la x es negativa y la y es positiva: (-, +).</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

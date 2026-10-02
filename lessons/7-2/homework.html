@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8304,7 +8363,10 @@ body {
           <p class="ladder-q"><span class="lang-en">Name three different rational numbers between -1 and 0. Write each as both a fraction and a decimal. Explain how you know they are between -1 and 0.</span><span class="lang-es" lang="es">Nombra tres números racionales diferentes entre -1 y 0. Escribe cada uno como fracción y como decimal. Explica cómo sabes que están entre -1 y 0.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Any negative number greater than −1 works, so pick friendly fractions and convert them: −1/2 = −0.5, −1/4 = −0.25, and −3/10 = −0.3. Each is negative, so it sits left of 0, but each has an absolute value less than 1, so it never reaches −1. On the number line all three land inside the single unit between −1 and 0.</span><span class="lang-es" lang="es">Sirve cualquier número negativo mayor que −1, así que elige fracciones fáciles y conviértelas: −1/2 = −0.5, −1/4 = −0.25 y −3/10 = −0.3. Cada uno es negativo, así que queda a la izquierda de 0, pero cada uno tiene un valor absoluto menor que 1, así que nunca llega a −1. En la recta numérica los tres caen dentro de la única unidad que va de −1 a 0.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8656,6 +8718,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Left of 0 (negative): -0.75, -2.5, -1 1/2</span><span class="lang-es" lang="es">A la izquierda de 0 (negativo): -0.75, -2.5, -1 1/2</span></li><li><span class="lang-en">Right of 0 (positive): 1/4, 0.6, 3/4</span><span class="lang-es" lang="es">A la derecha de 0 (positivo): 1/4, 0.6, 3/4</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Only the sign matters here, not the size. −0.75, −2.5, and −1 1/2 all carry a negative sign, so they sit to the left of 0. The markers 1/4, 0.6, and 3/4 have no negative sign, so they sit to the right of 0. You never need to convert or compare the values — −2.5 is much farther from zero than −0.75, but both land on the same side.</span><span class="lang-es" lang="es">Aquí solo importa el signo, no el tamaño. −0.75, −2.5 y −1 1/2 llevan signo negativo, así que quedan a la izquierda de 0. Los marcadores 1/4, 0.6 y 3/4 no tienen signo negativo, así que quedan a la derecha de 0. No hace falta convertir ni comparar los valores: −2.5 está mucho más lejos del cero que −0.75, pero ambos caen del mismo lado.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8894,6 +8968,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>3/4 · Decimal: 0.75</li><li><span class="lang-en">3/4 · Between Which Two Integers?: 0 and 1</span><span class="lang-es" lang="es">3/4 · ¿Entre qué dos enteros?: 0 y 1</span></li><li>-7/2 · Decimal: -3.5</li><li><span class="lang-en">-7/2 · Between Which Two Integers?: -4 and -3</span><span class="lang-es" lang="es">-7/2 · ¿Entre qué dos enteros?: -4 y -3</span></li><li><span class="lang-en">0.6 · Fraction: 3/5</span><span class="lang-es" lang="es">0.6 · Fracción: 3/5</span></li><li><span class="lang-en">0.6 · Between Which Two Integers?: 0 and 1</span><span class="lang-es" lang="es">0.6 · ¿Entre qué dos enteros?: 0 y 1</span></li><li><span class="lang-en">-1.25 · Fraction: -1 1/4</span><span class="lang-es" lang="es">-1.25 · Fracción: -1 1/4</span></li><li><span class="lang-en">-1.25 · Between Which Two Integers?: -2 and -1</span><span class="lang-es" lang="es">-1.25 · ¿Entre qué dos enteros?: -2 y -1</span></li><li>2 1/5 · Decimal: 2.2</li><li><span class="lang-en">2 1/5 · Between Which Two Integers?: 2 and 3</span><span class="lang-es" lang="es">2 1/5 · ¿Entre qué dos enteros?: 2 y 3</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Convert each value, then name the integers on either side of it. 3/4 = 0.75, between 0 and 1. −7/2 = −3.5, between −4 and −3, since more negative means farther left. 0.6 is six tenths, which is 3/5, between 0 and 1. −1.25 is −1 1/4, between −2 and −1. And 2 1/5 = 2.2, between 2 and 3. For negatives, the integer with the larger absolute value is the one on the left.</span><span class="lang-es" lang="es">Convierte cada valor y luego nombra los enteros que lo rodean. 3/4 = 0.75, entre 0 y 1. −7/2 = −3.5, entre −4 y −3, ya que más negativo significa más a la izquierda. 0.6 son seis décimos, o sea 3/5, entre 0 y 1. −1.25 es −1 1/4, entre −2 y −1. Y 2 1/5 = 2.2, entre 2 y 3. Para los negativos, el entero con mayor valor absoluto es el que queda a la izquierda.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8997,6 +9083,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>Between 0 and -1</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">-3/4 = -0.75, which is between 0 and -1. It is 3/4 of the way from 0 toward -1.</span><span class="lang-es" lang="es">-3/4 = -0.75, que está entre 0 y -1. Queda a 3/4 del camino de 0 hacia -1.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9116,6 +9214,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: fraction, decimal, negative, between, number line, greater than -1, less than 0.</span><span class="lang-es" lang="es">Una buena respuesta usa: fraction, decimal, negative, between, number line, greater than -1, less than 0.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Any negative number greater than −1 works, so pick friendly fractions and convert them: −1/2 = −0.5, −1/4 = −0.25, and −3/10 = −0.3. Each is negative, so it sits left of 0, but each has an absolute value less than 1, so it never reaches −1. On the number line all three land inside the single unit between −1 and 0.</span><span class="lang-es" lang="es">Sirve cualquier número negativo mayor que −1, así que elige fracciones fáciles y conviértelas: −1/2 = −0.5, −1/4 = −0.25 y −3/10 = −0.3. Cada uno es negativo, así que queda a la izquierda de 0, pero cada uno tiene un valor absoluto menor que 1, así que nunca llega a −1. En la recta numérica los tres caen dentro de la única unidad que va de −1 a 0.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9219,6 +9329,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Halfway between -2 and -3</span><span class="lang-es" lang="es">A la mitad entre -2 y -3</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">-2.5 sits exactly halfway between -2 and -3.</span><span class="lang-es" lang="es">-2.5 queda exactamente a la mitad entre -2 y -3.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9341,6 +9463,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>1. -2.5</li><li>2. -1.5</li><li>3. -1/4</li><li>4. 1/2</li><li>5. 0.75</li><li>6. 3</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Convert the fractions so everything is in the same form: −1/4 = −0.25 and 1/2 = 0.5. Reading left to right on a number line gives −2.5, −1.5, −1/4, 1/2, 0.75, 3. Among the negatives, −2.5 is farthest from zero so it is the least — the opposite of how the numbers would order if they were positive.</span><span class="lang-es" lang="es">Convierte las fracciones para que todo quede en la misma forma: −1/4 = −0.25 y 1/2 = 0.5. Al leer de izquierda a derecha en la recta numérica queda −2.5, −1.5, −1/4, 1/2, 0.75, 3. Entre los negativos, −2.5 es el más alejado del cero, así que es el menor, lo contrario de cómo se ordenarían si fueran positivos.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9455,6 +9589,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>-1.5</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">-1.5 is between -1 and -2 because it is 0.5 units to the left of -1 (or 0.5 units to the right of -2).</span><span class="lang-es" lang="es">-1.5 está entre -1 y -2 porque queda 0.5 unidades a la izquierda de -1 (o 0.5 unidades a la derecha de -2).</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9558,6 +9704,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>-1/4</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">|-1/4| = 0.25, |0.5| = 0.5, |-2| = 2, |1.75| = 1.75. Since 0.25 is the smallest absolute value, -1/4 is closest to zero.</span><span class="lang-es" lang="es">|-1/4| = 0.25, |0.5| = 0.5, |-2| = 2, |1.75| = 1.75. Como 0.25 es el valor absoluto más pequeño, -1/4 es el más cercano a cero.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9661,6 +9819,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>-4</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Farther left means more negative: -4 &lt; -1 &lt; 0 &lt; 2, so -4 is farthest left.</span><span class="lang-es" lang="es">Estar más a la izquierda significa ser más negativo: -4 &lt; -1 &lt; 0 &lt; 2, así que -4 está más a la izquierda.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9764,6 +9934,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>3/4</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">3/4 = 0.75, which lands between 0 and 1. 1.5 and 2 are larger, and -1/2 is to the left of 0.</span><span class="lang-es" lang="es">3/4 = 0.75, que cae entre 0 y 1. 1.5 y 2 son mayores, y -1/2 está a la izquierda de 0.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9893,6 +10075,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>1/2 → 0.5</li><li>-3/4 → -0.75</li><li>1 1/4 → 1.25</li><li>-2 1/2 → -2.5</li><li>3/10 → 0.3</li><li>-1/5 → -0.2</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Dividing the numerator by the denominator converts each fraction, and the sign never changes: 1/2 = 0.5, −3/4 = −0.75, 3/10 = 0.3, and −1/5 = −0.2. For the mixed numbers, keep the whole part and convert only the fraction, so 1 1/4 = 1.25 and −2 1/2 = −2.5. Matching the signs first splits the cards into two smaller groups before you compute.</span><span class="lang-es" lang="es">Dividir el numerador entre el denominador convierte cada fracción, y el signo nunca cambia: 1/2 = 0.5, −3/4 = −0.75, 3/10 = 0.3 y −1/5 = −0.2. Para los números mixtos, conserva la parte entera y convierte solo la fracción, así que 1 1/4 = 1.25 y −2 1/2 = −2.5. Emparejar primero los signos divide las tarjetas en dos grupos más pequeños antes de calcular.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10000,6 +10194,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>0.5 → 1/2</li><li>0.25 → 1/4</li><li>-0.5 → -1/2</li><li>0.2 → 1/5</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Read each decimal by its place value and write that as a fraction: 0.5 is five tenths, which simplifies to 1/2; 0.25 is twenty-five hundredths, which simplifies to 1/4; 0.2 is two tenths, which simplifies to 1/5; and −0.5 keeps its sign, giving −1/2. The negative marker can only pair with the negative fraction, so that match is settled by the sign alone.</span><span class="lang-es" lang="es">Lee cada decimal por su valor posicional y escríbelo como fracción: 0.5 son cinco décimos, que se simplifica a 1/2; 0.25 son veinticinco centésimos, que se simplifica a 1/4; 0.2 son dos décimos, que se simplifica a 1/5; y −0.5 conserva su signo, lo que da −1/2. El marcador negativo solo puede emparejarse con la fracción negativa, así que ese par se resuelve solo con el signo.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10103,6 +10309,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>-5, -2, 0, 3</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Least to greatest runs most-negative to most-positive: -5, -2, 0, 3.</span><span class="lang-es" lang="es">De menor a mayor va de lo más negativo a lo más positivo: -5, -2, 0, 3.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10206,6 +10424,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>1/4</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">0.25 means 25 hundredths = 25/100 = 1/4.</span><span class="lang-es" lang="es">0.25 significa 25 centésimas = 25/100 = 1/4.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

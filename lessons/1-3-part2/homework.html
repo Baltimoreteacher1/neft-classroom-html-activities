@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8214,7 +8273,10 @@ body {
           <p class="ladder-q"><span class="lang-en">The new year starts at midnight. What time will it be 2,022 minutes after midnight? Choose a tool or strategy (division, a number line, a table), show your work, and explain what to do when the number of hours passes 24.</span><span class="lang-es" lang="es">El año nuevo empieza a medianoche. ¿Qué hora será 2,022 minutos después de la medianoche? Elige una herramienta o estrategia (división, una recta numérica, una tabla), muestra tu trabajo y explica qué hacer cuando el número de horas pasa de 24.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">2,022 ÷ 60 = 33 hours with 42 minutes left over (60 × 33 = 1,980 and 2,022 − 1,980 = 42). 33 hours is more than a day: 33 − 24 = 9 hours into the next day. So the time is 9:42 a.m. on January 2. When the hours pass 24, subtract 24 for each full day and keep the remainder as the clock hour — the calendar day advances instead.</span><span class="lang-es" lang="es">2,022 ÷ 60 = 33 horas y sobran 42 minutos (60 × 33 = 1,980 y 2,022 − 1,980 = 42). 33 horas es más de un día: 33 − 24 = 9 horas del día siguiente. Así que la hora es 9:42 a.m. del 2 de enero. Cuando las horas pasan de 24, resta 24 por cada día completo y conserva el resto como la hora del reloj — el día del calendario es el que avanza.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8579,6 +8641,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Minutes convert by dividing by 60, not by moving the decimal point: 150 ÷ 60 = 2 hours 30 minutes, which is 2.5 hours.</span><span class="lang-es" lang="es">Los minutos se convierten dividiendo entre 60, no moviendo el punto decimal: 150 ÷ 60 = 2 horas 30 minutos, que son 2.5 horas.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Moving the decimal works for units based on 10 or 100, but an hour is 60 minutes, so you must divide by 60: 150 ÷ 60 = 2 h 30 min = 2.5 hours. 15 hours moves the point the other way; 1 h 50 min reads the digits as if 100 minutes made an hour.</span><span class="lang-es" lang="es">Mover el punto funciona para unidades basadas en 10 o 100, pero una hora tiene 60 minutos, así que debes dividir entre 60: 150 ÷ 60 = 2 h 30 min = 2.5 horas. 15 horas mueve el punto al otro lado; 1 h 50 min lee los dígitos como si 100 minutos fueran una hora.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8680,6 +8754,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">a little more than 10 hours</span><span class="lang-es" lang="es">un poco más de 10 horas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">625 ÷ 60 = 10 hours with 25 minutes left over — a little more than 10 hours. 6 and 62 come from moving the decimal point; 10.25 treats the 25 leftover MINUTES as a quarter of an hour, but 25 minutes is 25/60, not 25/100.</span><span class="lang-es" lang="es">625 ÷ 60 = 10 horas y sobran 25 minutos — un poco más de 10 horas. 6 y 62 vienen de mover el punto decimal; 10.25 trata los 25 MINUTOS sobrantes como un cuarto de hora, pero 25 minutos son 25/60, no 25/100.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8781,6 +8867,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>3</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Three jumps of 60 reach 180 without passing 200, so 3 whole hours fit. 4 hours would be 240 minutes, too many; 20 comes from moving the decimal point, which is not how minutes convert.</span><span class="lang-es" lang="es">Tres saltos de 60 llegan a 180 sin pasar de 200, así que caben 3 horas completas. 4 horas serían 240 minutos, demasiados; 20 viene de mover el punto decimal, que no es como se convierten los minutos.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8885,6 +8983,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">2,022 ÷ 60 = 33 hours with 42 minutes left over (60 × 33 = 1,980 and 2,022 − 1,980 = 42). 33 hours is more than a day: 33 − 24 = 9 hours into the next day. So the time is 9:42 a.m. on January 2. When the hours pass 24, subtract 24 for each full day and keep the remainder as the clock hour — the calendar day advances instead.</span><span class="lang-es" lang="es">2,022 ÷ 60 = 33 horas y sobran 42 minutos (60 × 33 = 1,980 y 2,022 − 1,980 = 42). 33 horas es más de un día: 33 − 24 = 9 horas del día siguiente. Así que la hora es 9:42 a.m. del 2 de enero. Cuando las horas pasan de 24, resta 24 por cada día completo y conserva el resto como la hora del reloj — el día del calendario es el que avanza.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8986,6 +9096,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>8:20 a.m.</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">500 ÷ 60 = 8 remainder 20, so 8:20 a.m. 5:00 moves the decimal point; 8:33 turns the fraction 20/60 ≈ 0.33 into minutes, which double-converts; 9:20 counts one hour too many (9 × 60 = 540 &gt; 500).</span><span class="lang-es" lang="es">500 ÷ 60 = 8 y sobran 20, así que las 8:20 a.m. 5:00 mueve el punto decimal; 8:33 convierte la fracción 20/60 ≈ 0.33 en minutos, lo que convierte dos veces; 9:20 cuenta una hora de más (9 × 60 = 540 &gt; 500).</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9087,6 +9209,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>3:20 a.m.</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">200 minutes is 3 hours and 20 minutes, so 3:20 a.m. 2:00 uses the decimal 2.00 from 200; 3:40 miscounts the leftover; 20:00 treats 200 minutes as 20 hours.</span><span class="lang-es" lang="es">200 minutos son 3 horas y 20 minutos, así que las 3:20 a.m. 2:00 usa el decimal 2.00 de 200; 3:40 cuenta mal el sobrante; 20:00 trata 200 minutos como 20 horas.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

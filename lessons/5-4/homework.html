@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8302,7 +8361,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A T-shaped room can be decomposed in two different ways. Show both ways and prove they give the same total area. Use a T-shape where the top is 14 ft × 4 ft and the stem is 6 ft × 10 ft.</span><span class="lang-es" lang="es">Un cuarto en forma de T se puede descomponer de dos maneras diferentes. Muestra las dos maneras y demuestra que dan la misma área total. Usa una forma de T donde la parte de arriba mida 14 pies × 4 pies y el tronco mida 6 pies × 10 pies.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Way 1 splits the T into its two named rectangles: 14 × 4 = 56 plus 6 × 10 = 60, a total of 116 sq ft. Way 2 wraps the T in a 14 ft × 14 ft rectangle worth 196 sq ft and subtracts the two empty 4 ft × 10 ft corners, 196 − 80 = 116 sq ft — the same region is being measured, so the decomposition you choose cannot change the area.</span><span class="lang-es" lang="es">La Manera 1 divide la T en sus dos rectángulos nombrados: 14 × 4 = 56 más 6 × 10 = 60, un total de 116 sq ft. La Manera 2 envuelve la T en un rectángulo de 14 ft × 14 ft que vale 196 sq ft y resta las dos esquinas vacías de 4 ft × 10 ft, 196 − 80 = 116 sq ft: se está midiendo la misma región, así que la forma en que la descompongas no puede cambiar el área.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8654,6 +8716,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Add the areas: L-shaped hallway (two rectangles joined), T-shaped stage (two rectangles joined), Plus-sign shape (rectangles joined)</span><span class="lang-es" lang="es">Suma las áreas: Pasillo en forma de L (dos rectángulos unidos), Escenario en forma de T (dos rectángulos unidos), Forma de signo más (rectángulos unidos)</span></li><li><span class="lang-en">Subtract the areas: Wall with a window cut out, Floor with a trapdoor removed, U-shaped pool (rectangle with center removed)</span><span class="lang-es" lang="es">Resta las áreas: Pared con una ventana recortada, Piso con una trampilla quitada, Piscina en forma de U (rectángulo sin el centro)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">When pieces are joined, the figure is bigger than either piece, so you add: the L-shaped hallway, the T-shaped stage, and the plus-sign shape all go under Add the areas. When something is cut out or removed, the figure is smaller than the original rectangle, so the window in the wall, the trapdoor in the floor, and the removed center of the U-shaped pool all go under Subtract the areas.</span><span class="lang-es" lang="es">Cuando las piezas están unidas, la figura es más grande que cualquiera de las piezas, así que sumas: el pasillo en forma de L, el escenario en forma de T y la figura de signo de más van en Suma las áreas. Cuando algo se recorta o se quita, la figura es más pequeña que el rectángulo original, así que la ventana en la pared, la trampilla en el piso y el centro quitado de la alberca en forma de U van en Resta las áreas.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8757,6 +8831,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">When a piece is cut out or removed from a larger shape</span><span class="lang-es" lang="es">Cuando se corta o se quita una parte de una figura más grande</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Subtract when a piece is removed from a larger shape (like a window cut from a wall). Add when two shapes are joined together (like an L-shape).</span><span class="lang-es" lang="es">Resta cuando se quita una pieza de una figura más grande (como una ventana recortada en una pared). Suma cuando dos figuras se unen (como una figura en forma de L).</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8930,6 +9016,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">ADD to the total: Triangular entrance canopy joined to the front wall, Rectangular wing attached to the main hall, Triangular gable joined on top of the rectangular wall</span><span class="lang-es" lang="es">SUMA al total: Toldo triangular de entrada unido a la pared del frente, Ala rectangular unida al salón principal, Frontón triangular unido encima de la pared rectangular</span></li><li><span class="lang-en">SUBTRACT from a larger shape: Square skylight opening cut out of the roof, Elevator shaft removed from the office floor, Circular fountain basin carved out of the courtyard</span><span class="lang-es" lang="es">RESTA de una forma más grande: Abertura cuadrada de tragaluz recortada del techo, Hueco del elevador quitado del piso de oficinas, Base circular de fuente recortada del patio</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Parts that stick out and enlarge the plan get added: the entrance canopy, the attached wing, and the gable joined on top of the wall. Parts that leave a hole shrink the plan and get subtracted: the skylight opening, the elevator shaft, and the fountain basin carved out of the courtyard.</span><span class="lang-es" lang="es">Las partes que sobresalen y agrandan el plano se suman: la marquesina de la entrada, el ala añadida y el frontón unido encima de la pared. Las partes que dejan un hueco reducen el plano y se restan: la abertura del tragaluz, el hueco del elevador y la fuente tallada en el patio.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9075,6 +9173,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">L-shape: 10×6 + 4×3 → 72 sq ft</span><span class="lang-es" lang="es">Forma de L: 10×6 + 4×3 → 72 sq ft</span></li><li><span class="lang-en">T-shape: 14×4 + 6×10 → 116 sq ft</span><span class="lang-es" lang="es">Forma de T: 14×4 + 6×10 → 116 sq ft</span></li><li><span class="lang-en">Wall 15×10 minus window 5×4 → 130 sq ft</span><span class="lang-es" lang="es">Pared 15×10 menos ventana 5×4 → 130 sq ft</span></li><li><span class="lang-en">Pool 14×10 minus cutout 6×5 → 110 sq ft</span><span class="lang-es" lang="es">Piscina 14×10 menos recorte 6×5 → 110 sq ft</span></li><li><span class="lang-en">L-shape: 8×5 + 3×6 → 58 sq ft</span><span class="lang-es" lang="es">Forma de L: 8×5 + 3×6 → 58 sq ft</span></li><li><span class="lang-en">Floor 12×8 minus vent 2×3 → 90 sq ft</span><span class="lang-es" lang="es">Piso 12×8 menos rejilla 2×3 → 90 sq ft</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Multiply each rectangle&#039;s dimensions first, then combine according to the card: the joined shapes add, so 60 + 12 = 72 sq ft, 56 + 60 = 116 sq ft, and 40 + 18 = 58 sq ft. The cards with &#039;minus&#039; subtract, giving 150 − 20 = 130 sq ft, 140 − 30 = 110 sq ft, and 96 − 6 = 90 sq ft.</span><span class="lang-es" lang="es">Multiplica primero las dimensiones de cada rectángulo y luego combina según la tarjeta: las figuras unidas se suman, así que 60 + 12 = 72 sq ft, 56 + 60 = 116 sq ft y 40 + 18 = 58 sq ft. Las tarjetas con &#039;minus&#039; restan, y dan 150 − 20 = 130 sq ft, 140 − 30 = 110 sq ft y 96 − 6 = 90 sq ft.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9178,6 +9288,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>75 sq ft</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">First rectangle = 9 x 6 = 54 sq ft. Second rectangle = 7 x 3 = 21 sq ft. Joined L-shape, so add: 54 + 21 = 75 sq ft.</span><span class="lang-es" lang="es">Primer rectángulo = 9 x 6 = 54 sq ft. Segundo rectángulo = 7 x 3 = 21 sq ft. Es una L unida, así que suma: 54 + 21 = 75 sq ft.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9317,6 +9439,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Walls · Area: 80 sq ft</span><span class="lang-es" lang="es">Paredes · Área: 80 pies²</span></li><li><span class="lang-en">Roof · Area: 20 sq ft</span><span class="lang-es" lang="es">Techo · Área: 20 pies²</span></li><li><span class="lang-en">Total · Area: 100 sq ft</span><span class="lang-es" lang="es">Total · Área: 100 pies²</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The two parts use different formulas: the rectangular walls are 10 × 8 = 80 sq ft, and the triangular roof is ½ × 10 × 4 = 20 sq ft. Because the roof sits on top of the walls with no overlap, the total is 80 + 20 = 100 sq ft.</span><span class="lang-es" lang="es">Las dos partes usan fórmulas distintas: las paredes rectangulares son 10 × 8 = 80 sq ft, y el techo triangular es ½ × 10 × 4 = 20 sq ft. Como el techo se apoya encima de las paredes sin traslaparse, el total es 80 + 20 = 100 sq ft.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9501,6 +9635,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Area &gt; 100 sq ft: L-shape: 12×8 + 6×5, Wall 15×10 − window 5×4, Floor 20×8 − vent 6×3</span><span class="lang-es" lang="es">Área &gt; 100 pies cuadrados: Forma de L: 12×8 + 6×5 = 126 pies cuadrados, Pared 15×10 − ventana 5×4 = 130 pies cuadrados, Piso 20×8 − rejilla 6×3 = 142 pies cuadrados</span></li><li><span class="lang-en">Area ≤ 100 sq ft: T-shape: 10×3 + 4×7, L-shape: 9×7 + 3×4, U-shape: 10×8 − 4×3</span><span class="lang-es" lang="es">Área ≤ 100 pies cuadrados: Forma de T: 10×3 + 4×7 = 58 pies cuadrados, Forma de L: 9×7 + 3×4 = 75 pies cuadrados, Forma de U: 10×8 − 4×3 = 68 pies cuadrados</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each card ends with its own total, so the sort is a comparison to 100 sq ft: 126, 130, and 142 sq ft are greater than 100, while 58, 75, and 68 sq ft are not. Notice that a cutout figure can still be large — the 20 × 8 floor loses only 18 sq ft to the vent and still totals 142 sq ft.</span><span class="lang-es" lang="es">Cada tarjeta termina con su propio total, así que la clasificación es una comparación con 100 sq ft: 126, 130 y 142 sq ft son mayores que 100, mientras que 58, 75 y 68 sq ft no lo son. Fíjate en que una figura con recorte todavía puede ser grande: el piso de 20 × 8 solo pierde 18 sq ft por la rejilla y aun así suma 142 sq ft.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9604,6 +9750,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>49 sq ft</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Rectangle = 7 x 5 = 35 sq ft. Triangle = 1/2 x 7 x 4 = 14 sq ft. The pieces are joined, so add: 35 + 14 = 49 sq ft.</span><span class="lang-es" lang="es">Rectángulo = 7 x 5 = 35 sq ft. Triángulo = 1/2 x 7 x 4 = 14 sq ft. Las piezas están unidas, así que suma: 35 + 14 = 49 sq ft.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9711,6 +9869,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">House-front wall: 11x6 rectangle + triangle base 11, height 4 → 88 sq ft</span><span class="lang-es" lang="es">Pared frontal de casa: rectángulo 11x6 + triángulo base 11, altura 4 → 88 sq ft</span></li><li><span class="lang-en">T-shaped studio: 13x4 top + 5x9 stem → 97 sq ft</span><span class="lang-es" lang="es">Estudio en forma de T: parte de arriba 13x4 + tallo 5x9 → 97 sq ft</span></li><li><span class="lang-en">Warehouse 20x9 minus loading bay 6x5 → 150 sq ft</span><span class="lang-es" lang="es">Bodega 20x9 menos zona de carga 6x5 → 150 sq ft</span></li><li><span class="lang-en">L-shaped gallery: 7x7 + 4x6 → 73 sq ft</span><span class="lang-es" lang="es">Galería en forma de L: 7x7 + 4x6 → 73 sq ft</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each plan combines its pieces the way its wording says: the house-front wall is 11 × 6 = 66 plus ½ × 11 × 4 = 22, giving 88 sq ft; the T-shaped studio is 52 + 45 = 97 sq ft; the L-shaped gallery is 49 + 24 = 73 sq ft. Only the warehouse uses &#039;minus&#039;, so it is 180 − 30 = 150 sq ft.</span><span class="lang-es" lang="es">Cada plano combina sus piezas según lo que dice su descripción: la pared del frente de la casa es 11 × 6 = 66 más ½ × 11 × 4 = 22, lo que da 88 sq ft; el estudio en forma de T es 52 + 45 = 97 sq ft; la galería en forma de L es 49 + 24 = 73 sq ft. Solo el almacén usa &#039;minus&#039;, así que es 180 − 30 = 150 sq ft.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9814,6 +9984,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>72 sq ft</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Area 1 = 10 × 6 = 60 sq ft. Area 2 = 4 × 3 = 12 sq ft. Total = 60 + 12 = 72 sq ft.</span><span class="lang-es" lang="es">Área 1 = 10 × 6 = 60 sq ft. Área 2 = 4 × 3 = 12 sq ft. Total = 60 + 12 = 72 sq ft.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9970,6 +10152,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">L-shaped deck · Total Area: 68 sq ft</span><span class="lang-es" lang="es">Terraza en forma de L · Área total: 68 pies²</span></li><li><span class="lang-en">Floor with alcove · Total Area: 105 sq ft</span><span class="lang-es" lang="es">Piso con un espacio adicional · Área total: 105 pies²</span></li><li><span class="lang-en">Wall with window cutout · Total Area: 102 sq ft</span><span class="lang-es" lang="es">Pared con abertura para ventana · Área total: 102 pies²</span></li><li><span class="lang-en">Courtyard with fountain cutout · Total Area: 164 sq ft</span><span class="lang-es" lang="es">Patio con abertura para fuente · Área total: 164 pies²</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The Operation column decides each row: the L-shaped deck gives 48 + 20 = 68 sq ft and the floor with the alcove gives 90 + 15 = 105 sq ft. The cutout rows subtract from the larger shape, so the wall is 120 − 18 = 102 sq ft and the courtyard is 200 − 36 = 164 sq ft.</span><span class="lang-es" lang="es">La columna de Operación decide cada fila: la terraza en forma de L da 48 + 20 = 68 sq ft y el piso con el nicho da 90 + 15 = 105 sq ft. Las filas con recorte restan de la figura más grande, así que la pared es 120 − 18 = 102 sq ft y el patio es 200 − 36 = 164 sq ft.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10073,6 +10267,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: decompose, add, subtract, rectangle, composite, equivalent, same area.</span><span class="lang-es" lang="es">Una buena respuesta usa: decompose, add, subtract, rectangle, composite, equivalent, same area.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Way 1 splits the T into its two named rectangles: 14 × 4 = 56 plus 6 × 10 = 60, a total of 116 sq ft. Way 2 wraps the T in a 14 ft × 14 ft rectangle worth 196 sq ft and subtracts the two empty 4 ft × 10 ft corners, 196 − 80 = 116 sq ft — the same region is being measured, so the decomposition you choose cannot change the area.</span><span class="lang-es" lang="es">La Manera 1 divide la T en sus dos rectángulos nombrados: 14 × 4 = 56 más 6 × 10 = 60, un total de 116 sq ft. La Manera 2 envuelve la T en un rectángulo de 14 ft × 14 ft que vale 196 sq ft y resta las dos esquinas vacías de 4 ft × 10 ft, 196 − 80 = 116 sq ft: se está midiendo la misma región, así que la forma en que la descompongas no puede cambiar el área.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10176,6 +10382,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>130 sq ft</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Patio = 15 × 10 = 150 sq ft. Cutout = 5 × 4 = 20 sq ft. Remaining = 150 − 20 = 130 sq ft.</span><span class="lang-es" lang="es">Patio = 15 × 10 = 150 sq ft. Recorte = 5 × 4 = 20 sq ft. Área restante = 150 − 20 = 130 sq ft.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10279,6 +10497,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">23 sq units</span><span class="lang-es" lang="es">23 unidades cuadradas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">5 × 3 = 15. 2 × 4 = 8. Total = 15 + 8 = 23 sq units.</span><span class="lang-es" lang="es">5 × 3 = 15. 2 × 4 = 8. Total = 15 + 8 = 23 unidades cuadradas.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

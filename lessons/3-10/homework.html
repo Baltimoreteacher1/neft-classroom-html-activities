@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8345,7 +8404,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A recipe says you need 5 feet of ribbon, but the store only sells ribbon in inches. Another recipe says you need 2 yards of fabric, but your ruler measures in feet. Convert both measurements and explain the steps you used. Which conversion factor did you use each time?</span><span class="lang-es" lang="es">Una receta dice que necesitas 5 pies de listón, pero la tienda solo vende listón en pulgadas. Otra receta dice que necesitas 2 yardas de tela, pero tu regla mide en pies. Convierte las dos medidas y explica los pasos que usaste. ¿Qué factor de conversión usaste en cada caso?</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Both conversions go from a bigger unit to a smaller one, so both multiply. Using 12 inches per foot, 5 × 12 = 60 inches of ribbon; using 3 feet per yard, 2 × 3 = 6 feet of fabric. Naming the conversion factor each time is what explains why both numbers grew.</span><span class="lang-es" lang="es">Las dos conversiones van de una unidad más grande a una más pequeña, así que ambas se multiplican. Con 12 pulgadas por pie, 5 × 12 = 60 pulgadas de cinta; con 3 pies por yarda, 2 × 3 = 6 pies de tela. Nombrar el factor de conversión cada vez es lo que explica por qué los dos números crecieron.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8648,6 +8710,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">6 yards · Answer: 18 feet</span><span class="lang-es" lang="es">6 yardas · Respuesta: 18 pies</span></li><li><span class="lang-en">3 pounds · Answer: 48 ounces</span><span class="lang-es" lang="es">3 libras · Respuesta: 48 onzas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Every row changes a bigger unit into a smaller one, so you multiply by the conversion factor and end up with more of the smaller units: 6 yards × 3 = 18 feet and 3 pounds × 16 = 48 ounces. The finished row shows the same move — 2 feet × 12 = 24 inches.</span><span class="lang-es" lang="es">Cada fila cambia una unidad más grande por una más pequeña, así que multiplicas por el factor de conversión y terminas con más unidades pequeñas: 6 yardas × 3 = 18 pies y 3 libras × 16 = 48 onzas. La fila ya resuelta muestra el mismo movimiento: 2 pies × 12 = 24 pulgadas.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8802,6 +8876,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Power cord · Converted: 72 inches</span><span class="lang-es" lang="es">Cable de alimentación · Convertido: 72 pulgadas</span></li><li><span class="lang-en">Top panel · Converted: 4.5 feet</span><span class="lang-es" lang="es">Panel superior · Convertido: 4.5 pies</span></li><li><span class="lang-en">Weight · Converted: 6 pounds</span><span class="lang-es" lang="es">Peso · Convertido: 6 libras</span></li><li><span class="lang-en">Side rail · Converted: 60 inches</span><span class="lang-es" lang="es">Riel lateral · Convertido: 60 pulgadas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Read each row&#039;s direction before you operate. Going to a smaller unit multiplies: the power cord is 2 × 3 = 6 ft and then 6 × 12 = 72 inches, and the side rail is 5 × 12 = 60 inches. Going to a bigger unit divides: the top panel is 54 ÷ 12 = 4.5 feet and the weight is 96 ÷ 16 = 6 pounds.</span><span class="lang-es" lang="es">Revisa la dirección de cada fila antes de operar. Ir a una unidad más pequeña se multiplica: el cable de corriente es 2 × 3 = 6 pies y luego 6 × 12 = 72 pulgadas, y el riel lateral es 5 × 12 = 60 pulgadas. Ir a una unidad más grande se divide: el panel superior es 54 ÷ 12 = 4.5 pies y el peso es 96 ÷ 16 = 6 libras.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8920,6 +9006,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">2 gallons of coolant → 8 quarts</span><span class="lang-es" lang="es">2 galones de refrigerante → 8 cuartos</span></li><li><span class="lang-en">60 inches of trim → 5 feet</span><span class="lang-es" lang="es">60 pulgadas de moldura → 5 pies</span></li><li><span class="lang-en">3,000 meters of cable → 3 kilometers</span><span class="lang-es" lang="es">3,000 metros de cable → 3 kilómetros</span></li><li><span class="lang-en">32 ounces of bolts → 2 pounds</span><span class="lang-es" lang="es">32 onzas de tornillos → 2 libras</span></li><li><span class="lang-en">10 feet of railing → 120 inches</span><span class="lang-es" lang="es">10 pies de barandal → 120 pulgadas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each card converts once, multiplying toward a smaller unit and dividing toward a bigger one: 2 gallons × 4 = 8 quarts and 10 feet × 12 = 120 inches, while 60 inches ÷ 12 = 5 feet, 32 ounces ÷ 16 = 2 pounds, and 3,000 meters ÷ 1,000 = 3 kilometers.</span><span class="lang-es" lang="es">Cada tarjeta convierte una sola vez, multiplicando hacia una unidad más pequeña y dividiendo hacia una más grande: 2 galones × 4 = 8 cuartos de galón y 10 pies × 12 = 120 pulgadas, mientras que 60 pulgadas ÷ 12 = 5 pies, 32 onzas ÷ 16 = 2 libras y 3,000 metros ÷ 1,000 = 3 kilómetros.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9037,6 +9135,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: 60 inches, 6 feet, 12 inches per foot, 3 feet per yard, multiply, conversion factor.</span><span class="lang-es" lang="es">Una buena respuesta usa: 60 inches, 6 feet, 12 inches per foot, 3 feet per yard, multiply, conversion factor.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Both conversions go from a bigger unit to a smaller one, so both multiply. Using 12 inches per foot, 5 × 12 = 60 inches of ribbon; using 3 feet per yard, 2 × 3 = 6 feet of fabric. Naming the conversion factor each time is what explains why both numbers grew.</span><span class="lang-es" lang="es">Las dos conversiones van de una unidad más grande a una más pequeña, así que ambas se multiplican. Con 12 pulgadas por pie, 5 × 12 = 60 pulgadas de cinta; con 3 pies por yarda, 2 × 3 = 6 pies de tela. Nombrar el factor de conversión cada vez es lo que explica por qué los dos números crecieron.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9166,6 +9276,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">3 yards → 9 feet</span><span class="lang-es" lang="es">3 yardas → 9 pies</span></li><li><span class="lang-en">4 feet → 48 inches</span><span class="lang-es" lang="es">4 pies → 48 pulgadas</span></li><li><span class="lang-en">5 pounds → 80 ounces</span><span class="lang-es" lang="es">5 libras → 80 onzas</span></li><li><span class="lang-en">2 yards → 72 inches</span><span class="lang-es" lang="es">2 yardas → 72 pulgadas</span></li><li><span class="lang-en">36 inches → 3 feet</span><span class="lang-es" lang="es">36 pulgadas → 3 pies</span></li><li><span class="lang-en">3 pounds → 48 ounces</span><span class="lang-es" lang="es">3 libras → 48 onzas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each card uses 1 yd = 3 ft, 1 ft = 12 in, or 1 lb = 16 oz, multiplying whenever the unit gets smaller: 3 yd × 3 = 9 ft, 4 ft × 12 = 48 in, 5 lb × 16 = 80 oz, and 3 lb × 16 = 48 oz. Two cards need extra care — 2 yards takes two steps (2 × 3 = 6 ft, then 6 × 12 = 72 in), and 36 inches goes the other direction, so 36 ÷ 12 = 3 ft.</span><span class="lang-es" lang="es">Cada tarjeta usa 1 yd = 3 ft, 1 ft = 12 in o 1 lb = 16 oz, y multiplica cuando la unidad se hace más pequeña: 3 yd × 3 = 9 ft, 4 ft × 12 = 48 in, 5 lb × 16 = 80 oz y 3 lb × 16 = 48 oz. Dos tarjetas piden más cuidado: 2 yardas lleva dos pasos (2 × 3 = 6 ft y luego 6 × 12 = 72 in), y 36 pulgadas va en la otra dirección, así que 36 ÷ 12 = 3 ft.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9339,6 +9461,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Multiply: Feet → inches, Yards → feet, Pounds → ounces</span><span class="lang-es" lang="es">Multiplica: Pies → pulgadas, Yardas → pies, Libras → onzas</span></li><li><span class="lang-en">Divide: Inches → feet, Ounces → pounds, Feet → yards</span><span class="lang-es" lang="es">Divide: Pulgadas → pies, Onzas → libras, Pies → yardas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The direction of the change decides the operation. Feet → inches, yards → feet, and pounds → ounces all move to a smaller unit, so you get more pieces and multiply. Inches → feet, ounces → pounds, and feet → yards move to a bigger unit, so you get fewer of them and divide.</span><span class="lang-es" lang="es">La dirección del cambio decide la operación. Pies → pulgadas, yardas → pies y libras → onzas van hacia una unidad más pequeña, así que obtienes más piezas y multiplicas. Pulgadas → pies, onzas → libras y pies → yardas van hacia una unidad más grande, así que obtienes menos y divides.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9451,6 +9585,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">2 feet</span><span class="lang-es" lang="es">2 pies</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">24 ÷ 12 = 2 feet.</span><span class="lang-es" lang="es">24 ÷ 12 = 2 pies.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9552,6 +9698,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">84 inches</span><span class="lang-es" lang="es">84 pulgadas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">7 × 12 = 84 inches.</span><span class="lang-es" lang="es">7 × 12 = 84 pulgadas.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9653,6 +9811,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">2 feet 6 inches</span><span class="lang-es" lang="es">2 pies 6 pulgadas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">30 ÷ 12 = 2 remainder 6. So 30 inches = 2 feet 6 inches.</span><span class="lang-es" lang="es">30 ÷ 12 = 2 y sobran 6. Entonces 30 pulgadas = 2 pies 6 pulgadas.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9754,6 +9924,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">36 inches</span><span class="lang-es" lang="es">36 pulgadas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Inches are smaller than feet, so multiply: 3 × 12 = 36 inches.</span><span class="lang-es" lang="es">Las pulgadas son más pequeñas que los pies, así que multiplica: 3 × 12 = 36 pulgadas.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9855,6 +10037,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">2,500 meters</span><span class="lang-es" lang="es">2,500 metros</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Meters are smaller than kilometers, so multiply: 2.5 × 1,000 = 2,500 meters.</span><span class="lang-es" lang="es">Los metros son más pequeños que los kilómetros, así que multiplica: 2.5 × 1,000 = 2,500 metros.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9956,6 +10150,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">9 feet</span><span class="lang-es" lang="es">9 pies</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">1 yard = 3 feet. 3 × 3 = 9 feet.</span><span class="lang-es" lang="es">1 yarda = 3 pies. 3 × 3 = 9 pies.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10057,6 +10263,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">64 ounces</span><span class="lang-es" lang="es">64 onzas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">1 pound = 16 ounces. 4 × 16 = 64 ounces.</span><span class="lang-es" lang="es">1 libra = 16 onzas. 4 × 16 = 64 onzas.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10158,6 +10376,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">80 ounces</span><span class="lang-es" lang="es">80 onzas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Ounces are smaller than pounds, so multiply: 5 × 16 = 80 ounces.</span><span class="lang-es" lang="es">Las onzas son más pequeñas que las libras, así que multiplica: 5 × 16 = 80 onzas.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

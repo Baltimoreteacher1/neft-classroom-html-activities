@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8200,7 +8259,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A bamboo plant is 40 cm tall and grows 3.5 cm every day. Use the pattern rule to predict how many days until it is 2 meters tall. Show the three steps — how much growth is left, matching the units, and dividing by one day&#039;s growth — and check your answer by working forward.</span><span class="lang-es" lang="es">Una planta de bambú mide 40 cm y crece 3.5 cm cada día. Usa la regla del patrón para predecir cuántos días faltan para que mida 2 metros. Muestra los tres pasos — cuánto crecimiento falta, igualar las unidades y dividir entre el crecimiento de un día — y comprueba tu respuesta avanzando hacia adelante.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Units: 2 m = 200 cm. Growth left: 200 − 40 = 160 cm. Days: 160 ÷ 3.5 ≈ 45.7, so it takes 46 days to reach or pass 2 meters (after 45 days it is 40 + 157.5 = 197.5 cm, still short; after 46 days it is 201 cm). Check forward: 40 + 46 × 3.5 = 40 + 161 = 201 cm ≥ 200. ✓ The rule lets you jump straight to the answer instead of adding 3.5 forty-six times.</span><span class="lang-es" lang="es">Unidades: 2 m = 200 cm. Crecimiento que falta: 200 − 40 = 160 cm. Días: 160 ÷ 3.5 ≈ 45.7, así que toma 46 días llegar a 2 metros o pasarlos (después de 45 días mide 40 + 157.5 = 197.5 cm, todavía falta; después de 46 días mide 201 cm). Comprueba hacia adelante: 40 + 46 × 3.5 = 40 + 161 = 201 cm ≥ 200. ✓ La regla te deja saltar directo a la respuesta en vez de sumar 3.5 cuarenta y seis veces.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8480,6 +8542,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>1,050 cm</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">15 − 4.5 = 10.5 m, and 10.5 × 100 = 1,050 cm. 10.5 leaves the units as meters, which will not divide by a centimeter rate; 1,500 starts from zero; 105 converts by 10 instead of 100.</span><span class="lang-es" lang="es">15 − 4.5 = 10.5 m, y 10.5 × 100 = 1,050 cm. 10.5 deja las unidades en metros, que no se pueden dividir entre una tasa en centímetros; 1,500 empieza desde cero; 105 convierte por 10 en vez de 100.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8581,6 +8655,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>7 kg</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">10 − 3 = 7 kg still to gain. Starting from zero (10 kg) forgets the puppy already weighs 3; 13 adds; 3.5 is the start plus one week.</span><span class="lang-es" lang="es">10 − 3 = 7 kg le falta ganar. Empezar desde cero (10 kg) olvida que el cachorro ya pesa 3; 13 suma; 3.5 es el inicio más una semana.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8682,6 +8768,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">420 days — a little over a year</span><span class="lang-es" lang="es">420 días — un poco más de un año</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">1,050 ÷ 2.5 = 420 days, a little over one year (365 days). 2,625 multiplies; 42 drops a place value; 1,047.5 subtracts the rate instead of dividing by it.</span><span class="lang-es" lang="es">1,050 ÷ 2.5 = 420 días, un poco más de un año (365 días). 2,625 multiplica; 42 pierde un valor posicional; 1,047.5 resta la tasa en vez de dividir entre ella.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8786,6 +8884,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">Units: 2 m = 200 cm. Growth left: 200 − 40 = 160 cm. Days: 160 ÷ 3.5 ≈ 45.7, so it takes 46 days to reach or pass 2 meters (after 45 days it is 40 + 157.5 = 197.5 cm, still short; after 46 days it is 201 cm). Check forward: 40 + 46 × 3.5 = 40 + 161 = 201 cm ≥ 200. ✓ The rule lets you jump straight to the answer instead of adding 3.5 forty-six times.</span><span class="lang-es" lang="es">Unidades: 2 m = 200 cm. Crecimiento que falta: 200 − 40 = 160 cm. Días: 160 ÷ 3.5 ≈ 45.7, así que toma 46 días llegar a 2 metros o pasarlos (después de 45 días mide 40 + 157.5 = 197.5 cm, todavía falta; después de 46 días mide 201 cm). Comprueba hacia adelante: 40 + 46 × 3.5 = 40 + 161 = 201 cm ≥ 200. ✓ La regla te deja saltar directo a la respuesta en vez de sumar 3.5 cuarenta y seis veces.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8887,6 +8997,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>18 + 10 × 2 = 38</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The rule is start + shots × 2: 18 + 10 × 2 = 38. Doubling the starting points (56 or 46) applies the rule to the wrong number; 28 counts each shot as 1 point.</span><span class="lang-es" lang="es">La regla es inicio + tiros × 2: 18 + 10 × 2 = 38. Duplicar los puntos iniciales (56 o 46) aplica la regla al número equivocado; 28 cuenta cada tiro como 1 punto.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8988,6 +9110,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>14</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">7 ÷ 0.5 = 14 weeks, and 3 + 14 × 0.5 = 10 checks. 3.5 multiplies by 0.5 instead of dividing; 7 forgets that each week is only half a kilogram; 20 divides the goal (10) instead of what is left.</span><span class="lang-es" lang="es">7 ÷ 0.5 = 14 semanas, y 3 + 14 × 0.5 = 10 comprueba. 3.5 multiplica por 0.5 en vez de dividir; 7 olvida que cada semana es solo medio kilogramo; 20 divide la meta (10) en vez de lo que falta.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

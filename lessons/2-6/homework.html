@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8314,7 +8373,10 @@ body {
           <p class="ladder-q"><span class="lang-en">The station must load 3,360 ration packs equally into 14 storage pods. Solve it with long division. Name each step — divide, multiply, subtract, bring down — and check your answer by multiplying.</span><span class="lang-es" lang="es">La estación debe cargar 3,360 paquetes de raciones por partes iguales en 14 cápsulas de almacenamiento. Resuélvelo con división larga. Nombra cada paso — divide, multiplica, resta, baja — y comprueba tu respuesta multiplicando.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Long division on 3,360 ÷ 14 runs the cycle three times: 33 ÷ 14 → 2 (2 × 14 = 28, leaving 5), bring down the 6 → 56 ÷ 14 → 4 (4 × 14 = 56, leaving 0), bring down the 0 → 0 ÷ 14 → 0, so a 0 must be written in the ones place. The quotient is 240 ration packs per pod, and 14 × 240 = 3,360 proves none were left over.</span><span class="lang-es" lang="es">La división larga de 3,360 entre 14 repite el ciclo tres veces: 33 ÷ 14 → 2 (2 × 14 = 28, quedan 5), baja el 6 → 56 ÷ 14 → 4 (4 × 14 = 56, queda 0), baja el 0 → 0 ÷ 14 → 0, así que hay que escribir un 0 en las unidades. El cociente es 240 paquetes de raciones por cápsula, y 14 × 240 = 3,360 comprueba que no sobró ninguno.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8759,6 +8821,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">144 ÷ 12 · Quotient: 12</span><span class="lang-es" lang="es">144 ÷ 12 · Cociente: 12</span></li><li><span class="lang-en">144 ÷ 12 · Remainder: 0</span><span class="lang-es" lang="es">144 ÷ 12 · Residuo: 0</span></li><li><span class="lang-en">480 ÷ 16 · Quotient: 30</span><span class="lang-es" lang="es">480 ÷ 16 · Cociente: 30</span></li><li><span class="lang-en">480 ÷ 16 · Remainder: 0</span><span class="lang-es" lang="es">480 ÷ 16 · Residuo: 0</span></li><li><span class="lang-en">1,000 ÷ 8 · Quotient: 125</span><span class="lang-es" lang="es">1,000 ÷ 8 · Cociente: 125</span></li><li><span class="lang-en">1,000 ÷ 8 · Remainder: 0</span><span class="lang-es" lang="es">1,000 ÷ 8 · Residuo: 0</span></li><li><span class="lang-en">100 ÷ 7 · Quotient: 14</span><span class="lang-es" lang="es">100 ÷ 7 · Cociente: 14</span></li><li><span class="lang-en">100 ÷ 7 · Remainder: 2</span><span class="lang-es" lang="es">100 ÷ 7 · Residuo: 2</span></li><li><span class="lang-en">500 ÷ 13 · Quotient: 38</span><span class="lang-es" lang="es">500 ÷ 13 · Cociente: 38</span></li><li><span class="lang-en">500 ÷ 13 · Remainder: 6</span><span class="lang-es" lang="es">500 ÷ 13 · Residuo: 6</span></li><li><span class="lang-en">250 ÷ 9 · Quotient: 27</span><span class="lang-es" lang="es">250 ÷ 9 · Cociente: 27</span></li><li><span class="lang-en">250 ÷ 9 · Remainder: 7</span><span class="lang-es" lang="es">250 ÷ 9 · Residuo: 7</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each row is the same four steps repeated: divide, multiply, subtract, bring down. 144 ÷ 12 = 12 R 0, 480 ÷ 16 = 30 R 0 and 1,000 ÷ 8 = 125 R 0 finish with nothing left over. 100 ÷ 7 = 14 R 2, 500 ÷ 13 = 38 R 6 and 250 ÷ 9 = 27 R 7 each end with a leftover that is smaller than the divisor — that leftover is the remainder. Check any row by multiplying: 13 × 38 = 494, and 494 + 6 = 500.</span><span class="lang-es" lang="es">Cada fila son los mismos cuatro pasos repetidos: divide, multiplica, resta, baja. 144 ÷ 12 = 12 R 0, 480 ÷ 16 = 30 R 0 y 1,000 ÷ 8 = 125 R 0 terminan sin que sobre nada. 100 ÷ 7 = 14 R 2, 500 ÷ 13 = 38 R 6 y 250 ÷ 9 = 27 R 7 terminan con un sobrante menor que el divisor: ese sobrante es el residuo. Comprueba cualquier fila multiplicando: 13 × 38 = 494 y 494 + 6 = 500.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8965,6 +9039,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">5,256 ÷ 12 · Quotient: 438</span><span class="lang-es" lang="es">5,256 ÷ 12 · Cociente: 438</span></li><li><span class="lang-en">5,256 ÷ 12 · Remainder: 0</span><span class="lang-es" lang="es">5,256 ÷ 12 · Residuo: 0</span></li><li><span class="lang-en">8,195 ÷ 14 · Quotient: 585</span><span class="lang-es" lang="es">8,195 ÷ 14 · Cociente: 585</span></li><li><span class="lang-en">8,195 ÷ 14 · Remainder: 5</span><span class="lang-es" lang="es">8,195 ÷ 14 · Residuo: 5</span></li><li><span class="lang-en">2,975 ÷ 23 · Quotient: 129</span><span class="lang-es" lang="es">2,975 ÷ 23 · Cociente: 129</span></li><li><span class="lang-en">2,975 ÷ 23 · Remainder: 8</span><span class="lang-es" lang="es">2,975 ÷ 23 · Residuo: 8</span></li><li><span class="lang-en">4,275 ÷ 15 · Quotient: 285</span><span class="lang-es" lang="es">4,275 ÷ 15 · Cociente: 285</span></li><li><span class="lang-en">4,275 ÷ 15 · Remainder: 0</span><span class="lang-es" lang="es">4,275 ÷ 15 · Residuo: 0</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">5,256 ÷ 12 = 438 R 0 and 4,275 ÷ 15 = 285 R 0 finish exactly. 8,195 ÷ 14 = 585 R 5 because 14 × 585 = 8,190 and 5 is left over, and 2,975 ÷ 23 = 129 R 8 because 23 × 129 = 2,967 and 8 is left over. In every one of them the remainder is smaller than the divisor — if yours is not, the last DIVIDE step was too small.</span><span class="lang-es" lang="es">5,256 ÷ 12 = 438 R 0 y 4,275 ÷ 15 = 285 R 0 terminan exactos. 8,195 ÷ 14 = 585 R 5 porque 14 × 585 = 8,190 y sobran 5, y 2,975 ÷ 23 = 129 R 8 porque 23 × 129 = 2,967 y sobran 8. En todos el residuo es menor que el divisor — si el tuyo no lo es, el último paso DIVIDE se quedó corto.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9085,6 +9171,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">384 ÷ 8 · Quotient: 48</span><span class="lang-es" lang="es">384 ÷ 8 · Cociente: 48</span></li><li><span class="lang-en">672 ÷ 6 · Quotient: 112</span><span class="lang-es" lang="es">672 ÷ 6 · Cociente: 112</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Long division builds the quotient one digit at a time. In 384 ÷ 8 the first working number is 38: DIVIDE 38 ÷ 8 → 4, MULTIPLY 4 × 8 = 32, SUBTRACT 38 − 32 = 6, BRING DOWN the 4 to make 64, and 64 ÷ 8 → 8 with nothing left — so the quotient is 48. The second row runs the same cycle three times: 6 ÷ 6 → 1, then 7 ÷ 6 → 1 with 1 left, then 12 ÷ 6 → 2, giving 112.</span><span class="lang-es" lang="es">La división larga construye el cociente un dígito a la vez. En 384 ÷ 8 el primer número de trabajo es 38: DIVIDE 38 ÷ 8 → 4, MULTIPLICA 4 × 8 = 32, RESTA 38 − 32 = 6, BAJA el 4 para formar 64, y 64 ÷ 8 → 8 sin que sobre nada, así que el cociente es 48. La segunda fila repite el mismo ciclo tres veces: 6 ÷ 6 → 1, luego 7 ÷ 6 → 1 y sobra 1, luego 12 ÷ 6 → 2, dando 112.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9202,6 +9300,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: divide, multiply, subtract, bring down, 240, 3360, 14, check.</span><span class="lang-es" lang="es">Una buena respuesta usa: divide, multiply, subtract, bring down, 240, 3360, 14, check.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Long division on 3,360 ÷ 14 runs the cycle three times: 33 ÷ 14 → 2 (2 × 14 = 28, leaving 5), bring down the 6 → 56 ÷ 14 → 4 (4 × 14 = 56, leaving 0), bring down the 0 → 0 ÷ 14 → 0, so a 0 must be written in the ones place. The quotient is 240 ration packs per pod, and 14 × 240 = 3,360 proves none were left over.</span><span class="lang-es" lang="es">La división larga de 3,360 entre 14 repite el ciclo tres veces: 33 ÷ 14 → 2 (2 × 14 = 28, quedan 5), baja el 6 → 56 ÷ 14 → 4 (4 × 14 = 56, queda 0), baja el 0 → 0 ÷ 14 → 0, así que hay que escribir un 0 en las unidades. El cociente es 240 paquetes de raciones por cápsula, y 14 × 240 = 3,360 comprueba que no sobró ninguno.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9339,6 +9449,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">2,578 ÷ 13 · Quotient: 198</span><span class="lang-es" lang="es">2,578 ÷ 13 · Cociente: 198</span></li><li><span class="lang-en">3,456 ÷ 16 · Quotient: 216</span><span class="lang-es" lang="es">3,456 ÷ 16 · Cociente: 216</span></li><li><span class="lang-en">1,987 ÷ 11 · Quotient: 180</span><span class="lang-es" lang="es">1,987 ÷ 11 · Cociente: 180</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Long division keeps going until no digits are left to bring down, and whatever is still there is the remainder: 2,578 ÷ 13 gives 198 R 4, 3,456 ÷ 16 gives 216 R 0, and 1,987 ÷ 11 gives 180 R 7. You can check each row with divisor × quotient + remainder, since 13 × 198 + 4 = 2,578 and 11 × 180 + 7 = 1,987.</span><span class="lang-es" lang="es">La división larga continúa hasta que no queden dígitos por bajar, y lo que todavía esté ahí es el residuo: 2,578 ÷ 13 da 198 R 4, 3,456 ÷ 16 da 216 R 0 y 1,987 ÷ 11 da 180 R 7. Puedes comprobar cada fila con divisor × cociente + residuo, ya que 13 × 198 + 4 = 2,578 y 11 × 180 + 7 = 1,987.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9468,6 +9590,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>450 ÷ 18 → 25</li><li>1,008 ÷ 16 → 63</li><li>1,440 ÷ 24 → 60</li><li>2,100 ÷ 15 → 140</li><li>864 ÷ 12 → 72</li><li>1,825 ÷ 25 → 73</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Every card pairs with the quotient that rebuilds its dividend: 450 ÷ 18 = 25, 1,008 ÷ 16 = 63, 1,440 ÷ 24 = 60, 2,100 ÷ 15 = 140, 864 ÷ 12 = 72, and 1,825 ÷ 25 = 73. Multiplying the quotient by the divisor is the fastest way to confirm a match, since 18 × 25 = 450 and 25 × 73 = 1,825.</span><span class="lang-es" lang="es">Cada tarjeta se une con el cociente que reconstruye su dividendo: 450 ÷ 18 = 25, 1,008 ÷ 16 = 63, 1,440 ÷ 24 = 60, 2,100 ÷ 15 = 140, 864 ÷ 12 = 72 y 1,825 ÷ 25 = 73. Multiplicar el cociente por el divisor es la forma más rápida de confirmar una pareja, ya que 18 × 25 = 450 y 25 × 73 = 1,825.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9586,6 +9720,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>5,824 ÷ 13 → 448</li><li>9,603 ÷ 11 → 873</li><li>7,912 ÷ 8 → 989</li><li>6,300 ÷ 25 → 252</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each door opens with the quotient that rebuilds its dividend: 5,824 ÷ 13 = 448, 9,603 ÷ 11 = 873, 7,912 ÷ 8 = 989, and 6,300 ÷ 25 = 252. Estimating the size helps first — 7,912 ÷ 8 must be close to 1,000, so 989 is the only card that fits.</span><span class="lang-es" lang="es">Cada puerta se abre con el cociente que reconstruye su dividendo: 5,824 ÷ 13 = 448, 9,603 ÷ 11 = 873, 7,912 ÷ 8 = 989 y 6,300 ÷ 25 = 252. Estimar el tamaño ayuda primero: 7,912 ÷ 8 debe estar cerca de 1,000, así que 989 es la única tarjeta que encaja.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9757,6 +9903,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">672 ÷ 8 · Quotient: 84</span><span class="lang-es" lang="es">672 ÷ 8 · Cociente: 84</span></li><li><span class="lang-en">2,208 ÷ 16 · Quotient: 138</span><span class="lang-es" lang="es">2,208 ÷ 16 · Cociente: 138</span></li><li><span class="lang-en">2,016 ÷ 14 · Quotient: 144</span><span class="lang-es" lang="es">2,016 ÷ 14 · Cociente: 144</span></li><li><span class="lang-en">1,560 ÷ 15 · Quotient: 104</span><span class="lang-es" lang="es">1,560 ÷ 15 · Cociente: 104</span></li><li><span class="lang-en">3,276 ÷ 12 · Quotient: 273</span><span class="lang-es" lang="es">3,276 ÷ 12 · Cociente: 273</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each quotient comes from repeating divide, multiply, subtract, bring down until the last digit is used: 672 ÷ 8 = 84, 2,208 ÷ 16 = 138, 2,016 ÷ 14 = 144, 1,560 ÷ 15 = 104, and 3,276 ÷ 12 = 273. Multiplying back rebuilds each dividend exactly, so every row ends with a remainder of 0.</span><span class="lang-es" lang="es">Cada cociente sale de repetir divide, multiplica, resta y baja hasta usar el último dígito: 672 ÷ 8 = 84, 2,208 ÷ 16 = 138, 2,016 ÷ 14 = 144, 1,560 ÷ 15 = 104, y 3,276 ÷ 12 = 273. Al multiplicar de regreso se reconstruye cada dividendo exactamente, así que todas las filas terminan con residuo 0.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9858,6 +10016,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>78</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">12 × 78 = 936. You can verify: 12 × 70 = 840, 12 × 8 = 96, 840 + 96 = 936.</span><span class="lang-es" lang="es">12 × 78 = 936. Puedes comprobarlo: 12 × 70 = 840, 12 × 8 = 96, 840 + 96 = 936.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9959,6 +10129,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>497</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">5 × 497 = 2,485. Running the cycle: 24 ÷ 5 → 4 with 4 left, 48 ÷ 5 → 9 with 3 left, 35 ÷ 5 → 7 with 0 left, so the quotient is 497 and the remainder is 0.</span><span class="lang-es" lang="es">5 × 497 = 2,485. Con el ciclo: 24 ÷ 5 → 4 y sobran 4, 48 ÷ 5 → 9 y sobran 3, 35 ÷ 5 → 7 y sobra 0, así que el cociente es 497 y el residuo es 0.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10060,6 +10242,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>84</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">9 × 84 = 756. Running the cycle: 75 ÷ 9 → 8 with 3 left, then 36 ÷ 9 → 4 with 0 left, so the quotient is 84 and the remainder is 0.</span><span class="lang-es" lang="es">9 × 84 = 756. Con el ciclo: 75 ÷ 9 → 8 y sobran 3, luego 36 ÷ 9 → 4 y sobra 0, así que el cociente es 84 y el residuo es 0.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10161,6 +10355,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>125</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">9 × 125 = 1,125. Running the cycle: 11 ÷ 9 → 1 with 2 left, 22 ÷ 9 → 2 with 4 left, 45 ÷ 9 → 5 with 0 left, so the quotient is 125.</span><span class="lang-es" lang="es">9 × 125 = 1,125. Con el ciclo: 11 ÷ 9 → 1 y sobran 2, 22 ÷ 9 → 2 y sobran 4, 45 ÷ 9 → 5 y sobra 0, así que el cociente es 125.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10262,6 +10468,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">156 boxes</span><span class="lang-es" lang="es">156 cajas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">2,184 ÷ 14 = 156. Check: 14 × 156 = 14 × 150 + 14 × 6 = 2,100 + 84 = 2,184.</span><span class="lang-es" lang="es">2,184 ÷ 14 = 156. Comprueba: 14 × 156 = 14 × 150 + 14 × 6 = 2,100 + 84 = 2,184.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10363,6 +10581,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>408</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> 12 × 408 = 4,896.</p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

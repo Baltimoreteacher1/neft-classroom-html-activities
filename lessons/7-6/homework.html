@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8317,7 +8376,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A rectangle has vertices at (-4, -2), (3, -2), (3, 5), and (-4, 5). Find the length, width, perimeter, and area of the rectangle. Show your work using absolute value.</span><span class="lang-es" lang="es">Un rectángulo tiene vértices en (-4, -2), (3, -2), (3, 5) y (-4, 5). Halla el largo, el ancho, el perímetro y el área del rectángulo. Muestra tu trabajo usando el valor absoluto.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">The width comes from the two x-values, |3 - (-4)| = 7, and the height comes from the two y-values, |5 - (-2)| = 7, so this rectangle is actually a square. That gives a perimeter of 2(7 + 7) = 28 units and an area of 7 × 7 = 49 square units.</span><span class="lang-es" lang="es">El ancho viene de los dos valores de x, |3 - (-4)| = 7, y la altura viene de los dos valores de y, |5 - (-2)| = 7, así que este rectángulo en realidad es un cuadrado. Eso da un perímetro de 2(7 + 7) = 28 unidades y un área de 7 × 7 = 49 unidades cuadradas.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8703,6 +8765,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Same side of zero — subtract: School (2, 3) to Library (2, 9), Subway (1, 6) to Tower (8, 6)</span><span class="lang-es" lang="es">El mismo lado del cero — resta: Escuela (2, 3) a Biblioteca (2, 9), Metro (1, 6) a Torre (8, 6)</span></li><li><span class="lang-en">Opposite sides of zero — add absolute values: Park (-4, 5) to City Hall (3, 5), Café (-2, 1) to Gym (-2, -4)</span><span class="lang-es" lang="es">Lados opuestos del cero — suma los valores absolutos: Parque (-4, 5) a Alcaldía (3, 5), Café (-2, 1) a Gimnasio (-2, -4)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">School to Library (3 and 9) and Subway to Tower (1 and 8) keep their changing coordinates on the same side of zero, so a single subtraction gives the distance. Park to City Hall (-4 and 3) and Café to Gym (1 and -4) have one negative and one positive value, so those routes cross an axis and the two absolute values get added.</span><span class="lang-es" lang="es">De la Escuela a la Biblioteca (3 y 9) y del Metro a la Torre (1 y 8), las coordenadas que cambian quedan del mismo lado del cero, así que una sola resta da la distancia. Del Parque al Ayuntamiento (-4 y 3) y del Café al Gimnasio (1 y -4) hay un valor negativo y uno positivo, así que esas rutas cruzan un eje y los dos valores absolutos se suman.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8859,6 +8933,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">(-5, 1) · Distance: 8</span><span class="lang-es" lang="es">(-5, 1) · Distancia: 8</span></li><li><span class="lang-en">(2, -4) · Distance: 10</span><span class="lang-es" lang="es">(2, -4) · Distancia: 10</span></li><li><span class="lang-en">(-3, -2) · Distance: 6</span><span class="lang-es" lang="es">(-3, -2) · Distancia: 6</span></li><li><span class="lang-en">(-1, 5) · Distance: 5</span><span class="lang-es" lang="es">(-1, 5) · Distancia: 5</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Every row shares one coordinate, so each segment is straight and only the coordinate that changes matters. All four pairs land on opposite sides of zero, so add the absolute values: |-5| + |3| = 8, |-4| + |6| = 10, |-2| + |4| = 6, and |-1| + |4| = 5.</span><span class="lang-es" lang="es">Cada fila comparte una coordenada, así que cada segmento es recto y solo importa la coordenada que cambia. Los cuatro pares caen en lados opuestos del cero, así que suma los valores absolutos: |-5| + |3| = 8, |-4| + |6| = 10, |-2| + |4| = 6 y |-1| + |4| = 5.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8962,6 +9048,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">12 units</span><span class="lang-es" lang="es">12 unidades</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Same x = -3. Distance = |5 - (-7)| = |5 + 7| = 12 units.</span><span class="lang-es" lang="es">El mismo x = -3. Distancia = |5 - (-7)| = |5 + 7| = 12 unidades.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9081,6 +9179,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">8 units</span><span class="lang-es" lang="es">8 unidades</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The x-coordinates match, so distance = |5 - (-3)| = 8 units.</span><span class="lang-es" lang="es">Las coordenadas x coinciden, así que la distancia = |5 - (-3)| = 8 unidades.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9255,6 +9365,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Rect 1 · Width: 7</span><span class="lang-es" lang="es">Rectángulo 1 · Ancho: 7</span></li><li><span class="lang-en">Rect 1 · Height: 4</span><span class="lang-es" lang="es">Rectángulo 1 · Altura: 4</span></li><li><span class="lang-en">Rect 1 · Perimeter: 22</span><span class="lang-es" lang="es">Rectángulo 1 · Perímetro: 22</span></li><li><span class="lang-en">Rect 2 · Width: 8</span><span class="lang-es" lang="es">Rectángulo 2 · Ancho: 8</span></li><li><span class="lang-en">Rect 2 · Height: 6</span><span class="lang-es" lang="es">Rectángulo 2 · Altura: 6</span></li><li><span class="lang-en">Rect 2 · Perimeter: 28</span><span class="lang-es" lang="es">Rectángulo 2 · Perímetro: 28</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Rect 1 runs from x = -3 to x = 4, so its width is |-3| + |4| = 7, and from y = 1 to y = 5, so its height is |5 - 1| = 4; the perimeter is 2(7 + 4) = 22. Rect 2 is |-2| + |6| = 8 wide and |-4| + |2| = 6 tall, so its perimeter is 2(8 + 6) = 28.</span><span class="lang-es" lang="es">El Rect 1 va de x = -3 a x = 4, así que su ancho es |-3| + |4| = 7, y de y = 1 a y = 5, así que su altura es |5 - 1| = 4; el perímetro es 2(7 + 4) = 22. El Rect 2 mide |-2| + |6| = 8 de ancho y |-4| + |2| = 6 de alto, así que su perímetro es 2(8 + 6) = 28.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9358,6 +9480,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">5 units</span><span class="lang-es" lang="es">5 unidades</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The x-coordinates match, so distance = |8 - 3| = 5 units.</span><span class="lang-es" lang="es">Las coordenadas x coinciden, así que la distancia = |8 - 3| = 5 unidades.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9472,6 +9606,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">6 units</span><span class="lang-es" lang="es">6 unidades</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Both points have y = 3, so this is a horizontal distance. |2 - (-4)| = |2 + 4| = 6 units.</span><span class="lang-es" lang="es">Los dos puntos tienen y = 3, así que esta es una distancia horizontal. |2 - (-4)| = |2 + 4| = 6 unidades.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9575,6 +9721,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">6 units</span><span class="lang-es" lang="es">6 unidades</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Both points have x = 5, so this is a vertical distance. |4 - (-2)| = |4 + 2| = 6 units.</span><span class="lang-es" lang="es">Los dos puntos tienen x = 5, así que esta es una distancia vertical. |4 - (-2)| = |4 + 2| = 6 unidades.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9678,6 +9836,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">7 units</span><span class="lang-es" lang="es">7 unidades</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The y-coordinates match, so distance = |3 - (-4)| = 7 units.</span><span class="lang-es" lang="es">Las coordenadas y coinciden, así que la distancia = |3 - (-4)| = 7 unidades.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9781,6 +9951,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">6 blocks</span><span class="lang-es" lang="es">6 cuadras</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Same x = 2, so the segment is vertical. Distance = |9 - 3| = 6 blocks.</span><span class="lang-es" lang="es">El mismo x = 2, así que el segmento es vertical. Distancia = |9 - 3| = 6 cuadras.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9884,6 +10066,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">7 blocks</span><span class="lang-es" lang="es">7 cuadras</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Same y = 5, so the segment is horizontal. The points are on opposite sides of zero, so add the absolute values: |-4| + |3| = 4 + 3 = 7 blocks.</span><span class="lang-es" lang="es">El mismo y = 5, así que el segmento es horizontal. Los puntos están en lados opuestos del cero, así que suma los valores absolutos: |-4| + |3| = 4 + 3 = 7 cuadras.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9987,6 +10181,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">5 blocks</span><span class="lang-es" lang="es">5 cuadras</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Same x = -2, so the segment is vertical. The points are on opposite sides of zero: |1| + |-4| = 1 + 4 = 5 blocks.</span><span class="lang-es" lang="es">El mismo x = -2, así que el segmento es vertical. Los puntos están en lados opuestos del cero: |1| + |-4| = 1 + 4 = 5 cuadras.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10094,6 +10300,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Subway (1, 6) to Tower (8, 6) → 7 blocks</span><span class="lang-es" lang="es">Metro (1, 6) a Torre (8, 6) → 7 cuadras</span></li><li><span class="lang-en">Market (-3, -1) to Stadium (-3, 7) → 8 blocks</span><span class="lang-es" lang="es">Mercado (-3, -1) a Estadio (-3, 7) → 8 cuadras</span></li><li><span class="lang-en">Bank (2, 3) to Library (2, 9) → 6 blocks</span><span class="lang-es" lang="es">Banco (2, 3) a Biblioteca (2, 9) → 6 cuadras</span></li><li><span class="lang-en">Café (-2, 1) to Gym (-2, -4) → 5 blocks</span><span class="lang-es" lang="es">Café (-2, 1) a Gimnasio (-2, -4) → 5 cuadras</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each pair shares a coordinate, so you only compare the numbers that change. Subway to Tower stays right of zero (|8 - 1| = 7 blocks) and Bank to Library stays above zero (|9 - 3| = 6 blocks), while Market to Stadium and Café to Gym each cross an axis, so their absolute values add: |-1| + |7| = 8 and |1| + |-4| = 5.</span><span class="lang-es" lang="es">Cada par comparte una coordenada, así que solo comparas los números que cambian. Del Metro a la Torre todo queda a la derecha del cero (|8 - 1| = 7 cuadras) y del Banco a la Biblioteca todo queda arriba del cero (|9 - 3| = 6 cuadras), mientras que del Mercado al Estadio y del Café al Gimnasio se cruza un eje, así que los valores absolutos se suman: |-1| + |7| = 8 y |1| + |-4| = 5.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10197,6 +10415,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">14 units</span><span class="lang-es" lang="es">14 unidades</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Width = 5 - 1 = 4. Height = 4 - 1 = 3. Perimeter = 2(4 + 3) = 14.</span><span class="lang-es" lang="es">Ancho = 5 - 1 = 4. Altura = 4 - 1 = 3. Perímetro = 2(4 + 3) = 14.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

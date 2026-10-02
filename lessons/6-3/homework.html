@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8339,7 +8398,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A bacteria colony doubles every hour. Starting with 1 bacterium, write a power expression for the number after 6 hours. Explain why exponential growth is so much faster than adding the same number each hour.</span><span class="lang-es" lang="es">Una colonia de bacterias se duplica cada hora. Empezando con 1 bacteria, escribe una expresión con potencias para la cantidad después de 6 horas. Explica por qué el crecimiento exponencial es mucho más rápido que sumar la misma cantidad cada hora.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Doubling every hour means multiplying by 2 once per hour, so after 6 hours the count is 2⁶ = 2 × 2 × 2 × 2 × 2 × 2 = 64 bacteria. Adding 2 each hour instead would give only 1 + 12 = 13. Repeated multiplication compounds — each hour multiplies everything already there — while repeated addition only ever adds the same fixed amount.</span><span class="lang-es" lang="es">Duplicarse cada hora significa multiplicar por 2 una vez por hora, así que después de 6 horas la cantidad es 2⁶ = 2 × 2 × 2 × 2 × 2 × 2 = 64 bacterias. Sumar 2 cada hora daría apenas 1 + 12 = 13. La multiplicación repetida se acumula —cada hora multiplica todo lo que ya existe—, mientras que la suma repetida siempre agrega la misma cantidad fija.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8672,6 +8734,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">4³ · Value: 64</span><span class="lang-es" lang="es">4³ · Valor: 64</span></li><li><span class="lang-en">2⁶ · Value: 64</span><span class="lang-es" lang="es">2⁶ · Valor: 64</span></li><li><span class="lang-en">5³ · Value: 125</span><span class="lang-es" lang="es">5³ · Valor: 125</span></li><li><span class="lang-en">10⁴ · Value: 10000</span><span class="lang-es" lang="es">10⁴ · Valor: 10000</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Multiply the listed factors with a running total: 4³ = 4 × 4 × 4 = 64, 2⁶ = 64 as well after six doublings, 5³ = 125, and 10⁴ = 10,000. Notice that 4³ and 2⁶ have the same value even though the bases and exponents differ, and that 10⁴ gains one zero for each factor of 10.</span><span class="lang-es" lang="es">Multiplica los factores que aparecen llevando un total acumulado: 4³ = 4 × 4 × 4 = 64, 2⁶ también da 64 después de seis duplicaciones, 5³ = 125 y 10⁴ = 10,000. Fíjate en que 4³ y 2⁶ tienen el mismo valor aunque las bases y los exponentes sean distintos, y en que 10⁴ gana un cero por cada factor de 10.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8823,6 +8897,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>7³: 7 × 7 × 7</li><li>6²: 6 × 6</li><li>4⁴: 4 × 4 × 4 × 4</li><li>9²: 9 × 9</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Match by counting factors, not by size. 7 × 7 × 7 has three 7&#039;s, so it is 7³; 6 × 6 has two 6&#039;s, so it is 6²; 4 × 4 × 4 × 4 has four 4&#039;s, so it is 4⁴; and 9 × 9 has two 9&#039;s, so it is 9². The repeated number becomes the base and how many times it appears becomes the exponent.</span><span class="lang-es" lang="es">Empareja contando factores, no por tamaño. 7 × 7 × 7 tiene tres 7, así que es 7³; 6 × 6 tiene dos 6, así que es 6²; 4 × 4 × 4 × 4 tiene cuatro 4, así que es 4⁴; y 9 × 9 tiene dos 9, así que es 9². El número que se repite es la base y la cantidad de veces que aparece es el exponente.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8943,6 +9029,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">3² · Value: 9</span><span class="lang-es" lang="es">3² · Valor: 9</span></li><li><span class="lang-en">2⁴ · Value: 16</span><span class="lang-es" lang="es">2⁴ · Valor: 16</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The middle column already unpacks each power, so all that is left is to multiply. 3² means two factors of 3, and 3 × 3 = 9. 2⁴ means four factors of 2, and multiplying step by step gives 2 × 2 = 4, 4 × 2 = 8, 8 × 2 = 16. The exponent counts the factors; it is never one of the factors.</span><span class="lang-es" lang="es">La columna del medio ya desarma cada potencia, así que solo falta multiplicar. 3² significa dos factores de 3, y 3 × 3 = 9. 2⁴ significa cuatro factores de 2, y multiplicando paso a paso da 2 × 2 = 4, 4 × 2 = 8, 8 × 2 = 16. El exponente cuenta los factores; nunca es uno de los factores.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9174,6 +9272,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">2⁵ · Value A: 32</span><span class="lang-es" lang="es">2⁵ · Valor A: 32</span></li><li><span class="lang-en">2⁵ · Value B: 25</span><span class="lang-es" lang="es">2⁵ · Valor B: 25</span></li><li><span class="lang-en">2⁵ · Which is greater?: 2⁵</span><span class="lang-es" lang="es">2⁵ · ¿Cuál es mayor?: 2⁵</span></li><li><span class="lang-en">2⁴ · Value A: 16</span><span class="lang-es" lang="es">2⁴ · Valor A: 16</span></li><li><span class="lang-en">2⁴ · Value B: 16</span><span class="lang-es" lang="es">2⁴ · Valor B: 16</span></li><li><span class="lang-en">2⁴ · Which is greater?: Equal</span><span class="lang-es" lang="es">2⁴ · ¿Cuál es mayor?: Igual</span></li><li><span class="lang-en">3⁴ · Value A: 81</span><span class="lang-es" lang="es">3⁴ · Valor A: 81</span></li><li><span class="lang-en">3⁴ · Value B: 64</span><span class="lang-es" lang="es">3⁴ · Valor B: 64</span></li><li><span class="lang-en">3⁴ · Which is greater?: 3⁴</span><span class="lang-es" lang="es">3⁴ · ¿Cuál es mayor?: 3⁴</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Swapping the base and exponent usually changes the value: 2⁵ = 32 beats 5² = 25, and 3⁴ = 81 beats 4³ = 64. The middle row is the exception — 2⁴ = 16 and 4² = 16 are equal — which shows that a swap only happens to match in special cases, not as a rule.</span><span class="lang-es" lang="es">Intercambiar la base y el exponente casi siempre cambia el valor: 2⁵ = 32 supera a 5² = 25, y 3⁴ = 81 supera a 4³ = 64. La fila del medio es la excepción —2⁴ = 16 y 4² = 16 son iguales—, lo que muestra que un intercambio solo coincide en casos especiales, no como regla.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9347,6 +9457,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Value &gt; 50: 3⁴, 10², 5³</span><span class="lang-es" lang="es">Valor &gt; 50: 3⁴, 10², 5³</span></li><li><span class="lang-en">Value ≤ 50: 2⁵, 7², 4²</span><span class="lang-es" lang="es">Valor ≤ 50: 2⁵, 7², 4²</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each card already shows its value, so the sorting is a comparison with 50. Above 50 are 3⁴ = 81, 10² = 100, and 5³ = 125. At or below 50 are 2⁵ = 32, 7² = 49, and 4² = 16. Watch 7² = 49: it looks close, but 49 is less than 50, so it belongs with the smaller group.</span><span class="lang-es" lang="es">Cada tarjeta ya muestra su valor, así que clasificar es comparar con 50. Por encima de 50 están 3⁴ = 81, 10² = 100 y 5³ = 125. En 50 o por debajo están 2⁵ = 32, 7² = 49 y 4² = 16. Cuidado con 7² = 49: parece cercano, pero 49 es menor que 50, así que va en el grupo de los pequeños.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9448,6 +9570,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: power, base, exponent, doubles, repeated multiplication, exponential, growth.</span><span class="lang-es" lang="es">Una buena respuesta usa: power, base, exponent, doubles, repeated multiplication, exponential, growth.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Doubling every hour means multiplying by 2 once per hour, so after 6 hours the count is 2⁶ = 2 × 2 × 2 × 2 × 2 × 2 = 64 bacteria. Adding 2 each hour instead would give only 1 + 12 = 13. Repeated multiplication compounds — each hour multiplies everything already there — while repeated addition only ever adds the same fixed amount.</span><span class="lang-es" lang="es">Duplicarse cada hora significa multiplicar por 2 una vez por hora, así que después de 6 horas la cantidad es 2⁶ = 2 × 2 × 2 × 2 × 2 × 2 = 64 bacterias. Sumar 2 cada hora daría apenas 1 + 12 = 13. La multiplicación repetida se acumula —cada hora multiplica todo lo que ya existe—, mientras que la suma repetida siempre agrega la misma cantidad fija.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9560,6 +9694,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>5 × 5 × 5</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">5³ means use 5 as a factor 3 times: 5 × 5 × 5. The exponent tells how many times to multiply, not what to multiply by.</span><span class="lang-es" lang="es">5³ significa usar 5 como factor 3 veces: 5 × 5 × 5. El exponente indica cuántas veces se multiplica, no por cuánto se multiplica.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9689,6 +9835,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>2⁵ → 32</li><li>3³ → 27</li><li>4³ → 64</li><li>10³ → 1000</li><li>5² → 25</li><li>2⁷ → 128</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Expand each power and multiply: 2⁵ = 32, 3³ = 27, 4³ = 64, 10³ = 1,000, 5² = 25, and 2⁷ = 128. The two powers of 2 are the ones most likely to be mixed up, so count factors carefully — five 2&#039;s give 32, while seven 2&#039;s give 128.</span><span class="lang-es" lang="es">Desarrolla cada potencia y multiplica: 2⁵ = 32, 3³ = 27, 4³ = 64, 10³ = 1,000, 5² = 25 y 2⁷ = 128. Las dos potencias de 2 son las que más se confunden, así que cuenta bien los factores: cinco 2 dan 32, mientras que siete 2 dan 128.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9818,6 +9976,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>7³ → 343</li><li>6² → 36</li><li>4⁴ → 256</li><li>9² → 81</li><li>6³ → 216</li><li>7² → 49</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Expanding each power gives its beat count: 7³ = 343, 6² = 36, 4⁴ = 256, 9² = 81, 6³ = 216, and 7² = 49. The pairs that share a base are the ones to check closely — 7² = 49 while 7³ = 343, and 6² = 36 while 6³ = 216 — because one extra factor multiplies the value by the base again.</span><span class="lang-es" lang="es">Al desarrollar cada potencia se obtiene su cantidad de tiempos: 7³ = 343, 6² = 36, 4⁴ = 256, 9² = 81, 6³ = 216 y 7² = 49. Las parejas que comparten la base son las que hay que revisar con cuidado —7² = 49 mientras que 7³ = 343, y 6² = 36 mientras que 6³ = 216— porque un factor adicional vuelve a multiplicar el valor por la base.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9919,6 +10089,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>7³</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The base 7 is used as a factor 3 times, so the power is 7³. 7³ = 7 × 7 × 7 = 343.</span><span class="lang-es" lang="es">La base 7 se usa como factor 3 veces, así que la potencia es 7³. 7³ = 7 × 7 × 7 = 343.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10020,6 +10202,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>64</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> 4³ = 4 × 4 × 4 = 64.</p>
+        </div>
+      </details>
     </section>
 
 
@@ -10121,6 +10315,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>36</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> 6² = 6 × 6 = 36.</p>
+        </div>
+      </details>
     </section>
 
 
@@ -10222,6 +10428,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>108</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> 4 + 2 = 6. 6² = 36. 3 × 36 = 108.</p>
+        </div>
+      </details>
     </section>
 
 
@@ -10323,6 +10541,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>81</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">3⁴ means use 3 as a factor 4 times: 3 × 3 × 3 × 3 = 81. It is NOT 3 × 4 = 12.</span><span class="lang-es" lang="es">3⁴ significa usar 3 como factor 4 veces: 3 × 3 × 3 × 3 = 81. NO es 3 × 4 = 12.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

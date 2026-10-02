@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8314,7 +8373,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A warehouse has 7,560 bottles to pack into cases of 24. How many full cases can be packed, and how many bottles are left over? Show your division step by step, say what the quotient means, and check your answer by multiplying back.</span><span class="lang-es" lang="es">Un almacén tiene 7,560 botellas para empacar en cajas de 24. ¿Cuántas cajas completas se pueden empacar y cuántas botellas sobran? Muestra tu división paso a paso, di qué significa el cociente y comprueba tu respuesta multiplicando de vuelta.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">24 × 300 = 7,200, leaving 360. 24 × 15 = 360, leaving 0. So 7,560 ÷ 24 = 315 with nothing left over: 315 full cases and 0 bottles remaining. The quotient 315 means 315 groups of 24 bottles. Check: 24 × 315 = 7,560. ✓</span><span class="lang-es" lang="es">24 × 300 = 7,200, y quedan 360. 24 × 15 = 360, y queda 0. Así que 7,560 ÷ 24 = 315 sin sobrante: 315 cajas completas y 0 botellas restantes. El cociente 315 significa 315 grupos de 24 botellas. Comprueba: 24 × 315 = 7,560. ✓</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8594,6 +8656,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>10,350</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">41,400 − 31,050 = 10,350 more teachers. 41,400 is the new total, not the extra; 72,450 adds the two totals; 1,035 drops a place value.</span><span class="lang-es" lang="es">41,400 − 31,050 = 10,350 maestros más. 41,400 es el nuevo total, no lo extra; 72,450 suma los dos totales; 1,035 pierde un valor posicional.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8695,6 +8769,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>31,050</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">621,000 ÷ 20 = 31,050 teachers, close to the estimate of 30,000. 3,105 drops a zero in the quotient and is ten times too small; 310,500 is ten times too big; 12,420,000 multiplies instead of dividing.</span><span class="lang-es" lang="es">621,000 ÷ 20 = 31,050 maestros, cerca de la estimación de 30,000. 3,105 pierde un cero en el cociente y es diez veces menor; 310,500 es diez veces mayor; 12,420,000 multiplica en vez de dividir.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8796,6 +8882,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A zero was dropped from the quotient — 8 × 51 = 408, not 4,080. The answer is 510.</span><span class="lang-es" lang="es">Se perdió un cero en el cociente — 8 × 51 = 408, no 4,080. La respuesta es 510.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">8 × 51 = 408, which is ten times smaller than 4,080, so a zero went missing in the quotient: 4,080 ÷ 8 = 510 (check: 8 × 510 = 4,080). Multiplying answers a different question, and 5,100 is ten times too big.</span><span class="lang-es" lang="es">8 × 51 = 408, que es diez veces menor que 4,080, así que se perdió un cero en el cociente: 4,080 ÷ 8 = 510 (comprueba: 8 × 510 = 4,080). Multiplicar responde otra pregunta, y 5,100 es diez veces mayor.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8900,6 +8998,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">24 × 300 = 7,200, leaving 360. 24 × 15 = 360, leaving 0. So 7,560 ÷ 24 = 315 with nothing left over: 315 full cases and 0 bottles remaining. The quotient 315 means 315 groups of 24 bottles. Check: 24 × 315 = 7,560. ✓</span><span class="lang-es" lang="es">24 × 300 = 7,200, y quedan 360. 24 × 15 = 360, y queda 0. Así que 7,560 ÷ 24 = 315 sin sobrante: 315 cajas completas y 0 botellas restantes. El cociente 315 significa 315 grupos de 24 botellas. Comprueba: 24 × 315 = 7,560. ✓</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9001,6 +9111,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>41,400</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">621,000 ÷ 15 = 41,400 teachers. That is more than the 31,050 needed at 20 to 1, which makes sense — smaller groups need more teachers. 4,140 is missing a place value; 31,050 answers the old question; 9,315,000 multiplies.</span><span class="lang-es" lang="es">621,000 ÷ 15 = 41,400 maestros. Es más que los 31,050 necesarios a 20 por 1, lo cual tiene sentido — grupos más pequeños necesitan más maestros. 4,140 pierde un valor posicional; 31,050 responde la pregunta anterior; 9,315,000 multiplica.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9102,6 +9224,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>112</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">12 × 100 = 1,200, and the remaining 144 is 12 × 12, so 1,344 ÷ 12 = 112 crates. Check: 12 × 112 = 1,344. 12 is only the last chunk; 1,112 adds the chunks in the wrong places; 16,128 multiplies.</span><span class="lang-es" lang="es">12 × 100 = 1,200, y los 144 restantes son 12 × 12, así que 1,344 ÷ 12 = 112 cajas. Comprueba: 12 × 112 = 1,344. 12 es solo la última parte; 1,112 suma las partes en el lugar equivocado; 16,128 multiplica.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

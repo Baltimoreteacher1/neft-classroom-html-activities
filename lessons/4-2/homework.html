@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8280,7 +8339,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A student says 3/8 is greater than 40% because 3 and 8 are bigger numbers than 4 and 0. Is the student correct? Convert both values to the same form and explain.</span><span class="lang-es" lang="es">Un estudiante dice que 3/8 es mayor que 40% porque 3 y 8 son números más grandes que 4 y 0. ¿Tiene razón? Convierte los dos valores a la misma forma y explica.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Bigger-looking digits do not mean a bigger value — the two amounts have to be in the same form before you compare them. Converting the fraction gives 3 ÷ 8 = 0.375, which is 37.5%. Since 37.5% is less than 40%, the student is not correct: 3/8 is the smaller value.</span><span class="lang-es" lang="es">Que las cifras se vean más grandes no significa que el valor sea mayor: las dos cantidades tienen que estar en la misma forma antes de compararlas. Al convertir la fracción se obtiene 3 ÷ 8 = 0.375, que es 37.5%. Como 37.5% es menor que 40%, el estudiante no tiene razón: 3/8 es el valor más pequeño.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8756,6 +8818,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">2/5 · Equivalent fraction out of 100: 40/100</span><span class="lang-es" lang="es">2/5 · Fracción equivalente con denominador 100: 40/100</span></li><li>2/5 · Decimal: 0.4</li><li><span class="lang-en">2/5 · Percent: 40%</span><span class="lang-es" lang="es">2/5 · Porcentaje: 40%</span></li><li><span class="lang-en">0.125 · Fraction: 1/8</span><span class="lang-es" lang="es">0.125 · Fracción: 1/8</span></li><li><span class="lang-en">0.125 · Equivalent fraction out of 100: 12.5/100</span><span class="lang-es" lang="es">0.125 · Fracción equivalente con denominador 100: 12.5/100</span></li><li><span class="lang-en">0.125 · Percent: 12.5%</span><span class="lang-es" lang="es">0.125 · Porcentaje: 12.5%</span></li><li><span class="lang-en">90% · Fraction: 9/10</span><span class="lang-es" lang="es">90% · Fracción: 9/10</span></li><li><span class="lang-en">90% · Equivalent fraction out of 100: 90/100</span><span class="lang-es" lang="es">90% · Fracción equivalente con denominador 100: 90/100</span></li><li>90% · Decimal: 0.9</li><li><span class="lang-en">5/8 · Equivalent fraction out of 100: 62.5/100</span><span class="lang-es" lang="es">5/8 · Fracción equivalente con denominador 100: 62.5/100</span></li><li>5/8 · Decimal: 0.625</li><li><span class="lang-en">5/8 · Percent: 62.5%</span><span class="lang-es" lang="es">5/8 · Porcentaje: 62.5%</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Percent means out of 100, so scale each fraction to a denominator of 100 when you can: 2/5 = 40/100 = 0.4 = 40%, and 90% = 90/100 = 0.9 = 9/10. When the denominator will not reach 100 with a whole number, divide instead: 1/8 = 0.125 = 12.5%, and 5/8 = 0.625 = 62.5%.</span><span class="lang-es" lang="es">Porcentaje significa de cada 100, así que escala cada fracción a denominador 100 cuando puedas: 2/5 = 40/100 = 0.4 = 40% y 90% = 90/100 = 0.9 = 9/10. Cuando el denominador no llega a 100 con un número entero, divide: 1/8 = 0.125 = 12.5% y 5/8 = 0.625 = 62.5%.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8933,6 +9007,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Fraction tiles: 2/5, 7/10</span><span class="lang-es" lang="es">Fichas de fracción: 2/5, 7/10</span></li><li><span class="lang-en">Decimal tiles: 0.3, 0.85</span><span class="lang-es" lang="es">Fichas de decimal: 0.3, 0.85</span></li><li><span class="lang-en">Percent tiles: 70%, 15%</span><span class="lang-es" lang="es">Fichas de porcentaje: 70%, 15%</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">This sort is about how each tile is WRITTEN, not how big it is. A fraction shows a numerator over a denominator (2/5 and 7/10), a decimal shows a decimal point (0.3 and 0.85), and a percent carries the % symbol (70% and 15%). The very same value could appear in any of the three forms.</span><span class="lang-es" lang="es">Esta clasificación se trata de cómo está ESCRITA cada ficha, no de qué tan grande es. Una fracción muestra un numerador sobre un denominador (2/5 y 7/10), un decimal muestra un punto decimal (0.3 y 0.85) y un por ciento lleva el símbolo % (70% y 15%). Un mismo valor podría aparecer en cualquiera de las tres formas.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9034,6 +9120,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>0.6 and 60%</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">5 × 20 = 100 and 3 × 20 = 60, so 3/5 = 60/100 = 0.6 = 60%.</span><span class="lang-es" lang="es">5 × 20 = 100 y 3 × 20 = 60, así que 3/5 = 60/100 = 0.6 = 60%.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9151,6 +9249,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: not correct, 0.375, 37.5%, less than, convert, compare.</span><span class="lang-es" lang="es">Una buena respuesta usa: not correct, 0.375, 37.5%, less than, convert, compare.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Bigger-looking digits do not mean a bigger value — the two amounts have to be in the same form before you compare them. Converting the fraction gives 3 ÷ 8 = 0.375, which is 37.5%. Since 37.5% is less than 40%, the student is not correct: 3/8 is the smaller value.</span><span class="lang-es" lang="es">Que las cifras se vean más grandes no significa que el valor sea mayor: las dos cantidades tienen que estar en la misma forma antes de compararlas. Al convertir la fracción se obtiene 3 ÷ 8 = 0.375, que es 37.5%. Como 37.5% es menor que 40%, el estudiante no tiene razón: 3/8 es el valor más pequeño.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9252,6 +9362,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>87.5%</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">8 does not scale to 100 by a whole number, so divide: 7 ÷ 8 = 0.875, and 0.875 × 100 = 87.5%. That is 87.5 out of 100.</span><span class="lang-es" lang="es">8 no escala a 100 con un número entero, así que divide: 7 ÷ 8 = 0.875, y 0.875 × 100 = 87.5%. Eso es 87.5 de cada 100.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9359,6 +9481,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>4/5 → 0.8 = 80%</li><li>9/10 → 0.9 = 90%</li><li>1/2 → 0.5 = 50%</li><li>1/4 → 0.25 = 25%</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each score tile and its match are the same value in different clothes: 4/5 = 80/100 = 0.8 = 80%, 9/10 = 90/100 = 0.9 = 90%, 1/2 = 50/100 = 0.5 = 50%, and 1/4 = 25/100 = 0.25 = 25%. Scaling a fraction to a denominator of 100 gives you its percent and its decimal at the same time.</span><span class="lang-es" lang="es">Cada ficha de puntaje y su pareja son el mismo valor con distinta ropa: 4/5 = 80/100 = 0.8 = 80%, 9/10 = 90/100 = 0.9 = 90%, 1/2 = 50/100 = 0.5 = 50% y 1/4 = 25/100 = 0.25 = 25%. Escalar una fracción a denominador 100 te da su porcentaje y su decimal al mismo tiempo.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9573,6 +9707,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Greater than 50%: 3/4, 0.8, 65%, 7/10</span><span class="lang-es" lang="es">Mayor que 50%: 3/4, 0.8, 65%, 7/10</span></li><li><span class="lang-en">Less than 50%: 1/3, 0.25, 40%, 2/5</span><span class="lang-es" lang="es">Menor que 50%: 1/3, 0.25, 40%, 2/5</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">50% is the same value as 0.5 and 1/2, so turning each card into a decimal makes the sort quick. 3/4 = 0.75, 0.8, 65% = 0.65, and 7/10 = 0.7 all sit above 0.5. 1/3 ≈ 0.33, 0.25, 40% = 0.4, and 2/5 = 0.4 all sit below 0.5.</span><span class="lang-es" lang="es">50% es el mismo valor que 0.5 y que 1/2, así que convertir cada tarjeta en decimal hace rápida la clasificación. 3/4 = 0.75, 0.8, 65% = 0.65 y 7/10 = 0.7 quedan todos por encima de 0.5. 1/3 ≈ 0.33, 0.25, 40% = 0.4 y 2/5 = 0.4 quedan todos por debajo de 0.5.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9674,6 +9820,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>60%</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">5 × 20 = 100, so 3 × 20 = 60. That makes 3/5 = 60/100 = 0.6 = 60%.</span><span class="lang-es" lang="es">5 × 20 = 100, así que 3 × 20 = 60. Entonces 3/5 = 60/100 = 0.6 = 60%.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9775,6 +9933,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>35%</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">20 × 5 = 100, so 7 × 5 = 35. That makes 7/20 = 35/100 = 0.35 = 35%.</span><span class="lang-es" lang="es">20 × 5 = 100, así que 7 × 5 = 35. Entonces 7/20 = 35/100 = 0.35 = 35%.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9876,6 +10046,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>25% and 1/4</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Move the decimal two places: 0.25 = 25%. As a fraction, 0.25 = 25/100 = 1/4.</span><span class="lang-es" lang="es">Mueve el punto decimal dos lugares: 0.25 = 25%. Como fracción, 0.25 = 25/100 = 1/4.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9977,6 +10159,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>0.45</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">45% means 45/100, and 45/100 written as a decimal is 0.45 (forty-five hundredths).</span><span class="lang-es" lang="es">45% significa 45/100, y 45/100 escrito como decimal es 0.45 (cuarenta y cinco centésimos).</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10147,6 +10341,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">1st (Smallest): 1/5</span><span class="lang-es" lang="es">1.º (el más pequeño): 1/5</span></li><li>2nd: 0.35</li><li>3rd: 2/5</li><li>4th: 55%</li><li><span class="lang-en">5th (Largest): 3/4</span><span class="lang-es" lang="es">5.º (el más grande): 3/4</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Rewriting every card as a decimal makes them comparable: 1/5 = 0.20, then 0.35, then 2/5 = 0.40, then 55% = 0.55, then 3/4 = 0.75. Those decimals run smallest to largest in exactly that order, so the cards land 1/5, 0.35, 2/5, 55%, 3/4.</span><span class="lang-es" lang="es">Reescribir cada tarjeta como decimal permite compararlas: 1/5 = 0.20, luego 0.35, luego 2/5 = 0.40, luego 55% = 0.55 y por último 3/4 = 0.75. Esos decimales van de menor a mayor justo en ese orden, así que las tarjetas quedan 1/5, 0.35, 2/5, 55%, 3/4.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10248,6 +10454,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>3/4</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">0.75 = 75/100. Simplify by dividing both by 25: 75÷25 = 3 and 100÷25 = 4. So 0.75 = 3/4.</span><span class="lang-es" lang="es">0.75 = 75/100. Simplifica dividiendo ambos entre 25: 75 ÷ 25 = 3 y 100 ÷ 25 = 4. Entonces 0.75 = 3/4.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

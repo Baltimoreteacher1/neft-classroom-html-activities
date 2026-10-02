@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8237,7 +8296,10 @@ body {
           <p class="ladder-q"><span class="lang-en">Build a factor tree for 120, starting with any factor pair you like. Show each split until every branch is prime, write the prime factorization with exponents, and check it by multiplying back. Then explain why a classmate who started with 10 × 12 gets the same final answer.</span><span class="lang-es" lang="es">Construye un árbol de factores para 120, empezando con cualquier par de factores. Muestra cada separación hasta que toda rama sea prima, escribe la factorización prima con exponentes y compruébala multiplicando de vuelta. Luego explica por qué un compañero que empezó con 10 × 12 obtiene la misma respuesta final.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">One tree: 120 = 10 × 12; 10 = 2 × 5; 12 = 3 × 4; 4 = 2 × 2. The primes are 2, 2, 2, 3, 5, so 120 = 2³ × 3 × 5. Check: 8 × 3 × 5 = 120. ✓ A classmate starting with 8 × 15 (or any pair) splits down to the same primes, because a number has only one prime factorization — the starting pair just changes the order you find them in.</span><span class="lang-es" lang="es">Un árbol: 120 = 10 × 12; 10 = 2 × 5; 12 = 3 × 4; 4 = 2 × 2. Los primos son 2, 2, 2, 3, 5, así que 120 = 2³ × 3 × 5. Comprueba: 8 × 3 × 5 = 120. ✓ Un compañero que empiece con 8 × 15 (o cualquier par) llega a los mismos primos, porque un número tiene una sola factorización prima — el par inicial solo cambia el orden en que los encuentras.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8517,6 +8579,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Both — 4 = 2 × 2 and 21 = 3 × 7.</span><span class="lang-es" lang="es">Las dos — 4 = 2 × 2 y 21 = 3 × 7.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Neither 4 nor 21 is prime, so both split: 4 = 2 × 2 and 21 = 3 × 7. Now every branch ends in 2, 2, 3, 7 — all prime — and the tree is done. Leaving a 4 or a 21 at the bottom is the most common way a tree is left unfinished.</span><span class="lang-es" lang="es">Ni 4 ni 21 son primos, así que los dos se separan: 4 = 2 × 2 y 21 = 3 × 7. Ahora cada rama termina en 2, 2, 3, 7 — todos primos — y el árbol está terminado. Dejar un 4 o un 21 abajo es la forma más común de dejar un árbol sin terminar.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8618,6 +8692,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">6 is not prime — split it into 2 × 3, so 60 = 2² × 3 × 5.</span><span class="lang-es" lang="es">6 no es primo — sepáralo en 2 × 3, así que 60 = 2² × 3 × 5.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">6 × 2 × 5 does equal 60, but 6 is composite, so the tree is not finished: 6 = 2 × 3 gives 60 = 2 × 2 × 3 × 5 = 2² × 3 × 5. 5 is prime, and the starting pair does not matter — every start ends at the same primes.</span><span class="lang-es" lang="es">6 × 2 × 5 sí da 60, pero 6 es compuesto, así que el árbol no está terminado: 6 = 2 × 3 da 60 = 2 × 2 × 3 × 5 = 2² × 3 × 5. 5 es primo, y el par inicial no importa — todo comienzo termina en los mismos primos.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8719,6 +8805,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>2³ × 3²</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">72 = 2 × 2 × 2 × 3 × 3 = 2³ × 3². Check: 8 × 9 = 72. 8 × 9 and 2 × 36 have composite numbers still at the bottom; 2² × 3² = 36 is one 2 short.</span><span class="lang-es" lang="es">72 = 2 × 2 × 2 × 3 × 3 = 2³ × 3². Comprueba: 8 × 9 = 72. A 8 × 9 y 2 × 36 les quedan números compuestos abajo; a 2² × 3² = 36 le falta un 2.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8823,6 +8921,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">One tree: 120 = 10 × 12; 10 = 2 × 5; 12 = 3 × 4; 4 = 2 × 2. The primes are 2, 2, 2, 3, 5, so 120 = 2³ × 3 × 5. Check: 8 × 3 × 5 = 120. ✓ A classmate starting with 8 × 15 (or any pair) splits down to the same primes, because a number has only one prime factorization — the starting pair just changes the order you find them in.</span><span class="lang-es" lang="es">Un árbol: 120 = 10 × 12; 10 = 2 × 5; 12 = 3 × 4; 4 = 2 × 2. Los primos son 2, 2, 2, 3, 5, así que 120 = 2³ × 3 × 5. Comprueba: 8 × 3 × 5 = 120. ✓ Un compañero que empiece con 8 × 15 (o cualquier par) llega a los mismos primos, porque un número tiene una sola factorización prima — el par inicial solo cambia el orden en que los encuentras.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8924,6 +9034,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>54</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">2 × 3³ = 2 × 27 = 54. 18 uses 3² instead of 3³; 36 = 2² × 3²; 24 = 2³ × 3 — the exponents are on the wrong primes.</span><span class="lang-es" lang="es">2 × 3³ = 2 × 27 = 54. 18 usa 3² en vez de 3³; 36 = 2² × 3²; 24 = 2³ × 3 — los exponentes están en los primos equivocados.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9025,6 +9147,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>2² × 3 × 7</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">84 = 2 × 2 × 3 × 7 = 2² × 3 × 7. Check: 4 × 3 × 7 = 84. 4 × 21 and 2 × 42 are factor pairs, not prime factorizations; 2 × 3 × 7 = 42 is missing one of the 2s.</span><span class="lang-es" lang="es">84 = 2 × 2 × 3 × 7 = 2² × 3 × 7. Comprueba: 4 × 3 × 7 = 84. 4 × 21 y 2 × 42 son pares de factores, no factorizaciones primas; a 2 × 3 × 7 = 42 le falta uno de los 2.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

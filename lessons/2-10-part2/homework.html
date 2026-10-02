@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8335,7 +8394,10 @@ body {
           <p class="ladder-q"><span class="lang-en">Set A is 14, 16, 18, 20, 22. Set B is 14, 16, 18, 20, 175. For EACH set, name the shape, then say which measure of center and which measure of spread you would report. Explain your choice for Set B in a full sentence.</span><span class="lang-es" lang="es">El Conjunto A es 14, 16, 18, 20, 22. El Conjunto B es 14, 16, 18, 20, 175. Para CADA conjunto, nombra la forma y luego di qué medida de centro y qué medida de dispersión informarías. Explica tu elección para el Conjunto B en una oración completa.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Set A is symmetric with no outlier (each value is 2 apart), so report the mean (18) and the MAD (2.4). Set B has an outlier, 175, far above a tight group, so report the median (18) and the IQR. For Set B the outlier would drag the mean up to 48.6, a number bigger than four of the five values, so the median describes the typical value honestly and the IQR describes the spread of the middle without the outlier.</span><span class="lang-es" lang="es">El Conjunto A es simétrico y sin valor atípico (cada valor está a 2 del siguiente), así que informa la media (18) y la MAD (2.4). El Conjunto B tiene un valor atípico, 175, muy por encima de un grupo apretado, así que informa la mediana (18) y el RIC. Para el Conjunto B el valor atípico arrastraría la media hasta 48.6, un número mayor que cuatro de los cinco valores, así que la mediana describe el valor típico con honestidad y el RIC describe la dispersión del medio sin el valor atípico.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8615,6 +8677,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">The median (18), because the outlier 175 drags the mean up to 48.6 — a number bigger than four of the five values.</span><span class="lang-es" lang="es">La mediana (18), porque el valor atípico 175 arrastra la media hasta 48.6 — un número mayor que cuatro de los cinco valores.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The mean is 243 ÷ 5 = 48.6, which is larger than four of the five values — the outlier 175 dragged it there. The median, the 3rd of the five ordered values, is 18 and describes a typical value honestly. The median is of ALL five values, not just the small ones, and 175 does not repeat.</span><span class="lang-es" lang="es">La media es 243 ÷ 5 = 48.6, mayor que cuatro de los cinco valores — el valor atípico 175 la arrastró hasta ahí. La mediana, el 3.º de los cinco valores ordenados, es 18 y describe un valor típico con honestidad. La mediana es de los CINCO valores, no solo de los pequeños, y 175 no se repite.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8716,6 +8790,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Kim&#039;s — the outlier 210 drags the mean far above the tight group of four, while the median sits inside it.</span><span class="lang-es" lang="es">El de Kim — el valor atípico 210 arrastra la media muy por encima del grupo apretado de cuatro, mientras que la mediana queda dentro de él.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The values 60–66 sit within 6 of each other; 210 is an outlier. It drags the mean to 92.4 — (60 + 62 + 64 + 66 + 210) ÷ 5 — a number that is nothing like any value in the set. The median, 64, sits inside the group and describes a typical value honestly; its partner for spread is the IQR. Using every value is not a virtue when one value is unlike all the others, and the greatest value is not a center.</span><span class="lang-es" lang="es">Los valores 60–66 están a 6 o menos entre sí; 210 es un valor atípico. Arrastra la media a 92.4 — (60 + 62 + 64 + 66 + 210) ÷ 5 — un número que no se parece a ningún valor del conjunto. La mediana, 64, queda dentro del grupo y describe un valor típico con honestidad; su pareja para la dispersión es el RIC. Usar todos los valores no es una virtud cuando uno es distinto a todos los demás, y el valor mayor no es un centro.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8817,6 +8903,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">median and IQR</span><span class="lang-es" lang="es">mediana y RIC</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">An outlier pulls the mean (and the MAD, which is built from the mean) toward itself, so a skewed set is described honestly by the median and the IQR — the pair that ignores the extreme. Mean-based measures overstate the spread, and mixing pairs breaks the match.</span><span class="lang-es" lang="es">Un valor atípico arrastra la media (y la MAD, que se construye a partir de la media) hacia sí, así que un conjunto sesgado se describe honestamente con la mediana y el RIC — el par que ignora el extremo. Las medidas basadas en la media exageran la dispersión, y mezclar pares rompe la pareja.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8921,6 +9019,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">Set A is symmetric with no outlier (each value is 2 apart), so report the mean (18) and the MAD (2.4). Set B has an outlier, 175, far above a tight group, so report the median (18) and the IQR. For Set B the outlier would drag the mean up to 48.6, a number bigger than four of the five values, so the median describes the typical value honestly and the IQR describes the spread of the middle without the outlier.</span><span class="lang-es" lang="es">El Conjunto A es simétrico y sin valor atípico (cada valor está a 2 del siguiente), así que informa la media (18) y la MAD (2.4). El Conjunto B tiene un valor atípico, 175, muy por encima de un grupo apretado, así que informa la mediana (18) y el RIC. Para el Conjunto B el valor atípico arrastraría la media hasta 48.6, un número mayor que cuatro de los cinco valores, así que la mediana describe el valor típico con honestidad y el RIC describe la dispersión del medio sin el valor atípico.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9022,6 +9132,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">box plot; dot plot</span><span class="lang-es" lang="es">diagrama de caja; diagrama de puntos</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A box plot is drawn from the five-number summary; a dot plot puts one dot above each individual value. A histogram groups values into interval bars, so it shows neither the exact five numbers nor the individual values.</span><span class="lang-es" lang="es">Un diagrama de caja se dibuja a partir del resumen de cinco números; un diagrama de puntos pone un punto sobre cada valor individual. Un histograma agrupa valores en barras por intervalo, así que no muestra ni los cinco números exactos ni los valores individuales.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9123,6 +9245,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">mean and MAD</span><span class="lang-es" lang="es">media y MAD</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A symmetric set with no outlier is described by the mean (center) and the MAD (spread). Median and IQR are the pair for skewed data; the mode and range are not a matched center-and-spread pair; mean with IQR mixes the two families.</span><span class="lang-es" lang="es">Un conjunto simétrico sin valor atípico se describe con la media (centro) y la MAD (dispersión). Mediana y RIC son el par para datos sesgados; la moda y el rango no son una pareja de centro y dispersión; la media con el RIC mezcla las dos familias.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

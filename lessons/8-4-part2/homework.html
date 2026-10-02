@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8336,7 +8395,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A movie is for ages 13 and up. Write an inequality for the ages a that may watch, describe how you would graph it (open or closed circle, which direction), and name three ages that are solutions. Then explain how the phrase &#039;and up&#039; told you which symbol to use.</span><span class="lang-es" lang="es">Una película es para edades de 13 en adelante. Escribe una desigualdad para las edades a que pueden verla, describe cómo la graficarías (círculo abierto o cerrado, en qué dirección) y nombra tres edades que sean soluciones. Luego explica cómo la frase &#039;en adelante&#039; te dijo qué símbolo usar.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">a ≥ 13. Graph: a closed circle at 13 (a 13-year-old IS allowed) with the arrow pointing right toward older ages. Solutions include 13, 16 and 40. &#039;And up&#039; means 13 counts and so does every age above it — that is &#039;greater than or equal to&#039;, the ≥ symbol; &#039;over 13&#039; would have meant &gt; with an open circle.</span><span class="lang-es" lang="es">a ≥ 13. Gráfica: un círculo cerrado en el 13 (alguien de 13 años SÍ puede) con la flecha apuntando a la derecha hacia edades mayores. Las soluciones incluyen 13, 16 y 40. &#039;En adelante&#039; significa que el 13 cuenta y también toda edad por encima — eso es &#039;mayor o igual que&#039;, el símbolo ≥; &#039;más de 13&#039; habría significado &gt; con un círculo abierto.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8618,6 +8680,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Closed — ≥ includes 3, and the arrow points right.</span><span class="lang-es" lang="es">Cerrado — ≥ incluye el 3, y la flecha apunta a la derecha.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">3 ≥ 3 is true, so 3 is a solution and the circle is closed; the arrow points right toward the greater values. An open circle is for &lt; and &gt;; shading left would show x ≤ 3.</span><span class="lang-es" lang="es">3 ≥ 3 es verdadero, así que el 3 es solución y el círculo es cerrado; la flecha apunta a la derecha hacia los valores mayores. Un círculo abierto es para &lt; y &gt;; sombrear a la izquierda mostraría x ≤ 3.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8721,6 +8795,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Open, shaded to the left.</span><span class="lang-es" lang="es">Abierto, sombreado a la izquierda.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">−2 &lt; −2 is false, so the circle at −2 is open, and &#039;less than&#039; shades left toward −3, −4, …. A closed circle would claim −2 is a solution; shading right would show x &gt; −2.</span><span class="lang-es" lang="es">−2 &lt; −2 es falso, así que el círculo en −2 es abierto, y &#039;menor que&#039; sombrea a la izquierda hacia −3, −4, …. Un círculo cerrado afirmaría que −2 es solución; sombrear a la derecha mostraría x &gt; −2.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8824,6 +8910,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>40, 25, 0</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">40, 25 and 0 each satisfy p ≤ 40. Every other set includes at least one number above 40, which the ferry cannot carry.</span><span class="lang-es" lang="es">40, 25 y 0 cumplen p ≤ 40. Cada uno de los otros conjuntos incluye al menos un número mayor que 40, que el transbordador no puede llevar.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8930,6 +9028,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">a ≥ 13. Graph: a closed circle at 13 (a 13-year-old IS allowed) with the arrow pointing right toward older ages. Solutions include 13, 16 and 40. &#039;And up&#039; means 13 counts and so does every age above it — that is &#039;greater than or equal to&#039;, the ≥ symbol; &#039;over 13&#039; would have meant &gt; with an open circle.</span><span class="lang-es" lang="es">a ≥ 13. Gráfica: un círculo cerrado en el 13 (alguien de 13 años SÍ puede) con la flecha apuntando a la derecha hacia edades mayores. Las soluciones incluyen 13, 16 y 40. &#039;En adelante&#039; significa que el 13 cuenta y también toda edad por encima — eso es &#039;mayor o igual que&#039;, el símbolo ≥; &#039;más de 13&#039; habría significado &gt; con un círculo abierto.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9033,6 +9143,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>x &gt; 5</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">An open circle rules out ≤ and ≥, and shading right means greater: x &gt; 5. x ≥ 5 would need a closed circle; &lt; and ≤ would shade left.</span><span class="lang-es" lang="es">Un círculo abierto descarta ≤ y ≥, y sombrear a la derecha significa mayor: x &gt; 5. x ≥ 5 necesitaría un círculo cerrado; &lt; y ≤ sombrearían a la izquierda.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9136,6 +9258,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>w ≤ 15</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">&#039;No more than&#039; means 15 is allowed and anything heavier is not: w ≤ 15. w &lt; 15 would forbid exactly 15 pounds; ≥ and &gt; point the wrong way.</span><span class="lang-es" lang="es">&#039;No más de&#039; significa que 15 está permitido y nada más pesado lo está: w ≤ 15. w &lt; 15 prohibiría exactamente 15 libras; ≥ y &gt; apuntan en la dirección equivocada.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

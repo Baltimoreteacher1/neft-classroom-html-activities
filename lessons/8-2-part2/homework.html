@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8337,7 +8396,10 @@ body {
           <p class="ladder-q"><span class="lang-en">Solve y − 14 = 6. Show the inverse operation applied to BOTH sides, then check your solution in the original equation. Finally, explain in a sentence why doing the operation to only one side would break the equation.</span><span class="lang-es" lang="es">Resuelve y − 14 = 6. Muestra la operación inversa aplicada a AMBOS lados, luego comprueba tu solución en la ecuación original. Por último, explica en una oración por qué hacer la operación en un solo lado rompería la ecuación.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">y − 14 + 14 = 6 + 14, so y = 20. Check: 20 − 14 = 6. ✓ An equation says the two sides are equal, like a balanced scale; adding 14 to only one side would make that side heavier, so the two sides would no longer be equal and the equation would no longer be true.</span><span class="lang-es" lang="es">y − 14 + 14 = 6 + 14, así que y = 20. Comprueba: 20 − 14 = 6. ✓ Una ecuación dice que los dos lados son iguales, como una balanza equilibrada; sumar 14 a un solo lado haría ese lado más pesado, así que los dos lados ya no serían iguales y la ecuación dejaría de ser verdadera.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8617,6 +8679,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">The student subtracted again instead of adding. Adding 14 to both sides gives y = 20, and 20 − 14 = 6.</span><span class="lang-es" lang="es">El estudiante volvió a restar en vez de sumar. Sumar 14 a ambos lados da y = 20, y 20 − 14 = 6.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Undoing &#039;− 14&#039; means adding 14 to both sides: y = 6 + 14 = 20, and 20 − 14 = 6 checks. Using the same operation again (subtracting) is the mistake; the check −8 − 14 = −22 ≠ 6 catches it. Division and multiplication are for equations that multiply or divide the variable.</span><span class="lang-es" lang="es">Deshacer &#039;− 14&#039; significa sumar 14 a ambos lados: y = 6 + 14 = 20, y 20 − 14 = 6 comprueba. Usar la misma operación otra vez (restar) es el error; la comprobación −8 − 14 = −22 ≠ 6 lo detecta. La división y la multiplicación son para ecuaciones que multiplican o dividen la variable.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8718,6 +8792,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">y = 59; check 59 − 23 = 36 ✓</span><span class="lang-es" lang="es">y = 59; comprobación 59 − 23 = 36 ✓</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">y = 36 + 23 = 59, and the check 59 − 23 = 36 is true. y = 13 does not work (13 − 23 is not 36); 59 + 23 = 36 is false; 36 − 23 = 13 is true arithmetic but does not check the equation y − 23 = 36.</span><span class="lang-es" lang="es">y = 36 + 23 = 59, y la comprobación 59 − 23 = 36 es verdadera. y = 13 no funciona (13 − 23 no es 36); 59 + 23 = 36 es falso; 36 − 23 = 13 es aritmética correcta pero no comprueba la ecuación y − 23 = 36.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8819,6 +8905,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>x = 16</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Adding 5 to both sides gives x = 16, and 16 − 5 = 11 checks. x = 6 subtracts 5 again (the same operation twice); 55 multiplies; −6 has the sign backward.</span><span class="lang-es" lang="es">Sumar 5 a ambos lados da x = 16, y 16 − 5 = 11 comprueba. x = 6 resta 5 otra vez (la misma operación dos veces); 55 multiplica; −6 tiene el signo al revés.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8923,6 +9021,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">y − 14 + 14 = 6 + 14, so y = 20. Check: 20 − 14 = 6. ✓ An equation says the two sides are equal, like a balanced scale; adding 14 to only one side would make that side heavier, so the two sides would no longer be equal and the equation would no longer be true.</span><span class="lang-es" lang="es">y − 14 + 14 = 6 + 14, así que y = 20. Comprueba: 20 − 14 = 6. ✓ Una ecuación dice que los dos lados son iguales, como una balanza equilibrada; sumar 14 a un solo lado haría ese lado más pesado, así que los dos lados ya no serían iguales y la ecuación dejaría de ser verdadera.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9024,6 +9134,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>45</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">m = 27 + 18 = 45. Check: 45 − 18 = 27. ✓ 9 subtracts 18 from 27 — but he must have started with more than he has left; 27 is what remains; 486 multiplies.</span><span class="lang-es" lang="es">m = 27 + 18 = 45. Comprueba: 45 − 18 = 27. ✓ 9 resta 18 de 27 — pero debió empezar con más de lo que le queda; 27 es lo que le queda; 486 multiplica.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9125,6 +9247,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>n = 11</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">n = 3 + 8 = 11, and 11 − 8 = 3 checks. −5 and 5 come from subtracting 8 from 3 in some order; 24 multiplies.</span><span class="lang-es" lang="es">n = 3 + 8 = 11, y 11 − 8 = 3 comprueba. −5 y 5 vienen de restar 8 de 3 en algún orden; 24 multiplica.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

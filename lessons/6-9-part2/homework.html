@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8251,7 +8310,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A baker has 5 cups of sugar. Each batch of cookies uses 5/8 cup. Predict whether the number of batches is more or less than 5, then solve 5 ÷ 5/8 with Keep, Change, Flip. Finally, check your answer by multiplying it by 5/8.</span><span class="lang-es" lang="es">Un panadero tiene 5 tazas de azúcar. Cada tanda de galletas usa 5/8 de taza. Predice si el número de tandas es más o menos de 5, luego resuelve 5 ÷ 5/8 con Mantén, Cambia, Voltea. Por último, comprueba tu respuesta multiplicándola por 5/8.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Prediction: more than 5 batches, because each batch uses less than a cup. 5 ÷ 5/8 = 5/1 × 8/5 = 40/5 = 8 batches. Check: 8 × 5/8 = 40/8 = 5 cups. ✓ The answer is bigger than 5 because dividing by a fraction less than 1 asks how many small pieces fit — and small pieces fit many times.</span><span class="lang-es" lang="es">Predicción: más de 5 tandas, porque cada tanda usa menos de una taza. 5 ÷ 5/8 = 5/1 × 8/5 = 40/5 = 8 tandas. Comprueba: 8 × 5/8 = 40/8 = 5 tazas. ✓ La respuesta es mayor que 5 porque dividir entre una fracción menor que 1 pregunta cuántas piezas pequeñas caben — y las piezas pequeñas caben muchas veces.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8602,6 +8664,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">More than 6, because each bag holds less than a pound.</span><span class="lang-es" lang="es">Más de 6, porque cada bolsa contiene menos de una libra.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Smaller bags mean more of them: the answer is more than 6 (it is 9). Dividing by a fraction less than 1 makes the quotient larger, and 6 × 2/3 = 4 answers &#039;what is 2/3 of 6 pounds&#039;, a different question.</span><span class="lang-es" lang="es">Bolsas más pequeñas significan más bolsas: la respuesta es más de 6 (es 9). Dividir entre una fracción menor que 1 agranda el cociente, y 6 × 2/3 = 4 responde &#039;cuánto es 2/3 de 6 libras&#039;, otra pregunta.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8703,6 +8777,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>9</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">6 × 3/2 = 18/2 = 9 bags — more than 6, as predicted. 4 multiplies by 2/3 (no flip); 18 stops before simplifying 18/2; 12 flips to 3/1 and forgets the 2.</span><span class="lang-es" lang="es">6 × 3/2 = 18/2 = 9 bolsas — más de 6, como se predijo. 4 multiplica por 2/3 (sin voltear); 18 se detiene antes de simplificar 18/2; 12 voltea a 3/1 y olvida el 2.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8804,6 +8890,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>10</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">8 × 5/4 = 40/4 = 10 planters, more than 8 as predicted. 6 2/5 multiplies by 4/5 with no flip; 40 forgets the ÷ 4; 6 is a guess below 8, which the prediction rules out.</span><span class="lang-es" lang="es">8 × 5/4 = 40/4 = 10 macetas, más de 8 como se predijo. 6 2/5 multiplica por 4/5 sin voltear; 40 olvida el ÷ 4; 6 es una suposición menor que 8, que la predicción descarta.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8908,6 +9006,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">Prediction: more than 5 batches, because each batch uses less than a cup. 5 ÷ 5/8 = 5/1 × 8/5 = 40/5 = 8 batches. Check: 8 × 5/8 = 40/8 = 5 cups. ✓ The answer is bigger than 5 because dividing by a fraction less than 1 asks how many small pieces fit — and small pieces fit many times.</span><span class="lang-es" lang="es">Predicción: más de 5 tandas, porque cada tanda usa menos de una taza. 5 ÷ 5/8 = 5/1 × 8/5 = 40/5 = 8 tandas. Comprueba: 8 × 5/8 = 40/8 = 5 tazas. ✓ La respuesta es mayor que 5 porque dividir entre una fracción menor que 1 pregunta cuántas piezas pequeñas caben — y las piezas pequeñas caben muchas veces.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9009,6 +9119,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>8</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">6 × 4/3 = 24/3 = 8. Check: 8 × 3/4 = 6. 4 1/2 multiplies by 3/4 without flipping; 24 forgets to divide by 3; 2 divides by 3 only.</span><span class="lang-es" lang="es">6 × 4/3 = 24/3 = 8. Comprueba: 8 × 3/4 = 6. 4 1/2 multiplica por 3/4 sin voltear; 24 olvida dividir entre 3; 2 divide solo entre 3.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9110,6 +9232,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>8</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">4 ÷ 1/2 = 4 × 2 = 8 — there are 8 halves in 4. 2 multiplies by 1/2 instead of flipping; 4 1/2 adds; 1/8 flips the wrong number.</span><span class="lang-es" lang="es">4 ÷ 1/2 = 4 × 2 = 8 — hay 8 medios en 4. 2 multiplica por 1/2 en vez de voltear; 4 1/2 suma; 1/8 voltea el número equivocado.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

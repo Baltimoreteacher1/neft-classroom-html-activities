@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8314,7 +8373,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A local newspaper reports that the average home price in a neighborhood is $450,000. The actual prices are: $180K, $200K, $190K, $210K, $195K, $1,725K. Is the reporter&#039;s claim misleading? Calculate the mean and median and explain which better represents a &#039;typical&#039; home price.</span><span class="lang-es" lang="es">Un periódico local informa que el precio promedio de una casa en un vecindario es de $450,000. Los precios reales son: $180K, $200K, $190K, $210K, $195K, $1,725K. ¿Es engañosa la afirmación del reportero? Calcula la media y la mediana y explica cuál representa mejor el precio de una casa &#039;típica&#039;.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">The six prices add to $2,700K, so the mean is 2,700 ÷ 6 = $450K, matching the reporter — but the median is the average of the middle two prices, $195K and $200K, which is $197.5K. Five of the six homes cost between $180K and $210K, so the $1,725K home is an outlier pulling the mean far above what most homes cost. The claim is misleading, and the median better represents a typical price.</span><span class="lang-es" lang="es">Los seis precios suman $2,700K, así que la media es 2,700 ÷ 6 = $450K, igual que dice el reportero; pero la mediana es el promedio de los dos precios del medio, $195K y $200K, o sea $197.5K. Cinco de las seis casas cuestan entre $180K y $210K, así que la casa de $1,725K es un valor atípico que jala la media muy por encima de lo que cuestan casi todas. La afirmación es engañosa, y la mediana representa mejor un precio típico.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8705,6 +8767,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Use Mean: No outliers in the data, Data is symmetric, All values are close together</span><span class="lang-es" lang="es">Usa la media: Los datos no tienen valores atípicos, Los datos son simétricos, Todos los valores están cercanos entre sí</span></li><li><span class="lang-en">Use Median: Data has one or more outliers, Data is skewed to one side, One extreme value pulls the average</span><span class="lang-es" lang="es">Usa la mediana: Los datos tienen uno o más valores atípicos, Los datos están sesgados hacia un lado, Un valor extremo jala el promedio</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The mean uses every value, so a single extreme number drags it toward itself, while the median is just the middle of the ordered list and barely moves. That is why &quot;no outliers,&quot; &quot;symmetric,&quot; and &quot;all values close together&quot; point to the mean, and &quot;has outliers,&quot; &quot;skewed to one side,&quot; and &quot;one extreme value pulls the average&quot; point to the median.</span><span class="lang-es" lang="es">La media usa todos los valores, así que un solo número extremo la jala hacia él, mientras que la mediana es simplemente el centro de la lista ordenada y casi no se mueve. Por eso &quot;sin valores atípicos&quot;, &quot;datos simétricos&quot; y &quot;todos los valores cercanos entre sí&quot; apuntan a la media, y &quot;tiene valores atípicos&quot;, &quot;datos sesgados hacia un lado&quot; y &quot;un valor extremo jala el promedio&quot; apuntan a la mediana.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8812,6 +8886,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">What was a typical game when one score is a record-breaking outlier? → Median</span><span class="lang-es" lang="es">¿Cómo fue un juego típico cuando un puntaje es un récord atípico? → Mediana</span></li><li><span class="lang-en">Which shoe size do most players wear? → Mode</span><span class="lang-es" lang="es">¿Qué talla de tenis usan la mayoría de los jugadores? → Moda</span></li><li><span class="lang-en">On a symmetric, outlier-free set, what is the average score? → Mean</span><span class="lang-es" lang="es">En un conjunto simétrico y sin atípicos, ¿cuál es el puntaje promedio? → Media</span></li><li><span class="lang-en">How far apart are the highest and lowest sprint times? → Range</span><span class="lang-es" lang="es">¿Qué tan separados están el tiempo más alto y el más bajo? → Rango</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each question names the job a different statistic does. A record-breaking outlier calls for the median, which resists extremes; &quot;which one do most players wear&quot; is the mode; a symmetric, outlier-free average is the mean; and the distance from the highest to the lowest sprint time is the range, a measure of spread rather than center.</span><span class="lang-es" lang="es">Cada pregunta nombra la tarea que hace una medida distinta. Un valor atípico que rompe récords pide la mediana, que resiste los extremos; &quot;cuál usan la mayoría de los jugadores&quot; es la moda; un promedio simétrico y sin valores atípicos es la media; y la distancia entre el tiempo de sprint más alto y el más bajo es el rango, una medida de dispersión y no de centro.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8913,6 +8999,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Range, because it is the highest minus the lowest value</span><span class="lang-es" lang="es">El rango, porque es el valor más alto menos el más bajo</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Range = max − min = 18 − 6 = 12. Because it uses only the two most extreme values, one outlier (18) changes the range a lot.</span><span class="lang-es" lang="es">Rango = máximo − mínimo = 18 − 6 = 12. Como usa solamente los dos valores más extremos, un solo valor atípico (18) cambia mucho el rango.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9030,6 +9128,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Mode, because it names the value that appears most</span><span class="lang-es" lang="es">La moda, porque nombra el valor que aparece más veces</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The mode is the value that shows up most often. Here size M appears 4 times, so the mode (M) tells the manager what to order most.</span><span class="lang-es" lang="es">La moda es el valor que aparece con más frecuencia. Aquí la talla M aparece 4 veces, así que la moda (M) le dice al encargado qué pedir en mayor cantidad.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9131,6 +9241,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Median, because 58 is an outlier that pulls the mean up</span><span class="lang-es" lang="es">La mediana, porque 58 es un valor atípico que sube la media</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The 58-point game is an outlier. It pulls the mean above 5 of the 6 games, so the median (16) better shows a typical game.</span><span class="lang-es" lang="es">El partido de 58 puntos es un valor atípico. Jala la media por encima de 5 de los 6 partidos, así que la mediana (16) muestra mejor un partido típico.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9232,6 +9354,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Median, because the .110 outlier pulls the mean down</span><span class="lang-es" lang="es">La mediana, porque el valor atípico .110 baja la media</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The .110 is an outlier that pulls the mean down to .260. The median (.2875) better represents typical performance because it isn&#039;t affected by the extreme value.</span><span class="lang-es" lang="es">El .110 es un valor atípico que baja la media hasta .260. La mediana (.2875) representa mejor el rendimiento típico porque no se ve afectada por el valor extremo.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9344,6 +9478,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Mean</span><span class="lang-es" lang="es">La media</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The data is symmetric with no outliers, so the mean (8.7) best represents the typical score.</span><span class="lang-es" lang="es">Los datos son simétricos y no tienen valores atípicos, así que la media (8.7) representa mejor la puntuación típica.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9445,6 +9591,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Median — the outlier 12:00 pulls the mean too high</span><span class="lang-es" lang="es">La mediana — el valor atípico de 12:00 sube demasiado la media</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The 12:00 is an outlier that pulls the mean up. The median (7:15) better represents the runner&#039;s typical time.</span><span class="lang-es" lang="es">El 12:00 es un valor atípico que sube la media. La mediana (7:15) representa mejor el tiempo típico de la corredora.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9546,6 +9704,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Median (7) — the outlier 50 inflates the mean</span><span class="lang-es" lang="es">La mediana (7) — el valor atípico 50 infla la media</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The mean (13.8) is higher than 5 of the 6 values because the outlier 50 pulls it up. The median (7) better represents a typical value.</span><span class="lang-es" lang="es">La media (13.8) es mayor que 5 de los 6 valores porque el valor atípico 50 la jala hacia arriba. La mediana (7) representa mejor un valor típico.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9704,6 +9874,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Measure of Center: Mean, Median, Mode</span><span class="lang-es" lang="es">Medida de centro: Media, Mediana, Moda</span></li><li><span class="lang-en">Measure of Spread: Range, Mean absolute deviation (MAD)</span><span class="lang-es" lang="es">Medida de dispersión: Rango, Desviación absoluta media (DAM)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Mean, median, and mode all answer &quot;where is a typical value?&quot;, so they are measures of center. Range and mean absolute deviation answer &quot;how spread out are the values?&quot; — the range is the distance from the lowest value to the highest, and MAD is the average distance from the mean.</span><span class="lang-es" lang="es">La media, la mediana y la moda responden &quot;¿dónde está un valor típico?&quot;, así que son medidas de centro. El rango y la desviación media absoluta responden &quot;¿qué tan dispersos están los valores?&quot;: el rango es la distancia del valor más bajo al más alto, y la MAD es la distancia promedio respecto a la media.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9847,6 +10029,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Mean is typically reported: Average temperature for the month, Average test score for a class (no outliers)</span><span class="lang-es" lang="es">Normalmente se reporta la media: Temperatura promedio del mes, Calificación promedio de una clase (sin valores atípicos)</span></li><li><span class="lang-en">Median is typically reported: Median household income in a city, Median home price in a neighborhood</span><span class="lang-es" lang="es">Normalmente se reporta la mediana: Ingreso familiar mediano de una ciudad, Precio mediano de las casas de un vecindario</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Reports use the median when a few extreme values would distort the average. Household income and home prices have long tails — a few very high earners or very expensive houses — so the median is reported. Monthly temperature and an outlier-free set of class test scores are roughly symmetric, so the mean represents them well.</span><span class="lang-es" lang="es">Los reportes usan la mediana cuando unos pocos valores extremos distorsionarían el promedio. El ingreso familiar y los precios de las casas tienen colas largas (unos pocos ingresos muy altos o casas carísimas), así que se reporta la mediana. La temperatura mensual y un conjunto de calificaciones sin valores atípicos son bastante simétricos, así que la media los representa bien.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9948,6 +10142,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: mean, median, outlier, misleading, pulls, higher, typical, skewed.</span><span class="lang-es" lang="es">Una buena respuesta usa: mean, median, outlier, misleading, pulls, higher, typical, skewed.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The six prices add to $2,700K, so the mean is 2,700 ÷ 6 = $450K, matching the reporter — but the median is the average of the middle two prices, $195K and $200K, which is $197.5K. Five of the six homes cost between $180K and $210K, so the $1,725K home is an outlier pulling the mean far above what most homes cost. The claim is misleading, and the median better represents a typical price.</span><span class="lang-es" lang="es">Los seis precios suman $2,700K, así que la media es 2,700 ÷ 6 = $450K, igual que dice el reportero; pero la mediana es el promedio de los dos precios del medio, $195K y $200K, o sea $197.5K. Cinco de las seis casas cuestan entre $180K y $210K, así que la casa de $1,725K es un valor atípico que jala la media muy por encima de lo que cuestan casi todas. La afirmación es engañosa, y la mediana representa mejor un precio típico.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10146,6 +10352,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">15, 18, 16, 17, 15 · Mean: 16.2</span><span class="lang-es" lang="es">15, 18, 16, 17, 15 · Media: 16.2</span></li><li><span class="lang-en">15, 18, 16, 17, 15 · Median: 16</span><span class="lang-es" lang="es">15, 18, 16, 17, 15 · Mediana: 16</span></li><li><span class="lang-en">15, 18, 16, 17, 15 · Outlier?: No</span><span class="lang-es" lang="es">15, 18, 16, 17, 15 · ¿Valor atípico?: No</span></li><li><span class="lang-en">15, 18, 16, 17, 15 · Best Measure: Mean (no outlier, data is clustered)</span><span class="lang-es" lang="es">15, 18, 16, 17, 15 · Mejor medida: Media (sin valor atípico; los datos están agrupados)</span></li><li><span class="lang-en">15, 18, 16, 17, 72 · Mean: 27.6</span><span class="lang-es" lang="es">15, 18, 16, 17, 72 · Media: 27.6</span></li><li><span class="lang-en">15, 18, 16, 17, 72 · Median: 17</span><span class="lang-es" lang="es">15, 18, 16, 17, 72 · Mediana: 17</span></li><li><span class="lang-en">15, 18, 16, 17, 72 · Outlier?: Yes (72)</span><span class="lang-es" lang="es">15, 18, 16, 17, 72 · ¿Valor atípico?: Sí (72)</span></li><li><span class="lang-en">15, 18, 16, 17, 72 · Best Measure: Median (72 pulls the mean to 27.6, higher than 4 of 5 values)</span><span class="lang-es" lang="es">15, 18, 16, 17, 72 · Mejor medida: Mediana (72 eleva la media a 27.6, por encima de 4 de los 5 valores)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The two rows differ only in the last value, which is what makes the effect of an outlier visible. Row 1 (15, 18, 16, 17, 15) has mean 81 ÷ 5 = 16.2 and median 16, so with no outlier the mean works fine. Row 2 swaps in 72: the mean jumps to 138 ÷ 5 = 27.6 while the median stays at 17, so the median is the better measure there.</span><span class="lang-es" lang="es">Las dos filas solo se diferencian en el último valor, y eso es lo que hace visible el efecto de un valor atípico. La fila 1 (15, 18, 16, 17, 15) tiene media 81 ÷ 5 = 16.2 y mediana 16, así que sin valor atípico la media funciona bien. La fila 2 cambia ese valor por 72: la media salta a 138 ÷ 5 = 27.6 mientras la mediana se queda en 17, así que ahí la mediana es la mejor medida.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

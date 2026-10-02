@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8224,7 +8283,10 @@ body {
           <p class="ladder-q"><span class="lang-en">Write your own fraction division word problem where the answer is 8. Then show the equation, solve it step by step, and explain how you know your answer is reasonable.</span><span class="lang-es" lang="es">Escribe tu propio problema de división de fracciones cuya respuesta sea 8. Después muestra la ecuación, resuélvela paso a paso y explica cómo sabes que tu respuesta es razonable.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">The safest way to build this problem is backwards: choose a group size, multiply it by 8, and let that product be the total in your story. For example, 8 groups of 1/2 make 4, so &quot;4 cups of trail mix packed into 1/2-cup bags&quot; gives 4 ÷ 1/2 = 4 × 2/1 = 8. The answer is reasonable because 8 groups of the size you chose rebuild the original total exactly.</span><span class="lang-es" lang="es">La forma más segura de construir este problema es al revés: elige un tamaño de grupo, multiplícalo por 8 y deja que ese producto sea el total de tu historia. Por ejemplo, 8 grupos de 1/2 forman 4, así que &quot;4 tazas de mezcla de nueces empacadas en bolsas de 1/2 taza&quot; da 4 ÷ 1/2 = 4 × 2/1 = 8. La respuesta es razonable porque 8 grupos del tamaño que elegiste vuelven a formar exactamente el total original.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8656,6 +8718,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Needs Division (how many groups fit?): A roll of crime-scene tape is 3/5 mile long, cut into 1/10-mile strips. How many strips? (3/5 ÷ 1/10), A footprint trail is 2/3 mile long with markers every 1/12 mile. How many markers? (2/3 ÷ 1/12)</span><span class="lang-es" lang="es">Necesita división (¿cuántos grupos caben?): Un rollo de cinta policial mide 3/5 de milla y se corta en tiras de 1/10 de milla. ¿Cuántas tiras? (3/5 ÷ 1/10), Un rastro de huellas mide 2/3 de milla con marcadores cada 1/12 de milla. ¿Cuántos marcadores? (2/3 ÷ 1/12)</span></li><li><span class="lang-en">Needs Multiplication (a part of an amount): Each evidence bag weighs 1/4 pound. The detective grabs 4 bags. What is the total weight? (1/4 × 4), A report is 3/8 page long. Torres reads half of it. How much did she read? (3/8 × 1/2)</span><span class="lang-es" lang="es">Necesita multiplicación (una parte de una cantidad): Cada bolsa de evidencia pesa 1/4 de libra. El detective toma 4 bolsas. ¿Cuál es el peso total? (1/4 × 4), Un informe ocupa 3/8 de página. Torres lee la mitad. ¿Cuánto leyó? (3/8 × 1/2)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Division answers &quot;how many equal pieces fit,&quot; so cutting a 3/5-mile roll into 1/10-mile strips (3/5 ÷ 1/10) and marking a 2/3-mile trail every 1/12 mile (2/3 ÷ 1/12) belong in the division lock. Multiplication finds a repeat or a part of an amount, so 4 bags at 1/4 pound each (1/4 × 4) and half of a 3/8-page report (3/8 × 1/2) belong in the multiplication lock.</span><span class="lang-es" lang="es">La división responde &quot;cuántas piezas iguales caben&quot;, así que cortar un rollo de 3/5 de milla en tiras de 1/10 de milla (3/5 ÷ 1/10) y marcar un sendero de 2/3 de milla cada 1/12 de milla (2/3 ÷ 1/12) van en el candado de división. La multiplicación halla una repetición o una parte de una cantidad, así que 4 bolsas de 1/4 de libra cada una (1/4 × 4) y la mitad de un informe de 3/8 de página (3/8 × 1/2) van en el candado de multiplicación.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8799,6 +8873,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Division Problem: How many 1/3-cup scoops fit into 2 cups? (2 ÷ 1/3), A ribbon is 3/4 yard. Each piece is 1/8 yard. How many pieces? (3/4 ÷ 1/8)</span><span class="lang-es" lang="es">Problema de división: ¿Cuántas medidas de 1/3 de taza caben en 2 tazas? (2 ÷ 1/3), Una cinta mide 3/4 de yarda. Cada trozo mide 1/8 de yarda. ¿Cuántos trozos? (3/4 ÷ 1/8)</span></li><li><span class="lang-en">Multiplication Problem: You run 1/2 mile, 3 times. How far total? (1/2 × 3), A recipe uses 2/3 cup. You make half a recipe. How much? (2/3 × 1/2)</span><span class="lang-es" lang="es">Problema de multiplicación: Corres 1/2 milla, 3 veces. ¿Cuánto en total? (1/2 × 3), Una receta usa 2/3 de taza. Haces media receta. ¿Cuánto? (2/3 × 1/2)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Division answers &quot;how many equal groups fit inside a total,&quot; so filling 2 cups with 1/3-cup scoops (2 ÷ 1/3) and cutting 3/4 yard into 1/8-yard pieces (3/4 ÷ 1/8) are division stories. Multiplication finds a repeat or a part of an amount, so running 1/2 mile three times (1/2 × 3) and making half of a 2/3-cup recipe (2/3 × 1/2) are multiplication stories.</span><span class="lang-es" lang="es">La división responde &quot;cuántos grupos iguales caben dentro de un total&quot;, así que llenar 2 tazas con cucharadas de 1/3 de taza (2 ÷ 1/3) y cortar 3/4 de yarda en piezas de 1/8 de yarda (3/4 ÷ 1/8) son problemas de división. La multiplicación halla una repetición o una parte de una cantidad, así que correr 1/2 milla tres veces (1/2 × 3) y hacer la mitad de una receta de 2/3 de taza (2/3 × 1/2) son problemas de multiplicación.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8906,6 +8992,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A 4/5-yard cord is cut into 1/10-yard fuses for the alarm. → 4/5 ÷ 1/10 = 8</span><span class="lang-es" lang="es">Un cordón de 4/5 de yarda se corta en mechas de 1/10 de yarda para la alarma. → 4/5 ÷ 1/10 = 8</span></li><li><span class="lang-en">A 1/2-gallon jug of luminol is poured into 1/8-gallon sprayers. → 1/2 ÷ 1/8 = 4</span><span class="lang-es" lang="es">Una jarra de 1/2 galón de luminol se vierte en rociadores de 1/8 de galón. → 1/2 ÷ 1/8 = 4</span></li><li><span class="lang-en">A 3/4-mile escape route is split into 3/8-mile sprints. → 3/4 ÷ 3/8 = 2</span><span class="lang-es" lang="es">Una ruta de escape de 3/4 de milla se divide en tramos de 3/8 de milla. → 3/4 ÷ 3/8 = 2</span></li><li><span class="lang-en">A 5/6-liter sample is divided into 1/12-liter test tubes. → 5/6 ÷ 1/12 = 10</span><span class="lang-es" lang="es">Una muestra de 5/6 de litro se divide en tubos de ensayo de 1/12 de litro. → 5/6 ÷ 1/12 = 10</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each story names a total and one piece size, and the matching equation always puts the total first: 4/5 ÷ 1/10 = 8 fuses, 1/2 ÷ 1/8 = 4 sprayers, 3/4 ÷ 3/8 = 2 sprints, and 5/6 ÷ 1/12 = 10 test tubes. Smaller pieces produce more of them, which is why the 1/12-liter tubes give the largest count.</span><span class="lang-es" lang="es">Cada historia menciona un total y el tamaño de una pieza, y la ecuación que le corresponde siempre pone el total primero: 4/5 ÷ 1/10 = 8 mechas, 1/2 ÷ 1/8 = 4 rociadores, 3/4 ÷ 3/8 = 2 tramos y 5/6 ÷ 1/12 = 10 tubos de ensayo. Las piezas más pequeñas producen más cantidad, por eso los tubos de 1/12 de litro dan el número más alto.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9023,6 +9121,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: divide, = 8, reasonable, word problem, equation, reciprocal.</span><span class="lang-es" lang="es">Una buena respuesta usa: divide, = 8, reasonable, word problem, equation, reciprocal.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The safest way to build this problem is backwards: choose a group size, multiply it by 8, and let that product be the total in your story. For example, 8 groups of 1/2 make 4, so &quot;4 cups of trail mix packed into 1/2-cup bags&quot; gives 4 ÷ 1/2 = 4 × 2/1 = 8. The answer is reasonable because 8 groups of the size you chose rebuild the original total exactly.</span><span class="lang-es" lang="es">La forma más segura de construir este problema es al revés: elige un tamaño de grupo, multiplícalo por 8 y deja que ese producto sea el total de tu historia. Por ejemplo, 8 grupos de 1/2 forman 4, así que &quot;4 tazas de mezcla de nueces empacadas en bolsas de 1/2 taza&quot; da 4 ÷ 1/2 = 4 × 2/1 = 8. La respuesta es razonable porque 8 grupos del tamaño que elegiste vuelven a formar exactamente el total original.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9160,6 +9270,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A board is 7/8 foot long. Each bracket needs 1/4 foot. How many FULL brackets can be cut? · Solution: 3</span><span class="lang-es" lang="es">Una tabla mide 7/8 de pie de largo. Cada soporte necesita 1/4 de pie. ¿Cuántos soportes COMPLETOS se pueden cortar? · Solución: 3</span></li><li><span class="lang-en">A jug holds 5/6 liter. Each cup holds 1/3 liter. How many FULL cups can be filled? · Solution: 2</span><span class="lang-es" lang="es">Una jarra contiene 5/6 de litro. Cada taza tiene capacidad de 1/3 de litro. ¿Cuántas tazas COMPLETAS se pueden llenar? · Solución: 2</span></li><li><span class="lang-en">A path is 3/4 mile long. A runner does laps of 3/8 mile. How many laps fit? · Solution: 2</span><span class="lang-es" lang="es">Un camino mide 3/4 de milla. Un corredor da vueltas de 3/8 de milla. ¿Cuántas vueltas caben? · Solución: 2</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">7/8 ÷ 1/4 = 3 1/2 bracket-lengths, so the board makes 3 full brackets with 1/8 foot left. 5/6 ÷ 1/3 = 2 1/2 cupfuls, so the jug fills 2 full cups with 1/6 liter left. 3/4 ÷ 3/8 = 2 full laps. Read the context: a fractional group is not another full group.</span><span class="lang-es" lang="es">7/8 ÷ 1/4 = 3 1/2 longitudes de soporte, así que se cortan 3 soportes completos y sobra 1/8 de pie. 5/6 ÷ 1/3 = 2 1/2 tazas, así que se llenan 2 tazas completas y sobra 1/6 de litro. 3/4 ÷ 3/8 = 2 vueltas completas. Lee el contexto: una parte de un grupo no es otro grupo completo.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9261,6 +9383,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">His math is correct (2 2/3), but his reasoning is wrong — dividing by a small fraction gives a larger result</span><span class="lang-es" lang="es">Sus cuentas están bien (2 2/3), pero su razonamiento está mal — dividir entre una fracción pequeña da un resultado más grande</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">2/3 ÷ 1/4 = 2/3 × 4/1 = 8/3 = 2 2/3. This IS correct. When you divide by a number less than 1, the quotient is greater than the dividend.</span><span class="lang-es" lang="es">2/3 ÷ 1/4 = 2/3 × 4/1 = 8/3 = 2 2/3. Eso SÍ es correcto. Cuando divides entre un número menor que 1, el cociente es mayor que el dividendo.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9373,6 +9507,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>4</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">1/2 ÷ 1/8 = 1/2 × 8/1 = 8/2 = 4 tests.</span><span class="lang-es" lang="es">1/2 ÷ 1/8 = 1/2 × 8/1 = 8/2 = 4 pruebas.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9474,6 +9620,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>3</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The total (9/10 liter) is the dividend and each vial (3/10 liter) is the divisor: 9/10 ÷ 3/10 = 9/10 × 10/3 = 90/30 = 3 vials, so the code is 3.</span><span class="lang-es" lang="es">El total (9/10 de litro) es el dividendo y cada frasco (3/10 de litro) es el divisor: 9/10 ÷ 3/10 = 9/10 × 10/3 = 90/30 = 3 frascos, así que el código es 3.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9575,6 +9733,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">3 laps</span><span class="lang-es" lang="es">3 vueltas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">3/4 ÷ 1/4 = 3/4 × 4/1 = 12/4 = 3 laps. This is reasonable: three 1/4-mile pieces fit into 3/4 mile.</span><span class="lang-es" lang="es">3/4 ÷ 1/4 = 3/4 × 4/1 = 12/4 = 3 vueltas. Tiene sentido: tres pedazos de 1/4 de milla caben en 3/4 de milla.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9676,6 +9846,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>5</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">5/6 ÷ 1/6 = 5/6 × 6/1 = 30/6 = 5 brackets.</span><span class="lang-es" lang="es">5/6 ÷ 1/6 = 5/6 × 6/1 = 30/6 = 5 soportes.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9777,6 +9959,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>7</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The total (7/8 lb) is the dividend and each cast (1/8 lb) is the divisor: 7/8 ÷ 1/8 = 7/8 × 8/1 = 56/8 = 7 casts.</span><span class="lang-es" lang="es">El total (7/8 lb) es el dividendo y cada molde (1/8 lb) es el divisor: 7/8 ÷ 1/8 = 7/8 × 8/1 = 56/8 = 7 moldes.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9914,6 +10108,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A chef has 2 1/2 cups of flour. Each batch of cookies needs 1/4 cup. How many batches? · Solution: 10</span><span class="lang-es" lang="es">Un cocinero tiene 2 1/2 tazas de harina. Cada lote de galletas necesita 1/4 de taza. ¿Cuántos lotes puede hacer? · Solución: 10</span></li><li><span class="lang-en">A detective has 1 1/3 gallons of solution. Each test uses 2/3 gallon. How many tests? · Solution: 2</span><span class="lang-es" lang="es">Un detective tiene 1 1/3 galones de solución. Cada prueba usa 2/3 de galón. ¿Cuántas pruebas puede hacer? · Solución: 2</span></li><li><span class="lang-en">A board is 3 3/4 feet long. Each piece must be 5/8 foot. How many pieces? · Solution: 6</span><span class="lang-es" lang="es">Una tabla mide 3 3/4 pies de largo. Cada pieza debe medir 5/8 de pie. ¿Cuántas piezas se pueden cortar? · Solución: 6</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each mixed number becomes an improper fraction before Keep-Change-Flip: 2 1/2 ÷ 1/4 = 5/2 × 4/1 = 10 batches, 1 1/3 ÷ 2/3 = 4/3 × 3/2 = 2 tests, and 3 3/4 ÷ 5/8 = 15/4 × 8/5 = 6 pieces. The Check column proves each one, because multiplying the quotient back by the divisor returns the original total.</span><span class="lang-es" lang="es">Cada número mixto se convierte en fracción impropia antes de Mantener-Cambiar-Invertir: 2 1/2 ÷ 1/4 = 5/2 × 4/1 = 10 tandas, 1 1/3 ÷ 2/3 = 4/3 × 3/2 = 2 pruebas y 3 3/4 ÷ 5/8 = 15/4 × 8/5 = 6 piezas. La columna de comprobación demuestra cada una, porque multiplicar el cociente por el divisor devuelve el total original.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10087,6 +10293,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Correct Equation and Solution: A tank has 5/6 gallon. Each bucket holds 1/3 gallon. → 5/6 ÷ 1/3 = 2 1/2 buckets, A pipe is 2/3 foot long. Each piece is 1/6 foot. → 2/3 ÷ 1/6 = 4 pieces, A bag has 3/4 lb. Each scoop is 1/8 lb. → 3/4 ÷ 1/8 = 6 scoops</span><span class="lang-es" lang="es">Ecuación y solución correctas: Un tanque tiene 5/6 de galón. Cada cubeta contiene 1/3 de galón. → 5/6 ÷ 1/3 = 2 1/2 cubetas, Un tubo mide 2/3 de pie. Cada trozo mide 1/6 de pie. → 2/3 ÷ 1/6 = 4 trozos, Una bolsa tiene 3/4 lb. Cada medida es de 1/8 lb. → 3/4 ÷ 1/8 = 6 medidas</span></li><li><span class="lang-en">Incorrect Equation or Solution: A rope is 1/2 yard. Each section is 1/4 yard. → 1/4 ÷ 1/2 = 1/2 section, A jug has 4/5 liter. Each cup is 2/5 liter. → 4/5 × 2/5 = 8/25 cups, A shelf is 7/8 foot. Each book is 1/4 foot. → 7/8 ÷ 1/4 = 7/32 books</span><span class="lang-es" lang="es">Ecuación o solución incorrecta: Una cuerda mide 1/2 yarda. Cada sección mide 1/4 de yarda. → 1/4 ÷ 1/2 = 1/2 sección, Una jarra tiene 4/5 de litro. Cada taza es de 2/5 de litro. → 4/5 × 2/5 = 8/25 tazas, Un estante mide 7/8 de pie. Cada libro mide 1/4 de pie. → 7/8 ÷ 1/4 = 7/32 libros</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Three cards are set up as total ÷ group size and solved correctly: 5/6 ÷ 1/3 = 2 1/2, 2/3 ÷ 1/6 = 4, and 3/4 ÷ 1/8 = 6. The other three break down: 1/4 ÷ 1/2 reverses the total and the piece size, 4/5 × 2/5 multiplies where the story asks how many cups fit, and 7/8 ÷ 1/4 = 7/32 comes from multiplying by 1/4 instead of flipping it to 4/1.</span><span class="lang-es" lang="es">Tres tarjetas están planteadas como total ÷ tamaño del grupo y resueltas correctamente: 5/6 ÷ 1/3 = 2 1/2, 2/3 ÷ 1/6 = 4 y 3/4 ÷ 1/8 = 6. Las otras tres fallan: 1/4 ÷ 1/2 invierte el total y el tamaño de la pieza, 4/5 × 2/5 multiplica cuando la historia pregunta cuántas tazas caben, y 7/8 ÷ 1/4 = 7/32 sale de multiplicar por 1/4 en vez de invertirlo a 4/1.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10188,6 +10406,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>5</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The total distance (5/6 mile) is the dividend and the checkpoint spacing (1/6 mile) is the divisor: 5/6 ÷ 1/6 = 5/6 × 6/1 = 30/6 = 5 checkpoints.</span><span class="lang-es" lang="es">La distancia total (5/6 de milla) es el dividendo y la separación entre puntos de control (1/6 de milla) es el divisor: 5/6 ÷ 1/6 = 5/6 × 6/1 = 30/6 = 5 puntos de control.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

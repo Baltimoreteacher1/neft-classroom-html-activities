@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8246,7 +8305,10 @@ body {
           <p class="ladder-q"><span class="lang-en">Use the distributive property to explain why 6 × 98 can be calculated as 6 × 100 − 6 × 2 = 588. Then create your own example of using the distributive property to make multiplication easier.</span><span class="lang-es" lang="es">Usa la propiedad distributiva para explicar por qué 6 × 98 se puede calcular como 6 × 100 − 6 × 2 = 588. Después crea tu propio ejemplo de cómo usar la propiedad distributiva para hacer más fácil una multiplicación.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Because 98 = 100 − 2, you can rewrite 6 × 98 as 6(100 − 2) and distribute: 6 × 100 − 6 × 2 = 600 − 12 = 588. The distributive property is what makes that rewrite legal, and it turns one hard multiplication into two easy ones — the same trick works for problems like 7 × 99 or 4 × 52.</span><span class="lang-es" lang="es">Como 98 = 100 − 2, puedes reescribir 6 × 98 como 6(100 − 2) y distribuir: 6 × 100 − 6 × 2 = 600 − 12 = 588. La propiedad distributiva es lo que permite ese cambio, y convierte una multiplicación difícil en dos fáciles; el mismo truco sirve para problemas como 7 × 99 o 4 × 52.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8584,6 +8646,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">2(x + 5) · Expanded Form: 2x + 10</span><span class="lang-es" lang="es">2(x + 5) · Forma desarrollada: 2x + 10</span></li><li><span class="lang-en">4(3 + 7) · Expanded Form: 12 + 28 = 40</span><span class="lang-es" lang="es">4(3 + 7) · Forma desarrollada: 12 + 28 = 40</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Expanding means the outside factor multiplies every term inside the parentheses. For 2(x + 5) that is 2 × x = 2x and 2 × 5 = 10, so the expanded form is 2x + 10. For 4(3 + 7) it is 4 × 3 = 12 and 4 × 7 = 28, giving 12 + 28 = 40 — the same result as 4 × 10.</span><span class="lang-es" lang="es">Expandir significa que el factor de afuera multiplica cada término dentro del paréntesis. Para 2(x + 5) eso da 2 × x = 2x y 2 × 5 = 10, así que la forma expandida es 2x + 10. Para 4(3 + 7) da 4 × 3 = 12 y 4 × 7 = 28, o sea 12 + 28 = 40, el mismo resultado que 4 × 10.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8738,6 +8812,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">3(2x + 5) · Expanded Form: 6x + 15</span><span class="lang-es" lang="es">3(2x + 5) · Forma desarrollada: 6x + 15</span></li><li><span class="lang-en">7(a − 4) · Expanded Form: 7a − 28</span><span class="lang-es" lang="es">7(a − 4) · Forma desarrollada: 7a − 28</span></li><li><span class="lang-en">2(3m + 8) · Expanded Form: 6m + 16</span><span class="lang-es" lang="es">2(3m + 8) · Forma desarrollada: 6m + 16</span></li><li><span class="lang-en">5(6 − y) · Expanded Form: 30 − 5y</span><span class="lang-es" lang="es">5(6 − y) · Forma desarrollada: 30 − 5y</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The outside factor multiplies the whole term inside, coefficient included, and the sign inside stays the same. So 3(2x + 5) = 6x + 15, 7(a − 4) = 7a − 28, 2(3m + 8) = 6m + 16, and 5(6 − y) = 30 − 5y.</span><span class="lang-es" lang="es">El factor de afuera multiplica el término completo de adentro, incluido su coeficiente, y el signo de adentro se mantiene igual. Así, 3(2x + 5) = 6x + 15, 7(a − 4) = 7a − 28, 2(3m + 8) = 6m + 16 y 5(6 − y) = 30 − 5y.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8896,6 +8982,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Distributed correctly: 2(x + 6) = 2x + 12, 5(y + 2) = 5y + 10, 6(m + 1) = 6m + 6</span><span class="lang-es" lang="es">Distribuido correctamente: 2(x + 6) = 2x + 12, 5(y + 2) = 5y + 10, 6(m + 1) = 6m + 6</span></li><li><span class="lang-en">Distributed incorrectly: 4(n + 3) = 4n + 3, 3(a + 7) = 3a + 7</span><span class="lang-es" lang="es">Distribuido incorrectamente: 4(n + 3) = 4n + 3, 3(a + 7) = 3a + 7</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A distribution is correct only when the outside factor multiplied both terms inside. 2(x + 6) = 2x + 12, 5(y + 2) = 5y + 10, and 6(m + 1) = 6m + 6 all do that. In 4(n + 3) = 4n + 3 and 3(a + 7) = 3a + 7 the second term was copied down untouched — they should read 4n + 12 and 3a + 21.</span><span class="lang-es" lang="es">Una distribución es correcta solo cuando el factor de afuera multiplicó los dos términos de adentro. 2(x + 6) = 2x + 12, 5(y + 2) = 5y + 10 y 6(m + 1) = 6m + 6 lo hacen. En 4(n + 3) = 4n + 3 y 3(a + 7) = 3a + 7 el segundo término se copió sin cambios; deberían quedar como 4n + 12 y 3a + 21.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9088,6 +9186,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">6x + 18 · GCF: 6</span><span class="lang-es" lang="es">6x + 18 · MCD: 6</span></li><li><span class="lang-en">6x + 18 · Factored Form: 6(x + 3)</span><span class="lang-es" lang="es">6x + 18 · Forma factorizada: 6(x + 3)</span></li><li><span class="lang-en">10n − 15 · GCF: 5</span><span class="lang-es" lang="es">10n − 15 · MCD: 5</span></li><li><span class="lang-en">10n − 15 · Factored Form: 5(2n − 3)</span><span class="lang-es" lang="es">10n − 15 · Forma factorizada: 5(2n − 3)</span></li><li><span class="lang-en">8a + 12 · GCF: 4</span><span class="lang-es" lang="es">8a + 12 · MCD: 4</span></li><li><span class="lang-en">8a + 12 · Factored Form: 4(2a + 3)</span><span class="lang-es" lang="es">8a + 12 · Forma factorizada: 4(2a + 3)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Factoring runs the distributive property backwards: pull the greatest common factor out front and leave what remains inside the parentheses. 6x + 18 shares a GCF of 6, giving 6(x + 3); 10n − 15 shares 5, giving 5(2n − 3); and 8a + 12 shares 4, giving 4(2a + 3). Distributing each answer returns the original expression.</span><span class="lang-es" lang="es">Factorizar es usar la propiedad distributiva al revés: sacas el máximo factor común al frente y dejas lo que queda dentro del paréntesis. 6x + 18 comparte un MFC de 6, así que da 6(x + 3); 10n − 15 comparte 5, así que da 5(2n − 3); y 8a + 12 comparte 4, así que da 4(2a + 3). Distribuir cada respuesta devuelve la expresión original.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9189,6 +9299,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: distributive, factor, expand, mental math, equivalent, multiply.</span><span class="lang-es" lang="es">Una buena respuesta usa: distributive, factor, expand, mental math, equivalent, multiply.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Because 98 = 100 − 2, you can rewrite 6 × 98 as 6(100 − 2) and distribute: 6 × 100 − 6 × 2 = 600 − 12 = 588. The distributive property is what makes that rewrite legal, and it turns one hard multiplication into two easy ones — the same trick works for problems like 7 × 99 or 4 × 52.</span><span class="lang-es" lang="es">Como 98 = 100 − 2, puedes reescribir 6 × 98 como 6(100 − 2) y distribuir: 6 × 100 − 6 × 2 = 600 − 12 = 588. La propiedad distributiva es lo que permite ese cambio, y convierte una multiplicación difícil en dos fáciles; el mismo truco sirve para problemas como 7 × 99 o 4 × 52.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9318,6 +9440,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>2(x + 9) → 2x + 18</li><li>5(3n − 2) → 15n − 10</li><li>4(a + 6) → 4a + 24</li><li>3(7 − y) → 21 − 3y</li><li>6(2m + 1) → 12m + 6</li><li>8(x − 3) → 8x − 24</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Distributing each factored card produces exactly one expanded card: 2(x + 9) = 2x + 18, 5(3n − 2) = 15n − 10, 4(a + 6) = 4a + 24, 3(7 − y) = 21 − 3y, 6(2m + 1) = 12m + 6, and 8(x − 3) = 8x − 24. Watch the signs — subtraction inside stays subtraction after you expand.</span><span class="lang-es" lang="es">Al distribuir, cada tarjeta factorizada produce exactamente una tarjeta expandida: 2(x + 9) = 2x + 18, 5(3n − 2) = 15n − 10, 4(a + 6) = 4a + 24, 3(7 − y) = 21 − 3y, 6(2m + 1) = 12m + 6 y 8(x − 3) = 8x − 24. Cuida los signos: la resta de adentro sigue siendo resta después de expandir.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9430,6 +9564,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>6n + 18</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> 6(n + 3) = 6 × n + 6 × 3 = 6n + 18.</p>
+        </div>
+      </details>
     </section>
 
 
@@ -9531,6 +9677,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>12</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> 4(5 − 2) = 4 × 5 − 4 × 2 = 20 − 8 = 12.</p>
+        </div>
+      </details>
     </section>
 
 
@@ -9632,6 +9790,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>3x + 12</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> 3(x + 4) = 3 × x + 3 × 4 = 3x + 12.</p>
+        </div>
+      </details>
     </section>
 
 
@@ -9733,6 +9903,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Both b and c</span><span class="lang-es" lang="es">Tanto b como c</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The distributive property says a(b + c) = ab + ac. You multiply the outside factor by EACH term inside the parentheses.</span><span class="lang-es" lang="es">La propiedad distributiva dice que a(b + c) = ab + ac. Multiplicas el factor de afuera por CADA término dentro del paréntesis.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9906,6 +10088,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Constant &gt; 15: 3(x + 7), 5(a + 4), 6(m + 3)</span><span class="lang-es" lang="es">Constante &gt; 15: 3(x + 7), 5(a + 4), 6(m + 3)</span></li><li><span class="lang-en">Constant ≤ 15: 2(n + 5), 4(y − 2), 2(3x + 1)</span><span class="lang-es" lang="es">Constante ≤ 15: 2(n + 5), 4(y − 2), 2(3x + 1)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The constant is the term with no variable, and each card&#039;s expansion already shows it. The constants 21, 20, and 18 in 3x + 21, 5a + 20, and 6m + 18 are all greater than 15, while 2n + 10, 4y − 8, and 6x + 2 are not. Notice that 2(3x + 1) = 6x + 2 has a large coefficient but a constant of only 2.</span><span class="lang-es" lang="es">La constante es el término que no tiene variable, y la expansión de cada tarjeta ya la muestra. Las constantes 21, 20 y 18 de 3x + 21, 5a + 20 y 6m + 18 son mayores que 15, mientras que 2n + 10, 4y − 8 y 6x + 2 no lo son. Fíjate en que 2(3x + 1) = 6x + 2 tiene un coeficiente grande pero una constante de apenas 2.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10013,6 +10207,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>2(b + c) → 2b + 2c</li><li>6(x + 2) → 6x + 12</li><li>3(m + 5) → 3m + 15</li><li>5(p + 1) → 5p + 5</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Every light cue follows the pattern a(b + c) = ab + ac, so the outside factor lands on both terms inside: 2(b + c) = 2b + 2c, 6(x + 2) = 6x + 12, 3(m + 5) = 3m + 15, and 5(p + 1) = 5p + 5.</span><span class="lang-es" lang="es">Cada señal de luz sigue el patrón a(b + c) = ab + ac, así que el factor de afuera cae sobre los dos términos de adentro: 2(b + c) = 2b + 2c, 6(x + 2) = 6x + 12, 3(m + 5) = 3m + 15 y 5(p + 1) = 5p + 5.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10114,6 +10320,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>3x + 12</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Distribute the 3 to each term: 3 × x + 3 × 4 = 3x + 12.</span><span class="lang-es" lang="es">Distribuye el 3 a cada término: 3 × x + 3 × 4 = 3x + 12.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10215,6 +10433,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>10 + 5n</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Distribute the 5 to each term: 5 × 2 + 5 × n = 10 + 5n.</span><span class="lang-es" lang="es">Distribuye el 5 a cada término: 5 × 2 + 5 × n = 10 + 5n.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

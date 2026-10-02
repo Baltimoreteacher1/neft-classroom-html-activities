@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8314,7 +8373,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A teacher collected test scores and made two different histograms — one with intervals of 5 (50–54, 55–59, etc.) and one with intervals of 20 (50–69, 70–89, 90–109). Both use the same data. How might the two histograms look different? Which interval size gives you more detail about the distribution? When might the larger interval be better?</span><span class="lang-es" lang="es">Un maestro recopiló puntajes de exámenes e hizo dos histogramas distintos: uno con intervalos de 5 (50–54, 55–59, etc.) y otro con intervalos de 20 (50–69, 70–89, 90–109). Los dos usan los mismos datos. ¿En qué podrían verse diferentes los dos histogramas? ¿Cuál tamaño de intervalo te da más detalle sobre la distribución? ¿Cuándo podría convenir más el intervalo grande?</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Intervals of 5 across 50–109 make 12 narrow bars with small frequencies, so peaks, gaps, and the exact shape show up clearly. Intervals of 20 make only 3 tall bars that smooth those details away, which is useful when the data set is large or you only want the big-picture comparison of low, middle, and high scores.</span><span class="lang-es" lang="es">Intervalos de 5 a lo largo de 50–109 forman 12 barras angostas con frecuencias pequeñas, así que los picos, los huecos y la forma exacta se ven con claridad. Intervalos de 20 forman solo 3 barras altas que borran esos detalles, lo cual sirve cuando el conjunto de datos es grande o solo quieres la comparación general entre calificaciones bajas, medias y altas.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8671,6 +8733,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Steps (in order): Step 1: Choose equal-sized intervals that cover all the data, Step 2: Count how many data values fall in each interval (frequency), Step 3: Draw bars for each interval — height = frequency, Step 4: Make sure bars touch with no gaps</span><span class="lang-es" lang="es">Pasos (en orden): Step 1: Choose equal-sized intervals that cover all the data, Step 2: Count how many data values fall in each interval (frequency), Step 3: Draw bars for each interval — height = frequency, Step 4: Make sure bars touch with no gaps</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The order is: choose equal-sized intervals, count the frequency in each one, draw bars whose heights match those frequencies, then make sure the bars touch. Counting cannot happen until the intervals exist, and the bar heights cannot be drawn until you know the counts.</span><span class="lang-es" lang="es">El orden es: elegir intervalos del mismo tamaño, contar la frecuencia en cada uno, dibujar barras cuyas alturas sean esas frecuencias y luego asegurarte de que las barras se toquen. No puedes contar antes de tener los intervalos, y no puedes dibujar las alturas antes de conocer los conteos.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8767,6 +8841,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Frequency → How many values are in an interval (the bar height)</span><span class="lang-es" lang="es">Frecuencia → Cuántos valores hay en un intervalo (la altura de la barra)</span></li><li><span class="lang-en">Interval → An equal-width range like 10–19</span><span class="lang-es" lang="es">Intervalo → Un rango de ancho igual, como 10–19</span></li><li><span class="lang-en">Bars touch → Why a histogram has no gaps between bars</span><span class="lang-es" lang="es">Las barras se tocan → Por qué un histograma no tiene espacios entre barras</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Frequency answers &#039;how many?&#039;, so it pairs with the count of values in an interval — that count is the bar&#039;s height. Interval is a range like 10–19 that groups values together, and &#039;Bars touch&#039; explains why a histogram has no gaps: the intervals run right into each other with no numbers left out.</span><span class="lang-es" lang="es">Frecuencia responde «¿cuántos?», así que se empareja con el conteo de valores en un intervalo, y ese conteo es la altura de la barra. Intervalo es un rango como 10–19 que agrupa valores, y «Las barras se tocan» explica por qué un histograma no tiene huecos: los intervalos se continúan uno con otro sin dejar ningún número fuera.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8874,6 +8960,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Histogram → Bars touch, shows frequency by interval</span><span class="lang-es" lang="es">Histograma → Barras juntas, muestra frecuencia por intervalo</span></li><li><span class="lang-en">Bar graph → Bars separated, shows categories</span><span class="lang-es" lang="es">Gráfica de barras → Barras separadas, muestra categorías</span></li><li><span class="lang-en">Frequency → Count of values in an interval</span><span class="lang-es" lang="es">Frecuencia → Cantidad de valores en un intervalo</span></li><li><span class="lang-en">Interval → Range of values grouped together</span><span class="lang-es" lang="es">Intervalo → Rango de valores agrupados</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Histogram goes with &#039;bars touch, shows frequency by interval&#039; and Bar graph with &#039;bars separated, shows categories&#039; — the gap between bars is the visual clue that separates the two graph types. Frequency is the count of values in an interval, and Interval is the range of values grouped together.</span><span class="lang-es" lang="es">Histograma va con «las barras se tocan, muestra la frecuencia por intervalo» y Gráfica de barras con «las barras están separadas, muestra categorías»: el espacio entre barras es la pista visual que distingue los dos tipos de gráfica. Frecuencia es el conteo de valores en un intervalo, e Intervalo es el rango de valores que se agrupan.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8991,6 +9089,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">The interval-of-5 histogram has more bars and shows more detail about the shape</span><span class="lang-es" lang="es">El histograma con intervalos de 5 tiene más barras y muestra más detalle de la forma</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Smaller intervals create more bars and reveal finer detail; larger intervals smooth the shape into fewer bars. Both still include all 40 scores.</span><span class="lang-es" lang="es">Los intervalos más pequeños crean más barras y revelan detalles más finos; los intervalos más grandes suavizan la forma en menos barras. Ambos histogramas siguen incluyendo los 40 puntajes.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9092,6 +9202,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Skewed right (most players low, tail toward high values)</span><span class="lang-es" lang="es">Sesgada a la derecha (la mayoría de los jugadores abajo, con cola hacia los valores altos)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The tallest bars are at the low end (0–1) and the bars shrink as goals increase — the tail points right, so it is skewed right.</span><span class="lang-es" lang="es">Las barras más altas están en el extremo bajo (0–1) y se van encogiendo a medida que aumentan los goles: la cola apunta a la derecha, así que está sesgada a la derecha.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9193,6 +9315,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: more bars, fewer bars, detail, pattern, shape, interval width, frequency.</span><span class="lang-es" lang="es">Una buena respuesta usa: more bars, fewer bars, detail, pattern, shape, interval width, frequency.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Intervals of 5 across 50–109 make 12 narrow bars with small frequencies, so peaks, gaps, and the exact shape show up clearly. Intervals of 20 make only 3 tall bars that smooth those details away, which is useful when the data set is large or you only want the big-picture comparison of low, middle, and high scores.</span><span class="lang-es" lang="es">Intervalos de 5 a lo largo de 50–109 forman 12 barras angostas con frecuencias pequeñas, así que los picos, los huecos y la forma exacta se ven con claridad. Intervalos de 20 forman solo 3 barras altas que borran esos detalles, lo cual sirve cuando el conjunto de datos es grande o solo quieres la comparación general entre calificaciones bajas, medias y altas.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9305,6 +9439,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Histogram bars touch (no gaps) because the intervals are continuous ranges</span><span class="lang-es" lang="es">Las barras del histograma se tocan (sin espacios) porque los intervalos son rangos continuos</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">In a histogram, bars touch because each interval connects to the next (0–9, 10–19, etc.) — the data is continuous.</span><span class="lang-es" lang="es">En un histograma las barras se tocan porque cada intervalo se conecta con el siguiente (0–9, 10–19, etc.): los datos son continuos.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9406,6 +9552,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">The frequency (count) of data in that interval</span><span class="lang-es" lang="es">La frecuencia (el conteo) de datos en ese intervalo</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each bar&#039;s height shows the frequency — how many data values fall within that interval.</span><span class="lang-es" lang="es">La altura de cada barra muestra la frecuencia: cuántos valores de datos caen dentro de ese intervalo.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9507,6 +9665,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">7 data values fall between 20 and 29</span><span class="lang-es" lang="es">7 valores de datos caen entre 20 y 29</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A bar&#039;s height is the frequency — here, 7 values land in the 20–29 interval.</span><span class="lang-es" lang="es">La altura de una barra es la frecuencia: aquí, 7 valores caen en el intervalo 20–29.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9639,6 +9809,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Symmetric (peak in the middle): Player heights on a team — most are average height, fewer are very tall or very short</span><span class="lang-es" lang="es">Simétrica (pico en el centro): Estaturas del equipo — la mayoría son medianas, pocos muy altos o muy bajos</span></li><li><span class="lang-en">Skewed Right (tail points to high values): Points per game — most players score low, a few stars score very high</span><span class="lang-es" lang="es">Sesgada a la derecha (la cola apunta a valores altos): Puntos por juego — la mayoría anota poco, unas estrellas anotan muchísimo</span></li><li><span class="lang-en">Skewed Left (tail points to low values): Free-throw % of experienced players — most are high, a few are very low</span><span class="lang-es" lang="es">Sesgada a la izquierda (la cola apunta a valores bajos): % de tiros libres de veteranos — la mayoría es alto, unos pocos muy bajos</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Player heights cluster around an average with few very tall or very short players, so the tallest bars sit in the middle — symmetric. Points per game has most players low with a few stars far to the high side, so the tail stretches right. Free-throw percentage for experienced players bunches high with a few very low values, so the tail stretches left.</span><span class="lang-es" lang="es">Las estaturas de los jugadores se agrupan alrededor de un promedio con pocos muy altos o muy bajos, así que las barras más altas quedan en el centro: simétrica. Los puntos por partido tienen a la mayoría en valores bajos con unas cuantas estrellas muy arriba, así que la cola se extiende a la derecha. El porcentaje de tiros libres de jugadores con experiencia se concentra en valores altos con unos pocos muy bajos, así que la cola se extiende a la izquierda.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9740,6 +9922,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Skewed right</span><span class="lang-es" lang="es">Sesgada a la derecha</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The tail points right (toward the high values), so it is skewed right — most players are clustered at the low end.</span><span class="lang-es" lang="es">La cola apunta a la derecha (hacia los valores altos), así que está sesgada a la derecha: la mayoría de los jugadores se agrupa en el extremo bajo.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9841,6 +10035,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>6</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The values 12, 14, 15, 17, 18, and 19 all fall between 10 and 19, so the frequency for that bin is 6.</span><span class="lang-es" lang="es">Los valores 12, 14, 15, 17, 18 y 19 caen entre 10 y 19, así que la frecuencia de ese intervalo es 6.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9995,6 +10201,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">0–4 · Frequency: 3</span><span class="lang-es" lang="es">0–4 · Frecuencia: 3</span></li><li><span class="lang-en">5–9 · Frequency: 4</span><span class="lang-es" lang="es">5–9 · Frecuencia: 4</span></li><li><span class="lang-en">10–14 · Frequency: 4</span><span class="lang-es" lang="es">10–14 · Frecuencia: 4</span></li><li><span class="lang-en">15–19 · Frequency: 1</span><span class="lang-es" lang="es">15–19 · Frecuencia: 1</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">With intervals of 5, the values 1, 3, 4 fall in 0–4 (3), the values 6, 7, 8, 9 fall in 5–9 (4), the values 11, 12, 13, 14 fall in 10–14 (4), and only 16 falls in 15–19 (1). The frequencies 3 + 4 + 4 + 1 = 12, matching the 12 rebound values.</span><span class="lang-es" lang="es">Con intervalos de 5, los valores 1, 3, 4 caen en 0–4 (3), los valores 6, 7, 8, 9 caen en 5–9 (4), los valores 11, 12, 13, 14 caen en 10–14 (4) y solo el 16 cae en 15–19 (1). Las frecuencias 3 + 4 + 4 + 1 = 12, igual a los 12 valores de rebotes.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10096,6 +10314,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>28</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Add all frequencies: 3 + 8 + 12 + 5 = 28 players.</span><span class="lang-es" lang="es">Suma todas las frecuencias: 3 + 8 + 12 + 5 = 28 jugadores.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

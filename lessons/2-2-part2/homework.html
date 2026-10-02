@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8335,7 +8394,10 @@ body {
           <p class="ladder-q"><span class="lang-en">Sketch (or describe) a histogram with intervals 0–9, 10–19, 20–29 and 30–39 that is skewed right. Give a height for each bar, then explain in one or two sentences how the bar heights show the skew.</span><span class="lang-es" lang="es">Dibuja (o describe) un histograma con intervalos 0–9, 10–19, 20–29 y 30–39 que esté sesgado a la derecha. Da una altura para cada barra y luego explica en una o dos oraciones cómo las alturas muestran el sesgo.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">One correct answer: heights 6, 3, 2, 1 over 0–9, 10–19, 20–29, 30–39. The tallest bar is at the left, and the bars shrink toward the right, making a long thin tail on the right — that trailing right side is what &#039;skewed right&#039; means. Any heights that start tall and step down toward the right are correct.</span><span class="lang-es" lang="es">Una respuesta correcta: alturas 6, 3, 2, 1 sobre 0–9, 10–19, 20–29, 30–39. La barra más alta está a la izquierda y las barras se achican hacia la derecha, formando una cola larga y delgada a la derecha — ese lado derecho que se alarga es lo que significa &#039;sesgado a la derecha&#039;. Cualquier conjunto de alturas que empiece alto y baje hacia la derecha es correcto.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8615,6 +8677,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">symmetric</span><span class="lang-es" lang="es">simétrica</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Short bars on both sides of a tall middle bar mirror each other, so the histogram is symmetric. Skewed shapes have one long trailing side, and a uniform histogram has bars that are all about the same height.</span><span class="lang-es" lang="es">Barras cortas a ambos lados de una barra alta en el medio se reflejan, así que el histograma es simétrico. Las formas sesgadas tienen un lado largo que se alarga, y un histograma uniforme tiene barras casi todas de la misma altura.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8716,6 +8790,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">The tail stretches to the right; most values sit on the left.</span><span class="lang-es" lang="es">La cola se estira a la derecha; la mayoría de los valores están a la izquierda.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Skewed right means the thin tail trails off toward the right, which leaves the tall bars — most of the values — on the left. Saying the values are on the right reverses the name, and an even spread would be uniform, not skewed.</span><span class="lang-es" lang="es">Sesgado a la derecha significa que la cola delgada se alarga hacia la derecha, lo que deja las barras altas — la mayoría de los valores — a la izquierda. Decir que los valores están a la derecha invierte el nombre, y un reparto parejo sería uniforme, no sesgado.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8817,6 +8903,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Symmetric — the heights read 2, 3, 3, 2, the same forward and backward.</span><span class="lang-es" lang="es">Simétrico — las alturas se leen 2, 3, 3, 2, igual de ida que de vuelta.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Heights 2, 3, 3, 2 are a mirror image, so the histogram is symmetric. Skew is about a trailing TAIL, not about which interval holds the highest or lowest scores, and two equal tall bars still give a symmetric shape.</span><span class="lang-es" lang="es">Las alturas 2, 3, 3, 2 son una imagen de espejo, así que el histograma es simétrico. El sesgo se trata de una COLA que se alarga, no de qué intervalo tiene las calificaciones más altas o más bajas, y dos barras altas iguales igual dan una forma simétrica.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8921,6 +9019,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">One correct answer: heights 6, 3, 2, 1 over 0–9, 10–19, 20–29, 30–39. The tallest bar is at the left, and the bars shrink toward the right, making a long thin tail on the right — that trailing right side is what &#039;skewed right&#039; means. Any heights that start tall and step down toward the right are correct.</span><span class="lang-es" lang="es">Una respuesta correcta: alturas 6, 3, 2, 1 sobre 0–9, 10–19, 20–29, 30–39. La barra más alta está a la izquierda y las barras se achican hacia la derecha, formando una cola larga y delgada a la derecha — ese lado derecho que se alarga es lo que significa &#039;sesgado a la derecha&#039;. Cualquier conjunto de alturas que empiece alto y baje hacia la derecha es correcto.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9022,6 +9132,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Peak at 410–419; the right side is taller than the left, so it is not perfectly symmetric.</span><span class="lang-es" lang="es">Pico en 410–419; el lado derecho es más alto que el izquierdo, así que no es perfectamente simétrica.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The tallest bar (4) is over 410–419, so that is the peak. Left of it is a single bar of height 1; right of it are bars of 3 and 1 — more data trails to the right, so the shape is not symmetric. The peak is the single tallest bar even when another bar is nearly as tall.</span><span class="lang-es" lang="es">La barra más alta (4) está sobre 410–419, así que ese es el pico. A su izquierda hay una sola barra de altura 1; a su derecha hay barras de 3 y 1 — más datos se alargan hacia la derecha, así que la forma no es simétrica. El pico es la única barra más alta aunque otra sea casi igual de alta.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9123,6 +9245,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>70–79</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The tallest bar (height 4) covers 70–79, so that interval is the peak. The peak is an INTERVAL on the horizontal axis, not the height itself (4), and the bars of height 2 are the shorter sides.</span><span class="lang-es" lang="es">La barra más alta (altura 4) cubre 70–79, así que ese intervalo es el pico. El pico es un INTERVALO del eje horizontal, no la altura misma (4), y las barras de altura 2 son los lados más bajos.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8249,7 +8308,10 @@ body {
           <p class="ladder-q"><span class="lang-en">Captain Vega&#039;s clues are at A(4, 3), B(−5, 2), C(−3, −4) and D(2, −5), with east/north positive. Name the quadrant of each clue and explain, in one sentence, the rule that lets you name a quadrant from the two signs without plotting.</span><span class="lang-es" lang="es">Las pistas de la capitana Vega están en A(4, 3), B(−5, 2), C(−3, −4) y D(2, −5), con este/norte positivos. Nombra el cuadrante de cada pista y explica, en una oración, la regla que te permite nombrar un cuadrante con los dos signos sin ubicar los puntos.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">A(4, 3) is (+, +): east and north → Quadrant I. B(−5, 2) is (−, +): west and north → Quadrant II. C(−3, −4) is (−, −): west and south → Quadrant III. D(2, −5) is (+, −): east and south → Quadrant IV. The rule: the sign of the first coordinate tells left or right and the sign of the second tells up or down, and each combination of the two signs belongs to exactly one quadrant.</span><span class="lang-es" lang="es">A(4, 3) es (+, +): este y norte → Cuadrante I. B(−5, 2) es (−, +): oeste y norte → Cuadrante II. C(−3, −4) es (−, −): oeste y sur → Cuadrante III. D(2, −5) es (+, −): este y sur → Cuadrante IV. La regla: el signo de la primera coordenada dice izquierda o derecha y el de la segunda dice arriba o abajo, y cada combinación de los dos signos pertenece a exactamente un cuadrante.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8595,6 +8657,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Quadrants II and IV each have one negative — WHICH one is negative matters. Here y is negative, so it is Quadrant IV.</span><span class="lang-es" lang="es">Los Cuadrantes II y IV tienen un negativo cada uno — importa CUÁL es negativo. Aquí y es negativa, así que es el Cuadrante IV.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">One negative narrows it to II or IV, but not which. A negative y means down, so (3, −8) is right and down — Quadrant IV. The size of the numbers does not decide the quadrant, and one positive coordinate is not enough for Quadrant I.</span><span class="lang-es" lang="es">Un negativo lo reduce a II o IV, pero no dice cuál. Una y negativa significa abajo, así que (3, −8) es derecha y abajo — Cuadrante IV. El tamaño de los números no decide el cuadrante, y una coordenada positiva no basta para el Cuadrante I.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8698,6 +8772,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>III, IV, II</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">(−7, −1) is left and down → III; (6, −2) is right and down → IV; (−4, 9) is left and up → II. The other orders assign at least one point to a quadrant whose signs do not match its coordinates.</span><span class="lang-es" lang="es">(−7, −1) es izquierda y abajo → III; (6, −2) es derecha y abajo → IV; (−4, 9) es izquierda y arriba → II. Los otros órdenes asignan al menos un punto a un cuadrante cuyos signos no coinciden con sus coordenadas.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8801,6 +8887,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Quadrant II</span><span class="lang-es" lang="es">Cuadrante II</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A negative x and positive y put the point left and up — Quadrant II. Quadrant I is (+, +), III is (−, −), IV is (+, −).</span><span class="lang-es" lang="es">Una x negativa y una y positiva ponen el punto a la izquierda y arriba — Cuadrante II. El Cuadrante I es (+, +), el III es (−, −), el IV es (+, −).</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8907,6 +9005,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">A(4, 3) is (+, +): east and north → Quadrant I. B(−5, 2) is (−, +): west and north → Quadrant II. C(−3, −4) is (−, −): west and south → Quadrant III. D(2, −5) is (+, −): east and south → Quadrant IV. The rule: the sign of the first coordinate tells left or right and the sign of the second tells up or down, and each combination of the two signs belongs to exactly one quadrant.</span><span class="lang-es" lang="es">A(4, 3) es (+, +): este y norte → Cuadrante I. B(−5, 2) es (−, +): oeste y norte → Cuadrante II. C(−3, −4) es (−, −): oeste y sur → Cuadrante III. D(2, −5) es (+, −): este y sur → Cuadrante IV. La regla: el signo de la primera coordenada dice izquierda o derecha y el de la segunda dice arriba o abajo, y cada combinación de los dos signos pertenece a exactamente un cuadrante.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9010,6 +9120,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>(−3, −4)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">(−3, −4) is left and down — Quadrant III. (3, −4) is IV; (−3, 4) is II; (0, −4) lies on the y-axis, which belongs to no quadrant.</span><span class="lang-es" lang="es">(−3, −4) es izquierda y abajo — Cuadrante III. (3, −4) es IV; (−3, 4) es II; (0, −4) está sobre el eje y, que no pertenece a ningún cuadrante.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9113,6 +9235,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Quadrant IV</span><span class="lang-es" lang="es">Cuadrante IV</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Right (positive x) and down (negative y) is Quadrant IV. Quadrant II would need the signs reversed, (−, +); III is both negative; I is both positive.</span><span class="lang-es" lang="es">Derecha (x positiva) y abajo (y negativa) es el Cuadrante IV. El Cuadrante II necesitaría los signos al revés, (−, +); el III es los dos negativos; el I es los dos positivos.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

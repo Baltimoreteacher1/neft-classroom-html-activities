@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8280,7 +8339,10 @@ body {
           <p class="ladder-q"><span class="lang-en">Two pyramids have the same base area (64 in²) but different slant heights. Pyramid A has slant height 6 in and Pyramid B has slant height 10 in. How much more surface area does Pyramid B have? Why does slant height affect surface area but NOT base area?</span><span class="lang-es" lang="es">Dos pirámides tienen la misma área de base (64 in²) pero alturas inclinadas diferentes. La pirámide A tiene una altura inclinada de 6 in y la pirámide B de 10 in. ¿Cuánta área superficial más tiene la pirámide B? ¿Por qué la altura inclinada afecta el área superficial pero NO el área de la base?</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">With a 64 in² base the edge is 8 in, so Pyramid A has SA = 64 + 4(½ × 8 × 6) = 64 + 96 = 160 in² and Pyramid B has SA = 64 + 4(½ × 8 × 10) = 64 + 160 = 224 in², a difference of 64 in². Slant height only appears in the triangle formula, so it stretches the lateral faces while the base area stays 8 × 8 no matter how tall the pyramid gets.</span><span class="lang-es" lang="es">Con una base de 64 in² la arista mide 8 in, así que la Pirámide A tiene SA = 64 + 4(½ × 8 × 6) = 64 + 96 = 160 in² y la Pirámide B tiene SA = 64 + 4(½ × 8 × 10) = 64 + 160 = 224 in², una diferencia de 64 in². La altura inclinada solo aparece en la fórmula del triángulo, así que estira las caras laterales mientras el área de la base sigue siendo 8 × 8 sin importar cuánto suba la pirámide.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8671,6 +8733,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Base (bottom): Square: side × side, Rectangle: length × width, Only one of these on the box</span><span class="lang-es" lang="es">Base (fondo): Cuadrado: lado × lado, Rectángulo: largo × ancho, Solo una de estas en la caja</span></li><li><span class="lang-en">Triangular faces: ½ × base edge × slant height, Uses the slant height as its height, Add 4 of these together</span><span class="lang-es" lang="es">Caras triangulares: ½ × arista de la base × altura inclinada, Usa la altura inclinada como su altura, Suma 4 de estas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Base cards describe the single flat bottom the box sits on, so &#039;Square: side × side&#039;, &#039;Rectangle: length × width&#039;, and &#039;Only one of these on the box&#039; all belong there. The face cards describe the triangles that lean up to the point — &#039;½ × base edge × slant height&#039;, &#039;Uses the slant height as its height&#039;, and &#039;Add 4 of these together&#039;.</span><span class="lang-es" lang="es">Las tarjetas de la base describen el único fondo plano sobre el que se apoya la caja, así que &#039;Square: side × side&#039;, &#039;Rectangle: length × width&#039; y &#039;Only one of these on the box&#039; van ahí. Las tarjetas de las caras describen los triángulos que se inclinan hacia la punta: &#039;½ × base edge × slant height&#039;, &#039;Uses the slant height as its height&#039; y &#039;Add 4 of these together&#039;.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8784,6 +8858,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>1. Find base area: 6 × 6 = 36</li><li>2. Find one lateral face: ½ × 6 × 10 = 30</li><li>3. Multiply by 4 faces: 4 × 30 = 120</li><li>4. Add base + lateral: 36 + 120</li><li>5. SA = 156 in²</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The steps follow the structure of the pyramid itself: find the square base (6 × 6 = 36), find one triangular face (½ × 6 × 10 = 30), multiply by the 4 faces (4 × 30 = 120), add base plus lateral (36 + 120), and state the total, SA = 156 in². The lateral total has to be built before it can be added to the base, so the order cannot be shuffled.</span><span class="lang-es" lang="es">Los pasos siguen la estructura misma de la pirámide: halla la base cuadrada (6 × 6 = 36), halla una cara triangular (½ × 6 × 10 = 30), multiplica por las 4 caras (4 × 30 = 120), suma base más lateral (36 + 120) y escribe el total, SA = 156 in². El total lateral debe construirse antes de sumarlo a la base, así que el orden no se puede cambiar.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8891,6 +8977,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Base 5 in, slant 8 in → 105 in²</span><span class="lang-es" lang="es">Base 5 in, altura inclinada 8 in → 105 in²</span></li><li><span class="lang-en">Base 6 in, slant 7 in → 120 in²</span><span class="lang-es" lang="es">Base 6 in, altura inclinada 7 in → 120 in²</span></li><li><span class="lang-en">Base 8 in, slant 9 in → 208 in²</span><span class="lang-es" lang="es">Base 8 in, altura inclinada 9 in → 208 in²</span></li><li><span class="lang-en">Base 10 in, slant 6 in → 220 in²</span><span class="lang-es" lang="es">Base 10 in, altura inclinada 6 in → 220 in²</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each box&#039;s total is its square base plus four triangles: 25 + 4(20) = 105 in², 36 + 4(21) = 120 in², 64 + 4(36) = 208 in², and 100 + 4(30) = 220 in². Notice the last two are close in total even though their shapes differ — you have to compute both parts rather than judging by the base edge alone.</span><span class="lang-es" lang="es">El total de cada caja es su base cuadrada más cuatro triángulos: 25 + 4(20) = 105 in², 36 + 4(21) = 120 in², 64 + 4(36) = 208 in² y 100 + 4(30) = 220 in². Fíjate en que los dos últimos totales quedan cerca aunque las formas son distintas: hay que calcular las dos partes en vez de juzgar solo por la arista de la base.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9008,6 +9106,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>20 in²</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Area of a triangle = ½ × base × height = ½ × 8 × 5 = 20 in². You use the slant height (5) as the triangle&#039;s height, not the pyramid&#039;s vertical height.</span><span class="lang-es" lang="es">Área de un triángulo = ½ × base × altura = ½ × 8 × 5 = 20 in². Usas la altura inclinada (5) como altura del triángulo, no la altura vertical de la pirámide.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9109,6 +9219,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: surface area, lateral, base, slant height, triangle, area, bigger, taller.</span><span class="lang-es" lang="es">Una buena respuesta usa: surface area, lateral, base, slant height, triangle, area, bigger, taller.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">With a 64 in² base the edge is 8 in, so Pyramid A has SA = 64 + 4(½ × 8 × 6) = 64 + 96 = 160 in² and Pyramid B has SA = 64 + 4(½ × 8 × 10) = 64 + 160 = 224 in², a difference of 64 in². Slant height only appears in the triangle formula, so it stretches the lateral faces while the base area stays 8 × 8 no matter how tall the pyramid gets.</span><span class="lang-es" lang="es">Con una base de 64 in² la arista mide 8 in, así que la Pirámide A tiene SA = 64 + 4(½ × 8 × 6) = 64 + 96 = 160 in² y la Pirámide B tiene SA = 64 + 4(½ × 8 × 10) = 64 + 160 = 224 in², una diferencia de 64 in². La altura inclinada solo aparece en la fórmula del triángulo, así que estira las caras laterales mientras el área de la base sigue siendo 8 × 8 sin importar cuánto suba la pirámide.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9210,6 +9332,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>175 in²</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Base: 7 × 7 = 49 in². One triangular face: ½ × 7 × 9 = 31.5 in². Four faces: 4 × 31.5 = 126 in². SA = 49 + 126 = 175 in². Surface area uses square units (in²).</span><span class="lang-es" lang="es">Base: 7 × 7 = 49 in². Una cara triangular: ½ × 7 × 9 = 31.5 in². Cuatro caras: 4 × 31.5 = 126 in². Área de superficie = 49 + 126 = 175 in². El área de superficie usa unidades cuadradas (in²).</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9322,6 +9456,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>95 in²</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Base: 5 × 5 = 25 in². Each lateral face: ½ × 5 × 7 = 17.5 in². Four faces: 4 × 17.5 = 70 in². SA = 25 + 70 = 95 in².</span><span class="lang-es" lang="es">Base: 5 × 5 = 25 in². Cada cara lateral: ½ × 5 × 7 = 17.5 in². Cuatro caras: 4 × 17.5 = 70 in². Área de superficie = 25 + 70 = 95 in².</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9423,6 +9569,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>133 cm²</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">SA = Base Area + Lateral Area = 49 + 84 = 133 cm².</span><span class="lang-es" lang="es">Área de superficie = área de la base + área lateral = 49 + 84 = 133 cm².</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9524,6 +9682,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>24 in²</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Area of a triangle = ½ × base × height = ½ × 8 × 6 = 24 in².</span><span class="lang-es" lang="es">Área de un triángulo = ½ × base × altura = ½ × 8 × 6 = 24 in².</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9628,6 +9798,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>1. Base 4×4, slant 5</li><li>2. Base 6×6, slant 5</li><li>3. Base 6×6, slant 8</li><li>4. Base 10×10, slant 9</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Ordering by the listed totals gives 56, then 96, then 132, then 280. Comparing the middle two shows why: both sit on a 6 × 6 base, but stretching the slant height from 5 to 8 grows every triangular face, so SA climbs from 96 to 132 even though the base never changed.</span><span class="lang-es" lang="es">Al ordenar por los totales que aparecen se obtiene 56, luego 96, luego 132 y luego 280. Comparar los dos del medio muestra por qué: ambos están sobre una base de 6 × 6, pero al alargar la altura inclinada de 5 a 8 crece cada cara triangular, así que el área total sube de 96 a 132 aunque la base no cambió.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9765,6 +9947,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Pyramid 1 · Area of One Face: 18 in²</span><span class="lang-es" lang="es">Pirámide 1 · Área de una cara: 18 pulg²</span></li><li><span class="lang-en">Pyramid 2 · Area of One Face: 15 cm²</span><span class="lang-es" lang="es">Pirámide 2 · Área de una cara: 15 cm²</span></li><li><span class="lang-en">Pyramid 3 · Area of One Face: 40 ft²</span><span class="lang-es" lang="es">Pirámide 3 · Área de una cara: 40 pies²</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Every lateral face of a pyramid is a triangle whose base is the base edge and whose height is the slant height, so its area is ½ × base edge × slant height. That gives ½ × 4 × 9 = 18 in² for Pyramid 1, ½ × 6 × 5 = 15 cm² for Pyramid 2, and ½ × 10 × 8 = 40 ft² for Pyramid 3.</span><span class="lang-es" lang="es">Cada cara lateral de una pirámide es un triángulo cuya base es la arista de la base y cuya altura es la altura inclinada, así que su área es ½ × arista de la base × altura inclinada. Eso da ½ × 4 × 9 = 18 in² para la Pirámide 1, ½ × 6 × 5 = 15 cm² para la Pirámide 2 y ½ × 10 × 8 = 40 ft² para la Pirámide 3.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9941,6 +10135,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Pyramid X · Base Area: 144 in²</span><span class="lang-es" lang="es">Pirámide X · Área de la base: 144 pulg²</span></li><li><span class="lang-en">Pyramid X · Total SA: 384 in²</span><span class="lang-es" lang="es">Pirámide X · Área superficial total: 384 pulg²</span></li><li><span class="lang-en">Pyramid Y · Base Area: 64 cm²</span><span class="lang-es" lang="es">Pirámide Y · Área de la base: 64 cm²</span></li><li><span class="lang-en">Pyramid Y · Total SA: 160 cm²</span><span class="lang-es" lang="es">Pirámide Y · Área superficial total: 160 cm²</span></li><li><span class="lang-en">Pyramid Z · Base Area: 196 ft²</span><span class="lang-es" lang="es">Pirámide Z · Área de la base: 196 pies²</span></li><li><span class="lang-en">Pyramid Z · Total SA: 504 ft²</span><span class="lang-es" lang="es">Pirámide Z · Área superficial total: 504 pies²</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each row is base area plus four triangular faces: Pyramid X gives 12 × 12 = 144 in² plus 4 × (½ × 12 × 10) = 240 in², so SA = 384 in². The same plan gives Pyramid Y 64 cm² + 4 × 24 = 160 cm² and Pyramid Z 196 ft² + 4 × 77 = 504 ft².</span><span class="lang-es" lang="es">Cada fila es el área de la base más cuatro caras triangulares: la Pirámide X da 12 × 12 = 144 in² más 4 × (½ × 12 × 10) = 240 in², así que SA = 384 in². El mismo plan da para la Pirámide Y 64 cm² + 4 × 24 = 160 cm² y para la Pirámide Z 196 ft² + 4 × 77 = 504 ft².</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10042,6 +10248,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>4</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A square pyramid has a square base and 4 triangular lateral faces — one for each side of the square.</span><span class="lang-es" lang="es">Una pirámide cuadrada tiene una base cuadrada y 4 caras laterales triangulares, una por cada lado del cuadrado.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10143,6 +10361,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>81 in²</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The base is a square, so base area = side × side = 9 × 9 = 81 in². You would still add the four triangular faces to get the full surface area.</span><span class="lang-es" lang="es">La base es un cuadrado, así que el área de la base = lado × lado = 9 × 9 = 81 in². Todavía tendrías que sumar las cuatro caras triangulares para obtener el área de superficie total.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

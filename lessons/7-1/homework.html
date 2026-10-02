@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8591,6 +8650,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Left of 0 (negative integer): -86, -9, -3</span><span class="lang-es" lang="es">A la izquierda de 0 (entero negativo): -86, -9, -3</span></li><li><span class="lang-en">Right of 0 (positive integer): 9, 21, 250</span><span class="lang-es" lang="es">A la derecha de 0 (entero positivo): 9, 21, 250</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The sign alone decides the side. -86, -9, and -3 all carry a negative sign, so all three graph to the left of 0, even though -86 is far away and -3 is close. The integers 9, 21, and 250 have no negative sign, so they graph to the right of 0. Distance from zero is a separate question from which side of zero a number is on.</span><span class="lang-es" lang="es">Solo el signo decide el lado. -86, -9 y -3 llevan signo negativo, así que los tres se grafican a la izquierda del 0, aunque -86 esté muy lejos y -3 muy cerca. Los enteros 9, 21 y 250 no tienen signo negativo, así que se grafican a la derecha del 0. La distancia al cero es una pregunta distinta de en qué lado del cero está un número.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8694,6 +8765,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>0</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Zero is 0 units from itself, so there is no other side to move to. Zero is its own opposite.</span><span class="lang-es" lang="es">El cero está a 0 unidades de sí mismo, así que no hay otro lado al que moverse. El cero es su propio opuesto.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8850,6 +8933,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A football play with a 12-yard loss · Integer: -12</span><span class="lang-es" lang="es">Una jugada de fútbol americano con una pérdida de 12 yardas · Entero: -12</span></li><li><span class="lang-en">A hiker 250 meters above sea level · Integer: 250</span><span class="lang-es" lang="es">Un excursionista a 250 metros sobre el nivel del mar · Entero: 250</span></li><li><span class="lang-en">7 degrees below zero · Integer: -7</span><span class="lang-es" lang="es">7 grados bajo cero · Entero: -7</span></li><li><span class="lang-en">A submarine resting at the surface of the water · Integer: 0</span><span class="lang-es" lang="es">Un submarino en la superficie del agua · Entero: 0</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each situation has a natural 0: the line of scrimmage, sea level, zero degrees, and the water surface. A 12-yard loss moves backward from the line of scrimmage, so it is -12. A hiker 250 meters above sea level is +250, written simply as 250. Seven degrees below zero is -7. A submarine resting right at the surface is exactly at the starting point, so its integer is 0 — not positive and not negative.</span><span class="lang-es" lang="es">Cada situación tiene un 0 natural: la línea de golpeo, el nivel del mar, cero grados y la superficie del agua. Una pérdida de 12 yardas retrocede desde la línea de golpeo, así que es -12. Un excursionista a 250 metros sobre el nivel del mar es +250, que se escribe simplemente 250. Siete grados bajo cero es -7. Un submarino justo en la superficie está exactamente en el punto de partida, así que su entero es 0: ni positivo ni negativo.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8969,6 +9064,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: integer, opposite, negative, positive, zero, sea level, temperature, below, above.</span><span class="lang-es" lang="es">Una buena respuesta usa: integer, opposite, negative, positive, zero, sea level, temperature, below, above.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Every situation that uses negative integers has a chosen zero. With elevation, 0 is sea level, so -30 meters means 30 meters below the surface and its opposite, 30, means 30 meters above it. With temperature, 0 is zero degrees, so -5°C is five degrees below zero and its opposite, 5°C, is five degrees above. In both cases the opposite is the same distance from 0, just measured in the other direction, which is what makes it the mirror image of the original quantity.</span><span class="lang-es" lang="es">Toda situación que usa enteros negativos tiene un cero elegido. Con la elevación, 0 es el nivel del mar, así que -30 metros significa 30 metros bajo la superficie y su opuesto, 30, significa 30 metros por encima. Con la temperatura, 0 es cero grados, así que -5°C son cinco grados bajo cero y su opuesto, 5°C, son cinco grados arriba. En ambos casos el opuesto está a la misma distancia del 0, solo medido en la otra dirección, y eso lo convierte en el reflejo de la cantidad original.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9072,6 +9179,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>0 is an integer, and it is its own opposite</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Integers are the counting numbers, their opposites, and 0. Zero is 0 units from itself, so it is its own opposite.</span><span class="lang-es" lang="es">Los enteros son los números para contar, sus opuestos y el 0. El cero está a 0 unidades de sí mismo, así que es su propio opuesto.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9194,6 +9313,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>1. -86</li><li>2. -9</li><li>3. -3</li><li>4. 0</li><li>5. 9</li><li>6. 21</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Reading left to right on a number line gives -86, -9, -3, 0, 9, 21. Among the negatives the order looks backward compared to positives: -86 is the farthest from 0, which puts it the farthest LEFT and makes it the least. Zero sits between the negatives and the positives, and the positives then increase as they run right.</span><span class="lang-es" lang="es">Al leer de izquierda a derecha en la recta numérica queda -86, -9, -3, 0, 9, 21. Entre los negativos el orden parece invertido respecto a los positivos: -86 es el más alejado del 0, lo que lo pone más a la IZQUIERDA y lo hace el menor. El cero queda entre los negativos y los positivos, y luego los positivos aumentan hacia la derecha.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9308,6 +9439,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>-8, -3, 0, 5</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Least to greatest reads left to right on the number line: -8, then -3, then 0, then 5.</span><span class="lang-es" lang="es">De menor a mayor se lee de izquierda a derecha en la recta numérica: -8, luego -3, luego 0 y luego 5.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9464,6 +9607,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">-15 · Opposite: 15</span><span class="lang-es" lang="es">-15 · Opuesto: 15</span></li><li><span class="lang-en">8 · Opposite: -8</span><span class="lang-es" lang="es">8 · Opuesto: -8</span></li><li><span class="lang-en">0 · Opposite: 0</span><span class="lang-es" lang="es">0 · Opuesto: 0</span></li><li><span class="lang-en">-100 · Opposite: 100</span><span class="lang-es" lang="es">-100 · Opuesto: 100</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">An opposite keeps the distance from 0 and flips the side, so the digits never change and the sign always does: -15 becomes 15, 8 becomes -8, and -100 becomes 100. Zero is the exception. It sits 0 units from itself, so there is no other side to move to, which makes 0 its own opposite.</span><span class="lang-es" lang="es">Un opuesto conserva la distancia al 0 y cambia el lado, así que las cifras nunca cambian y el signo siempre sí: -15 pasa a 15, 8 pasa a -8 y -100 pasa a 100. El cero es la excepción. Está a 0 unidades de sí mismo, así que no hay otro lado al que moverse, lo que hace que 0 sea su propio opuesto.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9567,6 +9722,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>-86</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Below sea level means less than 0, so the elevation is written with a negative sign: -86 meters.</span><span class="lang-es" lang="es">Bajo el nivel del mar significa menos que 0, así que la elevación se escribe con signo negativo: -86 metros.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9670,6 +9837,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>9</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The opposite of a number is the same distance from 0 on the other side, so the opposite of -9 is 9.</span><span class="lang-es" lang="es">El opuesto de un número está a la misma distancia de 0 pero del otro lado, así que el opuesto de -9 es 9.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9773,6 +9952,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>12°C and -12°C</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The opposite of -12 is 12, so 2 p.m. was 12°C. The opposite of 12 is -12, so 11 p.m. was back to -12°C.</span><span class="lang-es" lang="es">El opuesto de -12 es 12, así que a las 2 p.m. era 12°C. El opuesto de 12 es -12, así que a las 11 p.m. volvió a -12°C.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9876,6 +10067,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>12 yards past the line of scrimmage</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Write each play as an integer: -10, 4, -3, 21. Combining them gives -10 + 4 - 3 + 21 = 12, so the team ends 12 yards past the line of scrimmage.</span><span class="lang-es" lang="es">Escribe cada jugada como entero: -10, 4, -3, 21. Al combinarlos: -10 + 4 - 3 + 21 = 12, así que el equipo termina 12 yardas más allá de la línea de golpeo.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9979,6 +10182,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>-120 meters</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Farther below sea level means farther to the left of 0. -120 is 120 units below 0, which is deeper than 86 units below 0.</span><span class="lang-es" lang="es">Más abajo del nivel del mar significa más a la izquierda del 0. -120 está 120 unidades bajo 0, más profundo que 86 unidades bajo 0.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

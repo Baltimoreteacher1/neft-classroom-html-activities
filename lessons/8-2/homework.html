@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8337,7 +8396,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A detective solved x + 25 = 60 and got x = 35. Another detective solved y − 25 = 60 and got y = 35. Are both correct? Explain using inverse operations and check each answer.</span><span class="lang-es" lang="es">Un detective resolvió x + 25 = 60 y obtuvo x = 35. Otra detective resolvió y − 25 = 60 y obtuvo y = 35. ¿Están los dos correctos? Explica usando operaciones inversas y comprueba cada respuesta.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Only the first detective is right. For x + 25 = 60 the inverse is subtraction, so x = 60 − 25 = 35, and 35 + 25 = 60 checks out. For y − 25 = 60 the inverse is addition, so y = 60 + 25 = 85, not 35 — substituting 35 gives 35 − 25 = 10, not 60. Opposite operations need opposite inverses, even when the numbers look identical.</span><span class="lang-es" lang="es">Solo el primer detective tiene razón. Para x + 25 = 60 la inversa es la resta, así que x = 60 − 25 = 35, y 35 + 25 = 60 comprueba bien. Para y − 25 = 60 la inversa es la suma, así que y = 60 + 25 = 85, no 35: al sustituir 35 da 35 − 25 = 10, no 60. Operaciones opuestas necesitan inversas opuestas, aunque los números se vean idénticos.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8689,6 +8751,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Add to both sides: x − 9 = 14, n − 20 = 35, y − 6 = 8</span><span class="lang-es" lang="es">Suma a ambos lados: x − 9 = 14, n − 20 = 35, y − 6 = 8</span></li><li><span class="lang-en">Subtract from both sides: x + 12 = 30, n + 7 = 19, y + 15 = 40</span><span class="lang-es" lang="es">Resta a ambos lados: x + 12 = 30, n + 7 = 19, y + 15 = 40</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The sign attached to the number beside the variable decides the move. x − 9 = 14, n − 20 = 35, and y − 6 = 8 all subtract from the variable, so you add to both sides to undo them. x + 12 = 30, n + 7 = 19, and y + 15 = 40 all add, so you subtract from both sides. You never need to solve them to sort — just read the operation.</span><span class="lang-es" lang="es">El signo que acompaña al número junto a la variable decide el movimiento. x − 9 = 14, n − 20 = 35 y y − 6 = 8 le restan a la variable, así que sumas en ambos lados para deshacerlo. x + 12 = 30, n + 7 = 19 y y + 15 = 40 suman, así que restas en ambos lados. No hace falta resolverlas para clasificarlas: basta con leer la operación.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8826,6 +8900,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">x + 18 = 45 · Solution: x = 27</span><span class="lang-es" lang="es">x + 18 = 45 · Solución: x = 27</span></li><li><span class="lang-en">p − 22 = 19 · Solution: p = 41</span><span class="lang-es" lang="es">p − 22 = 19 · Solución: p = 41</span></li><li><span class="lang-en">w + 3.5 = 10 · Solution: w = 6.5</span><span class="lang-es" lang="es">w + 3.5 = 10 · Solución: w = 6.5</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each row names what is done to the variable, then undoes it on both sides. x + 18 = 45 adds 18, so subtract 18: x = 27, and 27 + 18 = 45. p − 22 = 19 subtracts 22, so add 22: p = 41, and 41 − 22 = 19. w + 3.5 = 10 adds 3.5, so subtract 3.5: w = 6.5, and 6.5 + 3.5 = 10 — decimals follow exactly the same rule.</span><span class="lang-es" lang="es">Cada fila nombra lo que se le hace a la variable y luego lo deshace en ambos lados. x + 18 = 45 suma 18, así que resta 18: x = 27, y 27 + 18 = 45. p − 22 = 19 resta 22, así que suma 22: p = 41, y 41 − 22 = 19. w + 3.5 = 10 suma 3.5, así que resta 3.5: w = 6.5, y 6.5 + 3.5 = 10; los decimales siguen exactamente la misma regla.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8933,6 +9019,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>a + 6 = 13 → a = 7</li><li>b − 5 = 8 → b = 13</li><li>c + 11 = 20 → c = 9</li><li>d − 9 = 6 → d = 15</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Undo each operation to unlock its value: a + 6 = 13 needs subtraction, so a = 7; b − 5 = 8 needs addition, so b = 13; c + 11 = 20 needs subtraction, so c = 9; and d − 9 = 6 needs addition, so d = 15. Watch that the addition equations produce solutions smaller than the total while the subtraction equations produce larger ones.</span><span class="lang-es" lang="es">Deshaz cada operación para descubrir su valor: a + 6 = 13 necesita resta, así que a = 7; b − 5 = 8 necesita suma, así que b = 13; c + 11 = 20 necesita resta, así que c = 9; y d − 9 = 6 necesita suma, así que d = 15. Fíjate en que las ecuaciones con suma dan soluciones menores que el total, mientras que las de resta dan soluciones mayores.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9050,6 +9148,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: inverse, subtract, add, both sides, check, 35, 85.</span><span class="lang-es" lang="es">Una buena respuesta usa: inverse, subtract, add, both sides, check, 35, 85.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Only the first detective is right. For x + 25 = 60 the inverse is subtraction, so x = 60 − 25 = 35, and 35 + 25 = 60 checks out. For y − 25 = 60 the inverse is addition, so y = 60 + 25 = 85, not 35 — substituting 35 gives 35 − 25 = 10, not 60. Opposite operations need opposite inverses, even when the numbers look identical.</span><span class="lang-es" lang="es">Solo el primer detective tiene razón. Para x + 25 = 60 la inversa es la resta, así que x = 60 − 25 = 35, y 35 + 25 = 60 comprueba bien. Para y − 25 = 60 la inversa es la suma, así que y = 60 + 25 = 85, no 35: al sustituir 35 da 35 − 25 = 10, no 60. Operaciones opuestas necesitan inversas opuestas, aunque los números se vean idénticos.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9151,6 +9261,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>34</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Subtract 16 from both sides: t = 50 − 16 = 34. Check: 34 + 16 = 50 ✓</span><span class="lang-es" lang="es">Resta 16 en ambos lados: t = 50 − 16 = 34. Comprueba: 34 + 16 = 50 ✓</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9252,6 +9374,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>x = 8</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Subtract 7 from both sides: x = 15 − 7 = 8. Check: 8 + 7 = 15 ✓</span><span class="lang-es" lang="es">Resta 7 en ambos lados: x = 15 − 7 = 8. Comprueba: 8 + 7 = 15 ✓</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9364,6 +9498,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>x = 6</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Subtract 9 from both sides: x = 15 − 9 = 6. Check: 6 + 9 = 15 ✓</span><span class="lang-es" lang="es">Resta 9 en ambos lados: x = 15 − 9 = 6. Comprueba: 6 + 9 = 15 ✓</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9465,6 +9611,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>y = 27</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Add 7 to both sides: y = 20 + 7 = 27. Check: 27 − 7 = 20 ✓</span><span class="lang-es" lang="es">Suma 7 en ambos lados: y = 20 + 7 = 27. Comprueba: 27 − 7 = 20 ✓</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9566,6 +9724,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>n = 27</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Subtract 15 from both sides: n = 42 − 15 = 27. Check: 27 + 15 = 42 ✓</span><span class="lang-es" lang="es">Resta 15 en ambos lados: n = 42 − 15 = 27. Comprueba: 27 + 15 = 42 ✓</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9667,6 +9837,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>m = 36</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Add 11 to both sides: m = 25 + 11 = 36. Check: 36 − 11 = 25 ✓</span><span class="lang-es" lang="es">Suma 11 en ambos lados: m = 25 + 11 = 36. Comprueba: 36 − 11 = 25 ✓</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9768,6 +9950,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>n = 13</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Add 4 to both sides: n = 9 + 4 = 13. Check: 13 − 4 = 9 ✓</span><span class="lang-es" lang="es">Suma 4 en ambos lados: n = 9 + 4 = 13. Comprueba: 13 − 4 = 9 ✓</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9869,6 +10063,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>$53</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> d − 15 = 38 → d = 38 + 15 = 53.</p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

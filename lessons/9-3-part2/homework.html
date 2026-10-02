@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8235,7 +8294,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A bike rental costs $8 to start plus $3 per hour. Write an equation for the total cost c after h hours, and explain which number multiplies h and which is added, and why. Then test your equation against this known pair: a 4-hour rental cost $20.</span><span class="lang-es" lang="es">La renta de una bicicleta cuesta $8 al inicio más $3 por hora. Escribe una ecuación para el costo total c después de h horas, y explica qué número multiplica h y cuál se suma, y por qué. Luego prueba tu ecuación con este par conocido: una renta de 4 horas costó $20.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">c = 3h + 8. The $3 is charged for EACH hour, so it multiplies the number of hours; the $8 is charged once no matter how long the rental is, so it is added once. Test with h = 4: 3 × 4 + 8 = 12 + 8 = 20, which matches the known $20 — the equation passes. (The reversed version, c = 8h + 3, gives $35 for 4 hours and fails the test.)</span><span class="lang-es" lang="es">c = 3h + 8. Los $3 se cobran por CADA hora, así que multiplican el número de horas; los $8 se cobran una vez sin importar cuánto dure la renta, así que se suman una vez. Prueba con h = 4: 3 × 4 + 8 = 12 + 8 = 20, que coincide con los $20 conocidos — la ecuación pasa. (La versión invertida, c = 8h + 3, da $35 para 4 horas y falla la prueba.)</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8515,6 +8577,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>y = 2x + 5</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">$2 repeats every hour, so it multiplies x; the $5 is paid once, so it is added: y = 2x + 5 (3 hours: $11). y = 5x + 2 charges the entry fee every hour; y = 7x adds the two charges and multiplies both; y = 2x forgets the fee.</span><span class="lang-es" lang="es">$2 se repite cada hora, así que multiplica x; los $5 se pagan una vez, así que se suman: y = 2x + 5 (3 horas: $11). y = 5x + 2 cobra la cuota de entrada cada hora; y = 7x suma los dos cobros y multiplica los dos; y = 2x olvida la cuota.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8616,6 +8690,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>y = 0.10x + 20</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Per-text cost multiplies, monthly fee adds: y = 0.10x + 20. y = 20x + 0.10 charges $20 per text; y = 20.10x merges the two charges into one rate; y = 0.10x drops the monthly fee.</span><span class="lang-es" lang="es">El costo por mensaje multiplica, la cuota mensual se suma: y = 0.10x + 20. y = 20x + 0.10 cobra $20 por mensaje; y = 20.10x junta los dos cobros en una sola tasa; y = 0.10x olvida la cuota mensual.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8717,6 +8803,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>c = 16h</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The rate multiplies the hours: c = 16h. c = 16 + h would add one dollar per hour to a flat $16; h = 16c reverses which variable depends on which; c = h ÷ 16 divides instead of multiplying.</span><span class="lang-es" lang="es">La tasa multiplica las horas: c = 16h. c = 16 + h sumaría un dólar por hora a $16 fijos; h = 16c invierte qué variable depende de cuál; c = h ÷ 16 divide en vez de multiplicar.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8821,6 +8919,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">c = 3h + 8. The $3 is charged for EACH hour, so it multiplies the number of hours; the $8 is charged once no matter how long the rental is, so it is added once. Test with h = 4: 3 × 4 + 8 = 12 + 8 = 20, which matches the known $20 — the equation passes. (The reversed version, c = 8h + 3, gives $35 for 4 hours and fails the test.)</span><span class="lang-es" lang="es">c = 3h + 8. Los $3 se cobran por CADA hora, así que multiplican el número de horas; los $8 se cobran una vez sin importar cuánto dure la renta, así que se suman una vez. Prueba con h = 4: 3 × 4 + 8 = 12 + 8 = 20, que coincide con los $20 conocidos — la ecuación pasa. (La versión invertida, c = 8h + 3, da $35 para 4 horas y falla la prueba.)</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8922,6 +9032,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">t = 17n; 20 hoodies cost $340</span><span class="lang-es" lang="es">t = 17n; 20 sudaderas cuestan $340</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">t = 17n, and 17 × 20 = $340. t = 17 + n adds instead of multiplying; $37 is that wrong equation&#039;s value; t = 20n puts the number of hoodies where the price belongs.</span><span class="lang-es" lang="es">t = 17n, y 17 × 20 = $340. t = 17 + n suma en vez de multiplicar; $37 es el valor de esa ecuación equivocada; t = 20n pone el número de sudaderas donde va el precio.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9023,6 +9145,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>$11</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">2 × 3 + 5 = 6 + 5 = $11 — $5 to enter, then $2, $2, $2. $21 adds 3 + 5 first and doubles (or uses 5x + 2 with x = 3 + …); $16 adds the fee twice; $10 drops the fee.</span><span class="lang-es" lang="es">2 × 3 + 5 = 6 + 5 = $11 — $5 por entrar, luego $2, $2, $2. $21 y $16 salen de sumar fuera de orden o de repetir la cuota; $10 olvida la cuota.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8236,7 +8295,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A toy company ships action figures in boxes that are 4 × 3 × 6 inches. A shipping crate is 24 × 12 × 18 inches. How many action figure boxes fit in the crate? Explain your reasoning step by step.</span><span class="lang-es" lang="es">Una juguetería envía figuras de acción en cajas de 4 × 3 × 6 pulgadas. Una caja de embarque mide 24 × 12 × 18 pulgadas. ¿Cuántas cajas de figuras caben en la caja de embarque? Explica tu razonamiento paso a paso.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Each toy box holds 4 × 3 × 6 = 72 in³ and the crate holds 24 × 12 × 18 = 5184 in³, so 5184 ÷ 72 = 72 boxes fit. The division comes out exact because every crate edge is a whole-number multiple of a box edge: 24 ÷ 4 = 6 across, 12 ÷ 3 = 4 deep, and 18 ÷ 6 = 3 layers, and 6 × 4 × 3 = 72 confirms it.</span><span class="lang-es" lang="es">Cada caja de juguete tiene 4 × 3 × 6 = 72 in³ y la caja grande tiene 24 × 12 × 18 = 5184 in³, así que caben 5184 ÷ 72 = 72 cajas. La división sale exacta porque cada lado de la caja grande es un múltiplo entero de un lado de la caja pequeña: 24 ÷ 4 = 6 a lo ancho, 12 ÷ 3 = 4 de fondo y 18 ÷ 6 = 3 capas, y 6 × 4 × 3 = 72 lo confirma.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8516,6 +8578,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">72 cubic in</span><span class="lang-es" lang="es">72 pulgadas cúbicas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">V = length × width × height = 6 × 4 × 3 = 72 cubic in. Volume uses cubic units.</span><span class="lang-es" lang="es">V = largo × ancho × alto = 6 × 4 × 3 = 72 pulgadas cúbicas. El volumen usa unidades cúbicas.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8617,6 +8691,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Volume measures 3D space (cubic units); area measures 2D surface (square units)</span><span class="lang-es" lang="es">El volumen mide el espacio en 3D (unidades cúbicas); el área mide una superficie en 2D (unidades cuadradas)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Volume measures the space inside a 3D shape (cubic units like in³). Area measures a flat 2D surface (square units like in²).</span><span class="lang-es" lang="es">El volumen mide el espacio dentro de una figura de tres dimensiones (unidades cúbicas como in³). El área mide una superficie plana de dos dimensiones (unidades cuadradas como in²).</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8718,6 +8804,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">18 cubic in</span><span class="lang-es" lang="es">18 pulgadas cúbicas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">V = 4 × 3 × 1.5 = 12 × 1.5 = 18 cubic in. A fractional edge does not change the steps.</span><span class="lang-es" lang="es">V = 4 × 3 × 1.5 = 12 × 1.5 = 18 pulgadas cúbicas. Una arista fraccionaria no cambia los pasos.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8854,6 +8952,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">L-shape A · Total Volume: 108 in³</span><span class="lang-es" lang="es">Figura en L A · Volumen total: 108 pulg³</span></li><li><span class="lang-en">L-shape B · Total Volume: 180 in³</span><span class="lang-es" lang="es">Figura en L B · Volumen total: 180 pulg³</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">An L-shape has no single length, width, and height, so you find each rectangular prism&#039;s volume separately and add them. L-shape A: 6 × 4 × 3 = 72 plus 6 × 2 × 3 = 36 gives 108 in³. L-shape B: 10 × 5 × 2 = 100 plus 4 × 5 × 4 = 80 gives 180 in³.</span><span class="lang-es" lang="es">Una figura en L no tiene un solo largo, ancho y altura, así que encuentras el volumen de cada prisma rectangular por separado y los sumas. Figura L A: 6 × 4 × 3 = 72 más 6 × 2 × 3 = 36 da 108 in³. Figura L B: 10 × 5 × 2 = 100 más 4 × 5 × 4 = 80 da 180 in³.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8955,6 +9065,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Box B by 40 in³</span><span class="lang-es" lang="es">La caja B por 40 in³</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Box A: 10 × 5 × 4 = 200 in³. Box B: 8 × 6 × 5 = 240 in³. Box B is bigger by 40 in³.</span><span class="lang-es" lang="es">Caja A: 10 × 5 × 4 = 200 in³. Caja B: 8 × 6 × 5 = 240 in³. La caja B es mayor por 40 in³.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9056,6 +9178,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>6 m³</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> V = 1/2 × 3 × 4 = 6 m³.</p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9168,6 +9302,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>2 cm</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> V = l × w × h → 36 = 6 × 3 × h → 36 = 18h → h = 2 cm.</p>
+        </div>
+      </details>
     </section>
 
 
@@ -9269,6 +9415,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Box A, because 50 cubic in is more than 48 cubic in</span><span class="lang-es" lang="es">La caja A, porque 50 pulgadas cúbicas es más que 48 pulgadas cúbicas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Box A: 5 × 5 × 2 = 50 cubic in. Box B: 4 × 4 × 3 = 48 cubic in. 50 &gt; 48, so Box A holds more.</span><span class="lang-es" lang="es">Caja A: 5 × 5 × 2 = 50 pulgadas cúbicas. Caja B: 4 × 4 × 3 = 48 pulgadas cúbicas. 50 &gt; 48, así que la caja A guarda más.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9376,6 +9534,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">2 × 3 × 4 → 24 cubic in</span><span class="lang-es" lang="es">2 × 3 × 4 → 24 pulgadas cúbicas</span></li><li><span class="lang-en">5 × 2 × 2 → 20 cubic in</span><span class="lang-es" lang="es">5 × 2 × 2 → 20 pulgadas cúbicas</span></li><li><span class="lang-en">3 × 3 × 3 → 27 cubic in</span><span class="lang-es" lang="es">3 × 3 × 3 → 27 pulgadas cúbicas</span></li><li><span class="lang-en">6 × 1 × 5 → 30 cubic in</span><span class="lang-es" lang="es">6 × 1 × 5 → 30 pulgadas cúbicas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Multiply the three dimensions on each card to find its volume: 2 × 3 × 4 = 24, 5 × 2 × 2 = 20, 3 × 3 × 3 = 27, and 6 × 1 × 5 = 30 cubic in. Boxes with very different shapes can land close in volume, so multiply instead of guessing from how big the numbers look.</span><span class="lang-es" lang="es">Multiplica las tres dimensiones de cada tarjeta para hallar su volumen: 2 × 3 × 4 = 24, 5 × 2 × 2 = 20, 3 × 3 × 3 = 27 y 6 × 1 × 5 = 30 pulgadas cúbicas. Cajas con formas muy distintas pueden quedar cerca en volumen, así que multiplica en lugar de adivinar por el tamaño de los números.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9477,6 +9647,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: volume, 72, 5184, divide, fit, layers, rows, columns.</span><span class="lang-es" lang="es">Una buena respuesta usa: volume, 72, 5184, divide, fit, layers, rows, columns.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each toy box holds 4 × 3 × 6 = 72 in³ and the crate holds 24 × 12 × 18 = 5184 in³, so 5184 ÷ 72 = 72 boxes fit. The division comes out exact because every crate edge is a whole-number multiple of a box edge: 24 ÷ 4 = 6 across, 12 ÷ 3 = 4 deep, and 18 ÷ 6 = 3 layers, and 6 × 4 × 3 = 72 confirms it.</span><span class="lang-es" lang="es">Cada caja de juguete tiene 4 × 3 × 6 = 72 in³ y la caja grande tiene 24 × 12 × 18 = 5184 in³, así que caben 5184 ÷ 72 = 72 cajas. La división sale exacta porque cada lado de la caja grande es un múltiplo entero de un lado de la caja pequeña: 24 ÷ 4 = 6 a lo ancho, 12 ÷ 3 = 4 de fondo y 18 ÷ 6 = 3 capas, y 6 × 4 × 3 = 72 lo confirma.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9578,6 +9760,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>6 ft</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Height = V ÷ (base area) = 9 ÷ (3/4 × 2) = 9 ÷ 1.5 = 6 ft.</span><span class="lang-es" lang="es">Altura = V ÷ (área de la base) = 9 ÷ (3/4 × 2) = 9 ÷ 1.5 = 6 ft.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9679,6 +9873,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>60 in³</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">V = l × w × h = 4 × 3 × 5 = 60 cubic inches.</span><span class="lang-es" lang="es">V = l × w × h = 4 × 3 × 5 = 60 pulgadas cúbicas.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9816,6 +10022,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">8 in · Volume: 80 in³</span><span class="lang-es" lang="es">8 pulgadas · Volumen: 80 pulg³</span></li><li><span class="lang-en">4 cm · Volume: 64 cm³</span><span class="lang-es" lang="es">4 cm · Volumen: 64 cm³</span></li><li><span class="lang-en">10 ft · Volume: 180 ft³</span><span class="lang-es" lang="es">10 pies · Volumen: 180 pies³</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Volume counts the unit cubes that fill a prism, and V = length × width × height finds that count: 8 × 5 × 2 = 80 in³, 4 × 4 × 4 = 64 cm³, and 10 × 3 × 6 = 180 ft³. Because three lengths are multiplied, the units come out cubic.</span><span class="lang-es" lang="es">El volumen cuenta los cubos unitarios que llenan un prisma, y V = largo × ancho × altura encuentra esa cantidad: 8 × 5 × 2 = 80 in³, 4 × 4 × 4 = 64 cm³ y 10 × 3 × 6 = 180 ft³. Como se multiplican tres longitudes, las unidades quedan cúbicas.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9917,6 +10135,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>125 cm³</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A cube&#039;s volume is edge³ = 5 × 5 × 5 = 125 cm³.</span><span class="lang-es" lang="es">El volumen de un cubo es arista³ = 5 × 5 × 5 = 125 cm³.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8345,7 +8404,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A runner logs 5 kilometers. Her friend logs 4,800 meters. Who ran farther? Convert one distance so both use the same unit, state whether you multiplied or divided and WHY, and check that your converted number moved in the direction you expected (bigger or smaller).</span><span class="lang-es" lang="es">Una corredora registra 5 kilómetros. Su amiga registra 4,800 metros. ¿Quién corrió más? Convierte una distancia para que las dos usen la misma unidad, di si multiplicaste o dividiste y POR QUÉ, y comprueba que tu número convertido se movió en la dirección que esperabas (más grande o más pequeño).</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Convert kilometers to meters: 5 × 1,000 = 5,000 meters. I multiplied because a meter is a smaller unit than a kilometer, so the same distance takes more of them — and 5,000 is indeed bigger than 5, as expected. 5,000 m &gt; 4,800 m, so the first runner ran farther (by 200 m). Going the other way works too: 4,800 ÷ 1,000 = 4.8 km, fewer of the bigger unit, and 4.8 &lt; 5.</span><span class="lang-es" lang="es">Convierte kilómetros a metros: 5 × 1,000 = 5,000 metros. Multipliqué porque un metro es una unidad más pequeña que un kilómetro, así que la misma distancia necesita más de ellos — y 5,000 es en efecto mayor que 5, como se esperaba. 5,000 m &gt; 4,800 m, así que la primera corredora corrió más (por 200 m). Al revés también funciona: 4,800 ÷ 1,000 = 4.8 km, menos de la unidad más grande, y 4.8 &lt; 5.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8625,6 +8687,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">2,550 yards</span><span class="lang-es" lang="es">2,550 yardas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">7,650 ÷ 3 = 2,550 yards, fewer than the feet — correct for a bigger unit. 22,950 multiplies (more yards than feet is impossible); 7,647 subtracts 3; 765 divides by 10.</span><span class="lang-es" lang="es">7,650 ÷ 3 = 2,550 yardas, menos que los pies — correcto para una unidad más grande. 22,950 multiplica (más yardas que pies es imposible); 7,647 resta 3; 765 divide entre 10.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8726,6 +8800,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">2 feet 6 inches</span><span class="lang-es" lang="es">2 pies 6 pulgadas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">30 ÷ 12 = 2 feet with 6 inches left over: 2 ft 6 in. 3 feet would be 36 inches; 360 multiplies; 1 ft 8 in. reads 30 as 18 + 12 wrongly.</span><span class="lang-es" lang="es">30 ÷ 12 = 2 pies y sobran 6 pulgadas: 2 pies 6 pulg. 3 pies serían 36 pulgadas; 360 multiplica; 1 pie 8 pulg. lee mal el 30.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8827,6 +8913,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">6 pounds</span><span class="lang-es" lang="es">6 libras</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Pounds are bigger, so there are fewer of them: 96 ÷ 16 = 6 pounds (check: 6 × 16 = 96). 1,536 multiplies — the wrong direction; 80 and 112 subtract or add the factor.</span><span class="lang-es" lang="es">Las libras son más grandes, así que hay menos: 96 ÷ 16 = 6 libras (comprueba: 6 × 16 = 96). 1,536 multiplica — la dirección equivocada; 80 y 112 restan o suman el factor.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8931,6 +9029,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">Convert kilometers to meters: 5 × 1,000 = 5,000 meters. I multiplied because a meter is a smaller unit than a kilometer, so the same distance takes more of them — and 5,000 is indeed bigger than 5, as expected. 5,000 m &gt; 4,800 m, so the first runner ran farther (by 200 m). Going the other way works too: 4,800 ÷ 1,000 = 4.8 km, fewer of the bigger unit, and 4.8 &lt; 5.</span><span class="lang-es" lang="es">Convierte kilómetros a metros: 5 × 1,000 = 5,000 metros. Multipliqué porque un metro es una unidad más pequeña que un kilómetro, así que la misma distancia necesita más de ellos — y 5,000 es en efecto mayor que 5, como se esperaba. 5,000 m &gt; 4,800 m, así que la primera corredora corrió más (por 200 m). Al revés también funciona: 4,800 ÷ 1,000 = 4.8 km, menos de la unidad más grande, y 4.8 &lt; 5.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9032,6 +9142,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">10,800 seconds</span><span class="lang-es" lang="es">10,800 segundos</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">3 × 60 = 180 minutes, and 180 × 60 = 10,800 seconds. 180 stops after one conversion (that is minutes); 3,600 is ONE hour in seconds; 123 adds the factors.</span><span class="lang-es" lang="es">3 × 60 = 180 minutos, y 180 × 60 = 10,800 segundos. 180 se detiene tras una conversión (eso son minutos); 3,600 es UNA hora en segundos; 123 suma los factores.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9133,6 +9255,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">27 feet</span><span class="lang-es" lang="es">27 pies</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Feet are smaller, so there are more: 9 × 3 = 27 feet. 3 divides (the direction for feet → yards); 12 and 6 add or subtract the factor.</span><span class="lang-es" lang="es">Los pies son más pequeños, así que hay más: 9 × 3 = 27 pies. 3 divide (la dirección para pies → yardas); 12 y 6 suman o restan el factor.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

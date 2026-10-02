@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8385,7 +8444,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A student says that (3, 5) and (5, 3) are the same point because they use the same numbers. Is the student correct? Explain why or why not, and describe where each point is located on the coordinate plane.</span><span class="lang-es" lang="es">Un estudiante dice que (3, 5) y (5, 3) son el mismo punto porque usan los mismos números. ¿Tiene razón? Explica por qué sí o por qué no y describe dónde se ubica cada punto en el plano de coordenadas.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">The student is not correct. In (3, 5) the 3 is the x-coordinate, so you move right 3 and up 5, landing high and toward the left. In (5, 3) the 5 is the x-coordinate, so you move right 5 and up 3, landing lower and farther right. Same digits, different jobs — the order inside an ordered pair decides which direction each number controls.</span><span class="lang-es" lang="es">El estudiante no tiene razón. En (3, 5) el 3 es la coordenada x, así que te mueves 3 a la derecha y 5 hacia arriba, y caes alto y hacia la izquierda. En (5, 3) el 5 es la coordenada x, así que te mueves 5 a la derecha y 3 hacia arriba, y caes más abajo y más a la derecha. Los mismos dígitos, distintas funciones: el orden dentro del par ordenado decide qué dirección controla cada número.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8732,6 +8794,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>1. Start at the origin (0, 0)</li><li>2. Move 4 units to the right along the x-axis</li><li>3. Move 5 units up from that spot</li><li>4. Place a dot at the point (4, 5)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Plotting always begins at the origin (0, 0), because every ordered pair counts its moves from there. The first number, 4, is the x-coordinate, so the move right along the x-axis comes next; the second number, 5, is the y-coordinate, so the move up follows; then you mark the dot at (4, 5).</span><span class="lang-es" lang="es">Ubicar un punto siempre empieza en el origen (0, 0), porque todo par ordenado cuenta sus movimientos desde ahí. El primer número, 4, es la coordenada x, así que sigue el movimiento hacia la derecha sobre el eje x; el segundo número, 5, es la coordenada y, así que después va el movimiento hacia arriba; y por último marcas el punto en (4, 5).</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8835,6 +8909,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>(3, 7)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The first coordinate is horizontal (right 3), the second is vertical (up 7). So (3, 7).</span><span class="lang-es" lang="es">La primera coordenada es horizontal (3 a la derecha) y la segunda es vertical (7 hacia arriba). Entonces (3, 7).</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8938,6 +9024,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Move 6 units to the right</span><span class="lang-es" lang="es">Muévete 6 unidades a la derecha</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The first number (x-coordinate) tells you horizontal movement. 6 means go right 6 units from the origin.</span><span class="lang-es" lang="es">El primer número (la coordenada x) indica el movimiento horizontal. El 6 significa avanzar 6 unidades a la derecha desde el origen.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9057,6 +9155,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Move 4 units to the right along the x-axis</span><span class="lang-es" lang="es">Muévete 4 unidades a la derecha sobre el eje x</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The first number in (x, y) is the x-coordinate, so 4 means move 4 units to the right along the x-axis before moving up.</span><span class="lang-es" lang="es">El primer número de (x, y) es la coordenada x, así que el 4 significa moverse 4 unidades a la derecha sobre el eje x antes de subir.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9170,6 +9280,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>1. (0, 4)</li><li>2. (1, 7)</li><li>3. (3, 2)</li><li>4. (5, 3)</li><li>5. (7, 1)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Only the first number in each pair matters here. The x-values are 5, 1, 3, 0, and 7, and putting those in order from smallest to largest gives (0, 4), (1, 7), (3, 2), (5, 3), (7, 1). Notice (0, 4) comes first even though its y-value of 4 is fairly large — the second number plays no part in this sort.</span><span class="lang-es" lang="es">Aquí solo importa el primer número de cada par. Los valores de x son 5, 1, 3, 0 y 7, y ordenarlos de menor a mayor da (0, 4), (1, 7), (3, 2), (5, 3), (7, 1). Fíjate en que (0, 4) va primero aunque su valor de y sea 4, que es bastante grande: el segundo número no interviene en esta clasificación.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9273,6 +9395,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>(7, 2)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The x-coordinate is the sideways move (right 7) and the y-coordinate is the up move (up 2), so the Sandy Dock is (7, 2).</span><span class="lang-es" lang="es">La coordenada x es el movimiento hacia los lados (7 a la derecha) y la coordenada y es el movimiento hacia arriba (2 hacia arriba), así que el Muelle de Arena es (7, 2).</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9413,6 +9547,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">(0, 0) → Origin</span><span class="lang-es" lang="es">(0, 0) → Origen</span></li><li><span class="lang-en">(4, 2) → Right 4, Up 2</span><span class="lang-es" lang="es">(4, 2) → Derecha 4, arriba 2</span></li><li><span class="lang-en">(1, 6) → Right 1, Up 6</span><span class="lang-es" lang="es">(1, 6) → Derecha 1, arriba 6</span></li><li><span class="lang-en">(5, 5) → Right 5, Up 5</span><span class="lang-es" lang="es">(5, 5) → Derecha 5, arriba 5</span></li><li><span class="lang-en">(3, 0) → On the x-axis</span><span class="lang-es" lang="es">(3, 0) → Sobre el eje x</span></li><li><span class="lang-en">(0, 4) → On the y-axis</span><span class="lang-es" lang="es">(0, 4) → Sobre el eje y</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Every ordered pair is (x, y): the first number is the move right and the second is the move up. So (4, 2) is right 4, up 2; (1, 6) is right 1, up 6; and (5, 5) is right 5, up 5. A 0 means no movement in that direction — (3, 0) never leaves the x-axis, (0, 4) never leaves the y-axis, and (0, 0) is the origin where the two axes meet.</span><span class="lang-es" lang="es">Todo par ordenado es (x, y): el primer número es el movimiento hacia la derecha y el segundo es el movimiento hacia arriba. Así, (4, 2) es derecha 4, arriba 2; (1, 6) es derecha 1, arriba 6; y (5, 5) es derecha 5, arriba 5. Un 0 significa que no hay movimiento en esa dirección: (3, 0) nunca deja el eje x, (0, 4) nunca deja el eje y, y (0, 0) es el origen, donde se cruzan los dos ejes.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9545,6 +9691,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Closest (smallest x): Fresh Spring (1, 4)</span><span class="lang-es" lang="es">Más cerca (x más pequeña): Manantial Fresco (1, 4)</span></li><li><span class="lang-en">Middle x: Coconut Grove (3, 8)</span><span class="lang-es" lang="es">x de en medio: Palmar de Cocos (3, 8)</span></li><li><span class="lang-en">Farthest (largest x): Treasure Chest (9, 6)</span><span class="lang-es" lang="es">Más lejos (x más grande): Cofre del Tesoro (9, 6)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The x-coordinate is the first number in each pair, and it tells how far right a landmark sits. Fresh Spring (1, 4) has the smallest x, Coconut Grove (3, 8) is in the middle, and Treasure Chest (9, 6) has the largest x. The y-values — 4, 8, and 6 — have no effect on this order at all.</span><span class="lang-es" lang="es">La coordenada x es el primer número de cada par y dice qué tan a la derecha está cada lugar. Fresh Spring (1, 4) tiene la x más pequeña, Coconut Grove (3, 8) queda en medio, y Treasure Chest (9, 6) tiene la x más grande. Los valores de y (4, 8 y 6) no afectan este orden en absoluto.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9674,6 +9832,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">(3, 2) → Quadrant I</span><span class="lang-es" lang="es">(3, 2) → Cuadrante I</span></li><li><span class="lang-en">(-4, 5) → Quadrant II</span><span class="lang-es" lang="es">(-4, 5) → Cuadrante II</span></li><li><span class="lang-en">(-2, -6) → Quadrant III</span><span class="lang-es" lang="es">(-2, -6) → Cuadrante III</span></li><li><span class="lang-en">(7, -1) → Quadrant IV</span><span class="lang-es" lang="es">(7, -1) → Cuadrante IV</span></li><li><span class="lang-en">(0, 3) → y-axis</span><span class="lang-es" lang="es">(0, 3) → Eje y</span></li><li><span class="lang-en">(5, 0) → x-axis</span><span class="lang-es" lang="es">(5, 0) → Eje x</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The signs of the two coordinates place each point. (3, 2) is (+, +) in Quadrant I; (-4, 5) is (-, +) in Quadrant II; (-2, -6) is (-, -) in Quadrant III; and (7, -1) is (+, -) in Quadrant IV. A coordinate of 0 puts the point on an axis instead of inside a quadrant, so (0, 3) is on the y-axis and (5, 0) is on the x-axis.</span><span class="lang-es" lang="es">Los signos de las dos coordenadas ubican cada punto. (3, 2) es (+, +) y está en el Cuadrante I; (-4, 5) es (-, +) y está en el Cuadrante II; (-2, -6) es (-, -) y está en el Cuadrante III; y (7, -1) es (+, -) y está en el Cuadrante IV. Una coordenada igual a 0 coloca el punto sobre un eje en vez de dentro de un cuadrante, así que (0, 3) está en el eje y y (5, 0) está en el eje x.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9830,6 +10000,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Right 7, Up 2 · Ordered Pair: (7, 2)</span><span class="lang-es" lang="es">7 a la derecha, 2 arriba · Par ordenado: (7, 2)</span></li><li><span class="lang-en">Right 0, Up 5 · Ordered Pair: (0, 5)</span><span class="lang-es" lang="es">0 a la derecha, 5 arriba · Par ordenado: (0, 5)</span></li><li><span class="lang-en">Right 4, Up 0 · Ordered Pair: (4, 0)</span><span class="lang-es" lang="es">4 a la derecha, 0 arriba · Par ordenado: (4, 0)</span></li><li><span class="lang-en">Right 3, Up 3 · Ordered Pair: (3, 3)</span><span class="lang-es" lang="es">3 a la derecha, 3 arriba · Par ordenado: (3, 3)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">&#039;Right&#039; gives the x-coordinate and &#039;Up&#039; gives the y-coordinate, in that order: Right 7, Up 2 is (7, 2); Right 0, Up 5 is (0, 5); Right 4, Up 0 is (4, 0); and Right 3, Up 3 is (3, 3). A move of 0 still gets written into the pair — that 0 is what shows the point is sitting on an axis.</span><span class="lang-es" lang="es">&#039;Right&#039; da la coordenada x y &#039;Up&#039; da la coordenada y, en ese orden: Right 7, Up 2 es (7, 2); Right 0, Up 5 es (0, 5); Right 4, Up 0 es (4, 0); y Right 3, Up 3 es (3, 3). Un movimiento de 0 también se escribe en el par: ese 0 es justamente lo que muestra que el punto está sobre un eje.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9959,6 +10141,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Sandy Dock → (7, 2)</span><span class="lang-es" lang="es">Muelle Arenoso → (7, 2)</span></li><li><span class="lang-en">Lookout Tower → (4, 9)</span><span class="lang-es" lang="es">Torre de Vigilancia → (4, 9)</span></li><li><span class="lang-en">Coconut Grove → (3, 8)</span><span class="lang-es" lang="es">Palmar de Cocos → (3, 8)</span></li><li><span class="lang-en">Hidden Cave → (6, 5)</span><span class="lang-es" lang="es">Cueva Escondida → (6, 5)</span></li><li><span class="lang-en">Fresh Spring → (1, 4)</span><span class="lang-es" lang="es">Manantial Fresco → (1, 4)</span></li><li><span class="lang-en">Treasure Chest → (9, 6)</span><span class="lang-es" lang="es">Cofre del Tesoro → (9, 6)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each landmark&#039;s ordered pair records how far right and how far up it sits. The Sandy Dock at (7, 2) is far right but low, the Lookout Tower at (4, 9) is high near the middle, Coconut Grove sits at (3, 8), the Hidden Cave at (6, 5), the Fresh Spring at (1, 4) hugs the left edge, and the Treasure Chest at (9, 6) is farthest right. The first number always measures across, the second always measures up.</span><span class="lang-es" lang="es">El par ordenado de cada lugar registra qué tan a la derecha y qué tan arriba se encuentra. El Sandy Dock en (7, 2) está muy a la derecha pero bajo, la Lookout Tower en (4, 9) está alta y hacia el centro, el Coconut Grove está en (3, 8), la Hidden Cave en (6, 5), el Fresh Spring en (1, 4) queda pegado al borde izquierdo, y el Treasure Chest en (9, 6) es el más a la derecha. El primer número siempre mide a lo ancho y el segundo siempre mide hacia arriba.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10062,6 +10256,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: order, x-coordinate, y-coordinate, horizontal, vertical, different, right, up.</span><span class="lang-es" lang="es">Una buena respuesta usa: order, x-coordinate, y-coordinate, horizontal, vertical, different, right, up.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The student is not correct. In (3, 5) the 3 is the x-coordinate, so you move right 3 and up 5, landing high and toward the left. In (5, 3) the 5 is the x-coordinate, so you move right 5 and up 3, landing lower and farther right. Same digits, different jobs — the order inside an ordered pair decides which direction each number controls.</span><span class="lang-es" lang="es">El estudiante no tiene razón. En (3, 5) el 3 es la coordenada x, así que te mueves 3 a la derecha y 5 hacia arriba, y caes alto y hacia la izquierda. En (5, 3) el 5 es la coordenada x, así que te mueves 5 a la derecha y 3 hacia arriba, y caes más abajo y más a la derecha. Los mismos dígitos, distintas funciones: el orden dentro del par ordenado decide qué dirección controla cada número.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10165,6 +10371,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>(3, 8)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Across (3) is the x-coordinate and up (8) is the y-coordinate, so the Coconut Grove is at (3, 8).</span><span class="lang-es" lang="es">A lo ancho (3) es la coordenada x y hacia arriba (8) es la coordenada y, así que el Cocotal está en (3, 8).</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10268,6 +10486,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>(0, 0)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The origin is where the x-axis and y-axis cross, at (0, 0).</span><span class="lang-es" lang="es">El origen es donde se cruzan el eje x y el eje y, en (0, 0).</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

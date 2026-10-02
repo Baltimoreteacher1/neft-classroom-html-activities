@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8429,7 +8488,7 @@ body {
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
           <details class="ladder-answer">
              <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
-             <p class="ladder-answer-text">She is not correct. While the first three points follow the pattern y = 3x (3, 6, 9), the fourth point should be (4, 12), not (4, 15). If you plot all four points, (4, 15) would not land on the line through the others. The ratio 4:15 does not simplify to 1:3 like the others.</p>
+             <p class="ladder-answer-text"><span class="lang-en">She is not correct. While the first three points follow the pattern y = 3x (3, 6, 9), the fourth point should be (4, 12), not (4, 15). If you plot all four points, (4, 15) would not land on the line through the others. The ratio 4:15 does not simplify to 1:3 like the others.</span><span class="lang-es" lang="es">No tiene razón. Que suban no basta: cada punto debe dar el mismo valor de y ÷ x: 3÷1 = 3, 6÷2 = 3 y 9÷3 = 3, pero 15÷4 = 3.75. Para comprobarlo, divide y entre x en cada punto (o busca que se repita el mismo paso a la derecha y hacia arriba), y (4, 15) queda por encima de donde iría la línea.</span></p>
            </details>
         </li></ol>
     </div>
@@ -8776,6 +8835,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A straight line through the origin</span><span class="lang-es" lang="es">Una línea recta que pasa por el origen</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Equivalent ratios are proportional, so their graph is always a straight line that passes through the origin (0, 0).</span><span class="lang-es" lang="es">Las razones equivalentes son proporcionales, así que su gráfica siempre es una línea recta que pasa por el origen (0, 0).</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8958,6 +9029,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>2 · y: 10</li><li><span class="lang-en">2 · Ordered Pair: (2, 10)</span><span class="lang-es" lang="es">2 · Par ordenado: (2, 10)</span></li><li>4 · y: 20</li><li><span class="lang-en">4 · Ordered Pair: (4, 20)</span><span class="lang-es" lang="es">4 · Par ordenado: (4, 20)</span></li><li>6 · y: 30</li><li><span class="lang-en">6 · Ordered Pair: (6, 30)</span><span class="lang-es" lang="es">6 · Par ordenado: (6, 30)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The rule y = 5x means every y-value is 5 times its x-value, so x = 2 gives y = 10, x = 4 gives y = 20, and x = 6 gives y = 30. Written as points, those rows are (2, 10), (4, 20), and (6, 30), with the x-value always listed first.</span><span class="lang-es" lang="es">La regla y = 5x significa que cada valor de y es 5 veces su valor de x, así que x = 2 da y = 10, x = 4 da y = 20 y x = 6 da y = 30. Escritas como puntos, esas filas son (2, 10), (4, 20) y (6, 30), con el valor de x siempre primero.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9061,6 +9144,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Student B</span><span class="lang-es" lang="es">Estudiante B</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Student A&#039;s ratio is 1:2 (y goes up 2 for each 1 in x). Student B&#039;s ratio is 1:3 (y goes up 3 for each 1 in x). A higher rate of change means a steeper line, so Student B&#039;s is steeper.</span><span class="lang-es" lang="es">La razón del estudiante A es 1:2 (y sube 2 por cada 1 de x). La razón del estudiante B es 1:3 (y sube 3 por cada 1 de x). Una tasa de cambio mayor significa una línea más inclinada, así que la del estudiante B es más inclinada.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9174,6 +9269,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>She is not correct. While the first three points follow the pattern y = 3x (3, 6, 9), the fourth point should be (4, 12), not (4, 15). If you plot all four points, (4, 15) would not land on the line through the others. The ratio 4:15 does not simplify to 1:3 like the others.</li><li><span class="lang-en">A strong answer uses: not correct, 12 not 15, straight line, pattern, 1:3, off the line.</span><span class="lang-es" lang="es">Una buena respuesta usa: not correct, 12 not 15, straight line, pattern, 1:3, off the line.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">She is not correct. Rising is not enough — every point must give the same value of y ÷ x: 3÷1 = 3, 6÷2 = 3, and 9÷3 = 3, but 15÷4 = 3.75. To check, divide y by x at each point (or look for the same right-and-up step repeating), and (4, 15) sits above where the line would go.</span><span class="lang-es" lang="es">No tiene razón. Que suban no basta: cada punto debe dar el mismo valor de y ÷ x: 3÷1 = 3, 6÷2 = 3 y 9÷3 = 3, pero 15÷4 = 3.75. Para comprobarlo, divide y entre x en cada punto (o busca que se repita el mismo paso a la derecha y hacia arriba), y (4, 15) queda por encima de donde iría la línea.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9277,6 +9384,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>4:1</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">For each point: 4÷1 = 4, 8÷2 = 4, 12÷3 = 4. The ratio of y to x is always 4:1.</span><span class="lang-es" lang="es">Para cada punto: 4÷1 = 4, 8÷2 = 4, 12÷3 = 4. La razón de y a x siempre es 4:1.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9384,6 +9503,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">2 cups → 4 scoops → (2, 4)</span><span class="lang-es" lang="es">2 tazas → 4 medidas → (2, 4)</span></li><li><span class="lang-en">3 cups → 6 scoops → (3, 6)</span><span class="lang-es" lang="es">3 tazas → 6 medidas → (3, 6)</span></li><li><span class="lang-en">5 cups → 10 scoops → (5, 10)</span><span class="lang-es" lang="es">5 tazas → 10 medidas → (5, 10)</span></li><li><span class="lang-en">6 cups → 12 scoops → (6, 12)</span><span class="lang-es" lang="es">6 tazas → 12 medidas → (6, 12)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each table row already gives the two numbers of the point in order, cups first and scoops second, so &#039;2 cups → 4 scoops&#039; becomes (2, 4) and &#039;5 cups → 10 scoops&#039; becomes (5, 10). Every pair satisfies y = 2x, which is a quick way to confirm a match before dropping it.</span><span class="lang-es" lang="es">Cada fila de la tabla ya da los dos números del punto en orden, primero las tazas y luego las cucharadas, así que &#039;2 cups → 4 scoops&#039; se convierte en (2, 4) y &#039;5 cups → 10 scoops&#039; se convierte en (5, 10). Cada par cumple y = 2x, lo cual es una forma rápida de confirmar una pareja antes de colocarla.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9498,6 +9629,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>(8, 24)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The pattern adds 2 to x and 6 to y each time. After (6, 18): x = 6+2 = 8, y = 18+6 = 24. The next point is (8, 24).</span><span class="lang-es" lang="es">El patrón suma 2 a x y 6 a y cada vez. Después de (6, 18): x = 6+2 = 8, y = 18+6 = 24. El siguiente punto es (8, 24).</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9601,6 +9744,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>28</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The ratio is y/x = 8/2 = 4. For every x, y = 4x. When x = 7: y = 4 × 7 = 28.</span><span class="lang-es" lang="es">La razón es y/x = 8/2 = 4. Para cada x, y = 4x. Cuando x = 7: y = 4 × 7 = 28.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9774,6 +9929,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">ON the line (y = 2x): (1, 2), (4, 8), (5, 10)</span><span class="lang-es" lang="es">SOBRE la recta (y = 2x): (1, 2), (4, 8), (5, 10)</span></li><li><span class="lang-en">OFF the line: (2, 3), (3, 5), (1, 4)</span><span class="lang-es" lang="es">FUERA de la recta: (2, 3), (3, 5), (1, 4)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A point sits on the line only when its y-value is exactly double its x-value, so (1, 2), (4, 8), and (5, 10) are ON. The other three fail the test — 2 × 2 = 4 not 3, 2 × 3 = 6 not 5, and 2 × 1 = 2 not 4 — so they land off the line.</span><span class="lang-es" lang="es">Un punto está sobre la línea solo cuando su valor de y es exactamente el doble de su valor de x, así que (1, 2), (4, 8) y (5, 10) están SOBRE la línea. Los otros tres no pasan la prueba: 2 × 2 = 4 y no 3, 2 × 3 = 6 y no 5, y 2 × 1 = 2 y no 4, así que quedan fuera de la línea.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9877,6 +10044,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>(3, 10)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">For the ratio 1:5, every y-value should be 5 times the x-value. (3, 10): 5 × 3 = 15, not 10. So (3, 10) does not belong.</span><span class="lang-es" lang="es">Para la razón 1:5, cada valor de y debe ser 5 veces el valor de x. En (3, 10): 5 × 3 = 15, no 10. Por eso (3, 10) no pertenece.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9980,6 +10159,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>(3, 6)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Cups (x) come first, scoops (y) second. 3 cups need 3 × 2 = 6 scoops, so the point is (3, 6).</span><span class="lang-es" lang="es">Las tazas (x) van primero y las cucharadas (y) segundo. 3 tazas necesitan 3 × 2 = 6 cucharadas, así que el punto es (3, 6).</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10083,6 +10274,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>y = 2x</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each cup needs 2 scoops, so y (scoops) is always 2 times x (cups): y = 2x. For 4 cups, y = 2 × 4 = 8.</span><span class="lang-es" lang="es">Cada taza necesita 2 cucharadas, así que y (cucharadas) siempre es 2 veces x (tazas): y = 2x. Para 4 tazas, y = 2 × 4 = 8.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

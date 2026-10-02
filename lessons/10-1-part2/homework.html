@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8200,7 +8259,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A shower uses about 2.5 gallons per minute. Cutting each shower from 10 minutes to 7 minutes, how much water does ONE person save per shower, per week (one shower a day), and per year? Then find the yearly saving for a household of 4. Explain which steps scale with the number of people and why.</span><span class="lang-es" lang="es">Una ducha usa cerca de 2.5 galones por minuto. Al acortar cada ducha de 10 minutos a 7 minutos, ¿cuánta agua ahorra UNA persona por ducha, por semana (una ducha al día) y por año? Luego halla el ahorro anual de un hogar de 4 personas. Explica qué pasos escalan con el número de personas y por qué.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Per shower: 3 minutes × 2.5 gallons = 7.5 gallons saved. Per week: 7.5 × 7 = 52.5 gallons. Per year: 7.5 × 365 = 2,737.5 gallons. Household of 4: 2,737.5 × 4 = 10,950 gallons a year. The per-shower, per-week and per-year figures describe ONE person; scaling by 4 comes last because every person takes their own showers, so the saving multiplies with people — unlike a leaky faucet, which would not.</span><span class="lang-es" lang="es">Por ducha: 3 minutos × 2.5 galones = 7.5 galones ahorrados. Por semana: 7.5 × 7 = 52.5 galones. Por año: 7.5 × 365 = 2,737.5 galones. Hogar de 4: 2,737.5 × 4 = 10,950 galones al año. Las cifras por ducha, por semana y por año describen a UNA persona; escalar por 4 va al final porque cada persona toma sus propias duchas, así que el ahorro se multiplica con las personas — a diferencia de una llave que gotea, que no lo haría.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8480,6 +8542,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">No — the faucet drips whether anyone uses it or not, so the leak&#039;s total stays 1,095 gallons a year.</span><span class="lang-es" lang="es">No — la llave gotea la use alguien o no, así que el total de la fuga sigue siendo 1,095 galones al año.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A leak runs on its own, so the number of people does not change it — 1,095 gallons a year either way. Scaling by household size is right for per-person habits like brushing, but multiplying a leak by 5 models something that is not happening.</span><span class="lang-es" lang="es">Una fuga corre por sí sola, así que el número de personas no la cambia — 1,095 galones al año de cualquier forma. Escalar por el tamaño del hogar es correcto para hábitos por persona como cepillarse, pero multiplicar una fuga por 5 modela algo que no está pasando.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8581,6 +8655,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">8 gallons</span><span class="lang-es" lang="es">8 galones</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">4 gallons × 2 brushings = 8 gallons a day. 4 counts only one brushing; 6 adds 4 + 2; 2 divides.</span><span class="lang-es" lang="es">4 galones × 2 cepillados = 8 galones al día. 4 cuenta solo un cepillado; 6 suma 4 + 2; 2 divide.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8682,6 +8768,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>8,760; 11,680; 14,600; 23,360</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">2,920 × 3 = 8,760; × 4 = 11,680; × 5 = 14,600; × 8 = 23,360. Adding the household size (2,923, …) treats people as gallons; 46,720 doubles the 8-person figure; the last option drops a place value.</span><span class="lang-es" lang="es">2,920 × 3 = 8,760; × 4 = 11,680; × 5 = 14,600; × 8 = 23,360. Sumar el tamaño del hogar (2,923, …) trata a las personas como galones; 46,720 duplica la cifra de 8 personas; la última opción pierde un valor posicional.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8786,6 +8884,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">Per shower: 3 minutes × 2.5 gallons = 7.5 gallons saved. Per week: 7.5 × 7 = 52.5 gallons. Per year: 7.5 × 365 = 2,737.5 gallons. Household of 4: 2,737.5 × 4 = 10,950 gallons a year. The per-shower, per-week and per-year figures describe ONE person; scaling by 4 comes last because every person takes their own showers, so the saving multiplies with people — unlike a leaky faucet, which would not.</span><span class="lang-es" lang="es">Por ducha: 3 minutos × 2.5 galones = 7.5 galones ahorrados. Por semana: 7.5 × 7 = 52.5 galones. Por año: 7.5 × 365 = 2,737.5 galones. Hogar de 4: 2,737.5 × 4 = 10,950 galones al año. Las cifras por ducha, por semana y por año describen a UNA persona; escalar por 4 va al final porque cada persona toma sus propias duchas, así que el ahorro se multiplica con las personas — a diferencia de una llave que gotea, que no lo haría.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8887,6 +8997,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">21 gallons; 1,095 gallons</span><span class="lang-es" lang="es">21 galones; 1,095 galones</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">3 × 7 = 21 gallons a week and 3 × 365 = 1,095 gallons a year. 10 and 368 add instead of multiplying; 365 forgets to multiply by 3; 24 uses 8 days.</span><span class="lang-es" lang="es">3 × 7 = 21 galones a la semana y 3 × 365 = 1,095 galones al año. 10 y 368 suman en vez de multiplicar; 365 olvida multiplicar por 3; 24 usa 8 días.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8988,6 +9110,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">2,920 gallons</span><span class="lang-es" lang="es">2,920 galones</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">8 × 365 = 2,920 gallons. 373 adds; 2,912 is an arithmetic slip (8 × 364); 29,200 has an extra zero.</span><span class="lang-es" lang="es">8 × 365 = 2,920 galones. 373 suma; 2,912 es un error aritmético (8 × 364); 29,200 tiene un cero de más.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

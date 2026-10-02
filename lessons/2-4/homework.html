@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8348,7 +8407,10 @@ body {
           <p class="ladder-q"><span class="lang-en">Two basketball teams played 9 games each. Team A: 40, 42, 44, 46, 48, 50, 52, 54, 56. Team B: 30, 35, 40, 45, 48, 50, 55, 60, 65. Find the five-number summary and IQR for each team. Which team is more consistent? Which has a wider spread in the middle 50%?</span><span class="lang-es" lang="es">Dos equipos de baloncesto jugaron 9 partidos cada uno. Equipo A: 40, 42, 44, 46, 48, 50, 52, 54, 56. Equipo B: 30, 35, 40, 45, 48, 50, 55, 60, 65. Encuentra el resumen de cinco números y el RIC de cada equipo. ¿Cuál equipo es más consistente? ¿Cuál tiene mayor dispersión en el 50% central?</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Team A&#039;s summary is 40, 43, 48, 53, 56 with IQR = 53 − 43 = 10, and Team B&#039;s is 30, 37.5, 48, 57.5, 65 with IQR = 57.5 − 37.5 = 20. Both teams share a median of 48, but Team B&#039;s middle 50% spreads twice as far, so Team A is the more consistent team.</span><span class="lang-es" lang="es">El resumen del Equipo A es 40, 43, 48, 53, 56 con IQR = 53 − 43 = 10, y el del Equipo B es 30, 37.5, 48, 57.5, 65 con IQR = 57.5 − 37.5 = 20. Los dos equipos comparten una mediana de 48, pero el 50% central del Equipo B se extiende el doble, así que el Equipo A es el más consistente.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8720,6 +8782,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Steps (in order): Step 1: Order the data from least to greatest, Step 2: Find the median (middle value), Step 3: Find Q1 (median of the lower half), Step 4: Find Q3 (median of the upper half), Step 5: Draw the box from Q1 to Q3 with a line at the median, and whiskers to min and max</span><span class="lang-es" lang="es">Pasos (en orden): Step 1: Order the data from least to greatest, Step 2: Find the median (middle value), Step 3: Find Q1 (median of the lower half), Step 4: Find Q3 (median of the upper half), Step 5: Draw the box from Q1 to Q3 with a line at the median, and whiskers to min and max</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The order matters because every step depends on the one before it. The data has to be sorted before a middle value means anything, the median has to be found before the list splits into a lower and an upper half, and Q1 and Q3 have to exist before you can draw the box from Q1 to Q3 with whiskers out to the minimum and maximum.</span><span class="lang-es" lang="es">El orden importa porque cada paso depende del anterior. Los datos tienen que estar ordenados antes de que un valor del medio signifique algo, la mediana tiene que hallarse antes de que la lista se divida en una mitad inferior y una superior, y Q1 y Q3 tienen que existir antes de poder dibujar la caja de Q1 a Q3 con los bigotes hasta el mínimo y el máximo.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8849,6 +8923,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Minimum → Smallest value in the data set</span><span class="lang-es" lang="es">Mínimo → El valor más pequeño del conjunto</span></li><li><span class="lang-en">Q1 → Median of the lower half</span><span class="lang-es" lang="es">Q1 → Mediana de la mitad inferior</span></li><li><span class="lang-en">Median → Middle value of the entire data set</span><span class="lang-es" lang="es">Mediana → Valor de en medio de todo el conjunto</span></li><li><span class="lang-en">Q3 → Median of the upper half</span><span class="lang-es" lang="es">Q3 → Mediana de la mitad superior</span></li><li><span class="lang-en">IQR → Q3 − Q1 (spread of middle 50%)</span><span class="lang-es" lang="es">RIC → Q3 − Q1 (dispersión del 50% central)</span></li><li><span class="lang-en">Maximum → Largest value in the data set</span><span class="lang-es" lang="es">Máximo → El valor más grande del conjunto</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The five-number summary runs Min, Q1, Median, Q3, Max from the smallest value to the largest, with Q1 and Q3 defined as the medians of the lower and upper halves. The IQR is not a location at all — it is the distance Q3 − Q1, which tells you how far the middle 50% of the data spreads.</span><span class="lang-es" lang="es">El resumen de cinco números va Mín, Q1, Mediana, Q3, Máx, del valor más pequeño al más grande, y Q1 y Q3 se definen como las medianas de la mitad inferior y la superior. El IQR no es una posición: es la distancia Q3 − Q1, que indica qué tanto se extiende el 50% central de los datos.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9037,6 +9123,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Part of the five-number summary: The minimum — the lowest score, Q1 — the median of the lower half, The median — the middle score, Q3 — the median of the upper half, The maximum — the highest score</span><span class="lang-es" lang="es">Parte del resumen de cinco números: El mínimo — el puntaje más bajo, Q1 — la mediana de la mitad inferior, La mediana — el puntaje de en medio, Q3 — la mediana de la mitad superior, El máximo — el puntaje más alto</span></li><li><span class="lang-en">Measure of spread: IQR — Q3 minus Q1, Range — maximum minus minimum</span><span class="lang-es" lang="es">Medida de dispersión: RIC — Q3 menos Q1, Rango — máximo menos mínimo</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The five-number summary names five positions in the data — minimum, Q1, median, Q3, and maximum — and each one is a single value you could mark on the number line. IQR = Q3 − Q1 and range = maximum − minimum are different: each is a subtraction that reports a distance, which is why they belong under measures of spread.</span><span class="lang-es" lang="es">El resumen de cinco números nombra cinco posiciones en los datos —mínimo, Q1, mediana, Q3 y máximo— y cada una es un solo valor que podrías marcar en la recta numérica. IQR = Q3 − Q1 y rango = máximo − mínimo son distintos: cada uno es una resta que informa una distancia, y por eso pertenecen a las medidas de dispersión.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9160,6 +9258,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Long right whisker, short left whisker → Skewed right — some high values stretch far from the box</span><span class="lang-es" lang="es">Bigote derecho largo, bigote izquierdo corto → Sesgo a la derecha — algunos valores altos se alejan de la caja</span></li><li><span class="lang-en">Median line centered in the box → Approximately symmetric in the middle 50%</span><span class="lang-es" lang="es">Línea de la mediana centrada en la caja → Aproximadamente simétrica en el 50% central</span></li><li><span class="lang-en">Very small box (small IQR) → Middle 50% is tightly clustered — consistent</span><span class="lang-es" lang="es">Caja muy pequeña (RIC pequeño) → El 50% central está muy agrupado — consistente</span></li><li><span class="lang-en">Very large box (large IQR) → Middle 50% is widely spread — high variability</span><span class="lang-es" lang="es">Caja muy grande (RIC grande) → El 50% central está muy disperso — alta variabilidad</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A box plot&#039;s shape carries the story. A long right whisker beside a short left one means a few high values stretch away from the box, which is skewed right, while a median line sitting in the center of the box means the middle 50% is roughly symmetric. Box width is about consistency: a small box is a small IQR and tightly clustered data, and a large box is a large IQR and high variability.</span><span class="lang-es" lang="es">La forma de un diagrama de caja cuenta la historia. Un bigote derecho largo junto a uno izquierdo corto significa que unos pocos valores altos se alejan de la caja, es decir, sesgo a la derecha, mientras que una línea de la mediana en el centro de la caja significa que el 50% central es casi simétrico. El ancho de la caja habla de consistencia: una caja pequeña es un IQR pequeño y datos muy agrupados, y una caja grande es un IQR grande y mucha variabilidad.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9261,6 +9371,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Team A&#039;s middle 50% is more consistent; Team B&#039;s is more spread out</span><span class="lang-es" lang="es">El 50% central del equipo A es más consistente; el del equipo B está más disperso</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A smaller IQR means the middle 50% of data is more tightly clustered. Team A&#039;s scoring is more consistent in the middle range.</span><span class="lang-es" lang="es">Un RIC más pequeño significa que el 50% central de los datos está más agrupado. La anotación del equipo A es más consistente en el rango central.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9362,6 +9484,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>Between 15 and 30</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The box of a box plot stretches from Q1 to Q3, and that box always holds the middle 50% of the data. Here the box goes from Q1 = 15 to Q3 = 30.</span><span class="lang-es" lang="es">La caja de un diagrama de caja se extiende de Q1 a Q3, y esa caja siempre contiene el 50% central de los datos. Aquí la caja va de Q1 = 15 a Q3 = 30.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9474,6 +9608,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>13</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">IQR = Q3 − Q1 = 28 − 15 = 13.</span><span class="lang-es" lang="es">RIC = Q3 − Q1 = 28 − 15 = 13.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9575,6 +9721,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">The median</span><span class="lang-es" lang="es">La mediana</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The line inside the box of a box plot always represents the median.</span><span class="lang-es" lang="es">La línea dentro de la caja de un diagrama de caja siempre representa la mediana.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9767,6 +9925,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Minimum · Value: 5</span><span class="lang-es" lang="es">Mínimo · Valor: 5</span></li><li><span class="lang-en">Q1 (median of lower half: 5, 8, 12, 15) · Value: 10</span><span class="lang-es" lang="es">Q1 (mediana de la mitad inferior: 5, 8, 12, 15) · Valor: 10</span></li><li><span class="lang-en">Median · Value: 18</span><span class="lang-es" lang="es">Mediana · Valor: 18</span></li><li><span class="lang-en">Q3 (median of upper half: 20, 25, 30, 35) · Value: 27.5</span><span class="lang-es" lang="es">Q3 (mediana de la mitad superior: 20, 25, 30, 35) · Valor: 27.5</span></li><li><span class="lang-en">Maximum · Value: 35</span><span class="lang-es" lang="es">Máximo · Valor: 35</span></li><li><span class="lang-en">IQR (Q3 − Q1) · Value: 17.5</span><span class="lang-es" lang="es">RIC (Q3 − Q1) · Valor: 17.5</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">With 9 ordered values, the 5th one is the median, 18, and the ends give the minimum 5 and the maximum 35. Each half holds 4 values, so the quartiles average the two middle numbers: Q1 = (8 + 12) ÷ 2 = 10 and Q3 = (25 + 30) ÷ 2 = 27.5, which makes IQR = 27.5 − 10 = 17.5.</span><span class="lang-es" lang="es">Con 9 valores ordenados, el quinto es la mediana, 18, y los extremos dan el mínimo 5 y el máximo 35. Cada mitad tiene 4 valores, así que los cuartiles promedian los dos números del medio: Q1 = (8 + 12) ÷ 2 = 10 y Q3 = (25 + 30) ÷ 2 = 27.5, lo que hace que IQR = 27.5 − 10 = 17.5.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9868,6 +10038,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: five-number summary, Q1, Q3, IQR, consistent, spread, middle 50%.</span><span class="lang-es" lang="es">Una buena respuesta usa: five-number summary, Q1, Q3, IQR, consistent, spread, middle 50%.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Team A&#039;s summary is 40, 43, 48, 53, 56 with IQR = 53 − 43 = 10, and Team B&#039;s is 30, 37.5, 48, 57.5, 65 with IQR = 57.5 − 37.5 = 20. Both teams share a median of 48, but Team B&#039;s middle 50% spreads twice as far, so Team A is the more consistent team.</span><span class="lang-es" lang="es">El resumen del Equipo A es 40, 43, 48, 53, 56 con IQR = 53 − 43 = 10, y el del Equipo B es 30, 37.5, 48, 57.5, 65 con IQR = 57.5 − 37.5 = 20. Los dos equipos comparten una mediana de 48, pero el 50% central del Equipo B se extiende el doble, así que el Equipo A es el más consistente.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9975,6 +10157,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Hawks: 5, 8, 11, 15, 18, 21, 27 → Min 5, Q1 8, Median 15, Q3 21, Max 27</span><span class="lang-es" lang="es">Halcones: 5, 8, 11, 15, 18, 21, 27 → Mín 5, Q1 8, Mediana 15, Q3 21, Máx 27</span></li><li><span class="lang-en">Comets: 10, 13, 16, 20, 24, 28, 33 → Min 10, Q1 13, Median 20, Q3 28, Max 33</span><span class="lang-es" lang="es">Cometas: 10, 13, 16, 20, 24, 28, 33 → Mín 10, Q1 13, Mediana 20, Q3 28, Máx 33</span></li><li><span class="lang-en">Jets: 2, 6, 9, 14, 19, 23, 30 → Min 2, Q1 6, Median 14, Q3 23, Max 30</span><span class="lang-es" lang="es">Jets: 2, 6, 9, 14, 19, 23, 30 → Mín 2, Q1 6, Mediana 14, Q3 23, Máx 30</span></li><li><span class="lang-en">Suns: 4, 7, 10, 16, 22, 25, 31 → Min 4, Q1 7, Median 16, Q3 25, Max 31</span><span class="lang-es" lang="es">Soles: 4, 7, 10, 16, 22, 25, 31 → Mín 4, Q1 7, Mediana 16, Q3 25, Máx 31</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each team recorded 7 ordered scores, so the summary is the 1st, 2nd, 4th, 6th, and 7th values: the median is the 4th score and each quartile is the middle of a three-score half. That gives Hawks 5, 8, 15, 21, 27; Comets 10, 13, 20, 28, 33; Jets 2, 6, 14, 23, 30; and Suns 4, 7, 16, 25, 31.</span><span class="lang-es" lang="es">Cada equipo registró 7 puntajes ordenados, así que el resumen son los valores 1.º, 2.º, 4.º, 6.º y 7.º: la mediana es el cuarto puntaje y cada cuartil es el valor del medio de una mitad de tres puntajes. Eso da Hawks 5, 8, 15, 21, 27; Comets 10, 13, 20, 28, 33; Jets 2, 6, 14, 23, 30; y Suns 4, 7, 16, 25, 31.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10076,6 +10270,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>50%</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The box in a box plot contains the middle 50% of the data (from Q1 to Q3).</span><span class="lang-es" lang="es">La caja de un diagrama de caja contiene el 50% central de los datos (de Q1 a Q3).</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10177,6 +10383,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Minimum 2, median 7, maximum 12</span><span class="lang-es" lang="es">Mínimo 2, mediana 7, máximo 12</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The data is already in order. The smallest value is 2 and the largest is 12. There are 7 values, so the median is the 4th value, which is 7.</span><span class="lang-es" lang="es">Los datos ya están ordenados. El valor más pequeño es 2 y el más grande es 12. Hay 7 valores, así que la mediana es el 4.º valor, que es 7.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10278,6 +10496,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>23</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Range = max − min = 31 − 8 = 23.</span><span class="lang-es" lang="es">Rango = máximo − mínimo = 31 − 8 = 23.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

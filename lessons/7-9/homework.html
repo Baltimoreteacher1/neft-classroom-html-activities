@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8283,7 +8342,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A triangle has vertices at A(1, 2), B(4, 2), and C(4, 6). If you reflect the entire triangle over the y-axis, what are the new vertices? What do you notice about the size and shape of the reflected triangle compared to the original?</span><span class="lang-es" lang="es">Un triángulo tiene vértices en A(1, 2), B(4, 2) y C(4, 6). Si reflejas todo el triángulo sobre el eje y, ¿cuáles son los vértices nuevos? ¿Qué observas sobre el tamaño y la forma del triángulo reflejado en comparación con el original?</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Reflect each vertex over the y-axis by flipping only the x-coordinate: A(1, 2) → A&#039;(-1, 2), B(4, 2) → B&#039;(-4, 2), and C(4, 6) → C&#039;(-4, 6). The reflected triangle is congruent to the original — same side lengths and same angles — because a reflection is a mirror flip that turns the figure around without stretching or shrinking it.</span><span class="lang-es" lang="es">Refleja cada vértice sobre el eje y cambiando solo la coordenada x: A(1, 2) → A&#039;(-1, 2), B(4, 2) → B&#039;(-4, 2) y C(4, 6) → C&#039;(-4, 6). El triángulo reflejado es congruente con el original —mismos lados y mismos ángulos— porque una reflexión es un volteo en espejo que gira la figura sin estirarla ni encogerla.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8639,6 +8701,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>1. Start with the point (5, -3)</li><li>2. Identify the axis of reflection: y-axis</li><li>3. The y-axis is vertical, so the x-coordinate changes sign</li><li>4. Change x from 5 to -5, keep y as -3</li><li>5. The reflection is (-5, -3)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The steps go: start with (5, -3), identify the y-axis as the axis of reflection, recall that the vertical y-axis flips the x-coordinate, change 5 to -5 while keeping y as -3, and state the reflection (-5, -3). You cannot decide which coordinate flips until you know the axis, and the answer only comes after the sign change is made.</span><span class="lang-es" lang="es">Los pasos van así: empezar con (5, -3), identificar el eje y como el eje de reflexión, recordar que el eje y vertical cambia la coordenada x, cambiar 5 por -5 conservando y como -3, y decir la reflexión (-5, -3). No puedes decidir qué coordenada cambia antes de saber el eje, y la respuesta solo llega después de hacer el cambio de signo.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8768,6 +8842,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Over x-axis → y-coordinate changes sign</span><span class="lang-es" lang="es">Sobre el eje x → La coordenada y cambia de signo</span></li><li><span class="lang-en">Over y-axis → x-coordinate changes sign</span><span class="lang-es" lang="es">Sobre el eje y → La coordenada x cambia de signo</span></li><li><span class="lang-en">Over both axes → Both coordinates change sign</span><span class="lang-es" lang="es">Sobre ambos ejes → Ambas coordenadas cambian de signo</span></li><li><span class="lang-en">Point on x-axis → Reflects to itself over x-axis</span><span class="lang-es" lang="es">Punto sobre el eje x → Se refleja en sí mismo sobre el eje x</span></li><li><span class="lang-en">Point on y-axis → Reflects to itself over y-axis</span><span class="lang-es" lang="es">Punto sobre el eje y → Se refleja en sí mismo sobre el eje y</span></li><li><span class="lang-en">(0, 0) → Reflects to itself over any axis</span><span class="lang-es" lang="es">(0, 0) → Se refleja en sí mismo sobre cualquier eje</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Crossing the horizontal x-axis moves a point up or down, so &#039;Over x-axis&#039; pairs with the y-coordinate changing sign; crossing the vertical y-axis moves it left or right, so &#039;Over y-axis&#039; pairs with the x-coordinate changing sign, and doing both changes both. A point already sitting on an axis has a 0 in the coordinate that would flip, so it reflects to itself — and (0, 0) is on both axes, so it never moves.</span><span class="lang-es" lang="es">Cruzar el eje x horizontal mueve un punto hacia arriba o hacia abajo, así que «Sobre el eje x» se empareja con el cambio de signo de la coordenada y; cruzar el eje y vertical lo mueve a la izquierda o a la derecha, así que «Sobre el eje y» se empareja con el cambio de signo de la coordenada x, y hacer ambas cosas cambia las dos. Un punto que ya está sobre un eje tiene un 0 en la coordenada que cambiaría, así que se refleja en sí mismo, y (0, 0) está sobre los dos ejes, así que nunca se mueve.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8871,6 +8957,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">The y-coordinate</span><span class="lang-es" lang="es">La coordenada y</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Across the x-axis the rule is (x, y) -&gt; (x, -y), so only the y-coordinate flips sign. (8, -6) becomes (8, 6).</span><span class="lang-es" lang="es">Sobre el eje x la regla es (x, y) → (x, -y), así que solo la coordenada y cambia de signo. El punto (8, -6) se convierte en (8, 6).</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8990,6 +9088,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>(3, -5)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Over x-axis: (-3, 5) → (-3, -5). Then over y-axis: (-3, -5) → (3, -5). Both coordinates changed sign.</span><span class="lang-es" lang="es">Sobre el eje x: (-3, 5) → (-3, -5). Luego sobre el eje y: (-3, -5) → (3, -5). Ambas coordenadas cambiaron de signo.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9180,6 +9290,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">(3, -7) · Reflected Point: (3, 7)</span><span class="lang-es" lang="es">(3, -7) · Punto reflejado: (3, 7)</span></li><li><span class="lang-en">(-5, 2) · Reflected Point: (5, 2)</span><span class="lang-es" lang="es">(-5, 2) · Punto reflejado: (5, 2)</span></li><li><span class="lang-en">(8, -1) · Reflected Point: (8, 1)</span><span class="lang-es" lang="es">(8, -1) · Punto reflejado: (8, 1)</span></li><li><span class="lang-en">(-4, -6) · Reflected Point: (4, -6)</span><span class="lang-es" lang="es">(-4, -6) · Punto reflejado: (4, -6)</span></li><li><span class="lang-en">(0, 9) · Reflected Point: (0, -9)</span><span class="lang-es" lang="es">(0, 9) · Punto reflejado: (0, -9)</span></li><li><span class="lang-en">(-3, 0) · Reflected Point: (3, 0)</span><span class="lang-es" lang="es">(-3, 0) · Punto reflejado: (3, 0)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Read the Axis column, then flip only that one coordinate: over the x-axis (3, -7) → (3, 7), (8, -1) → (8, 1), and (0, 9) → (0, -9); over the y-axis (-5, 2) → (5, 2), (-4, -6) → (4, -6), and (-3, 0) → (3, 0). A coordinate of 0 is its own opposite, which is why (0, 9) and (-3, 0) each keep their zero exactly as it was.</span><span class="lang-es" lang="es">Lee la columna Eje y luego cambia solo esa coordenada: sobre el eje x, (3, -7) → (3, 7), (8, -1) → (8, 1) y (0, 9) → (0, -9); sobre el eje y, (-5, 2) → (5, 2), (-4, -6) → (4, -6) y (-3, 0) → (3, 0). Una coordenada de 0 es su propio opuesto, por eso (0, 9) y (-3, 0) conservan su cero tal cual.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9283,6 +9405,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>(7, -2)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Folding along (reflecting across) the x-axis flips the sign of the y-coordinate only. (7, 2) becomes (7, -2).</span><span class="lang-es" lang="es">Doblar sobre el eje x (reflejar a través de él) cambia solo el signo de la coordenada y. El punto (7, 2) se convierte en (7, -2).</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9423,6 +9557,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">(2, 5) over y-axis → (-2, 5)</span><span class="lang-es" lang="es">(2, 5) sobre el eje y → (-2, 5)</span></li><li><span class="lang-en">(-3, 1) over y-axis → (3, 1)</span><span class="lang-es" lang="es">(-3, 1) sobre el eje y → (3, 1)</span></li><li><span class="lang-en">(4, -6) over x-axis → (4, 6)</span><span class="lang-es" lang="es">(4, -6) sobre el eje x → (4, 6)</span></li><li><span class="lang-en">(-1, -4) over x-axis → (-1, 4)</span><span class="lang-es" lang="es">(-1, -4) sobre el eje x → (-1, 4)</span></li><li><span class="lang-en">(5, 2) over x-axis → (5, -2)</span><span class="lang-es" lang="es">(5, 2) sobre el eje x → (5, -2)</span></li><li><span class="lang-en">(-6, 3) over y-axis → (6, 3)</span><span class="lang-es" lang="es">(-6, 3) sobre el eje y → (6, 3)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The axis named on each card tells you which coordinate flips: over the y-axis only x changes sign, so (2, 5) → (-2, 5), (-3, 1) → (3, 1), and (-6, 3) → (6, 3). Over the x-axis only y changes sign, so (4, -6) → (4, 6), (-1, -4) → (-1, 4), and (5, 2) → (5, -2).</span><span class="lang-es" lang="es">El eje que nombra cada tarjeta te dice qué coordenada cambia de signo: sobre el eje y solo cambia la x, así que (2, 5) → (-2, 5), (-3, 1) → (3, 1) y (-6, 3) → (6, 3). Sobre el eje x solo cambia la y, así que (4, -6) → (4, 6), (-1, -4) → (-1, 4) y (5, 2) → (5, -2).</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9530,6 +9676,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">(1, 7) folded over x-axis → (1, -7)</span><span class="lang-es" lang="es">(1, 7) doblado sobre el eje x → (1, -7)</span></li><li><span class="lang-en">(-8, 2) folded over y-axis → (8, 2)</span><span class="lang-es" lang="es">(-8, 2) doblado sobre el eje y → (8, 2)</span></li><li><span class="lang-en">(9, -3) folded over x-axis → (9, 3)</span><span class="lang-es" lang="es">(9, -3) doblado sobre el eje x → (9, 3)</span></li><li><span class="lang-en">(-1, -6) folded over y-axis → (1, -6)</span><span class="lang-es" lang="es">(-1, -6) doblado sobre el eje y → (1, -6)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A fold over the x-axis keeps x and flips y, so (1, 7) → (1, -7) and (9, -3) → (9, 3). A fold over the y-axis keeps y and flips x, so (-8, 2) → (8, 2) and (-1, -6) → (1, -6). Checking which number stayed the same is the quickest way to confirm a match.</span><span class="lang-es" lang="es">Un doblez sobre el eje x conserva la x y cambia la y, así que (1, 7) → (1, -7) y (9, -3) → (9, 3). Un doblez sobre el eje y conserva la y y cambia la x, así que (-8, 2) → (8, 2) y (-1, -6) → (1, -6). Revisar qué número se quedó igual es la forma más rápida de confirmar una pareja.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9633,6 +9791,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>(4, 3)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Reflecting over the x-axis changes the sign of the y-coordinate. The x stays the same (4), and the y changes from -3 to 3. The answer is (4, 3).</span><span class="lang-es" lang="es">Reflejar sobre el eje x cambia el signo de la coordenada y. La x se mantiene igual (4) y la y pasa de -3 a 3. La respuesta es (4, 3).</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9736,6 +9906,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>(2, 6)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Reflecting over the y-axis changes the sign of the x-coordinate. x goes from -2 to 2, and y stays 6. The answer is (2, 6).</span><span class="lang-es" lang="es">Reflejar sobre el eje y cambia el signo de la coordenada x. La x pasa de -2 a 2 y la y se mantiene en 6. La respuesta es (2, 6).</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9909,6 +10091,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Over x-axis: keep x, flip y (x, -y): (4, 9) fold over x-axis, (-2, 5) fold over x-axis, (6, -1) fold over x-axis</span><span class="lang-es" lang="es">Sobre el eje x: conserva x, cambia y (x, -y): (4, 9) dobla sobre el eje x, (-2, 5) dobla sobre el eje x, (6, -1) dobla sobre el eje x</span></li><li><span class="lang-en">Over y-axis: flip x, keep y (-x, y): (3, 8) fold over y-axis, (-7, 4) fold over y-axis, (2, -9) fold over y-axis</span><span class="lang-es" lang="es">Sobre el eje y: cambia x, conserva y (-x, y): (3, 8) dobla sobre el eje y, (-7, 4) dobla sobre el eje y, (2, -9) dobla sobre el eje y</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Sort by the axis named on the card, not by the signs of the coordinates. (4, 9), (-2, 5), and (6, -1) all fold over the x-axis, which follows (x, -y), while (3, 8), (-7, 4), and (2, -9) fold over the y-axis, which follows (-x, y).</span><span class="lang-es" lang="es">Clasifica por el eje que nombra la tarjeta, no por los signos de las coordenadas. (4, 9), (-2, 5) y (6, -1) se doblan sobre el eje x, que sigue (x, -y), mientras que (3, 8), (-7, 4) y (2, -9) se doblan sobre el eje y, que sigue (-x, y).</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10012,6 +10206,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: reflection, y-axis, x-coordinate, opposite, congruent, same size, same shape, mirror.</span><span class="lang-es" lang="es">Una buena respuesta usa: reflection, y-axis, x-coordinate, opposite, congruent, same size, same shape, mirror.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Reflect each vertex over the y-axis by flipping only the x-coordinate: A(1, 2) → A&#039;(-1, 2), B(4, 2) → B&#039;(-4, 2), and C(4, 6) → C&#039;(-4, 6). The reflected triangle is congruent to the original — same side lengths and same angles — because a reflection is a mirror flip that turns the figure around without stretching or shrinking it.</span><span class="lang-es" lang="es">Refleja cada vértice sobre el eje y cambiando solo la coordenada x: A(1, 2) → A&#039;(-1, 2), B(4, 2) → B&#039;(-4, 2) y C(4, 6) → C&#039;(-4, 6). El triángulo reflejado es congruente con el original —mismos lados y mismos ángulos— porque una reflexión es un volteo en espejo que gira la figura sin estirarla ni encogerla.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10115,6 +10321,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>(0, 5)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Points on the y-axis have x-coordinate = 0. (0, 5) is on the y-axis.</span><span class="lang-es" lang="es">Los puntos sobre el eje y tienen la coordenada x = 0. El punto (0, 5) está sobre el eje y.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10218,6 +10436,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>(5, 3)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Reflecting across the y-axis flips the sign of the x-coordinate only. (-5, 3) becomes (5, 3).</span><span class="lang-es" lang="es">Reflejar sobre el eje y cambia solo el signo de la coordenada x. El punto (-5, 3) se convierte en (5, 3).</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

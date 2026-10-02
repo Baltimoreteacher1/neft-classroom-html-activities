@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8269,7 +8328,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A team is ordering 8 identical uniform kits. Each kit has a jersey ($25) and shorts ($15). Write the total cost in factored form and in expanded form, find the total both ways, and explain in a sentence why the two ways MUST give the same answer.</span><span class="lang-es" lang="es">Un equipo pide 8 uniformes idénticos. Cada uniforme tiene una camiseta ($25) y un short ($15). Escribe el costo total en forma factorizada y en forma expandida, halla el total de las dos maneras y explica en una oración por qué las dos formas DEBEN dar la misma respuesta.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Factored: 8(25 + 15) = 8 × 40 = $320. Expanded: 8 × 25 + 8 × 15 = 200 + 120 = $320. They must agree because both count exactly the same items — 8 jerseys and 8 shorts — one way totals a kit first and then takes 8 kits, the other totals all the jerseys and all the shorts separately. That is the distributive property: 8(25 + 15) = 8 × 25 + 8 × 15.</span><span class="lang-es" lang="es">Factorizada: 8(25 + 15) = 8 × 40 = $320. Expandida: 8 × 25 + 8 × 15 = 200 + 120 = $320. Deben coincidir porque las dos cuentan exactamente los mismos artículos — 8 camisetas y 8 shorts — una forma suma un uniforme primero y luego toma 8, la otra suma todas las camisetas y todos los shorts por separado. Esa es la propiedad distributiva: 8(25 + 15) = 8 × 25 + 8 × 15.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8549,6 +8611,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>7(11 + 6)</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">7(11 + 6) = 7 × 17 = $119. 7 × 11 + 6 buys 7 stands but only one tuner; 7 + 11 + 6 adds the count as if it were a price; 11 + 6 × 7 buys one stand and 7 tuners.</span><span class="lang-es" lang="es">7(11 + 6) = 7 × 17 = $119. 7 × 11 + 6 compra 7 atriles pero solo un afinador; 7 + 11 + 6 suma la cantidad como si fuera un precio; 11 + 6 × 7 compra un atril y 7 afinadores.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8650,6 +8724,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>7 × 11 + 7 × 6</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">7 × 11 + 7 × 6 = 77 + 42 = $119, the same as 7(11 + 6). Multiplying 11 × 6 has no meaning here (a price times a price), and 11 + 6 is the cost of just one room.</span><span class="lang-es" lang="es">7 × 11 + 7 × 6 = 77 + 42 = $119, lo mismo que 7(11 + 6). Multiplicar 11 × 6 no tiene sentido aquí (un precio por un precio), y 11 + 6 es el costo de una sola sala.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8751,6 +8837,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">5(4 + 3) = 35 and 5 × 4 + 5 × 3 = 35</span><span class="lang-es" lang="es">5(4 + 3) = 35 y 5 × 4 + 5 × 3 = 35</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">5 × 7 = 35 and 20 + 15 = 35 — they always agree, which is the distributive property. 23 forgets to multiply the pens by 5; 60 multiplies 5 × 4 × 3; 12 adds 5 + 4 + 3.</span><span class="lang-es" lang="es">5 × 7 = 35 y 20 + 15 = 35 — siempre coinciden, que es la propiedad distributiva. 23 olvida multiplicar las plumas por 5; 60 multiplica 5 × 4 × 3; 12 suma 5 + 4 + 3.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8855,6 +8953,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">Factored: 8(25 + 15) = 8 × 40 = $320. Expanded: 8 × 25 + 8 × 15 = 200 + 120 = $320. They must agree because both count exactly the same items — 8 jerseys and 8 shorts — one way totals a kit first and then takes 8 kits, the other totals all the jerseys and all the shorts separately. That is the distributive property: 8(25 + 15) = 8 × 25 + 8 × 15.</span><span class="lang-es" lang="es">Factorizada: 8(25 + 15) = 8 × 40 = $320. Expandida: 8 × 25 + 8 × 15 = 200 + 120 = $320. Deben coincidir porque las dos cuentan exactamente los mismos artículos — 8 camisetas y 8 shorts — una forma suma un uniforme primero y luego toma 8, la otra suma todas las camisetas y todos los shorts por separado. Esa es la propiedad distributiva: 8(25 + 15) = 8 × 25 + 8 × 15.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8956,6 +9066,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">The expansion is wrong — the 4 must also multiply the 9, giving 4x + 36 (which is 40 at x = 1).</span><span class="lang-es" lang="es">La expansión está mal — el 4 también debe multiplicar el 9, dando 4x + 36 (que es 40 en x = 1).</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The mismatch (40 vs 13) proves 4x + 9 is not equivalent to 4(x + 9). The 4 has to multiply every term inside: 4(x + 9) = 4x + 36, and 4 + 36 = 40 matches the left side. Substituting a value is exactly how you catch this.</span><span class="lang-es" lang="es">La diferencia (40 contra 13) prueba que 4x + 9 no es equivalente a 4(x + 9). El 4 tiene que multiplicar cada término de adentro: 4(x + 9) = 4x + 36, y 4 + 36 = 40 coincide con el lado izquierdo. Sustituir un valor es justo la forma de detectarlo.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9057,6 +9179,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>12x + 30</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">6(2x + 5) = 6 × 2x + 6 × 5 = 12x + 30. 12x + 5 forgets to multiply the 5; 8x + 11 adds 6 instead of multiplying; 2x + 30 forgets to multiply the 2x.</span><span class="lang-es" lang="es">6(2x + 5) = 6 × 2x + 6 × 5 = 12x + 30. 12x + 5 olvida multiplicar el 5; 8x + 11 suma 6 en vez de multiplicar; 2x + 30 olvida multiplicar el 2x.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

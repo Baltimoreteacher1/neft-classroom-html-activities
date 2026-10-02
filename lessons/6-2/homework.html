@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8299,7 +8358,10 @@ body {
           <p class="ladder-q"><span class="lang-en">Is 3/4 ÷ 1/2 the same as 1/2 ÷ 3/4? Solve both and explain why or why not. What does this tell you about the order in division?</span><span class="lang-es" lang="es">¿Es 3/4 ÷ 1/2 lo mismo que 1/2 ÷ 3/4? Resuelve los dos y explica por qué sí o por qué no. ¿Qué te dice esto sobre el orden en la división?</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">3/4 ÷ 1/2 becomes 3/4 × 2/1 = 6/4 = 1 1/2, while 1/2 ÷ 3/4 becomes 1/2 × 4/3 = 4/6 = 2/3, so the two expressions are not equal. Swapping the dividend and the divisor flips the quotient to its reciprocal, which shows that division is not commutative — order matters.</span><span class="lang-es" lang="es">3/4 ÷ 1/2 se convierte en 3/4 × 2/1 = 6/4 = 1 1/2, mientras que 1/2 ÷ 3/4 se convierte en 1/2 × 4/3 = 4/6 = 2/3, así que las dos expresiones no son iguales. Intercambiar el dividendo y el divisor convierte el cociente en su recíproco, lo que muestra que la división no es conmutativa: el orden importa.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8742,6 +8804,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">1/2 ÷ 1/6 · Quotient: 3</span><span class="lang-es" lang="es">1/2 ÷ 1/6 · Cociente: 3</span></li><li><span class="lang-en">3/4 ÷ 1/4 · Quotient: 3</span><span class="lang-es" lang="es">3/4 ÷ 1/4 · Cociente: 3</span></li><li><span class="lang-en">2/3 ÷ 1/3 · Quotient: 2</span><span class="lang-es" lang="es">2/3 ÷ 1/3 · Cociente: 2</span></li><li><span class="lang-en">5/8 ÷ 1/4 · Quotient: 2 1/2</span><span class="lang-es" lang="es">5/8 ÷ 1/4 · Cociente: 2 1/2</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The middle column has already done Keep, Change, Flip, so the last column is only the simplifying step: 6/2 = 3, 12/4 = 3, 6/3 = 2, and 20/8 = 2 1/2. Every quotient is more than 1 because each dividend holds more than one copy of its divisor.</span><span class="lang-es" lang="es">La columna del medio ya hizo Conserva, Cambia, Voltea, así que la última columna es solo el paso de simplificar: 6/2 = 3, 12/4 = 3, 6/3 = 2 y 20/8 = 2 1/2. Todos los cocientes son mayores que 1 porque cada dividendo contiene más de una copia de su divisor.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8843,6 +8917,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>Rewrite 2 1/2 as the improper fraction 5/2</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A mixed number cannot be flipped or multiplied as it stands, so rewrite it first: 2 1/2 = 5/2. Then Keep, Change, Flip gives 5/2 × 4/1 = 10.</span><span class="lang-es" lang="es">Un número mixto no se puede voltear ni multiplicar tal como está, así que primero reescríbelo: 2 1/2 = 5/2. Luego Mantén, Cambia, Voltea da 5/2 × 4/1 = 10.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9016,6 +9102,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Quotient Greater Than 1: 3/4 ÷ 1/4, 5/6 ÷ 1/3, 2/3 ÷ 1/6</span><span class="lang-es" lang="es">Cociente mayor que 1: 3/4 ÷ 1/4 = 3 (mayor), 5/6 ÷ 1/3 = 5/2 (mayor), 2/3 ÷ 1/6 = 4 (mayor)</span></li><li><span class="lang-en">Quotient Less Than 1: 1/4 ÷ 1/2, 1/3 ÷ 2/3, 2/5 ÷ 4/5</span><span class="lang-es" lang="es">Cociente menor que 1: 1/4 ÷ 1/2 = 1/2 (menor), 1/3 ÷ 2/3 = 1/2 (menor), 2/5 ÷ 4/5 = 1/2 (menor)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Dividing asks how many copies of the divisor fit inside the dividend. In 3/4 ÷ 1/4, 5/6 ÷ 1/3, and 2/3 ÷ 1/6 the dividend is larger, so more than one copy fits and the quotient passes 1; in 1/4 ÷ 1/2, 1/3 ÷ 2/3, and 2/5 ÷ 4/5 the divisor is larger, so only part of a copy fits and each quotient is 1/2.</span><span class="lang-es" lang="es">Dividir pregunta cuántas copias del divisor caben dentro del dividendo. En 3/4 ÷ 1/4, 5/6 ÷ 1/3 y 2/3 ÷ 1/6 el dividendo es mayor, así que cabe más de una copia y el cociente pasa de 1; en 1/4 ÷ 1/2, 1/3 ÷ 2/3 y 2/5 ÷ 4/5 el divisor es mayor, así que solo cabe parte de una copia y cada cociente es 1/2.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9169,6 +9267,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">5/6 ÷ 1/3 · Quotient: 5/2 = 2 1/2</span><span class="lang-es" lang="es">5/6 ÷ 1/3 · Cociente: 5/2 = 2 1/2</span></li><li><span class="lang-en">4/9 ÷ 2/3 · Quotient: 2/3</span><span class="lang-es" lang="es">4/9 ÷ 2/3 · Cociente: 2/3</span></li><li><span class="lang-en">7/8 ÷ 1/2 · Quotient: 7/4 = 1 3/4</span><span class="lang-es" lang="es">7/8 ÷ 1/2 · Cociente: 7/4 = 1 3/4</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Keep, Change, Flip gives 5/6 × 3/1 = 15/6 = 5/2, 4/9 × 3/2 = 12/18 = 2/3, and 7/8 × 2/1 = 14/8 = 7/4. The check column multiplies each quotient back by its divisor — 5/2 × 1/3 = 5/6, 2/3 × 2/3 = 4/9, and 7/4 × 1/2 = 7/8 — landing on the original dividend every time.</span><span class="lang-es" lang="es">Conserva, Cambia, Voltea da 5/6 × 3/1 = 15/6 = 5/2, 4/9 × 3/2 = 12/18 = 2/3 y 7/8 × 2/1 = 14/8 = 7/4. La columna de comprobación multiplica cada cociente por su divisor —5/2 × 1/3 = 5/6, 2/3 × 2/3 = 4/9 y 7/4 × 1/2 = 7/8— y cae en el dividendo original cada vez.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9298,6 +9408,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>4/5 ÷ 2/5 → 2</li><li>3/4 ÷ 3/8 → 2</li><li>5/6 ÷ 1/3 → 2 1/2</li><li>2/3 ÷ 1/6 → 4</li><li>7/8 ÷ 1/4 → 3 1/2</li><li>1/2 ÷ 3/4 → 2/3</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Flipping only the second fraction and multiplying produces every match: 4/5 × 5/2 = 2, 3/4 × 8/3 = 2, 5/6 × 3/1 = 15/6 = 2 1/2, 2/3 × 6/1 = 4, and 7/8 × 4/1 = 28/8 = 3 1/2. Only 1/2 ÷ 3/4 has a divisor larger than its dividend, which is why 2/3 is the one quotient below 1.</span><span class="lang-es" lang="es">Voltear solo la segunda fracción y multiplicar produce cada pareja: 4/5 × 5/2 = 2, 3/4 × 8/3 = 2, 5/6 × 3/1 = 15/6 = 2 1/2, 2/3 × 6/1 = 4 y 7/8 × 4/1 = 28/8 = 3 1/2. Solo 1/2 ÷ 3/4 tiene un divisor mayor que su dividendo, por eso 2/3 es el único cociente menor que 1.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9471,6 +9593,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Whole-Number Code: 3/8 ÷ 1/8 = 3, 5/8 ÷ 1/8 = 5, 1/2 ÷ 1/8 = 4</span><span class="lang-es" lang="es">Código de número entero: 3/8 ÷ 1/8 = 3, 5/8 ÷ 1/8 = 5, 1/2 ÷ 1/8 = 4</span></li><li><span class="lang-en">Fraction Code: 7/10 ÷ 1/5 = 7/2, 3/4 ÷ 1/2 = 3/2, 1/3 ÷ 2/3 = 1/2</span><span class="lang-es" lang="es">Código de fracción: 7/10 ÷ 1/5 = 7/2, 3/4 ÷ 1/2 = 3/2, 1/3 ÷ 2/3 = 1/2</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A quotient is a whole number only when the divisor fits into the dividend an exact number of times. 3/8 ÷ 1/8 = 3, 5/8 ÷ 1/8 = 5, and 1/2 ÷ 1/8 = 4 count whole eighth-size pieces, while 7/10 ÷ 1/5 = 7/2, 3/4 ÷ 1/2 = 3/2, and 1/3 ÷ 2/3 = 1/2 each end with a leftover part of a piece, so those codes stay fractions.</span><span class="lang-es" lang="es">Un cociente es un número entero solo cuando el divisor cabe en el dividendo una cantidad exacta de veces. 3/8 ÷ 1/8 = 3, 5/8 ÷ 1/8 = 5 y 1/2 ÷ 1/8 = 4 cuentan piezas completas de un octavo, mientras que 7/10 ÷ 1/5 = 7/2, 3/4 ÷ 1/2 = 3/2 y 1/3 ÷ 2/3 = 1/2 terminan con una parte sobrante de una pieza, así que esos códigos siguen siendo fracciones.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9583,6 +9717,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>5/3</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">To find the reciprocal, flip the fraction. The reciprocal of 3/5 is 5/3.</span><span class="lang-es" lang="es">Para hallar el recíproco, invierte la fracción. El recíproco de 3/5 es 5/3.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9712,6 +9858,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>4/5 ÷ 1/10 → 8</li><li>5/6 ÷ 1/6 → 5</li><li>9/10 ÷ 3/10 → 3</li><li>5/8 ÷ 5/16 → 2</li><li>7/10 ÷ 1/5 → 7/2</li><li>3/5 ÷ 1/5 → 3</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Multiplying by the reciprocal opens each pair: 4/5 × 10/1 = 8, 5/6 × 6/1 = 5, 9/10 × 10/3 = 3, 5/8 × 16/5 = 2, 7/10 × 5/1 = 7/2, and 3/5 × 5/1 = 3. When the two denominators already match, you can also just count how many of the smaller piece fit inside the larger amount.</span><span class="lang-es" lang="es">Multiplicar por el recíproco abre cada pareja: 4/5 × 10/1 = 8, 5/6 × 6/1 = 5, 9/10 × 10/3 = 3, 5/8 × 16/5 = 2, 7/10 × 5/1 = 7/2 y 3/5 × 5/1 = 3. Cuando los dos denominadores ya coinciden, también puedes contar cuántas piezas pequeñas caben dentro de la cantidad mayor.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9813,6 +9971,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: not the same, 1 1/2, 2/3, order matters, not commutative.</span><span class="lang-es" lang="es">Una buena respuesta usa: not the same, 1 1/2, 2/3, order matters, not commutative.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">3/4 ÷ 1/2 becomes 3/4 × 2/1 = 6/4 = 1 1/2, while 1/2 ÷ 3/4 becomes 1/2 × 4/3 = 4/6 = 2/3, so the two expressions are not equal. Swapping the dividend and the divisor flips the quotient to its reciprocal, which shows that division is not commutative — order matters.</span><span class="lang-es" lang="es">3/4 ÷ 1/2 se convierte en 3/4 × 2/1 = 6/4 = 1 1/2, mientras que 1/2 ÷ 3/4 se convierte en 1/2 × 4/3 = 4/6 = 2/3, así que las dos expresiones no son iguales. Intercambiar el dividendo y el divisor convierte el cociente en su recíproco, lo que muestra que la división no es conmutativa: el orden importa.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9914,6 +10084,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">4 scoops</span><span class="lang-es" lang="es">4 cucharadas</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">2/3 ÷ 1/6 = 2/3 × 6/1 = 12/3 = 4 scoops.</span><span class="lang-es" lang="es">2/3 ÷ 1/6 = 2/3 × 6/1 = 12/3 = 4 cucharadas.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10015,6 +10197,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>4</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">(2/3) ÷ (1/6) = (2/3) × (6/1) = 12/3 = 4. The dial unlocks at 4.</span><span class="lang-es" lang="es">(2/3) ÷ (1/6) = (2/3) × (6/1) = 12/3 = 4. El disco se abre en 4.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10116,6 +10310,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>2</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">1/2 ÷ 1/4 = 1/2 × 4/1 = 4/2 = 2. Two 1/4-size pieces fit into 1/2.</span><span class="lang-es" lang="es">1/2 ÷ 1/4 = 1/2 × 4/1 = 4/2 = 2. Dos pedazos de tamaño 1/4 caben en 1/2.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10217,6 +10423,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>6</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6. Six 1/8-size pieces fit into 3/4.</span><span class="lang-es" lang="es">3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6. Seis pedazos de tamaño 1/8 caben en 3/4.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10318,6 +10536,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>2</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">2/3 ÷ 1/3 = 2/3 × 3/1 = 6/3 = 2. Two 1/3-size pieces fit into 2/3.</span><span class="lang-es" lang="es">2/3 ÷ 1/3 = 2/3 × 3/1 = 6/3 = 2. Dos pedazos de tamaño 1/3 caben en 2/3.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

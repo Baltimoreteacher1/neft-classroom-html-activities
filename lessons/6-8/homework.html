@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8338,7 +8397,10 @@ body {
           <p class="ladder-q">Explain why the commutative property works for addition and multiplication but NOT for subtraction and division. Give a specific number example for each operation to prove your point.</p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Addition and multiplication combine two amounts into a total or a product, and swapping which one you name first does not change that total: 10 + 2 = 2 + 10 = 12 and 10 × 2 = 2 × 10 = 20. Subtraction and division ask &#039;how much is left&#039; or &#039;how many fit,&#039; which depends on which number starts: 10 − 2 = 8 but 2 − 10 = −8, and 10 ÷ 2 = 5 but 2 ÷ 10 = 0.2.</span><span class="lang-es" lang="es">La suma y la multiplicación combinan dos cantidades en un total o un producto, y cambiar cuál nombras primero no altera ese resultado: 10 + 2 = 2 + 10 = 12 y 10 × 2 = 2 × 10 = 20. La resta y la división preguntan «cuánto queda» o «cuántos caben», y eso depende de cuál número va primero: 10 − 2 = 8 pero 2 − 10 = −8, y 10 ÷ 2 = 5 pero 2 ÷ 10 = 0.2.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8728,6 +8790,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Commutative Property: 2 + 5 = 5 + 2, 5 × 9 = 9 × 5</span><span class="lang-es" lang="es">Propiedad conmutativa: 2 + 5 = 5 + 2, 5 × 9 = 9 × 5</span></li><li><span class="lang-en">Associative Property: (2 + 6) + 4 = 2 + (6 + 4), (3 × 2) × 5 = 3 × (2 × 5)</span><span class="lang-es" lang="es">Propiedad asociativa: (2 + 6) + 4 = 2 + (6 + 4), (3 × 2) × 5 = 3 × (2 × 5)</span></li><li><span class="lang-en">Distributive Property: 5(7 + 2) = 5 × 7 + 5 × 2, 2(x + 5) = 2x + 10</span><span class="lang-es" lang="es">Propiedad distributiva: 5(7 + 2) = 5 × 7 + 5 × 2, 2(x + 5) = 2x + 10</span></li><li><span class="lang-en">Identity Property: 11 + 0 = 11, 6 × 1 = 6</span><span class="lang-es" lang="es">Propiedad de identidad: 11 + 0 = 11, 6 × 1 = 6</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">2 + 5 = 5 + 2 and 5 × 9 = 9 × 5 only swap order, so they are Commutative. (2 + 6) + 4 = 2 + (6 + 4) and (3 × 2) × 5 = 3 × (2 × 5) only move parentheses, so they are Associative. 5(7 + 2) = 5 × 7 + 5 × 2 and 2(x + 5) = 2x + 10 spread a multiplier across a sum, so they are Distributive, while 11 + 0 = 11 and 6 × 1 = 6 leave the value unchanged, so they are Identity.</span><span class="lang-es" lang="es">2 + 5 = 5 + 2 y 5 × 9 = 9 × 5 solo cambian el orden, así que son Conmutativa. (2 + 6) + 4 = 2 + (6 + 4) y (3 × 2) × 5 = 3 × (2 × 5) solo mueven los paréntesis, así que son Asociativa. 5(7 + 2) = 5 × 7 + 5 × 2 y 2(x + 5) = 2x + 10 reparten un multiplicador sobre una suma, así que son Distributiva, mientras que 11 + 0 = 11 y 6 × 1 = 6 dejan el valor igual, así que son Identidad.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8829,6 +8903,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Commutative Property</span><span class="lang-es" lang="es">Propiedad conmutativa</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Changing the order of factors is the Commutative Property of Multiplication.</span><span class="lang-es" lang="es">Cambiar el orden de los factores es la Propiedad Conmutativa de la Multiplicación.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8930,6 +9016,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Associative Property</span><span class="lang-es" lang="es">Propiedad asociativa</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The grouping (parentheses) changed but the order of the numbers stayed the same, so this is the Associative Property.</span><span class="lang-es" lang="es">La agrupación (los paréntesis) cambió pero el orden de los números se mantuvo igual, así que esta es la Propiedad Asociativa.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9083,6 +9181,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">y + y + y · Equivalent expression: 3y</span><span class="lang-es" lang="es">y + y + y · Expresión equivalente: 3y</span></li><li><span class="lang-en">(x + 4) + 6 · Equivalent expression: x + 10</span><span class="lang-es" lang="es">(x + 4) + 6 · Expresión equivalente: x + 10</span></li><li><span class="lang-en">5 + n · Equivalent expression: n + 5</span><span class="lang-es" lang="es">5 + n · Expresión equivalente: n + 5</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Here you write a new equivalent expression instead of naming a property: y + y + y is three copies of y, so it becomes 3y; the associative property regroups (x + 4) + 6 as x + (4 + 6) = x + 10; and the commutative property rewrites 5 + n as n + 5. Each new expression has the same value as the original for every number you substitute.</span><span class="lang-es" lang="es">Aquí escribes una nueva expresión equivalente en vez de nombrar una propiedad: y + y + y son tres copias de y, así que queda 3y; la propiedad asociativa reagrupa (x + 4) + 6 como x + (4 + 6) = x + 10; y la propiedad conmutativa reescribe 5 + n como n + 5. Cada expresión nueva vale lo mismo que la original para cualquier número que sustituyas.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9255,6 +9365,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">2 × 13 × 50 · Rearranged: 2 × 50 × 13 = 100 × 13</span><span class="lang-es" lang="es">2 × 13 × 50 · Reordenado: 2 × 50 × 13 = 100 × 13</span></li><li><span class="lang-en">2 × 13 × 50 · Property Used: Commutative &amp; Associative</span><span class="lang-es" lang="es">2 × 13 × 50 · Propiedad usada: Conmutativa y asociativa</span></li><li><span class="lang-en">2 × 13 × 50 · Value: 1300</span><span class="lang-es" lang="es">2 × 13 × 50 · Valor: 1300</span></li><li><span class="lang-en">45 + 27 + 55 · Rearranged: 45 + 55 + 27 = 100 + 27</span><span class="lang-es" lang="es">45 + 27 + 55 · Reordenado: 45 + 55 + 27 = 100 + 27</span></li><li><span class="lang-en">45 + 27 + 55 · Property Used: Commutative &amp; Associative</span><span class="lang-es" lang="es">45 + 27 + 55 · Propiedad usada: Conmutativa y asociativa</span></li><li><span class="lang-en">45 + 27 + 55 · Value: 127</span><span class="lang-es" lang="es">45 + 27 + 55 · Valor: 127</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">In 2 × 13 × 50, the commutative property lets you move the 50 next to the 2 and the associative property lets you group them: 2 × 50 × 13 = 100 × 13 = 1300. The same pair of properties turns 45 + 27 + 55 into 45 + 55 + 27 = 100 + 27 = 127, since 45 and 55 make a friendly 100.</span><span class="lang-es" lang="es">En 2 × 13 × 50, la propiedad conmutativa te deja mover el 50 junto al 2 y la asociativa te deja agruparlos: 2 × 50 × 13 = 100 × 13 = 1300. El mismo par de propiedades convierte 45 + 27 + 55 en 45 + 55 + 27 = 100 + 27 = 127, ya que 45 y 55 forman un cómodo 100.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9356,6 +9478,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Distributive Property</span><span class="lang-es" lang="es">Propiedad distributiva</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Multiplying 5 across both numbers inside the parentheses (5 × 7 and 5 × 2) shows the Distributive Property.</span><span class="lang-es" lang="es">Multiplicar el 5 por los dos números dentro de los paréntesis (5 × 7 y 5 × 2) muestra la Propiedad Distributiva.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9468,6 +9602,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Commutative Property</span><span class="lang-es" lang="es">Propiedad conmutativa</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The order of the addends changed, so this is the Commutative Property of Addition.</span><span class="lang-es" lang="es">Cambió el orden de los sumandos, así que esta es la Propiedad Conmutativa de la Suma.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9569,6 +9715,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Associative Property</span><span class="lang-es" lang="es">Propiedad asociativa</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The grouping (parentheses) changed but the order stayed the same, so this is the Associative Property of Multiplication.</span><span class="lang-es" lang="es">La agrupación (los paréntesis) cambió pero el orden se mantuvo igual, así que esta es la Propiedad Asociativa de la Multiplicación.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9670,6 +9828,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Identity Property</span><span class="lang-es" lang="es">Propiedad de identidad</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Adding 0 does not change the value, so this is the Identity Property of Addition.</span><span class="lang-es" lang="es">Sumar 0 no cambia el valor, así que esta es la Propiedad de Identidad de la Suma.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9771,6 +9941,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Identity Property</span><span class="lang-es" lang="es">Propiedad de identidad</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Multiplying by 1 keeps the same value, so this is the Identity Property of Multiplication.</span><span class="lang-es" lang="es">Multiplicar por 1 conserva el mismo valor, así que esta es la Propiedad de Identidad de la Multiplicación.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9900,6 +10082,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">8 × 6 = 6 × 8 → Commutative (Multiplication)</span><span class="lang-es" lang="es">8 × 6 = 6 × 8 → Conmutativa (multiplicación)</span></li><li><span class="lang-en">(4 × 2) × 3 = 4 × (2 × 3) → Associative (Multiplication)</span><span class="lang-es" lang="es">(4 × 2) × 3 = 4 × (2 × 3) → Asociativa (multiplicación)</span></li><li><span class="lang-en">6(2 + 3) = 6 × 2 + 6 × 3 → Distributive</span><span class="lang-es" lang="es">6(2 + 3) = 6 × 2 + 6 × 3 → Distributiva</span></li><li><span class="lang-en">10 × 1 = 10 → Identity (Multiplication)</span><span class="lang-es" lang="es">10 × 1 = 10 → De identidad (multiplicación)</span></li><li><span class="lang-en">0 + 19 = 19 → Identity (Addition)</span><span class="lang-es" lang="es">0 + 19 = 19 → De identidad (suma)</span></li><li><span class="lang-en">9 + 5 = 5 + 9 → Commutative (Addition)</span><span class="lang-es" lang="es">9 + 5 = 5 + 9 → Conmutativa (suma)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">8 × 6 = 6 × 8 swaps factors: commutative property of multiplication. (4 × 2) × 3 = 4 × (2 × 3) regroups factors: associative property of multiplication. 6(2 + 3) = 6 × 2 + 6 × 3 is distributive. Multiplying by 1 is the multiplication identity; adding 0 is the addition identity. 9 + 5 = 5 + 9 swaps addends: commutative property of addition.</span><span class="lang-es" lang="es">8 × 6 = 6 × 8 intercambia factores: propiedad conmutativa de la multiplicación. (4 × 2) × 3 = 4 × (2 × 3) reagrupa factores: propiedad asociativa de la multiplicación. 6(2 + 3) = 6 × 2 + 6 × 3 es distributiva. Multiplicar por 1 es la identidad multiplicativa; sumar 0 es la identidad aditiva. 9 + 5 = 5 + 9 intercambia sumandos: propiedad conmutativa de la suma.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10032,6 +10226,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Commutative: 9 + 4 = 4 + 9</span><span class="lang-es" lang="es">Conmutativa: 9 + 4 = 4 + 9</span></li><li><span class="lang-en">Associative: (5 + 1) + 3 = 5 + (1 + 3)</span><span class="lang-es" lang="es">Asociativa: (5 + 1) + 3 = 5 + (1 + 3)</span></li><li><span class="lang-en">Identity: 7 × 1 = 7</span><span class="lang-es" lang="es">De identidad: 7 × 1 = 7</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">In 9 + 4 = 4 + 9 the addends only swapped places, which is Commutative. In (5 + 1) + 3 = 5 + (1 + 3) the numbers stayed in the same order and only the parentheses moved, which is Associative. In 7 × 1 = 7 nothing moved at all — multiplying by 1 left the value unchanged, which is Identity.</span><span class="lang-es" lang="es">En 9 + 4 = 4 + 9 los sumandos solo cambiaron de lugar, y eso es Conmutativa. En (5 + 1) + 3 = 5 + (1 + 3) los números quedaron en el mismo orden y solo se movieron los paréntesis, y eso es Asociativa. En 7 × 1 = 7 nada se movió: multiplicar por 1 dejó el valor igual, y eso es Identidad.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10209,6 +10415,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Commutative: a + b = b + a, c × d = d × c</span><span class="lang-es" lang="es">Conmutativa: a + b = b + a, c × d = d × c</span></li><li><span class="lang-en">Associative: (m + n) + p = m + (n + p), (a × b) × c = a × (b × c)</span><span class="lang-es" lang="es">Asociativa: (m + n) + p = m + (n + p), (a × b) × c = a × (b × c)</span></li><li><span class="lang-en">Identity: x × 1 = x, y + 0 = y</span><span class="lang-es" lang="es">De identidad: x × 1 = x, y + 0 = y</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The letters follow the same rules as numbers: a + b = b + a and c × d = d × c are Commutative because the terms trade places, (m + n) + p = m + (n + p) and (a × b) × c = a × (b × c) are Associative because only the parentheses shift, and x × 1 = x and y + 0 = y are Identity because 1 and 0 leave the value untouched.</span><span class="lang-es" lang="es">Las letras siguen las mismas reglas que los números: a + b = b + a y c × d = d × c son Conmutativa porque los términos cambian de lugar, (m + n) + p = m + (n + p) y (a × b) × c = a × (b × c) son Asociativa porque solo se mueven los paréntesis, y x × 1 = x y y + 0 = y son Identidad porque el 1 y el 0 dejan el valor intacto.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10338,6 +10556,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">7 + 9 = 9 + 7 → Commutative (Add)</span><span class="lang-es" lang="es">7 + 9 = 9 + 7 → Conmutativa (suma)</span></li><li><span class="lang-en">(2 × 5) × 3 = 2 × (5 × 3) → Associative (Mult)</span><span class="lang-es" lang="es">(2 × 5) × 3 = 2 × (5 × 3) → Asociativa (mult.)</span></li><li><span class="lang-en">15 × 1 = 15 → Identity (Mult)</span><span class="lang-es" lang="es">15 × 1 = 15 → De identidad (mult.)</span></li><li><span class="lang-en">0 + 23 = 23 → Identity (Add)</span><span class="lang-es" lang="es">0 + 23 = 23 → De identidad (suma)</span></li><li><span class="lang-en">6 × 4 = 4 × 6 → Commutative (Mult)</span><span class="lang-es" lang="es">6 × 4 = 4 × 6 → Conmutativa (mult.)</span></li><li><span class="lang-en">(8 + 3) + 7 = 8 + (3 + 7) → Associative (Add)</span><span class="lang-es" lang="es">(8 + 3) + 7 = 8 + (3 + 7) → Asociativa (suma)</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each match names both the property and the operation, so read for two clues. 7 + 9 = 9 + 7 is Commutative (Add) and 6 × 4 = 4 × 6 is Commutative (Mult); (8 + 3) + 7 = 8 + (3 + 7) is Associative (Add) and (2 × 5) × 3 = 2 × (5 × 3) is Associative (Mult); 0 + 23 = 23 is Identity (Add) and 15 × 1 = 15 is Identity (Mult).</span><span class="lang-es" lang="es">Cada pareja nombra la propiedad y la operación, así que busca dos pistas. 7 + 9 = 9 + 7 es Conmutativa (Suma) y 6 × 4 = 4 × 6 es Conmutativa (Mult); (8 + 3) + 7 = 8 + (3 + 7) es Asociativa (Suma) y (2 × 5) × 3 = 2 × (5 × 3) es Asociativa (Mult); 0 + 23 = 23 es Identidad (Suma) y 15 × 1 = 15 es Identidad (Mult).</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

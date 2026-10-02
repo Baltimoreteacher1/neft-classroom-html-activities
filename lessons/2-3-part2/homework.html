@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8301,7 +8360,10 @@ body {
           <p class="ladder-q"><span class="lang-en">Eight students recorded their reading minutes: 40, 25, 55, 30, 45, 35, 60, 20. Find the median. Show the ordered list, name the two middle values, and explain why the median can be a number that no student actually recorded.</span><span class="lang-es" lang="es">Ocho estudiantes anotaron sus minutos de lectura: 40, 25, 55, 30, 45, 35, 60, 20. Halla la mediana. Muestra la lista ordenada, nombra los dos valores del medio y explica por qué la mediana puede ser un número que ningún estudiante anotó.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">Ordered: 20, 25, 30, 35, 40, 45, 55, 60. The 4th and 5th values are 35 and 40, so the median is (35 + 40) ÷ 2 = 37.5 minutes. No student recorded 37.5 — with an even count the median is the halfway point between two values, so it does not have to be one of the data values.</span><span class="lang-es" lang="es">Ordenados: 20, 25, 30, 35, 40, 45, 55, 60. El 4.º y el 5.º valor son 35 y 40, así que la mediana es (35 + 40) ÷ 2 = 37.5 minutos. Ningún estudiante anotó 37.5 — con un conteo par la mediana es el punto medio entre dos valores, así que no tiene que ser uno de los datos.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8581,6 +8643,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">The two middle values add to 28.</span><span class="lang-es" lang="es">Los dos valores del medio suman 28.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Median 14 means (a + b) ÷ 2 = 14 for the two middle values, so a + b = 28 — for example 13 and 15, or 12 and 16. Because of that, 14 need not appear in the data at all, the mean can be anything, and there is no rule about how many values equal 14.</span><span class="lang-es" lang="es">Mediana 14 significa (a + b) ÷ 2 = 14 para los dos valores del medio, así que a + b = 28 — por ejemplo 13 y 15, o 12 y 16. Por eso, el 14 no tiene que aparecer en los datos, la media puede ser cualquier cosa, y no hay regla sobre cuántos valores son 14.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8682,6 +8756,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">60 minutes</span><span class="lang-es" lang="es">60 minutos</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">With an even count, the median is halfway between the two middle values: (58 + 62) ÷ 2 = 60 minutes — a value that never appears in the data. Picking 58 or 62 alone stops one step early; 61 is the mean of all six, not the median.</span><span class="lang-es" lang="es">Con un conteo par, la mediana está a la mitad entre los dos valores del medio: (58 + 62) ÷ 2 = 60 minutos — un valor que no aparece en los datos. Elegir solo 58 o 62 se detiene un paso antes; 61 es la media de los seis, no la mediana.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8783,6 +8869,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">21.5 minutes</span><span class="lang-es" lang="es">21.5 minutos</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Ordered: 19, 20, 21, 22, 24, 25. The two middle values are 21 and 22, so the median is 21.5 minutes. Either middle value alone is not the median, and 22.5 would be halfway between 22 and 23 — a pair that is not in the middle.</span><span class="lang-es" lang="es">Ordenados: 19, 20, 21, 22, 24, 25. Los dos valores del medio son 21 y 22, así que la mediana es 21.5 minutos. Uno solo de los valores del medio no es la mediana, y 22.5 estaría a la mitad entre 22 y 23 — un par que no está en el medio.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8887,6 +8985,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">Ordered: 20, 25, 30, 35, 40, 45, 55, 60. The 4th and 5th values are 35 and 40, so the median is (35 + 40) ÷ 2 = 37.5 minutes. No student recorded 37.5 — with an even count the median is the halfway point between two values, so it does not have to be one of the data values.</span><span class="lang-es" lang="es">Ordenados: 20, 25, 30, 35, 40, 45, 55, 60. El 4.º y el 5.º valor son 35 y 40, así que la mediana es (35 + 40) ÷ 2 = 37.5 minutos. Ningún estudiante anotó 37.5 — con un conteo par la mediana es el punto medio entre dos valores, así que no tiene que ser uno de los datos.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8988,6 +9098,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">38 pounds</span><span class="lang-es" lang="es">38 libras</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Ordered: 31, 34, 37, 39, 43, 47. The middle pair is 37 and 39, and (37 + 39) ÷ 2 = 38 pounds. 37 and 39 are the two middle values, not the median; 38.5 is the mean of all six weights.</span><span class="lang-es" lang="es">Ordenados: 31, 34, 37, 39, 43, 47. El par del medio es 37 y 39, y (37 + 39) ÷ 2 = 38 libras. 37 y 39 son los dos valores del medio, no la mediana; 38.5 es la media de los seis pesos.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9089,6 +9211,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>7</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Ordered, the list is 3, 5, 6, 8, 9, 10; the two middle values are 6 and 8, and (6 + 8) ÷ 2 = 7. Choosing 5 or 8 takes a middle value from the UNORDERED list; 6.5 comes from averaging 5 and 8, the wrong pair.</span><span class="lang-es" lang="es">Ordenada, la lista es 3, 5, 6, 8, 9, 10; los dos valores del medio son 6 y 8, y (6 + 8) ÷ 2 = 7. Elegir 5 u 8 toma un valor del medio de la lista SIN ordenar; 6.5 viene de promediar 5 y 8, el par equivocado.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>

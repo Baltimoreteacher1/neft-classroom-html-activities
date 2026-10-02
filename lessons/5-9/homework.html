@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8212,7 +8271,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A regular hexagon and a regular pentagon are each divided into congruent central triangles. In both polygons, each central triangle has area 15 sq ft. Which polygon has greater total area? Explain why the triangle count matters. The two polygons have different side lengths.</span><span class="lang-es" lang="es">Un hexágono regular y un pentágono regular se dividen en triángulos centrales congruentes. En ambos polígonos, cada triángulo central tiene área 15 pies². ¿Cuál polígono tiene mayor área total? Explica por qué importa la cantidad de triángulos. Los dos polígonos tienen lados de diferentes longitudes.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">The hexagon has area 6 × 15 = 90 sq ft. The pentagon has area 5 × 15 = 75 sq ft. The hexagon has 15 sq ft more because it has one additional triangle of that area. Equal triangle areas do not require equal bases and heights.</span><span class="lang-es" lang="es">El hexágono tiene área 6 × 15 = 90 pies². El pentágono tiene área 5 × 15 = 75 pies². El hexágono tiene 15 pies² más porque tiene un triángulo adicional de esa área. Tener áreas iguales no exige bases y alturas iguales.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8588,6 +8650,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">More than 5 triangles: Regular hexagon, Regular octagon</span><span class="lang-es" lang="es">Más de 5 triángulos: Hexágono regular, Octágono regular</span></li><li><span class="lang-en">5 or fewer triangles: Equilateral triangle, Square, Regular pentagon</span><span class="lang-es" lang="es">5 triángulos o menos: Triángulo equilátero, Cuadrado, Pentágono regular</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A regular polygon splits into one triangle per side, so the triangle count is just the number of sides. The hexagon (6 sides) and the octagon (8 sides) are the only ones above 5; the equilateral triangle (3), the square (4), and the pentagon (exactly 5) all belong in the &#039;5 or fewer&#039; group.</span><span class="lang-es" lang="es">Un polígono regular se divide en un triángulo por cada lado, así que la cantidad de triángulos es simplemente el número de lados. El hexágono (6 lados) y el octágono (8 lados) son los únicos por encima de 5; el triángulo equilátero (3), el cuadrado (4) y el pentágono (exactamente 5) van en el grupo de &#039;5 o menos&#039;.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8731,6 +8805,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">One triangle ≤ 12 sq ft: Square tile: base 4 ft, height 2 ft, Hexagon tile: base 4 ft, height ≈ 3.5 ft</span><span class="lang-es" lang="es">Un triángulo ≤ 12 pies cuadrados: Loseta cuadrada: base 4 pies, altura 2 pies, Loseta hexagonal: base 4 pies, altura ≈ 3.5 pies</span></li><li><span class="lang-en">One triangle &gt; 12 sq ft: Octagon tile: base 6 ft, height ≈ 7.2 ft, Pentagon tile: base 8 ft, height ≈ 5.5 ft</span><span class="lang-es" lang="es">Un triángulo &gt; 12 pies cuadrados: Loseta octagonal: base 6 pies, altura ≈ 7.2 pies, Loseta pentagonal: base 8 pies, altura ≈ 5.5 pies</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Using the given heights, the central-triangle areas are ½ × 4 × 2 = 4 sq ft for the square, about ½ × 4 × 3.5 = 7 sq ft for the hexagon, about ½ × 6 × 7.2 = 21.6 sq ft for the octagon, and about ½ × 8 × 5.5 = 22 sq ft for the pentagon. The first two are at most 12; the last two are over 12.</span><span class="lang-es" lang="es">Con las alturas dadas, las áreas de los triángulos centrales son ½ × 4 × 2 = 4 pies² para el cuadrado, aproximadamente ½ × 4 × 3.5 = 7 pies² para el hexágono, aproximadamente ½ × 6 × 7.2 = 21.6 pies² para el octágono y aproximadamente ½ × 8 × 5.5 = 22 pies² para el pentágono. Las dos primeras no superan 12; las otras dos son mayores que 12.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8834,6 +8920,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>15.6 sq ft</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A = ½ × b × h = ½ × 6 × 5.2 = 15.6 square feet.</span><span class="lang-es" lang="es">A = ½ × b × h = ½ × 6 × 5.2 = 15.6 pies cuadrados.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8953,6 +9051,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">A strong answer uses: hexagon, pentagon, triangles, multiply, sides, decompose, area.</span><span class="lang-es" lang="es">Una buena respuesta usa: hexagon, pentagon, triangles, multiply, sides, decompose, area.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The hexagon has area 6 × 15 = 90 sq ft. The pentagon has area 5 × 15 = 75 sq ft. The hexagon has 15 sq ft more because it has one additional triangle of that area. Equal triangle areas do not require equal bases and heights.</span><span class="lang-es" lang="es">El hexágono tiene área 6 × 15 = 90 pies². El pentágono tiene área 5 × 15 = 75 pies². El hexágono tiene 15 pies² más porque tiene un triángulo adicional de esa área. Tener áreas iguales no exige bases y alturas iguales.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9096,6 +9206,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Total area ≥ 90 sq ft: Pentagon: 5 triangles, base 8 ft, height 5.5 ft, Hexagon: 6 triangles, base 6 ft, height 5.2 ft</span><span class="lang-es" lang="es">Área total ≥ 90 pies cuadrados: Pentágono: 5 triángulos, base 8 ft, altura 5.5 ft, Hexágono: 6 triángulos, base 6 ft, altura 5.2 ft</span></li><li><span class="lang-en">Total area &lt; 90 sq ft: Octagon: 8 triangles, base 4 ft, height 4.8 ft, Square: 4 triangles, base 5 ft, height 2.5 ft</span><span class="lang-es" lang="es">Área total &lt; 90 pies cuadrados: Octágono: 8 triángulos, base 4 ft, altura 4.8 ft, Cuadrado: 4 triángulos, base 5 ft, altura 2.5 ft</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each card needs both steps. Pentagon: 5 × (½ × 8 × 5.5) = 110 sq ft. Hexagon: 6 × (½ × 6 × 5.2) = 93.6 sq ft. Both reach 90. Octagon: 8 × (½ × 4 × 4.8) = 76.8 sq ft. Square: 4 × (½ × 5 × 2.5) = 25 sq ft. Both fall short — and notice the octagon has the MOST sides but not the most area, because its triangles are smaller.</span><span class="lang-es" lang="es">Cada tarjeta necesita los dos pasos. Pentágono: 5 × (½ × 8 × 5.5) = 110 pies cuadrados. Hexágono: 6 × (½ × 6 × 5.2) = 93.6. Ambos llegan a 90. Octágono: 8 × (½ × 4 × 4.8) = 76.8. Cuadrado: 4 × (½ × 5 × 2.5) = 25. Ambos quedan por debajo, y fíjate que el octágono tiene MÁS lados pero no más área, porque sus triángulos son más pequeños.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9199,6 +9321,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>72 cm²</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A hexagon has 6 sides, so it splits into 6 equal triangles. Total = 6 × 12 = 72 cm².</span><span class="lang-es" lang="es">Un hexágono tiene 6 lados, así que se divide en 6 triángulos iguales. Total = 6 × 12 = 72 cm².</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9313,6 +9447,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>28 in²</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">One triangle = ½ × 4 × 2.8 = 5.6 in². A pentagon has 5 triangles, so total = 5 × 5.6 = 28 in².</span><span class="lang-es" lang="es">Un triángulo = ½ × 4 × 2.8 = 5.6 in². Un pentágono tiene 5 triángulos, así que el total = 5 × 5.6 = 28 in².</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9416,6 +9562,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>172.8 sq ft</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">An octagon has 8 sides, so it splits into 8 triangles. One triangle = ½ × 6 × 7.2 = 21.6 sq ft. Total = 8 × 21.6 = 172.8 sq ft.</span><span class="lang-es" lang="es">Un octágono tiene 8 lados, así que se divide en 8 triángulos. Un triángulo = ½ × 6 × 7.2 = 21.6 pies cuadrados. Total = 8 × 21.6 = 172.8 pies cuadrados.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9519,6 +9677,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>42 sq cm</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each triangle: ½ × 4 × 3.5 = 7 sq cm. Total: 6 × 7 = 42 sq cm.</span><span class="lang-es" lang="es">Cada triángulo: ½ × 4 × 3.5 = 7 cm cuadrados. Total: 6 × 7 = 42 cm cuadrados.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9622,6 +9792,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>93.6 sq ft</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Total area = 6 triangles × 15.6 sq ft = 93.6 square feet.</span><span class="lang-es" lang="es">Área total = 6 triángulos × 15.6 pies cuadrados = 93.6 pies cuadrados.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9830,6 +10012,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Hexagon · Area of One Triangle: 15.6 sq ft</span><span class="lang-es" lang="es">Hexágono · Área de un triángulo: 15.6 pies²</span></li><li><span class="lang-en">Hexagon · Total Area: 93.6 sq ft</span><span class="lang-es" lang="es">Hexágono · Área total: 93.6 pies²</span></li><li><span class="lang-en">Pentagon · Area of One Triangle: 22 sq ft</span><span class="lang-es" lang="es">Pentágono · Área de un triángulo: 22 pies²</span></li><li><span class="lang-en">Pentagon · Total Area: 110 sq ft</span><span class="lang-es" lang="es">Pentágono · Área total: 110 pies²</span></li><li><span class="lang-en">Square · Area of One Triangle: 6.25 sq ft</span><span class="lang-es" lang="es">Cuadrado · Área de un triángulo: 6.25 pies²</span></li><li><span class="lang-en">Square · Total Area: 25 sq ft</span><span class="lang-es" lang="es">Cuadrado · Área total: 25 pies²</span></li><li><span class="lang-en">Octagon · Area of One Triangle: 9.6 sq ft</span><span class="lang-es" lang="es">Octágono · Área de un triángulo: 9.6 pies²</span></li><li><span class="lang-en">Octagon · Total Area: 76.8 sq ft</span><span class="lang-es" lang="es">Octágono · Área total: 76.8 pies²</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each row is two moves: one triangle&#039;s area with ½ × base × height, then that answer times the number of triangles. The hexagon gives ½ × 6 × 5.2 = 15.6 and 6 × 15.6 = 93.6 sq ft, the pentagon 22 and 110 sq ft, the square 6.25 and 25 sq ft, and the octagon 9.6 and 76.8 sq ft.</span><span class="lang-es" lang="es">Cada fila tiene dos movimientos: el área de un triángulo con ½ × base × altura, y luego ese resultado por el número de triángulos. El hexágono da ½ × 6 × 5.2 = 15.6 y 6 × 15.6 = 93.6 pies cuadrados; el pentágono, 22 y 110; el cuadrado, 6.25 y 25; y el octágono, 9.6 y 76.8 pies cuadrados.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9959,6 +10153,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Hexagon: 6 triangles, each ½×6×5.2 → 93.6 sq ft</span><span class="lang-es" lang="es">Hexágono: 6 triángulos, cada uno ½×6×5.2 → 93.6 sq ft</span></li><li><span class="lang-en">Pentagon: 5 triangles, each ½×8×5.5 → 110 sq ft</span><span class="lang-es" lang="es">Pentágono: 5 triángulos, cada uno ½×8×5.5 → 110 sq ft</span></li><li><span class="lang-en">Octagon: 8 triangles, each ½×4×4.8 → 76.8 sq ft</span><span class="lang-es" lang="es">Octágono: 8 triángulos, cada uno ½×4×4.8 → 76.8 sq ft</span></li><li><span class="lang-en">Square: 4 triangles, each ½×5×2.5 → 25 sq ft</span><span class="lang-es" lang="es">Cuadrado: 4 triángulos, cada uno ½×5×2.5 → 25 pies²</span></li><li><span class="lang-en">Decagon: 10 triangles, each about ½×3×4.6 → 69 sq ft</span><span class="lang-es" lang="es">Decágono: 10 triángulos, cada uno aproximadamente ½×3×4.6 → 69 pies²</span></li><li><span class="lang-en">Equilateral triangle: 3 central triangles, each about ½×4×1.2 → 7.2 sq ft</span><span class="lang-es" lang="es">Triángulo equilátero: 3 triángulos centrales, cada uno aproximadamente ½×4×1.2 → 7.2 pies²</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Multiply one triangle’s area by the triangle count. Using the displayed rounded heights: hexagon ≈ 6 × 15.6 = 93.6 sq ft, pentagon ≈ 5 × 22 = 110 sq ft, octagon ≈ 8 × 9.6 = 76.8 sq ft, decagon ≈ 10 × 6.9 = 69 sq ft, and equilateral triangle ≈ 3 × 2.4 = 7.2 sq ft. The square is exact: 4 × 6.25 = 25 sq ft.</span><span class="lang-es" lang="es">Multiplica el área de un triángulo por su cantidad. Con las alturas redondeadas mostradas: hexágono ≈ 6 × 15.6 = 93.6 pies², pentágono ≈ 5 × 22 = 110 pies², octágono ≈ 8 × 9.6 = 76.8 pies², decágono ≈ 10 × 6.9 = 69 pies² y triángulo equilátero ≈ 3 × 2.4 = 7.2 pies². El cuadrado es exacto: 4 × 6.25 = 25 pies².</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10066,6 +10272,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Square tile: 4 triangles, each ½×9×4.5 → 81 sq ft</span><span class="lang-es" lang="es">Loseta cuadrada: 4 triángulos, cada uno ½×9×4.5 → 81 pies²</span></li><li><span class="lang-en">Octagon tile: 8 triangles, each about ½×3×3.6 → About 43.2 sq ft</span><span class="lang-es" lang="es">Loseta octagonal: 8 triángulos, cada uno aproximadamente ½×3×3.6 → Aproximadamente 43.2 pies²</span></li><li><span class="lang-en">Hexagon tile: 6 triangles, each about ½×5×4.3 → About 64.5 sq ft</span><span class="lang-es" lang="es">Loseta hexagonal: 6 triángulos, cada uno aproximadamente ½×5×4.3 → Aproximadamente 64.5 pies²</span></li><li><span class="lang-en">Equilateral triangle tile: 1 whole triangle, about ½×6×5.2 → About 15.6 sq ft</span><span class="lang-es" lang="es">Loseta triangular equilátera: 1 triángulo completo, aproximadamente ½×6×5.2 → Aproximadamente 15.6 pies²</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Square: 4 × (½ × 9 × 4.5) = 81 sq ft. Using rounded heights, the octagon is about 8 × (½ × 3 × 3.6) = 43.2 sq ft and the hexagon about 6 × (½ × 5 × 4.3) = 64.5 sq ft. The whole equilateral triangle is about ½ × 6 × 5.2 = 15.6 sq ft; do not multiply it by 3.</span><span class="lang-es" lang="es">Cuadrado: 4 × (½ × 9 × 4.5) = 81 pies². Con alturas redondeadas, el octágono mide aproximadamente 8 × (½ × 3 × 3.6) = 43.2 pies² y el hexágono aproximadamente 6 × (½ × 5 × 4.3) = 64.5 pies². El triángulo equilátero completo mide aproximadamente ½ × 6 × 5.2 = 15.6 pies²; no lo multipliques por 3.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10169,6 +10387,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>5</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A regular pentagon has 5 sides, so drawing lines from the center to each vertex creates 5 equal triangles.</span><span class="lang-es" lang="es">Un pentágono regular tiene 5 lados, así que trazar líneas desde el centro hasta cada vértice crea 5 triángulos iguales.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

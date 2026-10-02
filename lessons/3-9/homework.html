@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8292,7 +8351,7 @@ body {
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
           <details class="ladder-answer">
              <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
-             <p class="ladder-answer-text">Yes, they are equivalent. Method 1 (simplify): 9:6 ÷ 3 = 3:2, which matches 3:2. Method 2 (cross-multiply): 3 × 6 = 18 and 2 × 9 = 18. Since both cross products are equal, the ratios are equivalent.</p>
+             <p class="ladder-answer-text"><span class="lang-en">Yes, they are equivalent. Method 1 (simplify): 9:6 ÷ 3 = 3:2, which matches 3:2. Method 2 (cross-multiply): 3 × 6 = 18 and 2 × 9 = 18. Since both cross products are equal, the ratios are equivalent.</span><span class="lang-es" lang="es">Las razones son equivalentes. Escalar lo demuestra: multiplicar ambas partes de 3:2 por 3 da 9:6. Simplificar también lo demuestra, porque 9:6 se reduce a 3:2, y multiplicar en cruz da 3 × 6 = 18 y 2 × 9 = 18, el mismo producto.</span></p>
            </details>
         </li></ol>
     </div>
@@ -8682,6 +8741,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">3:7 · Missing Value: 21</span><span class="lang-es" lang="es">3:7 · Valor que falta: 21</span></li><li><span class="lang-en">5:8 · Missing Value: 15</span><span class="lang-es" lang="es">5:8 · Valor que falta: 15</span></li><li><span class="lang-en">4:6 · Missing Value: 2</span><span class="lang-es" lang="es">4:6 · Valor que falta: 2</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">In each row, find the scale factor from the pair of matching parts you can see, then apply it to the other part. Row 1: 3 became 9, so × 3, and 7 × 3 = 21. Row 2: 8 became 24, so × 3, and 5 × 3 = 15. Row 3: 6 became 3, so ÷ 2, and 4 ÷ 2 = 2. Scaling can go up or down as long as both parts change by the same factor.</span><span class="lang-es" lang="es">En cada fila, encuentra el factor de escala con el par de partes que sí puedes ver y luego aplícalo a la otra parte. Fila 1: 3 pasó a 9, es decir × 3, y 7 × 3 = 21. Fila 2: 8 pasó a 24, es decir × 3, y 5 × 3 = 15. Fila 3: 6 pasó a 3, es decir ÷ 2, y 4 ÷ 2 = 2. La escala puede subir o bajar mientras ambas partes cambien por el mismo factor.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8855,6 +8926,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Equivalent to 2:5: 4:10, 6:15, 8:20</span><span class="lang-es" lang="es">Equivalente a 2:5: 4:10, 6:15, 8:20</span></li><li><span class="lang-en">NOT Equivalent to 2:5: 4:9, 2:7, 5:2</span><span class="lang-es" lang="es">NO equivalente a 2:5: 4:9, 2:7, 5:2</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">4:10, 6:15, and 8:20 are the 2:5 recipe scaled by 2, 3, and 4, so all three taste the same. The others do not: 4:9 doubles the flour but the milk would need to be 10, 2:7 keeps the flour the same while changing only the milk, and 5:2 flips the order so it describes 5 cups of flour to 2 of milk — a completely different mix.</span><span class="lang-es" lang="es">4:10, 6:15 y 8:20 son la receta 2:5 escalada por 2, 3 y 4, así que las tres saben igual. Las otras no: 4:9 duplica la harina, pero la leche tendría que ser 10; 2:7 deja la harina igual y cambia solo la leche; y 5:2 invierte el orden, así que describe 5 tazas de harina por 2 de leche, una mezcla completamente distinta.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8998,6 +9081,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Equivalent Ratios: 2:4 and 3:6, 5:10 and 1:2</span><span class="lang-es" lang="es">Razones equivalentes: 2:4 y 3:6, 5:10 y 1:2</span></li><li><span class="lang-en">NOT Equivalent: 3:7 and 6:12, 4:9 and 8:16</span><span class="lang-es" lang="es">NO equivalentes: 3:7 y 6:12, 4:9 y 8:16</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">2:4 and 3:6 both simplify to 1:2, and 5:10 also simplifies to 1:2, so those two pairs are equivalent. In 3:7 and 6:12 the first part doubled but the second went from 7 to 12, which is not doubling, so they are not equivalent — and 6:12 simplifies to 1:2 while 3:7 cannot be reduced at all. The same happens in 4:9 and 8:16: 4 doubled to 8, but 9 doubled would be 18, not 16.</span><span class="lang-es" lang="es">2:4 y 3:6 se simplifican a 1:2, y 5:10 también se simplifica a 1:2, así que esas dos parejas son equivalentes. En 3:7 y 6:12 la primera parte se duplicó, pero la segunda pasó de 7 a 12, que no es el doble, así que no son equivalentes: 6:12 se simplifica a 1:2 mientras que 3:7 no se puede reducir. Lo mismo pasa con 4:9 y 8:16: 4 se duplicó a 8, pero el doble de 9 sería 18, no 16.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9109,6 +9204,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>Yes, they are equivalent. Method 1 (simplify): 9:6 ÷ 3 = 3:2, which matches 3:2. Method 2 (cross-multiply): 3 × 6 = 18 and 2 × 9 = 18. Since both cross products are equal, the ratios are equivalent.</li><li><span class="lang-en">A strong answer uses: equivalent, simplify, 3:2, cross-multiply, 18, equal.</span><span class="lang-es" lang="es">Una buena respuesta usa: equivalent, simplify, 3:2, cross-multiply, 18, equal.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The ratios are equivalent. Scaling shows it: multiplying both parts of 3:2 by 3 gives 9:6. Simplifying shows it as well, since 9:6 reduces to 3:2, and cross-multiplying gives 3 × 6 = 18 and 2 × 9 = 18 — the same product.</span><span class="lang-es" lang="es">Las razones son equivalentes. Escalar lo demuestra: multiplicar ambas partes de 3:2 por 3 da 9:6. Simplificar también lo demuestra, porque 9:6 se reduce a 3:2, y multiplicar en cruz da 3 × 6 = 18 y 2 × 9 = 18, el mismo producto.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9289,6 +9396,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">6:15 · Simplified Form: 2:5</span><span class="lang-es" lang="es">6:15 · Forma simplificada: 2:5</span></li><li><span class="lang-en">6:15 · Equivalent to 2:5?: Yes</span><span class="lang-es" lang="es">6:15 · ¿Equivalente a 2:5?: Sí</span></li><li><span class="lang-en">8:25 · Simplified Form: 8:25</span><span class="lang-es" lang="es">8:25 · Forma simplificada: 8:25</span></li><li><span class="lang-en">8:25 · Equivalent to 2:5?: No</span><span class="lang-es" lang="es">8:25 · ¿Equivalente a 2:5?: No</span></li><li><span class="lang-en">10:25 · Simplified Form: 2:5</span><span class="lang-es" lang="es">10:25 · Forma simplificada: 2:5</span></li><li><span class="lang-en">10:25 · Equivalent to 2:5?: Yes</span><span class="lang-es" lang="es">10:25 · ¿Equivalente a 2:5?: Sí</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Divide each ratio by the greatest common factor of its two parts and compare with 2:5. 6:15 divides by 3 to give 2:5, so yes. 10:25 divides by 5 to give 2:5, so yes. 8:25 has no common factor other than 1, so its simplified form is still 8:25 and the answer is no — the 8 is close to a scaled 2, but 25 would need a first part of 10 to match.</span><span class="lang-es" lang="es">Divide cada razón entre el máximo factor común de sus dos partes y compárala con 2:5. 6:15 se divide entre 3 y da 2:5, así que sí. 10:25 se divide entre 5 y da 2:5, así que sí. 8:25 no tiene ningún factor común además de 1, así que su forma simplificada sigue siendo 8:25 y la respuesta es no: el 8 se parece a un 2 escalado, pero con 25 la primera parte tendría que ser 10.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9462,6 +9581,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">Equivalent to 3:4: 6:8, 9:12, 15:20</span><span class="lang-es" lang="es">Equivalente a 3:4: 6:8, 9:12, 15:20</span></li><li><span class="lang-en">NOT Equivalent to 3:4: 3:5, 4:3, 6:12</span><span class="lang-es" lang="es">NO equivalente a 3:4: 3:5, 4:3, 6:12</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">6:8, 9:12, and 15:20 are 3:4 scaled by 2, 3, and 5 — both parts multiplied by the same number each time. The other three fail that test: 3:5 keeps the 3 but changes only the second part, 4:3 reverses the order so it compares the quantities the other way around, and 6:12 doubles the 3 but quadruples the 4, simplifying to 1:2 instead of 3:4.</span><span class="lang-es" lang="es">6:8, 9:12 y 15:20 son 3:4 escalado por 2, 3 y 5: ambas partes multiplicadas por el mismo número cada vez. Las otras tres no pasan esa prueba: 3:5 conserva el 3 pero cambia solo la segunda parte, 4:3 invierte el orden y compara las cantidades al revés, y 6:12 duplica el 3 pero cuadruplica el 4, así que se simplifica a 1:2 en lugar de 3:4.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -9574,6 +9705,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_6">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>9:12</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Multiply both parts of 3:4 by 3: 3 x 3 = 9 and 4 x 3 = 12, so 9:12 is equivalent to 3:4.</span><span class="lang-es" lang="es">Multiplica ambas partes de 3:4 por 3: 3 × 3 = 9 y 4 × 3 = 12, así que 9:12 es equivalente a 3:4.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9681,6 +9824,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_7">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>2:3 → 8:12</li><li>3:5 → 9:15</li><li>4:7 → 12:21</li><li>5:6 → 10:12</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Each batch on the right is the recipe ratio with both parts multiplied by the same number: 2:3 scaled by 4 gives 8:12, 3:5 scaled by 3 gives 9:15, 4:7 scaled by 3 gives 12:21, and 5:6 scaled by 2 gives 10:12. If you simplify any card on the right by its greatest common factor, you land exactly on its recipe partner.</span><span class="lang-es" lang="es">Cada preparación de la derecha es la razón de la receta con ambas partes multiplicadas por el mismo número: 2:3 escalado por 4 da 8:12, 3:5 escalado por 3 da 9:15, 4:7 escalado por 3 da 12:21 y 5:6 escalado por 2 da 10:12. Si simplificas cualquier tarjeta de la derecha usando su máximo factor común, caes exactamente en su receta correspondiente.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9782,6 +9937,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_8">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>4:10</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Multiply both parts by 2: 2×2 = 4 and 5×2 = 10, so 4:10 is equivalent to 2:5.</span><span class="lang-es" lang="es">Multiplica ambas partes por 2: 2×2 = 4 y 5×2 = 10, así que 4:10 es equivalente a 2:5.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9883,6 +10050,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_9">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>2:3</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Divide both by 2: 4÷2 = 2 and 6÷2 = 3. The ratio 2:3 is equivalent to 4:6.</span><span class="lang-es" lang="es">Divide ambas partes entre 2: 4÷2 = 2 y 6÷2 = 3. La razón 2:3 es equivalente a 4:6.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9984,6 +10163,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_10">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>3:5</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">6:9 simplifies to 2:3. Check each: 2:3 ✓, 12:18 = 2:3 ✓, 18:27 = 2:3 ✓. But 3:5 does not simplify to 2:3.</span><span class="lang-es" lang="es">6:9 se simplifica a 2:3. Revisa cada una: 2:3 ✓, 12:18 = 2:3 ✓, 18:27 = 2:3 ✓. Pero 3:5 no se simplifica a 2:3.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10085,6 +10276,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_11">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>15:6</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Multiply both parts of 5:2 by 3: 5 x 3 = 15 and 2 x 3 = 6, so 15:6 is equivalent to 5:2.</span><span class="lang-es" lang="es">Multiplica ambas partes de 5:2 por 3: 5 × 3 = 15 y 2 × 3 = 6, así que 15:6 es equivalente a 5:2.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10186,6 +10389,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_12">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>3:5</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">The GCF of 15 and 25 is 5. Divide both by 5: 15÷5 = 3 and 25÷5 = 5. The simplest form is 3:5.</span><span class="lang-es" lang="es">El máximo común divisor de 15 y 25 es 5. Divide ambos entre 5: 15÷5 = 3 y 25÷5 = 5. La forma más simple es 3:5.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -10287,6 +10502,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_13">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>$120</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">Unit rate: $45 ÷ 3 = $15/hour. In 8 hours: $15 × 8 = $120.</span><span class="lang-es" lang="es">Tasa por unidad: $45 ÷ 3 = $15 por hora. En 8 horas: $15 × 8 = $120.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </details>

@@ -907,6 +907,65 @@ header.homework-header h1 {
   font-size: 14px;
 }
 
+/* Family answer key — one per problem, closed until a parent opens it. */
+.hw-answer-key {
+  margin-top: 12px;
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  background: var(--success-bg);
+}
+.hw-answer-key > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--success);
+}
+.hw-answer-key > summary::-webkit-details-marker { display: none; }
+.hw-answer-key > summary::after {
+  content: "▸";
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
+.hw-answer-key > summary:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.hw-answer-key-body {
+  padding: 4px 14px 12px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.hw-answer-key-label {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--success);
+}
+.hw-answer-key-lines {
+  margin: 0;
+  padding-left: 20px;
+}
+.hw-answer-key-lines li {
+  margin: 2px 0;
+  font-weight: 600;
+}
+.hw-answer-key-note {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+}
+@media print {
+  .hw-answer-key { display: none !important; }
+}
+
 .problem-check-result {
   font-size: 14px;
   font-weight: 600;
@@ -2641,12 +2700,11 @@ body.help-modal-open { overflow: hidden; }
 .ladder-choice { font-size: 14px; line-height: 1.4; }
 .ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are TEACHER-ONLY: hidden fail-closed for students, shown only
-   when the shared unified teacher toggle (localStorage nt-teacher-mode) has put
-   the page into teacher mode (body.teacher-mode). Keep in sync with the
-   teacher-mode bootstrap emitted in generate-homework-html.mjs. */
-.ladder-answer { display: none; margin-top: 7px; }
-body.teacher-mode .ladder-answer { display: block; }
+/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
+   at the kitchen table is this page's audience, so every ladder item carries
+   a closed <details> they can open. They used to be display:none unless the
+   device was in teacher mode, which left families with no way to check. */
+.ladder-answer { display: block; margin-top: 7px; }
 .ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
 .ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
@@ -7351,10 +7409,11 @@ body {
 /* Unified teacher-mode bootstrap. Reads the site-wide sticky key
    (localStorage nt-teacher-mode, same key as engine/core/teacher-mode.js,
    assets/curriculum-enhancements.js and shared/projects/answer-key-gate.js)
-   and flips on body.teacher-mode so teacher-only content (e.g. the practice
-   answer reveals) becomes visible. Fail-closed: without this class the
-   answers stay display:none for students. ?student=1 / ?teacher=0 force
-   student view so a teacher can hand a device back. */
+   and flips on body.teacher-mode so any teacher-only content becomes
+   visible. Practice answers are NOT gated by it any more: every problem and
+   every Try Together ladder item carries a family-visible "Show the answer"
+   reveal, because a parent checking the work at home is the audience of this
+   page. ?student=1 / ?teacher=0 still force student view. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
@@ -8217,7 +8276,10 @@ body {
           <p class="ladder-q"><span class="lang-en">A recipe needs 2 1/2 cups of oats per batch. A baker has 8 3/4 cups. How many FULL batches can be made, and how many cups of oats are left over? Convert both mixed numbers, divide, and then explain what the fraction part of your quotient means.</span><span class="lang-es" lang="es">Una receta necesita 2 1/2 tazas de avena por tanda. Un panadero tiene 8 3/4 tazas. ¿Cuántas tandas COMPLETAS se pueden hacer, y cuántas tazas de avena sobran? Convierte los dos números mixtos, divide y luego explica qué significa la parte fraccionaria de tu cociente.</span></p>
 
           <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
-
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text"><span class="lang-en">35/4 ÷ 5/2 = 35/4 × 2/5 = 70/20 = 3 1/2. That means 3 full batches and half of another batch. Half a batch uses half of 2 1/2 cups, which is 1 1/4 cups — so 3 full batches with 1 1/4 cups of oats left over. Check: 3 batches use 7 1/2 cups, and 8 3/4 − 7 1/2 = 1 1/4. ✓ The fraction part of a quotient is a fraction of a GROUP, not a fraction of the unit.</span><span class="lang-es" lang="es">35/4 ÷ 5/2 = 35/4 × 2/5 = 70/20 = 3 1/2. Eso significa 3 tandas completas y la mitad de otra tanda. Media tanda usa la mitad de 2 1/2 tazas, que es 1 1/4 tazas — así que 3 tandas completas y sobran 1 1/4 tazas de avena. Comprueba: 3 tandas usan 7 1/2 tazas, y 8 3/4 − 7 1/2 = 1 1/4. ✓ La parte fraccionaria de un cociente es una fracción de un GRUPO, no una fracción de la unidad.</span></p>
+           </details>
         </li></ol>
     </div>
 
@@ -8568,6 +8630,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_0" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_0">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>8/1 × 3/2</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">8 ÷ 2/3 = 8/1 × 3/2 = 24/2 = 12. 8/1 × 2/3 forgets to flip; 1/8 × 3/2 flips the first fraction; 8/1 ÷ 3/2 flips but never changes the sign to ×.</span><span class="lang-es" lang="es">8 ÷ 2/3 = 8/1 × 3/2 = 24/2 = 12. 8/1 × 2/3 olvida voltear; 1/8 × 3/2 voltea la primera fracción; 8/1 ÷ 3/2 voltea pero nunca cambia el signo a ×.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8669,6 +8743,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_1">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li><span class="lang-en">5 1/4 becomes 21/4.</span><span class="lang-es" lang="es">5 1/4 se convierte en 21/4.</span></li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">A mixed number must become an improper fraction: 5 × 4 + 1 = 21, so 21/4. 6/4 adds 5 + 1; 5/4 drops the whole; and Keep, Change, Flip cannot be applied to a mixed number as it stands.</span><span class="lang-es" lang="es">Un número mixto debe convertirse en fracción impropia: 5 × 4 + 1 = 21, así que 21/4. 6/4 suma 5 + 1; 5/4 pierde el entero; y Mantén, Cambia, Voltea no se puede aplicar a un número mixto tal cual.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8770,6 +8856,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_2">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>7</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">21/4 × 4/3 = 84/12 = 7 mini-loaves. Check: 7 × 3/4 = 21/4 = 5 1/4. 3 15/16 multiplies by 3/4 instead of dividing; 4 is a low guess; 84 is the numerator before simplifying.</span><span class="lang-es" lang="es">21/4 × 4/3 = 84/12 = 7 mini panes. Comprueba: 7 × 3/4 = 21/4 = 5 1/4. 3 15/16 multiplica por 3/4 en vez de dividir; 4 es una suposición baja; 84 es el numerador antes de simplificar.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
@@ -8874,6 +8972,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_3">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Sample answer:</span><span class="lang-es" lang="es">Respuesta de ejemplo:</span></strong> <span class="lang-en">35/4 ÷ 5/2 = 35/4 × 2/5 = 70/20 = 3 1/2. That means 3 full batches and half of another batch. Half a batch uses half of 2 1/2 cups, which is 1 1/4 cups — so 3 full batches with 1 1/4 cups of oats left over. Check: 3 batches use 7 1/2 cups, and 8 3/4 − 7 1/2 = 1 1/4. ✓ The fraction part of a quotient is a fraction of a GROUP, not a fraction of the unit.</span><span class="lang-es" lang="es">35/4 ÷ 5/2 = 35/4 × 2/5 = 70/20 = 3 1/2. Eso significa 3 tandas completas y la mitad de otra tanda. Media tanda usa la mitad de 2 1/2 tazas, que es 1 1/4 tazas — así que 3 tandas completas y sobran 1 1/4 tazas de avena. Comprueba: 3 tandas usan 7 1/2 tazas, y 8 3/4 − 7 1/2 = 1 1/4. ✓ La parte fraccionaria de un cociente es una fracción de un GRUPO, no una fracción de la unidad.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -8975,6 +9085,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_4">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>7</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">7/2 × 2/1 = 14/2 = 7 jars — 3 cups fill 6 jars and the extra half cup fills one more. 1 3/4 multiplies by 1/2; 3 1/4 divides the parts separately; 14 stops at 14/2.</span><span class="lang-es" lang="es">7/2 × 2/1 = 14/2 = 7 frascos — 3 tazas llenan 6 frascos y la media taza extra llena uno más. 1 3/4 multiplica por 1/2; 3 1/4 divide las partes por separado; 14 se detiene en 14/2.</span></p>
+        </div>
+      </details>
     </section>
 
 
@@ -9076,6 +9198,18 @@ body {
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+
+      <details class="hw-answer-key" id="answer_key_5">
+        <summary>
+          <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
+          <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
+        </summary>
+        <div class="hw-answer-key-body">
+          <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
+          <ul class="hw-answer-key-lines"><li>5</li></ul>
+          <p class="hw-answer-key-note"><strong><span class="lang-en">Why:</span><span class="lang-es" lang="es">Por qué:</span></strong> <span class="lang-en">5/2 × 2/1 = 10/2 = 5 halves. 1 1/4 multiplies by 1/2; 2 1/4 divides only the fraction part; 10/4 flips the wrong fraction.</span><span class="lang-es" lang="es">5/2 × 2/1 = 10/2 = 5 medios. 1 1/4 multiplica por 1/2; 2 1/4 divide solo la parte fraccionaria; 10/4 voltea la fracción equivocada.</span></p>
+        </div>
+      </details>
     </section>
   </section>
       </section>
