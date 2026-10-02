@@ -4291,7 +4291,7 @@ body[data-active-tab]:not([data-active-tab="check"]) .bottom-status-bar {
 }
 .hw-hero .lang-toggle-btn:focus-visible { outline: 3px solid #f2c15b; outline-offset: 2px; }
 
-/* 10-minute plan, inside the hero */
+/* Route choice, inside the hero */
 .hw-hero .hw-quickplan {
   margin-top: 18px;
   border: 1px dashed rgba(242,193,91,.5);
@@ -6895,23 +6895,6 @@ html [hidden] { display: none !important; }
 .hw-route-note { margin: 10px 2px 0; font-size: 12.5px; color: #486581; }
 .hw-route-chooser.route-just-changed { box-shadow: 0 0 0 4px rgba(31,166,162,.2); }
 
-/* The 10-minute route keeps the situation and all three guided Together steps.
-   Hiding them left Step 1 referring to a scenario families could not see.
-   Extended practice and tools return when a longer route is picked. */
-body[data-homework-route="quick"] .learn-summary-block,
-body[data-homework-route="quick"] .learn-extended-block,
-body[data-homework-route="quick"] .learn-big-idea-block .guided-steps,
-body[data-homework-route="quick"] .learn-big-idea-block .watch-for-list,
-body[data-homework-route="quick"] #hw_panel_together .huddle-hook-banner,
-body[data-homework-route="quick"] #hw_panel_together .parent-coach-prompt,
-body[data-homework-route="quick"] #hw_panel_together .together-ladder,
-body[data-homework-route="quick"] #hw_panel_together .math-talk-hub,
-body[data-homework-route="quick"] #hw_panel_together .fam-act-corner,
-body[data-homework-route="quick"] #hw_panel_together .scratchpad-inline-toggle,
-body[data-homework-route="quick"] #hw_panel_together .workbench-drawer {
-  display: none !important;
-}
-body[data-homework-route="quick"] .quick-check-extra-copy { display: none !important; }
 body[data-homework-route]:not([data-homework-route="full"]) .homework-tab-extra-note {
   display: none !important;
 }
@@ -7410,15 +7393,41 @@ body {
         </details>
 
         <p class="hw-hero-lead">
-          <span class="lang-en">Start with 10 minutes. Explain one idea, practice two problems, and finish. Work with a partner or on your own.</span>
-          <span class="lang-es" lang="es">Empieza con 10 minutos. Explica una idea, practica dos problemas y termina. Trabaja con alguien o por tu cuenta.</span>
+          <span class="lang-en">Choose a 20- or 30-minute route. Learn, practice, and explain your thinking with a partner or on your own.</span>
+          <span class="lang-es" lang="es">Elige una ruta de 20 o 30 minutos. Aprende, practica y explica tu razonamiento con alguien o por tu cuenta.</span>
         </p>
 
         <ul class="hw-hero-stats" aria-label="What tonight looks like">
           <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en"><span id="hw_hero_stop_count">4</span> stops</span><span class="lang-es" lang="es"><span id="hw_hero_stop_count_es">4</span> paradas</span></li>
-          <li class="hw-stat"><span aria-hidden="true">⏱️</span><span class="lang-en">About <span id="hw_hero_minutes">10</span> minutes</span><span class="lang-es" lang="es">Unos <span id="hw_hero_minutes_es">10</span> minutos</span></li>
+          <li class="hw-stat"><span aria-hidden="true">⏱️</span><span class="lang-en">About <span id="hw_hero_minutes">20</span> minutes</span><span class="lang-es" lang="es">Unos <span id="hw_hero_minutes_es">20</span> minutos</span></li>
           <li class="hw-stat"><span aria-hidden="true">👪</span><span class="lang-en">Better together</span><span class="lang-es" lang="es">Mejor en familia</span></li>
         </ul>
+
+
+      <section class="hw-route-chooser" aria-labelledby="hw_route_title">
+        <div class="hw-route-heading">
+          <span class="hw-route-icon" aria-hidden="true">🧭</span>
+          <div>
+            <h2 id="hw_route_title"><span class="lang-en">Choose tonight's homework</span><span class="lang-es" lang="es">Elige la tarea de hoy</span></h2>
+            <p><span class="lang-en">Pick the time your family has. You can switch routes anytime.</span><span class="lang-es" lang="es">Elijan el tiempo que tienen. Pueden cambiar de ruta cuando quieran.</span></p>
+          </div>
+        </div>
+        <div class="hw-route-options" role="group" aria-label="Choose homework time" data-aria-en="Choose homework time" data-aria-es="Elegir el tiempo de práctica">
+          <button type="button" class="hw-route-option is-active" data-route-mode="core" aria-pressed="true" onclick="setHomeworkRoute('core')">
+            <span class="hw-route-time">20 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Full lesson help · all 6 core problems</span><span class="lang-es" lang="es">Ayuda completa · los 6 problemas</span></small></span>
+          </button>
+          <button type="button" class="hw-route-option" data-route-mode="full" aria-pressed="false" onclick="setHomeworkRoute('full')">
+            <span class="hw-route-time">30 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Full family night</span><span class="lang-es" lang="es">Noche familiar completa</span></strong><small><span class="lang-en">Words · hands-on mission · practice · games</span><span class="lang-es" lang="es">Palabras · misión práctica · ejercicios · juegos</span></small></span>
+          </button>
+        </div>
+        <p class="hw-route-note" id="hw_route_note" aria-live="polite">
+          <span class="lang-en">Learn &amp; practice selected: 4 focused stops and all 6 core problems, about 20 minutes.</span>
+          <span class="lang-es" lang="es">Ruta de aprendizaje: 4 paradas y los 6 problemas, unos 20 minutos.</span>
+        </p>
+        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start homework</span><span class="lang-es" lang="es">Empezar la tarea</span></button>
+      </section>
 
         <details class="hw-tools-menu"><summary><span class="lang-en">Share, print &amp; paper practice</span><span class="lang-es" lang="es">Compartir, imprimir y practicar en papel</span></summary>
         <div class="hw-hero-share-bar">
@@ -7449,35 +7458,6 @@ body {
           </div>
         </div>
 
-
-      <section class="hw-route-chooser" aria-labelledby="hw_route_title">
-        <div class="hw-route-heading">
-          <span class="hw-route-icon" aria-hidden="true">🧭</span>
-          <div>
-            <h2 id="hw_route_title"><span class="lang-en">Tonight: the essentials</span><span class="lang-es" lang="es">Hoy: lo esencial</span></h2>
-            <p><span class="lang-en">Pick the time your family has. You can switch routes anytime.</span><span class="lang-es" lang="es">Elijan el tiempo que tienen. Pueden cambiar de ruta cuando quieran.</span></p>
-          </div>
-        </div>
-        <div class="hw-route-options" role="group" aria-label="Choose homework time" data-aria-en="Choose homework time" data-aria-es="Elegir el tiempo de práctica">
-          <button type="button" class="hw-route-option is-active" data-route-mode="quick" aria-pressed="true" onclick="setHomeworkRoute('quick')">
-            <span class="hw-route-time">10 <small>min</small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Essentials</span><span class="lang-es" lang="es">Lo esencial</span></strong><small><span class="lang-en">Big idea · guided Together steps · 2 warm-ups</span><span class="lang-es" lang="es">Idea principal · pasos guiados juntos · 2 ejercicios</span></small></span>
-          </button>
-          <button type="button" class="hw-route-option" data-route-mode="core" aria-pressed="false" onclick="setHomeworkRoute('core')">
-            <span class="hw-route-time">20 <small>min</small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Full lesson help · all 6 core problems</span><span class="lang-es" lang="es">Ayuda completa · los 6 problemas</span></small></span>
-          </button>
-          <button type="button" class="hw-route-option" data-route-mode="full" aria-pressed="false" onclick="setHomeworkRoute('full')">
-            <span class="hw-route-time">30 <small>min</small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Full family night</span><span class="lang-es" lang="es">Noche familiar completa</span></strong><small><span class="lang-en">Words · hands-on mission · practice · games</span><span class="lang-es" lang="es">Palabras · misión práctica · ejercicios · juegos</span></small></span>
-          </button>
-        </div>
-        <p class="hw-route-note" id="hw_route_note" aria-live="polite">
-          <span class="lang-en">Essentials selected: 4 focused stops and 2 warm-ups, about 10 minutes.</span>
-          <span class="lang-es" lang="es">Ruta esencial: 4 paradas y 2 ejercicios, unos 10 minutos.</span>
-        </p>
-        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start homework</span><span class="lang-es" lang="es">Empezar la tarea</span></button>
-      </section>
       </div>
     </header>
 
@@ -7650,10 +7630,6 @@ body {
         <circle cx="140" cy="282" r="27" fill="#0f766e"/><text x="140" y="293" text-anchor="middle" font-size="28" font-weight="800" fill="#ffffff">2</text><circle cx="272" cy="282" r="27" fill="#0f766e"/><text x="272" y="293" text-anchor="middle" font-size="28" font-weight="800" fill="#ffffff">2</text><circle cx="368" cy="282" r="27" fill="#0f766e"/><text x="368" y="293" text-anchor="middle" font-size="28" font-weight="800" fill="#ffffff">2</text><circle cx="500" cy="282" r="27" fill="#0f766e"/><text x="500" y="293" text-anchor="middle" font-size="28" font-weight="800" fill="#ffffff">3</text>
         <text x="320" y="366" text-anchor="middle" font-size="32" font-weight="800" fill="#0f766e">24 = 2 × 2 × 2 × 3</text>
       </svg><figcaption class="concept-visual-caption"><span class="lang-en">Keep splitting until every branch ends on a prime number (circled). Those primes are the answer.</span><span class="lang-es" lang="es">Sigan separando hasta que cada rama termine en un número primo (en círculo). Esos primos son la respuesta.</span></figcaption></figure>
-      <div class="concept-quick-wrap">
-        <p class="concept-quick-title"><span class="lang-en">Follow the picture path</span><span class="lang-es" lang="es">Sigan la ruta visual</span></p>
-        <ol class="concept-quick-path" aria-label="Four-step visual math path"><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">👀</span><span class="concept-quick-num">1</span><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">🧩</span><span class="concept-quick-num">2</span><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✏️</span><span class="concept-quick-num">3</span><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✅</span><span class="concept-quick-num">4</span><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></li></ol>
-      </div>
       <ol class="guided-steps">
 
           <li class="guided-step step-color-1">
@@ -10361,7 +10337,6 @@ function initFamilyGames() {
    are in the path, how many practice problems count, the remaining-time
    display, and every Continue button. */
 var HOMEWORK_ROUTES = {
-  quick: { tabs: ['learn', 'together', 'check', 'done'], total: 10, problemLimit: 2, minutes: { learn: 2, together: 3, check: 4, done: 1 } },
   core: { tabs: ['learn', 'together', 'check', 'done'], total: 20, problemLimit: 6, minutes: { learn: 5, together: 6, check: 7, done: 2 } },
   full: { tabs: ['learn', 'words', 'together', 'check', 'play', 'done'], total: 30, problemLimit: 6, minutes: { learn: 5, words: 3, together: 6, check: 8, play: 5, done: 3 } }
 };
@@ -10371,13 +10346,13 @@ function routeStorageKey() {
 }
 
 function activeHomeworkRoute() {
-  var id = document.body.dataset.homeworkRoute || 'quick';
-  return HOMEWORK_ROUTES[id] || HOMEWORK_ROUTES.quick;
+  var id = document.body.dataset.homeworkRoute || 'core';
+  return HOMEWORK_ROUTES[id] || HOMEWORK_ROUTES.core;
 }
 
 function setHomeworkRoute(mode, options) {
   options = options || {};
-  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'quick';
+  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'core';
   var route = HOMEWORK_ROUTES[mode];
   document.body.dataset.homeworkRoute = mode;
 
@@ -10422,9 +10397,9 @@ function setHomeworkRoute(mode, options) {
   var warmups = document.querySelectorAll('.practice-tier-warmup .problem-section');
   warmups.forEach(function (problem, index) { problem.hidden = index >= route.problemLimit; });
   var challenge = document.querySelector('.practice-tier-challenge');
-  if (challenge) challenge.hidden = mode === 'quick';
+  if (challenge) challenge.hidden = false;
   var more = document.querySelector('.more-practice');
-  if (more) more.hidden = mode === 'quick';
+  if (more) more.hidden = false;
   ['hw_goal_count', 'hw_goal_count_es'].forEach(function (id) {
     var el = document.getElementById(id);
     if (el) el.textContent = String(route.problemLimit);
@@ -10449,7 +10424,6 @@ function setHomeworkRoute(mode, options) {
   var note = document.getElementById('hw_route_note');
   if (note) {
     var copy = {
-      quick: ['Essentials selected: 4 focused stops and 2 warm-ups, about 10 minutes.', 'Ruta esencial: 4 paradas y 2 ejercicios, unos 10 minutos.'],
       core: ['Learn & practice selected: 4 focused stops and all 6 core problems, about 20 minutes.', 'Ruta de aprendizaje: 4 paradas y los 6 problemas, unos 20 minutos.'],
       full: ['Full route selected: all 6 stops, about 30 minutes.', 'Ruta completa: 6 paradas, unos 30 minutos.']
     }[mode];
@@ -10481,8 +10455,9 @@ function updateHomeworkRouteTime(minutes) {
 }
 
 function restoreHomeworkRoute() {
-  var mode = 'quick';
-  try { mode = localStorage.getItem(routeStorageKey()) || 'quick'; } catch (e) {}
+  var mode = 'core';
+  try { mode = localStorage.getItem(routeStorageKey()) || 'core'; } catch (e) {}
+  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'core';
   var requested = new URLSearchParams(location.search).get('route');
   if (Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, requested)) mode = requested;
   setHomeworkRoute(mode, { silent: true, keepTab: true });
@@ -10950,8 +10925,8 @@ function toggleSignoffSubmitBtn() {
 
 function homeworkShareUrl() {
   var url = new URL(window.location.href);
-  var route = document.body.dataset.homeworkRoute || 'quick';
-  url.searchParams.set('route', Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, route) ? route : 'quick');
+  var route = document.body.dataset.homeworkRoute || 'core';
+  url.searchParams.set('route', Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, route) ? route : 'core');
   url.searchParams.set('lang', document.body.dataset.homeworkLanguage || preferredLanguageMode());
   return url.href;
 }

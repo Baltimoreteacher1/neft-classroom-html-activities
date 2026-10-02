@@ -55,7 +55,7 @@ test("actual family app defaults to current week, opens archive, keeps language/
     assert.equal(new URL(w.location.href).searchParams.get("week"), previousWeek);
     d.getElementById("language-toggle").click();
     assert.equal(new URL(w.location.href).searchParams.get("week"), previousWeek);
-    assert.equal(d.querySelector(".homework-card a").getAttribute("href"), "/lessons/3-2/homework.html?route=quick&lang=es");
+    assert.equal(d.querySelector(".homework-card a").getAttribute("href"), "/lessons/3-2/homework.html?route=core&lang=es&section=all-families");
     change(w, d.getElementById("section-select"), "602");
     assert.equal(new URL(w.location.href).searchParams.has("week"), false);
     assert.equal(d.getElementById("homework-week-select"), null);

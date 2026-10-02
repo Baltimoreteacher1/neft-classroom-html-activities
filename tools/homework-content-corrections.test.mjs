@@ -8,9 +8,9 @@ import {
 } from "../scripts/homework-alignment.mjs";
 import { ANSWER_MATCH_JS } from "../scripts/homework-answer-match.mjs";
 import { tableModel } from "../scripts/lib/homework-problems.mjs";
+import { loadLessonConfig } from "./lib/curriculum-source.mjs";
 
-const config = (id) =>
-  JSON.parse(readFileSync(new URL(`../lessons/${id}/config.json`, import.meta.url), "utf8"));
+const config = loadLessonConfig;
 const notes = (id) =>
   JSON.parse(
     readFileSync(new URL(`../data/family-homework-notes/${id}.json`, import.meta.url), "utf8"),
@@ -240,7 +240,7 @@ test("all selected core-lesson table headers and text cells have Spanish equival
         for (const header of p.headers || p.columns || []) check(header);
         for (const row of p.rows || [])
           for (const [key, value] of Object.entries(row))
-            if (key !== "answer" && key !== "editable") check(value);
+            if (key !== "answer" && key !== "editable" && !key.endsWith("Es")) check(value);
         for (const row of tableModel(p).rows)
           for (const cell of row) if (cell.isEditable) check(cell.correctValue);
       }

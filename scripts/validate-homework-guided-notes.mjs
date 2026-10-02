@@ -113,8 +113,6 @@ const REQUIRED_MARKERS = [
   "Qué aprendemos hoy",
   "The big idea",
   "La idea principal",
-  "Follow the picture path",
-  "Sigan la ruta visual",
   "In one sentence",
   "En una frase",
   "Try this together",
@@ -130,7 +128,6 @@ const REQUIRED_MARKERS = [
   "Check This Problem",
   "NTAnswerMatch",
   'class="homework-tab-bar"',
-  'class="concept-quick-path"',
   'class="learning-word-chips"',
   'class="step-lead lang-en"',
   'class="family-visual-lab"',
@@ -161,7 +158,6 @@ const REQUIRED_MARKERS = [
   // be graduated without revealing answers, and the no-device activity must
   // be pickable and trackable on every generated page.
   'class="hw-route-chooser"',
-  'data-route-mode="quick"',
   'data-route-mode="core"',
   'data-route-mode="full"',
   "setHomeworkRoute",
@@ -302,6 +298,9 @@ for (const id of lessonIds) {
     if (!html.includes(marker)) {
       issues.push({ id, level: "CRITICAL", msg: `Missing marker: ${marker}` });
     }
+  }
+  if (html.includes('data-route-mode="quick"')) {
+    issues.push({ id, level: "CRITICAL", msg: "Retired 10-minute route is still offered" });
   }
 
   const wantedWorkbench = homeworkWorkbenchTool(config);

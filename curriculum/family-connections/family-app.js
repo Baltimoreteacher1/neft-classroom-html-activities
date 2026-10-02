@@ -212,6 +212,15 @@ function render() {
       .filter((s) => s.visible !== false)
       .map((s) => new Option(s.label, s.id, false, s.id === sectionId)),
   );
+  const classLink = byId("class-link");
+  if (classLink) classLink.replaceChildren();
+  if (classLink && !editRequested && section.id !== "all-families") {
+    classLink.append(document.createTextNode(es ? `Clase ${section.label}: ` : `Class ${section.label}: `));
+    const bookmark = document.createElement("a");
+    bookmark.href = familyLink(section.id, language, location.origin);
+    bookmark.textContent = es ? "Guarda el enlace de esta clase" : "Bookmark this class's homework link";
+    classLink.append(bookmark);
+  }
   if (editRequested) {
     byId("teacher-inline").hidden = !editDraft;
     byId("draft-preview-panel").hidden = !editDraft;

@@ -4291,7 +4291,7 @@ body[data-active-tab]:not([data-active-tab="check"]) .bottom-status-bar {
 }
 .hw-hero .lang-toggle-btn:focus-visible { outline: 3px solid #f2c15b; outline-offset: 2px; }
 
-/* 10-minute plan, inside the hero */
+/* Route choice, inside the hero */
 .hw-hero .hw-quickplan {
   margin-top: 18px;
   border: 1px dashed rgba(242,193,91,.5);
@@ -6895,23 +6895,6 @@ html [hidden] { display: none !important; }
 .hw-route-note { margin: 10px 2px 0; font-size: 12.5px; color: #486581; }
 .hw-route-chooser.route-just-changed { box-shadow: 0 0 0 4px rgba(31,166,162,.2); }
 
-/* The 10-minute route keeps the situation and all three guided Together steps.
-   Hiding them left Step 1 referring to a scenario families could not see.
-   Extended practice and tools return when a longer route is picked. */
-body[data-homework-route="quick"] .learn-summary-block,
-body[data-homework-route="quick"] .learn-extended-block,
-body[data-homework-route="quick"] .learn-big-idea-block .guided-steps,
-body[data-homework-route="quick"] .learn-big-idea-block .watch-for-list,
-body[data-homework-route="quick"] #hw_panel_together .huddle-hook-banner,
-body[data-homework-route="quick"] #hw_panel_together .parent-coach-prompt,
-body[data-homework-route="quick"] #hw_panel_together .together-ladder,
-body[data-homework-route="quick"] #hw_panel_together .math-talk-hub,
-body[data-homework-route="quick"] #hw_panel_together .fam-act-corner,
-body[data-homework-route="quick"] #hw_panel_together .scratchpad-inline-toggle,
-body[data-homework-route="quick"] #hw_panel_together .workbench-drawer {
-  display: none !important;
-}
-body[data-homework-route="quick"] .quick-check-extra-copy { display: none !important; }
 body[data-homework-route]:not([data-homework-route="full"]) .homework-tab-extra-note {
   display: none !important;
 }
@@ -7410,15 +7393,41 @@ body {
         </details>
 
         <p class="hw-hero-lead">
-          <span class="lang-en">Start with 10 minutes. Explain one idea, practice two problems, and finish. Work with a partner or on your own.</span>
-          <span class="lang-es" lang="es">Empieza con 10 minutos. Explica una idea, practica dos problemas y termina. Trabaja con alguien o por tu cuenta.</span>
+          <span class="lang-en">Choose a 20- or 30-minute route. Learn, practice, and explain your thinking with a partner or on your own.</span>
+          <span class="lang-es" lang="es">Elige una ruta de 20 o 30 minutos. Aprende, practica y explica tu razonamiento con alguien o por tu cuenta.</span>
         </p>
 
         <ul class="hw-hero-stats" aria-label="What tonight looks like">
           <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en"><span id="hw_hero_stop_count">4</span> stops</span><span class="lang-es" lang="es"><span id="hw_hero_stop_count_es">4</span> paradas</span></li>
-          <li class="hw-stat"><span aria-hidden="true">⏱️</span><span class="lang-en">About <span id="hw_hero_minutes">10</span> minutes</span><span class="lang-es" lang="es">Unos <span id="hw_hero_minutes_es">10</span> minutos</span></li>
+          <li class="hw-stat"><span aria-hidden="true">⏱️</span><span class="lang-en">About <span id="hw_hero_minutes">20</span> minutes</span><span class="lang-es" lang="es">Unos <span id="hw_hero_minutes_es">20</span> minutos</span></li>
           <li class="hw-stat"><span aria-hidden="true">👪</span><span class="lang-en">Better together</span><span class="lang-es" lang="es">Mejor en familia</span></li>
         </ul>
+
+
+      <section class="hw-route-chooser" aria-labelledby="hw_route_title">
+        <div class="hw-route-heading">
+          <span class="hw-route-icon" aria-hidden="true">🧭</span>
+          <div>
+            <h2 id="hw_route_title"><span class="lang-en">Choose tonight's homework</span><span class="lang-es" lang="es">Elige la tarea de hoy</span></h2>
+            <p><span class="lang-en">Pick the time your family has. You can switch routes anytime.</span><span class="lang-es" lang="es">Elijan el tiempo que tienen. Pueden cambiar de ruta cuando quieran.</span></p>
+          </div>
+        </div>
+        <div class="hw-route-options" role="group" aria-label="Choose homework time" data-aria-en="Choose homework time" data-aria-es="Elegir el tiempo de práctica">
+          <button type="button" class="hw-route-option is-active" data-route-mode="core" aria-pressed="true" onclick="setHomeworkRoute('core')">
+            <span class="hw-route-time">20 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Full lesson help · all 6 core problems</span><span class="lang-es" lang="es">Ayuda completa · los 6 problemas</span></small></span>
+          </button>
+          <button type="button" class="hw-route-option" data-route-mode="full" aria-pressed="false" onclick="setHomeworkRoute('full')">
+            <span class="hw-route-time">30 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Full family night</span><span class="lang-es" lang="es">Noche familiar completa</span></strong><small><span class="lang-en">Words · hands-on mission · practice · games</span><span class="lang-es" lang="es">Palabras · misión práctica · ejercicios · juegos</span></small></span>
+          </button>
+        </div>
+        <p class="hw-route-note" id="hw_route_note" aria-live="polite">
+          <span class="lang-en">Learn &amp; practice selected: 4 focused stops and all 6 core problems, about 20 minutes.</span>
+          <span class="lang-es" lang="es">Ruta de aprendizaje: 4 paradas y los 6 problemas, unos 20 minutos.</span>
+        </p>
+        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start homework</span><span class="lang-es" lang="es">Empezar la tarea</span></button>
+      </section>
 
         <details class="hw-tools-menu"><summary><span class="lang-en">Share, print &amp; paper practice</span><span class="lang-es" lang="es">Compartir, imprimir y practicar en papel</span></summary>
         <div class="hw-hero-share-bar">
@@ -7449,35 +7458,6 @@ body {
           </div>
         </div>
 
-
-      <section class="hw-route-chooser" aria-labelledby="hw_route_title">
-        <div class="hw-route-heading">
-          <span class="hw-route-icon" aria-hidden="true">🧭</span>
-          <div>
-            <h2 id="hw_route_title"><span class="lang-en">Tonight: the essentials</span><span class="lang-es" lang="es">Hoy: lo esencial</span></h2>
-            <p><span class="lang-en">Pick the time your family has. You can switch routes anytime.</span><span class="lang-es" lang="es">Elijan el tiempo que tienen. Pueden cambiar de ruta cuando quieran.</span></p>
-          </div>
-        </div>
-        <div class="hw-route-options" role="group" aria-label="Choose homework time" data-aria-en="Choose homework time" data-aria-es="Elegir el tiempo de práctica">
-          <button type="button" class="hw-route-option is-active" data-route-mode="quick" aria-pressed="true" onclick="setHomeworkRoute('quick')">
-            <span class="hw-route-time">10 <small>min</small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Essentials</span><span class="lang-es" lang="es">Lo esencial</span></strong><small><span class="lang-en">Big idea · guided Together steps · 2 warm-ups</span><span class="lang-es" lang="es">Idea principal · pasos guiados juntos · 2 ejercicios</span></small></span>
-          </button>
-          <button type="button" class="hw-route-option" data-route-mode="core" aria-pressed="false" onclick="setHomeworkRoute('core')">
-            <span class="hw-route-time">20 <small>min</small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Full lesson help · all 6 core problems</span><span class="lang-es" lang="es">Ayuda completa · los 6 problemas</span></small></span>
-          </button>
-          <button type="button" class="hw-route-option" data-route-mode="full" aria-pressed="false" onclick="setHomeworkRoute('full')">
-            <span class="hw-route-time">30 <small>min</small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Full family night</span><span class="lang-es" lang="es">Noche familiar completa</span></strong><small><span class="lang-en">Words · hands-on mission · practice · games</span><span class="lang-es" lang="es">Palabras · misión práctica · ejercicios · juegos</span></small></span>
-          </button>
-        </div>
-        <p class="hw-route-note" id="hw_route_note" aria-live="polite">
-          <span class="lang-en">Essentials selected: 4 focused stops and 2 warm-ups, about 10 minutes.</span>
-          <span class="lang-es" lang="es">Ruta esencial: 4 paradas y 2 ejercicios, unos 10 minutos.</span>
-        </p>
-        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start homework</span><span class="lang-es" lang="es">Empezar la tarea</span></button>
-      </section>
       </div>
     </header>
 
@@ -7619,7 +7599,7 @@ body {
     </div>
       <div class="learn-big-idea-block">
 
-      <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span> <button type="button" class="btn-listen-concept" onclick="speakBigIdea('A statistical question anticipates variation across a group.', 'Una pregunta estadística anticipa variación en un grupo.')" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button></h2>
+      <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span> <button type="button" class="btn-listen-concept" onclick="speakBigIdea('One shelf has one count. Counting each shelf gives 4, 7, and 10 books: varied answers worth collecting.', 'Un estante tiene una sola cantidad. Al contar cada estante obtenemos 4, 7 y 10 libros: respuestas variadas que podemos recopilar.')" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button></h2>
       <!-- renderLearnTab() strips the  wrapper, so the oversized
            "big idea" type scale hangs off this inner div, not off
            .section-visual (which never reaches the page). -->
@@ -7627,17 +7607,13 @@ body {
       <div class="key-idea-banner">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
           <div>
-            <p class="lang-en"><strong>In one sentence:</strong> A statistical question anticipates variation across a group.</p>
-            <p class="lang-es" lang="es"><strong>En una frase:</strong> Una pregunta estadística anticipa variación en un grupo.</p>
+            <p class="lang-en"><strong>In one sentence:</strong> One shelf has one count. Counting each shelf gives 4, 7, and 10 books: varied answers worth collecting.</p>
+            <p class="lang-es" lang="es"><strong>En una frase:</strong> Un estante tiene una sola cantidad. Al contar cada estante obtenemos 4, 7 y 10 libros: respuestas variadas que podemos recopilar.</p>
           </div>
-          <button type="button" class="btn-read-aloud" onclick="speakHomeworkText('A statistical question anticipates variation across a group.', 'Una pregunta estadística anticipa variación en un grupo.')" title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+          <button type="button" class="btn-read-aloud" onclick="speakHomeworkText('One shelf has one count. Counting each shelf gives 4, 7, and 10 books: varied answers worth collecting.', 'Un estante tiene una sola cantidad. Al contar cada estante obtenemos 4, 7 y 10 libros: respuestas variadas que podemos recopilar.')" title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         </div>
       </div>
-      <figure class="concept-visual-wrap"><div class="family-specific-model"><p style="font-size:clamp(20px,4vw,28px);font-weight:800;text-align:center;overflow-wrap:anywhere">4, 7, 10</p></div><figcaption class="concept-visual-caption"><span class="lang-en">A statistical question anticipates variation across a group.</span><span class="lang-es" lang="es">Una pregunta estadística anticipa variación en un grupo.</span></figcaption></figure>
-      <div class="concept-quick-wrap">
-        <p class="concept-quick-title"><span class="lang-en">Follow the picture path</span><span class="lang-es" lang="es">Sigan la ruta visual</span></p>
-        <ol class="concept-quick-path" aria-label="Four-step visual math path"><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">👀</span><span class="concept-quick-num">1</span><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">🧩</span><span class="concept-quick-num">2</span><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✏️</span><span class="concept-quick-num">3</span><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></li></ol>
-      </div>
+      <figure class="concept-visual-wrap"><div class="family-specific-model"><svg viewBox="0 0 600 250" role="img" aria-label="One shelf has one count. Counting each shelf gives 4, 7, and 10 books: varied answers worth collecting." data-aria-en="One shelf has one count. Counting each shelf gives 4, 7, and 10 books: varied answers worth collecting." data-aria-es="Un estante tiene una sola cantidad. Al contar cada estante obtenemos 4, 7 y 10 libros: respuestas variadas que podemos recopilar."><rect x="50" y="88" width="120" height="12" rx="3" fill="#0f766e"/><rect x="57" y="62" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><rect x="67" y="62" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><rect x="77" y="62" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><rect x="87" y="62" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><text x="110" y="130" text-anchor="middle" fill="#12355b" font-size="20">4</text><rect x="250" y="88" width="120" height="12" rx="3" fill="#0f766e"/><rect x="257" y="62" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><rect x="267" y="62" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><rect x="277" y="62" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><rect x="287" y="62" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><text x="310" y="130" text-anchor="middle" fill="#12355b" font-size="20">4</text><rect x="210" y="190" width="120" height="12" rx="3" fill="#0f766e"/><rect x="217" y="164" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><rect x="227" y="164" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><rect x="237" y="164" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><rect x="247" y="164" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><rect x="257" y="164" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><rect x="267" y="164" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><rect x="277" y="164" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><text x="270" y="232" text-anchor="middle" fill="#12355b" font-size="20">7</text><rect x="390" y="190" width="120" height="12" rx="3" fill="#0f766e"/><rect x="397" y="164" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><rect x="407" y="164" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><rect x="417" y="164" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><rect x="427" y="164" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><rect x="437" y="164" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><rect x="447" y="164" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><rect x="457" y="164" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><rect x="467" y="164" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><rect x="477" y="164" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><rect x="487" y="164" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/><text x="450" y="232" text-anchor="middle" fill="#12355b" font-size="20">10</text><line x1="190" y1="20" x2="190" y2="240" stroke="#12355b" stroke-width="3"/></svg><p style="font-size:clamp(20px,4vw,28px);font-weight:800;text-align:center;overflow-wrap:anywhere">4, 7, 10</p></div><figcaption class="concept-visual-caption"><span class="lang-en">One shelf has one count. Counting each shelf gives 4, 7, and 10 books: varied answers worth collecting.</span><span class="lang-es" lang="es">Un estante tiene una sola cantidad. Al contar cada estante obtenemos 4, 7 y 10 libros: respuestas variadas que podemos recopilar.</span></figcaption></figure>
       <ol class="guided-steps">
 
           <li class="guided-step step-color-1">
@@ -7756,8 +7732,8 @@ body {
       </div>
       <div class="parent-coach-tip">
         <strong>💬 <span class="lang-en">Parent Coach Question:</span><span class="lang-es" lang="es">Pregunta de guía:</span></strong>
-        <span class="lang-en">A statistical question anticipates variation across a group.</span>
-        <span class="lang-es" lang="es">Una pregunta estadística anticipa variación en un grupo.</span>
+        <span class="lang-en">One shelf has one count. Counting each shelf gives 4, 7, and 10 books: varied answers worth collecting.</span>
+        <span class="lang-es" lang="es">Un estante tiene una sola cantidad. Al contar cada estante obtenemos 4, 7 y 10 libros: respuestas variadas que podemos recopilar.</span>
       </div>
     </div>
       </div>
@@ -7776,7 +7752,7 @@ body {
       <div class="powerup-choices-grid" id="powerup_choices">
 
           <button type="button" class="powerup-choice-btn" data-choice-idx="0" data-is-correct="true"
-            data-hint-en="A statistical question anticipates variation across a group." data-hint-es="Una pregunta estadística anticipa variación en un grupo."
+            data-hint-en="One shelf has one count. Counting each shelf gives 4, 7, and 10 books: varied answers worth collecting." data-hint-es="Un estante tiene una sola cantidad. Al contar cada estante obtenemos 4, 7 y 10 libros: respuestas variadas que podemos recopilar."
             onclick="checkSkillPowerUp(this, 0, 0)">
             <span class="powerup-letter">A</span>
             <span class="powerup-choice-text">
@@ -7785,7 +7761,7 @@ body {
             </span>
           </button>
           <button type="button" class="powerup-choice-btn" data-choice-idx="1" data-is-correct="false"
-            data-hint-en="A statistical question anticipates variation across a group." data-hint-es="Una pregunta estadística anticipa variación en un grupo."
+            data-hint-en="One shelf has one count. Counting each shelf gives 4, 7, and 10 books: varied answers worth collecting." data-hint-es="Un estante tiene una sola cantidad. Al contar cada estante obtenemos 4, 7 y 10 libros: respuestas variadas que podemos recopilar."
             onclick="checkSkillPowerUp(this, 1, 0)">
             <span class="powerup-letter">B</span>
             <span class="powerup-choice-text">
@@ -7794,7 +7770,7 @@ body {
             </span>
           </button>
           <button type="button" class="powerup-choice-btn" data-choice-idx="2" data-is-correct="false"
-            data-hint-en="A statistical question anticipates variation across a group." data-hint-es="Una pregunta estadística anticipa variación en un grupo."
+            data-hint-en="One shelf has one count. Counting each shelf gives 4, 7, and 10 books: varied answers worth collecting." data-hint-es="Un estante tiene una sola cantidad. Al contar cada estante obtenemos 4, 7 y 10 libros: respuestas variadas que podemos recopilar."
             onclick="checkSkillPowerUp(this, 2, 0)">
             <span class="powerup-letter">C</span>
             <span class="powerup-choice-text">
@@ -7807,7 +7783,7 @@ body {
         <div class="powerup-feedback-content" id="powerup_feedback_content"></div>
       </div>
     </section></div>
-      <p class="tab-help-row learn-extended-block"><button type="button" class="help-pop-btn" data-help='{"titleEn":"The big idea","titleEs":"La idea principal","en":"A statistical question anticipates variation across a group.","es":"Una pregunta estadística anticipa variación en un grupo."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Need more help?</span><span class="lang-es" lang="es">¿Más ayuda?</span></button></p>
+      <p class="tab-help-row learn-extended-block"><button type="button" class="help-pop-btn" data-help='{"titleEn":"The big idea","titleEs":"La idea principal","en":"One shelf has one count. Counting each shelf gives 4, 7, and 10 books: varied answers worth collecting.","es":"Un estante tiene una sola cantidad. Al contar cada estante obtenemos 4, 7 y 10 libros: respuestas variadas que podemos recopilar."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Need more help?</span><span class="lang-es" lang="es">¿Más ayuda?</span></button></p>
       <div class="tab-flow-nav">
         <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('learn')">
           <span class="lang-en">Continue ➔</span>
@@ -8189,7 +8165,7 @@ body {
             <div class="together-step-head">
               <span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span>
               <div class="together-step-actions">
-                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"A statistical question anticipates variation across a group.","es":"Una pregunta estadística anticipa variación en un grupo."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></button>
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"One shelf has one count. Counting each shelf gives 4, 7, and 10 books: varied answers worth collecting.","es":"Un estante tiene una sola cantidad. Al contar cada estante obtenemos 4, 7 y 10 libros: respuestas variadas que podemos recopilar."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></button>
 
               </div>
             </div>
@@ -8203,7 +8179,7 @@ body {
             <div class="together-step-head">
               <span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span>
               <div class="together-step-actions">
-                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"A statistical question anticipates variation across a group.","es":"Una pregunta estadística anticipa variación en un grupo."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></button>
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"One shelf has one count. Counting each shelf gives 4, 7, and 10 books: varied answers worth collecting.","es":"Un estante tiene una sola cantidad. Al contar cada estante obtenemos 4, 7 y 10 libros: respuestas variadas que podemos recopilar."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></button>
 
               </div>
             </div>
@@ -8217,7 +8193,7 @@ body {
             <div class="together-step-head">
               <span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span>
               <div class="together-step-actions">
-                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 hint","titleEs":"Pista del paso 3","en":"A statistical question anticipates variation across a group.","es":"Una pregunta estadística anticipa variación en un grupo."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></button>
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 hint","titleEs":"Pista del paso 3","en":"One shelf has one count. Counting each shelf gives 4, 7, and 10 books: varied answers worth collecting.","es":"Un estante tiene una sola cantidad. Al contar cada estante obtenemos 4, 7 y 10 libros: respuestas variadas que podemos recopilar."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></button>
 
               </div>
             </div>
@@ -8375,8 +8351,8 @@ body {
         </li></ol>
         <div class="fam-act-talk">
           <strong>💬 <span class="lang-en">Talk about it:</span><span class="lang-es" lang="es">Para conversar:</span></strong>
-          <span class="lang-en">A statistical question anticipates variation across a group.</span>
-          <span class="lang-es" lang="es">Una pregunta estadística anticipa variación en un grupo.</span>
+          <span class="lang-en">One shelf has one count. Counting each shelf gives 4, 7, and 10 books: varied answers worth collecting.</span>
+          <span class="lang-es" lang="es">Un estante tiene una sola cantidad. Al contar cada estante obtenemos 4, 7 y 10 libros: respuestas variadas que podemos recopilar.</span>
         </div>
         <button type="button" class="fam-mission-complete" data-mission-complete="0" aria-pressed="false" onclick="completeFamilyMission(0)">
           <span class="fam-mission-check" aria-hidden="true">✓</span>
@@ -8422,8 +8398,8 @@ body {
         </li></ol>
         <div class="fam-act-talk">
           <strong>💬 <span class="lang-en">Talk about it:</span><span class="lang-es" lang="es">Para conversar:</span></strong>
-          <span class="lang-en">A statistical question anticipates variation across a group.</span>
-          <span class="lang-es" lang="es">Una pregunta estadística anticipa variación en un grupo.</span>
+          <span class="lang-en">One shelf has one count. Counting each shelf gives 4, 7, and 10 books: varied answers worth collecting.</span>
+          <span class="lang-es" lang="es">Un estante tiene una sola cantidad. Al contar cada estante obtenemos 4, 7 y 10 libros: respuestas variadas que podemos recopilar.</span>
         </div>
         <button type="button" class="fam-mission-complete" data-mission-complete="1" aria-pressed="false" onclick="completeFamilyMission(1)">
           <span class="fam-mission-check" aria-hidden="true">✓</span>
@@ -8768,7 +8744,7 @@ body {
             <tbody>
 
                 <tr>
-                  <td><span class="lang-en">How many push-ups can each student do in one minute?</span><span class="lang-es" lang="es">¿Cuántas flexiones puede hacer cada estudiante en un minuto?</span></td>
+                  <td><span class="lang-en">How many push-ups can each student do in one minute?</span><span class="lang-es" lang="es">¿Cuántas lagartijas puede hacer cada estudiante en un minuto?</span></td>
                         <td>
                           <div class="table-input-wrapper">
                             <input type="text"
@@ -8781,7 +8757,20 @@ body {
                             <span class="feedback-badge"></span>
                           </div>
                         </td>
-                      <td><span class="lang-en">Different students can do different amounts — there is variability.</span><span class="lang-es" lang="es">Distintos estudiantes pueden hacer distintas cantidades: hay variabilidad.</span></td>
+
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text"
+                                   class="custom-input table-input"
+                                   name="q_1_table_0_2"
+                                   data-correct="Different students can do different amounts — there is variability." data-self-review="true" data-correct-es="Distintos estudiantes pueden hacer cantidades diferentes; hay variabilidad."
+                                   aria-label="Why?, row 1: How many push-ups can each student do in one minute? / ¿Por qué?, fila 1"
+                                   placeholder="Explain / Explica"
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+
                 </tr>
 
                 <tr>
@@ -8798,11 +8787,24 @@ body {
                             <span class="feedback-badge"></span>
                           </div>
                         </td>
-                      <td><span class="lang-en">There is one fixed answer (4 sides) — no variability.</span><span class="lang-es" lang="es">Hay una respuesta fija (4 lados): no hay variabilidad.</span></td>
+
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text"
+                                   class="custom-input table-input"
+                                   name="q_1_table_1_2"
+                                   data-correct="There is one fixed answer (4 sides) — no variability." data-self-review="true" data-correct-es="Hay una sola respuesta fija (4 lados); no hay variabilidad."
+                                   aria-label="Why?, row 2: How many sides does a basketball court have? / ¿Por qué?, fila 2"
+                                   placeholder="Explain / Explica"
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+
                 </tr>
 
                 <tr>
-                  <td><span class="lang-en">How far does each player kick the ball?</span><span class="lang-es" lang="es">¿A qué distancia patea la pelota cada jugador?</span></td>
+                  <td><span class="lang-en">How far does each player kick the ball?</span><span class="lang-es" lang="es">¿Qué distancia patea la pelota cada jugador?</span></td>
                         <td>
                           <div class="table-input-wrapper">
                             <input type="text"
@@ -8815,7 +8817,20 @@ body {
                             <span class="feedback-badge"></span>
                           </div>
                         </td>
-                      <td><span class="lang-en">Different players kick different distances — the data varies.</span><span class="lang-es" lang="es">Distintos jugadores patean a distintas distancias: los datos varían.</span></td>
+
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text"
+                                   class="custom-input table-input"
+                                   name="q_1_table_2_2"
+                                   data-correct="Different players kick different distances — the data varies." data-self-review="true" data-correct-es="Distintos jugadores patean a distancias diferentes; los datos varían."
+                                   aria-label="Why?, row 3: How far does each player kick the ball? / ¿Por qué?, fila 3"
+                                   placeholder="Explain / Explica"
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+
                 </tr>
 
             </tbody>
@@ -10454,7 +10469,7 @@ body {
       <ol class="kt-steps">
         <li><span class="lang-en">Choose: “How many books are on my shelf?” or “How many books are on each shelf in this room?”</span><span class="lang-es" lang="es">Elige: «¿Cuántos libros hay en mi estante?» o «¿Cuántos libros hay en cada estante de este cuarto?»</span></li><li><span class="lang-en">Explain which question expects a set of answers that may vary. Count three shelves or use 4, 7, 10.</span><span class="lang-es" lang="es">Explica qué pregunta espera varias respuestas que pueden variar. Cuenta tres estantes o usa 4, 7, 10.</span></li><li><span class="lang-en">Name what is measured and the group being studied.</span><span class="lang-es" lang="es">Nombra qué se mide y el grupo que se estudia.</span></li>
       </ol>
-      <p class="kt-why">💡 <strong><span class="lang-en">Why it works:</span><span class="lang-es" lang="es">Por qué funciona:</span></strong> <span class="lang-en">A statistical question anticipates variation across a group.</span><span class="lang-es" lang="es">Una pregunta estadística anticipa variación en un grupo.</span></p>
+      <p class="kt-why">💡 <strong><span class="lang-en">Why it works:</span><span class="lang-es" lang="es">Por qué funciona:</span></strong> <span class="lang-en">One shelf has one count. Counting each shelf gives 4, 7, and 10 books: varied answers worth collecting.</span><span class="lang-es" lang="es">Un estante tiene una sola cantidad. Al contar cada estante obtenemos 4, 7 y 10 libros: respuestas variadas que podemos recopilar.</span></p>
     </div>
 
       <div class="parent-signoff-container card-ish">
@@ -10815,7 +10830,7 @@ body {
         <div class="stuck-panel stuck-say">
           <h3 class="stuck-heading">✅ <span class="lang-en">What to say</span><span class="lang-es" lang="es">Qué decir</span></h3>
           <ul>
-            <li><p class="lang-en">A statistical question anticipates variation across a group.</p><p class="lang-es" lang="es">Una pregunta estadística anticipa variación en un grupo.</p></li><li><p class="lang-en">Choose: “How many books are on my shelf?” or “How many books are on each shelf in this room?”</p><p class="lang-es" lang="es">Elige: «¿Cuántos libros hay en mi estante?» o «¿Cuántos libros hay en cada estante de este cuarto?»</p></li><li><p class="lang-en">Explain which question expects a set of answers that may vary. Count three shelves or use 4, 7, 10.</p><p class="lang-es" lang="es">Explica qué pregunta espera varias respuestas que pueden variar. Cuenta tres estantes o usa 4, 7, 10.</p></li>
+            <li><p class="lang-en">One shelf has one count. Counting each shelf gives 4, 7, and 10 books: varied answers worth collecting.</p><p class="lang-es" lang="es">Un estante tiene una sola cantidad. Al contar cada estante obtenemos 4, 7 y 10 libros: respuestas variadas que podemos recopilar.</p></li><li><p class="lang-en">Choose: “How many books are on my shelf?” or “How many books are on each shelf in this room?”</p><p class="lang-es" lang="es">Elige: «¿Cuántos libros hay en mi estante?» o «¿Cuántos libros hay en cada estante de este cuarto?»</p></li><li><p class="lang-en">Explain which question expects a set of answers that may vary. Count three shelves or use 4, 7, 10.</p><p class="lang-es" lang="es">Explica qué pregunta espera varias respuestas que pueden variar. Cuenta tres estantes o usa 4, 7, 10.</p></li>
           </ul>
         </div>
         <div class="stuck-panel stuck-dont">
@@ -10833,7 +10848,7 @@ body {
       <div class="help-hub card-ish">
         <h3 class="section-title">💡 <span class="lang-en">Quick help topics</span><span class="lang-es" lang="es">Temas de ayuda</span></h3>
         <ul class="help-topic-list">
-          <li><button type="button" class="help-pop-btn" data-help='{"titleEn":"Try saying…","titleEs":"Intenta decir…","en":"A statistical question anticipates variation across a group.","es":"Una pregunta estadística anticipa variación en un grupo."}' onclick="openHelpModalFromBtn(this)"><span class="lang-en">Tip 1</span><span class="lang-es" lang="es">Pista 1</span></button></li><li><button type="button" class="help-pop-btn" data-help='{"titleEn":"Try saying…","titleEs":"Intenta decir…","en":"Choose: “How many books are on my shelf?” or “How many books are on each shelf in this room?”","es":"Elige: «¿Cuántos libros hay en mi estante?» o «¿Cuántos libros hay en cada estante de este cuarto?»"}' onclick="openHelpModalFromBtn(this)"><span class="lang-en">Tip 2</span><span class="lang-es" lang="es">Pista 2</span></button></li><li><button type="button" class="help-pop-btn" data-help='{"titleEn":"Try saying…","titleEs":"Intenta decir…","en":"Explain which question expects a set of answers that may vary. Count three shelves or use 4, 7, 10.","es":"Explica qué pregunta espera varias respuestas que pueden variar. Cuenta tres estantes o usa 4, 7, 10."}' onclick="openHelpModalFromBtn(this)"><span class="lang-en">Tip 3</span><span class="lang-es" lang="es">Pista 3</span></button></li>
+          <li><button type="button" class="help-pop-btn" data-help='{"titleEn":"Try saying…","titleEs":"Intenta decir…","en":"One shelf has one count. Counting each shelf gives 4, 7, and 10 books: varied answers worth collecting.","es":"Un estante tiene una sola cantidad. Al contar cada estante obtenemos 4, 7 y 10 libros: respuestas variadas que podemos recopilar."}' onclick="openHelpModalFromBtn(this)"><span class="lang-en">Tip 1</span><span class="lang-es" lang="es">Pista 1</span></button></li><li><button type="button" class="help-pop-btn" data-help='{"titleEn":"Try saying…","titleEs":"Intenta decir…","en":"Choose: “How many books are on my shelf?” or “How many books are on each shelf in this room?”","es":"Elige: «¿Cuántos libros hay en mi estante?» o «¿Cuántos libros hay en cada estante de este cuarto?»"}' onclick="openHelpModalFromBtn(this)"><span class="lang-en">Tip 2</span><span class="lang-es" lang="es">Pista 2</span></button></li><li><button type="button" class="help-pop-btn" data-help='{"titleEn":"Try saying…","titleEs":"Intenta decir…","en":"Explain which question expects a set of answers that may vary. Count three shelves or use 4, 7, 10.","es":"Explica qué pregunta espera varias respuestas que pueden variar. Cuenta tres estantes o usa 4, 7, 10."}' onclick="openHelpModalFromBtn(this)"><span class="lang-en">Tip 3</span><span class="lang-es" lang="es">Pista 3</span></button></li>
         </ul>
       </div>
 
@@ -10899,8 +10914,8 @@ body {
         <div class="rf-col-left">
           <div class="rf-card rf-card-bigidea">
             <h3>🎯 <span class="lang-en">The Big Idea</span><span class="lang-es" lang="es">La idea principal</span></h3>
-            <p class="rf-key-en"><strong><span class="lang-en">In one sentence:</span><span class="lang-es" lang="es">En una frase:</span></strong> A statistical question anticipates variation across a group.</p>
-            <p class="rf-key-es" lang="es"><strong>En una frase:</strong> Una pregunta estadística anticipa variación en un grupo.</p>
+            <p class="rf-key-en"><strong><span class="lang-en">In one sentence:</span><span class="lang-es" lang="es">En una frase:</span></strong> One shelf has one count. Counting each shelf gives 4, 7, and 10 books: varied answers worth collecting.</p>
+            <p class="rf-key-es" lang="es"><strong>En una frase:</strong> Un estante tiene una sola cantidad. Al contar cada estante obtenemos 4, 7 y 10 libros: respuestas variadas que podemos recopilar.</p>
           </div>
 
           <div class="rf-card rf-card-dinner">
@@ -11418,7 +11433,6 @@ function initFamilyGames() {
    are in the path, how many practice problems count, the remaining-time
    display, and every Continue button. */
 var HOMEWORK_ROUTES = {
-  quick: { tabs: ['learn', 'together', 'check', 'done'], total: 10, problemLimit: 2, minutes: { learn: 2, together: 3, check: 4, done: 1 } },
   core: { tabs: ['learn', 'together', 'check', 'done'], total: 20, problemLimit: 6, minutes: { learn: 5, together: 6, check: 7, done: 2 } },
   full: { tabs: ['learn', 'words', 'together', 'check', 'play', 'done'], total: 30, problemLimit: 6, minutes: { learn: 5, words: 3, together: 6, check: 8, play: 5, done: 3 } }
 };
@@ -11428,13 +11442,13 @@ function routeStorageKey() {
 }
 
 function activeHomeworkRoute() {
-  var id = document.body.dataset.homeworkRoute || 'quick';
-  return HOMEWORK_ROUTES[id] || HOMEWORK_ROUTES.quick;
+  var id = document.body.dataset.homeworkRoute || 'core';
+  return HOMEWORK_ROUTES[id] || HOMEWORK_ROUTES.core;
 }
 
 function setHomeworkRoute(mode, options) {
   options = options || {};
-  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'quick';
+  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'core';
   var route = HOMEWORK_ROUTES[mode];
   document.body.dataset.homeworkRoute = mode;
 
@@ -11479,9 +11493,9 @@ function setHomeworkRoute(mode, options) {
   var warmups = document.querySelectorAll('.practice-tier-warmup .problem-section');
   warmups.forEach(function (problem, index) { problem.hidden = index >= route.problemLimit; });
   var challenge = document.querySelector('.practice-tier-challenge');
-  if (challenge) challenge.hidden = mode === 'quick';
+  if (challenge) challenge.hidden = false;
   var more = document.querySelector('.more-practice');
-  if (more) more.hidden = mode === 'quick';
+  if (more) more.hidden = false;
   ['hw_goal_count', 'hw_goal_count_es'].forEach(function (id) {
     var el = document.getElementById(id);
     if (el) el.textContent = String(route.problemLimit);
@@ -11506,7 +11520,6 @@ function setHomeworkRoute(mode, options) {
   var note = document.getElementById('hw_route_note');
   if (note) {
     var copy = {
-      quick: ['Essentials selected: 4 focused stops and 2 warm-ups, about 10 minutes.', 'Ruta esencial: 4 paradas y 2 ejercicios, unos 10 minutos.'],
       core: ['Learn & practice selected: 4 focused stops and all 6 core problems, about 20 minutes.', 'Ruta de aprendizaje: 4 paradas y los 6 problemas, unos 20 minutos.'],
       full: ['Full route selected: all 6 stops, about 30 minutes.', 'Ruta completa: 6 paradas, unos 30 minutos.']
     }[mode];
@@ -11538,8 +11551,9 @@ function updateHomeworkRouteTime(minutes) {
 }
 
 function restoreHomeworkRoute() {
-  var mode = 'quick';
-  try { mode = localStorage.getItem(routeStorageKey()) || 'quick'; } catch (e) {}
+  var mode = 'core';
+  try { mode = localStorage.getItem(routeStorageKey()) || 'core'; } catch (e) {}
+  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'core';
   var requested = new URLSearchParams(location.search).get('route');
   if (Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, requested)) mode = requested;
   setHomeworkRoute(mode, { silent: true, keepTab: true });
@@ -12007,8 +12021,8 @@ function toggleSignoffSubmitBtn() {
 
 function homeworkShareUrl() {
   var url = new URL(window.location.href);
-  var route = document.body.dataset.homeworkRoute || 'quick';
-  url.searchParams.set('route', Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, route) ? route : 'quick');
+  var route = document.body.dataset.homeworkRoute || 'core';
+  url.searchParams.set('route', Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, route) ? route : 'core');
   url.searchParams.set('lang', document.body.dataset.homeworkLanguage || preferredLanguageMode());
   return url.href;
 }

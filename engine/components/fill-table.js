@@ -664,7 +664,8 @@ export function normalizeFillTable(config = {}) {
     // `labelEs`; those names are written out here on purpose, because a reader
     // — human or grep — cannot otherwise tell that this file consumes them,
     // and `tools/esol-lane-coverage.test.mjs` exists precisely to catch a
-    // translated field with no visible consumer.
+    // translated field with no visible consumer. `whyEs` is handled by the
+    // same generic lookup when a lesson makes its reasoning column editable.
     rowFigures.push(obj.figure || null);
     const keys = Object.keys(obj).filter((k) => k !== "figure" && !/Es$/.test(k));
     const values = keys.map((k) => obj[k]);

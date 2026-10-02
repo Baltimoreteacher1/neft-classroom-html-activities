@@ -97,15 +97,15 @@ test("actual family view renders selected homework, due date and Spanish action,
     assert.match(root.textContent, /Entrega/);
     assert.equal(
       root.querySelector(".homework-card a").getAttribute("href"),
-      "/lessons/3-2/homework.html?route=quick&lang=es",
+      "/lessons/3-2/homework.html?route=core&lang=es&section=all-families",
     );
     renderHomeworkHub(root, snapshot, lessons, "all-families", "en", {
       now: new Date("2026-10-01T12:00:00Z"),
     });
     assert.equal(root.querySelector(".homework-card"), null);
     assert.match(root.querySelector("#family-week h2").textContent, /Waiting for this week/);
-    assert.match(root.textContent, /Last posted: Sep 21 – Sep 25/);
-    assert.equal(root.querySelector(".week-dates"), null);
+    assert.match(root.textContent, /Last posted: Sep 21, 2026 – Sep 25, 2026/);
+    assert.match(root.querySelector(".week-dates").textContent, /Sep 28, 2026 – Oct 2, 2026/);
   } finally {
     globalThis.document = previous;
     dom.window.close();
@@ -136,14 +136,14 @@ test("family homework keeps all five weekdays in order, including repeated lesso
       "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
     ]);
     assert.deepEqual(cards.map((card) => card.querySelector("a")?.getAttribute("href") || ""), [
-      "/lessons/3-2/homework.html?route=quick&lang=en",
-      "/lessons/3-3/homework.html?route=quick&lang=en",
-      "/lessons/3-2/homework.html?route=quick&lang=en",
+      "/lessons/3-2/homework.html?route=core&lang=en&section=all-families",
+      "/lessons/3-3/homework.html?route=core&lang=en&section=all-families",
+      "/lessons/3-2/homework.html?route=core&lang=en&section=all-families",
       "", "",
     ]);
     assert.match(cards[3].textContent, /Not posted yet/);
     assert.equal(cards[3].querySelector(".today-badge")?.textContent, "Today");
-    assert.equal(cards[0].querySelector(".day-date")?.textContent, "Sep 21");
+    assert.equal(cards[0].querySelector(".day-date")?.textContent, "Sep 21, 2026");
     assert.equal(cards[0].querySelector(".day-work h4")?.textContent, "Unit rates");
     renderHomeworkHub(root, snapshot, lessons, "all-families", "es", {
       now: new Date("2026-09-24T12:00:00Z"),

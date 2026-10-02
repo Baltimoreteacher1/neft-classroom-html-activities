@@ -69,7 +69,9 @@ const dateLabel = (iso, lang) =>
     timeZone: "UTC",
     month: "short",
     day: "numeric",
+    year: "numeric",
   }).format(new Date(`${iso}T12:00:00Z`));
+const mondayOf = (iso) => addDays(iso, -(new Date(`${iso}T12:00:00Z`).getUTCDay() + 6) % 7);
 
 /** The public page and authenticated preview use exactly the same view. */
 export function renderHomeworkHub(
@@ -85,10 +87,16 @@ export function renderHomeworkHub(
   const section = resolveSection(snapshot, sectionId);
   const phase = weekPhase(section.week?.startDate, now);
   const today = schoolDate(now);
+  const displayStart = phase === "empty" || (phase === "past" && !preview && !archive)
+    ? mondayOf(today) : section.week.startDate;
   root.replaceChildren();
   const week = el("section", undefined, "hub-panel");
   week.id = "family-week";
   week.append(el("p", section.label, "eyebrow"));
+  if (section.id === "all-families" && snapshot.sections?.some((item) => item.visible !== false && item.id !== "all-families")) week.append(el("p", t(
+    "Shared class updates appear here. Choose your class above for homework assigned to your class.",
+    "Aquí aparecen los avisos para todas las clases. Elige tu clase arriba para ver la tarea asignada a tu clase.",
+  ), "class-guidance"));
   week.append(
     el(
       "h2",
@@ -101,19 +109,12 @@ export function renderHomeworkHub(
           : t("This week’s homework", "Tareas de esta semana"),
     ),
   );
-  if (phase !== "empty" && (phase !== "past" || preview || archive))
-    week.append(
-      el(
-        "p",
-        `${dateLabel(section.week.startDate, lang)} – ${dateLabel(addDays(section.week.startDate, 4), lang)}`,
-        "week-dates",
-      ),
-    );
-  if (snapshot.publishedAt && Number.isFinite(Date.parse(snapshot.publishedAt))) {
+  week.append(el("p", `${dateLabel(displayStart, lang)} – ${dateLabel(addDays(displayStart, 4), lang)}`, "week-dates"));
+  if ((phase !== "past" || archive || preview) && phase !== "empty" && snapshot.publishedAt && Number.isFinite(Date.parse(snapshot.publishedAt))) {
     const updated = new Intl.DateTimeFormat(es ? "es-US" : "en-US", {
       dateStyle: "medium", timeStyle: "short", timeZone: "America/New_York",
     }).format(new Date(snapshot.publishedAt));
-    week.append(el("p", `${t("Last updated", "Última actualización")}: ${updated} · ${t("Eastern time", "hora del Este")}`, "quiet last-updated"));
+    week.append(el("p", `${t("Published for this week", "Publicado para esta semana")}: ${updated} · ${t("Eastern time", "hora del Este")}`, "quiet last-updated"));
   }
   if (archive && phase === "past") week.append(el("p", t(
     "Previous homework — these dates have passed. Use this plan to review or catch up.",
@@ -209,7 +210,7 @@ export function renderHomeworkHub(
       content.append(
         el(
           "p",
-          `${t("Lesson", "Lección")} ${item.id} · ${t("About 10 minutes", "Unos 10 minutos")}`,
+          `${t("Lesson", "Lección")} ${item.id} · ${t("Choose 20 or 30 minutes", "Elige 20 o 30 minutos")}`,
           "eyebrow",
         ),
       );
@@ -223,13 +224,18 @@ export function renderHomeworkHub(
         addDays(item.entry.dueDate, 0) === item.entry.dueDate
       )
         content.append(el("p", `${t("Due", "Entrega")}: ${dateLabel(item.entry.dueDate, lang)}`, "due-date"));
+      else content.append(el("p", t("Due date: ask Mr. Neft if needed.", "Fecha de entrega: consulta al Sr. Neft si la necesitas."), "quiet"));
+      content.append(el("p", t(
+        "Complete one route. Work saves on this device; bring your work or questions to class. It is not sent automatically.",
+        "Completa una ruta. El trabajo se guarda en este dispositivo; lleva tu trabajo o preguntas a clase. No se envía automáticamente.",
+      ), "assignment-guidance"));
       const link = el("a", t("Open homework", "Abrir tarea"), "button");
       const path = /^\/lessons\/\d{1,2}-\d{1,2}(?:-flagship)?\/homework(?:\.html)?\/?$/.test(
         item.homeworkPath,
       )
         ? item.homeworkPath
         : `/lessons/${item.id}/homework.html`;
-      link.href = `${path}?route=quick&lang=${lang}`;
+      link.href = `${path}?route=core&lang=${lang}&section=${encodeURIComponent(section.id)}`;
       card.append(content, link);
       list.append(card);
     }
@@ -244,6 +250,13 @@ export function renderHomeworkHub(
         "quiet",
       ),
     );
+  }
+  if (!assignments.length && !preview) {
+    const optional = el("p", t("Optional review, not assigned homework: ", "Repaso opcional, no tarea asignada: "), "optional-review");
+    const guide = el("a", t("Family math guides", "Guías de matemáticas para familias"));
+    guide.href = "/families/";
+    optional.append(guide);
+    week.append(optional);
   }
   const message = el("section", undefined, "message-panel");
   const messageCopy = el("div", undefined, "message-copy");

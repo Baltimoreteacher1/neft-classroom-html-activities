@@ -17,9 +17,9 @@ import {
   renderWelcomeBanner,
   resolveKitchenTableActivity,
 } from "../scripts/homework-guided-notes.mjs";
-import { lessonPath } from "./lib/curriculum-source.mjs";
+import { lessonPath, loadLessonConfig } from "./lib/curriculum-source.mjs";
 
-const config = (id) => JSON.parse(readFileSync(lessonPath(id, "config.json"), "utf8"));
+const config = loadLessonConfig;
 function runtime(query = "") {
   const markup =
     renderQuickPlan() +
@@ -44,14 +44,14 @@ function runtime(query = "") {
   return dom;
 }
 
-test("new family starts on essentials, keeps saved choice, and explicit valid URL wins", () => {
+test("new family starts on 20 minutes, keeps saved choice, and retired links use 20 minutes", () => {
   const dom = runtime();
   const w = dom.window;
   w.restoreHomeworkRoute();
-  assert.equal(w.document.body.dataset.homeworkRoute, "quick");
+  assert.equal(w.document.body.dataset.homeworkRoute, "core");
   assert.equal(
     w.document.querySelectorAll(".practice-tier-warmup .problem-section:not([hidden])").length,
-    2,
+    4,
   );
   assert.equal(w.document.getElementById("hw_tab_words").hidden, true);
   w.localStorage.setItem("hw_route_3-2", "full");
@@ -61,35 +61,44 @@ test("new family starts on essentials, keeps saved choice, and explicit valid UR
   w.localStorage.setItem("hw_lang_mode", "en");
   w.restoreHomeworkRoute();
   w.setLanguageMode(w.preferredLanguageMode());
-  assert.equal(w.document.body.dataset.homeworkRoute, "quick");
+  assert.equal(w.document.body.dataset.homeworkRoute, "full");
   assert.equal(w.document.documentElement.lang, "es");
   assert.match(w.document.getElementById("hw_tab_check").getAttribute("aria-label"), /parada/);
   const shared = new URL(w.homeworkShareUrl());
-  assert.equal(shared.searchParams.get("route"), "quick");
+  assert.equal(shared.searchParams.get("route"), "full");
   assert.equal(shared.searchParams.get("lang"), "es");
   assert.equal(shared.searchParams.get("section"), "class-1");
   assert.match(
     decodeURIComponent(w.document.getElementById("hw_text_link").href),
-    /route=quick&lang=es/,
+    /route=full&lang=es/,
   );
   w.history.replaceState(null, "", "?route=__proto__&lang=bad");
   w.localStorage.setItem("hw_route_3-2", "broken");
   w.restoreHomeworkRoute();
-  assert.equal(w.document.body.dataset.homeworkRoute, "quick");
+  assert.equal(w.document.body.dataset.homeworkRoute, "core");
   dom.window.close();
 });
 
-test("10-minute Together route keeps the problem situation and all guided steps", () => {
+test("20-minute Together route keeps the problem situation and all guided steps", () => {
   const page = readFileSync(lessonPath("3-3", "homework.html"), "utf8");
-  const quickRules = page.match(
-    /\/\* The 10-minute route[\s\S]*?display: none !important;\s*}/,
-  )?.[0];
-  assert.ok(quickRules, "generated 3-3 homework must contain the quick-route rules");
-  assert.doesNotMatch(quickRules, /\.try-scenario|\.try-together-note|\.together-steps/);
+  assert.doesNotMatch(page, /data-route-mode="quick"|The 10-minute route/);
   const dom = new JSDOM(page);
   const together = dom.window.document.querySelector("#hw_panel_together");
   assert.match(together.querySelector(".try-scenario.lang-en").textContent, /drink uses 1 cup/);
   assert.equal(together.querySelectorAll(".together-steps > li").length, 3);
+  dom.window.close();
+});
+
+test("statistical-question homework shows a concrete model and keeps reasons for feedback", () => {
+  const page = readFileSync(lessonPath("2-1", "homework.html"), "utf8");
+  const dom = new JSDOM(page);
+  const d = dom.window.document;
+  assert.equal(d.querySelectorAll("[data-route-mode]").length, 2);
+  assert.match(d.querySelector(".concept-visual-caption").textContent, /One shelf has one count/);
+  const table = d.querySelector("#problem_1 .fill-table");
+  assert.ok(table);
+  assert.equal(table.querySelectorAll("input.table-input").length, 6);
+  assert.doesNotMatch(table.textContent, /Different students can do different amounts/);
   dom.window.close();
 });
 

@@ -34,7 +34,7 @@ test("publishing a future week retains current homework and chooses nearest futu
   assert.equal(defaultHomeworkWeek(weeks, new Date("2026-11-01T16:00:00Z")), null);
   withDom((root) => {
     renderHomeworkHub(root, snapshotForWeek(next, record), lessons, "all-families", "en", { now });
-    assert.match(root.textContent, /Sep 28 – Oct 2/);
+    assert.match(root.textContent, /Sep 28, 2026 – Oct 2, 2026/);
     assert.ok(root.querySelector('a[href*="/lessons/3-2/homework"]'));
   });
 });
@@ -68,9 +68,9 @@ test("previous assignments open with archive notice, their original due dates, a
   withDom((root) => {
     renderHomeworkHub(root, old, lessons, "all-families", "es", { now, archive: true });
     assert.match(root.textContent, /Tareas anteriores/);
-    assert.match(root.textContent, /Última actualización/);
+    assert.match(root.textContent, /Publicado para esta semana/);
     assert.match(root.textContent, /Entrega: 22 sept/);
-    assert.equal(root.querySelector(".homework-card a").getAttribute("href"), "/lessons/3-2/homework.html?route=quick&lang=es");
+    assert.equal(root.querySelector(".homework-card a").getAttribute("href"), "/lessons/3-2/homework.html?route=core&lang=es&section=all-families");
     assert.equal(root.querySelector(".today-badge"), null);
   });
 });

@@ -34,6 +34,12 @@ function assertIncludes(text, needle, label) {
     fail(`${label} is missing "${needle}"`);
   }
 }
+const htmlEsc = (value) =>
+  String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 
 function localTargetExists(href) {
   if (!href.startsWith("/")) return true;
@@ -140,14 +146,14 @@ if (!existsSync(indexPath)) {
 const requiredSections = [
   "What Your Child Is Learning",
   "Why This Matters",
-  "What It May Look Like In Class",
+  "Example from this lesson",
   "How You Can Help At Home",
-  "Apoyo para familias en español",
-  "Qué está aprendiendo su hijo/a",
+  "Qué está aprendiendo su estudiante",
   "Por qué es importante",
   "Cómo puede ayudar en casa",
   "Key Vocabulary",
   "Try It Together",
+  "Inténtenlo juntos",
 ];
 
 const lessonsById = new Map(familyLessons.map((lesson) => [lesson.lessonId, lesson]));
@@ -168,8 +174,43 @@ for (const lessonId of expectedIds) {
     assertIncludes(pageHtml, section, `families/lessons/${lessonId}/index.html`);
   }
 
-  assertIncludes(pageHtml, data?.objective, `families/lessons/${lessonId}/index.html`);
-  assertIncludes(pageHtml, data?.languageObjective, `families/lessons/${lessonId}/index.html`);
+  assertIncludes(pageHtml, htmlEsc(data?.objective), `families/lessons/${lessonId}/index.html`);
+  assertIncludes(
+    pageHtml,
+    htmlEsc(data?.languageObjective),
+    `families/lessons/${lessonId}/index.html`,
+  );
+  assertIncludes(pageHtml, htmlEsc(data?.titleEs), `families/lessons/${lessonId}/index.html`);
+  for (const field of ["learningTonight", "bigIdea"]) {
+    for (const lang of ["en", "es"]) {
+      if (!data?.support?.[field]?.[lang]) fail(`Lesson ${lessonId} lacks ${lang} ${field}`);
+      else
+        assertIncludes(
+          pageHtml,
+          htmlEsc(data.support[field][lang]),
+          `families/lessons/${lessonId}/index.html`,
+        );
+    }
+  }
+  if (!data?.support?.tryTogether?.steps?.length)
+    fail(`Lesson ${lessonId} lacks lesson-specific family practice`);
+  for (const step of data?.support?.tryTogether?.steps || []) {
+    for (const field of ["en", "es", "hint", "hintEs"]) {
+      if (!step[field]) fail(`Lesson ${lessonId} has an untranslated practice ${field}`);
+      else
+        assertIncludes(pageHtml, htmlEsc(step[field]), `families/lessons/${lessonId}/index.html`);
+    }
+  }
+  for (const word of data?.vocabulary || []) {
+    if (!word.definitionEs)
+      fail(`Lesson ${lessonId} has an untranslated vocabulary definition: ${word.term}`);
+    else
+      assertIncludes(
+        pageHtml,
+        htmlEsc(word.definitionEs),
+        `families/lessons/${lessonId}/index.html`,
+      );
+  }
 
   for (const resource of data?.resources || []) {
     assertIncludes(pageHtml, `href="${resource.href}"`, `families/lessons/${lessonId}/index.html`);
