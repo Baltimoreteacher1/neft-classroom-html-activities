@@ -596,6 +596,52 @@
     });
   }
 
+  /** @param {string} iso */
+  function shortDayLabel(iso) {
+    var parts = iso.split("-").map(Number);
+    return new Date(parts[0], parts[1] - 1, parts[2]).toLocaleDateString(undefined, {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+    });
+  }
+
+  /**
+   * The next school days from the pacing plan, under today's panel. A teacher
+   * sees the week they are walking into; a student sees what class does next.
+   * @param {{upcoming?: {date:string, lesson:CatalogLesson|null, dayType:string, planTitle:string}[]}} plan
+   */
+  function renderUpcoming(plan) {
+    var days = plan.upcoming || [];
+    if (!days.length) return;
+    var group = node("section", "cn-resource-group cn-upcoming-group");
+    group.appendChild(node("h4", "cn-group-title", "Coming up"));
+    var list = node("ol", "cn-upcoming");
+    days.forEach(function (day) {
+      var item = node("li", "");
+      item.appendChild(node("span", "cn-upcoming-day", shortDayLabel(day.date)));
+      if (day.lesson) {
+        var open = openLessonButton(
+          day.lesson,
+          day.lesson.id.replace("-", ".") + " · " + day.lesson.title,
+        );
+        open.className = "cn-upcoming-lesson";
+        item.appendChild(open);
+        if (day.dayType === "Continued Lesson")
+          item.appendChild(node("span", "cn-upcoming-note", "day 2"));
+        else if (day.dayType === "Catch-Up")
+          item.appendChild(node("span", "cn-upcoming-note", "catch-up"));
+      } else {
+        item.appendChild(
+          node("span", "cn-upcoming-note", day.planTitle || day.dayType || "No new lesson"),
+        );
+      }
+      list.appendChild(item);
+    });
+    group.appendChild(list);
+    preview.appendChild(group);
+  }
+
   /** A pathway id ("3-3-catchup", "3-3-group1") belongs to its core lesson. @param {string} id */
   function coreId(id) {
     return String(id || "").replace(/-(?:group[12]|catchup|part2|flagship)$/, "");
@@ -634,9 +680,19 @@
     var plan = planFor(days[index]);
     var lesson = byId.get(coreId(plan.lessonId)) || null;
     var next = null;
-    for (var i = index + 1; i < days.length && !next; i++) {
-      var later = byId.get(coreId(planFor(days[i]).lessonId));
-      if (later && later !== lesson) next = later;
+    var upcoming = [];
+    for (var i = index + 1; i < days.length && (!next || upcoming.length < 4); i++) {
+      if (!Array.isArray(days[i])) continue;
+      var ahead = planFor(days[i]);
+      var later = byId.get(coreId(ahead.lessonId)) || null;
+      if (later && later !== lesson && !next) next = later;
+      if (upcoming.length < 4)
+        upcoming.push({
+          date: String(days[i][0]),
+          lesson: later,
+          dayType: ahead.dayType,
+          planTitle: later ? "" : ahead.planTitle,
+        });
     }
     return {
       date: String(days[index][0]),
@@ -645,6 +701,7 @@
       dayType: plan.dayType,
       planTitle: lesson ? "" : plan.planTitle,
       next: next,
+      upcoming: upcoming,
     };
   }
 
@@ -757,6 +814,7 @@
         }
       }
       if (!card.isConnected) preview.appendChild(card);
+      renderUpcoming(plan);
       var other = node("p", "cn-starter");
       other.append(
         forAudience(
