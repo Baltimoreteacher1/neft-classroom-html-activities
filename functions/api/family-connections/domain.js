@@ -2,6 +2,7 @@ import { normalizeCopyOverrides } from "../../../curriculum/family-connections/s
 import {
   createDefaultSnapshot,
   DAYS,
+  HOMEWORK_ID_PATTERN,
   parseCanvasCourseUrl,
   SNAPSHOT_SCHEMA_VERSION,
   safeExternalUrl,
@@ -14,7 +15,7 @@ const text = (value, maximum) =>
     .slice(0, maximum);
 const lessonId = (value) => {
   const clean = text(value, 24);
-  return /^\d{1,2}-\d{1,2}(?:-flagship)?$/.test(clean) ? clean : "";
+  return HOMEWORK_ID_PATTERN.test(clean) ? clean : "";
 };
 const localOrSecureUrl = (value) => {
   const clean = text(value, 400);

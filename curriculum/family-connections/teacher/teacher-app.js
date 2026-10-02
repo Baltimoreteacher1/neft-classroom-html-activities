@@ -1,4 +1,9 @@
-import { publicationChecks, renderPublicationChecks, homeworkLinkErrors, addHomeworkLinkErrors } from "../shared/publication-checks.js";
+import {
+  publicationChecks,
+  renderPublicationChecks,
+  homeworkLinkErrors,
+  addHomeworkLinkErrors,
+} from "../shared/publication-checks.js";
 import {
   buildCanvasAnnouncement,
   buildCanvasExport,
@@ -247,10 +252,10 @@ async function resolvedPacingDays(sectionCode) {
    * distrust a fill that is perfectly current. */
   let live = true;
   try {
-    const response = await fetch(
-      `/api/pacing/state?section=${encodeURIComponent(sectionCode)}`,
-      { credentials: "same-origin", headers: { accept: "application/json" } },
-    );
+    const response = await fetch(`/api/pacing/state?section=${encodeURIComponent(sectionCode)}`, {
+      credentials: "same-origin",
+      headers: { accept: "application/json" },
+    });
     if (response.ok) overlay = (await response.json())?.overlay ?? {};
     else live = false;
   } catch {
@@ -326,7 +331,11 @@ async function applyPacingFill() {
   try {
     const sectionCode = pacingSectionFor(current);
     const { days, live } = await resolvedPacingDays(sectionCode);
-    const week = buildWeekFromPacing(days, startDate, state.lessons.map((item) => item.id));
+    const week = buildWeekFromPacing(
+      days,
+      startDate,
+      state.lessons.map((item) => item.id),
+    );
     current.week.label = week.label;
     current.week.startDate = week.startDate;
     current.week.days = week.days;
@@ -517,7 +526,10 @@ async function publish() {
   byId("publish-draft").disabled = true;
   const reviewed = JSON.stringify(state.draft);
   try {
-    const checks = addHomeworkLinkErrors(publicationChecks(state.draft, state.lessons), await homeworkLinkErrors(state.draft, state.lessons));
+    const checks = addHomeworkLinkErrors(
+      publicationChecks(state.draft, state.lessons),
+      await homeworkLinkErrors(state.draft, state.lessons),
+    );
     if (JSON.stringify(state.draft) !== reviewed || !state.previewed)
       return notify("The draft changed during link checks. Preview it again before publishing.");
     let panel = byId("advanced-publication-checks");
@@ -528,9 +540,18 @@ async function publish() {
       byId("family-preview").before(panel);
     }
     renderPublicationChecks(panel, checks);
-    if (checks.some((check) => check.errors.length)) return notify("Fix the publication errors in the preview before publishing.");
+    if (checks.some((check) => check.errors.length))
+      return notify("Fix the publication errors in the preview before publishing.");
     if (state.dirty && !(await persist())) return;
-    if (!window.confirm("Publish this complete draft to Family Mode now?\n" + checks.flatMap((check) => check.warnings.map((warning) => `${check.label}: ${warning}`)).join("\n"))) return;
+    if (
+      !window.confirm(
+        "Publish this complete draft to Family Mode now?\n" +
+          checks
+            .flatMap((check) => check.warnings.map((warning) => `${check.label}: ${warning}`))
+            .join("\n"),
+      )
+    )
+      return;
     state.draft = await publishDraft(state.draft.revision);
     state.dirty = false;
     state.previewed = false;
@@ -714,7 +735,11 @@ async function initialize() {
   try {
     const manifestResponse = await fetch("/data/curriculum-manifest.json");
     if (!manifestResponse.ok) throw new Error("The curriculum catalog is unavailable.");
-    state.lessons = normalizeLessons((await manifestResponse.json()).lessons);
+    const manifest = await manifestResponse.json();
+    state.lessons = normalizeLessons([
+      ...(manifest.lessons || []),
+      ...(manifest.familyHomework || []),
+    ]);
     [state.draft, state.history] = await Promise.all([loadDraft(), loadHistory()]);
     // Older drafts predate the copy field — ensure both language lanes exist.
     state.draft.copy = { en: { ...state.draft.copy?.en }, es: { ...state.draft.copy?.es } };

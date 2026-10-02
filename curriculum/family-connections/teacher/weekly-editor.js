@@ -1,5 +1,10 @@
-import { publicationChecks, renderPublicationChecks, homeworkLinkErrors, addHomeworkLinkErrors } from "../shared/publication-checks.js";
-import { DAYS, normalizeLessons } from "../shared/model.js";
+import {
+  publicationChecks,
+  renderPublicationChecks,
+  homeworkLinkErrors,
+  addHomeworkLinkErrors,
+} from "../shared/publication-checks.js";
+import { DAYS, homeworkLabel, normalizeLessons } from "../shared/model.js";
 import { loadDraft, loadHistory, saveDraft, publishDraft } from "../shared/api-client.js";
 import { addDays, familyLink, renderHomeworkHub, schoolDate } from "../shared/homework-hub.js";
 import { weekStartFor } from "../shared/pacing-week.js";
@@ -83,11 +88,26 @@ function renderDays() {
     card.setAttribute("aria-labelledby", heading.id);
     card.append(heading);
     const date = section().week.startDate && addDays(section().week.startDate, index);
-    if (date) card.append(node("p", new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`))));
+    if (date)
+      card.append(
+        node(
+          "p",
+          new Intl.DateTimeFormat("en-US", {
+            month: "long",
+            day: "numeric",
+            timeZone: "UTC",
+          }).format(new Date(`${date}T12:00:00Z`)),
+        ),
+      );
     const title = lessons.find((item) => item.id === entry.lessonId);
-    const assignment = node("p", title && entry.status === "lesson"
-      ? `Family homework: Lesson ${title.id} · ${title.title}`
-      : entry.status === "no-class" ? "No family homework assigned" : "Homework not posted yet");
+    const assignment = node(
+      "p",
+      title && entry.status === "lesson"
+        ? `Family homework: ${homeworkLabel(title)} · ${title.title}`
+        : entry.status === "no-class"
+          ? "No family homework assigned"
+          : "Homework not posted yet",
+    );
     assignment.className = "day-assignment";
     card.append(assignment);
     if (title && entry.status === "lesson") {
@@ -110,9 +130,10 @@ function renderDays() {
         group.label = `Unit ${currentUnit}`;
         select.append(group);
       }
-      group.append(new Option(`Lesson ${lesson.id} · ${lesson.title}`, lesson.id));
+      group.append(new Option(`${homeworkLabel(lesson)} · ${lesson.title}`, lesson.id));
     }
-    select.value = entry.status === "lesson" ? entry.lessonId : entry.status === "no-class" ? "no-class" : "";
+    select.value =
+      entry.status === "lesson" ? entry.lessonId : entry.status === "no-class" ? "no-class" : "";
     label.htmlFor = select.id;
     select.addEventListener("change", () => {
       const choice = select.value;
@@ -129,9 +150,11 @@ function renderDays() {
       markDirty();
       renderDays();
       byId(`lesson-select-${index}`).focus();
-      notify(lessonId
-        ? `Lesson ${lessonId} assigned to ${day}. Its family homework link was added automatically.`
-        : `${day}: ${status === "no-class" ? "no homework assigned" : "not posted yet"}.`);
+      notify(
+        lessonId
+          ? `Lesson ${lessonId} assigned to ${day}. Its family homework link was added automatically.`
+          : `${day}: ${status === "no-class" ? "no homework assigned" : "not posted yet"}.`,
+      );
     });
     card.append(label, select);
     if (entry.status === "lesson") {
@@ -260,7 +283,10 @@ byId("weekly-editor").addEventListener("submit", (event) => {
   }
   withBusy(async () => {
     notify("Checking assigned homework links before publishing…");
-    const checks = addHomeworkLinkErrors(publicationChecks(draft, lessons), await homeworkLinkErrors(draft, lessons));
+    const checks = addHomeworkLinkErrors(
+      publicationChecks(draft, lessons),
+      await homeworkLinkErrors(draft, lessons),
+    );
     renderPublicationChecks(byId("publication-checks"), checks);
     if (checks.some((check) => check.errors.length)) {
       previewed = false;
@@ -349,7 +375,8 @@ async function initialize() {
     ]);
     if (!manifestResponse.ok) throw new Error("Lesson list could not load.");
     draft = saved;
-    lessons = normalizeLessons((await manifestResponse.json()).lessons);
+    const manifest = await manifestResponse.json();
+    lessons = normalizeLessons([...(manifest.lessons || []), ...(manifest.familyHomework || [])]);
     history = past;
     try {
       const response = await fetch("/api/family-connections/published", { cache: "no-store" });

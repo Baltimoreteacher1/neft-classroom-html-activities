@@ -1,4 +1,13 @@
-import { DAYS, normalizeLessons, resolveSection, pickLang, weekNote, safeExternalUrl } from "./model.js";
+import {
+  DAYS,
+  HOMEWORK_PATH_PATTERN,
+  homeworkLabel,
+  normalizeLessons,
+  resolveSection,
+  pickLang,
+  weekNote,
+  safeExternalUrl,
+} from "./model.js";
 
 export function schoolDate(now = new Date()) {
   return new Intl.DateTimeFormat("en-CA", {
@@ -87,16 +96,28 @@ export function renderHomeworkHub(
   const section = resolveSection(snapshot, sectionId);
   const phase = weekPhase(section.week?.startDate, now);
   const today = schoolDate(now);
-  const displayStart = phase === "empty" || (phase === "past" && !preview && !archive)
-    ? mondayOf(today) : section.week.startDate;
+  const displayStart =
+    phase === "empty" || (phase === "past" && !preview && !archive)
+      ? mondayOf(today)
+      : section.week.startDate;
   root.replaceChildren();
   const week = el("section", undefined, "hub-panel");
   week.id = "family-week";
   week.append(el("p", section.label, "eyebrow"));
-  if (section.id === "all-families" && snapshot.sections?.some((item) => item.visible !== false && item.id !== "all-families")) week.append(el("p", t(
-    "Shared class updates appear here. Choose your class above for homework assigned to your class.",
-    "Aquí aparecen los avisos para todas las clases. Elige tu clase arriba para ver la tarea asignada a tu clase.",
-  ), "class-guidance"));
+  if (
+    section.id === "all-families" &&
+    snapshot.sections?.some((item) => item.visible !== false && item.id !== "all-families")
+  )
+    week.append(
+      el(
+        "p",
+        t(
+          "Shared class updates appear here. Choose your class above for homework assigned to your class.",
+          "Aquí aparecen los avisos para todas las clases. Elige tu clase arriba para ver la tarea asignada a tu clase.",
+        ),
+        "class-guidance",
+      ),
+    );
   week.append(
     el(
       "h2",
@@ -104,22 +125,48 @@ export function renderHomeworkHub(
         ? t("Waiting for this week’s homework", "Esperando las tareas de esta semana")
         : archive && phase === "past"
           ? t("Previous homework", "Tareas anteriores")
-        : phase === "upcoming"
-          ? t("Upcoming homework", "Próximas tareas")
-          : t("This week’s homework", "Tareas de esta semana"),
+          : phase === "upcoming"
+            ? t("Upcoming homework", "Próximas tareas")
+            : t("This week’s homework", "Tareas de esta semana"),
     ),
   );
-  week.append(el("p", `${dateLabel(displayStart, lang)} – ${dateLabel(addDays(displayStart, 4), lang)}`, "week-dates"));
-  if ((phase !== "past" || archive || preview) && phase !== "empty" && snapshot.publishedAt && Number.isFinite(Date.parse(snapshot.publishedAt))) {
+  week.append(
+    el(
+      "p",
+      `${dateLabel(displayStart, lang)} – ${dateLabel(addDays(displayStart, 4), lang)}`,
+      "week-dates",
+    ),
+  );
+  if (
+    (phase !== "past" || archive || preview) &&
+    phase !== "empty" &&
+    snapshot.publishedAt &&
+    Number.isFinite(Date.parse(snapshot.publishedAt))
+  ) {
     const updated = new Intl.DateTimeFormat(es ? "es-US" : "en-US", {
-      dateStyle: "medium", timeStyle: "short", timeZone: "America/New_York",
+      dateStyle: "medium",
+      timeStyle: "short",
+      timeZone: "America/New_York",
     }).format(new Date(snapshot.publishedAt));
-    week.append(el("p", `${t("Published for this week", "Publicado para esta semana")}: ${updated} · ${t("Eastern time", "hora del Este")}`, "quiet last-updated"));
+    week.append(
+      el(
+        "p",
+        `${t("Published for this week", "Publicado para esta semana")}: ${updated} · ${t("Eastern time", "hora del Este")}`,
+        "quiet last-updated",
+      ),
+    );
   }
-  if (archive && phase === "past") week.append(el("p", t(
-    "Previous homework — these dates have passed. Use this plan to review or catch up.",
-    "Tareas anteriores: estas fechas ya pasaron. Usa este plan para repasar o ponerte al día.",
-  ), "archive-notice"));
+  if (archive && phase === "past")
+    week.append(
+      el(
+        "p",
+        t(
+          "Previous homework — these dates have passed. Use this plan to review or catch up.",
+          "Tareas anteriores: estas fechas ya pasaron. Usa este plan para repasar o ponerte al día.",
+        ),
+        "archive-notice",
+      ),
+    );
   const assignments = assignedHomework(snapshot, lessons, section.id);
   if (phase === "past" && !preview && !archive) {
     week.append(
@@ -163,10 +210,21 @@ export function renderHomeworkHub(
         ),
       );
     if (!assignments.length) {
-      const allNoHomework = DAYS.every((day) => section.week.days?.find((entry) => entry.day === day)?.status === "no-class");
-      week.append(el("p", allNoHomework
-        ? t("No homework assigned this week.", "No hay tareas asignadas esta semana.")
-        : t("Some homework has not been posted yet. Check the daily statuses below.", "Algunas tareas aún no se han publicado. Consulta el estado de cada día abajo."), "empty-state"));
+      const allNoHomework = DAYS.every(
+        (day) => section.week.days?.find((entry) => entry.day === day)?.status === "no-class",
+      );
+      week.append(
+        el(
+          "p",
+          allNoHomework
+            ? t("No homework assigned this week.", "No hay tareas asignadas esta semana.")
+            : t(
+                "Some homework has not been posted yet. Check the daily statuses below.",
+                "Algunas tareas aún no se han publicado. Consulta el estado de cada día abajo.",
+              ),
+          "empty-state",
+        ),
+      );
     }
     const note = weekNote(section.week, lang);
     if (note) week.append(el("p", note));
@@ -180,7 +238,16 @@ export function renderHomeworkHub(
       dayHeading.append(
         el(
           "h3",
-          t(day, { Monday: "Lunes", Tuesday: "Martes", Wednesday: "Miércoles", Thursday: "Jueves", Friday: "Viernes" }[day]),
+          t(
+            day,
+            {
+              Monday: "Lunes",
+              Tuesday: "Martes",
+              Wednesday: "Miércoles",
+              Thursday: "Jueves",
+              Friday: "Viernes",
+            }[day],
+          ),
         ),
       );
       dayHeading.append(el("span", dateLabel(dayDate, lang), "day-date"));
@@ -194,13 +261,28 @@ export function renderHomeworkHub(
         const entry = section.week.days?.find((value) => value.day === day);
         const labels = {
           "no-class": t("No homework assigned.", "No hay tarea asignada."),
-          review: t("Review day — see the teacher’s note.", "Día de repaso: consulta la nota docente."),
-          assessment: t("Assessment day — see the teacher’s note.", "Día de evaluación: consulta la nota docente."),
+          review: t(
+            "Review day — see the teacher’s note.",
+            "Día de repaso: consulta la nota docente.",
+          ),
+          assessment: t(
+            "Assessment day — see the teacher’s note.",
+            "Día de evaluación: consulta la nota docente.",
+          ),
         };
         const unavailable = entry?.status === "lesson";
-        content.append(el("p", unavailable
-          ? t("Homework link unavailable. Contact Mr. Neft on ClassDojo.", "El enlace de la tarea no está disponible. Contacta al Sr. Neft por ClassDojo.")
-          : labels[entry?.status] || t("Not posted yet.", "Aún no se ha publicado."), "quiet"));
+        content.append(
+          el(
+            "p",
+            unavailable
+              ? t(
+                  "Homework link unavailable. Contact Mr. Neft on ClassDojo.",
+                  "El enlace de la tarea no está disponible. Contacta al Sr. Neft por ClassDojo.",
+                )
+              : labels[entry?.status] || t("Not posted yet.", "Aún no se ha publicado."),
+            "quiet",
+          ),
+        );
         const note = pickLang(entry?.note, entry?.noteEs, lang);
         if (note) content.append(el("p", note));
         card.append(content);
@@ -210,12 +292,16 @@ export function renderHomeworkHub(
       content.append(
         el(
           "p",
-          `${t("Lesson", "Lección")} ${item.id} · ${t("Choose 20 or 30 minutes", "Elige 20 o 30 minutos")}`,
+          item.kind === "unit-review"
+            ? `${homeworkLabel(item, lang)} · ${t("Work through it together, a part at a time", "Háganlo juntos, una parte a la vez")}`
+            : `${homeworkLabel(item, lang)} · ${t("Choose 20 or 30 minutes", "Elige 20 o 30 minutos")}`,
           "eyebrow",
         ),
       );
       const override = snapshot.homeworkOverrides?.[item.id];
-      content.append(el("h4", pickLang(override?.title || item.title, override?.titleEs || item.titleEs, lang)));
+      content.append(
+        el("h4", pickLang(override?.title || item.title, override?.titleEs || item.titleEs, lang)),
+      );
       const noteText = pickLang(item.entry.note, item.entry.noteEs, lang);
       if (noteText) content.append(el("p", noteText));
       if (
@@ -223,16 +309,32 @@ export function renderHomeworkHub(
         /^\d{4}-\d{2}-\d{2}$/.test(item.entry.dueDate) &&
         addDays(item.entry.dueDate, 0) === item.entry.dueDate
       )
-        content.append(el("p", `${t("Due", "Entrega")}: ${dateLabel(item.entry.dueDate, lang)}`, "due-date"));
-      else content.append(el("p", t("Due date: ask Mr. Neft if needed.", "Fecha de entrega: consulta al Sr. Neft si la necesitas."), "quiet"));
-      content.append(el("p", t(
-        "Complete one route. Work saves on this device; bring your work or questions to class. It is not sent automatically.",
-        "Completa una ruta. El trabajo se guarda en este dispositivo; lleva tu trabajo o preguntas a clase. No se envía automáticamente.",
-      ), "assignment-guidance"));
+        content.append(
+          el("p", `${t("Due", "Entrega")}: ${dateLabel(item.entry.dueDate, lang)}`, "due-date"),
+        );
+      else
+        content.append(
+          el(
+            "p",
+            t(
+              "Due date: ask Mr. Neft if needed.",
+              "Fecha de entrega: consulta al Sr. Neft si la necesitas.",
+            ),
+            "quiet",
+          ),
+        );
+      content.append(
+        el(
+          "p",
+          t(
+            "Complete one route. Work saves on this device; bring your work or questions to class. It is not sent automatically.",
+            "Completa una ruta. El trabajo se guarda en este dispositivo; lleva tu trabajo o preguntas a clase. No se envía automáticamente.",
+          ),
+          "assignment-guidance",
+        ),
+      );
       const link = el("a", t("Open homework", "Abrir tarea"), "button");
-      const path = /^\/lessons\/\d{1,2}-\d{1,2}(?:-flagship)?\/homework(?:\.html)?\/?$/.test(
-        item.homeworkPath,
-      )
+      const path = HOMEWORK_PATH_PATTERN.test(item.homeworkPath)
         ? item.homeworkPath
         : `/lessons/${item.id}/homework.html`;
       link.href = `${path}?route=core&lang=${lang}&section=${encodeURIComponent(section.id)}`;
@@ -252,7 +354,11 @@ export function renderHomeworkHub(
     );
   }
   if (!assignments.length && !preview) {
-    const optional = el("p", t("Optional review, not assigned homework: ", "Repaso opcional, no tarea asignada: "), "optional-review");
+    const optional = el(
+      "p",
+      t("Optional review, not assigned homework: ", "Repaso opcional, no tarea asignada: "),
+      "optional-review",
+    );
     const guide = el("a", t("Family math guides", "Guías de matemáticas para familias"));
     guide.href = "/families/";
     optional.append(guide);
