@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { analyzeWriting, SPEAKING_CHECKS } from "../access-practice-lab/src/grade.js";
-import { TIERS } from "../access-practice-lab/src/util.js";
+import { TIERS, testingWindowPhase } from "../access-practice-lab/src/util.js";
 
 test("word-bank feedback does not reward embedded substrings", () => {
   const feedback = analyzeWriting(
@@ -51,4 +51,21 @@ test("support choices preserve route keys without claiming official scores", () 
     SPEAKING_CHECKS.find((check) => check.id === "clear").label,
     /words, phrases, or sentences/,
   );
+});
+
+test("testing window status ends with the configured regular window", () => {
+  const window = { start: "2027-01-06", end: "2027-02-16" };
+  assert.deepEqual(testingWindowPhase(window, "2026-10-02"), {
+    phase: "upcoming",
+    daysAway: 96,
+  });
+  assert.deepEqual(testingWindowPhase(window, "2027-01-06"), {
+    phase: "starting",
+    daysAway: 0,
+  });
+  assert.deepEqual(testingWindowPhase(window, "2027-02-16"), {
+    phase: "open",
+    daysAway: 0,
+  });
+  assert.equal(testingWindowPhase(window, "2027-02-17"), null);
 });

@@ -2,7 +2,7 @@
 // content/family.json so it can be edited without touching code.
 import { crumbsHTML } from "../components.js";
 import { loadFamily, loadShared } from "../content.js";
-import { BASE, formatDate, html } from "../util.js";
+import { BASE, formatDate, html, testingWindowPhase } from "../util.js";
 
 export async function render(ctx) {
   const [fam, shared] = await Promise.all([loadFamily(), loadShared().catch(() => ({}))]);
@@ -37,7 +37,7 @@ export async function render(ctx) {
             </button>
           </div>
         </div>
-        ${win ? html`<aside class="window-card"><span class="window-kicker">${T(fam.windowLabel)}</span><strong>${formatDate(win.start)} – ${formatDate(win.end)}</strong><span>${T(fam.windowNote)}</span></aside>` : ""}
+        ${testingWindowPhase(win) ? html`<aside class="window-card"><span class="window-kicker">${T(fam.windowLabel)}</span><strong>${formatDate(win.start)} – ${formatDate(win.end)}</strong><span>${T(fam.windowNote)}</span></aside>` : ""}
       </section>
       ${fam.sections.map(
         (s) =>

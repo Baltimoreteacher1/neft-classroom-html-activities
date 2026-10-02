@@ -107,6 +107,19 @@ export function formatDate(iso, opts = { month: "short", day: "numeric" }) {
   return Number.isNaN(d.getTime()) ? iso : d.toLocaleDateString(undefined, opts);
 }
 
+/** Current regular testing window, or null once it has ended. */
+export function testingWindowPhase(win, today = todayISO()) {
+  if (!win?.start || !win?.end) return null;
+  const date = (iso) => new Date(`${iso}T12:00:00`).getTime();
+  const start = date(win.start);
+  const end = date(win.end);
+  const now = date(today);
+  if (![start, end, now].every(Number.isFinite) || end < start || now > end) return null;
+  const daysAway = Math.round((start - now) / 86400000);
+  if (daysAway > 0) return { phase: "upcoming", daysAway };
+  return { phase: daysAway === 0 ? "starting" : "open", daysAway: 0 };
+}
+
 /** Announce a short status message to screen readers and the toast area. */
 let toastTimer = 0;
 export function announce(message) {

@@ -11,7 +11,7 @@ import {
   bandLabel,
   formatDate,
   html,
-  todayISO,
+  testingWindowPhase,
   raw,
 } from "../util.js";
 import { buildPracticePlan } from "../practice-plan.js";
@@ -26,11 +26,6 @@ export function nextActivity(band, domain, level, rows) {
   const done = new Set(loadRecord(band, domain, level).complete);
   const next = rows.find((r) => !done.has(r[0]));
   return { done: rows.filter((r) => done.has(r[0])).length, total: rows.length, next };
-}
-
-function daysUntil(iso) {
-  const ms = new Date(`${iso}T08:00:00`) - new Date(`${todayISO()}T08:00:00`);
-  return Math.round(ms / 86400000);
 }
 
 export async function render(ctx) {
@@ -60,7 +55,7 @@ export async function render(ctx) {
     .reduce((n, r) => n + r.record.complete.length, 0);
   const streak = weekStreak();
   const win = shared.testWindow;
-  const until = win ? daysUntil(win.start) : null;
+  const windowPhase = testingWindowPhase(win);
 
   const tiles = CORE_DOMAINS.filter((d) => domains[d]).map((d) => {
     const meta = DOMAIN_META[d];
@@ -102,12 +97,12 @@ export async function render(ctx) {
           ${bandSwitchHTML(band, ctx.bands)}
         </div>
         ${
-          win && until != null && until >= -50
+          windowPhase
             ? html`<aside class="window-card" aria-label="ACCESS testing window">
                 <span class="window-kicker">${win.state} ACCESS testing</span>
                 <strong>${formatDate(win.start)} – ${formatDate(win.end)}</strong>
                 <span
-                  >${until > 0 ? `${until} days away` : until === 0 ? "Starts today" : "Testing is happening now"}</span
+                  >${windowPhase.phase === "upcoming" ? `${windowPhase.daysAway} days away` : windowPhase.phase === "starting" ? "Starts today" : "Testing is happening now"}</span
                 >
               </aside>`
             : ""
