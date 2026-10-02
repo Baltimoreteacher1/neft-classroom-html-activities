@@ -28,11 +28,19 @@ export function mountGames(host, lab, state, save, level) {
     const isInequality = lab.model.kind === 'inequality';
     const approximate = Math.abs(challenge.target - Number(challenge.target.toFixed(4))) > 1e-8;
     const goal = isMirror ? `Move A to the reflection of B across the ${round % 2 ? 'x' : 'y'}-axis.` : isInequality ? `Find a test value that ${round % 2 ? 'does not satisfy' : 'satisfies'} the rule. The boundary itself ${round % 2 ? 'may help you find a counterexample' : 'is worth checking'}.` : isBalance ? 'Make both sides equal. Only the candidate value of x can change.' : `Make ${challenge.metric.toLowerCase()} ${approximate ? 'approximately' : 'equal'} ${fmt(challenge.target)}.${approximate ? ' The target is rounded to four decimal places.' : ''} Only one control is unlocked.`;
-    stage.innerHTML = `<div class="round-heading"><h3>${esc(lab.finale)}</h3><p>Puzzle ${round + 1} of 3</p></div><div class="mission-track" aria-label="${round} of 3 puzzles solved">${[0,1,2].map(i => `<span class="${i < round ? 'earned' : ''}">${i < round ? '✓' : i + 1}</span>`).join('')}</div><p class="target">${esc(goal)}</p><p>Plan a move, change the model, then submit your solution. You can retry without losing progress.</p><div class="puzzle-model"></div><div class="actions"><button type="button" data-check>Submit solution</button><button type="button" class="quiet" data-hint>Get a strategy hint</button></div><p class="game-feedback" role="status"></p>`;
+    const showGap = !isMirror && !isInequality && !isBalance;
+    stage.innerHTML = `<div class="round-heading"><h3>${esc(lab.finale)}</h3><p>Puzzle ${round + 1} of 3</p></div><div class="mission-track" aria-label="${round} of 3 puzzles solved">${[0,1,2].map(i => `<span class="${i < round ? 'earned' : ''}">${i < round ? '✓' : i + 1}</span>`).join('')}</div><p class="target">${esc(goal)}</p><p class="goal-gap" aria-live="polite"></p><p>Plan a move, change the unlocked control, then submit your solution. You can retry without losing progress.</p><div class="puzzle-model"></div><div class="actions"><button type="button" data-check>Submit solution</button><button type="button" class="quiet" data-hint>Get a strategy hint</button></div><p class="game-feedback" role="status"></p>`;
     const saved = progress.puzzleValues;
     const initial = saved?.round === round ? saved.values : challenge.start;
+    const gap = stage.querySelector('.goal-gap');
+    const describe = (result) => {
+      if (isBalance) { gap.textContent = `Left side ${fmt(result.lhs)} · right side ${fmt(result.rhs)} · ${Math.abs(result.value) < 1e-9 ? 'balanced' : 'not balanced yet'}`; return; }
+      if (!showGap) { gap.textContent = ''; return; }
+      const diff = result.value - challenge.target;
+      gap.textContent = `Current ${challenge.metric.toLowerCase()}: ${fmt(result.value)} · goal: ${fmt(challenge.target)} · ${Math.abs(diff) <= challenge.tolerance ? 'on target' : diff > 0 ? 'too high' : 'too low'}`;
+    };
     const model = mountModel(stage.querySelector('.puzzle-model'), lab.model, { initial, free: challenge.free, prefix: 'game', level,
-      onChange: values => { progress.puzzleValues = { round, values }; save(); } });
+      onChange: (values, result) => { progress.puzzleValues = { round, values }; describe(result); save(); } });
     const status = stage.querySelector('.game-feedback');
     stage.querySelector('[data-hint]').onclick = () => { progress.hints++; save(); status.textContent = isMirror ? 'A reflection changes the sign of the coordinate perpendicular to the mirror. The other coordinate stays the same.' : isInequality ? 'Read the direction and test the boundary. Think about whether equality is allowed.' : isBalance ? 'Use the inverse operation, then substitute your candidate into the original equation.' : 'Look at the relationship in the model. Predict whether the unlocked value needs to increase or decrease. Use the worked examples in Learn if you need a starting point.'; };
     stage.querySelector('[data-check]').onclick = () => {

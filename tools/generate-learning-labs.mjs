@@ -5,7 +5,7 @@ import { controls, evaluate } from "../curriculum/learning-labs/shared/math.mjs"
 import { esc } from "../curriculum/learning-labs/shared/model.mjs";
 import { blueprints, unitNames } from "./learning-labs/blueprints.mjs";
 import { originalPractice } from "./learning-labs/practice.mjs";
-import { withCurriculumShell } from "./lib/curriculum-shell.mjs";
+import { courseNav, withCurriculumShell } from "./lib/curriculum-shell.mjs";
 import {
   CORE_ID_RE,
   listLessonDirs,
@@ -39,14 +39,23 @@ if (
   throw new Error("Lab coverage must match every core lesson exactly once.");
 const version = createHash("sha256")
   .update(
-    ["app.mjs", "math.mjs", "model.mjs", "games.mjs", "lab.css"]
+    [
+      "app.mjs",
+      "activities.mjs",
+      "progress.mjs",
+      "math.mjs",
+      "model.mjs",
+      "games.mjs",
+      "catalog.mjs",
+      "lab.css",
+    ]
       .map((f) => readFileSync(join(destination, "shared", f)))
       .join(""),
   )
   .digest("hex")
   .slice(0, 10);
 const page = (title, body, extra = "") => `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} | EduWonderLab</title><meta name="description" content="Interactive Grade 6 mathematics: learn, investigate, practice at three levels, create, and play."><link rel="icon" href="/assets/favicon.svg"><link rel="stylesheet" href="/assets/fonts/hub-curriculum.css"><link rel="stylesheet" href="/curriculum/learning-labs/shared/lab.css?v=${version}">${extra}${body.includes("data-lab=") ? '<link rel="stylesheet" href="/assets/game-studio.css?v=20261002"><script src="/assets/game-studio.js?v=20261002" defer></script>' : ""}</head><body>${body}</body></html>\n`;
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} | EduWonderLab</title><meta name="description" content="Interactive Grade 6 mathematics: learn, investigate, practice at three levels, create, and play."><link rel="icon" href="/assets/favicon.svg"><link rel="stylesheet" href="/assets/fonts/hub-curriculum.css"><link rel="stylesheet" href="/curriculum/learning-labs/shared/lab.css?v=${version}">${extra}</head><body>${body}</body></html>\n`;
 
 function standalone(question) {
   return (
@@ -205,7 +214,7 @@ for (const blueprint of blueprints) {
     join(dir, "index.html"),
     page(
       blueprint.title,
-      `<a class="skip-link" href="#workspace">Skip to activity</a><div id="lab-root" data-lab="${blueprint.id}"><nav class="crumbs" aria-label="Breadcrumb"><a href="/curriculum/">Curriculum</a><a href="/curriculum/learning-labs/">Learning labs</a></nav><main><h1>${esc(blueprint.title)}</h1><p>${esc(blueprint.mission)}</p><p>Lessons ${label}. Loading your activities…</p><noscript>This lab needs JavaScript. You can still <a href="/lessons/${blueprint.lessons[0]}/">open the connected lesson</a>.</noscript></main></div><script type="module" src="/curriculum/learning-labs/shared/app.mjs?v=${version}"></script>`,
+      `<a class="skip-link" href="#workspace">Skip to activity</a>${courseNav("labs")}<div id="lab-root" data-lab="${blueprint.id}"><nav class="crumbs" aria-label="Breadcrumb"><a href="/curriculum/">Curriculum</a><a href="/curriculum/learning-labs/">Learning labs</a></nav><main><h1>${esc(blueprint.title)}</h1><p>${esc(blueprint.mission)}</p><p>Lessons ${label}. Loading your activities…</p><noscript>This lab needs JavaScript. You can still <a href="/lessons/${blueprint.lessons[0]}/">open the connected lesson</a>.</noscript></main></div><script type="module" src="/curriculum/learning-labs/shared/app.mjs?v=${version}"></script>`,
       `<link rel="canonical" href="https://eduwonderlab.com/curriculum/learning-labs/${blueprint.id}/">`,
     ),
   );
@@ -216,6 +225,7 @@ for (const blueprint of blueprints) {
     unit,
     unitName: lab.unitName,
     lessons: blueprint.lessons,
+    lessonTitles: lessons.map((l) => l.title),
     mission: blueprint.mission,
     model: blueprint.model.kind,
     mode: blueprint.model.mode,
@@ -238,20 +248,51 @@ writeFileSync(
     2,
   ) + "\n",
 );
-const catalogBody = `<a class="skip-link" href="#catalog">Skip to labs</a><header class="catalog-header"><nav class="crumbs" aria-label="Breadcrumb"><a href="/curriculum/">Curriculum</a><a href="/curriculum/units/">Units and lessons</a></nav><h1>Learning labs</h1><p>Make something. Test an idea. Explain what changed.</p><p class="catalog-meta">${catalog.length} labs · ${covered.length} lessons · Worked examples, investigations, and games</p><details class="catalog-guide"><summary>How to use a lab</summary><p>Start with Learn. Choose Support, Core, or Stretch for practice. Then try the creation challenge and games.</p><p>Work independently or with a partner. Allow 35–55 minutes, or split a lab across two lessons. Progress stays in this browser.</p></details><nav class="unit-nav" aria-label="Jump to unit">${unitNames.map((_n, i) => `<a href="#unit-${i + 1}">Unit ${i + 1}</a>`).join("")}</nav></header><main id="catalog">${unitNames
+const modelLabels = {
+  array: "Seating array",
+  data: "Data display",
+  decimal: "Decimal receipt",
+  division: "Division model",
+  ratio: "Ratio mixer",
+  rate: "Unit-price comparison",
+  conversion: "Unit conversion",
+  growth: "Table and graph",
+  percent: "Hundred grid",
+  area: "Area model",
+  solid: "Nets and volume",
+  fraction: "Fraction strips",
+  power: "Powers and order",
+  expression: "Area-model expressions",
+  factors: "Factor lists",
+  line: "Number line",
+  coordinates: "Coordinate plane",
+  balance: "Balance scale",
+  inequality: "Inequality line",
+};
+const catalogBody = `<a class="skip-link" href="#catalog">Skip to labs</a><header class="catalog-header"><nav class="crumbs" aria-label="Breadcrumb"><a href="/curriculum/">Curriculum</a><a href="/curriculum/units/">Units and lessons</a></nav><h1>Learning labs</h1><p>Make something. Test an idea. Explain what changed.</p><p class="catalog-meta">${catalog.length} labs · ${covered.length} lessons · Worked examples, live models, three practice levels, and games</p><details class="catalog-guide"><summary>How to use a lab</summary><p>Each lab has six activities: Your mission, Learn, Investigate, Practice, Create, and Games. Start with Learn. Choose Support, Core, or Stretch for practice. Then try the creation challenge and games.</p><p>Work independently or with a partner. Allow 35–55 minutes, or split a lab across two lessons. Progress stays in this browser, and Download work keeps a copy.</p></details><form class="catalog-finder" role="search" data-finder><label for="lab-search">Find a lab by lesson number, title, or topic</label><input id="lab-search" type="search" placeholder="For example: 3.4, histogram, or percent" autocomplete="off"><p class="finder-status" role="status"></p></form><nav class="unit-nav" aria-label="Jump to unit">${unitNames.map((_n, i) => `<a href="#unit-${i + 1}">Unit ${i + 1}</a>`).join("")}</nav></header><main id="catalog">${unitNames
   .map(
     (name, i) =>
-      `<section class="catalog-unit" id="unit-${i + 1}"><h2>Unit ${i + 1}: ${esc(name)}</h2><div class="catalog-grid">${catalog
+      `<section class="catalog-unit" id="unit-${i + 1}"><h2>Unit ${i + 1}: ${esc(name)}<span class="unit-count">${catalog.filter((l) => l.unit === i + 1).length} labs</span></h2><div class="catalog-grid">${catalog
         .filter((l) => l.unit === i + 1)
         .map(
           (l) =>
-            `<article class="lab-card" style="--accent:${l.accent}"><span class="lab-card-icon" aria-hidden="true">${l.icon}</span><p class="lesson-label">Lessons ${l.lessons.map((id) => id.replace("-", ".")).join(" & ")}</p><h3><a href="${l.href}">${esc(l.title)}</a></h3><p>${esc(l.mission)}</p><p class="card-detail">Finale: ${esc(l.finale)} + Connection Quest</p></article>`,
+            `<article class="lab-card" style="--accent:${l.accent}" data-lab="${l.id}" data-search="${esc(
+              [
+                l.title,
+                ...l.lessons.map((id) => id.replace("-", ".")),
+                ...l.lessonTitles,
+                modelLabels[l.model] || l.model,
+                l.finale,
+              ]
+                .join(" ")
+                .toLowerCase(),
+            )}"><span class="lab-card-icon" aria-hidden="true">${l.icon}</span><p class="lesson-label">Lessons ${l.lessons.map((id) => id.replace("-", ".")).join(" & ")}</p><h3><a href="${l.href}">${esc(l.title)}</a></h3><ul class="card-lessons">${l.lessons.map((id, n) => `<li>${id.replace("-", ".")} ${esc(l.lessonTitles[n])}</li>`).join("")}</ul><p>${esc(l.mission)}</p><p class="card-tags"><span class="lesson-chip quiet-chip">${esc(modelLabels[l.model] || l.model)}</span><span class="lesson-chip quiet-chip">3 practice levels</span></p><p class="card-detail">Finale: ${esc(l.finale)} + Connection Quest</p></article>`,
         )
         .join("")}</div></section>`,
   )
   .join(
     "",
-  )}</main><footer>EduWonderLab · Grade 6 mathematics · <a href="/curriculum/">Return to curriculum</a></footer>`;
+  )}</main><footer>EduWonderLab · Grade 6 mathematics · <a href="/curriculum/">Return to curriculum</a></footer><script type="module" src="/curriculum/learning-labs/shared/catalog.mjs?v=${version}"></script>`;
 writeFileSync(
   join(destination, "index.html"),
   withCurriculumShell(page("Interactive Learning Labs", catalogBody), "labs"),

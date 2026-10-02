@@ -92,3 +92,37 @@ count to 1,248. A full affected-content sweep of those labs plus the rounded-tar
 case passed 487 answer submissions, 153 construction puzzles, 51 matching games,
 and the six responsive/accessibility samples. The earlier full-series sweep and
 this affected-content sweep together cover every current practice item.
+
+## Upgrade record, 2026-10-02
+
+Shared-engine upgrade applied to every lab (the engine is shared, so Units 1 and
+10 receive the same shell; content review focused on Units 2–9):
+
+- Course navigation replaces the arcade toolbar on lab pages, so a lab no longer
+  offers a "← Games" link back to the arcade. The catalog gained a lesson
+  finder (number, title, topic), lesson titles and model tags on each card, and
+  an "in progress on this device" badge.
+- Progress is visible everywhere: numbered tabs with done/in-progress marks, a
+  progress pill in the toolbar, a status list on the mission page with a
+  "Continue with …" button, and the same summary in the downloaded report.
+- Learn renders the lesson's key idea as a numbered callout, shows the
+  "Let's try together" example as a second reveal stepper, and offers the
+  worked examples in Spanish (every lesson source carries `linesEs`).
+- Investigate adds a predict/change/explain strip, per-model "what the picture
+  shows / try this first" guidance (`guidance()` in `model.mjs`), level-specific
+  sentence frames, a Done check per investigation, and an "Add what the model
+  shows now" button that copies the live readout into the evidence note.
+- The histogram now draws only the occupied intervals (minimum four) with
+  staggered labels, fixing overlapping axis text on the live site.
+- Practice shows a progress bar, hint counts ("2 of 3 shown"), in-progress and
+  complete states in the activity picker, a completion card that points to the
+  next level, and focuses Next after a correct answer.
+- Create offers sentence-starter buttons, a word count, and a "ready to share"
+  check tied to the three criteria. Games show the current value against the
+  goal while a student adjusts the unlocked control.
+- Engine modules: `app.mjs` (shell, mission, report), `activities.mjs` (learn,
+  investigate, practice, create), `progress.mjs` (completion rules, key-idea
+  parsing), `catalog.mjs` (finder). `tools/learning-labs.test.mjs` covers the
+  completion rules, key-idea parsing, Spanish parity, model guidance and the
+  histogram binning. The full browser sweep and the scoped QA gate passed
+  before release.

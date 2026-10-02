@@ -17,9 +17,18 @@ export function visual(model, values, result) {
   } else if (k === 'data') {
     const s = result, axisMax = Math.max(10, Math.ceil(Math.max(...values) / 10) * 10), sx = x => 55 + x / axisMax * 490;
     if (model.mode === 'histogram') {
-      const bins = Array(11).fill(0); values.forEach(n => bins[Math.min(10, Math.floor(n / 5))]++);
-      bins.forEach((n, i) => { body += rect(45 + i * 47, 240 - n * 25, 42, n * 25); body += text(66 + i * 47, 265, `${i * 5}–${i * 5 + 4}`); if (n) body += text(66 + i * 47, 230 - n * 25, n); });
-      body += text(300, 292, 'Equal-width intervals · frequency is printed above each bar');
+      // Bins of width 5 from 0 up to the last occupied interval, so labels stay legible.
+      const count = Math.max(4, Math.floor(Math.max(...values) / 5) + 1), width = 500 / count;
+      const bins = Array(count).fill(0); values.forEach(n => bins[Math.min(count - 1, Math.floor(n / 5))]++);
+      const unit = Math.min(25, 200 / Math.max(1, ...bins));
+      body += line(50, 240, 550, 240);
+      bins.forEach((n, i) => {
+        const x = 50 + i * width, cx = x + width / 2, stagger = count > 7 && i % 2 ? 18 : 0;
+        body += rect(x + 2, 240 - n * unit, width - 4, n * unit);
+        body += `<text x="${cx}" y="${260 + stagger}" text-anchor="middle" font-size="${count > 7 ? 13 : 15}">${i * 5}–${i * 5 + 4}</text>`;
+        if (n) body += text(cx, 230 - n * unit, n);
+      });
+      body += text(300, 296, `${values.length} observations · intervals of width 5 · frequency above each bar`);
     } else {
       body += line(55, 135, 545, 135);
       for (let n = 0; n <= axisMax; n += axisMax / 10) body += line(sx(n), 129, sx(n), 141) + text(sx(n), 161, n);
@@ -173,4 +182,43 @@ export function mountModel(host, model, { initial = model.values, free = null, o
   });
   update();
   return { get values() { return [...values]; }, get valid() { return valid; }, result: () => evaluate(model, values, { symbol, shape }) };
+}
+
+// Student-facing orientation for each live model: what the picture shows and what to watch.
+const watch = {
+  'array': ['Each square is one seat. Rows run across; the readout multiplies rows by seats per row.', 'Change one number at a time and watch whether the total grows or shrinks.'],
+  'data:histogram': ['Each bar counts how many observations fall in one interval of width 5. Bars touch because the intervals are continuous.', 'Move one observation across an interval boundary and watch which bar loses one and which gains one.'],
+  'data:box': ['Dots show every observation. The shaded box covers the middle half, from Q1 to Q3, with the median marked inside it.', 'Change only the largest value: the maximum moves, but does the median move?'],
+  'data:spread': ['The box shows the middle half. Range measures the whole spread; IQR measures only the box.', 'Try to stretch the range without widening the box.'],
+  'data:mean-mad': ['The readout gives the mean (fair share) and MAD, the average distance of the observations from the mean.', 'Make all values closer together and watch the MAD shrink while the mean can stay the same.'],
+  'data:outlier': ['One unusual value sits far from the rest. Compare how the mean and the median respond to it.', 'Replace the unusual value with a typical one and compare both measures again.'],
+  'decimal': ['The two boxes show price per item and number of items. Their product is the order total.', 'Predict the total before changing a value. Decide whether it should go up or down.'],
+  'division': ['The total supply is split into equal shipments. The quotient counts the shipments.', 'Keep the total fixed and make each shipment larger. What happens to the number of shipments?'],
+  'ratio': ['Each block is one cup. The top row is the first ingredient; the bottom row is the second.', 'Scale both rows by the same factor and check that the simplified ratio does not change.'],
+  'rate': ['Price divided by the number of items gives the unit price in dollars per item.', 'Compare two offers using the same unit, dollars per one item.'],
+  'conversion': ['The fixed factor converts one unit to another. The readout multiplies length by that factor.', 'Double the length and check that the converted length also doubles.'],
+  'growth': ['Points follow a rule y = (increase per step)·x + starting amount. The highlighted point shows the current input.', 'Change the starting amount and watch the whole line shift without changing its steepness.'],
+  'growth:ratio-graph': ['Each point is (carriages, passengers). The line passes through (0, 0) because the relationship is proportional.', 'Change passengers per carriage and watch the steepness of the line.'],
+  'percent': ['The hundred grid shades one square for each percent. The readout applies that percent to the whole amount.', 'Keep the percent fixed and change the whole. The shading stays the same while the amount changes.'],
+  'percent:whole': ['The grid shows the percent. The readout works backward from a known part to recover the whole.', 'Check the recovered whole: multiply it by the percent as a decimal to get the part back.'],
+  'area': ['The dashed segment is the perpendicular height. Area uses base and height, not slanted sides.', 'Double the height and predict whether the area doubles.'],
+  'area:trapezoid': ['The two horizontal sides are the parallel bases. The dashed segment is the perpendicular height.', 'Swap the two bases. Does the area change?'],
+  'area:polygon': ['The regular polygon is split into congruent triangles meeting at the center. The apothem is each triangle’s height.', 'Add sides while keeping the side length and watch the area grow.'],
+  'solid': ['The net shows all faces of the box laid flat. Volume counts the unit cubes that fill it.', 'Change one dimension and predict the new volume before reading it.'],
+  'solid:surface': ['The net shows every face. Surface area adds the area of all faces; the pyramid net has one square and four triangles.', 'Switch between prism and pyramid nets and compare how the formulas use the dimensions.'],
+  'fraction': ['Each strip is one whole unit, divided into equal parts. A portion uses some of those parts.', 'Make the serving size smaller and predict whether the number of portions grows or shrinks.'],
+  'power': ['The expression evaluates the power first, then adds. The picture shows the repeated multiplication.', 'Increase the exponent by one and compare the jump in value with adding one to the base.'],
+  'expression': ['The rectangle is split into two parts: a·x and a·b. Together they equal a(x + b).', 'Change x and check that both expression forms still give the same value.'],
+  'factors': ['The lists show every factor of each number. The GCF is the largest shared factor; the LCM is the smallest shared multiple.', 'Choose two numbers with no common factor other than 1 and check what happens to the LCM.'],
+  'line': ['Both locations sit on one number line. The readout compares them and measures their distance.', 'Place one point at the opposite of the other and watch the distances from zero.'],
+  'coordinates': ['Point A and point B sit on a coordinate plane. The readout measures along horizontal and vertical streets.', 'Move one point so both share the same x-coordinate and check which distance becomes zero.'],
+  'coordinates:rectangle': ['A and B are opposite corners of a rectangle. Width and height come from the coordinate differences.', 'Move one corner across an axis and check that the width is still a positive length.'],
+  'coordinates:reflect': ['The readout lists A’s reflections across each axis. Move B to test which coordinate changes sign.', 'Reflect across the x-axis: x stays the same and y changes sign.'],
+  'coordinates:symmetry': ['The readout lists A’s reflections across each axis. Move B to test which coordinate changes sign.', 'Reflect across the y-axis: y stays the same and x changes sign.'],
+  'balance': ['The scale tips toward the heavier side. It balances only when the candidate value of x makes both sides equal.', 'Use the inverse operation to find x, then test it on the scale.'],
+  'inequality': ['The highlighted ray shows every value that satisfies the rule. An open circle excludes the boundary; a closed circle includes it.', 'Test the boundary value itself and explain whether it qualifies.'],
+};
+export function guidance(model) {
+  const [show, tip] = watch[`${model.kind}:${model.mode}`] || watch[model.kind] || ['The picture updates as you change the controls.', 'Change one quantity at a time and record what the readout shows.'];
+  return { show, tip };
 }

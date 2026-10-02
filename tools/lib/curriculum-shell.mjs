@@ -18,6 +18,9 @@ export const shellPages = new Map([
   ["curriculum/my-progress/index.html", ""],
   ["curriculum/family-connections/index.html", "families"],
 ]);
+export function courseNav(active = "") {
+  return `<nav class="ewl-course-nav" aria-label="Curriculum navigation"><div class="ewl-course-nav__inner"><a class="ewl-course-brand" href="/curriculum/"><img src="/assets/favicon.svg" width="28" height="28" alt="">EduWonderLab<span>Grade 6 math</span></a><ul>${destinations.map(([key, href, label]) => `<li><a href="${href}"${key === active ? ' aria-current="page"' : ""}>${label}</a></li>`).join("")}</ul></div></nav>`;
+}
 export function withCurriculumShell(html, active = "") {
   html = html.replace(
     /<!-- curriculum-shell:begin -->[\s\S]*?<!-- curriculum-shell:end -->\s*/g,
@@ -53,6 +56,6 @@ export function withCurriculumShell(html, active = "") {
     target && !/class="skip-link"/.test(html)
       ? `<a class="ewl-skip" href="#${target}">Skip to main content</a>`
       : "";
-  const nav = `<!-- curriculum-shell:begin -->\n${skip}<nav class="ewl-course-nav" aria-label="Curriculum navigation"><div class="ewl-course-nav__inner"><a class="ewl-course-brand" href="/curriculum/"><img src="/assets/favicon.svg" width="28" height="28" alt="">EduWonderLab<span>Grade 6 math</span></a><ul>${destinations.map(([key, href, label]) => `<li><a href="${href}"${key === active ? ' aria-current="page"' : ""}>${label}</a></li>`).join("")}</ul></div></nav>\n<!-- curriculum-shell:end -->\n`;
+  const nav = `<!-- curriculum-shell:begin -->\n${skip}${courseNav(active)}\n<!-- curriculum-shell:end -->\n`;
   return html.replace(/(<body[^>]*>)\s*/, `$1\n${nav}`);
 }
