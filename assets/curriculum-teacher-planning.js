@@ -1353,7 +1353,7 @@
       }
     });
     var summary = document.createElement("summary");
-    summary.textContent = "🧰 Teacher Tools & Featured Resources";
+    summary.textContent = "Teacher tools & featured resources";
     tools.parentNode.insertBefore(details, tools);
     details.appendChild(summary);
 

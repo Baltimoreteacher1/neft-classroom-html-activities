@@ -27,8 +27,31 @@ const names = [...source.matchAll(/<span class="unit-name">([^<]+)<\/span>/g)].m
 const manifest = loadCurriculumManifest();
 if (names.length !== manifest.units.length)
   throw new Error("Unit overview does not match the course.");
+
+// Unit dates come from the generated pacing ranges (the original plan), so the
+// cards can say when each unit is taught and mark the current one on load.
+const ranges = JSON.parse(readFileSync(resolve(REPO_ROOT, "data/pacing-unit-ranges.json"), "utf8"));
+const rangeFor = (unit) => ranges.units.find((entry) => entry.curriculumUnit === unit);
+const MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
+const shortDate = (iso) => {
+  const [, month, day] = iso.split("-").map(Number);
+  return `${MONTHS[month - 1]} ${day}`;
+};
+const datesFor = (unit) => {
+  const range = rangeFor(unit);
+  if (!range?.startDate || !range?.endDate) return { attrs: "", label: "" };
+  return {
+    attrs: ` data-start="${range.startDate}" data-end="${range.endDate}"`,
+    label: `<span class="course-unit-dates">${shortDate(range.startDate)} – ${shortDate(range.endDate)}</span>`,
+  };
+};
 const overview = `<!-- course-overview:begin -->
-<section class="course-overview" id="course-overview" aria-labelledby="course-overview-title"><div class="course-overview__head"><h2 id="course-overview-title">Your Grade 6 course</h2><p>${manifest.units.length} units. ${manifest.lessons.length} lessons. Choose a unit to see its lessons and resources.</p></div><ol class="course-unit-list">${manifest.units.map((unit, index) => `<li><a href="/curriculum/units/#unit-${unit}"><span class="course-unit-number">Unit ${unit}</span><strong class="course-unit-title">${names[index]}</strong><span class="course-unit-count">${manifest.lessons.filter((lesson) => lesson.unit === unit).length} lessons</span></a></li>`).join("")}</ol></section>
+<section class="course-overview" id="course-overview" aria-labelledby="course-overview-title"><div class="course-overview__head"><h2 id="course-overview-title">Your Grade 6 course</h2><p>${manifest.units.length} units. ${manifest.lessons.length} lessons. Units are listed by number; the dates show when each one is taught.</p></div><ol class="course-unit-list">${manifest.units
+  .map((unit, index) => {
+    const dates = datesFor(unit);
+    return `<li data-unit="${unit}"${dates.attrs}><a href="/curriculum/units/#unit-${unit}"><span class="course-unit-number">Unit ${unit}</span><strong class="course-unit-title">${names[index]}</strong><span class="course-unit-count">${manifest.lessons.filter((lesson) => lesson.unit === unit).length} lessons</span>${dates.label}</a></li>`;
+  })
+  .join("")}</ol></section>
 <!-- course-overview:end -->
 `;
 const home = resolve(REPO_ROOT, "curriculum/index.html");

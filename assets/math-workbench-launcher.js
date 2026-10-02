@@ -165,6 +165,15 @@
       "#mwb-launcher .mwb-label{max-width:0;opacity:0;overflow:hidden;white-space:nowrap;" +
       "transition:max-width .18s ease,opacity .18s ease;}" +
       "#mwb-launcher:hover .mwb-label,#mwb-launcher:focus-visible .mwb-label{max-width:180px;opacity:1;}" +
+      // The curriculum dashboard has room beside its content on wide screens,
+      // so there the label is always shown: a bare ✱ does not say what it opens.
+      "@media (min-width:1100px){.mwb-labelled #mwb-launcher{width:auto;gap:8px;padding:0 16px;}" +
+      ".mwb-labelled #mwb-launcher .mwb-label{max-width:180px;opacity:1;}}" +
+      // Phones: a slim tab flush with the edge, so it cannot sit on top of a
+      // full-width search box or text field, and it steps aside while typing.
+      "@media (max-width:640px){#mwb-launcher{right:0;width:30px;height:40px;" +
+      "border-radius:12px 0 0 12px;border-right:0;}" +
+      ".mwb-typing #mwb-launcher{visibility:hidden;}}" +
       "@media (prefers-reduced-motion:reduce){#mwb-launcher{transition:none;}" +
       "#mwb-launcher:hover{transform:none;}}" +
       "@media print{#mwb-launcher,#mwb-launcher-style{display:none!important;}}";
@@ -189,7 +198,21 @@
     nav.className = "mwb-launcher-nav";
     nav.setAttribute("aria-label", "Math Workbench");
     nav.appendChild(a);
+    if (/^\/curriculum\/?(?:index\.html)?$/.test(location.pathname))
+      nav.classList.add("mwb-labelled");
     document.body.appendChild(nav);
+    document.addEventListener("focusin", function (event) {
+      var t = event.target;
+      var typing =
+        t instanceof HTMLTextAreaElement ||
+        (t instanceof HTMLInputElement &&
+          !/^(?:button|checkbox|radio|range|submit|reset|color|file)$/.test(t.type)) ||
+        (t instanceof HTMLElement && t.isContentEditable);
+      nav.classList.toggle("mwb-typing", !!typing);
+    });
+    document.addEventListener("focusout", function () {
+      nav.classList.remove("mwb-typing");
+    });
     lessonAwareHref(a);
 
     // Geometry lessons (Unit 10 / 3D solids / nets) mount a twin NetFold 3D

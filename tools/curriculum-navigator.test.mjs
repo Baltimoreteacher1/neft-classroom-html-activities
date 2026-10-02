@@ -14,6 +14,8 @@ const launch = JSON.parse(
 const SAVED = "ewl:curriculum:saved:v1";
 const RECENT = "ewl:curriculum:recent:v1";
 const markup = `<main><section id="curriculum-navigator"><div id="nav-recent"></div><div class="cn-layout"><div class="cn-browser"><label for="curr-search">Find a lesson</label><input id="curr-search" type="search"><button id="curr-search-clear" hidden>Clear search</button><label for="nav-unit">Unit</label><select id="nav-unit"></select><button id="nav-saved" type="button" aria-pressed="false">Saved</button><button id="nav-reset" type="button">Reset</button><p id="nav-results-status" role="status"></p><ol id="nav-results"></ol><button id="nav-more" type="button" hidden>More</button></div><section id="nav-preview" tabindex="-1" aria-labelledby="nav-lesson-title"><h3 id="nav-lesson-title">Choose a lesson</h3></section></div><p id="nav-message" role="status"></p><button id="nav-retry" type="button" hidden>Retry</button></section></main>`;
+/** A resource link's own label, without its "Printable"/"Interactive" kind tag. */
+const labelOf = (link) => link.querySelector(".cn-resource-label")?.textContent ?? link.textContent;
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
 const tests = [];
 const test = (name, action) => tests.push({ name, action });
@@ -57,6 +59,9 @@ async function setup(options = {}) {
   if (options.clipboard)
     Object.defineProperty(window.navigator, "clipboard", { value: options.clipboard });
   if (options.cockpit) window.CurriculumCockpit = options.cockpit;
+  if (options.pacingDays) window.__NT_PACING_DAYS = options.pacingDays;
+  if (options.overlay)
+    window.localStorage.setItem("nt-pacing:overlay", JSON.stringify(options.overlay));
   window.eval(source);
   await tick();
   const $ = (id) => window.document.getElementById(id);
@@ -153,7 +158,7 @@ test("selection shows target and real resources, including supported lesson vari
     assert.ok($("nav-preview").querySelector('a[href="/lessons/3-2-part2/?student=1"]'));
     assert.ok($("nav-preview").querySelector('a[href="/lessons/3-2-group1/?student=1"]'));
     assert.ok(
-      $("nav-preview").querySelector('a[href="/lessons/3-2-group2/worksheet-2.html?student=1"]'),
+      $("nav-preview").querySelector('a[href="/lessons/3-2-group2/worksheet-2?student=1"]'),
     );
     assert.ok($("nav-preview").querySelector(".hub-teacher-only a"));
     assert.match($("nav-preview").textContent, /does not record student learning or mastery/);
@@ -175,14 +180,11 @@ test("unavailable and inapplicable catalog resources never become links", async 
   await using({ catalog: altered }, ({ $, pick }) => {
     pick("3-2");
     assert.equal(
-      $("nav-preview").querySelector('a[href="/lessons/3-2/worksheet.html?student=1"]'),
+      $("nav-preview").querySelector('a[href="/lessons/3-2/worksheet?student=1"]'),
       null,
     );
-    assert.equal(
-      $("nav-preview").querySelector('a[href="/lessons/3-2/notes.html?student=1"]'),
-      null,
-    );
-    assert.equal($("nav-preview").querySelector('a[href="/lessons/3-2/slides.html"]'), null);
+    assert.equal($("nav-preview").querySelector('a[href="/lessons/3-2/notes?student=1"]'), null);
+    assert.equal($("nav-preview").querySelector('a[href="/lessons/3-2/slides"]'), null);
   });
 });
 
@@ -591,7 +593,7 @@ test("readiness and learning-lab links use the existing launch manifest without 
     pick(withoutReadiness.id);
     assert.equal(
       [...$("nav-preview").querySelectorAll("a")].some(
-        (link) => link.textContent === "Readiness check",
+        (link) => labelOf(link) === "Readiness check",
       ),
       false,
     );
@@ -611,7 +613,7 @@ test("learning-lab exception rejects external, encoded, traversal, and other-res
       pick("3-2");
       assert.equal(
         [...$("nav-preview").querySelectorAll("a")].some(
-          (link) => link.textContent === "Interactive learning lab",
+          (link) => labelOf(link) === "Interactive learning lab",
         ),
         false,
         unsafe,
@@ -624,7 +626,7 @@ test("learning-lab exception rejects external, encoded, traversal, and other-res
   await using({ launch: modified }, ({ $, pick }) => {
     pick("3-2");
     assert.equal(
-      [...$("nav-preview").querySelectorAll("a")].some((link) => link.textContent === "Handout"),
+      [...$("nav-preview").querySelectorAll("a")].some((link) => labelOf(link) === "Handout"),
       false,
     );
   });
@@ -668,6 +670,101 @@ test("Teach this lesson reuses the existing workflow control with the selected l
       assert.equal(opened, 1, "student mode does not activate teacher tools");
     },
   );
+});
+
+test("resource links use final URLs and say what kind of material they open", () =>
+  using({}, ({ $, pick }) => {
+    pick("3-2");
+    const links = [...$("nav-preview").querySelectorAll("a.cn-resource")];
+    assert.ok(links.length > 5);
+    for (const link of links)
+      assert.doesNotMatch(link.getAttribute("href"), /\.html(?:[?#]|$)/, link.getAttribute("href"));
+    const handout = links.find((link) => labelOf(link) === "Handout");
+    assert.ok(handout, "positive control: the label helper finds a real resource");
+    assert.equal(handout.querySelector(".cn-kind").textContent, "Printable");
+    assert.equal(
+      links.find((link) => labelOf(link) === "Interactive lesson").dataset.kind,
+      "Interactive",
+    );
+  }));
+
+test("with no lesson chosen, the panel opens on today's lesson from the pacing plan", async () => {
+  const today = new Date();
+  const iso = (d) =>
+    d.getFullYear() +
+    "-" +
+    String(d.getMonth() + 1).padStart(2, "0") +
+    "-" +
+    String(d.getDate()).padStart(2, "0");
+  const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+  const days = [
+    [iso(today), "3-4", "Core Lesson", ""],
+    [iso(tomorrow), "3-5", "Core Lesson", ""],
+  ];
+  const title = (id) => catalog.lessons.find((lesson) => lesson.id === id).title;
+  await using({ pacingDays: days }, ({ $, window }) => {
+    assert.equal($("nav-lesson-title").textContent, title("3-4"));
+    assert.match($("nav-preview").textContent, /Today in class/);
+    assert.ok(window.document.getElementById("curriculum-navigator").classList.contains("cn-idle"));
+    const open = [...$("nav-preview").querySelectorAll("button")].find(
+      (button) => button.textContent === "Open today’s lesson",
+    );
+    open.click();
+    assert.equal(new URL(window.location.href).searchParams.get("lesson"), "3-4");
+    assert.ok(
+      !window.document.getElementById("curriculum-navigator").classList.contains("cn-idle"),
+    );
+  });
+  // A planner move saved on this device wins over the original plan.
+  await using(
+    {
+      pacingDays: days,
+      overlay: { [iso(today)]: { plan: { lessonId: "3-3-catchup", dayType: "Catch-Up" } } },
+    },
+    ({ $ }) => {
+      assert.equal($("nav-lesson-title").textContent, title("3-3"));
+      assert.match($("nav-preview").textContent, /catch-up day/);
+    },
+  );
+  // A day with no lesson names the day and offers the next lesson instead.
+  await using(
+    { pacingDays: [[iso(today), "", "Assessment", "Unit Assessment — Unit 3"], days[1]] },
+    ({ $ }) => {
+      assert.equal($("nav-lesson-title").textContent, "Unit Assessment — Unit 3");
+      assert.match($("nav-preview").textContent, /Next lesson: 3\.5/);
+    },
+  );
+  // Outside the school year it falls back to the plain chooser, with copy for each audience.
+  await using({ pacingDays: [["2000-01-03", "3-4", "Core Lesson", ""]] }, ({ $ }) => {
+    assert.equal($("nav-lesson-title").textContent, "Choose your next lesson");
+    assert.ok($("nav-preview").querySelector(".hub-teacher-only"));
+    assert.ok($("nav-preview").querySelector(".hub-student-only"));
+  });
+});
+
+test("the teacher Lesson status filter narrows the results and students ignore it", async () => {
+  const altered = structuredClone(catalog);
+  altered.lessons.find((lesson) => lesson.id === "3-2").status = { needsReview: true };
+  altered.lessons.find((lesson) => lesson.id === "3-3").status = { missingResources: ["handout"] };
+  for (const lesson of altered.lessons) if (!["3-2", "3-3"].includes(lesson.id)) lesson.status = {};
+  await using({ catalog: altered, teacher: true }, ({ $, window }) => {
+    const ids = () =>
+      [...$("nav-results").querySelectorAll("[data-lesson-id]")].map((b) => b.dataset.lessonId);
+    const filter = (value) => {
+      window.document.body.dataset.auditFilter = value;
+      window.document.dispatchEvent(new window.CustomEvent("ewl:audit-filter"));
+    };
+    filter("attention");
+    assert.deepEqual(ids(), ["3-2", "3-3"]);
+    filter("review");
+    assert.deepEqual(ids(), ["3-2"]);
+    filter("missing");
+    assert.deepEqual(ids(), ["3-3"]);
+    assert.match($("nav-results").textContent, /Missing resources/);
+    window.document.body.classList.remove("teacher-mode");
+    filter("missing");
+    assert.match($("nav-results-status").textContent, /^84 lessons/);
+  });
 });
 
 for (const { name, action } of tests) {

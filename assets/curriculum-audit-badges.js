@@ -7,7 +7,7 @@
  *   - a small status badge strip (Ready / Needs Review / Missing, + Level 1)
  *   - Family / Student Help / Teacher Notes resource pills (the newly generated
  *     support pages), so they are discoverable from the hub.
- *   - a "Show only problems" toggle + status filter in the controls bar.
+ *   - a teacher-only "Lesson status" filter in the controls bar.
  *
  * Purely additive and idempotent: it never restructures or removes existing
  * card markup, only appends. If the manifest is missing it does nothing.
@@ -43,7 +43,7 @@
       ".audit-controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 8px;}" +
       ".audit-controls label{font-size:13.5px;color:#5f6f80;display:flex;align-items:center;gap:6px;}" +
       ".audit-controls select{min-height:40px;border:1px solid #d7e2ed;border-radius:8px;padding:0 8px;background:#fff;color:#21313f;}" +
-      "body.audit-only-problems details.lesson:not([data-audit-status=problem]){display:none!important;}" +
+      "body.audit-filter-attention details.lesson[data-audit-status=ready]{display:none!important;}" +
       "body.audit-filter-ready details.lesson:not([data-audit-status=ready]){display:none!important;}" +
       "body.audit-filter-review details.lesson:not([data-audit-status=review]){display:none!important;}" +
       "body.audit-filter-missing details.lesson:not([data-audit-status=problem]){display:none!important;}" +
@@ -52,7 +52,7 @@
       // These mirror them onto the VISIBLE hub items, which is where a teacher
       // actually reads and filters them.
       ".lesson-outline-item .audit-badges{margin:4px 0 0;}" +
-      "body.audit-only-problems .lesson-outline-item:not([data-audit-status=problem]){display:none!important;}" +
+      "body.audit-filter-attention .lesson-outline-item[data-audit-status=ready]{display:none!important;}" +
       "body.audit-filter-ready .lesson-outline-item:not([data-audit-status=ready]){display:none!important;}" +
       "body.audit-filter-review .lesson-outline-item:not([data-audit-status=review]){display:none!important;}" +
       "body.audit-filter-missing .lesson-outline-item:not([data-audit-status=problem]){display:none!important;}";
@@ -107,7 +107,7 @@
   function enhanceCard(card, entry) {
     var status = statusOf(entry);
     card.setAttribute("data-quality-source", "curriculum-manifest");
-    // problem = anything not fully ready, used by the "show only problems" filter.
+    // problem = missing resources; the "Lesson status" filter reads these values.
     card.setAttribute(
       "data-audit-status",
       status === "ready" ? "ready" : status === "review" ? "review" : "problem",
@@ -188,22 +188,17 @@
     // visitor — students included — saw two controls that did nothing.
     var bar = el("div", "audit-controls hub-teacher-only");
 
-    var probLabel = el("label", null, "");
-    var cb = el("input");
-    cb.type = "checkbox";
-    cb.id = "audit-only-problems";
-    probLabel.appendChild(cb);
-    probLabel.appendChild(document.createTextNode(" Show only problems"));
-    cb.addEventListener("change", function () {
-      document.body.classList.toggle("audit-only-problems", cb.checked);
-    });
-
-    var selLabel = el("label", null, "Status: ");
+    // One labelled control. It drives the lesson finder (which listens for
+    // ewl:audit-filter) and, through the body classes, the printed list.
+    var selLabel = el("label", null, "Lesson status");
+    selLabel.setAttribute("for", "audit-status-filter");
     var sel = el("select");
+    sel.id = "audit-status-filter";
     [
-      ["all", "All"],
+      ["all", "All lessons"],
+      ["attention", "Needs attention"],
       ["ready", "Ready"],
-      ["review", "Needs Review"],
+      ["review", "Needs review"],
       ["missing", "Missing resources"],
     ].forEach(function (o) {
       var opt = el("option", null, o[1]);
@@ -212,13 +207,20 @@
     });
     sel.addEventListener("change", function () {
       var b = document.body;
-      b.classList.remove("audit-filter-ready", "audit-filter-review", "audit-filter-missing");
+      b.classList.remove(
+        "audit-filter-attention",
+        "audit-filter-ready",
+        "audit-filter-review",
+        "audit-filter-missing",
+      );
       if (sel.value !== "all") b.classList.add("audit-filter-" + sel.value);
+      if (sel.value === "all") delete b.dataset.auditFilter;
+      else b.dataset.auditFilter = sel.value;
+      document.dispatchEvent(new CustomEvent("ewl:audit-filter"));
     });
-    selLabel.appendChild(sel);
 
-    bar.appendChild(probLabel);
     bar.appendChild(selLabel);
+    bar.appendChild(sel);
     controls.parentNode.insertBefore(bar, controls.nextSibling);
   }
 

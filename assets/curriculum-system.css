@@ -235,3 +235,75 @@
   color: var(--course-ink);
   border-bottom: 1px solid var(--course-border);
 }
+
+/* One accent per unit, shared by the dashboard course cards and the units
+   page, so a unit reads as the same thing wherever it appears. Decorative
+   only: text never relies on these colors. */
+.curriculum-product {
+  --unit-1: #316f62; --unit-2: #2f6fa3; --unit-3: #b5562b; --unit-4: #7a5aa6; --unit-5: #2f8a8a;
+  --unit-6: #a8792a; --unit-7: #3f6db5; --unit-8: #a34a6b; --unit-9: #557a2f; --unit-10: #5b6470;
+}
+.course-unit-list li[data-unit="1"] { --unit-accent: var(--unit-1); }
+.course-unit-list li[data-unit="2"] { --unit-accent: var(--unit-2); }
+.course-unit-list li[data-unit="3"] { --unit-accent: var(--unit-3); }
+.course-unit-list li[data-unit="4"] { --unit-accent: var(--unit-4); }
+.course-unit-list li[data-unit="5"] { --unit-accent: var(--unit-5); }
+.course-unit-list li[data-unit="6"] { --unit-accent: var(--unit-6); }
+.course-unit-list li[data-unit="7"] { --unit-accent: var(--unit-7); }
+.course-unit-list li[data-unit="8"] { --unit-accent: var(--unit-8); }
+.course-unit-list li[data-unit="9"] { --unit-accent: var(--unit-9); }
+.course-unit-list li[data-unit="10"] { --unit-accent: var(--unit-10); }
+.course-unit-list a { position: relative; box-shadow: inset 0 4px 0 var(--unit-accent, transparent); padding-top: 18px; }
+.course-unit-dates { margin-top: 2px; color: var(--course-muted); font-size: 14px; }
+.course-unit-list li.is-current a { background: #f3f8f4; box-shadow: inset 0 6px 0 var(--unit-accent, var(--course-teal)), inset 0 0 0 2px var(--unit-accent, var(--course-teal)); }
+.course-unit-now { align-self: flex-start; margin-bottom: 6px; padding: 1px 10px; border-radius: 999px; background: var(--unit-accent, var(--course-teal)); color: #fff; font-size: 14px; font-weight: 700; line-height: 1.6; }
+.curriculum-units-page #unit-1 .unit-card-header { box-shadow: inset 0 4px 0 var(--unit-1); }
+.curriculum-units-page #unit-2 .unit-card-header { box-shadow: inset 0 4px 0 var(--unit-2); }
+.curriculum-units-page #unit-3 .unit-card-header { box-shadow: inset 0 4px 0 var(--unit-3); }
+.curriculum-units-page #unit-4 .unit-card-header { box-shadow: inset 0 4px 0 var(--unit-4); }
+.curriculum-units-page #unit-5 .unit-card-header { box-shadow: inset 0 4px 0 var(--unit-5); }
+.curriculum-units-page #unit-6 .unit-card-header { box-shadow: inset 0 4px 0 var(--unit-6); }
+.curriculum-units-page #unit-7 .unit-card-header { box-shadow: inset 0 4px 0 var(--unit-7); }
+.curriculum-units-page #unit-8 .unit-card-header { box-shadow: inset 0 4px 0 var(--unit-8); }
+.curriculum-units-page #unit-9 .unit-card-header { box-shadow: inset 0 4px 0 var(--unit-9); }
+.curriculum-units-page #unit-10 .unit-card-header { box-shadow: inset 0 4px 0 var(--unit-10); }
+
+/* Phones: the six destinations stay on one scrollable row instead of
+   wrapping into a two-row grid that pushes the page down. */
+@media (max-width: 780px) {
+  .ewl-course-nav ul {
+    display: flex; flex-wrap: nowrap; gap: 2px; overflow-x: auto;
+    scroll-snap-type: x proximity; scrollbar-width: none; margin-inline: -16px; padding-inline: 12px;
+  }
+  .ewl-course-nav ul::-webkit-scrollbar { display: none; }
+  .ewl-course-nav li { flex: none; scroll-snap-align: start; }
+  .ewl-course-nav li a { padding: 10px 12px; white-space: nowrap; }
+}
+
+/* Type floor for the dashboard: nothing a student or teacher has to read is
+   set below 13px. Tags, tile captions and the footer were 11-12px. The
+   attribute selectors catch the tool-library cards whose sizes are inline. */
+.curriculum-home :is(.ewl-preset-tag, .ewl-preset-badge, .mf-tag, .card-collapse-toggle, .ttb-label, small) {
+  font-size: 13px;
+}
+.curriculum-home :is([style*="font-size: 11px"], [style*="font-size:11px"], [style*="font-size: 11.5px"],
+  [style*="font-size: 12px"], [style*="font-size:12px"], [style*="font-size: 12.5px"]) {
+  font-size: 13px !important;
+}
+.curriculum-home footer.hub { font-size: 14px; line-height: 1.6; }
+
+/* One control language across the dashboard and the units page: 8px corners,
+   44px+ targets, the same blue outline buttons. The units page had pill
+   download buttons, 6px pathway buttons and 11px badges beside the
+   dashboard's square-cornered controls. */
+.curriculum-product #curriculum-navigator :is(.cn-button, #nav-saved, #nav-more, #nav-retry, #curr-search, #nav-unit, #nav-copy-url) {
+  border-radius: 8px;
+}
+.curriculum-units-page .ntdl-trigger {
+  min-height: 44px; padding: 9px 16px; border: 1px solid #9ab0c5; border-radius: 8px;
+  background: #fff; color: var(--course-blue); font-size: 16px; line-height: 1.35;
+}
+.curriculum-units-page .ntdl-trigger:hover { border-color: var(--course-blue); background: #eaf2fa; }
+.curriculum-units-page .units-lesson-pathways button,
+.curriculum-units-page .units-result-actions a { border-radius: 8px; }
+.curriculum-units-page .badge { font-size: 13px; border-radius: 4px; padding: 1px 8px; }

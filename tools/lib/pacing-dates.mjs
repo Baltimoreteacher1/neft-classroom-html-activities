@@ -31,6 +31,26 @@ export function datesFromRanges(ranges) {
   return out;
 }
 
+/**
+ * Compact per-day schedule for the hub's "today's lesson" card:
+ * `[date, lessonId, dayType, planTitle]` for every school day of the plan.
+ * planTitle is emitted only when the day has no lesson, so a lesson's name is
+ * always read from the curriculum manifest and can never go stale here.
+ */
+export function pacingDays(days) {
+  return (days || [])
+    .filter((day) => day.schoolStatus === "school")
+    .map((day) => {
+      const plan = day.plan || {};
+      return [
+        day.date,
+        plan.lessonId || "",
+        plan.dayType || "",
+        plan.lessonId ? "" : plan.planTitle || "",
+      ];
+    });
+}
+
 export function diffPacingDates(expected, actual) {
   const diffs = [];
   const keys = new Set([...Object.keys(expected || {}), ...Object.keys(actual || {})]);

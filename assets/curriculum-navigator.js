@@ -36,6 +36,30 @@
     return;
 
   var PAGE_SIZE = 8;
+  var OVERLAY_KEY = "nt-pacing:overlay";
+  /** What opening a material gives you, shown as a small tag on each link. */
+  var RESOURCE_KINDS = {
+    readiness: "Check",
+    learningLab: "Interactive",
+    lesson: "Interactive",
+    guidedNotes: "Notes",
+    handout: "Printable",
+    worksheetLevel0: "Printable",
+    worksheet: "Printable",
+    worksheet2: "Printable",
+    mstarWorksheet: "Printable",
+    studentHelp: "Help",
+    exitTicket: "Check",
+    homework: "Practice",
+    familyPage: "Family",
+    slides: "Slides",
+    teacherNotes: "Teacher",
+    guidedNotesPdf: "PDF",
+    guidedNotesDocx: "Word",
+    mstarWorksheetPdf: "PDF",
+    homeworkDocx: "Word",
+    practice: "Printable",
+  };
   var SAVED_KEY = "ewl:curriculum:saved:v1";
   var RECENT_KEY = "ewl:curriculum:recent:v1";
   /** @type {CatalogLesson[]} */
@@ -101,17 +125,28 @@
     }
   }
 
-  /** @param {string} path @param {string} label @param {boolean} [student] @param {string} [key] */
-  function resourceLink(path, label, student, key) {
+  /** @param {string} path @param {string} label @param {boolean} [student] @param {string} [key] @param {boolean} [tagged] */
+  function resourceLink(path, label, student, key, tagged) {
     var clean = safePath(path, key);
     if (!clean) return null;
     var link = document.createElement("a");
     var url = new URL(clean, window.location.origin);
     if (student) url.searchParams.set("student", "1");
-    link.href = url.pathname + url.search + url.hash;
+    link.href = prettyPath(url.pathname) + url.search + url.hash;
     link.className = "cn-resource";
-    link.textContent = label;
+    var kind = tagged && key ? RESOURCE_KINDS[key] : "";
+    if (kind) {
+      link.dataset.kind = kind;
+      link.append(node("span", "cn-resource-label", label), node("span", "cn-kind", kind));
+    } else link.textContent = label;
     return link;
+  }
+
+  /** Cloudflare Pages answers `/x.html` with a redirect to `/x`; link to the
+   * final URL so every material opens in one request instead of two.
+   * @param {string} pathname */
+  function prettyPath(pathname) {
+    return pathname.replace(/\/index\.html$/, "/").replace(/\.html$/, "");
   }
 
   /** @param {string} key */
@@ -242,11 +277,35 @@
     });
   }
 
+  /** Curriculum-QA status, same rule as curriculum-audit-badges.js.
+   * @param {CatalogLesson & {status?:{needsReview?:boolean, missingResources?:unknown[], brokenLinks?:unknown[]}}} lesson */
+  function auditStatus(lesson) {
+    var st = lesson.status || {};
+    if (st.needsReview) return "review";
+    if (
+      (st.missingResources && st.missingResources.length) ||
+      (st.brokenLinks && st.brokenLinks.length)
+    )
+      return "missing";
+    return "ready";
+  }
+
+  /** The teacher-only status filter (set by curriculum-audit-badges.js). Ignored for students. */
+  function auditFilter() {
+    if (!document.body.classList.contains("teacher-mode")) return "";
+    return document.body.dataset.auditFilter || "";
+  }
+
   function matching() {
     var query = searchQuery();
+    var status = auditFilter();
     return lessons.filter(function (lesson) {
       if (unit.value && String(lesson.unit) !== unit.value) return false;
       if (onlySaved && !saved.has(lesson.id)) return false;
+      if (status) {
+        var own = auditStatus(lesson);
+        if (status === "attention" ? own === "ready" : own !== status) return false;
+      }
       return matchesQuery(lesson, query);
     });
   }
@@ -385,6 +444,15 @@
         translation.lang = "es";
         pick.appendChild(translation);
       }
+      var quality = auditStatus(lesson);
+      if (quality !== "ready")
+        pick.appendChild(
+          node(
+            "span",
+            "cn-status cn-status--" + quality + " hub-teacher-only",
+            quality === "review" ? "Needs review" : "Missing resources",
+          ),
+        );
       if (lesson.id === selected) pick.appendChild(node("span", "cn-selected-label", "Viewing"));
       item.appendChild(pick);
       results.appendChild(item);
@@ -423,7 +491,7 @@
           : ""
         : studentLesson?.resources?.[key];
       if (!teacher && catalog && (!catalog.exists || !catalog.applicable)) return;
-      var link = resourceLink(path, entry[1], !teacher, key);
+      var link = resourceLink(path, entry[1], !teacher, key, true);
       if (link) {
         var item = node("li", "");
         item.appendChild(link);
@@ -460,7 +528,7 @@
         ["practice", "More practice"],
         ["homework", "Homework"],
       ].forEach(function (entry) {
-        var resource = resourceLink(item.resources[entry[0]], entry[1], true);
+        var resource = resourceLink(item.resources[entry[0]], entry[1], true, entry[0], true);
         if (resource) {
           var li = node("li", "");
           li.appendChild(resource);
@@ -506,8 +574,231 @@
     }
   }
 
+  /** Local calendar date as YYYY-MM-DD (not UTC, which flips a day early in the evening). */
+  function isoToday() {
+    var now = new Date();
+    return (
+      now.getFullYear() +
+      "-" +
+      String(now.getMonth() + 1).padStart(2, "0") +
+      "-" +
+      String(now.getDate()).padStart(2, "0")
+    );
+  }
+
+  /** @param {string} iso */
+  function dayLabel(iso) {
+    var parts = iso.split("-").map(Number);
+    return new Date(parts[0], parts[1] - 1, parts[2]).toLocaleDateString(undefined, {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+    });
+  }
+
+  /** A pathway id ("3-3-catchup", "3-3-group1") belongs to its core lesson. @param {string} id */
+  function coreId(id) {
+    return String(id || "").replace(/-(?:group[12]|catchup|part2|flagship)$/, "");
+  }
+
+  /**
+   * Today's place in the pacing plan: the generated per-day schedule, with the
+   * teacher's own planner moves (saved on this device) layered on top, exactly
+   * as the weekly planner reads them. Returns the first school day on or after
+   * today, or null outside the school year or without pacing data.
+   * @returns {{date:string, isToday:boolean, lesson:CatalogLesson|null, dayType:string, planTitle:string, next:CatalogLesson|null} | null}
+   */
+  function pacingToday() {
+    var days = /** @type {unknown} */ (window.__NT_PACING_DAYS);
+    if (!Array.isArray(days) || !days.length) return null;
+    var today = isoToday();
+    var overlay = {};
+    try {
+      overlay = JSON.parse(window.localStorage.getItem(OVERLAY_KEY) || "{}") || {};
+    } catch (_error) {
+      overlay = {};
+    }
+    /** @param {unknown[]} row */
+    function planFor(row) {
+      var moved = overlay[String(row[0])]?.plan || {};
+      return {
+        lessonId: typeof moved.lessonId === "string" ? moved.lessonId : String(row[1] || ""),
+        dayType: typeof moved.dayType === "string" ? moved.dayType : String(row[2] || ""),
+        planTitle: typeof moved.planTitle === "string" ? moved.planTitle : String(row[3] || ""),
+      };
+    }
+    var index = days.findIndex(function (row) {
+      return Array.isArray(row) && String(row[0]) >= today;
+    });
+    if (index < 0) return null;
+    var plan = planFor(days[index]);
+    var lesson = byId.get(coreId(plan.lessonId)) || null;
+    var next = null;
+    for (var i = index + 1; i < days.length && !next; i++) {
+      var later = byId.get(coreId(planFor(days[i]).lessonId));
+      if (later && later !== lesson) next = later;
+    }
+    return {
+      date: String(days[index][0]),
+      isToday: String(days[index][0]) === today,
+      lesson: lesson,
+      dayType: plan.dayType,
+      planTitle: lesson ? "" : plan.planTitle,
+      next: next,
+    };
+  }
+
+  /** @param {string} text @param {string} audience */
+  function forAudience(text, audience) {
+    var el = node("span", audience === "teacher" ? "hub-teacher-only" : "hub-student-only", text);
+    return el;
+  }
+
+  /** @param {CatalogLesson} lesson @param {string} label @param {boolean} [primary] */
+  function openLessonButton(lesson, label, primary) {
+    var open = button(
+      "",
+      function () {
+        select(lesson.id, true, true);
+      },
+      "cn-button" + (primary ? " cn-primary" : ""),
+    );
+    open.append(label);
+    open.setAttribute("aria-controls", "nav-preview");
+    return open;
+  }
+
+  /** The panel before any lesson is chosen: today's lesson from the pacing plan. */
+  function renderIdle() {
+    root.classList.add("cn-idle");
+    preview.replaceChildren();
+    var plan = pacingToday();
+    var title;
+    if (plan && (plan.lesson || plan.planTitle)) {
+      var card = node("div", "cn-today");
+      var when = node("p", "cn-eyebrow");
+      when.append(
+        forAudience(
+          (plan.isToday ? "Today in class · " : "Next class · ") + dayLabel(plan.date),
+          "student",
+        ),
+        forAudience(
+          (plan.isToday ? "Teaching today · " : "Next teaching day · ") + dayLabel(plan.date),
+          "teacher",
+        ),
+      );
+      card.appendChild(when);
+      title = node("h3", "cn-preview-title", plan.lesson ? plan.lesson.title : plan.planTitle);
+      title.id = "nav-lesson-title";
+      card.appendChild(title);
+      if (plan.lesson) {
+        var detail = "Lesson " + plan.lesson.id.replace("-", ".") + " · Unit " + plan.lesson.unit;
+        if (plan.dayType === "Continued Lesson") detail += " · second day";
+        else if (plan.dayType === "Catch-Up") detail += " · catch-up day";
+        card.appendChild(node("p", "cn-lesson-meta", detail));
+        if (plan.lesson.objective)
+          card.appendChild(node("p", "cn-today-target", plan.lesson.objective));
+        var actions = node("div", "cn-preview-actions");
+        var studentOpen = openLessonButton(plan.lesson, "Open today’s lesson", true);
+        studentOpen.classList.add("hub-student-only");
+        var teacherOpen = openLessonButton(plan.lesson, "Prepare this lesson", true);
+        teacherOpen.classList.add("hub-teacher-only");
+        actions.append(studentOpen, teacherOpen);
+        card.appendChild(actions);
+      } else {
+        card.appendChild(
+          node(
+            "p",
+            "cn-lesson-meta",
+            plan.dayType ? plan.dayType + " day — no new lesson." : "No new lesson on this day.",
+          ),
+        );
+        if (plan.next) {
+          var upcoming = node("div", "cn-preview-actions");
+          upcoming.appendChild(
+            openLessonButton(
+              plan.next,
+              "Next lesson: " + plan.next.id.replace("-", ".") + " " + plan.next.title,
+              true,
+            ),
+          );
+          card.appendChild(upcoming);
+        }
+      }
+      preview.appendChild(card);
+      var other = node("p", "cn-starter");
+      other.append(
+        forAudience(
+          "Looking for a different lesson? Search or pick a unit from the list.",
+          "student",
+        ),
+        forAudience("Teaching something else? Search or pick a unit from the list.", "teacher"),
+      );
+      preview.appendChild(other);
+    } else {
+      title = node("h3", "cn-preview-title", "Choose your next lesson");
+      title.id = "nav-lesson-title";
+      var starter = node("p", "cn-starter");
+      starter.append(
+        forAudience(
+          "Choose a lesson from the list. Its activities and materials will appear here.",
+          "student",
+        ),
+        forAudience(
+          "Choose a lesson from the list to see its materials, student link, and teacher notes.",
+          "teacher",
+        ),
+      );
+      preview.append(title, starter);
+      var orientation = node("ol", "cn-orientation");
+      [
+        ["student", "Find your lesson", "Search a topic or choose a unit."],
+        ["student", "Open and learn", "Read the learning target, then open your lesson."],
+        ["student", "Practice the same math", "Use the lesson’s practice and homework links."],
+        ["teacher", "Find the lesson", "Search a topic, a standard, or a lesson number."],
+        ["teacher", "Prepare it", "Check the learning target, slides, and teacher notes."],
+        ["teacher", "Share the student link", "Copy the link students open in class."],
+      ].forEach(function (entry) {
+        var step = node("li", entry[0] === "teacher" ? "hub-teacher-only" : "hub-student-only");
+        var text = node("div", "");
+        text.append(node("strong", "", entry[1]), node("span", "", entry[2]));
+        step.appendChild(text);
+        orientation.appendChild(step);
+      });
+      preview.appendChild(orientation);
+    }
+    var starters = node("div", "cn-starter-links");
+    [
+      ["/curriculum/learning-labs/", "Explore a learning lab", "student"],
+      ["/curriculum/arcade/", "Practice with a game", "student"],
+      ["/curriculum/my-progress/", "Check my progress", "student"],
+      ["/curriculum/planning/", "Open the pacing planner", "teacher"],
+      ["/curriculum/practice-workbooks/", "Practice workbooks", "teacher"],
+    ].forEach(function (entry) {
+      var link = /** @type {HTMLAnchorElement} */ (
+        node("a", entry[2] === "teacher" ? "hub-teacher-only" : "hub-student-only", entry[1])
+      );
+      link.href = entry[0];
+      starters.appendChild(link);
+    });
+    preview.appendChild(starters);
+    var note = node("p", "cn-local-note");
+    note.append(
+      forAudience(
+        "Save useful lessons on this device with the Save lesson button. No sign-in needed.",
+        "student",
+      ),
+      forAudience(
+        "Saved lessons and planner moves stay on this device. Nothing here records student work.",
+        "teacher",
+      ),
+    );
+    preview.appendChild(note);
+  }
+
   /** @param {CatalogLesson} lesson */
   function renderPreview(lesson) {
+    root.classList.remove("cn-idle");
     preview.replaceChildren();
     var back = button("← Back to results", backToResults, "cn-button cn-back");
     back.setAttribute("aria-controls", "nav-results");
@@ -749,48 +1040,7 @@
     } else {
       selected = "";
       explicitSelection = false;
-      preview.replaceChildren();
-      var title = node("h3", "cn-preview-title", "Choose your next lesson");
-      title.id = "nav-lesson-title";
-      preview.append(
-        title,
-        node(
-          "p",
-          "cn-starter",
-          "Choose a lesson from the list. Its activities and materials will appear here.",
-        ),
-      );
-      var orientation = node("ol", "cn-orientation");
-      [
-        ["Find your lesson", "Search a topic or choose a unit."],
-        ["Open and learn", "Read the learning target, then open your lesson."],
-        ["Practice the same math", "Use the lesson’s practice and homework links."],
-      ].forEach(function (entry) {
-        var step = node("li", "");
-        var text = node("div", "");
-        text.append(node("strong", "", entry[0]), node("span", "", entry[1]));
-        step.appendChild(text);
-        orientation.appendChild(step);
-      });
-      preview.appendChild(orientation);
-      var starters = node("div", "cn-starter-links");
-      [
-        ["/curriculum/learning-labs/", "Explore a learning lab"],
-        ["/curriculum/arcade/", "Practice with a game"],
-        ["/curriculum/my-progress/", "Check my progress"],
-      ].forEach(function (entry) {
-        var link = /** @type {HTMLAnchorElement} */ (node("a", "", entry[1]));
-        link.href = entry[0];
-        starters.appendChild(link);
-      });
-      preview.appendChild(starters);
-      preview.appendChild(
-        node(
-          "p",
-          "cn-local-note",
-          "Save useful lessons on this device with the Save lesson button. No sign-in needed.",
-        ),
-      );
+      renderIdle();
       if (requested)
         message.textContent =
           "That lesson is not in this catalog. Choose a lesson from the results.";
@@ -956,6 +1206,10 @@
     updateUrl(false);
   });
   reset.addEventListener("click", resetFilters);
+  document.addEventListener("ewl:audit-filter", function () {
+    limit = PAGE_SIZE;
+    renderResults();
+  });
   more.addEventListener("click", function () {
     var firstNew = results.querySelectorAll("[data-lesson-id]").length;
     limit += PAGE_SIZE;

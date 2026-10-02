@@ -147,7 +147,7 @@
         heading.tabIndex = -1;
         card.querySelector(".selector-group--lesson").after(heading);
       }
-      heading.textContent = lesson.title;
+      heading.textContent = lesson.displayTitle || lesson.title;
       lessonPathways(card, unit, lesson, heading);
       let actions = card.querySelector(".units-lesson-actions");
       if (!actions) {
@@ -285,7 +285,7 @@
         const titleText = normalize(item.querySelector(".search-result-header")?.textContent || "");
         const matches = units.flatMap((unit) =>
           unit.lessons
-            .filter((lesson) => normalize(lesson.title) === titleText)
+            .filter((lesson) => normalize(lesson.displayTitle || lesson.title) === titleText)
             .map((lesson) => ({ unit, lesson })),
         );
         if (matches.length === 1) {
@@ -541,7 +541,7 @@
         if (!lesson.lessonId) return;
         const item = document.createElement("option");
         item.value = lesson.lessonId;
-        item.textContent = lesson.title;
+        item.textContent = lesson.displayTitle || lesson.title;
         group.appendChild(item);
       });
       bottom.appendChild(group);

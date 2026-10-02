@@ -299,7 +299,10 @@ try {
         const options = await card
           .locator(".lesson-select option")
           .evaluateAll((nodes) => nodes.map((el) => ({ value: el.value, text: el.textContent })));
-        const option = options.find((o) => new RegExp(`\\b${lesson}\\b`).test(o.text));
+        // The picker prints the hub's "Lesson 3.1" numbering; ids are "3-1".
+        const option = options.find((o) =>
+          new RegExp(`\\b${lesson.replace("-", "[-.]")}\\b`).test(o.text),
+        );
         assert.ok(
           option,
           `Lesson ${lesson} must appear in its unit selector: ${JSON.stringify(options)}`,

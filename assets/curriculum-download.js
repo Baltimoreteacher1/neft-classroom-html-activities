@@ -1422,7 +1422,7 @@ window.NTCurriculumDownload = { open };
  */
 /** @type {Array<[RegExp, (m: RegExpExecArray) => string]>} */
 const LESSON_ID_PATTERNS = [
-  [/^Lesson\s+(\d+-\d+)/i, (m) => m[1]],
+  [/^Lesson\s+(\d+)[.-](\d+)\b/i, (m) => `${m[1]}-${m[2]}`],
   [/^(\d+)\.(\d+)\s+Small Group:\s*Group\s*([12])/i, (m) => `${m[1]}-${m[2]}-group${m[3]}`],
   [/^(\d+)\.(\d+)\s+Catch-?Up/i, (m) => `${m[1]}-${m[2]}-catchup`],
 ];
@@ -1457,7 +1457,7 @@ function decorateUnitCards() {
         row.className = "unit-resources-row";
         card.querySelector(".unit-card-header")?.after(row);
       }
-      const button = makeTrigger("⬇️ Download Unit", `Choose a download package for Unit ${num}`);
+      const button = makeTrigger("Download unit", `Choose a download package for Unit ${num}`);
       button.dataset.ntDownloadUnit = String(num);
       row.appendChild(button);
     }
@@ -1467,7 +1467,7 @@ function decorateUnitCards() {
     if (!select || !group || group.querySelector("[data-nt-download-lesson]")) continue;
 
     const button = makeTrigger(
-      "⬇️ Download Lesson",
+      "Download lesson",
       "Add this lesson's resources to the download cart",
       "ntdl-trigger--lesson",
     );

@@ -2676,6 +2676,18 @@
       head = head.replace(/\s+/g, " "); // Clean whitespaces
 
       var headHTML = headEl ? headEl.innerHTML.trim() : "Lesson " + (lIdx + 1);
+      // What people read: the hub's "Lesson 3.1" numbering, without the
+      // standard badge's text run onto the title (the standard has its own
+      // chip). `title` stays the raw text because SCORM names and lookups use it.
+      var displayTitle = head;
+      if (headEl) {
+        var plain = headEl.cloneNode(true);
+        plain.querySelectorAll(".badge-std").forEach(function (badge) {
+          badge.remove();
+        });
+        displayTitle = plain.textContent.replace(/\s+/g, " ").trim() || head;
+      }
+      displayTitle = displayTitle.replace(/^Lesson\s+(\d+)-(\d+)\b/, "Lesson $1.$2");
 
       var objEl = l.querySelector(".lesson-obj");
       var obj = objEl ? objEl.textContent.trim() : "";
@@ -2803,6 +2815,7 @@
         id: uIdx + "-" + lIdx,
         lessonId: lessonId,
         title: head,
+        displayTitle: displayTitle,
         titleHTML: headHTML,
         objective: obj,
         activities: activities,
@@ -3058,7 +3071,7 @@
       u.lessons.forEach(function (l, lIdx) {
         var opt = document.createElement("option");
         opt.value = lIdx;
-        opt.textContent = l.title;
+        opt.textContent = l.displayTitle || l.title;
         lessonSelect.appendChild(opt);
       });
       lessonWrapper.appendChild(lessonSelect);
@@ -3331,7 +3344,7 @@
 
           var header = document.createElement("div");
           header.className = "search-result-header";
-          header.textContent = l.title;
+          header.textContent = l.displayTitle || l.title;
           item.appendChild(header);
 
           if (l.objective) {

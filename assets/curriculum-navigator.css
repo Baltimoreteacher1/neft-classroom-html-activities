@@ -149,3 +149,39 @@
   #curriculum-navigator .cn-selected-label { position: absolute; top: 12px; right: 12px; margin: 0; }
   #curriculum-navigator .cn-result-meta { padding-right: 60px; }
 }
+
+/* Today's lesson: the panel's opening state comes from the pacing plan. */
+#curriculum-navigator .cn-today { margin-bottom: 8px; }
+#curriculum-navigator .cn-today .cn-eyebrow { letter-spacing: 0.04em; }
+#curriculum-navigator .cn-today-target { margin: 14px 0 0; padding: 12px 16px; border-left: 4px solid #47745a; background: #eef4e9; font-size: 17px; line-height: 1.5; }
+#curriculum-navigator .cn-today + .cn-starter { margin: 20px 0 8px; padding-top: 16px; border-top: 1px solid #dbe4d9; color: var(--cn-muted); font-size: 16px; }
+
+/* Each material says what it opens. */
+#curriculum-navigator .cn-resource[data-kind] { justify-content: space-between; gap: 10px; }
+#curriculum-navigator .cn-kind { flex: none; padding: 2px 8px; border-radius: 999px; background: #edf3f8; color: #2f4f6b; font-size: 13px; font-weight: 600; line-height: 1.5; text-decoration: none; }
+#curriculum-navigator .cn-resource[data-kind="Interactive"] .cn-kind { background: #e3f1ec; color: #11574e; }
+#curriculum-navigator .cn-resource[data-kind="Printable"] .cn-kind,
+#curriculum-navigator .cn-resource[data-kind="PDF"] .cn-kind,
+#curriculum-navigator .cn-resource[data-kind="Word"] .cn-kind { background: #f4efe4; color: #6a4f12; }
+#curriculum-navigator .cn-resource[data-kind="Check"] .cn-kind { background: #f3e9f3; color: #6b2f6b; }
+
+/* Small groups side by side so the two tables can be compared at a glance. */
+#curriculum-navigator .cn-variants { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 10px; }
+#curriculum-navigator .cn-variants > .cn-group-title { grid-column: 1 / -1; margin-bottom: 0; }
+#curriculum-navigator .cn-variants .cn-variant { margin: 0; }
+#curriculum-navigator .cn-variants .cn-resources { grid-template-columns: 1fr; }
+
+/* Teacher-only quality flag on a result. */
+#curriculum-navigator .cn-status { margin-top: 6px; padding: 2px 8px; border-radius: 999px; font-size: 13px; font-weight: 700; }
+#curriculum-navigator .cn-status--missing { background: #fde4e1; color: #8f2a1f; }
+#curriculum-navigator .cn-status--review { background: #fef0d8; color: #7a540e; }
+
+/* The list stays beside the lesson on wide screens, so "Back to results" is only needed once they stack. */
+@media (min-width: 781px) {
+  #curriculum-navigator .cn-back { display: none; }
+}
+/* Stacked: put today's lesson above the long list instead of a screen below it. */
+@media (max-width: 780px) {
+  #curriculum-navigator.cn-idle #nav-preview { order: -1; border-bottom: 1px solid var(--cn-border); }
+  #curriculum-navigator.cn-idle .cn-browser { border-bottom: 0; }
+}
