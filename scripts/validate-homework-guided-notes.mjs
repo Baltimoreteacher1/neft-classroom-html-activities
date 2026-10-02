@@ -294,9 +294,31 @@ for (const id of lessonIds) {
     };
   }
 
+  const ratioComparison = id === "3-5" || id === "3-5-part2";
+  const sharedModelMarkers = new Set([
+    'class="family-visual-lab"',
+    'data-visual-lab="',
+    'class="visual-lab-stage"',
+    'data-lesson-model="',
+    "data-lesson-model-host",
+    'class="interactive-visual"',
+    'class="visual-representation-grid"',
+  ]);
   for (const marker of REQUIRED_MARKERS) {
+    if (ratioComparison && sharedModelMarkers.has(marker)) continue;
     if (!html.includes(marker)) {
       issues.push({ id, level: "CRITICAL", msg: `Missing marker: ${marker}` });
+    }
+  }
+  if (ratioComparison) {
+    for (const marker of [
+      "data-ratio-compare",
+      "data-ratio-a-cocoa",
+      "data-ratio-b-cocoa",
+      "data-ratio-verdict",
+    ]) {
+      if (!html.includes(marker))
+        issues.push({ id, level: "CRITICAL", msg: `Missing ratio comparison control: ${marker}` });
     }
   }
   if (html.includes('data-route-mode="quick"')) {
@@ -372,7 +394,7 @@ for (const id of lessonIds) {
     issues.push({ id, level: "HIGH", msg: "Learning summary has doubled punctuation" });
   }
 
-  const visualLabs = (html.match(/class="family-visual-lab"/g) || []).length;
+  const visualLabs = (html.match(/class="family-visual-lab(?: |")/g) || []).length;
   const lessonModels = (html.match(/data-lesson-model="/g) || []).length;
   const representationCards = (html.match(/class="visual-representation-card /g) || []).length;
   if (visualLabs !== 1) {
@@ -382,14 +404,14 @@ for (const id of lessonIds) {
       msg: `Expected one visual math lab, found ${visualLabs}`,
     });
   }
-  if (lessonModels !== 1) {
+  if (lessonModels !== (ratioComparison ? 0 : 1)) {
     issues.push({
       id,
       level: "CRITICAL",
       msg: `Expected one shared lesson model, found ${lessonModels}`,
     });
   }
-  if (representationCards !== 3) {
+  if (representationCards !== (ratioComparison ? 0 : 3)) {
     issues.push({
       id,
       level: "HIGH",

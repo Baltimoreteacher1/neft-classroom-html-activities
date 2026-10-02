@@ -17,6 +17,7 @@ import {
   renderWelcomeBanner,
   resolveKitchenTableActivity,
 } from "../scripts/homework-guided-notes.mjs";
+import { VISUAL_LABS_JS } from "../scripts/homework-visual-labs.mjs";
 import { lessonPath, loadLessonConfig } from "./lib/curriculum-source.mjs";
 
 const config = loadLessonConfig;
@@ -110,11 +111,12 @@ test("statistical-question homework shows a concrete model and keeps reasons for
   dom.window.close();
 });
 
-test("Done is brief; all signatures, media and extra activity live in closed optional details", () => {
+test("Done shows every optional activity without a disclosure", () => {
   const dom = runtime();
   const d = dom.window.document;
   const extras = d.querySelector(".homework-optional-extras");
-  assert.equal(extras.open, false);
+  assert.equal(extras.tagName, "SECTION");
+  assert.equal(extras.querySelectorAll(".homework-extra-actions .btn").length, 3);
   for (const selector of [
     "#parent_name_input",
     "#parent_note_input",
@@ -129,6 +131,56 @@ test("Done is brief; all signatures, media and extra activity live in closed opt
   assert.match(d.querySelector("#hw_panel_done").textContent, /no adult signature is needed/);
   assert.equal(d.querySelector("#submit_signoff_btn").disabled, false);
   dom.window.close();
+});
+
+test("ratio homework compares two recipes and updates both rates", () => {
+  for (const id of ["3-5", "3-5-part2"]) {
+    const dom = new JSDOM(readFileSync(lessonPath(id, "homework.html"), "utf8"), {
+      runScripts: "outside-only",
+    });
+    const d = dom.window.document;
+    dom.window.eval(VISUAL_LABS_JS);
+    d.dispatchEvent(new dom.window.Event("DOMContentLoaded"));
+    const verdict = d.querySelector("[data-ratio-verdict]");
+    assert.match(verdict.textContent, /35 ounces of milk.*21 tablespoons.*Tran uses 20/);
+    const cocoa = d.querySelector("[data-ratio-b-cocoa]");
+    cocoa.value = "5";
+    cocoa.dispatchEvent(new dom.window.Event("input", { bubbles: true }));
+    assert.match(verdict.textContent, /Tran uses 25.*Tran has more cocoa/);
+    dom.window.close();
+  }
+});
+
+test("graph and polygon family models match their lesson topics", () => {
+  for (const [id, kind] of [
+    ["3-4", "line-grapher"],
+    ["7-7", "coordinate-plane"],
+    ["9-2", "line-grapher"],
+  ]) {
+    for (const session of [id, `${id}-part2`]) {
+      const page = readFileSync(lessonPath(session, "homework.html"), "utf8");
+      const dom = new JSDOM(page);
+      assert.equal(
+        dom.window.document.querySelector(".family-visual-lab").dataset.lessonModel,
+        kind,
+      );
+      dom.window.close();
+    }
+  }
+});
+
+test("the optional table activity uses the lesson's own math", () => {
+  const withNotes = (id) => ({
+    ...config(id),
+    lessonId: id,
+    familyNotes: JSON.parse(
+      readFileSync(new URL(`../data/family-homework-notes/${id}.json`, import.meta.url), "utf8"),
+    ),
+  });
+  const compare = resolveKitchenTableActivity(withNotes("3-5"));
+  assert.match(compare.steps.join(" "), /35 ounces.*Compare 21 and 20/);
+  const polygon = resolveKitchenTableActivity(withNotes("7-7"));
+  assert.match(polygon.steps.join(" "), /coordinate|polygon|vertex|rectangle/i);
 });
 
 test("local reflection never implies a network send, can save without a guardian, and reports storage failure", () => {

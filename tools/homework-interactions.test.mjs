@@ -207,7 +207,7 @@ test("camera capture, frame/sticker changes, and attachment reveal the local ref
     w.attachPhotoboothToSignoff();
     w.setTimeout = timeout;
     assert.equal(d.body.dataset.activeTab, "done");
-    assert.equal(d.querySelector(".homework-optional-extras").open, true);
+    assert.equal(d.querySelector(".homework-optional-extras").tagName, "SECTION");
     assert.equal(d.getElementById("signoff_form_wrapper").hidden, false);
     assert.equal(d.getElementById("work_photo_preview_wrap").hidden, false);
   } finally {

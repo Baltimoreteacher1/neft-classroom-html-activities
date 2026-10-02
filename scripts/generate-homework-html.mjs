@@ -575,6 +575,10 @@ function lessonConfigs() {
         if (existsSync(basePath)) {
           try {
             const base = JSON.parse(readFileSync(basePath, "utf8"));
+            const baseNotesPath = join(root, "data", "family-homework-notes", `${baseId}.json`);
+            if (existsSync(baseNotesPath)) {
+              base.familyNotes = JSON.parse(readFileSync(baseNotesPath, "utf8"));
+            }
             const inherited = lessonModelCandidates(base)[0];
             if (inherited) shaped.reviewDiagram = inherited;
           } catch (e) {
@@ -1101,6 +1105,7 @@ function selectLessonInteractiveModel(config) {
     if (html) {
       return {
         kind: candidate.kind,
+        manip: candidate.manip,
         title: candidateTitle,
         html,
       };

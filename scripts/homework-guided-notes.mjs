@@ -15,6 +15,8 @@ import {
   homeworkWorkbenchTool,
   ratioFocus,
   selectAlignedQuickCheckProblems,
+  selectMorePracticeProblems,
+  selectTieredQuickCheckProblems,
 } from "./homework-alignment.mjs";
 import { getExternalResources } from "./homework-external-resources.mjs";
 import {
@@ -1292,40 +1294,25 @@ function conceptVisual(config) {
   if (baseLesson === "3-5") {
     return {
       svg: conceptFrame({
-        label:
-          "Compare Ratio Relationships: Comparing runner speeds using unit rates to see who is faster",
+        label: "Two cocoa recipes compared using the same amount of milk",
         tone: "teal",
-        height: 410,
-        title: "Compare Ratio Relationships / Comparar razones",
+        height: 390,
+        title: "Compare cocoa recipes / Comparar recetas de chocolate",
         body: `
-        <!-- Runner A Card -->
-        ${conceptCard(34, 68, 572, 98)}
-        <rect x="50" y="82" width="104" height="26" rx="6" fill="#0f766e"/>
-        <text x="102" y="100" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">RUNNER A</text>
-        <text x="168" y="101" font-size="17" font-weight="700" fill="#12355b">6 miles in 2 hours  →  6 ÷ 2 =</text>
-        <text x="430" y="101" font-size="22" font-weight="800" fill="#0f766e">3.0 mph</text>
-        <rect x="50" y="124" width="360" height="24" rx="6" fill="#0d9488"/>
-        <text x="420" y="142" font-size="15" font-weight="800" fill="#0d9488">3.0 miles per hour</text>
-
-        <!-- Runner B Card -->
-        ${conceptCard(34, 180, 572, 98)}
-        <rect x="50" y="194" width="104" height="26" rx="6" fill="#6366f1"/>
-        <text x="102" y="212" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">RUNNER B</text>
-        <text x="168" y="213" font-size="17" font-weight="700" fill="#12355b">10 miles in 4 hours  →  10 ÷ 4 =</text>
-        <text x="430" y="213" font-size="22" font-weight="800" fill="#6366f1">2.5 mph</text>
-        <rect x="50" y="236" width="300" height="24" rx="6" fill="#818cf8"/>
-        <text x="360" y="254" font-size="15" font-weight="800" fill="#6366f1">2.5 miles per hour</text>
-
-        <!-- Comparison Winner Banner -->
-        <rect x="34" y="292" width="572" height="98" rx="14" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
-        <text x="320" y="324" text-anchor="middle" font-size="21" font-weight="800" fill="#b45309">★ Runner A is Faster!  (3.0 mph &gt; 2.5 mph)</text>
-        <line x1="60" y1="338" x2="580" y2="338" stroke="#fde68a" stroke-width="2"/>
-        <text x="320" y="364" text-anchor="middle" font-size="16" font-weight="700" fill="#12355b">Key Strategy: Convert different ratios to a unit rate (rate per 1 unit) to compare fairly.</text>`,
+        ${conceptCard(34, 70, 572, 96)}
+        <text x="54" y="102" font-size="18" font-weight="800" fill="#12355b">Chef Reyes: 3 cocoa for 5 milk</text>
+        <text x="54" y="134" font-size="18" font-weight="700" fill="#0f766e">Multiply both by 7 → 21 cocoa for 35 milk</text>
+        ${conceptCard(34, 180, 572, 96)}
+        <text x="54" y="212" font-size="18" font-weight="800" fill="#12355b">Chef Tran: 4 cocoa for 7 milk</text>
+        <text x="54" y="244" font-size="18" font-weight="700" fill="#6366f1">Multiply both by 5 → 20 cocoa for 35 milk</text>
+        <rect x="34" y="290" width="572" height="76" rx="14" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
+        <text x="320" y="320" text-anchor="middle" font-size="19" font-weight="800" fill="#12355b">Same milk: 35 ounces each</text>
+        <text x="320" y="348" text-anchor="middle" font-size="18" font-weight="800" fill="#b45309">21 &gt; 20, so Reyes has more cocoa.</text>`,
       }),
       capEn:
-        "To compare two ratio relationships, calculate the unit rate for each one. The higher unit rate is faster or greater.",
+        "Make the milk amounts equal before comparing the cocoa. Reyes has 21 tablespoons for 35 ounces; Tran has 20 for 35 ounces.",
       capEs:
-        "Para comparar dos relaciones de razón, calculen la tasa unitaria de cada una. La tasa mayor es más rápida o mayor.",
+        "Iguala las cantidades de leche antes de comparar el cacao. Reyes usa 21 cucharadas por 35 onzas; Tran usa 20 por 35 onzas.",
     };
   }
 
@@ -2721,6 +2708,12 @@ export function resolveKitchenTableActivity(config) {
 
 export function renderCelebration(config = null, _lessonId = "") {
   const kt = resolveKitchenTableActivity(config);
+  const tiers = selectTieredQuickCheckProblems(config?.practice || {}, config || {});
+  const hasMorePractice =
+    selectMorePracticeProblems(config?.practice || {}, config || {}, [
+      ...tiers.warmup,
+      ...tiers.challenge,
+    ]).length > 0;
   const ktHtml = kt
     ? `
     <div class="kitchen-table-card card-ish">
@@ -2748,48 +2741,14 @@ export function renderCelebration(config = null, _lessonId = "") {
         <a class="btn btn-primary" href="https://home.classdojo.com/" target="_blank" rel="noopener"><span class="lang-en">Open ClassDojo to message Mr. Neft</span><span class="lang-es" lang="es">Abrir ClassDojo para escribir al Sr. Neft</span></a>
         <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicia sesión con tu cuenta familiar, abre Mensajes y elige al Sr. Neft. Incluye el número de esta lección y tu pregunta.</span></p>
       </div>
-      <details class="homework-optional-extras"><summary><span class="lang-en">Optional: more practice, photos &amp; a local reflection</span><span class="lang-es" lang="es">Opcional: más práctica, fotos y una reflexión local</span></summary>
+      <section class="homework-optional-extras" aria-labelledby="homework_extras_title">
+      <h3 id="homework_extras_title"><span class="lang-en">Want to do more?</span><span class="lang-es" lang="es">¿Quieren hacer más?</span></h3>
       <p><span class="lang-en">These extras are not required. Photos, recordings and reflections stay on this device. To send anything to Mr. Neft, use ClassDojo.</span><span class="lang-es" lang="es">Estos extras no son obligatorios. Las fotos, grabaciones y reflexiones quedan en este dispositivo. Para enviar algo al Sr. Neft, usa ClassDojo.</span></p>
-      <button type="button" class="btn btn-secondary" onclick="switchHomeworkTab('photobooth')"><span class="lang-en">Open optional photobooth</span><span class="lang-es" lang="es">Abrir cabina de fotos opcional</span></button>
-      <div class="high-five-banner">
-        <button type="button" class="btn-high-five" onclick="triggerHighFive()">
-          <span class="high-five-emoji" aria-hidden="true">✋</span>
-          <div class="high-five-labels">
-            <strong><span class="lang-en">Give a High Five!</span><span class="lang-es" lang="es">¡Dame esos cinco!</span></strong>
-            <small><span class="lang-en">Tap to celebrate tonight's math effort!</span><span class="lang-es" lang="es">¡Toca para celebrar el esfuerzo de hoy!</span></small>
-          </div>
-        </button>
+      <div class="homework-extra-actions">
+        <button type="button" class="btn btn-secondary" onclick="switchHomeworkTab('check'); document.querySelector('.more-practice')?.setAttribute('open', '')"><span class="lang-en">➕ ${hasMorePractice ? "Try more practice problems" : "Review practice problems"}</span><span class="lang-es" lang="es">➕ ${hasMorePractice ? "Hacer más ejercicios" : "Repasar los ejercicios"}</span></button>
+        <button type="button" class="btn btn-secondary" onclick="switchHomeworkTab('photobooth')"><span class="lang-en">📸 Open the math work photobooth</span><span class="lang-es" lang="es">📸 Abrir la cabina de fotos</span></button>
+        <a class="btn btn-secondary" href="#parent_reflection_input"><span class="lang-en">✍️ Write a reflection below</span><span class="lang-es" lang="es">✍️ Escribir una reflexión abajo</span></a>
       </div>
-
-      <div class="achievement-shelf" id="achievement_shelf">
-        <div class="achievement-badge badge-learn is-unlocked" id="badge_achieve_learn">
-          <span class="achieve-icon" aria-hidden="true">📖</span>
-          <span class="achieve-name"><span class="lang-en">Concept Explorer</span><span class="lang-es" lang="es">Explorador</span></span>
-        </div>
-        <div class="achievement-badge badge-vocab" id="badge_achieve_vocab">
-          <span class="achieve-icon" aria-hidden="true">📚</span>
-          <span class="achieve-name"><span class="lang-en">Vocab Champ</span><span class="lang-es" lang="es">Camp. Vocabulario</span></span>
-        </div>
-        <div class="achievement-badge badge-practice" id="badge_achieve_practice">
-          <span class="achieve-icon" aria-hidden="true">⭐</span>
-          <span class="achieve-name"><span class="lang-en">3-Star Hero</span><span class="lang-es" lang="es">Héroe 3 Estrellas</span></span>
-        </div>
-        <div class="achievement-badge badge-arcade is-unlocked" id="badge_achieve_arcade">
-          <span class="achieve-icon" aria-hidden="true">🎮</span>
-          <span class="achieve-name"><span class="lang-en">Game Master</span><span class="lang-es" lang="es">Maestro del Juego</span></span>
-        </div>
-        <div class="achievement-badge badge-streak is-unlocked" id="badge_achieve_streak">
-          <span class="achieve-icon" aria-hidden="true">🔥</span>
-          <span class="achieve-name"><span class="lang-en">Family Streak</span><span class="lang-es" lang="es">Racha Familiar</span></span>
-        </div>
-        <div class="achievement-badge badge-mission" id="badge_achieve_mission">
-          <span class="achieve-icon" aria-hidden="true">🏡</span>
-          <span class="achieve-name"><span class="lang-en">Home Explorer</span><span class="lang-es" lang="es">Explorador del Hogar</span></span>
-        </div>
-      </div>
-
-      ${ktHtml}
-
       <div class="parent-signoff-container card-ish">
         <h3 class="signoff-title">✍️ <span class="lang-en">Optional reflection on this device</span><span class="lang-es" lang="es">Reflexión opcional en este dispositivo</span></h3>
         
@@ -2937,17 +2896,46 @@ export function renderCelebration(config = null, _lessonId = "") {
         </div>
       </div>
 
-      <div class="next-photobooth-banner card-ish">
-        <button type="button" class="btn-next-photobooth" onclick="switchHomeworkTab('photobooth')">
-          <span class="pb-banner-icon" aria-hidden="true">📸</span>
-          <div class="pb-banner-labels">
-            <strong><span class="lang-en">Open the Math Work Photobooth ➔</span><span class="lang-es" lang="es">Abre la cabina de fotos del trabajo ➔</span></strong>
-            <small><span class="lang-en">Optional. Photograph tonight's notebook page, scratchpad or whiteboard — add a frame and stickers, then download or print it.</span><span class="lang-es" lang="es">Opcional. Tomen una foto de la página del cuaderno, del borrador o de la pizarra: agreguen un marco y calcomanías, y descárguenla o imprímanla.</span></small>
+      <div class="high-five-banner">
+        <button type="button" class="btn-high-five" onclick="triggerHighFive()">
+          <span class="high-five-emoji" aria-hidden="true">✋</span>
+          <div class="high-five-labels">
+            <strong><span class="lang-en">Give a High Five!</span><span class="lang-es" lang="es">¡Dame esos cinco!</span></strong>
+            <small><span class="lang-en">Tap to celebrate tonight's math effort!</span><span class="lang-es" lang="es">¡Toca para celebrar el esfuerzo de hoy!</span></small>
           </div>
         </button>
       </div>
 
-      </details>
+      <div class="achievement-shelf" id="achievement_shelf">
+        <div class="achievement-badge badge-learn is-unlocked" id="badge_achieve_learn">
+          <span class="achieve-icon" aria-hidden="true">📖</span>
+          <span class="achieve-name"><span class="lang-en">Concept Explorer</span><span class="lang-es" lang="es">Explorador</span></span>
+        </div>
+        <div class="achievement-badge badge-vocab" id="badge_achieve_vocab">
+          <span class="achieve-icon" aria-hidden="true">📚</span>
+          <span class="achieve-name"><span class="lang-en">Vocab Champ</span><span class="lang-es" lang="es">Camp. Vocabulario</span></span>
+        </div>
+        <div class="achievement-badge badge-practice" id="badge_achieve_practice">
+          <span class="achieve-icon" aria-hidden="true">⭐</span>
+          <span class="achieve-name"><span class="lang-en">3-Star Hero</span><span class="lang-es" lang="es">Héroe 3 Estrellas</span></span>
+        </div>
+        <div class="achievement-badge badge-arcade is-unlocked" id="badge_achieve_arcade">
+          <span class="achieve-icon" aria-hidden="true">🎮</span>
+          <span class="achieve-name"><span class="lang-en">Game Master</span><span class="lang-es" lang="es">Maestro del Juego</span></span>
+        </div>
+        <div class="achievement-badge badge-streak is-unlocked" id="badge_achieve_streak">
+          <span class="achieve-icon" aria-hidden="true">🔥</span>
+          <span class="achieve-name"><span class="lang-en">Family Streak</span><span class="lang-es" lang="es">Racha Familiar</span></span>
+        </div>
+        <div class="achievement-badge badge-mission" id="badge_achieve_mission">
+          <span class="achieve-icon" aria-hidden="true">🏡</span>
+          <span class="achieve-name"><span class="lang-en">Home Explorer</span><span class="lang-es" lang="es">Explorador del Hogar</span></span>
+        </div>
+      </div>
+
+      ${ktHtml}
+
+      </section>
 
       <!-- Print-Only Certificate Layout -->
       <div class="print-only-certificate" id="print_only_certificate">
@@ -3296,6 +3284,32 @@ export function getTopicMisconception(topic, config) {
  * the Together tab by renderFamilyActivityCorner().
  */
 const FAMILY_ACTIVITIES = {
+  ratioComparison: [
+    {
+      icon: "☕",
+      titleEn: "Compare two cocoa recipes",
+      titleEs: "Compara dos recetas de chocolate",
+      materialsEn: "Paper and pencil; no ingredients needed",
+      materialsEs: "Papel y lápiz; no hacen falta ingredientes",
+      minutes: 5,
+      steps: [
+        {
+          en: "Draw two cards: Reyes uses 3 spoons of cocoa with 5 ounces of milk. Tran uses 4 spoons with 7 ounces.",
+          es: "Dibuja dos tarjetas: Reyes usa 3 cucharadas de cacao con 5 onzas de leche. Tran usa 4 cucharadas con 7 onzas.",
+        },
+        {
+          en: "Make the milk match at 35 ounces: multiply Reyes's amounts by 7 and Tran's by 5.",
+          es: "Iguala la leche a 35 onzas: multiplica las cantidades de Reyes por 7 y las de Tran por 5.",
+        },
+        {
+          en: "Compare 21 and 20 spoons for the same 35 ounces. Which recipe has more cocoa?",
+          es: "Compara 21 y 20 cucharadas para las mismas 35 onzas. ¿Cuál receta tiene más cacao?",
+        },
+      ],
+      talkEn: "Why can't we decide just by looking at 3 and 4 spoons?",
+      talkEs: "¿Por qué no basta mirar solo las 3 y 4 cucharadas?",
+    },
+  ],
   ratios: [
     {
       icon: "🥣",
@@ -4578,6 +4592,8 @@ const FAMILY_ACTIVITIES = {
 
 export function getFamilyActivities(topicOrConfig) {
   const config = typeof topicOrConfig === "object" ? topicOrConfig : null;
+  if (["3-5", "3-5-part2"].includes(String(config?.lessonId || config?.id || "")))
+    return FAMILY_ACTIVITIES.ratioComparison;
   const exact = config && exactFamilyMission(config);
   if (exact)
     return [
@@ -4602,6 +4618,25 @@ export function getFamilyActivities(topicOrConfig) {
         ],
       },
     ];
+  const together = config?.familyNotes?.tryTogether;
+  if (together?.scenarioEn && Array.isArray(together.steps) && together.steps.length) {
+    return [
+      {
+        icon: "✏️",
+        titleEn: `Practice: ${config.familyNotes.sessionTitle || config.title}`,
+        titleEs: together.titleEs || "Practiquen juntos",
+        materialsEn: "Paper and pencil",
+        materialsEs: "Papel y lápiz",
+        minutes: 5,
+        steps: [
+          { en: together.scenarioEn, es: together.scenarioEs || together.scenarioEn },
+          ...together.steps.map((step) => ({ en: step.en, es: step.es || step.en })),
+        ],
+        talkEn: "How do your numbers support your answer?",
+        talkEs: "¿Cómo apoyan los números tu respuesta?",
+      },
+    ];
+  }
   const topic = config ? detectVisualTopic(config) : topicOrConfig;
   return FAMILY_ACTIVITIES[topic] || FAMILY_ACTIVITIES.fallback;
 }
@@ -8283,7 +8318,9 @@ export function renderProblemHintButton(_problem, _visual = "", coach = {}) {
 }
 
 export function renderDoneTab(config = null, lessonId = "") {
-  const inner = renderCelebration(config, lessonId).replace(/<section[^>]*>|<\/section>/g, "");
+  const inner = renderCelebration(config, lessonId)
+    .replace(/^\s*<section[^>]*>/, "")
+    .replace(/<\/section>\s*$/, "");
   return `<div ${tabPanelAttrs("done", true)}>${inner}</div>`;
 }
 
@@ -11057,8 +11094,6 @@ function attachPhotoboothToSignoff() {
     switchHomeworkTab('done');
     var formEl = pbEl('signoff_form_wrapper');
     if (formEl) {
-      var extras = formEl.closest('details');
-      if (extras) extras.open = true;
       editParentSignoff();
       formEl.scrollIntoView({ behavior: 'smooth' });
     }
@@ -15631,12 +15666,16 @@ body[data-homework-route]:not([data-homework-route="full"]) .homework-tab-extra-
 
 /* A short finish and tools that stay out of the reading column. */
 .hw-tools-menu { margin: 14px 0; }
-.hw-tools-menu > summary, .homework-optional-extras > summary, .family-mission-alternatives > summary { cursor:pointer; min-height:44px; padding:10px 0; font-size:16px; font-weight:750; }
+.hw-tools-menu > summary, .family-mission-alternatives > summary { cursor:pointer; min-height:44px; padding:10px 0; font-size:16px; font-weight:750; }
 .hw-hero-titles h1 { margin:0; font-size:clamp(26px,5vw,44px); }
 .hw-hero-titles h1 .welcome-title-es { font-size:inherit; }
 .homework-message-action { margin:16px 0; }
 .homework-message-action p, .homework-optional-extras > p, .family-roles { font-size:16px; line-height:1.55; }
 .homework-optional-extras { margin-top:24px; border-top:1px solid #cbd5e1; }
+.homework-optional-extras h3 { margin:18px 0 6px; font-size:23px; color:#12355b; }
+.homework-extra-actions { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:16px 0 22px; }
+.homework-extra-actions .btn { display:flex; align-items:center; justify-content:center; min-height:54px; padding:10px; text-align:center; white-space:normal; font-size:16px; }
+@media(max-width:700px) { .homework-extra-actions { grid-template-columns:1fr; } }
 .hw-utility-controls { display:flex; align-items:center; flex-wrap:wrap; gap:10px; }
 .hw-utility-controls .hw-stuck-fab { position:static; margin:0; box-shadow:none; min-height:44px; }
 .hw-utility-controls #nsr-root { position:static !important; inset:auto !important; margin:0 !important; }

@@ -5158,6 +5158,7 @@ body.hw-drawer-open { overflow: hidden; }
 }
 
 
+.ratio-compare-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.ratio-compare-recipe{min-width:0;margin:0;padding:18px;border:2px solid #173a5e;border-radius:18px;background:#eef8f4}.ratio-compare-recipe legend{padding:0 8px;font-size:20px;font-weight:800}.ratio-compare-recipe label{display:grid;gap:5px;margin:10px 0;font-size:16px;font-weight:700}.ratio-compare-recipe input{width:100%;max-width:160px;min-height:44px;padding:7px 10px;border:2px solid #173a5e;border-radius:9px;background:#fff;color:#173a5e;font:inherit;font-size:20px}.ratio-compare-recipe input:focus-visible{outline:3px solid #b45309;outline-offset:2px}.ratio-compare-result{min-height:68px;margin-top:14px;font-size:17px;line-height:1.4}.ratio-compare-bar{height:22px;margin-top:10px;border:1px solid #173a5e;border-radius:12px;background:#fff;overflow:hidden}.ratio-compare-bar span{display:block;height:100%;background:#0b8f87;transition:width .2s}.ratio-compare-recipe:nth-child(2) .ratio-compare-bar span{background:#c65d43}.ratio-compare-verdict{margin:18px 0 8px;padding:16px;border:2px solid #173a5e;border-radius:14px;background:#fff2c2;font-size:19px;font-weight:800;line-height:1.4}.ratio-compare-coach{margin:8px 0 0;font-size:17px;line-height:1.45}@media(max-width:650px){.ratio-compare-grid{grid-template-columns:1fr}}
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
 .visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
@@ -7020,12 +7021,16 @@ body[data-homework-route]:not([data-homework-route="full"]) .homework-tab-extra-
 
 /* A short finish and tools that stay out of the reading column. */
 .hw-tools-menu { margin: 14px 0; }
-.hw-tools-menu > summary, .homework-optional-extras > summary, .family-mission-alternatives > summary { cursor:pointer; min-height:44px; padding:10px 0; font-size:16px; font-weight:750; }
+.hw-tools-menu > summary, .family-mission-alternatives > summary { cursor:pointer; min-height:44px; padding:10px 0; font-size:16px; font-weight:750; }
 .hw-hero-titles h1 { margin:0; font-size:clamp(26px,5vw,44px); }
 .hw-hero-titles h1 .welcome-title-es { font-size:inherit; }
 .homework-message-action { margin:16px 0; }
 .homework-message-action p, .homework-optional-extras > p, .family-roles { font-size:16px; line-height:1.55; }
 .homework-optional-extras { margin-top:24px; border-top:1px solid #cbd5e1; }
+.homework-optional-extras h3 { margin:18px 0 6px; font-size:23px; color:#12355b; }
+.homework-extra-actions { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:16px 0 22px; }
+.homework-extra-actions .btn { display:flex; align-items:center; justify-content:center; min-height:54px; padding:10px; text-align:center; white-space:normal; font-size:16px; }
+@media(max-width:700px) { .homework-extra-actions { grid-template-columns:1fr; } }
 .hw-utility-controls { display:flex; align-items:center; flex-wrap:wrap; gap:10px; }
 .hw-utility-controls .hw-stuck-fab { position:static; margin:0; box-shadow:none; min-height:44px; }
 .hw-utility-controls #nsr-root { position:static !important; inset:auto !important; margin:0 !important; }
@@ -7722,7 +7727,7 @@ body {
           <strong>💬 <span class="lang-en">Family conversation:</span><span class="lang-es" lang="es">Conversación familiar:</span></strong>
           <p class="visual-coach-q"><span class="lang-en">Ask: "Where do you see the numbers from tonight&#039;s math in this model?"</span><span class="lang-es" lang="es">Pregunta: "¿Dónde ves los números de la tarea de hoy en este modelo?"</span></p>
         </div>
-        <details><summary><span class="lang-en">Lesson connection</span><span class="lang-es" lang="es">Conexión con la lección</span></summary><p class="visual-source-idea">Keep, Change, Flip works for every division problem with a fraction — whole numbers, fractions, and mixed numbers alike. Formula: a/b ÷ c/d = a/b × d/c</p></details>
+        <p class="visual-source-idea"><strong><span class="lang-en">Tonight's idea:</span><span class="lang-es" lang="es">La idea de hoy:</span></strong> <span class="lang-en">Keep, Change, Flip works for every division problem with a fraction: keep the first number, change ÷ to ×, and flip the second number. Then multiply across and simplify.</span><span class="lang-es" lang="es">Mantén, Cambia, Voltea funciona para toda división con fracciones: mantén el primer número, cambia ÷ por × y voltea el segundo número. Luego multiplica de lado a lado y simplifica.</span></p>
       </article>
     </div>
   </section></div>
@@ -8297,12 +8302,12 @@ body {
 
     <details class="fam-act-card" data-family-activity="0" open>
       <summary class="fam-act-summary">
-        <span class="fam-act-icon" aria-hidden="true">🫓</span>
+        <span class="fam-act-icon" aria-hidden="true">✏️</span>
         <span class="fam-act-titles">
-          <strong><span class="lang-en">Fair-Share Kitchen</span><span class="lang-es" lang="es">Cocina de porciones justas</span></strong>
+          <strong><span class="lang-en">Practice: 6.1–6.2 · Extra Practice</span><span class="lang-es" lang="es">Inténtenlo juntos</span></strong>
           <small class="fam-act-meta">
-            <span class="fam-act-time">⏱️ ~10 min</span>
-            <span class="fam-act-materials"><span class="lang-en">🧰 A tortilla, sandwich, or sheet of paper; a butter knife or scissors</span><span class="lang-es" lang="es">🧰 Una tortilla, un sándwich o una hoja de papel; un cuchillo sin filo o tijeras</span></span>
+            <span class="fam-act-time">⏱️ ~5 min</span>
+            <span class="fam-act-materials"><span class="lang-en">🧰 Paper and pencil</span><span class="lang-es" lang="es">🧰 Papel y lápiz</span></span>
           </small>
         </span>
         <span class="fam-act-chevron" aria-hidden="true">▾</span>
@@ -8312,28 +8317,35 @@ body {
         <li class="fam-act-step">
           <span class="fam-act-step-num" aria-hidden="true">1</span>
           <div>
-            <p class="lang-en">Cut (or fold) the tortilla into fourths. Ask: how many 1/4 pieces are in ONE whole?</p>
-            <p class="lang-es" lang="es">Corten (o doblen) la tortilla en cuartos. Pregunta: ¿cuántos pedazos de 1/4 hay en UNA entera?</p>
+            <p class="lang-en">A ribbon is 3/4 yard long. How many 1/8-yard pieces can be cut from it? Solve 3/4 ÷ 1/8.</p>
+            <p class="lang-es" lang="es">Un listón mide 3/4 de yarda. ¿Cuántas piezas de 1/8 de yarda se pueden cortar? Resuelvan 3/4 ÷ 1/8.</p>
           </div>
         </li>
         <li class="fam-act-step">
           <span class="fam-act-step-num" aria-hidden="true">2</span>
           <div>
-            <p class="lang-en">Now imagine 2 tortillas. How many 1/4 pieces in 2 wholes? Write it as 2 ÷ 1/4.</p>
-            <p class="lang-es" lang="es">Ahora imaginen 2 tortillas. ¿Cuántos pedazos de 1/4 hay en 2 enteras? Escríbanlo como 2 ÷ 1/4.</p>
+            <p class="lang-en">Say the question out loud: how many 1/8-yard pieces fit into 3/4 yard? Predict — more than 3, or fewer?</p>
+            <p class="lang-es" lang="es">Digan la pregunta en voz alta: ¿cuántas piezas de 1/8 de yarda caben en 3/4 de yarda? Predigan — ¿más de 3, o menos?</p>
           </div>
         </li>
         <li class="fam-act-step">
           <span class="fam-act-step-num" aria-hidden="true">3</span>
           <div>
-            <p class="lang-en">Check by counting the pieces. Does the answer get bigger or smaller than 2? Talk about why.</p>
-            <p class="lang-es" lang="es">Comprueben contando los pedazos. ¿La respuesta es mayor o menor que 2? Hablen de por qué.</p>
+            <p class="lang-en">Keep 3/4, change ÷ to ×, flip 1/8 to 8/1. The new problem is 3/4 × 8/1.</p>
+            <p class="lang-es" lang="es">Mantengan 3/4, cambien ÷ por × y volteen 1/8 a 8/1. El nuevo problema es 3/4 × 8/1.</p>
+          </div>
+        </li>
+        <li class="fam-act-step">
+          <span class="fam-act-step-num" aria-hidden="true">4</span>
+          <div>
+            <p class="lang-en">Multiply across, then simplify. How many pieces — and was your prediction right?</p>
+            <p class="lang-es" lang="es">Multipliquen de lado a lado y luego simplifiquen. ¿Cuántas piezas — y acertó su predicción?</p>
           </div>
         </li></ol>
         <div class="fam-act-talk">
           <strong>💬 <span class="lang-en">Talk about it:</span><span class="lang-es" lang="es">Para conversar:</span></strong>
-          <span class="lang-en">Why does dividing by a fraction give MORE pieces, not fewer?</span>
-          <span class="lang-es" lang="es">¿Por qué dividir entre una fracción da MÁS pedazos y no menos?</span>
+          <span class="lang-en">How do your numbers support your answer?</span>
+          <span class="lang-es" lang="es">¿Cómo apoyan los números tu respuesta?</span>
         </div>
         <button type="button" class="fam-mission-complete" data-mission-complete="0" aria-pressed="false" onclick="completeFamilyMission(0)">
           <span class="fam-mission-check" aria-hidden="true">✓</span>
@@ -8341,99 +8353,7 @@ body {
         </button>
       </div>
     </details>
-      <details class="family-mission-alternatives"><summary><span class="lang-en">Optional alternatives</span><span class="lang-es" lang="es">Alternativas opcionales</span></summary>
-    <details class="fam-act-card" data-family-activity="1">
-      <summary class="fam-act-summary">
-        <span class="fam-act-icon" aria-hidden="true">🍚</span>
-        <span class="fam-act-titles">
-          <strong><span class="lang-en">Measuring-Cup Challenge</span><span class="lang-es" lang="es">Reto de la taza medidora</span></strong>
-          <small class="fam-act-meta">
-            <span class="fam-act-time">⏱️ ~10 min</span>
-            <span class="fam-act-materials"><span class="lang-en">🧰 Measuring cups, rice or dry beans, a bowl</span><span class="lang-es" lang="es">🧰 Tazas medidoras, arroz o frijoles secos, un tazón</span></span>
-          </small>
-        </span>
-        <span class="fam-act-chevron" aria-hidden="true">▾</span>
-      </summary>
-      <div class="fam-act-body">
-        <ol class="fam-act-steps">
-        <li class="fam-act-step">
-          <span class="fam-act-step-num" aria-hidden="true">1</span>
-          <div>
-            <p class="lang-en">Predict: how many 1/3-cup scoops will it take to fill 2 cups?</p>
-            <p class="lang-es" lang="es">Predigan: ¿cuántas medidas de 1/3 de taza se necesitan para llenar 2 tazas?</p>
-          </div>
-        </li>
-        <li class="fam-act-step">
-          <span class="fam-act-step-num" aria-hidden="true">2</span>
-          <div>
-            <p class="lang-en">Scoop and count together. Write the matching division problem: 2 ÷ 1/3.</p>
-            <p class="lang-es" lang="es">Midan y cuenten juntos. Escriban la división que corresponde: 2 ÷ 1/3.</p>
-          </div>
-        </li>
-        <li class="fam-act-step">
-          <span class="fam-act-step-num" aria-hidden="true">3</span>
-          <div>
-            <p class="lang-en">Try it again with 1/2-cup scoops. Which scoop needed more trips? Why?</p>
-            <p class="lang-es" lang="es">Repitan con medidas de 1/2 taza. ¿Cuál medida necesitó más viajes? ¿Por qué?</p>
-          </div>
-        </li></ol>
-        <div class="fam-act-talk">
-          <strong>💬 <span class="lang-en">Talk about it:</span><span class="lang-es" lang="es">Para conversar:</span></strong>
-          <span class="lang-en">Before scooping, how could you KNOW the answer without counting?</span>
-          <span class="lang-es" lang="es">Antes de medir, ¿cómo podrían SABER la respuesta sin contar?</span>
-        </div>
-        <button type="button" class="fam-mission-complete" data-mission-complete="1" aria-pressed="false" onclick="completeFamilyMission(1)">
-          <span class="fam-mission-check" aria-hidden="true">✓</span>
-          <span class="lang-en">We did this mission</span><span class="lang-es" lang="es">Completamos esta misión</span>
-        </button>
-      </div>
-    </details>
-    <details class="fam-act-card" data-family-activity="2">
-      <summary class="fam-act-summary">
-        <span class="fam-act-icon" aria-hidden="true">🧵</span>
-        <span class="fam-act-titles">
-          <strong><span class="lang-en">String Split</span><span class="lang-es" lang="es">Cortar la cuerda</span></strong>
-          <small class="fam-act-meta">
-            <span class="fam-act-time">⏱️ ~10 min</span>
-            <span class="fam-act-materials"><span class="lang-en">🧰 String, yarn, or paper strip; ruler; scissors</span><span class="lang-es" lang="es">🧰 Cuerda, estambre o tira de papel; regla; tijeras</span></span>
-          </small>
-        </span>
-        <span class="fam-act-chevron" aria-hidden="true">▾</span>
-      </summary>
-      <div class="fam-act-body">
-        <ol class="fam-act-steps">
-        <li class="fam-act-step">
-          <span class="fam-act-step-num" aria-hidden="true">1</span>
-          <div>
-            <p class="lang-en">Cut a piece of string 3 feet (or 90 cm) long and measure it together.</p>
-            <p class="lang-es" lang="es">Corten una cuerda de 3 pies (o 90 cm) y mídanla juntos.</p>
-          </div>
-        </li>
-        <li class="fam-act-step">
-          <span class="fam-act-step-num" aria-hidden="true">2</span>
-          <div>
-            <p class="lang-en">Predict how many 1/2-foot (15 cm) pieces you can cut from it. Write the division.</p>
-            <p class="lang-es" lang="es">Predigan cuántos pedazos de 1/2 pie (15 cm) saldrán. Escriban la división.</p>
-          </div>
-        </li>
-        <li class="fam-act-step">
-          <span class="fam-act-step-num" aria-hidden="true">3</span>
-          <div>
-            <p class="lang-en">Cut and count. Compare the count with your division answer.</p>
-            <p class="lang-es" lang="es">Corten y cuenten. Comparen el conteo con el resultado de la división.</p>
-          </div>
-        </li></ol>
-        <div class="fam-act-talk">
-          <strong>💬 <span class="lang-en">Talk about it:</span><span class="lang-es" lang="es">Para conversar:</span></strong>
-          <span class="lang-en">What would happen to the number of pieces if each piece were half as long?</span>
-          <span class="lang-es" lang="es">¿Qué pasaría con el número de pedazos si cada pedazo midiera la mitad?</span>
-        </div>
-        <button type="button" class="fam-mission-complete" data-mission-complete="2" aria-pressed="false" onclick="completeFamilyMission(2)">
-          <span class="fam-mission-check" aria-hidden="true">✓</span>
-          <span class="lang-en">We did this mission</span><span class="lang-es" lang="es">Completamos esta misión</span>
-        </button>
-      </div>
-    </details></details>
+      <details class="family-mission-alternatives"><summary><span class="lang-en">Optional alternatives</span><span class="lang-es" lang="es">Alternativas opcionales</span></summary></details>
     </div>
       <div class="scratchpad-inline-toggle">
         <button type="button" class="btn btn-secondary scratchpad-toggle-btn" onclick="toggleScratchpad()">
@@ -10246,7 +10166,6 @@ body {
       </div>
     </div>
 <div class="tab-panel-inner" data-tab-panel="done" id="hw_panel_done" role="tabpanel" hidden>
-
       <h2 class="section-title">🎉 <span class="lang-en">Finished for today</span><span class="lang-es" lang="es">Terminaste por hoy</span></h2>
       <p class="celebrate-text lang-en">Name one strategy that helped, or one question to ask next time. You can stop here; no adult signature is needed.</p>
       <p class="celebrate-text lang-es" lang="es">Di una estrategia que te ayudó o una pregunta para la próxima vez. Puedes terminar aquí; no necesitas la firma de un adulto.</p>
@@ -10259,57 +10178,14 @@ body {
         <a class="btn btn-primary" href="https://home.classdojo.com/" target="_blank" rel="noopener"><span class="lang-en">Open ClassDojo to message Mr. Neft</span><span class="lang-es" lang="es">Abrir ClassDojo para escribir al Sr. Neft</span></a>
         <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicia sesión con tu cuenta familiar, abre Mensajes y elige al Sr. Neft. Incluye el número de esta lección y tu pregunta.</span></p>
       </div>
-      <details class="homework-optional-extras"><summary><span class="lang-en">Optional: more practice, photos &amp; a local reflection</span><span class="lang-es" lang="es">Opcional: más práctica, fotos y una reflexión local</span></summary>
+      <section class="homework-optional-extras" aria-labelledby="homework_extras_title">
+      <h3 id="homework_extras_title"><span class="lang-en">Want to do more?</span><span class="lang-es" lang="es">¿Quieren hacer más?</span></h3>
       <p><span class="lang-en">These extras are not required. Photos, recordings and reflections stay on this device. To send anything to Mr. Neft, use ClassDojo.</span><span class="lang-es" lang="es">Estos extras no son obligatorios. Las fotos, grabaciones y reflexiones quedan en este dispositivo. Para enviar algo al Sr. Neft, usa ClassDojo.</span></p>
-      <button type="button" class="btn btn-secondary" onclick="switchHomeworkTab('photobooth')"><span class="lang-en">Open optional photobooth</span><span class="lang-es" lang="es">Abrir cabina de fotos opcional</span></button>
-      <div class="high-five-banner">
-        <button type="button" class="btn-high-five" onclick="triggerHighFive()">
-          <span class="high-five-emoji" aria-hidden="true">✋</span>
-          <div class="high-five-labels">
-            <strong><span class="lang-en">Give a High Five!</span><span class="lang-es" lang="es">¡Dame esos cinco!</span></strong>
-            <small><span class="lang-en">Tap to celebrate tonight's math effort!</span><span class="lang-es" lang="es">¡Toca para celebrar el esfuerzo de hoy!</span></small>
-          </div>
-        </button>
+      <div class="homework-extra-actions">
+        <button type="button" class="btn btn-secondary" onclick="switchHomeworkTab('check'); document.querySelector('.more-practice')?.setAttribute('open', '')"><span class="lang-en">➕ Try more practice problems</span><span class="lang-es" lang="es">➕ Hacer más ejercicios</span></button>
+        <button type="button" class="btn btn-secondary" onclick="switchHomeworkTab('photobooth')"><span class="lang-en">📸 Open the math work photobooth</span><span class="lang-es" lang="es">📸 Abrir la cabina de fotos</span></button>
+        <a class="btn btn-secondary" href="#parent_reflection_input"><span class="lang-en">✍️ Write a reflection below</span><span class="lang-es" lang="es">✍️ Escribir una reflexión abajo</span></a>
       </div>
-
-      <div class="achievement-shelf" id="achievement_shelf">
-        <div class="achievement-badge badge-learn is-unlocked" id="badge_achieve_learn">
-          <span class="achieve-icon" aria-hidden="true">📖</span>
-          <span class="achieve-name"><span class="lang-en">Concept Explorer</span><span class="lang-es" lang="es">Explorador</span></span>
-        </div>
-        <div class="achievement-badge badge-vocab" id="badge_achieve_vocab">
-          <span class="achieve-icon" aria-hidden="true">📚</span>
-          <span class="achieve-name"><span class="lang-en">Vocab Champ</span><span class="lang-es" lang="es">Camp. Vocabulario</span></span>
-        </div>
-        <div class="achievement-badge badge-practice" id="badge_achieve_practice">
-          <span class="achieve-icon" aria-hidden="true">⭐</span>
-          <span class="achieve-name"><span class="lang-en">3-Star Hero</span><span class="lang-es" lang="es">Héroe 3 Estrellas</span></span>
-        </div>
-        <div class="achievement-badge badge-arcade is-unlocked" id="badge_achieve_arcade">
-          <span class="achieve-icon" aria-hidden="true">🎮</span>
-          <span class="achieve-name"><span class="lang-en">Game Master</span><span class="lang-es" lang="es">Maestro del Juego</span></span>
-        </div>
-        <div class="achievement-badge badge-streak is-unlocked" id="badge_achieve_streak">
-          <span class="achieve-icon" aria-hidden="true">🔥</span>
-          <span class="achieve-name"><span class="lang-en">Family Streak</span><span class="lang-es" lang="es">Racha Familiar</span></span>
-        </div>
-        <div class="achievement-badge badge-mission" id="badge_achieve_mission">
-          <span class="achieve-icon" aria-hidden="true">🏡</span>
-          <span class="achieve-name"><span class="lang-en">Home Explorer</span><span class="lang-es" lang="es">Explorador del Hogar</span></span>
-        </div>
-      </div>
-
-
-    <div class="kitchen-table-card card-ish">
-      <div class="kt-badge">🍽️ <span class="lang-en">5-MINUTE KITCHEN TABLE MATH</span><span class="lang-es" lang="es">MATEMÁTICAS EN LA MESA · 5 MINUTOS</span></div>
-      <h3 class="kt-title"><span class="lang-en">Fair-Share Kitchen</span><span class="lang-es" lang="es">Cocina de porciones justas</span></h3>
-      <p class="kt-materials">📦 <strong><span class="lang-en">Materials:</span><span class="lang-es" lang="es">Materiales:</span></strong> <span class="lang-en">A tortilla, sandwich, or sheet of paper; a butter knife or scissors</span><span class="lang-es" lang="es">Una tortilla, un sándwich o una hoja de papel; un cuchillo sin filo o tijeras</span></p>
-      <ol class="kt-steps">
-        <li><span class="lang-en">Cut (or fold) the tortilla into fourths. Ask: how many 1/4 pieces are in ONE whole?</span><span class="lang-es" lang="es">Corten (o doblen) la tortilla en cuartos. Pregunta: ¿cuántos pedazos de 1/4 hay en UNA entera?</span></li><li><span class="lang-en">Now imagine 2 tortillas. How many 1/4 pieces in 2 wholes? Write it as 2 ÷ 1/4.</span><span class="lang-es" lang="es">Ahora imaginen 2 tortillas. ¿Cuántos pedazos de 1/4 hay en 2 enteras? Escríbanlo como 2 ÷ 1/4.</span></li><li><span class="lang-en">Check by counting the pieces. Does the answer get bigger or smaller than 2? Talk about why.</span><span class="lang-es" lang="es">Comprueben contando los pedazos. ¿La respuesta es mayor o menor que 2? Hablen de por qué.</span></li>
-      </ol>
-      <p class="kt-why">💡 <strong><span class="lang-en">Why it works:</span><span class="lang-es" lang="es">Por qué funciona:</span></strong> <span class="lang-en">Why does dividing by a fraction give MORE pieces, not fewer?</span><span class="lang-es" lang="es">¿Por qué dividir entre una fracción da MÁS pedazos y no menos?</span></p>
-    </div>
-
       <div class="parent-signoff-container card-ish">
         <h3 class="signoff-title">✍️ <span class="lang-en">Optional reflection on this device</span><span class="lang-es" lang="es">Reflexión opcional en este dispositivo</span></h3>
 
@@ -10457,17 +10333,55 @@ body {
         </div>
       </div>
 
-      <div class="next-photobooth-banner card-ish">
-        <button type="button" class="btn-next-photobooth" onclick="switchHomeworkTab('photobooth')">
-          <span class="pb-banner-icon" aria-hidden="true">📸</span>
-          <div class="pb-banner-labels">
-            <strong><span class="lang-en">Open the Math Work Photobooth ➔</span><span class="lang-es" lang="es">Abre la cabina de fotos del trabajo ➔</span></strong>
-            <small><span class="lang-en">Optional. Photograph tonight's notebook page, scratchpad or whiteboard — add a frame and stickers, then download or print it.</span><span class="lang-es" lang="es">Opcional. Tomen una foto de la página del cuaderno, del borrador o de la pizarra: agreguen un marco y calcomanías, y descárguenla o imprímanla.</span></small>
+      <div class="high-five-banner">
+        <button type="button" class="btn-high-five" onclick="triggerHighFive()">
+          <span class="high-five-emoji" aria-hidden="true">✋</span>
+          <div class="high-five-labels">
+            <strong><span class="lang-en">Give a High Five!</span><span class="lang-es" lang="es">¡Dame esos cinco!</span></strong>
+            <small><span class="lang-en">Tap to celebrate tonight's math effort!</span><span class="lang-es" lang="es">¡Toca para celebrar el esfuerzo de hoy!</span></small>
           </div>
         </button>
       </div>
 
-      </details>
+      <div class="achievement-shelf" id="achievement_shelf">
+        <div class="achievement-badge badge-learn is-unlocked" id="badge_achieve_learn">
+          <span class="achieve-icon" aria-hidden="true">📖</span>
+          <span class="achieve-name"><span class="lang-en">Concept Explorer</span><span class="lang-es" lang="es">Explorador</span></span>
+        </div>
+        <div class="achievement-badge badge-vocab" id="badge_achieve_vocab">
+          <span class="achieve-icon" aria-hidden="true">📚</span>
+          <span class="achieve-name"><span class="lang-en">Vocab Champ</span><span class="lang-es" lang="es">Camp. Vocabulario</span></span>
+        </div>
+        <div class="achievement-badge badge-practice" id="badge_achieve_practice">
+          <span class="achieve-icon" aria-hidden="true">⭐</span>
+          <span class="achieve-name"><span class="lang-en">3-Star Hero</span><span class="lang-es" lang="es">Héroe 3 Estrellas</span></span>
+        </div>
+        <div class="achievement-badge badge-arcade is-unlocked" id="badge_achieve_arcade">
+          <span class="achieve-icon" aria-hidden="true">🎮</span>
+          <span class="achieve-name"><span class="lang-en">Game Master</span><span class="lang-es" lang="es">Maestro del Juego</span></span>
+        </div>
+        <div class="achievement-badge badge-streak is-unlocked" id="badge_achieve_streak">
+          <span class="achieve-icon" aria-hidden="true">🔥</span>
+          <span class="achieve-name"><span class="lang-en">Family Streak</span><span class="lang-es" lang="es">Racha Familiar</span></span>
+        </div>
+        <div class="achievement-badge badge-mission" id="badge_achieve_mission">
+          <span class="achieve-icon" aria-hidden="true">🏡</span>
+          <span class="achieve-name"><span class="lang-en">Home Explorer</span><span class="lang-es" lang="es">Explorador del Hogar</span></span>
+        </div>
+      </div>
+
+
+    <div class="kitchen-table-card card-ish">
+      <div class="kt-badge">🍽️ <span class="lang-en">5-MINUTE KITCHEN TABLE MATH</span><span class="lang-es" lang="es">MATEMÁTICAS EN LA MESA · 5 MINUTOS</span></div>
+      <h3 class="kt-title"><span class="lang-en">Practice: 6.1–6.2 · Extra Practice</span><span class="lang-es" lang="es">Inténtenlo juntos</span></h3>
+      <p class="kt-materials">📦 <strong><span class="lang-en">Materials:</span><span class="lang-es" lang="es">Materiales:</span></strong> <span class="lang-en">Paper and pencil</span><span class="lang-es" lang="es">Papel y lápiz</span></p>
+      <ol class="kt-steps">
+        <li><span class="lang-en">A ribbon is 3/4 yard long. How many 1/8-yard pieces can be cut from it? Solve 3/4 ÷ 1/8.</span><span class="lang-es" lang="es">Un listón mide 3/4 de yarda. ¿Cuántas piezas de 1/8 de yarda se pueden cortar? Resuelvan 3/4 ÷ 1/8.</span></li><li><span class="lang-en">Say the question out loud: how many 1/8-yard pieces fit into 3/4 yard? Predict — more than 3, or fewer?</span><span class="lang-es" lang="es">Digan la pregunta en voz alta: ¿cuántas piezas de 1/8 de yarda caben en 3/4 de yarda? Predigan — ¿más de 3, o menos?</span></li><li><span class="lang-en">Keep 3/4, change ÷ to ×, flip 1/8 to 8/1. The new problem is 3/4 × 8/1.</span><span class="lang-es" lang="es">Mantengan 3/4, cambien ÷ por × y volteen 1/8 a 8/1. El nuevo problema es 3/4 × 8/1.</span></li><li><span class="lang-en">Multiply across, then simplify. How many pieces — and was your prediction right?</span><span class="lang-es" lang="es">Multipliquen de lado a lado y luego simplifiquen. ¿Cuántas piezas — y acertó su predicción?</span></li>
+      </ol>
+      <p class="kt-why">💡 <strong><span class="lang-en">Why it works:</span><span class="lang-es" lang="es">Por qué funciona:</span></strong> <span class="lang-en">How do your numbers support your answer?</span><span class="lang-es" lang="es">¿Cómo apoyan los números tu respuesta?</span></p>
+    </div>
+
+      </section>
 
       <!-- Print-Only Certificate Layout -->
       <div class="print-only-certificate" id="print_only_certificate">
@@ -13221,8 +13135,6 @@ function attachPhotoboothToSignoff() {
     switchHomeworkTab('done');
     var formEl = pbEl('signoff_form_wrapper');
     if (formEl) {
-      var extras = formEl.closest('details');
-      if (extras) extras.open = true;
       editParentSignoff();
       formEl.scrollIntoView({ behavior: 'smooth' });
     }
@@ -13358,6 +13270,34 @@ function hwGameCheckSort() {
 
 (function () {
   "use strict";
+  function initRatioComparison(lab) {
+    var fields = ['a-cocoa', 'a-milk', 'b-cocoa', 'b-milk'].map(function(key){return lab.querySelector('[data-ratio-'+key+']');});
+    function update() {
+      var nums = fields.map(function(field){return Number(field.value);});
+      var verdict = lab.querySelector('[data-ratio-verdict]');
+      if (nums.some(function(n){return !Number.isInteger(n) || n < 1 || n > 30;})) {
+        verdict.querySelector('.lang-en').textContent = 'Enter whole numbers from 1 to 30 in all four boxes.';
+        verdict.querySelector('.lang-es').textContent = 'Escribe números enteros del 1 al 30 en las cuatro casillas.';
+        ['a','b'].forEach(function(key){var box=lab.querySelector('[data-ratio-'+key+'-result]');box.querySelector('.lang-en').textContent='';box.querySelector('.lang-es').textContent='';lab.querySelector('[data-ratio-'+key+'-bar]').style.width='0';});
+        return;
+      }
+      var a = nums[0] / nums[1], b = nums[2] / nums[3];
+      [['a','Reyes',nums[0],nums[1],a],['b','Tran',nums[2],nums[3],b]].forEach(function(row){
+        var box=lab.querySelector('[data-ratio-'+row[0]+'-result]');
+        box.querySelector('.lang-en').textContent = row[2]+' ÷ '+row[3]+' = '+row[4].toFixed(2)+' tablespoons per 1 ounce';
+        box.querySelector('.lang-es').textContent = row[2]+' ÷ '+row[3]+' = '+row[4].toFixed(2)+' cucharadas por 1 onza';
+        lab.querySelector('[data-ratio-'+row[0]+'-bar]').style.width = (row[4]/Math.max(a,b)*100)+'%';
+      });
+      var common = nums[1]*nums[3], cocoaA = nums[0]*nums[3], cocoaB = nums[2]*nums[1];
+      var winner = cocoaA > cocoaB ? 'Reyes' : 'Tran';
+      verdict.querySelector('.lang-en').textContent = 'For '+common+' ounces of milk: Reyes uses '+cocoaA+' tablespoons; Tran uses '+cocoaB+'. '+(cocoaA===cocoaB?'Both recipes have the same cocoa strength.':winner+' has more cocoa for the same milk.');
+      verdict.querySelector('.lang-es').textContent = 'Para '+common+' onzas de leche: Reyes usa '+cocoaA+' cucharadas; Tran usa '+cocoaB+'. '+(cocoaA===cocoaB?'Ambas recetas tienen la misma intensidad de cacao.':winner+' tiene más cacao para la misma cantidad de leche.');
+    }
+    fields.forEach(function(field){field.addEventListener('input',update);});
+    update();
+  }
+  function initRatioComparisons(){document.querySelectorAll('[data-ratio-compare]').forEach(initRatioComparison);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initRatioComparisons);else initRatioComparisons();
   var NS = "http://www.w3.org/2000/svg";
   function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
   function svgWrap(body, label) { return '<svg viewBox="0 0 560 280" role="img" aria-label="' + label + '"><rect x="8" y="8" width="544" height="264" rx="24" fill="#f8fbf2" stroke="#173a5e" stroke-width="3"/>' + body + '</svg>'; }
