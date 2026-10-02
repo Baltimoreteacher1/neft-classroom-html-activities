@@ -1706,3 +1706,35 @@
   border-radius: 10px;
   background: #fff;
 }
+
+/* A single vocabulary card uses the space for its definition, not a page-sized
+   illustration. Keep diagrams intact with contain and a bounded picture area. */
+body:not(.nt-present) .reading-card-stack .sg-vcard {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  align-content: start;
+  gap: 8px 20px;
+}
+body:not(.nt-present) .reading-card-stack .sg-vcard-picture {
+  grid-column: 1;
+  grid-row: 1 / span 4;
+  width: 180px;
+  height: 135px;
+  min-height: 0;
+  aspect-ratio: 4 / 3;
+  margin: 0;
+}
+body:not(.nt-present) .reading-card-stack .sg-vcard > :not(.sg-vcard-picture):not(.sg-speak) {
+  grid-column: 2;
+  margin-top: 0;
+}
+body:not(.nt-present) .reading-card-stack .sg-vterm { padding-right: 32px; }
+@media (max-width: 600px) {
+  body:not(.nt-present) .reading-card-stack .sg-vcard { display: flex; }
+  body:not(.nt-present) .reading-card-stack .sg-vcard-picture {
+    align-self: center;
+    max-width: 100%;
+    margin-bottom: 8px;
+  }
+}
+body:has(.reading-hero) .sg-panel { scroll-margin-top: 80px; }
