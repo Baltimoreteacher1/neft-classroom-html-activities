@@ -704,7 +704,38 @@
         var teacherOpen = openLessonButton(plan.lesson, "Prepare this lesson", true);
         teacherOpen.classList.add("hub-teacher-only");
         actions.append(studentOpen, teacherOpen);
+        if (plan.next) {
+          actions.appendChild(
+            openLessonButton(
+              plan.next,
+              "Up next: " + plan.next.id.replace("-", ".") + " " + plan.next.title,
+            ),
+          );
+        }
         card.appendChild(actions);
+        // The materials a class reaches for first, one click from the panel
+        // instead of behind "Prepare this lesson". Same links, same safePath
+        // checks, as the full preview — resourceGroup appends to the preview,
+        // so the card goes in first and the groups follow it.
+        preview.appendChild(card);
+        resourceGroup(plan.lesson, "Today’s materials", [
+          ["lesson", "Interactive lesson"],
+          ["guidedNotes", "Guided notes"],
+          ["handout", "Handout"],
+          ["homework", "Homework"],
+          ["familyPage", "Family guide"],
+          ["learningLab", "Interactive learning lab"],
+        ]);
+        resourceGroup(
+          plan.lesson,
+          "Teacher preparation",
+          [
+            ["slides", "Teaching slides"],
+            ["teacherNotes", "Teacher notes"],
+            ["exitTicket", "Final check"],
+          ],
+          true,
+        );
       } else {
         card.appendChild(
           node(
@@ -725,7 +756,7 @@
           card.appendChild(upcoming);
         }
       }
-      preview.appendChild(card);
+      if (!card.isConnected) preview.appendChild(card);
       var other = node("p", "cn-starter");
       other.append(
         forAudience(

@@ -2206,7 +2206,7 @@
   // Homework&Family first, else fall back to Practice & Games.
   var OUTLINE_GROUPS = [
     {
-      title: "✅ Must Do · Learn",
+      title: "Learn",
       keywords: [
         "open the lesson",
         "interactive lesson",
@@ -2219,29 +2219,59 @@
       ],
     },
     {
-      title: "🧩 If Needed · Supports",
+      title: "Supports",
       keywords: ["notes", "handout"],
     },
     {
-      title: "🔬 Interactive Learning Labs",
+      title: "Interactive learning labs",
       keywords: ["interactive learning lab"],
     },
     {
-      title: "🏠 At Home · Continue",
+      title: "At home",
       keywords: ["homework", "family", "forms"],
     },
     // Practice & Games is the catch-all; rendered last regardless of
     // position here (see buildGroupedOutline ordering).
   ];
 
-  function outlineItemIcon(act, isProject) {
-    var name = (act.text || "").toLowerCase();
-    if (act.isBonus) return "🎯";
-    if (isProject) return "🛠️";
-    if (name.indexOf("lesson") > -1 || name.indexOf("html") > -1) return "💻";
-    if (name.indexOf("notes") > -1 || name.indexOf("packet") > -1) return "📝";
-    if (name.indexOf("homework") > -1) return "🏠";
-    return "🔗";
+  // Authored labels still carry a leading pictograph in places ("👪 Family
+  // Page"). Icons as text leak into aria-labels ("Mark complete: 💻 …") and
+  // read as clutter; the row's kind tag now says what the link opens.
+  var LEADING_SYMBOL =
+    /^(?:[☀-➿⬀-⯿]|[\uD83C-\uDBFF][\uDC00-\uDFFF])(?:️|‍(?:[\uD83C-\uDBFF][\uDC00-\uDFFF]|[☀-➿]))*\s*/;
+  function cleanLabel(text) {
+    var out = String(text || "");
+    var guard = 0;
+    while (LEADING_SYMBOL.test(out) && guard++ < 4) out = out.replace(LEADING_SYMBOL, "");
+    return out.trim();
+  }
+  window.NeftCleanLabel = cleanLabel;
+
+  // What a row opens, as a short tag beside its name. Order matters: a
+  // "Practice Arcade Game" is a game before it is practice; a PDF is a
+  // printable whatever it is called.
+  function outlineItemKind(act, isProject) {
+    var name = cleanLabel(act.text).toLowerCase();
+    var href = (act.href || "").toLowerCase();
+    if (isProject) return "Project";
+    if (/\.(pdf)([?#]|$)/.test(href)) return "PDF";
+    if (/\.(docx?)([?#]|$)/.test(href)) return "Word";
+    if (/\.(pptx?)([?#]|$)/.test(href)) return "Slides";
+    if (/\/api\/scorm/.test(href)) return "Canvas";
+    if (/\bgame\b|arcade|\/games?\//.test(name + " " + href)) return "Game";
+    if (/slides|present/.test(name)) return "Slides";
+    if (/learning lab/.test(name) || /\/learning-labs\//.test(href)) return "Lab";
+    if (/mode=tools/.test(href) || /interactive tools|manipulative/.test(name)) return "Tools";
+    if (/forms?\b|exit ticket|final check|quiz|readiness/.test(name) || /post-forms/.test(href))
+      return "Check";
+    if (/family/.test(name) || /\/family\//.test(href)) return "Family";
+    if (/homework/.test(name) || /homework/.test(href)) return "Homework";
+    if (/teacher notes/.test(name) || /teacher-notes/.test(href)) return "Teacher";
+    if (/notes|handout|worksheet|packet|printable|study guide/.test(name)) return "Printable";
+    if (/student help/.test(name) || /student-help/.test(href)) return "Help";
+    if (act.isBonus) return "Bonus";
+    if (/lesson|html/.test(name) || /^\/lessons\/[^/]+\/?(\?|$)/.test(href)) return "Interactive";
+    return "Link";
   }
 
   function outlineCategoryIndex(act) {
@@ -2325,7 +2355,7 @@
           ? head.querySelector(".lesson-head").textContent.replace(/\s+/g, " ").trim()
           : link.textContent) || "Small Group";
       var moreBody = ensureOutlineMore(link.parentElement);
-      moreBody.appendChild(makeScormLink(href, title, "⬇", "scorm-dl"));
+      moreBody.appendChild(makeScormLink(href, title, "Canvas", "scorm-dl"));
     });
 
   // Apply Day (Part II). These rows are static anchors on /curriculum/units/:
@@ -2349,7 +2379,7 @@
     var chip = makeScormLink(
       href,
       "Lesson " + m[1] + " \u00b7 Part II: Apply",
-      "\ud83c\udf93 Canvas (SCORM)",
+      "Canvas (SCORM)",
       "res scorm-dl scorm-dl-part2",
       "",
     );
@@ -2462,7 +2492,8 @@
     } else if (act.isBonus) {
       a.className = "res-bonus";
     }
-    a.innerHTML = outlineItemIcon(act, isProject) + " " + act.text;
+    a.textContent = cleanLabel(act.text);
+    a.dataset.kind = outlineItemKind(act, isProject);
     li.appendChild(a);
     if (act.isFamilyHomework) {
       var qrBtn = document.createElement("button");
@@ -2472,7 +2503,7 @@
         "margin-left:6px;padding:1px 6px;font-size:11px;font-weight:700;border-radius:6px;background:#f1f5f9;border:1px solid #cbd5e1;color:#334155;cursor:pointer;vertical-align:middle;";
       qrBtn.title = "Show QR Code for families";
       qrBtn.setAttribute("aria-label", "Show QR Code for " + act.text);
-      qrBtn.textContent = "📱 QR";
+      qrBtn.textContent = "QR";
       qrBtn.addEventListener("click", function (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -2485,7 +2516,7 @@
         makeScormLink(
           act.href,
           (scormTitlePrefix ? scormTitlePrefix + " — " : "") + act.text,
-          "⬇",
+          "Canvas",
           "scorm-dl",
         ),
       );
@@ -2513,7 +2544,7 @@
     // order is: Lesson & Slides, Notes & Handouts, Practice & Games,
     // Homework & Family.
     sections.splice(2, 0, {
-      title: "🎯 Practice · Apply",
+      title: "Practice & games",
       items: buckets[OUTLINE_GROUPS.length],
     });
 
@@ -3166,12 +3197,12 @@
         if (!hasArcade) {
           if (lesson.isEndOfUnit && lesson.unitInteger) {
             allActs.push({
-              text: "🎮 Unit Review Game",
+              text: "Unit Review Game",
               href: "/math/games/practice-arcade/?unit=" + lesson.unitInteger,
             });
           } else if (lesson.lessonId) {
             allActs.push({
-              text: "⚙️ Practice Arcade Game",
+              text: "Practice Arcade Game",
               href: "/math/games/practice-arcade/?lesson=" + lesson.lessonId,
             });
           }
@@ -3198,7 +3229,7 @@
         }
         if (toolsId) {
           allActs.push({
-            text: "🧰 Interactive Tools",
+            text: "Interactive Tools",
             href: "/lessons/" + toolsId + "/?mode=tools",
             phaseIndex: 1,
           });
@@ -3251,7 +3282,7 @@
         }
         if (scormTarget) {
           scormLessonBtn.href = scormDownloadHref(scormTarget, scormTitle);
-          scormLessonBtn.textContent = "🎓 Download for Canvas (SCORM)";
+          scormLessonBtn.textContent = "Canvas package (SCORM)";
           scormLessonBtn.title = "Download “" + scormTitle + "” as a Canvas-ready SCORM package";
           scormLessonBtn.setAttribute("aria-label", scormLessonBtn.title);
           scormLessonBtn.style.display = "";
@@ -3323,7 +3354,6 @@
     var title = document.createElement("h2");
     title.style.fontSize = "18px";
     title.style.color = "var(--navy)";
-    title.style.fontFamily = "Outfit, sans-serif";
     title.style.marginBottom = "12px";
     title.textContent = 'Search Results for "' + q + '"';
     panel.appendChild(title);

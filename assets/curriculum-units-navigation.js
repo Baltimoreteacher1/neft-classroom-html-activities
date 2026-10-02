@@ -201,6 +201,31 @@
       const options = card.querySelector(".units-lesson-options");
       if (options && Array.from(card.querySelectorAll(".activity-select")).some((s) => s.value))
         options.open = true;
+      // Copy link / Copy student launch / Print lesson / Canvas package are
+      // appended to .lesson-info one at a time by three different scripts, so
+      // they stacked as four full-width buttons under the resource list. One
+      // labelled row keeps them together and in proportion. Idempotent: nodes
+      // already inside the row are skipped.
+      const utilities = Array.from(
+        info.querySelectorAll(
+          ":scope > .lesson-copy-link, :scope > .lesson-print-lesson, :scope > .scorm-lesson-btn",
+        ),
+      );
+      if (utilities.length) {
+        let row = info.querySelector(":scope > .units-lesson-utilities");
+        if (!row) {
+          row = document.createElement("div");
+          row.className = "units-lesson-utilities";
+          row.setAttribute("role", "group");
+          row.setAttribute("aria-label", "Share and print this lesson");
+          const label = document.createElement("span");
+          label.className = "units-lesson-utilities__label";
+          label.textContent = "Share & print";
+          row.appendChild(label);
+          info.appendChild(row);
+        }
+        utilities.forEach((node) => row.appendChild(node));
+      }
       let paging = card.querySelector(".units-lesson-paging");
       if (!paging) {
         paging = document.createElement("nav");

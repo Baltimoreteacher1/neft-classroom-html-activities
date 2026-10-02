@@ -969,7 +969,7 @@
               var printBtn = document.createElement("button");
               printBtn.type = "button";
               printBtn.className = "lesson-print-activity";
-              printBtn.textContent = "🖨";
+              printBtn.textContent = "Print";
               printBtn.title = "Print “" + act.text + "”";
               printBtn.setAttribute("aria-label", "Print: " + act.text);
               printBtn.addEventListener(
@@ -989,7 +989,7 @@
                 var pktBtn = document.createElement("button");
                 pktBtn.type = "button";
                 pktBtn.className = "lesson-print-activity lesson-print-packet";
-                pktBtn.textContent = "🖨";
+                pktBtn.textContent = "Packet";
                 pktBtn.title = "Print full lesson packet";
                 pktBtn.setAttribute("aria-label", "Print full lesson packet");
                 pktBtn.addEventListener(
@@ -1216,7 +1216,7 @@
     var btn = document.createElement("button");
     btn.type = "button";
     btn.className = "lesson-print-lesson";
-    btn.innerHTML = "🖨 Print lesson";
+    btn.innerHTML = "Print lesson";
     btn.title = "Print this lesson — objective, standard, and its full activity list";
     btn.addEventListener("click", function () {
       printLessonSheet(card, unit);
@@ -1236,7 +1236,7 @@
     var btn = document.createElement("button");
     btn.type = "button";
     btn.className = "lesson-copy-link";
-    btn.innerHTML = "🔗 Copy link";
+    btn.innerHTML = "Copy link";
     btn.title = "Copy a shareable link to this lesson (for Classroom / Canvas)";
     btn.addEventListener("click", function () {
       var link = buildLessonShareLink(card, unit);
@@ -1255,7 +1255,7 @@
           window.prompt("Copy this lesson link:", link);
           btn.innerHTML = "Copy link manually";
           setTimeout(function () {
-            btn.innerHTML = "🔗 Copy link";
+            btn.innerHTML = "Copy link";
           }, 2000);
         },
       );
@@ -1279,7 +1279,7 @@
     var btn = document.createElement("button");
     btn.type = "button";
     btn.className = "lesson-copy-link lesson-student-launch-copy";
-    btn.innerHTML = "🎒 Copy student launch";
+    btn.innerHTML = "Copy student launch";
     btn.title =
       "Copy the student-safe launch link (/curriculum/student-launch/) — no teacher PIN needed";
     btn.addEventListener("click", function () {
@@ -1306,7 +1306,7 @@
           window.prompt("Copy this lesson link:", link);
           btn.innerHTML = "Copy link manually";
           setTimeout(function () {
-            btn.innerHTML = "🎒 Copy student launch";
+            btn.innerHTML = "Copy student launch";
           }, 2000);
         },
       );
@@ -1367,7 +1367,7 @@
     var btn = document.createElement("button");
     btn.type = "button";
     btn.className = "unit-resource-btn unit-print-btn";
-    btn.innerHTML = "🖨 Print unit";
+    btn.innerHTML = "Print unit";
     btn.title = "Print just this unit";
     btn.addEventListener("click", function () {
       printSingleUnit(idx, unit.num + " · " + unit.name);
@@ -1488,7 +1488,7 @@
           var printBtn = document.createElement("button");
           printBtn.type = "button";
           printBtn.className = "lesson-print-activity";
-          printBtn.textContent = "🖨";
+          printBtn.textContent = "Print";
           printBtn.title = "Print “" + text + "”";
           printBtn.setAttribute("aria-label", "Print: " + text);
           printBtn.addEventListener("click", function (e) {
@@ -1505,7 +1505,7 @@
             var pktBtn = document.createElement("button");
             pktBtn.type = "button";
             pktBtn.className = "lesson-print-activity lesson-print-packet";
-            pktBtn.textContent = "🖨";
+            pktBtn.textContent = "Packet";
             pktBtn.title = "Print full lesson packet";
             pktBtn.setAttribute("aria-label", "Print full lesson packet");
             pktBtn.addEventListener(
