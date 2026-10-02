@@ -749,21 +749,11 @@
     <!-- Student Passport (meta-progression: lifetime XP / streak / badges) -->
     <link rel="stylesheet" href="/assets/lesson-passport.css" />
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
+<style>.session-brief{padding:20px;margin:20px 0;border:1px solid #64769a;border-radius:16px;background:#16233b;color:#f1f5ff;font-size:16px;line-height:1.6}.session-brief label{display:flex;gap:10px;align-items:center}.session-brief input{width:20px;height:20px}.session-brief button,.review-missed{min-height:44px;padding:10px 18px;font:700 16px system-ui;border-radius:10px;background:#a8f1d2;color:#092b23;border:0;cursor:pointer}.session-brief [hidden]{display:none}.review-breakdown{max-width:720px;margin:24px auto;font-size:17px;line-height:1.6}.review-breakdown summary{padding:12px;cursor:pointer}.review-breakdown li{padding:12px;border-bottom:1px solid #536283}.review-breakdown p{color:#d4e2ff}</style>
 </head>
   <body>
 
-      <!-- EWL Universal Arcade Enhancements Header -->
-      <div class="ewl-arcade-header-bar" style="position: relative; z-index: 100;">
-        <div class="ewl-arcade-title-group">
-          <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
-          <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
-        </div>
-        <div class="ewl-arcade-controls">
-          <button type="button" class="ewl-btn-toggle active" id="ewl-btn-l1" onclick="if(window.ewlSetLevel) window.ewlSetLevel(1)">L1 Support</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-l2" onclick="if(window.ewlSetLevel) window.ewlSetLevel(2)">L2 Challenge</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-lang" onclick="if(window.ewlToggleLang) window.ewlToggleLang()">🌐 EN / ES</button>
-        </div>
-      </div>
   
     <!-- Screen-reader live region (announces answer feedback) -->
     <div id="ra-sr" class="sr-only" role="status" aria-live="polite"></div>
@@ -775,7 +765,7 @@
       <div class="hero">
         <span class="mascot" role="img" aria-label="Arcade robot mascot">🕹️</span>
         <h1>Boss-Battle<br />Review Arcade</h1>
-        <p class="sub">Grade 6 Math · All 10 Units · Instant Feedback · Lives System</p>
+        <p class="sub">Grade 6 Math · Ten Skill Adventures · Practice or Challenge</p>
       </div>
 
       <div style="text-align: center; margin-bottom: 12px">
@@ -792,22 +782,23 @@
 
       <div class="how-to" role="note" aria-label="How to play">
         <div class="how-to-item">
-          <span class="icon">❤️</span> 3 lives — lose one per wrong answer
+          <span class="icon">❤️</span> Practice freely, or choose 3-life challenge
         </div>
         <div class="how-to-item"><span class="icon">⚡</span> Build a streak for extra glory</div>
         <div class="how-to-item"><span class="icon">💡</span> Every answer explains the math</div>
         <div class="how-to-item"><span class="icon">🏆</span> Earn a tier rating at the end</div>
       </div>
 
-      <p class="unit-grid-label">Pick a unit to practice</p>
+      <div class="session-brief"><strong>Your adventure, your pace</strong><p>Answer with a tap or number keys 1–4. Read the explanation, then choose Next. Finish every question in practice mode. Your adventure saves after each answer on this browser.</p><label><input id="review-challenge" type="checkbox"> Challenge mode: three lives</label><button id="review-resume" type="button" hidden>Resume saved adventure</button></div>
+      <p class="unit-grid-label">Pick a skill to practice</p>
       <div class="unit-grid" role="group" aria-label="Unit selector">
         <button class="unit-btn" onclick="startGame(1)" data-unit="1">
-          <span class="u-num">Unit 1</span>
+          <span class="u-num">Units 2 &amp; 6</span>
           <span class="u-emoji">🔢</span>
           Number Sense
         </button>
         <button class="unit-btn" onclick="startGame(2)" data-unit="2">
-          <span class="u-num">Unit 2</span>
+          <span class="u-num">Unit 6</span>
           <span class="u-emoji">➗</span>
           Fraction Division
         </button>
@@ -847,14 +838,14 @@
           Two-Variable
         </button>
         <button class="unit-btn" onclick="startGame(10)" data-unit="10">
-          <span class="u-num">Unit 10</span>
+          <span class="u-num">Unit 5</span>
           <span class="u-emoji">📦</span>
           Volume &amp; SA
         </button>
       </div>
 
       <button class="boss-btn" onclick="startGame('boss')" aria-label="Boss Battle mixed mode">
-        🔥 Boss Battle — Mixed (All Units)
+        🔥 Boss Battle — Mixed Skills
       </button>
     </section>
 
@@ -941,7 +932,8 @@
         </div>
       </div>
 
-      <div class="results-btns">
+      <details class="review-breakdown"><summary id="review-breakdown-label">Review your adventure</summary><ol id="review-history"></ol></details><div class="results-btns">
+        <button class="r-btn primary" id="review-retry" hidden>Practice questions to revisit</button>
         <button class="r-btn primary" id="play-again-btn" onclick="playAgain()">
           🔄 Play Again
         </button>
@@ -964,6 +956,7 @@
       <p>You ran out of lives! Don't give up — every mistake is a lesson.</p>
       <div class="go-btns">
         <button class="r-btn primary" onclick="playAgain()">🔄 Try Again</button>
+        <button class="r-btn secondary" onclick="document.getElementById('gameover-overlay').classList.remove('show'); showResults()">Review results</button>
         <button class="r-btn secondary" onclick="goHome()">🏠 Home</button>
       </div>
     </div>
@@ -1785,6 +1778,9 @@
         streak: 0,
         maxStreak: 0,
         answered: false,
+        history: [],
+        missed: [],
+        challenge: false,
         unitMode: null, // 1..10 or 'boss'
       };
 
@@ -1993,8 +1989,29 @@
       /* ════════════════════════════════════════════════════════════════
    START GAME
 ════════════════════════════════════════════════════════════════ */
+      let reviewPaused = false;
+      const reviewSaveKey = "review-adventure-v1";
+      function saveReview() {
+        try { localStorage.setItem(reviewSaveKey, JSON.stringify({ ...state, idx:state.idx + (state.answered ? 1 : 0), answered:false })); }
+        catch (_) { srSay("Saving is unavailable. Keep this tab open to continue your adventure."); }
+      }
+      function savedReview() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(reviewSaveKey) || "null");
+          if (!saved || !Array.isArray(saved.queue) || !saved.queue.length || saved.queue.length > 30 || !Number.isInteger(saved.idx) || saved.idx < 0 || saved.idx >= saved.queue.length) return null;
+          if (saved.challenge && saved.lives <= 0) return null;
+          if (!saved.queue.every(q => Object.values(BANK).flat().some(authored => authored.q === q.q))) return null;
+          return saved;
+        } catch (_) { return null; }
+      }
+      window.ReviewStudio = {
+        pause() { reviewPaused = true; }, resume() { reviewPaused = false; },
+      };
       function startGame(unit) {
         state.unitMode = unit;
+        state.history = [];
+        state.missed = [];
+        state.challenge = document.getElementById("review-challenge").checked;
 
         const BOSS_SIZE = 12;
         let pool;
@@ -2040,6 +2057,8 @@
    RENDER QUESTION
 ════════════════════════════════════════════════════════════════ */
       function renderQuestion() {
+        state.answered = false;
+        saveReview();
         const total = state.queue.length;
         const qNum = state.idx + 1;
         const q = state.queue[state.idx];
@@ -2047,7 +2066,7 @@
 
         // HUD
         document.getElementById("hud-hearts").textContent =
-          "❤️".repeat(state.lives) + "🖤".repeat(3 - state.lives);
+          state.challenge ? "❤️".repeat(state.lives) + "🖤".repeat(3 - state.lives) : "∞ Practice";
         document.getElementById("hud-score").textContent = "Score: " + state.score;
         document.getElementById("hud-streak").textContent = "🔥 Streak: " + state.streak;
         document.getElementById("hud-prog-text").textContent = "Question " + qNum + " of " + total;
@@ -2059,7 +2078,7 @@
 
         // Unit label
         document.getElementById("q-unit-label").textContent =
-          "Unit " + (q.unit || state.unitMode) + " · " + q.topic;
+          "Unit " + ({1:"2 / 6",2:6,10:5}[q.unit] || q.unit || state.unitMode) + " · " + q.topic;
 
         // Question text (localized)
         document.getElementById("q-text").textContent = loc(q, "q");
@@ -2098,7 +2117,7 @@
    HANDLE ANSWER
 ════════════════════════════════════════════════════════════════ */
       function handleAnswer(choiceIdx) {
-        if (state.answered) return;
+        if (state.answered || reviewPaused || !Number.isInteger(choiceIdx) || choiceIdx < 0 || choiceIdx >= state.queue[state.idx].choices.length) return;
         state.answered = true;
 
         const q = state.queue[state.idx];
@@ -2124,17 +2143,21 @@
           if (state.streak > state.maxStreak) state.maxStreak = state.streak;
         } else {
           state.streak = 0;
-          state.lives--;
+          if (state.challenge) state.lives--;
+          state.missed.push(q);
         }
 
         // Update HUD hearts immediately
         document.getElementById("hud-hearts").textContent =
-          "❤️".repeat(Math.max(0, state.lives)) + "🖤".repeat(3 - Math.max(0, state.lives));
+          state.challenge ? "❤️".repeat(Math.max(0, state.lives)) + "🖤".repeat(3 - Math.max(0, state.lives)) : "∞ Practice";
         document.getElementById("hud-score").textContent = "Score: " + state.score;
         document.getElementById("hud-streak").textContent = "🔥 Streak: " + state.streak;
 
         // Per-answer learning signal (device-local + /api/scores). Guarded.
         raSignal(q, correct);
+        state.history.push({q, correct, choiceIdx});
+        saveReview();
+        window.GameStudio?.emit("feedback", {correct, message: correct ? "Correct!" : "Read the explanation, then keep going."});
 
         // Explanation (localized)
         const expl = document.getElementById("explanation");
@@ -2174,8 +2197,9 @@
    NEXT QUESTION
 ════════════════════════════════════════════════════════════════ */
       function nextQuestion() {
+        if (reviewPaused || !state.answered) return;
         // Check game over (0 lives) AFTER showing explanation
-        if (state.lives <= 0) {
+        if (state.challenge && state.lives <= 0) {
           document.getElementById("gameover-overlay").classList.add("show");
           return;
         }
@@ -2194,9 +2218,26 @@
       function showResults() {
         showScreen("screen-results");
 
-        const total = state.queue.length;
+        const total = state.history.length;
         const acc = total > 0 ? Math.round((state.correct / total) * 100) : 0;
 
+        try { localStorage.removeItem(reviewSaveKey); } catch (_) {}
+        document.getElementById("review-resume").hidden = true;
+        const history = document.getElementById("review-history");
+        history.replaceChildren();
+        state.history.forEach(entry => {
+          const item = document.createElement("li");
+          const title = document.createElement("strong"); title.textContent = (entry.correct ? "✓ " : "↻ ") + loc(entry.q, "q");
+          const explanation = document.createElement("p"); explanation.textContent = "Answer: " + locChoices(entry.q)[entry.q.answer] + ". " + loc(entry.q,"why");
+          item.append(title, explanation); history.appendChild(item);
+        });
+        const retry = document.getElementById("review-retry"); retry.hidden = !state.missed.length;
+        retry.textContent = "Practice " + state.missed.length + " questions to revisit";
+        retry.onclick = () => {
+          const pool = state.missed.slice(); state = {...state,queue:shuffle(pool),idx:0,score:0,correct:0,lives:3,streak:0,maxStreak:0,answered:false,history:[],missed:[],challenge:false};
+          showScreen("screen-play"); renderQuestion();
+        };
+        window.GameStudio?.emit("complete", {score:state.score,correct:state.correct,total,message:"Adventure complete. Review explanations or try a fresh round."});
         document.getElementById("res-score").textContent = state.score;
         document.getElementById("res-acc").textContent = acc + "%";
         document.getElementById("res-streak").textContent = state.maxStreak;
@@ -2243,18 +2284,18 @@
         if (acc >= 90) {
           trophy = "🏆";
           heading = "LEGENDARY!";
-          msg = "You crushed it! You're ready to level up — seriously impressive work.";
+          msg = "You solved at least 90% of this adventure. Try another skill or a fresh set.";
         } else if (acc >= 75) {
           trophy = "🥇";
           heading = "Expert Player";
-          msg = "Strong performance! A little more practice and you'll be legendary.";
+          msg = "You solved at least 75% of this adventure. Revisit a missed question to strengthen your strategy.";
         } else if (acc >= 60) {
           trophy = "🥈";
           heading = "Getting There!";
           msg = "Solid effort! Review the questions you missed and try again.";
         } else if (acc >= 40) {
           trophy = "🥉";
-          heading = "Keep Grinding";
+          heading = "Growing Your Skills";
           msg = "Don't give up! Every question you review makes you stronger. Try again!";
         } else {
           trophy = "💪";
@@ -2292,6 +2333,8 @@
    KEYBOARD: Enter on boss button, focus management
 ════════════════════════════════════════════════════════════════ */
       document.addEventListener("keydown", function (e) {
+        if (e.target.closest("input,select,textarea") || reviewPaused || e.ctrlKey || e.altKey || e.metaKey) return;
+        if (!document.getElementById("screen-play").classList.contains("hidden") && /^[1-4]$/.test(e.key)) { e.preventDefault(); handleAnswer(Number(e.key)-1); }
         if (e.key === "Escape") {
           const overlay = document.getElementById("gameover-overlay");
           if (overlay.classList.contains("show")) goHome();
@@ -2307,6 +2350,9 @@
         }
       })();
 
+      const resumeButton = document.getElementById("review-resume");
+      resumeButton.hidden = !savedReview();
+      resumeButton.onclick = () => { const saved = savedReview(); if (!saved) return; state = saved; showScreen("screen-play"); renderQuestion(); };
       /* Initialize language buttons + home best-score chips on load */
       updateLangButtons();
       renderHomeBests();
@@ -2328,20 +2374,14 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
     <!-- nsr-injected:end -->
-  
-      <!-- EWL Diagnostic Misconception Coach -->
-      <div class="ewl-coach-card" id="ewl-coach-card" style="display: flex; position: relative; z-index: 100;">
-        <div class="ewl-coach-icon">💡</div>
-        <div class="ewl-coach-content">
-          <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
-          <p id="ewl-coach-text" data-en="Calm self-paced review lab: practice, match, sort, and solve at your own pace!" data-es="Práctica a tu propio ritmo: clasifica, empareja y resuelve.">Calm self-paced review lab: practice, match, sort, and solve at your own pace!</p>
-        </div>
-      </div>
+
   
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
   <!-- nt-chrome-injected:begin (shared page chrome — tools/inject-nt-chrome.js) -->
   <script src="/assets/nt-chrome.js" defer></script>
   <!-- nt-chrome-injected:end -->
+<script src="/assets/game-studio.js?v=20261002" defer></script>
+<script src="/math/review-arcade/studio.js" defer></script>
 </body>
 </html>

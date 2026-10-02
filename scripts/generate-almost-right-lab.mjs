@@ -550,6 +550,8 @@ function makePage(mission) {
         .creature-row { flex-direction: column; }
       }
     </style>
+    <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
+    <script src="/assets/game-studio.js?v=20261002" defer></script>
   </head>
   <body>
 
@@ -825,6 +827,19 @@ function makePage(mission) {
       }
       function saveProgress(p) { try { localStorage.setItem(LS_KEY, JSON.stringify(p)); } catch {} }
 
+      const draftKey = "arl-draft-" + MISSION_ID;
+      let draft = {};
+      try { draft = JSON.parse(localStorage.getItem(draftKey) || "{}"); } catch {}
+      document.querySelectorAll("textarea, input[id]").forEach(input => {
+        if (typeof draft[input.id] === "string") input.value = draft[input.id];
+        input.addEventListener("input", () => {
+          draft[input.id] = input.value;
+          try { localStorage.setItem(draftKey, JSON.stringify(draft)); } catch {}
+        });
+      });
+      window.addEventListener("DOMContentLoaded", () => {
+        window.GameStudio?.register({ title: "Train the creature", instructions: ["Find the creature's mistaken operation.", "Explain why it is wrong, then correct and check the equation.", "Solve three fresh problems. Your written drafts stay on this device if you reload."] });
+      });
       // ── Progress bar ──
       function updateProgress() {
         const pct = Math.round((currentStep / (STEPS.length - 1)) * 100);
@@ -833,6 +848,15 @@ function makePage(mission) {
         document.getElementById("progress-label").textContent = "Step " + (currentStep + 1) + " of " + STEPS.length;
       }
 
+      function continueAfter(region, next) {
+        region.querySelector(".mission-continue")?.remove();
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "btn-primary mission-continue";
+        button.textContent = "Continue when ready →";
+        button.addEventListener("click", () => showStep(next), { once: true });
+        region.append(document.createElement("br"), button);
+      }
       function showStep(stepName) {
         STEPS.forEach(s => {
           const el = document.getElementById("step-" + s);
@@ -856,7 +880,9 @@ function makePage(mission) {
       // ── STEP 2: Diagnose ──
       document.querySelectorAll(".diag-btn").forEach(btn => {
         btn.addEventListener("click", function() {
+          if (this.disabled) return;
           const correct = this.dataset.correct === "true";
+          window.GameStudio?.emit("feedback", { correct });
           document.querySelectorAll(".diag-btn").forEach(b => {
             b.disabled = true;
             if (b.dataset.correct === "true") b.classList.add("correct");
@@ -866,7 +892,7 @@ function makePage(mission) {
           if (correct) {
             fb.textContent = "✓ Right! The creature ${mission.misconceptionLabel}. Now let's teach it the correct rule.";
             fb.className = "diag-feedback correct";
-            setTimeout(() => showStep("teach"), 1800);
+            continueAfter(fb, "teach");
           } else {
             fb.textContent = "Not quite. Look at the creature's work step by step — which operation did it use that it shouldn't have?";
             fb.className = "diag-feedback wrong";
@@ -893,11 +919,12 @@ function makePage(mission) {
           document.getElementById("explain-input").focus();
           return;
         }
+        document.getElementById("teach-next-btn").disabled = true;
         const valLow = val.toLowerCase();
         const hasVocab = VOCAB_WORDS.some(w => valLow.includes(w.toLowerCase()));
         const fb = document.getElementById("explain-feedback");
         if (hasVocab) {
-          fb.textContent = "✓ Strong explanation! You used a math vocabulary word.";
+          fb.textContent = "You used a math vocabulary word. Check that your explanation names the mistake and tells why the correct operation works.";
           fb.className = "explain-feedback strong";
           const p = loadProgress();
           p.explanationStrength = (p.explanationStrength || 0) + 1;
@@ -906,14 +933,15 @@ function makePage(mission) {
           fb.textContent = 'Good start! Try adding a math word like "inverse", "${mission.creature.inverseVerb}", or "balance" to make it stronger.';
           fb.className = "explain-feedback";
         }
-        setTimeout(() => showStep("correct"), 1400);
+        continueAfter(fb, "correct");
       });
 
       // ── STEP 4: Correct ──
       function checkMainAnswer() {
-        const val = parseFloat(document.getElementById("main-ans-input").value);
+        if (document.getElementById("main-check-btn").disabled) return;
+        const val = Number(document.getElementById("main-ans-input").value.trim() || NaN);
         const fb = document.getElementById("main-ans-feedback");
-        if (isNaN(val)) {
+        if (!Number.isFinite(val)) {
           fb.textContent = "Enter a number for x.";
           fb.style.color = "#dc2626";
           return;
@@ -922,7 +950,7 @@ function makePage(mission) {
           fb.textContent = "✓ Correct! x = " + CORRECT_ANS + ". " + ${JSON.stringify(mission.checkExplanation)};
           fb.style.color = "var(--green)";
           document.getElementById("main-check-btn").disabled = true;
-          setTimeout(() => showStep("practice"), 2000);
+          continueAfter(fb, "practice");
         } else {
           fb.textContent = "Not quite. Remember: ${mission.ruleShort}. Try again.";
           fb.style.color = "#dc2626";
@@ -938,12 +966,13 @@ function makePage(mission) {
 
       document.querySelectorAll(".check-ans-btn").forEach(btn => {
         btn.addEventListener("click", function() {
+          if (this.disabled) return;
           const idx = parseInt(this.dataset.idx, 10);
           const inputEl = document.getElementById("practice-ans-" + idx);
-          const val = parseFloat(inputEl.value);
+          const val = Number(inputEl.value.trim() || NaN);
           const fb = document.getElementById("pf-" + idx);
           const checkArea = document.getElementById("check-step-" + idx);
-          if (isNaN(val)) { fb.textContent = "Enter a number."; fb.className = "practice-feedback wrong"; return; }
+          if (!Number.isFinite(val)) { fb.textContent = "Enter a number."; fb.className = "practice-feedback wrong"; return; }
           const correct = Math.abs(val - practiceAnswers[idx]) < 0.001;
           if (correct) {
             fb.textContent = "✓ Correct!";
@@ -1002,6 +1031,9 @@ function makePage(mission) {
       if (retryEl) retryObs.observe(retryEl, { attributes: true, attributeFilter: ["class"] });
 
       document.getElementById("retry-complete-btn").addEventListener("click", () => {
+        if (document.getElementById("retry-complete-btn").disabled) return;
+        document.getElementById("retry-complete-btn").disabled = true;
+        window.GameStudio?.emit("complete", { correct: TOTAL_PRACTICE, total: TOTAL_PRACTICE, message: "Mission complete. You found, corrected, and checked the mistake." });
         // Save progress
         const p = loadProgress();
         if (!p.completedMissions.includes(MISSION_ID)) p.completedMissions.push(MISSION_ID);

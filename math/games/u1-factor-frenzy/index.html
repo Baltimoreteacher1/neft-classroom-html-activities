@@ -530,9 +530,13 @@
         justify-content: center;
         margin-top: 16px;
       }
-    </style>
+          button:focus-visible,a:focus-visible{outline:3px solid #ffd17b;outline-offset:4px;} .pal-actions button,.ewl-exp-box button{min-width:44px;min-height:44px;} .vdef,.hint,.vault-subtitle{font-size:16px!important;line-height:1.55;} .screen.on{scroll-margin-top:90px;}
+      @media(max-width:600px){.ewl-exponent-dials{flex-wrap:wrap}.arcade-theme-header{padding:12px!important}.play-layout-grid{display:block!important}.tree-wrap{max-width:100%;overflow:auto}.bubble{min-width:48px;min-height:48px}}
+     .nt-chrome-dock{display:none!important;}
+ @media(max-width:600px){.vrow{display:flex!important;flex-direction:column;gap:8px}.vterm{width:auto!important}.vdef{width:100%!important}.btn{color:#fff!important}}
+</style>
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-    <link rel="stylesheet" href="/assets/game-fx.css" />
+
     <!-- gfx-injected:end -->
     <!-- Games-2D metadata source of truth (must load before the game script) -->
     <script src="/assets/games2d-data.js"></script>
@@ -551,38 +555,26 @@
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
   <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
+    <script src="/assets/game-studio.js?v=20261002" defer></script>
+    <link rel="stylesheet" href="/math/games/shared/cabinet-tools.css?v=20261002">
+    <script src="/math/games/shared/cabinet-tools.js?v=20261002" defer></script>
 </head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
     <div id="ff-sr" role="status" aria-live="polite"></div>
 
-    
-            <!-- EWL Universal Arcade Enhancements Header -->
-      <div class="ewl-arcade-header-bar">
-        <div class="ewl-arcade-title-group">
-          <a href="/math/games/" class="ewl-back-hub-btn">⬅️ Arcade Hub</a>
-          <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
-          <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
-        </div>
-        <div class="ewl-arcade-controls">
-          <button type="button" class="ewl-btn-toggle active" id="ewl-btn-l1" onclick="if(window.ewlSetLevel) window.ewlSetLevel(1)">L1 Support</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-l2" onclick="if(window.ewlSetLevel) window.ewlSetLevel(2)">L2 Challenge</button>
-          <button type="button" class="ewl-sound-toggle-btn" id="ewl-btn-sound" onclick="if(window.GameFX && window.GameFX.AudioSynth){ window.GameFX.AudioSynth.muted = !window.GameFX.AudioSynth.muted; this.innerText = window.GameFX.AudioSynth.muted ? '🔇 Muted' : '🔊 Sound On'; }">🔊 Sound On</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-lang" onclick="if(window.ewlToggleLang) window.ewlToggleLang()">🌐 EN / ES</button>
-        </div>
-      </div>
-  
 <main id="wrap">
       <div id="arcade-controls-host"></div>
 
       <div class="arcade-theme-header" style="background: linear-gradient(135deg, rgba(15,43,60,0.9), rgba(6,32,44,0.95)); border: 1px solid #12a596; border-radius: 16px; padding: 14px 18px; margin-bottom: 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
         <div style="font-size: 2.2rem; background: rgba(255,255,255,0.06); padding: 8px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">🚀</div>
         <div>
-          <div style="font-size: 1.15rem; font-weight: 900; color: #ffffff; letter-spacing: 0.5px;">🚀 COSMIC ASTEROID SMASHER</div>
-          <div style="font-size: 0.88rem; color: #94a3b8; margin-top: 2px;">Fire Prime Lasers to smash composite asteroids into glowing prime crystal fragments!</div>
+          <div style="font-size: 1.15rem; font-weight: 900; color: #ffffff; letter-spacing: 0.5px;">🔐 PRIME FACTOR VAULT</div>
+          <div style="font-size: 0.88rem; color: #94a3b8; margin-top: 2px;">Break composite numbers into prime factors, then calibrate the exponent vault.</div>
         </div>
       </div>
-  
+
       <!-- VOCAB GATE -->
       <section id="screen-vocab" class="screen on" aria-labelledby="vh">
         <h1 id="vh">⚒️ Factor Frenzy</h1>
@@ -769,7 +761,7 @@
             } catch (e) {}
         },
         play(t, f, d, v = 0.2) {
-          if (!this.ctx) return;
+          if (!this.ctx || window.NT_MUTED) return;
           try {
             const c = this.ctx,
               o = c.createOscillator(),
@@ -893,6 +885,8 @@
       let ffEndless = false;
 
       // ── State ──
+      let factorPaused = false;
+      let undoSnapshot = null;
       const S = {
         level: 1,
         score: 0,
@@ -926,6 +920,7 @@
         f.textContent = msg;
         f.className = "feedback " + cls;
         srSay(msg);
+        document.dispatchEvent(new CustomEvent("game:feedback", {detail: {correct: cls === "good", message: msg}}));
       }
 
       // ── Vocab gate ──
@@ -985,6 +980,9 @@
 
       function loadRound(i) {
         if (S.over) return;
+        S.roundComplete = false;
+        undoSnapshot = null;
+        $("vault-stage").innerHTML = '<div class="vault-graphic-box"><div class="vault-icon" id="vault-icon">🔒</div><div class="vault-title" id="vault-title">Factor Vault Locked</div><div class="vault-subtitle" id="vault-subtitle">Complete all prime leaves to unlock</div></div>';
         S.round = i;
         S.cur = S.puzzles[i];
         S.selected = null;
@@ -1049,11 +1047,13 @@
 
       // ── Action palette ──
       function selectNode(id) {
+        if (factorPaused || S.over || S.roundComplete) return;
         S.selected = S.selected === id ? null : id;
         S.selectedFactorA = null;
         renderTree();
         renderPalette();
         if (S.selected) {
+          $("palette").querySelector("button")?.focus({preventScroll: true});
           const node = findNode(S.cur.root, id);
           srSay(`You tapped ${node.value}. Is it prime, or can it be split?`);
         }
@@ -1110,7 +1110,7 @@
               const targetB = node.value / fa;
               const isCorrectA = node.value % fa === 0;
               html += `<span class="pal-or">Factor A = <b>${fa}</b>. Select partner B where ${fa} × B = ${node.value}:</span>`;
-              
+
               if (isCorrectA) {
                 const bOptions = [targetB];
                 [targetB + 1, targetB - 1, targetB + 2].forEach(db => {
@@ -1148,6 +1148,8 @@
       }
 
       function actPrime(node) {
+        if (factorPaused || S.over || S.roundComplete || node.prime || node.children) return;
+        if (isPrime(node.value)) undoSnapshot = {root: JSON.parse(JSON.stringify(S.cur.root)), score: S.score, correctActions: S.correctActions};
         S.totalActions++;
         if (isPrime(node.value)) {
           node.prime = true;
@@ -1168,6 +1170,7 @@
           updateReadout();
           flash(node.value + " is prime — locked in ✓", "good");
           if (isComplete(S.cur.root)) roundWon();
+          else $("tree").querySelector("button:not(:disabled)")?.focus({preventScroll: true});
         } else {
           S.mistakes++;
           SFX.bad();
@@ -1180,6 +1183,8 @@
       }
 
       function actSplit(node, a, b, isValid = true) {
+        if (factorPaused || S.over || S.roundComplete || node.prime || node.children) return;
+        if (isValid && a > 1 && b > 1 && a * b === node.value) undoSnapshot = {root: JSON.parse(JSON.stringify(S.cur.root)), score: S.score, correctActions: S.correctActions};
         S.totalActions++;
         if (isValid && a > 1 && b > 1 && a * b === node.value) {
           node.children = [makeNode(a), makeNode(b)];
@@ -1199,6 +1204,7 @@
           updateReadout();
           flash(node.value + " = " + a + " × " + b, "good");
           if (isComplete(S.cur.root)) roundWon();
+          else $("tree").querySelector("button:not(:disabled)")?.focus({preventScroll: true});
         } else {
           S.mistakes++;
           SFX.bad();
@@ -1213,6 +1219,9 @@
       }
 
       function roundWon() {
+        if (S.roundComplete) return;
+        S.roundComplete = true;
+        undoSnapshot = null;
         S.completed++;
         S.score += 25; // tree complete bonus
         $("hud-score").textContent = S.score;
@@ -1265,6 +1274,7 @@
         stage.innerHTML = html;
 
         window.ffStepExp = function(base, delta) {
+          if (factorPaused || S.over) return;
           const cur = S.userExponents[base] || 1;
           const next = Math.max(1, Math.min(6, cur + delta));
           S.userExponents[base] = next;
@@ -1275,12 +1285,15 @@
         const btn = $("btn-calibrate-vault");
         if (btn) {
           btn.onclick = function() {
+            if (factorPaused || S.over) return;
+            S.totalActions++;
             let correct = true;
             uniqueBases.forEach(b => {
               if (S.userExponents[b] !== actualCounts[b]) correct = false;
             });
 
             if (correct) {
+              S.correctActions++;
               S.score += 50;
               $("hud-score").textContent = S.score;
               SFX.win();
@@ -1295,12 +1308,17 @@
                   <div class="vault-subtitle">+50 Points Bonus! ${S.cur.n} = ${exponentForm(lockedPrimes())}</div>
                 </div>
               `;
-              if (ffEndless) {
-                if (S.round + 1 >= S.puzzles.length)
-                  S.puzzles = S.puzzles.concat(buildRounds(S.level).map(makePuzzle));
-                setTimeout(() => loadRound(S.round + 1), 1200);
-              } else if (S.round + 1 >= ROUNDS) setTimeout(() => endGame(), 1200);
-              else setTimeout(() => loadRound(S.round + 1), 1200);
+              const next = document.createElement("button"); next.className = "btn big"; next.textContent = "Continue expedition →";
+              stage.append(next); next.focus();
+              next.onclick = () => {
+                if (factorPaused || S.over) return;
+                next.disabled = true;
+                if (ffEndless) {
+                  if (S.round + 1 >= S.puzzles.length) S.puzzles = S.puzzles.concat(buildRounds(S.level).map(makePuzzle));
+                  loadRound(S.round + 1);
+                } else if (S.round + 1 >= ROUNDS) endGame();
+                else loadRound(S.round + 1);
+              };
             } else {
               S.mistakes++;
               SFX.bad();
@@ -1356,17 +1374,13 @@
           } catch (e) {}
         }
         show("result");
-        if (window.ewlShowMasteryModal) {
-          window.ewlShowMasteryModal({
-            score: typeof S !== "undefined" && S.score ? S.score : 1000,
-            maxScore: 1000,
-            stars: typeof stars !== "undefined" ? stars : 3,
-            accuracy: 100,
-            title: "Factor Frenzy — Prime Factorization Game"
-          });
-        }
+        document.dispatchEvent(new CustomEvent("game:complete", {detail: {score: S.score, correct: S.correctActions, total: S.totalActions, accuracy: S.totalActions ? Math.round(S.correctActions / S.totalActions * 100) : 0, message: "Factor expedition complete. " + S.completed + " vaults opened."}}));
       }
 
+      // Pause also protects DOM controls outside the canvas engine.
+      document.addEventListener("click", event => {
+        if (factorPaused && event.target.closest("#wrap")) { event.preventDefault(); event.stopImmediatePropagation(); }
+      }, true);
       // ── Wiring ──
       $("vocab-go").addEventListener("click", () => {
         renderLevels();
@@ -1396,6 +1410,17 @@
         endGame();
       });
 
+      window.addEventListener("DOMContentLoaded", () => {
+        window.GameStudio && window.GameStudio.register({title: "Factor Frenzy", instructions: ["Select a composite number, then choose factors whose product equals it.", "Mark each prime leaf, then count repeated primes to calibrate the exponent vault.", "Use Tab and Enter to choose branches and factors. Undo restores your last branch before vault calibration."], pause() {factorPaused = true;}, resume() {factorPaused = false;}, setMuted(value) {window.NT_MUTED = value; if (SFX.ctx) {if(value) SFX.ctx.suspend().catch(()=>{}); else SFX.ctx.resume().catch(()=>{});}}});
+        const undo = document.createElement("button"); undo.className = "btn"; undo.type = "button"; undo.textContent = "Undo last branch";
+        $("hint").after(undo);
+        undo.onclick = () => {
+          if (factorPaused || S.over || S.roundComplete || !undoSnapshot) return;
+          S.cur.root = undoSnapshot.root; S.score = undoSnapshot.score; S.correctActions = undoSnapshot.correctActions; undoSnapshot = null; S.selected = null;
+          $("hud-score").textContent = S.score; renderTree(); renderPalette(); updateReadout(); flash("Last branch restored. Try another factor pair.", "");
+          $("tree").querySelector("button:not(:disabled)")?.focus({preventScroll: true});
+        };
+      });
       renderVocab();
     </script>
 
@@ -1403,12 +1428,12 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-    <script src="/assets/game-fx.js" defer></script>
+
     <!-- gfx-injected:end -->
     <!-- Adaptive level picker (window.NTAdaptive: pickLevel / recordRun) -->
     <script src="/assets/game-adaptive.js" defer></script>
     <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-    
+
     <!-- mwb-injected:end -->
     <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
     <script src="/assets/game-hint-ladder.js" defer></script>
@@ -1433,7 +1458,7 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
     <!-- nsr-injected:end -->
-  
+
       <!-- EWL Diagnostic Misconception Coach -->
       <div class="ewl-coach-card" id="ewl-coach-card" style="display: flex;">
         <div class="ewl-coach-icon">💡</div>
@@ -1442,110 +1467,14 @@
           <p id="ewl-coach-text" data-en="Prime factorization breaks composite numbers into prime leaves. 2 is the smallest prime number!" data-es="La factorización prima descompone números compuestos en hojas primas. ¡El 2 es el número primo más pequeño!">Prime factorization breaks composite numbers into prime leaves. 2 is the smallest prime number!</p>
         </div>
       </div>
-  
-  <script>
-    (function() {
-      window.ewlShowMasteryModal = function(opts) {
-        opts = opts || {};
-        const score = opts.score || 0;
-        const maxScore = opts.maxScore || 1000;
-        const stars = opts.stars || (score >= maxScore * 0.8 ? 3 : score >= maxScore * 0.5 ? 2 : 1);
-        const accuracy = opts.accuracy != null ? opts.accuracy : Math.min(100, Math.round((score / Math.max(1, maxScore)) * 100));
-        const gameTitle = opts.title || "Unit Game Complete!";
-        const nextUrl = opts.nextUrl || "/math/games/";
 
-        const starStr = "⭐".repeat(stars) + "☆".repeat(3 - stars);
-        
-        const modalHtml = `
-          <div class="ewl-mastery-overlay" id="ewl-mastery-modal">
-            <div class="ewl-mastery-card">
-              <div class="ewl-mastery-stars">${starStr}</div>
-              <h2 class="ewl-mastery-title">${gameTitle}</h2>
-              <p class="ewl-mastery-subtitle">Grade 6 Math Review Mastery Achieved!</p>
-              <div class="ewl-mastery-stats">
-                <div class="ewl-stat-box">
-                  <div class="ewl-stat-num">${score}</div>
-                  <div class="ewl-stat-lbl">Final Score</div>
-                </div>
-                <div class="ewl-stat-box">
-                  <div class="ewl-stat-num">${accuracy}%</div>
-                  <div class="ewl-stat-lbl">Accuracy</div>
-                </div>
-              </div>
-              <div class="ewl-mastery-actions">
-                <button class="ewl-mastery-btn ewl-btn-secondary" onclick="location.reload()">🔄 Play Again</button>
-                <button class="ewl-mastery-btn ewl-btn-primary" onclick="location.href='${nextUrl}'">🎮 More Games</button>
-              </div>
-            </div>
-          </div>
-        `;
-        const existing = document.getElementById("ewl-mastery-modal");
-        if (existing) existing.remove();
-        document.body.insertAdjacentHTML("beforeend", modalHtml);
-        
-        if (window.GameFX && window.GameFX.AudioSynth) {
-          try { window.GameFX.AudioSynth.playSuccess(); } catch(e){}
-        }
-        if (window.GameFX && window.GameFX.burst) {
-          try { window.GameFX.burst(window.innerWidth / 2, window.innerHeight / 3); } catch(e){}
-        }
-      };
-    })();
-  </script>
+
   <!-- Shared Arcade FX Engine & Particles -->
-  <canvas id="fx-canvas" style="position:fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:9999;"></canvas>
-  <script src="/math/games/shared/arcade-fx-engine.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const canvas = document.getElementById("fx-canvas");
-      if (canvas) {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        window.addEventListener("resize", () => {
-          canvas.width = window.innerWidth;
-          canvas.height = window.innerHeight;
-        });
-      }
 
-      document.body.addEventListener("click", function(e) {
-        if (window.ArcadeFX) {
-          window.ArcadeFX.playSFX("click");
-          if (canvas && e.target.classList.contains("btn")) {
-            window.ArcadeFX.spawnParticles(canvas, e.clientX, e.clientY, "#12a596", 20);
-          }
-        }
-      });
-    });
-  </script>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      if (window.ArcadeFX) {
-        window.ArcadeFX.renderControlBar("arcade-controls-host");
-      }
-      const canvas = document.getElementById("fx-canvas");
-      if (canvas) {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        window.addEventListener("resize", () => {
-          canvas.width = window.innerWidth;
-          canvas.height = window.innerHeight;
-        });
-      }
 
-      document.body.addEventListener("click", function(e) {
-        if (window.ArcadeFX) {
-          if (e.target.closest(".btn, button, .bubble, .card, canvas")) {
-            window.ArcadeFX.playSFX("click");
-            if (canvas && (e.target.closest(".btn, button") || e.target.tagName === "BUTTON")) {
-              window.ArcadeFX.spawnParticles(canvas, e.clientX, e.clientY, "#12a596", 22);
-            }
-          }
-        }
-      });
-    });
-  </script>
-  
+
+
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
   <!-- nt-chrome-injected:begin (shared page chrome — tools/inject-nt-chrome.js) -->

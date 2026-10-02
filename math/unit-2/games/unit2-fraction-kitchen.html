@@ -75,6 +75,8 @@
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
   <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
+<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261002">
 </head>
   <body>
 
@@ -147,6 +149,7 @@
           this.ctx = null;
         }
         init() {
+          if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
           if (!this.ctx)
             try {
               this.ctx = new (
@@ -155,6 +158,7 @@
             } catch (e) {}
         }
         tone(f, d, t = "sine", v = 0.06) {
+          if (window.__flagshipMuted) return;
           if (!this.ctx) return;
           try {
             const o = this.ctx.createOscillator(),
@@ -198,8 +202,8 @@
       // Build a recipe order: an exact target fraction of the jug. Sometimes
       // it is shown as an EQUIVALENT fraction the player must convert against
       // the jug's actual gradations.
-      function makeOrder(round) {
-        const dens = round < 3 ? [2, 4] : round < 6 ? [3, 4, 6] : [4, 6, 8, 5];
+      function makeOrder(round, tier = 2) {
+        const dens = tier === 1 ? [2, 4] : round < 3 ? [2, 4] : round < 6 ? [3, 4, 6] : [4, 6, 8, 5];
         const jugDen = Phaser.Utils.Array.GetRandom(dens);
         const targetNum = randInt(1, jugDen - 1); // proper fraction < 1
         const [sn, sd] = simplify(targetNum, jugDen);
@@ -207,7 +211,7 @@
         let shownNum = targetNum,
           shownDen = jugDen,
           equiv = false;
-        if (round >= 3 && Math.random() < 0.4) {
+        if (tier !== 1 && round >= 3 && Math.random() < 0.4) {
           const mult = randInt(2, 3);
           if (sd * mult !== jugDen) {
             shownNum = sn * mult;
@@ -488,7 +492,7 @@
         }
 
         nextOrder() {
-          this.order = makeOrder(this.round);
+          this.order = makeOrder(this.round, this.sys.settings.data?.studioTier || 2);
           this.fill = 0;
           this.pouring = false;
           this.locked = false;
@@ -949,7 +953,7 @@
         },
         scene: [BootScene, TitleScene, GameScene, ResultsScene],
       };
-      var fkGame = new Phaser.Game(config);
+      var fkGame = window.__flagshipGame = new Phaser.Game(config);
       // Keyboard accessibility: make the game canvas focusable.
       fkGame.events.once("ready", function () {
         var c = fkGame.canvas;
@@ -970,7 +974,6 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-    <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
     <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
     
@@ -1005,57 +1008,9 @@
           <p id="ewl-coach-text" data-en="Dividing by a fraction is multiplying by its reciprocal (Keep, Change, Flip)!" data-es="¡Dividir por una fracción es multiplicar por su recíproco!">Dividing by a fraction is multiplying by its reciprocal (Keep, Change, Flip)!</p>
         </div>
       </div>
-  
-  <script>
-    (function() {
-      window.ewlShowMasteryModal = function(opts) {
-        opts = opts || {};
-        const score = opts.score || 0;
-        const maxScore = opts.maxScore || 1000;
-        const stars = opts.stars || (score >= maxScore * 0.8 ? 3 : score >= maxScore * 0.5 ? 2 : 1);
-        const accuracy = opts.accuracy != null ? opts.accuracy : Math.min(100, Math.round((score / Math.max(1, maxScore)) * 100));
-        const gameTitle = opts.title || "Unit Game Complete!";
-        const nextUrl = opts.nextUrl || "/math/games/";
-
-        const starStr = "⭐".repeat(stars) + "☆".repeat(3 - stars);
-        
-        const modalHtml = `
-          <div class="ewl-mastery-overlay" id="ewl-mastery-modal">
-            <div class="ewl-mastery-card">
-              <div class="ewl-mastery-stars">${starStr}</div>
-              <h2 class="ewl-mastery-title">${gameTitle}</h2>
-              <p class="ewl-mastery-subtitle">Grade 6 Math Review Mastery Achieved!</p>
-              <div class="ewl-mastery-stats">
-                <div class="ewl-stat-box">
-                  <div class="ewl-stat-num">${score}</div>
-                  <div class="ewl-stat-lbl">Final Score</div>
-                </div>
-                <div class="ewl-stat-box">
-                  <div class="ewl-stat-num">${accuracy}%</div>
-                  <div class="ewl-stat-lbl">Accuracy</div>
-                </div>
-              </div>
-              <div class="ewl-mastery-actions">
-                <button class="ewl-mastery-btn ewl-btn-secondary" onclick="location.reload()">🔄 Play Again</button>
-                <button class="ewl-mastery-btn ewl-btn-primary" onclick="location.href='${nextUrl}'">🎮 More Games</button>
-              </div>
-            </div>
-          </div>
-        `;
-        const existing = document.getElementById("ewl-mastery-modal");
-        if (existing) existing.remove();
-        document.body.insertAdjacentHTML("beforeend", modalHtml);
-        
-        if (window.GameFX && window.GameFX.AudioSynth) {
-          try { window.GameFX.AudioSynth.playSuccess(); } catch(e){}
-        }
-        if (window.GameFX && window.GameFX.burst) {
-          try { window.GameFX.burst(window.innerWidth / 2, window.innerHeight / 3); } catch(e){}
-        }
-      };
-    })();
-  </script>
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
+<script src="/assets/game-studio.js?v=20261002" defer></script>
+<script src="/math/games/shared/flagship-studio.js?v=20261002" defer></script>
 </body>
 </html>

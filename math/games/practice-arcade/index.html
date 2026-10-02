@@ -133,54 +133,11 @@
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />
     <script src="/math/games/shared/arcade-fx-engine.js"></script>
-  </head>
+  <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
+<link rel="stylesheet" href="/math/games/practice-arcade/studio.css">
+</head>
   <body>
-    <!-- EWL Universal Arcade Enhancements Header -->
-    <div class="ewl-arcade-header-bar" style="position: relative; z-index: 100">
-      <div class="ewl-arcade-title-group">
-        <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge"
-          >⭐ Level 1: Guided Support</span
-        >
-        <span id="ewl-world-badge" style="font-size: 13px; font-weight: 800; color: #38bdf8; background: rgba(56,189,248,0.12); padding: 4px 10px; border-radius: 999px;"
-          >🕹️ Practice Arcade</span
-        >
-      </div>
-      <div class="ewl-arcade-controls" style="display: flex; align-items: center; gap: 8px;">
-        <span id="arcade-streak-badge" style="font-weight: 900; font-size: 13px; color: #38bdf8; background: rgba(56,189,248,0.15); padding: 4px 10px; border-radius: 999px;">🔥 STREAK: 0</span>
-        <button
-          type="button"
-          class="ewl-btn-toggle"
-          id="ewl-btn-sfx"
-          onclick="if (window.ArcadeFX) { const m = window.ArcadeFX.toggleMute(); this.innerText = m ? '🔇 Muted' : '🔊 SFX ON'; }"
-        >
-          🔊 SFX ON
-        </button>
-        <button
-          type="button"
-          class="ewl-btn-toggle active"
-          id="ewl-btn-l1"
-          onclick="if (window.ewlSetLevel) window.ewlSetLevel(1);"
-        >
-          L1 Support
-        </button>
-        <button
-          type="button"
-          class="ewl-btn-toggle"
-          id="ewl-btn-l2"
-          onclick="if (window.ewlSetLevel) window.ewlSetLevel(2);"
-        >
-          L2 Challenge
-        </button>
-        <button
-          type="button"
-          class="ewl-btn-toggle"
-          id="ewl-btn-lang"
-          onclick="if (window.ewlToggleLang) window.ewlToggleLang();"
-        >
-          🌐 EN / ES
-        </button>
-      </div>
-    </div>
+    <header class="ewl-arcade-header-bar" aria-label="Current adventure"><span id="ewl-world-badge" style="font-size:18px;font-weight:800;color:#b9f3df">Practice Arcade</span></header>
 
     <section id="pa-phone-launch" aria-labelledby="pa-phone-title" hidden>
       <p class="pa-phone-label">Practice Arcade</p>
@@ -191,6 +148,11 @@
       <button id="pa-phone-start" type="button">Start practice</button>
       <a href="/math/games/practice-arcade/map.html">Choose another unit →</a>
     </section>
+    <section class="practice-console" aria-label="Practice session">
+      <div><strong id="practice-session-title">Your next math adventure</strong><p id="practice-session-note">No timer. Hints and retries help you learn. Progress stays on this browser.</p></div>
+      <div class="practice-console-actions"><button id="practice-resume" type="button" hidden>Resume saved adventure</button><button id="practice-retry" type="button" hidden>Practice questions to revisit</button><a href="/math/games/practice-arcade/map.html">World map</a></div>
+    </section>
+    <details id="practice-text-controls" class="practice-text-controls" hidden><summary>Text and touch controls</summary><div id="practice-native-round"></div><p id="practice-native-feedback" role="status" aria-live="polite"></p></details>
     <main id="pa-stage" aria-label="Practice Arcade game" style="width:100%; min-height:300px; position:relative;"></main>
     <div id="loader">
       <div class="spinner"></div>
@@ -279,7 +241,7 @@
             boss: "🦉",
           },
           2: {
-            name: "Fraction Falls",
+            name: "Data Dunes",
             bgTop: 0x0f766e,
             bgBot: 0x115e59,
             panel: 0x134e4a,
@@ -287,7 +249,7 @@
             tile: 0x0d9488,
             tileHi: 0x14b8a6,
             accent: 0x2dd4bf,
-            glyphs: "½¼¾⅓",
+            glyphs: "▁▄█σ",
             boss: "🐢",
           },
           3: {
@@ -327,7 +289,7 @@
             boss: "🦊",
           },
           6: {
-            name: "Grove of Signs",
+            name: "Fraction & Formula Forest",
             bgTop: 0x15803d,
             bgBot: 0x166534,
             panel: 0x14532d,
@@ -335,11 +297,11 @@
             tile: 0x16a34a,
             tileHi: 0x22c55e,
             accent: 0x4ade80,
-            glyphs: "±<>≤",
+            glyphs: "½xyⁿ",
             boss: "🐸",
           },
           7: {
-            name: "Cipher Caverns",
+            name: "Integer Isles",
             bgTop: 0x1e3a8a,
             bgBot: 0x334155,
             panel: 0x1e293b,
@@ -347,11 +309,11 @@
             tile: 0x1d4ed8,
             tileHi: 0x3b82f6,
             accent: 0x60a5fa,
-            glyphs: "xyⁿ=",
+            glyphs: "±<>•",
             boss: "🦈",
           },
           8: {
-            name: "Data Dunes",
+            name: "Equation Escape",
             bgTop: 0xbe185d,
             bgBot: 0x9d174d,
             panel: 0x831843,
@@ -359,11 +321,11 @@
             tile: 0xdb2777,
             tileHi: 0xec4899,
             accent: 0xf472b6,
-            glyphs: "▁▄█σ",
+            glyphs: "xy=≤",
             boss: "🦩",
           },
           9: {
-            name: "Grid Galaxy",
+            name: "Variable Valley",
             bgTop: 0x0e7490,
             bgBot: 0x1e40af,
             panel: 0x164e63,
@@ -375,7 +337,7 @@
             boss: "🤖",
           },
           10: {
-            name: "Prism Peaks",
+            name: "Math in My World",
             bgTop: 0xa16207,
             bgBot: 0x854d0e,
             panel: 0x713f12,
@@ -492,6 +454,43 @@
           award() {},
         };
 
+        let resumeRun = null;
+                let completedRounds = [];
+        const checkpointKey = () => "pa-adventure-v1-" + activeLesson;
+        const contentSignature = () => JSON.stringify(allRounds.map(r => [r.kind, r.prompt, [...(r.choices || [])].sort(), r.choices?.[r.correctIndex], r.target, r.answer]).sort((a,b) => JSON.stringify(a).localeCompare(JSON.stringify(b))));
+        function storedRun() {
+          try {
+            const run = JSON.parse(localStorage.getItem(checkpointKey()) || "null");
+            if (!run || run.signature !== contentSignature() || run.tier !== tier || !Array.isArray(run.rounds) || !run.rounds.length || run.rounds.length > 12 || !Number.isInteger(run.idx) || run.idx < 0 || run.idx >= run.rounds.length) return null;
+            return run;
+          } catch (_) { return null; }
+        }
+        function studioEvent(type, detail) { if (window.GameStudio) window.GameStudio.emit(type, detail); }
+        function updateSession(scene) {
+          const title = document.getElementById("practice-session-title");
+          const note = document.getElementById("practice-session-note");
+          title.textContent = lessonTitle;
+          if (scene) note.textContent = "Challenge " + (scene.idx + 1) + " of " + rounds.length + " · Score " + scene.score + " · First-try solves " + scene.correctCount + ". Retry freely; no timer.";
+          else note.textContent = "Choose your practice level. Use number keys for choices, arrows for markers, and Enter to check. Progress saves after every challenge.";
+          document.getElementById("practice-resume").hidden = !!scene || !storedRun();
+          document.getElementById("practice-retry").hidden = true;
+        }
+        window.PracticeStudio = {
+          setMuted(m) { SFX.on = !m; JUICE.audio.setMuted?.(m); if (window.ArcadeFX?.isMuted && window.ArcadeFX.isMuted() !== !!m) window.ArcadeFX.toggleMute(); },
+          setMotion(m) {
+            JUICE.reduceMotion = !!m;
+            if (!this.motionWrapped) {
+              ["burst", "confetti", "shake", "floatText", "tilePop"].forEach(name => { const original = JUICE[name]; if (original) JUICE[name] = (...args) => { if (!JUICE.reduceMotion) return original.apply(JUICE,args); }; });
+              const popIn = JUICE.popIn;
+              JUICE.popIn = (scene,target,...args) => { if (JUICE.reduceMotion) { target.setAlpha(1).setScale(1); return; } return popIn?.call(JUICE,scene,target,...args); };
+              this.motionWrapped = true;
+            }
+            const play = window.paGame?.scene.getScene("Play"); if (play) play.reduce = !!m;
+          },
+          pause() { this.pausedScenes = window.paGame?.scene.getScenes(true).map(s => s.scene.key) || []; this.pausedScenes.forEach(key => window.paGame.scene.pause(key)); JUICE.audio.musicStop(); },
+          resume() { (this.pausedScenes || []).forEach(key => window.paGame.scene.resume(key)); this.pausedScenes = []; },
+        };
+
         function srSay(msg) {
           const el = document.getElementById("pa-sr");
           if (el) el.textContent = msg;
@@ -545,7 +544,7 @@
           unitReviewBtn: { en: "UNIT REVIEW ▶", es: "REPASO ▶" },
           score: { en: "Score", es: "Puntos" },
           of: { en: "of", es: "de" },
-          correctWord: { en: "correct", es: "correctas" },
+          correctWord: { en: "first-try solves", es: "resueltas al primer intento" },
           steps: { en: "Steps", es: "Pasos" },
           guidedSteps: { en: "Guided Steps", es: "Pasos Guiados" },
           level1: { en: "Level 1 · Support", es: "Nivel 1 · Apoyo" },
@@ -836,7 +835,7 @@
           const bgHex = "#" + PALETTE.bgBot.toString(16).padStart(6, "0");
           const stage = document.getElementById("pa-stage");
           function fitStage() {
-            stage.style.height = Math.max(300, innerHeight - stage.getBoundingClientRect().top - 92) + "px";
+            stage.style.height = Math.max(300, Math.min(960, innerWidth - 24) * H / W) + "px";
             if (window.paGame) {
               // refresh uses cached parent dimensions. Re-measure after the
               // native phone launch screen reveals the game container.
@@ -1311,6 +1310,13 @@
               document.getElementById("pa-phone-start").onclick = null;
               document.getElementById("pa-phone-tier").onchange = null;
             });
+            document.getElementById("practice-text-controls").hidden = true;
+            updateSession();
+            document.getElementById("practice-resume").onclick = () => {
+              resumeRun = storedRun(); if (!resumeRun) return;
+              rounds = resumeRun.rounds;
+              this.scene.start("Play"); this.game.canvas.focus({preventScroll:true});
+            };
             drawStars(this);
             const accentHex = "#" + PALETTE.accent.toString(16).padStart(6, "0");
 
@@ -1581,6 +1587,12 @@
             this.power = 0;
             this.powerMax = 3;
             this.doubled = false;
+            const recovering = resumeRun;
+            if (recovering) {
+              ["idx", "score", "streak", "correctCount", "power", "doubled", "itemLog"].forEach(key => { if (recovering[key] !== undefined) this[key] = recovering[key]; });
+              rounds = recovering.rounds;
+              resumeRun = null;
+            }
             this.gems = []; // collected-gem sprites in the tray
             this.th = JUICE.theme(themeId);
             drawStars(this);
@@ -1788,6 +1800,7 @@
 
             this.updateHUD();
             this.startRound();
+            if (recovering) { this.tries = recovering.tries || 0; this.saveRun(); }
             this.maybeShowPowerCoach();
           }
 
@@ -2041,6 +2054,8 @@
             this.carrying = null;
             this.carryMoved = false;
             this.nlOnMove = null;
+            this.accessibleMarker = null;
+            this.buildTiles = [];
             this.bins = null;
             this.sortTiles = null;
             // Input-settle window: ignore selection input for a beat after a round
@@ -2051,6 +2066,8 @@
             // performance.now() (wall clock) because the scene clock reads stale
             // during create(), before the first update tick.
             this.inputSettleUntil = (window.performance ? performance.now() : Date.now()) + 380;
+            updateSession(this);
+            if (this.idx < rounds.length) this.saveRun();
             if (this.idx >= rounds.length) {
               this.finish();
               return;
@@ -2162,6 +2179,47 @@
             else if (kind === "plot") this.renderPlot(r);
             else if (kind === "chain") this.renderChain(r);
             else this.renderChoose(r);
+            if (r.kind !== "chain") this.renderAccessibleControls(r);
+          }
+
+          renderAccessibleControls(r) {
+            const panel = document.getElementById("practice-text-controls");
+            panel.hidden = false;
+            if (innerWidth <= 900) panel.open = true;
+            const area = document.getElementById("practice-native-round"); area.replaceChildren();
+            const prompt = document.createElement("p"); prompt.className = "practice-native-prompt"; prompt.textContent = loc(r, "prompt") || r.prompt; area.appendChild(prompt);
+            const controls = document.createElement("div"); controls.className = "practice-native-actions"; area.appendChild(controls);
+            const key = name => { if (!this.locked && !window.GameStudio?.paused && this.settled()) this.input.keyboard.emit("keydown-" + name, {target:document.body}); };
+            const button = (label, action) => { const b = document.createElement("button"); b.type = "button"; b.textContent = label; b.onclick = () => { if(!window.GameStudio?.paused) action(b); }; controls.appendChild(b); return b; };
+            if (r.kind === "sort") {
+              this.sortTiles.forEach(tile => {
+                const label = document.createElement("label"); label.textContent = tile.data.text + " ";
+                const select = document.createElement("select"); select.add(new Option("Choose a group", ""));
+                r.categories.forEach((category,i) => select.add(new Option(category.label,String(i))));
+                select.onchange = () => { if(this.locked || !this.settled() || window.GameStudio?.paused || select.value === "") return; const freed = this.unassignTile(tile); if(freed >= 0) this.layoutBin(freed); this.assignTile(tile,Number(select.value)); };
+                label.appendChild(select); controls.appendChild(label);
+              }); button("Check groups", () => key("ENTER"));
+            } else if (r.kind === "match") {
+              this.matchLeft.concat(this.matchRight).forEach(tile => button(tile.label.text, b => { this.matchTap(tile); controls.querySelectorAll("button").forEach((control,i) => { const item = this.matchLeft.concat(this.matchRight)[i]; control.disabled = !!item.done; control.setAttribute("aria-pressed",String(this.matchSel === item)); }); }));
+            } else if (r.kind === "build") {
+              this.buildTiles.forEach(tile => { const b = button(tile.label.text, b => { tile.bg.emit("pointerdown"); b.setAttribute("aria-pressed",String(tile.picked)); }); b.setAttribute("aria-pressed","false"); });
+              button("Check pieces", () => key("ENTER"));
+            } else if (r.kind === "numline" || r.kind === "balance" || r.kind === "plot") {
+              button("← Left / decrease", () => key("LEFT")); button("Right / increase →", () => key("RIGHT"));
+              if(r.kind === "plot") { button("↑ Up", () => key("UP")); button("↓ Down", () => key("DOWN")); }
+              button("Check marker", () => key("ENTER"));
+              const value = document.createElement("p"); value.id = "practice-marker-value"; area.appendChild(value); this.updateAccessibleMarker();
+            } else {
+              const options = r.kind === "fixit" ? r.steps.map(step => (step.label || "") + " " + step.work) : r.kind === "chain" ? r.steps[this.chainIdx || 0].choices : r.choices;
+              (options || []).forEach((choice,i) => button((i+1) + ". " + choice, () => key(keyName(i+1))));
+            }
+            document.getElementById("practice-native-feedback").textContent = "Read the prompt, then use these controls or the game board.";
+          }
+          updateAccessibleMarker() {
+            const value = document.getElementById("practice-marker-value");
+            if (!value) return;
+            const r = rounds[this.idx];
+            value.textContent = r.kind === "plot" ? "Marker: (" + this.fmt(this.plotX) + ", " + this.fmt(this.plotY) + ")" : "Current value: " + this.fmt(r.kind === "balance" ? this.balVal : this.nlVal);
           }
 
           // True once the brief input-settle window after a round render has
@@ -2180,6 +2238,8 @@
           resolve(correct, why) {
             if (this.locked) return;
             const w = why || rounds[this.idx].why || "";
+            studioEvent("feedback", { correct, message: correct ? "Challenge solved!" : "Try again. Hints can help." });
+            document.getElementById("practice-native-feedback").textContent = (correct ? "Solved! " : "Try again. ") + w;
             const cx = W / 2,
               cy = 300;
             if (correct) {
@@ -2271,6 +2331,7 @@
                 }
               } catch (eCoach) {}
               this.updateHUD();
+              this.saveRun();
             }
           }
 
@@ -2301,7 +2362,13 @@
             } catch (e) {}
           }
 
+          saveRun() {
+            try { localStorage.setItem(checkpointKey(), JSON.stringify({signature:contentSignature(), tier, rounds, idx:this.idx, tries:this.tries, score:this.score, streak:this.streak, correctCount:this.correctCount, power:this.power, doubled:this.doubled, itemLog:this.itemLog})); }
+            catch (_) { document.getElementById("practice-session-note").textContent += " Saving is unavailable in this browser; keep this tab open."; }
+          }
           finish() {
+            completedRounds = rounds.slice();
+            try { localStorage.removeItem(checkpointKey()); } catch (_) {}
             JUICE.audio.musicStop();
             this.scene.start("Result", {
               score: this.score,
@@ -2965,6 +3032,7 @@
               this.nlVal = Math.min(r.max, Math.max(r.min, this.nlVal + d * r.step));
               refresh();
               srSay("Marker at " + this.fmt(this.nlVal));
+              this.updateAccessibleMarker();
             };
             this.input.keyboard.on("keydown-LEFT", () => nudge(-1));
             this.input.keyboard.on("keydown-RIGHT", () => nudge(1));
@@ -3029,6 +3097,7 @@
               const x = ix + col * spacing;
               const y = rowY + row * 74;
               const tile = this.makeTile(x, y, tileW, 56, tk, "22px");
+              this.buildTiles.push(tile);
               this.layer.add(tile.parts);
               tile.picked = false;
               tile.bg.on("pointerdown", () => {
@@ -3129,6 +3198,7 @@
               valTxt.setText("x = " + this.fmt(this.balVal));
               drawBeam();
               srSay("x equals " + this.fmt(this.balVal));
+              this.updateAccessibleMarker();
             };
             const minus = makeButton(this, cx - 150, cy + 120, 62, 56, "−", () => nudge(-1));
             const plus = makeButton(this, cx + 150, cy + 120, 62, 56, "+", () => nudge(1));
@@ -3257,6 +3327,7 @@
               this.plotY = Math.min(r.yMax, Math.max(r.yMin, this.plotY + dy * r.step));
               refresh();
               srSay("Point at " + this.fmt(this.plotX) + ", " + this.fmt(this.plotY));
+              this.updateAccessibleMarker();
             };
             this.input.keyboard.on("keydown-LEFT", () => nudge(-1, 0));
             this.input.keyboard.on("keydown-RIGHT", () => nudge(1, 0));
@@ -3311,12 +3382,13 @@
             this.layer.add(stepLayer);
             const total = r.steps.length;
             const pickChain = (i, ci, tile) => {
-              if (this.locked || !this.settled()) return;
+              if (this.locked || this.chainStepLocked || !this.settled()) return;
               const s = r.steps[i];
               SFX.pick();
               if (ci === s.correctIndex) {
                 tile.bg.setFillStyle(PALETTE.good);
                 if (i < total - 1) {
+                  this.chainStepLocked = true;
                   this.mascotSay("Nice! ✔");
                   this.feedback.setColor("#86efac").setText(t("yes")).setAlpha(1);
                   srSay("Correct. Next step.");
@@ -3336,6 +3408,9 @@
                 const msg = s.why ? t("hint") + s.why : t("tryAgain");
                 this.feedback.setColor("#fde68a").setText(msg).setAlpha(1);
                 srSay("Not quite. " + (s.why || "Try again."));
+                document.getElementById("practice-native-feedback").textContent = "Try again. " + (s.why || "Read the current step.");
+                this.saveRun();
+                studioEvent("feedback", {correct:false,message:"Try the step again."});
                 try {
                   if (window.GameFX && typeof window.GameFX.coach === "function") {
                     window.GameFX.coach("tip", msg);
@@ -3351,6 +3426,9 @@
               // Clear the previous step's per-tile key handlers before rebinding.
               this.input.keyboard.removeAllListeners();
               const s = r.steps[i];
+              this.chainStepLocked = false;
+              this.chainIdx = i;
+              this.renderAccessibleControls({...r, kind:"choose", prompt:s.prompt, choices:s.choices});
               const prog = this.add
                 .text(W / 2, 214, t("stepOf") + " " + (i + 1) + " / " + total, {
                   fontFamily: "Nunito, Segoe UI, sans-serif",
@@ -3603,6 +3681,21 @@
             const d = this.d;
             const ratio = d.total ? d.correct / d.total : 0;
             const stars = ratio >= 0.85 ? 3 : ratio >= 0.5 ? 2 : 1;
+            document.getElementById("practice-text-controls").hidden = true;
+            studioEvent("complete", {score:d.score, correct:d.correct, total:d.total, message:"Adventure complete. " + d.correct + " first-try solves."});
+            try {
+              const key = "pa-summary-" + activeLesson;
+              const previous = JSON.parse(localStorage.getItem(key) || "null");
+              if (!previous || stars > previous.stars || d.score > previous.score) localStorage.setItem(key, JSON.stringify({score:d.score, stars, firstTry:d.correct, total:d.total, playedAt:Date.now()}));
+            } catch (_) {}
+            document.getElementById("practice-session-title").textContent = "Adventure complete · " + stars + " stars";
+            document.getElementById("practice-session-note").textContent = "All " + d.total + " challenges solved. " + d.correct + " solved on your first try. Score " + d.score + ". Choose a replay or your next world.";
+            const retry = document.getElementById("practice-retry");
+            const toRevisit = completedRounds.filter((r, i) => d.items?.[i]?.tries > 0);
+            retry.hidden = !toRevisit.length;
+            retry.textContent = "Practice " + toRevisit.length + " questions to revisit";
+            retry.onclick = () => { rounds = toRevisit.slice(); this.scene.start("Play"); this.game.canvas.focus({preventScroll:true}); };
+            document.getElementById("practice-resume").hidden = true;
 
             // Celebrating boss + a medal that spins in — a real "you cleared the
             // level" payoff moment.
@@ -4010,53 +4103,12 @@
     
     <!-- mwb-injected:end -->
 
-    <!-- EWL Diagnostic Misconception Coach -->
-    <div
-      class="ewl-coach-card"
-      id="ewl-coach-card"
-      style="display: flex; position: relative; z-index: 100"
-    >
-      <div class="ewl-coach-icon">💡</div>
-      <div class="ewl-coach-content">
-        <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
-        <p
-          id="ewl-coach-text"
-          data-en="Calm self-paced review lab: sort into bins, match pairs, choose the answer, and spot the mistake!"
-          data-es="Laboratorio de repaso a tu propio ritmo: clasifica en contenedores, empareja, elige la respuesta y encuentra el error."
-        >
-          Calm self-paced review lab: sort into bins, match pairs, choose the answer, and spot the
-          mistake!
-        </p>
-      </div>
-    </div>
-    <!-- Shared Arcade FX Engine & Particles -->
-    <canvas id="fx-canvas" style="position:fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:9999;"></canvas>
-    <script src="/math/games/shared/arcade-fx-engine.js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", function() {
-        const canvas = document.getElementById("fx-canvas");
-        if (canvas) {
-          canvas.width = window.innerWidth;
-          canvas.height = window.innerHeight;
-          window.addEventListener("resize", () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-          });
-        }
-
-        document.body.addEventListener("pointerdown", function(e) {
-          if (window.ArcadeFX) {
-            if (canvas) {
-              window.ArcadeFX.spawnParticles(canvas, e.clientX, e.clientY, "#38bdf8", 16);
-            }
-          }
-        });
-      });
-    </script>
     <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
   <!-- nt-chrome-injected:begin (shared page chrome — tools/inject-nt-chrome.js) -->
   <script src="/assets/nt-chrome.js" defer></script>
   <!-- nt-chrome-injected:end -->
+<script src="/assets/game-studio.js?v=20261002" defer></script>
+<script src="/math/games/practice-arcade/studio.js" defer></script>
 </body>
 </html>

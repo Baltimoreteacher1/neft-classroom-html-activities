@@ -132,7 +132,9 @@ function create(host) {
   host.querySelector('#creation').oninput = event => { state.created = event.target.value; save(); };
   host.querySelectorAll('[data-criterion]').forEach(el => el.onchange = () => { state.checklist = [...host.querySelectorAll('[data-criterion]:checked')].map(c => Number(c.dataset.criterion)); save(); }); bindNotes(host);
 }
-function games(host) { host.innerHTML = `<h2>Finish with a game</h2><p>Use the same mathematics in two different ways: construct a solution, then connect ideas. Neither game uses a countdown.</p><div class="games-root"></div>`; mountGames(host.querySelector('.games-root'), lab, state, save, state.level); }
+function games(host) {
+  window.GameStudio?.register({ title: lab.finale, instructions: ['Choose a level, then select a construction mission or Connection Quest.', 'Read the goal, change the unlocked control, and submit your solution. Hints and retries cost no progress.', 'Match each term with its meaning. Arrow keys move between cards; Enter selects. Completed puzzles and pairs save on this device.'] });
+  host.innerHTML = `<h2>Finish with a game</h2><p>Use the same mathematics in two different ways: construct a solution, then connect ideas. Neither game uses a countdown.</p><div class="games-root"></div>`; mountGames(host.querySelector('.games-root'), lab, state, save, state.level); }
 function reportText() {
   const lines = [lab.title, `Lessons: ${lab.lessons.map(l=>l.id).join(', ')}`, `Level: ${levels[state.level].label}`, '', 'My creation', state.created || '(No creation recorded)', '', 'Notes'];
   for (const [key, value] of Object.entries(state.notes)) if (value) lines.push(`${key}: ${value}`);

@@ -138,6 +138,8 @@
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
   <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
+<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261002">
 </head>
   <body>
 
@@ -250,7 +252,7 @@
       const VV_RM_QUERY =
         window.matchMedia &&
         window.matchMedia("(prefers-reduced-motion: reduce)");
-      const reducedMotion = () => !!(VV_RM_QUERY && VV_RM_QUERY.matches);
+      const reducedMotion = () => window.__flagshipReduced ?? (!!(VV_RM_QUERY && VV_RM_QUERY.matches));
       const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
       const choice = (arr) => arr[Math.floor(Math.random() * arr.length)];
       function shuffle(a) {
@@ -1049,7 +1051,7 @@
           this.refreshHUD();
 
           this.time.delayedCall(correct ? 950 : 1700, () => {
-            if (this.lives <= 0) return this.gameOver();
+            if (this.lives <= 0) this.lives = START_LIVES; // Keep learning after a miss; every mission can be finished.
             this.qIndex++;
             this.nextQuestion();
           });
@@ -1322,7 +1324,7 @@
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
         scene: [BootScene, TitleScene, GameScene, ResultScene],
       };
-      const vvGame = new Phaser.Game(config);
+      const vvGame = window.__flagshipGame = new Phaser.Game(config);
 
       // ── Canvas accessibility (additive; no gameplay change) ──
       // Phaser renders into one <canvas> that is not in the tab order by
@@ -1356,7 +1358,6 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-    <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
   <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
   
@@ -1373,57 +1374,9 @@
           <p id="ewl-coach-text" data-en="Plot (x, y) by moving horizontally first!" data-es="¡Grafica (x, y) moviéndote horizontalmente primero!">Plot (x, y) by moving horizontally first!</p>
         </div>
       </div>
-  
-  <script>
-    (function() {
-      window.ewlShowMasteryModal = function(opts) {
-        opts = opts || {};
-        const score = opts.score || 0;
-        const maxScore = opts.maxScore || 1000;
-        const stars = opts.stars || (score >= maxScore * 0.8 ? 3 : score >= maxScore * 0.5 ? 2 : 1);
-        const accuracy = opts.accuracy != null ? opts.accuracy : Math.min(100, Math.round((score / Math.max(1, maxScore)) * 100));
-        const gameTitle = opts.title || "Unit Game Complete!";
-        const nextUrl = opts.nextUrl || "/math/games/";
-
-        const starStr = "⭐".repeat(stars) + "☆".repeat(3 - stars);
-        
-        const modalHtml = `
-          <div class="ewl-mastery-overlay" id="ewl-mastery-modal">
-            <div class="ewl-mastery-card">
-              <div class="ewl-mastery-stars">${starStr}</div>
-              <h2 class="ewl-mastery-title">${gameTitle}</h2>
-              <p class="ewl-mastery-subtitle">Grade 6 Math Review Mastery Achieved!</p>
-              <div class="ewl-mastery-stats">
-                <div class="ewl-stat-box">
-                  <div class="ewl-stat-num">${score}</div>
-                  <div class="ewl-stat-lbl">Final Score</div>
-                </div>
-                <div class="ewl-stat-box">
-                  <div class="ewl-stat-num">${accuracy}%</div>
-                  <div class="ewl-stat-lbl">Accuracy</div>
-                </div>
-              </div>
-              <div class="ewl-mastery-actions">
-                <button class="ewl-mastery-btn ewl-btn-secondary" onclick="location.reload()">🔄 Play Again</button>
-                <button class="ewl-mastery-btn ewl-btn-primary" onclick="location.href='${nextUrl}'">🎮 More Games</button>
-              </div>
-            </div>
-          </div>
-        `;
-        const existing = document.getElementById("ewl-mastery-modal");
-        if (existing) existing.remove();
-        document.body.insertAdjacentHTML("beforeend", modalHtml);
-        
-        if (window.GameFX && window.GameFX.AudioSynth) {
-          try { window.GameFX.AudioSynth.playSuccess(); } catch(e){}
-        }
-        if (window.GameFX && window.GameFX.burst) {
-          try { window.GameFX.burst(window.innerWidth / 2, window.innerHeight / 3); } catch(e){}
-        }
-      };
-    })();
-  </script>
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
+<script src="/assets/game-studio.js?v=20261002" defer></script>
+<script src="/math/games/shared/flagship-studio.js?v=20261002" defer></script>
 </body>
 </html>
