@@ -21,6 +21,8 @@
   .lp-section { margin: 0 0 22px; page-break-inside: avoid; }
   .es { color: var(--muted); font-style: italic; font-size: 0.92em; }
   .context { background: #f6f6f2; border-left: 3px solid var(--accent); padding: 8px 12px; margin: 0 0 10px; }
+  .notice-figure { margin: 12px 0; break-inside: avoid; text-align: center; }
+  .notice-figure img { display: block; max-width: 100%; max-height: 340px; width: auto; height: auto; margin: 0 auto; object-fit: contain; }
   .keyidea { background: #fff8e6; border: 1px solid #e3c46a; border-radius: 6px; padding: 8px 12px; }
   .item { margin: 0 0 14px; page-break-inside: avoid; }
   .qtext { font-weight: 600; margin: 0 0 6px; }
@@ -54,21 +56,89 @@
   .wa-lbl { font-weight: 600; min-width: 150px; }
   .numline, .coordgrid { max-width: 100%; margin: 8px 0; }
   .bvs { color: var(--muted); }
-  .print-btn { position: fixed; top: 14px; right: 14px; background: var(--accent); color: #fff;
-    border: none; border-radius: 8px; padding: 10px 16px; font-size: 11pt; cursor: pointer; font-family: inherit; }
+  .resource-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; }
+  .resource-toolbar a { color: var(--accent); font-weight: 700; padding: 10px 0; }
+  .print-btn { background: var(--accent); color: #fff; min-height: 44px;
+    border: none; border-radius: 8px; padding: 10px 16px; font-size: 12pt; cursor: pointer; font-family: inherit; }
+  :focus-visible { outline: 3px solid #a9471a; outline-offset: 4px; }
+  @media (max-width: 560px) { body { padding: 16px; } .idbar { gap: 12px; } }
+  @page { size: Letter; margin: .55in; }
   footer { margin-top: 26px; border-top: 1px solid var(--rule); padding-top: 8px; color: var(--muted); font-size: 10pt; }
   @media print {
     body { padding: 0; max-width: none; font-size: 11.5pt; }
-    .print-btn { display: none; }
+    .resource-toolbar { display: none; }
     .lp-section { page-break-inside: auto; }
+    h1, h2, h3, .cititle { break-after: avoid; }
+    p { orphans: 3; widows: 3; }
   }
+
+  .item { margin: 0 0 20px; break-inside: avoid; }
+  .qtext { font-weight: 650; margin: 0 0 8px; }
+  .qnum { color: #155f67; font-weight: 750; }
+  .task-directions, .hint-line { margin: 6px 0 10px; color: #374b54; }
+  .choices { list-style: none; margin: 8px 0; padding: 0; }
+  .choices li { margin: 6px 0; }
+  .ltr { display: inline-block; border: 1px solid #536168; border-radius: 50%; width: 1.6em; height: 1.6em; text-align: center; margin-right: 6px; }
+  .work { margin-top: 10px; }
+  .wl { border-bottom: 1px solid #a9b0b3; height: 1.8em; }
+  .blank, .paper-blank { display: inline-block; min-width: 4em; min-height: 1.8em; border-bottom: 1px solid #657078; }
+  .ans .blank { min-width: 10em; }
+  .item table { table-layout: fixed; overflow-wrap: anywhere; }
+  .item th, .item td { padding: 9px; min-width: 0; }
+  .fill { height: 3em; }
+  .matchtbl .mnum, .matchtbl .mltr { width: 2.5em; }
+  .matchtbl .mans { width: 3em; border-bottom: 1px solid #333; }
+  .wordbank { margin: 12px 0; }
+  .chip { display: inline-block; border: 1px solid #89959b; padding: 7px 10px; margin: 4px 4px 4px 0; border-radius: 4px; }
+  .sortboxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; }
+  .sortbox { min-height: 150px; border: 1px solid #657078; border-radius: 4px; }
+  .order-line { display: block; height: 2.2em; border-bottom: 1px solid #657078; }
+  .point-tasks { margin: 8px 0; padding-left: 1.4em; }
+  .sorthd { padding: 8px; border-bottom: 1px solid #657078; font-weight: 700; background: #f3f5f4; }
+  .worked { padding: 10px; border: 1px solid #89959b; }
+  .wa-step { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px dashed #a9b0b3; }
+  .wa-lbl { flex: 0 0 28%; font-weight: 600; }
+  .wa-work { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .numline, .bar-figure { display: block; width: 100%; height: auto; margin: 12px 0; }
+  .division-space { display: block; width: min(100%, 480px); height: auto; margin: 12px 0; }
+  .coordgrid { display: block; width: min(100%, 420px); height: auto; margin: 12px auto; }
+  .graph-task { break-inside: avoid; }
+  .model-space { min-height: 160px; border: 1px solid #89959b; padding: 10px; }
+  .model-space span { color: #475663; font-size: .9em; }
+  @media (max-width: 560px) {
+    .item th, .item td { padding: 5px; }
+    .item table { font-size: .85em; }
+    .item .paper-blank { min-width: 0; width: 100%; }
+    .wa-step { flex-direction: column; gap: 2px; }
+  }
+  @media screen and (max-width: 600px) {
+    /* Retain the injected tools as normal document actions on small screens,
+       where their floating stack otherwise covers the reading column. */
+    body > #nsr-root { position: relative; right: auto; bottom: auto; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; margin: 24px auto 0; max-width: 900px; z-index: 10; }
+    body > #nsr-root #nsr-launcher, body > #nsr-root #nsr-workbench { min-height: 44px; font-size: .85rem; }
+    body > #nsr-root #nsr-panel { bottom: 56px; }
+    body .mwb-launcher-nav { margin-top: 16px; text-align: right; }
+    body #mwb-launcher, body #netfold-launcher { position: static !important; margin: 4px; }
+  }
+  @media print {
+    .item { color: #111; }
+    .item table { font-size: 10pt; }
+    .graph-task, .item tr, .sortbox { break-inside: avoid; }
+    .item thead { display: table-header-group; }
+    .numline, .coordgrid, .bar-figure { break-inside: avoid; }
+  }
+
 </style>
   <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->
 </head>
 <body>
-  <button class="print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+  <nav class="resource-toolbar" aria-label="Packet actions">
+    <a href="/lessons/8-1/">← Back to lesson</a>
+    <button type="button" class="print-btn" onclick="window.print()">Print / Save PDF</button>
+  </nav>
+  <main>
   <h1>Understand Equations and Their Solutions</h1>
   <p class="doc-meta">6.AT.8 · Unit 8 · Lesson 1</p>
   <div class="idbar">
@@ -78,6 +148,7 @@
   </div>
   <section class="lp-section"><h2>🎯 Learning Goals</h2><p><strong>Content:</strong> I can write an equation for a real situation and check whether a given value is a solution by substituting it.</p><p><strong>Language:</strong> I can explain a solution using the words substitute, solution, true, and equal sign.</p></section>
   <section class="lp-section"><h2>👀 Notice &amp; Wonder</h2><p class="context">Detective Ruiz pins a clue to the case board: 'A number of stolen gems, plus 8 more found in the safe, equals 20 gems in all.'</p>
+         <figure class="notice-figure"><img src="/lessons/8-1/reveal-assets/notice-wonder.svg" alt="A detective's case board: an unknown number of gems stolen, plus 8 found in the safe, making 20 in all." loading="eager" decoding="sync"></figure>
          <p><strong>I notice…</strong></p><div class="work"><div class="wl"></div><div class="wl"></div></div>
          <p><strong>I wonder…</strong></p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
   <section class="lp-section" data-support-slot="vocabulary"><h2>📚 Vocabulary</h2><table class="vocabtbl"><tr><th>Word</th><th>What it means</th><th>Example</th></tr><tr><td><strong>Write Equations</strong><br><span class="es">Escribir ecuaciones</span></td><td>Represent a relationship with expressions joined by an equal sign.<br><span class="es">Representar una relación con expresiones unidas por un signo igual.</span></td><td>31 + p = 48 — Two sides set equal, with an unknown.</td></tr><tr><td><strong>Equation</strong><br><span class="es">Ecuación</span></td><td>A math sentence with an equal sign showing both sides are the same.<br><span class="es">Una oración matemática con un signo igual que muestra que ambos lados son iguales.</span></td><td>x + 5 = 12 — It has an equal sign showing two equal amounts.</td></tr><tr><td><strong>Variable</strong><br><span class="es">Variable</span></td><td>A letter that stands for a number that is unknown or can change.<br><span class="es">Una letra que representa un número desconocido o que puede cambiar.</span></td><td>The p in 31 + p = 48 — A letter for the unknown amount.</td></tr><tr><td><strong>Equal sign</strong><br><span class="es">Signo igual</span></td><td>The = sign, showing both sides are the same.<br><span class="es">El signo =, que muestra que ambos lados son iguales.</span></td><td>The = in 2.5h = 1,000 — It claims both sides match.</td></tr><tr><td><strong>Expression</strong><br><span class="es">Expresión</span></td><td>A math phrase with numbers and letters, but no equal sign.<br><span class="es">Una frase matemática con números y letras, pero sin signo igual.</span></td><td>8n + 15 — Numbers and letters, no equals sign.</td></tr><tr><td><strong>Constant</strong><br><span class="es">Constante</span></td><td>A fixed number in an expression or equation that does not change.<br><span class="es">Un número fijo en una expresión o ecuación que no cambia.</span></td><td>The 15 in 8n + 15 — It never changes.</td></tr><tr><td><strong>Unknown</strong><br><span class="es">Incógnita</span></td><td>The value you are trying to find, usually shown with a variable.<br><span class="es">El valor que intentas encontrar, mostrado normalmente con una variable.</span></td><td>The x in x + 8 = 15 — The value you are solving for.</td></tr><tr><td><strong>Solution</strong><br><span class="es">Solución</span></td><td>A value that makes an equation true when it is substituted for the variable.<br><span class="es">Un valor que hace verdadera una ecuación cuando se sustituye por la variable.</span></td><td>x = 7 for x + 8 = 15 — 7 + 8 really is 15.</td></tr><tr><td><strong>Substitute</strong><br><span class="es">Sustituir</span></td><td>To replace a variable with a number so the equation can be checked.<br><span class="es">Reemplazar una variable por un número para poder comprobar la ecuación.</span></td><td>Putting 7 into x + 8 = 15 — The letter is swapped for a value.</td></tr><tr><td><strong>Estimate</strong><br><span class="es">Estimar</span></td><td>A close first guess that helps you start solving.<br><span class="es">Una primera aproximación cercana que te ayuda a empezar a resolver.</span></td><td>Guessing 8 planks for a 36-inch door with 4 and one half-inch planks — It is a close guess to test.</td></tr></table></section>
@@ -95,11 +166,12 @@
         <p class="hint-line">Word bank: Equation, Variable, Equal sign, Expression</p>
         <div class="work"><div class="wl"></div><div class="wl"></div></div></div></section>
   <section class="lp-section" data-support-slot="workedExample"><h2>🚀 Launch</h2><p class="context">Detective Ruiz received a tip: 'A number of stolen gems plus 8 more equals 20 total gems.' She needs to write an equation to represent this clue before she can solve the case. How would you write this situation as an equation?</p><h3>How do I turn a word clue into an equation?</h3><p>An equation is a math sentence with an equal sign (=). To write one, I pick a letter (a variable) for the unknown number and match the words to math symbols.</p><p class="keyidea"><strong>Key idea:</strong> Equations &amp; Solutions. Formula: Left Expression = Right Expression. 1. An equation is a mathematical sentence stating two expressions are equal. 2. A solution is a value for the variable that makes the equation true. 3. Check: Substitute the value into the equation and verify that both sides balance</p><div class="cistep"><p class="cititle">Watch me</p><ul><li>Clue: 'A number of stolen gems plus 8 more equals 20 total.'</li><li>The unknown is the number of gems. I let n stand for it.</li><li>'Plus 8 more' means + 8. 'Equals 20 total' means = 20.</li><li>So my equation is n + 8 = 20.</li></ul></div><div class="cistep"><p class="cititle">Let's try together</p><ul><li>New clue: 'A number plus 5 equals 9.' What is the unknown?</li><li>We let n be the unknown. What does 'plus 5' tell us to write?</li><li>What does 'equals 9' tell us? Put it together: n + 5 = 9.</li></ul></div><div class="cistep"><p class="cititle">Your turn — test a solution</p><ul><li>Here is the equation from the clue: n + 5 = 9. A detective guesses n = 3.</li><li>Substitute the guess: replace n with 3 to get 3 + 5 = 9.</li><li>Is that statement true? 3 + 5 is 8, and 8 does not equal 9, so 3 is NOT a solution.</li><li>Revise the guess and test again until the statement is true. Which value makes it true, and how do you know it is the solution?</li></ul></div></section>
-  <section class="lp-section"><h2>🔍 Explore</h2><p class="context">Use the balance scale to see how this word problem becomes an equation. Drag the correct expression to each side of the scale to make it balance.</p><div class="item" data-practice-item><p class="qtext">Build the equation on the balance scale. What goes on each side?</p><p class="hint-line">Balanced or not balanced? Show your check in the blank.</p><table class="balancetbl"></table></div><p class="frame">How did you decide what expression to put on each side of the balance? — I put ___ on the left side because ___, and ___ on the right side because ___. The equal sign means ___.</p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
-  <section class="lp-section" data-support-slot="practice"><h2>✏️ Practice</h2><div class="item" data-practice-item><p class="qtext"><span class="qnum">1.</span> Match each situation to its equation</p><p class="hint-line">Write the letter of the matching item in the blank.</p><table class="matchtbl"><tr><td class="mnum">1.</td><td>A detective has some cases. After getting 9 new cases, she has 22.</td><td class="mans"></td><td class="mltr">A.</td><td>4n = 28</td></tr><tr><td class="mnum">2.</td><td>A suspect's age divided by 3 equals 12.</td><td class="mans"></td><td class="mltr">B.</td><td>n + 9 = 22</td></tr><tr><td class="mnum">3.</td><td>Four times the number of fingerprints equals 28.</td><td class="mans"></td><td class="mltr">C.</td><td>n / 3 = 12</td></tr><tr><td class="mnum">4.</td><td>A detective had some clues. After removing 6, she had 15 left.</td><td class="mans"></td><td class="mltr">D.</td><td>n − 6 = 15</td></tr></table></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">2.</span> For each situation, identify what the variable represents and write the equation.</p><table class="grid"><tr><th>Situation</th><th>Variable Represents</th><th>Equation</th></tr><tr><td>A box holds some files. After removing 5, there are 13 left.</td><td>Number of files in the box</td><td class="fill"></td></tr><tr><td>A detective split 48 photos equally into folders. Each folder has 6 photos.</td><td>Number of folders</td><td class="fill"></td></tr></table></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">3.</span> A detective found some fingerprints on Monday and 14 more on Tuesday, for a total of 30. Which equation represents this?</p><ol class="choices"><li><span class="ltr">A</span> f + 14 = 30</li><li><span class="ltr">B</span> f − 14 = 30</li><li><span class="ltr">C</span> 14f = 30</li><li><span class="ltr">D</span> f / 14 = 30</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">4.</span> Build the equation 2n + 3 = 11 on the balance scale and find n.</p><p class="hint-line">Balanced or not balanced? Show your check in the blank.</p><table class="balancetbl"></table></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">5.</span> </p><div class="worked"><div class="wa-step"><span class="wa-lbl">Clue</span><span class="wa-work">A number of case files divided by 3 equals 6.</span></div><div class="wa-step"><span class="wa-lbl">Choose a variable</span><span class="wa-work">Let n be the number of case files.</span></div><div class="wa-step"><span class="wa-lbl">Write the equation</span><span class="wa-work">3n = 6</span></div></div><p class="ea-q"><strong>Which step has the mistake, and what should it be?</strong></p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div></section>
+  <section class="lp-section"><h2>🔍 Explore</h2><div class="item" data-practice-item data-task-type="balance-scale"><p class="qtext">Use n + 15 = 42. Draw a balance model, then solve while keeping both sides equal. Explain each step.</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div><p class="frame">How did you decide what expression to put on each side of the balance? — I put ___ on the left side because ___, and ___ on the right side because ___. The equal sign means ___.</p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
+  <section class="lp-section" data-support-slot="practice"><h2>✏️ Practice</h2><div class="item" data-practice-item data-task-type="matching"><p class="qtext"><span class="qnum">1.</span> Match each situation to its equation</p><p class="hint-line">Write the letter of the matching item in the blank.</p><table class="matchtbl"><tr><td class="mnum">1.</td><td>A detective has some cases. After getting 9 new cases, she has 22.</td><td class="mans"></td><td class="mltr">A.</td><td>4n = 28</td></tr><tr><td class="mnum">2.</td><td>A suspect's age divided by 3 equals 12.</td><td class="mans"></td><td class="mltr">B.</td><td>n + 9 = 22</td></tr><tr><td class="mnum">3.</td><td>Four times the number of fingerprints equals 28.</td><td class="mans"></td><td class="mltr">C.</td><td>n / 3 = 12</td></tr><tr><td class="mnum">4.</td><td>A detective had some clues. After removing 6, she had 15 left.</td><td class="mans"></td><td class="mltr">D.</td><td>n − 6 = 15</td></tr></table></div><div class="item" data-practice-item data-task-type="fill-table"><p class="qtext"><span class="qnum">2.</span> For each situation, identify what the variable represents and write the equation.</p><p class="hint-line">Complete each empty cell. Show your reasoning below.</p><table class="grid"><thead><tr><th scope="col">Situation</th><th scope="col">Variable Represents</th><th scope="col">Equation</th></tr></thead><tbody><tr><td>A box holds some files. After removing 5, there are 13 left.</td><td class="fill" aria-label="Your response: Variable Represents, row 1"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: Equation, row 1"><span class="paper-blank"></span></td></tr><tr><td>A detective split 48 photos equally into folders. Each folder has 6 photos.</td><td class="fill" aria-label="Your response: Variable Represents, row 2"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: Equation, row 2"><span class="paper-blank"></span></td></tr></tbody></table><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">3.</span> A detective found some fingerprints on Monday and 14 more on Tuesday, for a total of 30. Which equation represents this?</p><ol class="choices"><li><span class="ltr">A</span> f + 14 = 30</li><li><span class="ltr">B</span> f − 14 = 30</li><li><span class="ltr">C</span> 14f = 30</li><li><span class="ltr">D</span> f / 14 = 30</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="balance-scale"><p class="qtext"><span class="qnum">4.</span> Build the equation 2n + 3 = 11 on the balance scale and find n.</p><p class="balance-equation"><strong>2n + 3 = 11</strong></p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="error-analysis"><p class="qtext"><span class="qnum">5.</span> Crack the Equation Error</p><div class="worked"><div class="wa-step"><span class="wa-lbl">Clue</span><span class="wa-work">A number of case files divided by 3 equals 6.</span></div><div class="wa-step"><span class="wa-lbl">Choose a variable</span><span class="wa-work">Let n be the number of case files.</span></div><div class="wa-step"><span class="wa-lbl">Write the equation</span><span class="wa-work">3n = 6</span></div></div><p class="ea-q"><strong>Which step has the mistake, and what should it be?</strong></p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div></section>
   <section class="lp-section"><h2>🌍 Connect to the Real World</h2><p class="context">A detective is tracking stolen paintings. She knows that the number of paintings recovered plus 14 paintings still missing equals the 37 total stolen. The equation p + 14 = 37 represents this situation.</p><p class="qtext">How many paintings has the detective recovered? How did writing an equation help you understand the situation?</p><p class="hint-line">Try to use: 23, equation, variable, represents, plus, equal, unknown</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></section>
   <section class="lp-section" data-support-slot="response"><h2>🎟️ Exit Ticket</h2><p class="qtext">Which value is the solution of n + 5 = 9, and how do you know?</p><ol class="choices"><li><span class="ltr">A</span> n = 3, because 3 is close to 4</li><li><span class="ltr">B</span> n = 4, because 4 + 5 = 9 is true</li><li><span class="ltr">C</span> n = 5, because 5 appears in the equation</li><li><span class="ltr">D</span> n = 14, because 9 + 5 = 14</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></section>
   <footer>Neft Teacher · 8-1 · Printable full-lesson packet · Complete every section, then bring it to class.</footer>
+  </main>
   <!-- Anonymous usage beacon. It has to be emitted HERE rather than added by
        tools/inject-usage-signal.mjs: this file is regenerated on every build,
        so an injected tag is silently stripped again on the next `npm run build`

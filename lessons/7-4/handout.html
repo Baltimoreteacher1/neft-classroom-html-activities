@@ -8,25 +8,97 @@
     @import url("/assets/fonts/fraunces-87aa83.css");
     @import url('/assets/fonts/outfit-hanken-grotesk-e0dfae.css');
     * { box-sizing: border-box; }
-    body { font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #264653; margin: 0; padding: 24px; background: #fff; }
+    body { font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #264653; margin: 0; padding: 24px; background: #fff; font-size: 17px; line-height: 1.55; }
+    main { max-width: 900px; margin: 0 auto; }
+    .resource-toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .resource-toolbar a { color: #155f67; font-weight: 650; padding: 10px 0; }
+    .resource-toolbar button { min-height: 44px; border: 0; border-radius: 6px; background: #155f67; color: white; padding: 10px 16px; font: inherit; font-weight: 700; cursor: pointer; }
+    :focus-visible { outline: 3px solid #a9471a; outline-offset: 4px; }
     h1, h2 { font-family: Outfit, system-ui, sans-serif; margin: 0 0 8px; }
     .header { border-bottom: 3px solid #387F84; padding-bottom: 12px; margin-bottom: 16px; }
     .meta { color: #5a6b75; font-size: 0.9rem; }
     .bilingual { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .box { border: 1px solid #e4ddc9; border-radius: 8px; padding: 12px; margin-bottom: 12px; background: #fdf6ec; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 1rem; }
     th, td { border: 1px solid #e4ddc9; padding: 8px; text-align: left; vertical-align: top; }
     th { background: #dff2ee; }
+    .vocabulary-table { table-layout: fixed; overflow-wrap: break-word; }
+    .vocabulary-table th:first-child { width: 34%; }
     .work-space { border-bottom: 1px dashed #c5bdb0; min-height: 48px; margin-top: 8px; }
     .notice-wonder { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .footer { margin-top: 16px; font-size: 0.78rem; color: #5a6b75; text-align: center; }
     .name-line { border-bottom: 1px solid #264653; display: inline-block; min-width: 200px; margin-left: 8px; }
+    .practice-box { background: #fff; }
+    .practice-box > h2 { margin-bottom: 16px; }
+    @media (max-width: 600px) { body { padding: 16px; } .bilingual, .notice-wonder { grid-template-columns: 1fr; } .name-line { min-width: 140px; } }
+    @page { size: Letter; margin: .55in; }
     @media print {
-      body { padding: 12px; }
+      body { padding: 0; font-size: 11.5pt; }
       .no-print { display: none; }
       .box { break-inside: avoid; }
+      .practice-box { break-inside: auto; border: 0; padding: 0; }
+      h1, h2, h3 { break-after: avoid; }
+      p { orphans: 3; widows: 3; }
+      .bilingual { display: block; }
     }
-    
+
+  .item { margin: 0 0 20px; break-inside: avoid; }
+  .qtext { font-weight: 650; margin: 0 0 8px; }
+  .qnum { color: #155f67; font-weight: 750; }
+  .task-directions, .hint-line { margin: 6px 0 10px; color: #374b54; }
+  .choices { list-style: none; margin: 8px 0; padding: 0; }
+  .choices li { margin: 6px 0; }
+  .ltr { display: inline-block; border: 1px solid #536168; border-radius: 50%; width: 1.6em; height: 1.6em; text-align: center; margin-right: 6px; }
+  .work { margin-top: 10px; }
+  .wl { border-bottom: 1px solid #a9b0b3; height: 1.8em; }
+  .blank, .paper-blank { display: inline-block; min-width: 4em; min-height: 1.8em; border-bottom: 1px solid #657078; }
+  .ans .blank { min-width: 10em; }
+  .item table { table-layout: fixed; overflow-wrap: anywhere; }
+  .item th, .item td { padding: 9px; min-width: 0; }
+  .fill { height: 3em; }
+  .matchtbl .mnum, .matchtbl .mltr { width: 2.5em; }
+  .matchtbl .mans { width: 3em; border-bottom: 1px solid #333; }
+  .wordbank { margin: 12px 0; }
+  .chip { display: inline-block; border: 1px solid #89959b; padding: 7px 10px; margin: 4px 4px 4px 0; border-radius: 4px; }
+  .sortboxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; }
+  .sortbox { min-height: 150px; border: 1px solid #657078; border-radius: 4px; }
+  .order-line { display: block; height: 2.2em; border-bottom: 1px solid #657078; }
+  .point-tasks { margin: 8px 0; padding-left: 1.4em; }
+  .sorthd { padding: 8px; border-bottom: 1px solid #657078; font-weight: 700; background: #f3f5f4; }
+  .worked { padding: 10px; border: 1px solid #89959b; }
+  .wa-step { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px dashed #a9b0b3; }
+  .wa-lbl { flex: 0 0 28%; font-weight: 600; }
+  .wa-work { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .numline, .bar-figure { display: block; width: 100%; height: auto; margin: 12px 0; }
+  .division-space { display: block; width: min(100%, 480px); height: auto; margin: 12px 0; }
+  .coordgrid { display: block; width: min(100%, 420px); height: auto; margin: 12px auto; }
+  .graph-task { break-inside: avoid; }
+  .model-space { min-height: 160px; border: 1px solid #89959b; padding: 10px; }
+  .model-space span { color: #475663; font-size: .9em; }
+  @media (max-width: 560px) {
+    .item th, .item td { padding: 5px; }
+    .item table { font-size: .85em; }
+    .item .paper-blank { min-width: 0; width: 100%; }
+    .wa-step { flex-direction: column; gap: 2px; }
+  }
+  @media screen and (max-width: 600px) {
+    /* Retain the injected tools as normal document actions on small screens,
+       where their floating stack otherwise covers the reading column. */
+    body > #nsr-root { position: relative; right: auto; bottom: auto; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; margin: 24px auto 0; max-width: 900px; z-index: 10; }
+    body > #nsr-root #nsr-launcher, body > #nsr-root #nsr-workbench { min-height: 44px; font-size: .85rem; }
+    body > #nsr-root #nsr-panel { bottom: 56px; }
+    body .mwb-launcher-nav { margin-top: 16px; text-align: right; }
+    body #mwb-launcher, body #netfold-launcher { position: static !important; margin: 4px; }
+  }
+  @media print {
+    .item { color: #111; }
+    .item table { font-size: 10pt; }
+    .graph-task, .item tr, .sortbox { break-inside: avoid; }
+    .item thead { display: table-header-group; }
+    .numline, .coordgrid, .bar-figure { break-inside: avoid; }
+  }
+
+
 /* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
    Appended last so it overrides each generator's base CSS. Finish-only:
    serif headings + paper ground + AA-safe ink. No layout/size changes. */
@@ -75,9 +147,10 @@ header.packet h1::after{
 </head>
 <body>
 <main>
-  <div class="no-print" style="text-align:right; margin-bottom:12px;">
-    <button onclick="window.print()" style="padding:8px 16px; font-weight:700; cursor:pointer;">🖨️ Print / Imprimir</button>
-  </div>
+  <nav class="no-print resource-toolbar" aria-label="Handout actions">
+    <a href="/lessons/7-4/">← Back to lesson</a>
+    <button type="button" onclick="window.print()">Print / Save PDF</button>
+  </nav>
   <header class="header">
     <h1>Compare and Order Integers and Rational Numbers</h1>
     <div class="meta">6.NOS.8 · Unit 7 · Lesson 4</div>
@@ -88,7 +161,7 @@ header.packet h1::after{
     <div class="box">
       <h2>Objectives / Objetivos</h2>
       <p lang="en"><strong>Content Objective:</strong> I can compare and order integers using a number line.</p>
-      
+
       <p lang="en"><strong>Language Objective:</strong> I can explain my reasoning using the words compare, order, greater than, and less than.</p>
     </div>
     <div class="box">
@@ -104,15 +177,16 @@ header.packet h1::after{
 
   <div class="box" data-support-slot="vocabulary">
     <h2>Vocabulary / Vocabulario</h2>
-    <table>
-      <thead><tr><th>Term / Término</th><th>Definition / Definición</th></tr></thead>
+    <table class="vocabulary-table">
+      <thead><tr><th scope="col">Term / Término</th><th scope="col">Definition / Definición</th></tr></thead>
       <tbody><tr><td><strong>Compare and Order Integers</strong><br><span lang="es">Comparar y ordenar enteros</span></td><td>Use a number line to decide which integers are greater or less and place them in order.<br><span lang="es">Usar una recta numérica para decidir cuáles enteros son mayores o menores y colocarlos en orden.</span></td></tr><tr><td><strong>Number line</strong><br><span lang="es">Recta numérica</span></td><td>A straight line where numbers are placed in order; numbers get smaller to the left and larger to the right.<br><span lang="es">Una recta donde los números se colocan en orden; los números son menores a la izquierda y mayores a la derecha.</span></td></tr><tr><td><strong>Compare</strong><br><span lang="es">Comparar</span></td><td>To see if a number is bigger, smaller, or equal to another.<br><span lang="es">Ver si un número es mayor, menor o igual que otro.</span></td></tr><tr><td><strong>Order</strong><br><span lang="es">Ordenar</span></td><td>To arrange numbers by size, from least to greatest or greatest to least.<br><span lang="es">Acomodar números por tamaño, de menor a mayor o de mayor a menor.</span></td></tr><tr><td><strong>Greater than</strong><br><span lang="es">Mayor que</span></td><td>The &gt; sign, showing one number is bigger.<br><span lang="es">El signo &gt;, que muestra que un número es mayor.</span></td></tr><tr><td><strong>Less than</strong><br><span lang="es">Menor que</span></td><td>The &lt; sign, showing one number is smaller.<br><span lang="es">El signo &lt;, que muestra que un número es menor.</span></td></tr></tbody>
     </table>
   </div>
 
-  <div class="box" data-support-slot="practice">
+  <div class="box practice-box" data-support-slot="practice">
     <h2>Practice Preview / Vista previa de práctica</h2>
-    <ol><li>Which statement is TRUE?<ol type="A" style="margin:8px 0 0 1.2rem; font-size:0.88rem;"><li>-5 &lt; -2</li><li>-4 &gt; 0</li><li>-3 &gt; -1</li><li>-1 &lt; -6</li></ol><div class="work-space"></div></li><li>Plot these integers and write them in order from greatest to least: -8, 4, -3, 1, -1, 6<div class="work-space"></div></li><li>Compare each pair of integers using &lt; , &gt; , or =.<div class="work-space"></div></li><li>Find the Comparison Error<ol style="margin:8px 0 0 1.2rem; font-size:0.88rem;"><li><strong>Step 1:</strong> Problem — <span style="font-family:monospace;">Compare -3 and -8. Which is greater?</span></li><li><strong>Step 2:</strong> Student thinking — <span style="font-family:monospace;">8 is bigger than 3, so -8 must be greater than -3</span></li><li><strong>Step 3:</strong> Student answer — <span style="font-family:monospace;">-8 &gt; -3</span></li></ol><p style="margin:6px 0 0; font-size:0.85rem;"><em>Which step has the mistake? Explain it and write the correct work.</em></p><div class="work-space"></div></li></ol>
+    <p>Read each task. Show your work in the spaces provided and explain how you know.</p>
+    <div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">1.</span> Which statement is TRUE?</p><ol class="choices"><li><span class="ltr">A</span> -5 &lt; -2</li><li><span class="ltr">B</span> -4 &gt; 0</li><li><span class="ltr">C</span> -3 &gt; -1</li><li><span class="ltr">D</span> -1 &lt; -6</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="number-line"><p class="qtext"><span class="qnum">2.</span> Plot these integers and write them in order from greatest to least: -8, 4, -3, 1, -1, 6</p><p class="hint-line">Mark and label: A; B; C; D; E; F</p><svg class="numline" viewBox="0 0 680 80" role="img" aria-label="Blank number line from -10 to 8; each tick represents 1"><line x1="24" y1="40" x2="656" y2="40" stroke="#333" stroke-width="2"/><line x1="24" y1="34" x2="24" y2="46" stroke="#333" stroke-width="1"/><text x="24" y="64" font-size="14" text-anchor="middle" fill="#333">-10</text><line x1="59.11111111111111" y1="34" x2="59.11111111111111" y2="46" stroke="#333" stroke-width="1"/><text x="59.11111111111111" y="64" font-size="14" text-anchor="middle" fill="#333">-9</text><line x1="94.22222222222221" y1="34" x2="94.22222222222221" y2="46" stroke="#333" stroke-width="1"/><text x="94.22222222222221" y="64" font-size="14" text-anchor="middle" fill="#333">-8</text><line x1="129.33333333333331" y1="34" x2="129.33333333333331" y2="46" stroke="#333" stroke-width="1"/><text x="129.33333333333331" y="64" font-size="14" text-anchor="middle" fill="#333">-7</text><line x1="164.44444444444443" y1="34" x2="164.44444444444443" y2="46" stroke="#333" stroke-width="1"/><text x="164.44444444444443" y="64" font-size="14" text-anchor="middle" fill="#333">-6</text><line x1="199.55555555555557" y1="34" x2="199.55555555555557" y2="46" stroke="#333" stroke-width="1"/><text x="199.55555555555557" y="64" font-size="14" text-anchor="middle" fill="#333">-5</text><line x1="234.66666666666666" y1="34" x2="234.66666666666666" y2="46" stroke="#333" stroke-width="1"/><text x="234.66666666666666" y="64" font-size="14" text-anchor="middle" fill="#333">-4</text><line x1="269.77777777777777" y1="34" x2="269.77777777777777" y2="46" stroke="#333" stroke-width="1"/><text x="269.77777777777777" y="64" font-size="14" text-anchor="middle" fill="#333">-3</text><line x1="304.88888888888886" y1="34" x2="304.88888888888886" y2="46" stroke="#333" stroke-width="1"/><text x="304.88888888888886" y="64" font-size="14" text-anchor="middle" fill="#333">-2</text><line x1="340" y1="34" x2="340" y2="46" stroke="#333" stroke-width="1"/><text x="340" y="64" font-size="14" text-anchor="middle" fill="#333">-1</text><line x1="375.11111111111114" y1="34" x2="375.11111111111114" y2="46" stroke="#333" stroke-width="1"/><text x="375.11111111111114" y="64" font-size="14" text-anchor="middle" fill="#333">0</text><line x1="410.22222222222223" y1="34" x2="410.22222222222223" y2="46" stroke="#333" stroke-width="1"/><text x="410.22222222222223" y="64" font-size="14" text-anchor="middle" fill="#333">1</text><line x1="445.3333333333333" y1="34" x2="445.3333333333333" y2="46" stroke="#333" stroke-width="1"/><text x="445.3333333333333" y="64" font-size="14" text-anchor="middle" fill="#333">2</text><line x1="480.44444444444446" y1="34" x2="480.44444444444446" y2="46" stroke="#333" stroke-width="1"/><text x="480.44444444444446" y="64" font-size="14" text-anchor="middle" fill="#333">3</text><line x1="515.5555555555555" y1="34" x2="515.5555555555555" y2="46" stroke="#333" stroke-width="1"/><text x="515.5555555555555" y="64" font-size="14" text-anchor="middle" fill="#333">4</text><line x1="550.6666666666667" y1="34" x2="550.6666666666667" y2="46" stroke="#333" stroke-width="1"/><text x="550.6666666666667" y="64" font-size="14" text-anchor="middle" fill="#333">5</text><line x1="585.7777777777777" y1="34" x2="585.7777777777777" y2="46" stroke="#333" stroke-width="1"/><text x="585.7777777777777" y="64" font-size="14" text-anchor="middle" fill="#333">6</text><line x1="620.8888888888889" y1="34" x2="620.8888888888889" y2="46" stroke="#333" stroke-width="1"/><text x="620.8888888888889" y="64" font-size="14" text-anchor="middle" fill="#333">7</text><line x1="656" y1="34" x2="656" y2="46" stroke="#333" stroke-width="1"/><text x="656" y="64" font-size="14" text-anchor="middle" fill="#333">8</text></svg><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="fill-table"><p class="qtext"><span class="qnum">3.</span> Compare each pair of integers using &lt; , &gt; , or =.</p><p class="hint-line">Complete each empty cell. Show your reasoning below.</p><table class="grid"><thead><tr><th scope="col">Integer A</th><th scope="col">Integer B</th><th scope="col">Comparison (&lt; , &gt; , or =)</th></tr></thead><tbody><tr><td>-4</td><td>2</td><td class="fill" aria-label="Your response: Comparison (&lt; , &gt; , or =), row 1"><span class="paper-blank"></span></td></tr><tr><td>-7</td><td>-3</td><td class="fill" aria-label="Your response: Comparison (&lt; , &gt; , or =), row 2"><span class="paper-blank"></span></td></tr><tr><td>0</td><td>-5</td><td class="fill" aria-label="Your response: Comparison (&lt; , &gt; , or =), row 3"><span class="paper-blank"></span></td></tr><tr><td>-1</td><td>-1</td><td class="fill" aria-label="Your response: Comparison (&lt; , &gt; , or =), row 4"><span class="paper-blank"></span></td></tr><tr><td>6</td><td>-9</td><td class="fill" aria-label="Your response: Comparison (&lt; , &gt; , or =), row 5"><span class="paper-blank"></span></td></tr></tbody></table><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="error-analysis"><p class="qtext"><span class="qnum">4.</span> Find the Comparison Error</p><div class="worked"><div class="wa-step"><span class="wa-lbl">Problem</span><span class="wa-work">Compare -3 and -8. Which is greater?</span></div><div class="wa-step"><span class="wa-lbl">Student thinking</span><span class="wa-work">8 is bigger than 3, so -8 must be greater than -3</span></div><div class="wa-step"><span class="wa-lbl">Student answer</span><span class="wa-work">-8 &gt; -3</span></div></div><p class="ea-q"><strong>Which step has the mistake, and what should it be?</strong></p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div>
   </div>
 
   <div class="box" data-support-slot="response">

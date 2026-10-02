@@ -12,7 +12,15 @@
  * Exit 0 = fresh, 1 = stale (lists the files), 2 = could not run.
  */
 import { execFileSync } from "node:child_process";
-import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  symlinkSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -53,6 +61,11 @@ try {
   for (const f of ["package.json"]) {
     if (existsSync(join(ROOT, f))) cpSync(join(ROOT, f), join(scratch, f));
   }
+  // Mirror the workspace link so package imports resolve to the copied engine,
+  // keeping regeneration isolated from the working tree and its dependencies.
+  const workspaceScope = join(scratch, "node_modules", "@eduwonderlab");
+  mkdirSync(workspaceScope, { recursive: true });
+  symlinkSync(join(scratch, "engine"), join(workspaceScope, "engine"), "dir");
 
   execFileSync(process.execPath, [join(scratch, "scripts", "generate-printable-lesson.mjs")], {
     cwd: scratch,

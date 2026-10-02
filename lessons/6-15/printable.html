@@ -21,6 +21,8 @@
   .lp-section { margin: 0 0 22px; page-break-inside: avoid; }
   .es { color: var(--muted); font-style: italic; font-size: 0.92em; }
   .context { background: #f6f6f2; border-left: 3px solid var(--accent); padding: 8px 12px; margin: 0 0 10px; }
+  .notice-figure { margin: 12px 0; break-inside: avoid; text-align: center; }
+  .notice-figure img { display: block; max-width: 100%; max-height: 340px; width: auto; height: auto; margin: 0 auto; object-fit: contain; }
   .keyidea { background: #fff8e6; border: 1px solid #e3c46a; border-radius: 6px; padding: 8px 12px; }
   .item { margin: 0 0 14px; page-break-inside: avoid; }
   .qtext { font-weight: 600; margin: 0 0 6px; }
@@ -54,21 +56,89 @@
   .wa-lbl { font-weight: 600; min-width: 150px; }
   .numline, .coordgrid { max-width: 100%; margin: 8px 0; }
   .bvs { color: var(--muted); }
-  .print-btn { position: fixed; top: 14px; right: 14px; background: var(--accent); color: #fff;
-    border: none; border-radius: 8px; padding: 10px 16px; font-size: 11pt; cursor: pointer; font-family: inherit; }
+  .resource-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; }
+  .resource-toolbar a { color: var(--accent); font-weight: 700; padding: 10px 0; }
+  .print-btn { background: var(--accent); color: #fff; min-height: 44px;
+    border: none; border-radius: 8px; padding: 10px 16px; font-size: 12pt; cursor: pointer; font-family: inherit; }
+  :focus-visible { outline: 3px solid #a9471a; outline-offset: 4px; }
+  @media (max-width: 560px) { body { padding: 16px; } .idbar { gap: 12px; } }
+  @page { size: Letter; margin: .55in; }
   footer { margin-top: 26px; border-top: 1px solid var(--rule); padding-top: 8px; color: var(--muted); font-size: 10pt; }
   @media print {
     body { padding: 0; max-width: none; font-size: 11.5pt; }
-    .print-btn { display: none; }
+    .resource-toolbar { display: none; }
     .lp-section { page-break-inside: auto; }
+    h1, h2, h3, .cititle { break-after: avoid; }
+    p { orphans: 3; widows: 3; }
   }
+
+  .item { margin: 0 0 20px; break-inside: avoid; }
+  .qtext { font-weight: 650; margin: 0 0 8px; }
+  .qnum { color: #155f67; font-weight: 750; }
+  .task-directions, .hint-line { margin: 6px 0 10px; color: #374b54; }
+  .choices { list-style: none; margin: 8px 0; padding: 0; }
+  .choices li { margin: 6px 0; }
+  .ltr { display: inline-block; border: 1px solid #536168; border-radius: 50%; width: 1.6em; height: 1.6em; text-align: center; margin-right: 6px; }
+  .work { margin-top: 10px; }
+  .wl { border-bottom: 1px solid #a9b0b3; height: 1.8em; }
+  .blank, .paper-blank { display: inline-block; min-width: 4em; min-height: 1.8em; border-bottom: 1px solid #657078; }
+  .ans .blank { min-width: 10em; }
+  .item table { table-layout: fixed; overflow-wrap: anywhere; }
+  .item th, .item td { padding: 9px; min-width: 0; }
+  .fill { height: 3em; }
+  .matchtbl .mnum, .matchtbl .mltr { width: 2.5em; }
+  .matchtbl .mans { width: 3em; border-bottom: 1px solid #333; }
+  .wordbank { margin: 12px 0; }
+  .chip { display: inline-block; border: 1px solid #89959b; padding: 7px 10px; margin: 4px 4px 4px 0; border-radius: 4px; }
+  .sortboxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; }
+  .sortbox { min-height: 150px; border: 1px solid #657078; border-radius: 4px; }
+  .order-line { display: block; height: 2.2em; border-bottom: 1px solid #657078; }
+  .point-tasks { margin: 8px 0; padding-left: 1.4em; }
+  .sorthd { padding: 8px; border-bottom: 1px solid #657078; font-weight: 700; background: #f3f5f4; }
+  .worked { padding: 10px; border: 1px solid #89959b; }
+  .wa-step { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px dashed #a9b0b3; }
+  .wa-lbl { flex: 0 0 28%; font-weight: 600; }
+  .wa-work { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .numline, .bar-figure { display: block; width: 100%; height: auto; margin: 12px 0; }
+  .division-space { display: block; width: min(100%, 480px); height: auto; margin: 12px 0; }
+  .coordgrid { display: block; width: min(100%, 420px); height: auto; margin: 12px auto; }
+  .graph-task { break-inside: avoid; }
+  .model-space { min-height: 160px; border: 1px solid #89959b; padding: 10px; }
+  .model-space span { color: #475663; font-size: .9em; }
+  @media (max-width: 560px) {
+    .item th, .item td { padding: 5px; }
+    .item table { font-size: .85em; }
+    .item .paper-blank { min-width: 0; width: 100%; }
+    .wa-step { flex-direction: column; gap: 2px; }
+  }
+  @media screen and (max-width: 600px) {
+    /* Retain the injected tools as normal document actions on small screens,
+       where their floating stack otherwise covers the reading column. */
+    body > #nsr-root { position: relative; right: auto; bottom: auto; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; margin: 24px auto 0; max-width: 900px; z-index: 10; }
+    body > #nsr-root #nsr-launcher, body > #nsr-root #nsr-workbench { min-height: 44px; font-size: .85rem; }
+    body > #nsr-root #nsr-panel { bottom: 56px; }
+    body .mwb-launcher-nav { margin-top: 16px; text-align: right; }
+    body #mwb-launcher, body #netfold-launcher { position: static !important; margin: 4px; }
+  }
+  @media print {
+    .item { color: #111; }
+    .item table { font-size: 10pt; }
+    .graph-task, .item tr, .sortbox { break-inside: avoid; }
+    .item thead { display: table-header-group; }
+    .numline, .coordgrid, .bar-figure { break-inside: avoid; }
+  }
+
 </style>
   <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->
 </head>
 <body>
-  <button class="print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+  <nav class="resource-toolbar" aria-label="Packet actions">
+    <a href="/lessons/6-15/">← Back to lesson</a>
+    <button type="button" class="print-btn" onclick="window.print()">Print / Save PDF</button>
+  </nav>
+  <main>
   <h1>Simplify Algebraic Expressions</h1>
   <p class="doc-meta">6.AT.7 · Unit 6 · Lesson 15</p>
   <div class="idbar">
@@ -78,6 +148,7 @@
   </div>
   <section class="lp-section"><h2>🎯 Learning Goals</h2><p><strong>Content:</strong> I can simplify algebraic expressions by combining like terms.</p><p><strong>Language:</strong> I can explain my steps using the words like terms, combine, simplify, and coefficient.</p></section>
   <section class="lp-section"><h2>👀 Notice &amp; Wonder</h2><p class="context">A studio order lists the same equipment two different ways. On the left it is written out item by item — microphone, microphone, stand, microphone, stand. On the right the same gear is grouped together — 3 microphones and 2 stands.</p>
+         <figure class="notice-figure"><img src="/lessons/6-15/reveal-assets/notice-wonder.svg" alt="A studio order shown twice: listed item by item, and grouped together as 3 microphones and 2 stands." loading="eager" decoding="sync"></figure>
          <p><strong>I notice…</strong></p><div class="work"><div class="wl"></div><div class="wl"></div></div>
          <p><strong>I wonder…</strong></p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
   <section class="lp-section" data-support-slot="vocabulary"><h2>📚 Vocabulary</h2><table class="vocabtbl"><tr><th>Word</th><th>What it means</th><th>Example</th></tr><tr><td><strong>Simplify Algebraic Expressions</strong><br><span class="es">Simplificar expresiones algebraicas</span></td><td>Rewrite an expression in a shorter equivalent form by combining like terms and using properties.<br><span class="es">Reescribir una expresión en una forma equivalente más corta combinando términos semejantes y usando propiedades.</span></td><td>6x + 2x + 4 written as 8x + 4 — Only the like terms combined.</td></tr><tr><td><strong>Like Terms</strong><br><span class="es">Términos semejantes</span></td><td>Terms with the same variable raised to the same exponent, like 2x and 5x.<br><span class="es">Términos con la misma variable elevada al mismo exponente, como 2x y 5x.</span></td><td>3y and 8y — They share the same variable y.</td></tr><tr><td><strong>Combine</strong><br><span class="es">Combinar</span></td><td>To add or subtract terms with the same variable and exponent into one.<br><span class="es">Sumar o restar términos con la misma variable y el mismo exponente en uno solo.</span></td><td>3x + 2x making 5x — Same variable, added.</td></tr><tr><td><strong>Simplify</strong><br><span class="es">Simplificar</span></td><td>To rewrite an expression in a shorter form that is still equal to the original.<br><span class="es">Reescribir una expresión en una forma más corta que sigue siendo igual a la original.</span></td><td>2a + 5a + 3 written as 7a + 3 — Like terms combine; the constant stays.</td></tr><tr><td><strong>Coefficient</strong><br><span class="es">Coeficiente</span></td><td>The number in front of a letter, like the 3 in 3x.<br><span class="es">El número frente a una letra, como el 3 en 3x.</span></td><td>The 3 in 3x — The number multiplying the variable.</td></tr><tr><td><strong>Term</strong><br><span class="es">Término</span></td><td>A single number, variable, or product of them, separated by + or − signs.<br><span class="es">Un solo número, variable o producto de ellos, separado por signos + o −.</span></td><td>The 3x in 3x + 5 — A piece separated by + or −.</td></tr><tr><td><strong>Distributive property</strong><br><span class="es">Propiedad distributiva</span></td><td>Multiplying a number by everything inside the parentheses: a(b + c) = ab + ac.<br><span class="es">Multiplicar un número por todo lo que está dentro del paréntesis: a(b + c) = ab + ac.</span></td><td>4(n + 3) = 4n + 12 — Every term inside is multiplied.</td></tr></table></section>
@@ -95,11 +166,12 @@
         <p class="hint-line">Word bank: Like Terms, Combine, Simplify, Coefficient</p>
         <div class="work"><div class="wl"></div><div class="wl"></div></div></div></section>
   <section class="lp-section" data-support-slot="workedExample"><h2>🚀 Launch</h2><p class="context">The music studio is placing supply orders for three rehearsal rooms. Room A needs 4 microphones and 3 stands. Room B needs 2 microphones and 5 stands. Room C needs 6 microphones and 1 stand. Instead of ordering separately, you can combine: (4 + 2 + 6) microphones and (3 + 5 + 1) stands = 12 microphones and 9 stands. That's simplifying by combining like items!</p><h3>How do we simplify by combining like terms?</h3><p>Like terms are terms with the same variable raised to the same exponent, like 2x and 5x. To simplify an expression, you add or subtract the like terms to make it shorter.</p><p class="keyidea"><strong>Key idea:</strong> Combining Like Terms. 1. Like Terms: Terms that share the exact same variable part and exponent (e.g. 4x and 2x). 2. Add or subtract the coefficients of like terms; keep the variable unchanged. 3. Constants (numbers without variables) combine together separately</p><div class="cistep"><p class="cititle">Watch me</p><ul><li>The rooms need microphones and stands: (4 + 2 + 6) microphones and (3 + 5 + 1) stands.</li><li>Microphones are like items, so I add: 4 + 2 + 6 = 12 microphones.</li><li>Stands are like items, so I add: 3 + 5 + 1 = 9 stands.</li><li>In algebra this is the same as 4m + 2m + 6m + 3s + 5s + 1s = 12m + 9s.</li></ul></div><div class="cistep"><p class="cititle">Let's try together</p><ul><li>Let's simplify 5x + 3x. Are these like terms?</li><li>Yes, both have x, so we add the numbers in front: 5 + 3 = 8.</li><li>So 5x + 3x = 8x.</li></ul></div><div class="cistep"><p class="cititle">Now it's your turn</p><ul><li>Sort the terms into like terms and not-like terms in the activity.</li><li>Remember: only terms with the same variable can be combined.</li></ul></div></section>
-  <section class="lp-section"><h2>🔍 Explore</h2><p class="context">Identify the like terms in each expression. Group the terms that can be combined.</p><div class="item" data-practice-item><p class="qtext">Identify the like terms in each expression. Group the terms that can be combined.</p><div class="wordbank"><strong>Word bank:</strong> <span class="chip">5x and 3x</span> <span class="chip">3x and 3y</span> <span class="chip">8 and 2t</span> <span class="chip">6m and 4p</span> <span class="chip">4n and 9n</span> <span class="chip">7a and 2a</span></div><div class="sortboxes"><div class="sortbox"><div class="sorthd">Like Terms (can combine)</div></div><div class="sortbox"><div class="sorthd">Not Like Terms (cannot combine)</div></div></div></div><p class="frame">What rule determines whether two terms are 'like terms'? Why can't you combine unlike terms? — Two terms are like terms when they have the same ___. You cannot combine ___ and ___ because they represent different ___.</p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
-  <section class="lp-section" data-support-slot="practice"><h2>✏️ Practice</h2><div class="item" data-practice-item><p class="qtext"><span class="qnum">1.</span> Simplify each expression by combining like terms.</p><table class="grid"><tr></tr><tr><td>3a + 5a + 2</td><td>3a + 5a = 8a</td><td class="fill"></td></tr><tr><td>6x + 4 + 2x + 7</td><td></td><td class="fill"></td></tr><tr><td>10m − 3m + 5</td><td></td><td class="fill"></td></tr><tr><td>4y + 3 + y + 9</td><td></td><td class="fill"></td></tr></table></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">2.</span> Match each expression to its simplified form.</p><p class="hint-line">Write the letter of the matching item in the blank.</p><table class="matchtbl"><tr><td class="mnum">1.</td><td>8x + 3x + 1</td><td class="mans"></td><td class="mltr">A.</td><td>7y</td></tr><tr><td class="mnum">2.</td><td>5a − 2a + 7</td><td class="mans"></td><td class="mltr">B.</td><td>6p + 1</td></tr><tr><td class="mnum">3.</td><td>4n + n + 6</td><td class="mans"></td><td class="mltr">C.</td><td>7m + 10</td></tr><tr><td class="mnum">4.</td><td>12y − 5y</td><td class="mans"></td><td class="mltr">D.</td><td>5n + 6</td></tr><tr><td class="mnum">5.</td><td>3m + 8 + 4m + 2</td><td class="mans"></td><td class="mltr">E.</td><td>11x + 1</td></tr><tr><td class="mnum">6.</td><td>9p + 1 − 3p</td><td class="mans"></td><td class="mltr">F.</td><td>3a + 7</td></tr></table></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">3.</span> Simplify each expression, then sort by whether the simplified coefficient of the variable is greater than 6 or not.</p><div class="wordbank"><strong>Word bank:</strong> <span class="chip">10m − 7m</span> <span class="chip">8n − 3n</span> <span class="chip">6p − p</span> <span class="chip">3a + a + 4a</span> <span class="chip">2y + 5y</span> <span class="chip">4x + 5x</span></div><div class="sortboxes"><div class="sortbox"><div class="sorthd">Coefficient &gt; 6</div></div><div class="sortbox"><div class="sorthd">Coefficient ≤ 6</div></div></div></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">4.</span> Both simplify to 7x + 2 — they are equivalent.</p><p class="hint-line">Balanced or not balanced? Show your check in the blank.</p><table class="balancetbl"></table></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">5.</span> </p><div class="worked"><div class="wa-step"><span class="wa-lbl">Expression</span><span class="wa-work">6x + 4 + 2x</span></div><div class="wa-step"><span class="wa-lbl">Combine</span><span class="wa-work">Add everything: 6 + 4 + 2 = 12</span></div><div class="wa-step"><span class="wa-lbl">Simplify</span><span class="wa-work">12x</span></div></div><p class="ea-q"><strong>Which step has the mistake, and what should it be?</strong></p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div></section>
+  <section class="lp-section"><h2>🔍 Explore</h2><div class="item" data-practice-item data-task-type="drag-sort"><p class="qtext">Identify the like terms in each expression. Group the terms that can be combined.</p><p class="hint-line">Write each item in its correct group.</p><div class="wordbank"><strong>Word bank:</strong> <span class="chip">5x and 3x</span> <span class="chip">3x and 3y</span> <span class="chip">8 and 2t</span> <span class="chip">6m and 4p</span> <span class="chip">4n and 9n</span> <span class="chip">7a and 2a</span></div><div class="sortboxes"><div class="sortbox"><div class="sorthd">Like Terms (can combine)</div></div><div class="sortbox"><div class="sorthd">Not Like Terms (cannot combine)</div></div></div></div><p class="frame">What rule determines whether two terms are 'like terms'? Why can't you combine unlike terms? — Two terms are like terms when they have the same ___. You cannot combine ___ and ___ because they represent different ___.</p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
+  <section class="lp-section" data-support-slot="practice"><h2>✏️ Practice</h2><div class="item" data-practice-item data-task-type="fill-table"><p class="qtext"><span class="qnum">1.</span> Simplify each expression by combining like terms.</p><p class="hint-line">Complete each empty cell. Show your reasoning below.</p><table class="grid"><thead><tr><th scope="col">Expression</th><th scope="col">Like Terms Combined</th><th scope="col">Simplified</th></tr></thead><tbody><tr><td>3a + 5a + 2</td><td>3a + 5a = 8a</td><td class="fill" aria-label="Your response: Simplified, row 1"><span class="paper-blank"></span></td></tr><tr><td>6x + 4 + 2x + 7</td><td class="fill" aria-label="Your response: Like Terms Combined, row 2"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: Simplified, row 2"><span class="paper-blank"></span></td></tr><tr><td>10m − 3m + 5</td><td class="fill" aria-label="Your response: Like Terms Combined, row 3"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: Simplified, row 3"><span class="paper-blank"></span></td></tr><tr><td>4y + 3 + y + 9</td><td class="fill" aria-label="Your response: Like Terms Combined, row 4"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: Simplified, row 4"><span class="paper-blank"></span></td></tr></tbody></table><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="matching-game"><p class="qtext"><span class="qnum">2.</span> Match each expression to its simplified form.</p><p class="hint-line">Write the letter of the matching item in the blank.</p><table class="matchtbl"><tr><td class="mnum">1.</td><td>8x + 3x + 1</td><td class="mans"></td><td class="mltr">A.</td><td>7y</td></tr><tr><td class="mnum">2.</td><td>5a − 2a + 7</td><td class="mans"></td><td class="mltr">B.</td><td>6p + 1</td></tr><tr><td class="mnum">3.</td><td>4n + n + 6</td><td class="mans"></td><td class="mltr">C.</td><td>7m + 10</td></tr><tr><td class="mnum">4.</td><td>12y − 5y</td><td class="mans"></td><td class="mltr">D.</td><td>5n + 6</td></tr><tr><td class="mnum">5.</td><td>3m + 8 + 4m + 2</td><td class="mans"></td><td class="mltr">E.</td><td>11x + 1</td></tr><tr><td class="mnum">6.</td><td>9p + 1 − 3p</td><td class="mans"></td><td class="mltr">F.</td><td>3a + 7</td></tr></table></div><div class="item" data-practice-item data-task-type="drag-sort"><p class="qtext"><span class="qnum">3.</span> Simplify each expression, then sort by whether the simplified coefficient of the variable is greater than 6 or not.</p><p class="hint-line">Write each item in its correct group.</p><div class="wordbank"><strong>Word bank:</strong> <span class="chip">10m − 7m</span> <span class="chip">8n − 3n</span> <span class="chip">6p − p</span> <span class="chip">3a + a + 4a</span> <span class="chip">2y + 5y</span> <span class="chip">4x + 5x</span></div><div class="sortboxes"><div class="sortbox"><div class="sorthd">Coefficient &gt; 6</div></div><div class="sortbox"><div class="sorthd">Coefficient ≤ 6</div></div></div></div><div class="item" data-practice-item data-task-type="balance-scale"><p class="qtext"><span class="qnum">4.</span> Compare 3x + 4x + 2 and 7x + 2. Simplify each expression and explain whether they are equivalent for every value of x.</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="error-analysis"><p class="qtext"><span class="qnum">5.</span> Spot the Mistake — Swept-Up Constant</p><div class="worked"><div class="wa-step"><span class="wa-lbl">Expression</span><span class="wa-work">6x + 4 + 2x</span></div><div class="wa-step"><span class="wa-lbl">Combine</span><span class="wa-work">Add everything: 6 + 4 + 2 = 12</span></div><div class="wa-step"><span class="wa-lbl">Simplify</span><span class="wa-work">12x</span></div></div><p class="ea-q"><strong>Which step has the mistake, and what should it be?</strong></p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div></section>
   <section class="lp-section"><h2>🌍 Connect to the Real World</h2><p class="context">A music festival needs supplies for 3 stages. Stage 1 needs 8m + 5 cables, Stage 2 needs 3m + 7 cables, and Stage 3 needs 4m + 2 cables, where m represents the number of microphones per stage. The total order is (8m + 5) + (3m + 7) + (4m + 2).</p><p class="qtext">Simplify the total order expression. What does each part of the simplified expression tell you?</p><p class="hint-line">Try to use: 15, 14, 15m, microphone cables, 14, extra cables, combine, like terms</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></section>
   <section class="lp-section" data-support-slot="response"><h2>🎟️ Exit Ticket</h2><p class="qtext">Simplify 6x + 3 + 2x + 5.</p><ol class="choices"><li><span class="ltr">A</span> 8x + 8</li><li><span class="ltr">B</span> 8x² + 8</li><li><span class="ltr">C</span> 16x</li><li><span class="ltr">D</span> 62x + 35</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></section>
   <footer>Neft Teacher · 6-15 · Printable full-lesson packet · Complete every section, then bring it to class.</footer>
+  </main>
   <!-- Anonymous usage beacon. It has to be emitted HERE rather than added by
        tools/inject-usage-signal.mjs: this file is regenerated on every build,
        so an injected tag is silently stripped again on the next `npm run build`

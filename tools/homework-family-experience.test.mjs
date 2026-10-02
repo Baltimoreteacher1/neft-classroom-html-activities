@@ -95,9 +95,17 @@ test("statistical-question homework shows a concrete model and keeps reasons for
   const d = dom.window.document;
   assert.equal(d.querySelectorAll("[data-route-mode]").length, 2);
   assert.match(d.querySelector(".concept-visual-caption").textContent, /One shelf has one count/);
-  const table = d.querySelector("#problem_1 .fill-table");
+  // The authored wording affects the deterministic problem order. Identify
+  // the warm-up table by its task and content, not its displayed number.
+  const table = [
+    ...d.querySelectorAll('.practice-tier-warmup [data-problem-type="fill-table"] .fill-table'),
+  ].find((candidate) =>
+    /How many push-ups can each student do in one minute\?/.test(candidate.textContent),
+  );
   assert.ok(table);
   assert.equal(table.querySelectorAll("input.table-input").length, 6);
+  assert.ok([...table.querySelectorAll("input.table-input")].every((input) => input.value === ""));
+  assert.equal(table.querySelectorAll('input[data-self-review="true"]').length, 3);
   assert.doesNotMatch(table.textContent, /Different students can do different amounts/);
   dom.window.close();
 });

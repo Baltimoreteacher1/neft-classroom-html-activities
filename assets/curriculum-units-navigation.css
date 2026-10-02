@@ -162,3 +162,67 @@
 .curriculum-product.curriculum-units-page .units-overview { margin-bottom: 0; }
 .curriculum-product.curriculum-units-page .units-overview>summary { padding-block: 10px; }
 .curriculum-product.curriculum-units-page .units-browser-nav #units-browser-status { font-size: 16px; }
+
+/* A lesson's support choices stay beside its title. These are three routes
+   through one learning target, with the selected route named in plain text. */
+.curriculum-units-page .units-lesson-pathways {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 24px 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--course-border, #c5d4df);
+}
+.curriculum-units-page .units-lesson-pathways[hidden] { display: none; }
+.curriculum-units-page .units-lesson-pathways button,
+.curriculum-units-page .units-result-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 9px 14px;
+  border: 1px solid #668a84;
+  border-radius: 6px;
+  background: #fff;
+  color: #184e47;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+.curriculum-units-page .units-lesson-pathways button[aria-pressed="true"] {
+  background: #185a51;
+  border-color: #185a51;
+  color: #fff;
+  box-shadow: inset 0 -3px 0 #fff;
+}
+.curriculum-units-page .units-lesson-pathways button:hover:not([aria-pressed="true"]),
+.curriculum-units-page .units-result-actions a:hover { background: #eaf3ee; }
+.curriculum-units-page .units-pathway-description {
+  flex-basis: 100%;
+  margin: 2px 0 0;
+  max-width: 70ch;
+  color: #354f64;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.curriculum-units-page .units-result-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-block: 14px; }
+.curriculum-units-page .units-result-actions a + a { border-color: transparent; padding-inline: 6px; text-decoration: underline; text-underline-offset: 3px; }
+.curriculum-units-page .units-lesson-pathways button:focus-visible,
+.curriculum-units-page .units-result-actions a:focus-visible,
+.curriculum-units-page .units-lesson-heading:focus { outline: 3px solid #176d9c; outline-offset: 4px; }
+.curriculum-units-page .units-results-grid .search-result-unit { text-transform: none; letter-spacing: normal; font-size: 1rem; }
+@media (max-width: 780px) {
+  .curriculum-units-page .units-lesson-pathways { margin-inline: 20px; }
+}
+@media (max-width: 400px) {
+  .curriculum-units-page .units-lesson-pathways button { flex: 1 1 auto; }
+  .curriculum-units-page .units-result-actions { align-items: stretch; flex-direction: column; }
+}
+@media print {
+  .curriculum-units-page .units-lesson-pathways,
+  .curriculum-units-page .units-result-actions { display: none !important; }
+}

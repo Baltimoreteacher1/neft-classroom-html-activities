@@ -21,6 +21,8 @@
   .lp-section { margin: 0 0 22px; page-break-inside: avoid; }
   .es { color: var(--muted); font-style: italic; font-size: 0.92em; }
   .context { background: #f6f6f2; border-left: 3px solid var(--accent); padding: 8px 12px; margin: 0 0 10px; }
+  .notice-figure { margin: 12px 0; break-inside: avoid; text-align: center; }
+  .notice-figure img { display: block; max-width: 100%; max-height: 340px; width: auto; height: auto; margin: 0 auto; object-fit: contain; }
   .keyidea { background: #fff8e6; border: 1px solid #e3c46a; border-radius: 6px; padding: 8px 12px; }
   .item { margin: 0 0 14px; page-break-inside: avoid; }
   .qtext { font-weight: 600; margin: 0 0 6px; }
@@ -54,21 +56,89 @@
   .wa-lbl { font-weight: 600; min-width: 150px; }
   .numline, .coordgrid { max-width: 100%; margin: 8px 0; }
   .bvs { color: var(--muted); }
-  .print-btn { position: fixed; top: 14px; right: 14px; background: var(--accent); color: #fff;
-    border: none; border-radius: 8px; padding: 10px 16px; font-size: 11pt; cursor: pointer; font-family: inherit; }
+  .resource-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; }
+  .resource-toolbar a { color: var(--accent); font-weight: 700; padding: 10px 0; }
+  .print-btn { background: var(--accent); color: #fff; min-height: 44px;
+    border: none; border-radius: 8px; padding: 10px 16px; font-size: 12pt; cursor: pointer; font-family: inherit; }
+  :focus-visible { outline: 3px solid #a9471a; outline-offset: 4px; }
+  @media (max-width: 560px) { body { padding: 16px; } .idbar { gap: 12px; } }
+  @page { size: Letter; margin: .55in; }
   footer { margin-top: 26px; border-top: 1px solid var(--rule); padding-top: 8px; color: var(--muted); font-size: 10pt; }
   @media print {
     body { padding: 0; max-width: none; font-size: 11.5pt; }
-    .print-btn { display: none; }
+    .resource-toolbar { display: none; }
     .lp-section { page-break-inside: auto; }
+    h1, h2, h3, .cititle { break-after: avoid; }
+    p { orphans: 3; widows: 3; }
   }
+
+  .item { margin: 0 0 20px; break-inside: avoid; }
+  .qtext { font-weight: 650; margin: 0 0 8px; }
+  .qnum { color: #155f67; font-weight: 750; }
+  .task-directions, .hint-line { margin: 6px 0 10px; color: #374b54; }
+  .choices { list-style: none; margin: 8px 0; padding: 0; }
+  .choices li { margin: 6px 0; }
+  .ltr { display: inline-block; border: 1px solid #536168; border-radius: 50%; width: 1.6em; height: 1.6em; text-align: center; margin-right: 6px; }
+  .work { margin-top: 10px; }
+  .wl { border-bottom: 1px solid #a9b0b3; height: 1.8em; }
+  .blank, .paper-blank { display: inline-block; min-width: 4em; min-height: 1.8em; border-bottom: 1px solid #657078; }
+  .ans .blank { min-width: 10em; }
+  .item table { table-layout: fixed; overflow-wrap: anywhere; }
+  .item th, .item td { padding: 9px; min-width: 0; }
+  .fill { height: 3em; }
+  .matchtbl .mnum, .matchtbl .mltr { width: 2.5em; }
+  .matchtbl .mans { width: 3em; border-bottom: 1px solid #333; }
+  .wordbank { margin: 12px 0; }
+  .chip { display: inline-block; border: 1px solid #89959b; padding: 7px 10px; margin: 4px 4px 4px 0; border-radius: 4px; }
+  .sortboxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; }
+  .sortbox { min-height: 150px; border: 1px solid #657078; border-radius: 4px; }
+  .order-line { display: block; height: 2.2em; border-bottom: 1px solid #657078; }
+  .point-tasks { margin: 8px 0; padding-left: 1.4em; }
+  .sorthd { padding: 8px; border-bottom: 1px solid #657078; font-weight: 700; background: #f3f5f4; }
+  .worked { padding: 10px; border: 1px solid #89959b; }
+  .wa-step { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px dashed #a9b0b3; }
+  .wa-lbl { flex: 0 0 28%; font-weight: 600; }
+  .wa-work { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .numline, .bar-figure { display: block; width: 100%; height: auto; margin: 12px 0; }
+  .division-space { display: block; width: min(100%, 480px); height: auto; margin: 12px 0; }
+  .coordgrid { display: block; width: min(100%, 420px); height: auto; margin: 12px auto; }
+  .graph-task { break-inside: avoid; }
+  .model-space { min-height: 160px; border: 1px solid #89959b; padding: 10px; }
+  .model-space span { color: #475663; font-size: .9em; }
+  @media (max-width: 560px) {
+    .item th, .item td { padding: 5px; }
+    .item table { font-size: .85em; }
+    .item .paper-blank { min-width: 0; width: 100%; }
+    .wa-step { flex-direction: column; gap: 2px; }
+  }
+  @media screen and (max-width: 600px) {
+    /* Retain the injected tools as normal document actions on small screens,
+       where their floating stack otherwise covers the reading column. */
+    body > #nsr-root { position: relative; right: auto; bottom: auto; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; margin: 24px auto 0; max-width: 900px; z-index: 10; }
+    body > #nsr-root #nsr-launcher, body > #nsr-root #nsr-workbench { min-height: 44px; font-size: .85rem; }
+    body > #nsr-root #nsr-panel { bottom: 56px; }
+    body .mwb-launcher-nav { margin-top: 16px; text-align: right; }
+    body #mwb-launcher, body #netfold-launcher { position: static !important; margin: 4px; }
+  }
+  @media print {
+    .item { color: #111; }
+    .item table { font-size: 10pt; }
+    .graph-task, .item tr, .sortbox { break-inside: avoid; }
+    .item thead { display: table-header-group; }
+    .numline, .coordgrid, .bar-figure { break-inside: avoid; }
+  }
+
 </style>
   <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->
 </head>
 <body>
-  <button class="print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+  <nav class="resource-toolbar" aria-label="Packet actions">
+    <a href="/lessons/5-6/">← Back to lesson</a>
+    <button type="button" class="print-btn" onclick="window.print()">Print / Save PDF</button>
+  </nav>
+  <main>
   <h1>Represent Three-Dimensional Figures in Two Dimensions</h1>
   <p class="doc-meta">6.GR.4 · Unit 5 · Lesson 6</p>
   <div class="idbar">
@@ -78,6 +148,7 @@
   </div>
   <section class="lp-section"><h2>🎯 Learning Goals</h2><p><strong>Content:</strong> I can find the surface area of a solid by using its net.</p><p><strong>Language:</strong> I can explain my work using the words surface area, net, face, and two-dimensional.</p></section>
   <section class="lp-section"><h2>👀 Notice &amp; Wonder</h2><p class="context">Yuzuki is making paper replicas of the Pyramids of Giza for a social studies project. She has flat sheets of paper and needs to know how much paper each pyramid will take.</p>
+         <figure class="notice-figure"><img src="/lessons/5-6/reveal-assets/notice-wonder.png" alt="Pink T-shaped tiles scattered across a green field, all the same shape and size." loading="eager" decoding="sync"></figure>
          <p><strong>I notice…</strong></p><div class="work"><div class="wl"></div><div class="wl"></div></div>
          <p><strong>I wonder…</strong></p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
   <section class="lp-section" data-support-slot="vocabulary"><h2>📚 Vocabulary</h2><table class="vocabtbl"><tr><th>Word</th><th>What it means</th><th>Example</th></tr><tr><td><strong>Surface Area Using Nets</strong><br><span class="es">Área de superficie usando redes</span></td><td>The total area of all the faces of a solid. A net unfolds the solid flat so you can see every face and add their areas.<br><span class="es">El área total de todas las caras de un cuerpo. Una plantilla lo despliega para ver cada cara y sumar sus áreas.</span></td><td>Adding all six rectangles of the unfolded box — Every face counted once.</td></tr><tr><td><strong>Surface area</strong><br><span class="es">Área de superficie</span></td><td>The total area of all the flat sides of a solid.<br><span class="es">El área total de todos los lados planos de un sólido.</span></td><td>52 in² of wrapping paper — The outside, in square units.</td></tr><tr><td><strong>Net</strong><br><span class="es">Plantilla (desarrollo plano)</span></td><td>A flat shape that folds up into a solid.<br><span class="es">Una figura plana que se dobla y forma un sólido.</span></td><td>Six connected rectangles that fold into a box — It folds up into a solid.</td></tr><tr><td><strong>Face</strong><br><span class="es">Cara</span></td><td>One flat side of a solid shape.<br><span class="es">Un lado plano de una figura sólida.</span></td><td>The front rectangle of a box — One flat side.</td></tr><tr><td><strong>Two-dimensional</strong><br><span class="es">Bidimensional</span></td><td>A flat shape with length and width, but no thickness.<br><span class="es">Una figura plana con largo y ancho, pero sin grosor.</span></td><td>A rectangle drawn on paper — Length and width, no thickness.</td></tr><tr><td><strong>Edge</strong><br><span class="es">Arista</span></td><td>The line where two flat sides of a solid meet.<br><span class="es">La línea donde se unen dos lados planos de un sólido.</span></td><td>The line where two faces meet — A boundary between faces.</td></tr><tr><td><strong>Pyramid</strong><br><span class="es">Pirámide</span></td><td>A solid with one base and triangular sides that meet at a point.<br><span class="es">Un sólido con una base y lados triangulares que se unen en un punto.</span></td><td>A solid with a square bottom and four triangles meeting at the top — One base, triangular sides, one point on top.</td></tr><tr><td><strong>Vertex</strong><br><span class="es">Vértice</span></td><td>A corner point where edges meet.<br><span class="es">Un punto de esquina donde se unen las aristas.</span></td><td>The top point of a square pyramid — Four edges meet there.</td></tr></table></section>
@@ -98,11 +169,12 @@
         <p class="hint-line">Word bank: Surface area, Net, Face, Two-dimensional</p>
         <div class="work"><div class="wl"></div><div class="wl"></div></div></div></section>
   <section class="lp-section" data-support-slot="workedExample"><h2>🚀 Launch</h2><p class="context">Your class is designing custom wrapping paper for time capsule boxes. To figure out how much paper you need, you have to find the total surface area of each box. The trick? Unfold the box into a net so you can see every face laid flat!</p><h3>How do we find the surface area of a box?</h3><p>Surface area is the total area of all the flat faces of a solid. A net unfolds the box flat so you can see and add all 6 faces. The answer uses square units.</p><p class="keyidea"><strong>Key idea:</strong> Representing 3D Solids with Nets. 1. A net is a 2D flat pattern that folds into a 3D solid without overlapping. 2. Rectangular prism net has 6 rectangular faces in 3 congruent opposite pairs. 3. Surface Area is the total sum of the areas of all flat faces on the net</p><div class="cistep"><p class="cititle">Watch me</p><ul><li>My box is 8 in. long, 5 in. wide, and 3 in. tall. I unfold it into a net and see 3 pairs of faces.</li><li>Top and bottom: each is 8 × 5 = 40, and there are 2 of them, so 2 × 40 = 80.</li><li>Front and back: each is 8 × 3 = 24, so 2 × 24 = 48.</li><li>Left and right: each is 5 × 3 = 15, so 2 × 15 = 30.</li><li>I add all the pairs: 80 + 48 + 30 = 158. The surface area is 158 in².</li></ul></div><div class="cistep"><p class="cititle">Let's try together</p><ul><li>Now a smaller box: 4 long, 3 wide, 2 tall. How many pairs of faces does it have?</li><li>Top and bottom: 4 × 3 = 12, times 2 = 24. Front and back: 4 × 2 = 8, times 2 = 16.</li><li>Left and right: 3 × 2 = 6, times 2 = 12. Now add 24 + 16 + 12. What is the surface area?</li><li>Yes, SA = 52 in². Remember to use square units.</li></ul></div><div class="cistep"><p class="cititle">Now it's your turn</p><ul><li>In the table below, find the area of each face pair, then add them for the total surface area.</li><li>Write your answers in square inches (in²).</li></ul></div></section>
-  <section class="lp-section"><h2>🔍 Explore</h2><p class="context">Identify each face of the rectangular time capsule box (l = 8 in, w = 5 in, h = 3 in). Find the area of each face pair, then calculate the total surface area.</p><div class="item" data-practice-item><p class="qtext">Identify each face of the rectangular time capsule box (l = 8 in, w = 5 in, h = 3 in). Find the area of each face pair, then calculate the total surface area.</p><table class="grid"><tr></tr><tr><td>Top &amp; Bottom</td><td>8 × 5</td><td></td><td>2</td><td class="fill"></td></tr><tr><td>Front &amp; Back</td><td>8 × 3</td><td></td><td>2</td><td class="fill"></td></tr><tr><td>Left &amp; Right</td><td>5 × 3</td><td></td><td>2</td><td class="fill"></td></tr><tr><td></td><td></td><td></td><td>Total SA:</td><td class="fill"></td></tr></table></div><p class="frame">The total surface area is 158 in². Which face pair contributes the most area? Why does that make sense when you look at the dimensions? — The ___ faces contribute the most area (___ in²) because their dimensions ___ × ___ = ___ are the largest. The total SA is ___ + ___ + ___ = ___ in².</p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
-  <section class="lp-section" data-support-slot="practice"><h2>✏️ Practice</h2><div class="item" data-practice-item><p class="qtext"><span class="qnum">1.</span> Find the surface area of each time capsule box using its net.</p><table class="grid"><tr></tr><tr><td>Box A</td><td>10 in</td><td>6 in</td><td>4 in</td><td class="fill"></td></tr><tr><td>Box B</td><td>7 cm</td><td>7 cm</td><td>3 cm</td><td class="fill"></td></tr><tr><td>Box C</td><td>12 ft</td><td>5 ft</td><td>2 ft</td><td class="fill"></td></tr></table></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">2.</span> A cube has edges of 5 cm. What is its surface area?</p><ol class="choices"><li><span class="ltr">A</span> 30 cm²</li><li><span class="ltr">B</span> 125 cm²</li><li><span class="ltr">C</span> 150 cm²</li><li><span class="ltr">D</span> 150 cm³</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">3.</span> A gift box has SA = 222 in². The top and bottom together are 120 in². The front and back together are 60 in². How much area is the left and right sides together?</p><p>What is the combined area of the left and right faces?</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">4.</span> Sort these rectangular prisms from LEAST surface area to GREATEST surface area.</p><div class="wordbank"><strong>Word bank:</strong> <span class="chip">2 × 2 × 2</span> <span class="chip">5 × 4 × 3</span> <span class="chip">6 × 4 × 2</span> <span class="chip">10 × 1 × 1</span> <span class="chip">3 × 3 × 3</span></div><div class="sortboxes"></div></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">5.</span> </p><div class="worked"><div class="wa-step"><span class="wa-lbl">Read</span><span class="wa-work">A time capsule box from the net is l = 7 in, w = 5 in, h = 4 in. Find the surface area.</span></div><div class="wa-step"><span class="wa-lbl">Find each face pair</span><span class="wa-work">Top/Bottom: 7×5 = 35, Front/Back: 7×4 = 28, Left/Right: 5×4 = 20</span></div><div class="wa-step"><span class="wa-lbl">Apply the formula</span><span class="wa-work">SA = 2(35) + 2(28) + 20 = 70 + 56 + 20 = 146 in² (left/right pair not doubled)</span></div><div class="wa-step"><span class="wa-lbl">Answer</span><span class="wa-work">Surface Area = 146 in²</span></div></div><p class="ea-q"><strong>Which step has the mistake, and what should it be?</strong></p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div></section>
+  <section class="lp-section"><h2>🔍 Explore</h2><div class="item" data-practice-item data-task-type="fill-table"><p class="qtext">Identify each face of the rectangular time capsule box (l = 8 in, w = 5 in, h = 3 in). Find the area of each face pair, then calculate the total surface area.</p><p class="hint-line">Complete each empty cell. Show your reasoning below.</p><table class="grid"><thead><tr><th scope="col">Face Pair</th><th scope="col">Dimensions</th><th scope="col">Area of One Face (in²)</th><th scope="col">Number of Faces</th><th scope="col">Total for Pair (in²)</th></tr></thead><tbody><tr><td>Top &amp; Bottom</td><td>8 × 5</td><td class="fill" aria-label="Your response: Area of One Face (in²), row 1"><span class="paper-blank"></span></td><td>2</td><td class="fill" aria-label="Your response: Total for Pair (in²), row 1"><span class="paper-blank"></span></td></tr><tr><td>Front &amp; Back</td><td>8 × 3</td><td class="fill" aria-label="Your response: Area of One Face (in²), row 2"><span class="paper-blank"></span></td><td>2</td><td class="fill" aria-label="Your response: Total for Pair (in²), row 2"><span class="paper-blank"></span></td></tr><tr><td>Left &amp; Right</td><td>5 × 3</td><td class="fill" aria-label="Your response: Area of One Face (in²), row 3"><span class="paper-blank"></span></td><td>2</td><td class="fill" aria-label="Your response: Total for Pair (in²), row 3"><span class="paper-blank"></span></td></tr><tr><td></td><td></td><td></td><td>Total SA:</td><td class="fill" aria-label="Your response: Total for Pair (in²), row 4"><span class="paper-blank"></span></td></tr></tbody></table><div class="work"><div class="wl"></div><div class="wl"></div></div></div><p class="frame">The total surface area is 158 in². Which face pair contributes the most area? Why does that make sense when you look at the dimensions? — The ___ faces contribute the most area (___ in²) because their dimensions ___ × ___ = ___ are the largest. The total SA is ___ + ___ + ___ = ___ in².</p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
+  <section class="lp-section" data-support-slot="practice"><h2>✏️ Practice</h2><div class="item" data-practice-item data-task-type="fill-table"><p class="qtext"><span class="qnum">1.</span> Find the surface area of each time capsule box using its net.</p><p class="hint-line">Complete each empty cell. Show your reasoning below.</p><table class="grid"><thead><tr><th scope="col">Box</th><th scope="col">Length</th><th scope="col">Width</th><th scope="col">Height</th><th scope="col">Surface Area</th></tr></thead><tbody><tr><td>Box A</td><td>10 in</td><td>6 in</td><td>4 in</td><td class="fill" aria-label="Your response: Surface Area, row 1"><span class="paper-blank"></span></td></tr><tr><td>Box B</td><td>7 cm</td><td>7 cm</td><td>3 cm</td><td class="fill" aria-label="Your response: Surface Area, row 2"><span class="paper-blank"></span></td></tr><tr><td>Box C</td><td>12 ft</td><td>5 ft</td><td>2 ft</td><td class="fill" aria-label="Your response: Surface Area, row 3"><span class="paper-blank"></span></td></tr></tbody></table><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">2.</span> A cube has edges of 5 cm. What is its surface area?</p><ol class="choices"><li><span class="ltr">A</span> 30 cm²</li><li><span class="ltr">B</span> 125 cm²</li><li><span class="ltr">C</span> 150 cm²</li><li><span class="ltr">D</span> 150 cm³</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="bar-model"><p class="qtext"><span class="qnum">3.</span> A gift box has total surface area 222 in². Its top and bottom together have area 120 in², and its front and back together have area 60 in². Find the combined area of its left and right faces. Show an equation and label the missing part of the model.</p><div class="model-space"><span>Draw and label your bar model.</span></div><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="drag-sort"><p class="qtext"><span class="qnum">4.</span> Sort these rectangular prisms from LEAST surface area to GREATEST surface area.</p><p class="hint-line">Write the items in the requested order, one per line.</p><div class="wordbank"><strong>Word bank:</strong> <span class="chip">2 × 2 × 2</span> <span class="chip">5 × 4 × 3</span> <span class="chip">6 × 4 × 2</span> <span class="chip">10 × 1 × 1</span> <span class="chip">3 × 3 × 3</span></div><div class="ordering-work"><p><strong>Requested order</strong></p><ol><li><span class="order-line"></span></li><li><span class="order-line"></span></li><li><span class="order-line"></span></li><li><span class="order-line"></span></li><li><span class="order-line"></span></li></ol></div></div><div class="item" data-practice-item data-task-type="error-analysis"><p class="qtext"><span class="qnum">5.</span> Spot the Mistake — One Pair Was Not Doubled</p><div class="worked"><div class="wa-step"><span class="wa-lbl">Read</span><span class="wa-work">A time capsule box from the net is l = 7 in, w = 5 in, h = 4 in. Find the surface area.</span></div><div class="wa-step"><span class="wa-lbl">Find each face pair</span><span class="wa-work">Top/Bottom: 7×5 = 35, Front/Back: 7×4 = 28, Left/Right: 5×4 = 20</span></div><div class="wa-step"><span class="wa-lbl">Apply the formula</span><span class="wa-work">SA = 2(35) + 2(28) + 20 = 70 + 56 + 20 = 146 in² (left/right pair not doubled)</span></div><div class="wa-step"><span class="wa-lbl">Answer</span><span class="wa-work">Surface Area = 146 in²</span></div></div><p class="ea-q"><strong>Which step has the mistake, and what should it be?</strong></p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div></section>
   <section class="lp-section"><h2>🌍 Connect to the Real World</h2><p class="context">A gift shop wraps boxes with decorative paper. A box is 14 inches long, 10 inches wide, and 6 inches tall. One sheet of wrapping paper covers 400 square inches.</p><p class="qtext">How many sheets of wrapping paper are needed to cover the entire box?</p><p class="hint-line">Try to use: 568, 14, 10, 6, 280, 168, 120, 2, sheets, surface area</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></section>
   <section class="lp-section" data-support-slot="response"><h2>🎟️ Exit Ticket</h2><p class="qtext">A rectangular prism has l = 9 in, w = 5 in, h = 3 in. What is the surface area?</p><ol class="choices"><li><span class="ltr">A</span> 87 in²</li><li><span class="ltr">B</span> 135 in²</li><li><span class="ltr">C</span> 174 in²</li><li><span class="ltr">D</span> 174 in³</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></section>
   <footer>Neft Teacher · 5-6 · Printable full-lesson packet · Complete every section, then bring it to class.</footer>
+  </main>
   <!-- Anonymous usage beacon. It has to be emitted HERE rather than added by
        tools/inject-usage-signal.mjs: this file is regenerated on every build,
        so an injected tag is silently stripped again on the next `npm run build`

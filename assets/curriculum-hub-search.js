@@ -18,20 +18,6 @@
   // (loaded via <script src="/curriculum/lesson-mstar-worksheets.js">; regenerate with `npm run generate-lesson-mstar-worksheet-map`)
   var LESSON_MSTAR_WORKSHEETS = window.LESSON_MSTAR_WORKSHEETS || {};
 
-  // Culminating projects directory per unit
-  var UNIT_CULMINATING_PROJECT = {
-    1: "/math/unit-1/projects/",
-    2: "/math/unit-2/projects/",
-    3: "/math/unit-3/projects/",
-    4: "/math/unit-4/projects/",
-    5: "/math/unit-5/projects/",
-    6: "/math/unit-6/projects/",
-    7: "/math/unit-8/projects/",
-    8: "/math/statistics/projects/",
-    9: "/math/unit-7/projects/",
-    10: "/math/unit-10/projects/",
-  };
-
   // Specific lesson-to-projects mapping
   // Print-ready resources (paper game, color-by-number, word search,
   // MCAP packet) attached to each lesson card. Surfaced in the activity
@@ -2207,287 +2193,8 @@
     ],
   };
 
-  var LESSON_PROJECTS = {
-    // Unit 1 - The Number System
-    "1-1": [
-      {
-        text: "Lesson 1-1: Prime Factorization Game",
-        href: "/math/unit-1/factor-tree-salvage/",
-      },
-    ],
-
-    // Unit 2 - Fractions
-    "2-1": [
-      {
-        text: "Lesson 2-1: Fraction Division Soccer Game",
-        href: "/math/unit-2/fraction-division-soccer/",
-      },
-    ],
-    "2-2": [
-      {
-        text: "Lesson 2-2: Fraction Division Soccer Game",
-        href: "/math/unit-2/fraction-division-soccer/",
-      },
-    ],
-
-    // Unit 3 - Ratios
-    "3-1": [
-      {
-        text: "Kitchen Chef Game",
-        href: "/math/unit-3/6-rp-1game/",
-      },
-    ],
-    "3-2": [
-      {
-        text: "Recipe Factory",
-        href: "/math/unit-3/recipe-factory-line/",
-      },
-      { text: "RatioLab", href: "/ratiolab/" },
-    ],
-    "3-3": [{ text: "RatioLab", href: "/ratiolab/" }],
-    "3-4": [
-      {
-        text: "Recipe Factory",
-        href: "/math/unit-3/recipe-factory-line/",
-      },
-    ],
-
-    // Unit 4 - Rates & Percents
-    "4-2": [
-      {
-        text: "Lesson 4-2: Relate Fractions, Decimals, and Percents Game",
-        href: "/math/unit-2/pixel-area-model/",
-      },
-    ],
-    "4-3": [
-      {
-        text: "Lesson 4-3: Percents Greater Than 100% and Less Than 1% Game",
-        href: "/math/unit-2/pixel-area-model/",
-      },
-    ],
-    "4-4": [
-      {
-        text: "Lesson 4-4: Find the Percent of a Number Game",
-        href: "/math/unit-2/pixel-area-model/",
-      },
-    ],
-    "4-5": [
-      {
-        text: "Lesson 4-5: Use Percent to Solve Problems Game",
-        href: "/math/unit-2/pixel-area-model/",
-      },
-    ],
-
-    // Unit 5 - Area
-    "5-1": [
-      {
-        text: "Lesson 5-1: Area of Parallelograms Game",
-        href: "/math/unit-10/area-architect/",
-      },
-    ],
-    "5-2": [{ text: "Lesson 5-2: Area of Triangles Game", href: "/math/unit-10/area-architect/" }],
-    "5-3": [{ text: "Lesson 5-3: Area of Trapezoids Game", href: "/math/unit-10/area-architect/" }],
-    "5-4": [
-      { text: "Lesson 5-4: Apply Area Concepts Game", href: "/math/unit-10/area-architect/" },
-    ],
-
-    // Unit 6 - Expressions
-    "6-1": [
-      {
-        text: "Lesson 6-1: Powers and Exponents Game",
-        href: "/math/unit-6/exponent-space-launch/",
-      },
-    ],
-    "6-2": [
-      {
-        text: "Lesson 6-2: Numerical Expressions Game",
-        href: "/math/unit-6/pemdas-alchemy/",
-      },
-    ],
-    "6-3": [
-      {
-        text: "Distributive Alchemy",
-        href: "/math/unit-6/distributive-alchemy/",
-      },
-    ],
-    "6-4": [
-      {
-        text: "Equivalent Expressions Forge",
-        href: "/math/unit-6/equivalent-expressions-forge/",
-      },
-    ],
-    "6-5": [{ text: "Word-to-Equations", href: "/word-to-equations/" }],
-
-    // Unit 7 - Equations / Two-Variable Relationships
-    "7-2": [
-      {
-        text: "One-Step Solver Arena",
-        href: "/math/unit-8/one-step-solver-arena/",
-      },
-    ],
-    "7-3": [
-      {
-        text: "Lesson 7-3: Solve Multiplication and Division Equations Game",
-        href: "/math/unit-8/inverse-balance-scale/",
-      },
-    ],
-    "7-4": [
-      {
-        text: "Neon Inequality",
-        href: "/math/unit-8/neon-inequality/",
-      },
-    ],
-    "7-6": [
-      {
-        text: "Mars Exploration Game",
-        href: "/math/unit-9/6-ee-c-9martiangame/",
-      },
-      {
-        text: "Variable Velocity Racing",
-        href: "/math/unit-9/6-ee-c-9variablevelocitygame/",
-      },
-      {
-        text: "Lesson 7-6: Relationships Between Two Variables Game",
-        href: "/math/unit-9/variable-voyage/",
-      },
-    ],
-    "7-7": [
-      {
-        text: "Variable Velocity Racing",
-        href: "/math/unit-9/6-ee-c-9variablevelocitygame/",
-      },
-      {
-        text: "Lesson 7-7: Graphs of Relationships Game",
-        href: "/math/unit-9/variable-voyage/",
-      },
-    ],
-
-    // Unit 8 - Statistics
-    "8-1": [
-      {
-        text: "Statistical Question Detective",
-        href: "/math/statistics/6-sp-a-1reviewactivities/",
-      },
-      {
-        text: "6.DS.A.1 Data Lab",
-        href: "/math/statistics/6-sp-a-1data-lab-6-sp-a-1-flagship/",
-      },
-    ],
-    "8-2": [
-      {
-        text: "Stats of My Life Project",
-        href: "/math/statistics/statistics-of-my-life/",
-      },
-      {
-        text: "Stats Choice Quest",
-        href: "/math/statistics/meanmedianmodesoccerandbracelets/",
-      },
-      {
-        text: "Lesson 8-2: Mean, Median, and Mode Game",
-        href: "/gemini-data-quest/gemini_median_mode_ai_adventure.html",
-      },
-    ],
-    "8-3": [
-      {
-        text: "Lesson 8-3: Mean Absolute Deviation Game",
-        href: "/math/unit-8/mad-balance-sandbox/",
-      },
-    ],
-    "8-5": [
-      {
-        text: "Box Plot Builder",
-        href: "/math/statistics/box-plot-builder/",
-      },
-      {
-        text: "Box Plot Detective Game",
-        href: "/math/statistics/box-plot-detective/",
-      },
-    ],
-    "8-6": [
-      {
-        text: "Histogram Master Lab",
-        href: "/math/statistics/histogram-master-lab/",
-      },
-      {
-        text: "Histogram Hero Game",
-        href: "/math/statistics/histogram-hero/",
-      },
-      {
-        text: "Disease Detectives (Level 2)",
-        href: "/math/statistics/histogram-master-lab/games/disease-detectives-level-2.html",
-      },
-      {
-        text: "Game Day Data Lab (Level 2)",
-        href: "/math/statistics/histogram-master-lab/games/game-day-data-lab-level-2.html",
-      },
-      {
-        text: "Histogram Graphic Novel",
-        href: "/math/statistics/histogram-graphic-novel/",
-      },
-    ],
-
-    // Unit 9 - Coordinate Plane & Integers
-    "9-1": [
-      {
-        text: "Coordinate Graphing Game",
-        href: "/math/unit-7/6-ns-c-6game/",
-      },
-      { text: "Cartesian Odyssey", href: "/cartesian-odyssey/" },
-      { text: "Lesson 9-1: Represent Integers Game", href: "/math/unit-7/subzero-ledger/" },
-    ],
-    "9-2": [
-      {
-        text: "Coordinate Graphing Game",
-        href: "/math/unit-7/6-ns-c-6game/",
-      },
-      { text: "Cartesian Odyssey", href: "/cartesian-odyssey/" },
-      {
-        text: "Lesson 9-2: Opposites and Absolute Value Game",
-        href: "/math/unit-7/subzero-ledger/",
-      },
-    ],
-    "9-3": [
-      {
-        text: "Lesson 9-3: Compare and Order Integers Game",
-        href: "/math/unit-7/subzero-ledger/",
-      },
-    ],
-    "9-4": [{ text: "Lesson 9-4: Rational Numbers Game", href: "/math/unit-7/subzero-ledger/" }],
-    "9-6": [
-      {
-        text: "Lesson 9-6: Graph Reflections of Points Game",
-        href: "/math/unit-7/coordinate-reflections/",
-      },
-    ],
-    "9-7": [
-      {
-        text: "Lesson 9-7: Absolute Value and Distance Game",
-        href: "/math/unit-7/subzero-ledger/",
-      },
-    ],
-
-    // Unit 10 - Geometry / Volume & Surface Area
-    "10-1": [
-      {
-        text: "Lesson 10-1: Volume of Rectangular Prisms Game",
-        href: "/math/unit-10/voxel-volume-pack/",
-      },
-    ],
-    "10-3": [
-      { text: "NetFold Pro Simulator", href: "/netfold-pro/" },
-      {
-        text: "Nets of 3D Figures",
-        href: "/math/unit-5/supplemental/5-6session1/",
-      },
-    ],
-    "10-5": [
-      { text: "NetFold Pro Simulator", href: "/netfold-pro/" },
-      {
-        text: "Nets of 3D Figures",
-        href: "/math/unit-5/supplemental/5-6session1/",
-      },
-    ],
-  };
+  // Current lesson-owned recommendations, generated from config.projects.
+  var LESSON_PROJECTS = window.LESSON_PROJECTS || {};
 
   // 1. Scrape Curriculum Data from existing DOM
   var unitsData = [];
@@ -3055,7 +2762,11 @@
       // Resolve projects
       var projects = LESSON_PROJECTS[lessonId] || LESSON_PROJECTS[baseLessonId];
       if (!projects || projects.length === 0) {
-        var culminatingHref = UNIT_CULMINATING_PROJECT[unitInteger];
+        // The unit card already records current ownership; path numbers are legacy.
+        var culminatingResource = endOfUnitRes.concat(unitRes).find(function (resource) {
+          return /\/projects\/(?:[?#].*)?$/.test(resource.href || "");
+        });
+        var culminatingHref = culminatingResource && culminatingResource.href;
         if (culminatingHref) {
           projects = [
             {
@@ -3143,6 +2854,9 @@
       cluster: unitCluster,
       unitIndex: unitInteger,
       resources: unitRes,
+      projectResources: endOfUnitRes.concat(unitRes).filter(function (resource) {
+        return /\/projects\/(?:[?#].*)?$/.test(resource.href || "");
+      }),
       lessons: lessonsData,
     });
   });
@@ -3283,16 +2997,18 @@
         resRow.appendChild(a);
       });
       if (u.unitIndex) {
-        var projPath =
-          UNIT_CULMINATING_PROJECT[u.unitIndex] || "/math/unit-" + u.unitIndex + "/projects/";
-        var openProjBtn = document.createElement("a");
-        openProjBtn.className = "unit-resource-btn";
-        openProjBtn.href = projPath;
-        openProjBtn.innerHTML = "🚀 " + (u.num ? u.num + " Project" : "Unit Project");
-        openProjBtn.style.background = "#1a6fb5";
-        openProjBtn.style.color = "#ffffff";
-        openProjBtn.style.fontWeight = "700";
-        resRow.appendChild(openProjBtn);
+        var projectResource = u.projectResources[0];
+        if (projectResource) {
+          var projPath = projectResource.href;
+          var openProjBtn = document.createElement("a");
+          openProjBtn.className = "unit-resource-btn";
+          openProjBtn.href = projPath;
+          openProjBtn.innerHTML = "🚀 " + (u.num ? u.num + " Project" : "Unit Project");
+          openProjBtn.style.background = "#1a6fb5";
+          openProjBtn.style.color = "#ffffff";
+          openProjBtn.style.fontWeight = "700";
+          resRow.appendChild(openProjBtn);
+        }
 
         resRow.appendChild(
           makeScormLink(
@@ -3307,16 +3023,18 @@
         // never generated — all 10 buttons 404'd. Build it on demand from
         // the live unit projects page, the same path the review-game chip
         // above uses, so there is nothing to keep in sync.
-        var zipBtn = makeScormLink(
-          projPath,
-          u.num + " Project",
-          "📦 Unit Project — Canvas SCORM",
-          "unit-resource-btn scorm-dl",
-        );
-        zipBtn.style.background = "#256b5b";
-        zipBtn.style.color = "#ffffff";
-        zipBtn.style.fontWeight = "700";
-        resRow.appendChild(zipBtn);
+        if (projectResource) {
+          var zipBtn = makeScormLink(
+            projPath,
+            u.num + " Project",
+            "📦 Unit Project — Canvas SCORM",
+            "unit-resource-btn scorm-dl",
+          );
+          zipBtn.style.background = "#256b5b";
+          zipBtn.style.color = "#ffffff";
+          zipBtn.style.fontWeight = "700";
+          resRow.appendChild(zipBtn);
+        }
       }
       if (resRow.children.length > 0) {
         card.appendChild(resRow);

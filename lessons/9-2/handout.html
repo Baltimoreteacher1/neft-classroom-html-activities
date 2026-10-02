@@ -8,25 +8,97 @@
     @import url("/assets/fonts/fraunces-87aa83.css");
     @import url('/assets/fonts/outfit-hanken-grotesk-e0dfae.css');
     * { box-sizing: border-box; }
-    body { font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #264653; margin: 0; padding: 24px; background: #fff; }
+    body { font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #264653; margin: 0; padding: 24px; background: #fff; font-size: 17px; line-height: 1.55; }
+    main { max-width: 900px; margin: 0 auto; }
+    .resource-toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .resource-toolbar a { color: #155f67; font-weight: 650; padding: 10px 0; }
+    .resource-toolbar button { min-height: 44px; border: 0; border-radius: 6px; background: #155f67; color: white; padding: 10px 16px; font: inherit; font-weight: 700; cursor: pointer; }
+    :focus-visible { outline: 3px solid #a9471a; outline-offset: 4px; }
     h1, h2 { font-family: Outfit, system-ui, sans-serif; margin: 0 0 8px; }
     .header { border-bottom: 3px solid #387F84; padding-bottom: 12px; margin-bottom: 16px; }
     .meta { color: #5a6b75; font-size: 0.9rem; }
     .bilingual { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .box { border: 1px solid #e4ddc9; border-radius: 8px; padding: 12px; margin-bottom: 12px; background: #fdf6ec; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 1rem; }
     th, td { border: 1px solid #e4ddc9; padding: 8px; text-align: left; vertical-align: top; }
     th { background: #dff2ee; }
+    .vocabulary-table { table-layout: fixed; overflow-wrap: break-word; }
+    .vocabulary-table th:first-child { width: 34%; }
     .work-space { border-bottom: 1px dashed #c5bdb0; min-height: 48px; margin-top: 8px; }
     .notice-wonder { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .footer { margin-top: 16px; font-size: 0.78rem; color: #5a6b75; text-align: center; }
     .name-line { border-bottom: 1px solid #264653; display: inline-block; min-width: 200px; margin-left: 8px; }
+    .practice-box { background: #fff; }
+    .practice-box > h2 { margin-bottom: 16px; }
+    @media (max-width: 600px) { body { padding: 16px; } .bilingual, .notice-wonder { grid-template-columns: 1fr; } .name-line { min-width: 140px; } }
+    @page { size: Letter; margin: .55in; }
     @media print {
-      body { padding: 12px; }
+      body { padding: 0; font-size: 11.5pt; }
       .no-print { display: none; }
       .box { break-inside: avoid; }
+      .practice-box { break-inside: auto; border: 0; padding: 0; }
+      h1, h2, h3 { break-after: avoid; }
+      p { orphans: 3; widows: 3; }
+      .bilingual { display: block; }
     }
-    
+
+  .item { margin: 0 0 20px; break-inside: avoid; }
+  .qtext { font-weight: 650; margin: 0 0 8px; }
+  .qnum { color: #155f67; font-weight: 750; }
+  .task-directions, .hint-line { margin: 6px 0 10px; color: #374b54; }
+  .choices { list-style: none; margin: 8px 0; padding: 0; }
+  .choices li { margin: 6px 0; }
+  .ltr { display: inline-block; border: 1px solid #536168; border-radius: 50%; width: 1.6em; height: 1.6em; text-align: center; margin-right: 6px; }
+  .work { margin-top: 10px; }
+  .wl { border-bottom: 1px solid #a9b0b3; height: 1.8em; }
+  .blank, .paper-blank { display: inline-block; min-width: 4em; min-height: 1.8em; border-bottom: 1px solid #657078; }
+  .ans .blank { min-width: 10em; }
+  .item table { table-layout: fixed; overflow-wrap: anywhere; }
+  .item th, .item td { padding: 9px; min-width: 0; }
+  .fill { height: 3em; }
+  .matchtbl .mnum, .matchtbl .mltr { width: 2.5em; }
+  .matchtbl .mans { width: 3em; border-bottom: 1px solid #333; }
+  .wordbank { margin: 12px 0; }
+  .chip { display: inline-block; border: 1px solid #89959b; padding: 7px 10px; margin: 4px 4px 4px 0; border-radius: 4px; }
+  .sortboxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; }
+  .sortbox { min-height: 150px; border: 1px solid #657078; border-radius: 4px; }
+  .order-line { display: block; height: 2.2em; border-bottom: 1px solid #657078; }
+  .point-tasks { margin: 8px 0; padding-left: 1.4em; }
+  .sorthd { padding: 8px; border-bottom: 1px solid #657078; font-weight: 700; background: #f3f5f4; }
+  .worked { padding: 10px; border: 1px solid #89959b; }
+  .wa-step { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px dashed #a9b0b3; }
+  .wa-lbl { flex: 0 0 28%; font-weight: 600; }
+  .wa-work { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .numline, .bar-figure { display: block; width: 100%; height: auto; margin: 12px 0; }
+  .division-space { display: block; width: min(100%, 480px); height: auto; margin: 12px 0; }
+  .coordgrid { display: block; width: min(100%, 420px); height: auto; margin: 12px auto; }
+  .graph-task { break-inside: avoid; }
+  .model-space { min-height: 160px; border: 1px solid #89959b; padding: 10px; }
+  .model-space span { color: #475663; font-size: .9em; }
+  @media (max-width: 560px) {
+    .item th, .item td { padding: 5px; }
+    .item table { font-size: .85em; }
+    .item .paper-blank { min-width: 0; width: 100%; }
+    .wa-step { flex-direction: column; gap: 2px; }
+  }
+  @media screen and (max-width: 600px) {
+    /* Retain the injected tools as normal document actions on small screens,
+       where their floating stack otherwise covers the reading column. */
+    body > #nsr-root { position: relative; right: auto; bottom: auto; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; margin: 24px auto 0; max-width: 900px; z-index: 10; }
+    body > #nsr-root #nsr-launcher, body > #nsr-root #nsr-workbench { min-height: 44px; font-size: .85rem; }
+    body > #nsr-root #nsr-panel { bottom: 56px; }
+    body .mwb-launcher-nav { margin-top: 16px; text-align: right; }
+    body #mwb-launcher, body #netfold-launcher { position: static !important; margin: 4px; }
+  }
+  @media print {
+    .item { color: #111; }
+    .item table { font-size: 10pt; }
+    .graph-task, .item tr, .sortbox { break-inside: avoid; }
+    .item thead { display: table-header-group; }
+    .numline, .coordgrid, .bar-figure { break-inside: avoid; }
+  }
+
+
 /* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
    Appended last so it overrides each generator's base CSS. Finish-only:
    serif headings + paper ground + AA-safe ink. No layout/size changes. */
@@ -69,9 +141,10 @@ header.packet h1::after{
 </head>
 <body>
 <main>
-  <div class="no-print" style="text-align:right; margin-bottom:12px;">
-    <button onclick="window.print()" style="padding:8px 16px; font-weight:700; cursor:pointer;">🖨️ Print / Imprimir</button>
-  </div>
+  <nav class="no-print resource-toolbar" aria-label="Handout actions">
+    <a href="/lessons/9-2/">← Back to lesson</a>
+    <button type="button" onclick="window.print()">Print / Save PDF</button>
+  </nav>
   <header class="header">
     <h1>Analyze Graphs of Relationships Between Two Variables</h1>
     <div class="meta">6.AT.11 · Unit 9 · Lesson 2</div>
@@ -82,7 +155,7 @@ header.packet h1::after{
     <div class="box">
       <h2>Objectives / Objetivos</h2>
       <p lang="en"><strong>Content Objective:</strong> I can use a table and a graph to determine and analyze the relationship between two variable quantities.</p>
-      
+
       <p lang="en"><strong>Language Objective:</strong> I can describe what a point on a graph represents using the words ordered pair, axis, and coordinates.</p>
     </div>
     <div class="box">
@@ -91,19 +164,20 @@ header.packet h1::after{
     </div>
   </div>
 
-  
+
 
   <div class="box" data-support-slot="vocabulary">
     <h2>Vocabulary / Vocabulario</h2>
-    <table>
-      <thead><tr><th>Term / Término</th><th>Definition / Definición</th></tr></thead>
+    <table class="vocabulary-table">
+      <thead><tr><th scope="col">Term / Término</th><th scope="col">Definition / Definición</th></tr></thead>
       <tbody><tr><td><strong>graph</strong><br><span lang="es">gráfica</span></td><td>A picture on a coordinate plane that shows how two quantities are related.<br><span lang="es">Un dibujo en un plano de coordenadas que muestra cómo se relacionan dos cantidades.</span></td></tr><tr><td><strong>table of values</strong><br><span lang="es">tabla de valores</span></td><td>A list of matched pairs of values that shows a relationship using numbers.<br><span lang="es">Una lista de pares de valores que muestra una relación usando números.</span></td></tr><tr><td><strong>ordered pair</strong><br><span lang="es">par ordenado</span></td><td>Two numbers written as (x, y) that name one point on a graph. The independent variable comes first.<br><span lang="es">Dos números escritos como (x, y) que nombran un punto en la gráfica. La variable independiente va primero.</span></td></tr><tr><td><strong>axis</strong><br><span lang="es">eje</span></td><td>One of the two number lines that frame a graph. Each axis is labeled with a quantity from the problem.<br><span lang="es">Una de las dos rectas numéricas que enmarcan una gráfica. Cada eje se rotula con una cantidad del problema.</span></td></tr><tr><td><strong>coordinates</strong><br><span lang="es">coordenadas</span></td><td>The numbers in an ordered pair that tell how far to move along each axis to reach a point.<br><span lang="es">Los números de un par ordenado que indican cuánto avanzar por cada eje para llegar a un punto.</span></td></tr><tr><td><strong>Rate of change</strong><br><span lang="es">Tasa de cambio</span></td><td>How much y changes each time x goes up by one.<br><span lang="es">Cuánto cambia y cada vez que x aumenta en uno.</span></td></tr></tbody>
     </table>
   </div>
 
-  <div class="box" data-support-slot="practice">
+  <div class="box practice-box" data-support-slot="practice">
     <h2>Practice Preview / Vista previa de práctica</h2>
-    <ol><li>Football tickets cost $45 each. What is the total cost of 3 tickets?<ol type="A" style="margin:8px 0 0 1.2rem; font-size:0.88rem;"><li>$45</li><li>$48</li><li>$90</li><li>$135</li></ol><div class="work-space"></div></li><li>The Sandia Peak tram travels 1,200 feet each minute and the ascent takes 15 minutes. How long is the whole ascent in feet?<ol type="A" style="margin:8px 0 0 1.2rem; font-size:0.88rem;"><li>1,215 feet</li><li>12,000 feet</li><li>16,800 feet</li><li>18,000 feet</li></ol><div class="work-space"></div></li><li>A tram starts at 0 feet and travels 1,200 feet each minute. On its graph, minutes are on the horizontal axis and feet on the vertical axis. Which ordered pair lies on this graph?<ol type="A" style="margin:8px 0 0 1.2rem; font-size:0.88rem;"><li>(5, 6000)</li><li>(5, 1200)</li><li>(5, 5000)</li><li>(6000, 5)</li></ol><div class="work-space"></div></li><li>Nakai's savings account has a principal of $750 and earns 3.5% simple interest each year. How much interest does Nakai earn in one year?<ol type="A" style="margin:8px 0 0 1.2rem; font-size:0.88rem;"><li>$3.50</li><li>$26.25</li><li>$75.00</li><li>$262.50</li></ol><div class="work-space"></div></li></ol>
+    <p>Read each task. Show your work in the spaces provided and explain how you know.</p>
+    <div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">1.</span> Football tickets cost $45 each. What is the total cost of 3 tickets?</p><ol class="choices"><li><span class="ltr">A</span> $45</li><li><span class="ltr">B</span> $48</li><li><span class="ltr">C</span> $90</li><li><span class="ltr">D</span> $135</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">2.</span> The Sandia Peak tram travels 1,200 feet each minute and the ascent takes 15 minutes. How long is the whole ascent in feet?</p><ol class="choices"><li><span class="ltr">A</span> 1,215 feet</li><li><span class="ltr">B</span> 12,000 feet</li><li><span class="ltr">C</span> 16,800 feet</li><li><span class="ltr">D</span> 18,000 feet</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">3.</span> A tram starts at 0 feet and travels 1,200 feet each minute. On its graph, minutes are on the horizontal axis and feet on the vertical axis. Which ordered pair lies on this graph?</p><ol class="choices"><li><span class="ltr">A</span> (5, 6000)</li><li><span class="ltr">B</span> (5, 1200)</li><li><span class="ltr">C</span> (5, 5000)</li><li><span class="ltr">D</span> (6000, 5)</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">4.</span> Nakai's savings account has a principal of $750 and earns 3.5% simple interest each year. How much interest does Nakai earn in one year?</p><ol class="choices"><li><span class="ltr">A</span> $3.50</li><li><span class="ltr">B</span> $26.25</li><li><span class="ltr">C</span> $75.00</li><li><span class="ltr">D</span> $262.50</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div>
   </div>
 
   <div class="box" data-support-slot="response">

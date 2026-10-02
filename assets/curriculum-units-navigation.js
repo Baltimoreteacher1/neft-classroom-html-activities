@@ -33,6 +33,82 @@
     const isFiltering = () =>
       !!document.querySelector('.hub-filter-chip[aria-pressed="true"]:not([data-filter="all"])');
 
+    function studentUrl(href) {
+      const url = new URL(href, location.origin);
+      url.searchParams.set("student", "1");
+      const supports = new URLSearchParams(location.search).get("supports");
+      if (supports) url.searchParams.set("supports", supports);
+      return url.pathname + url.search + url.hash;
+    }
+
+    function selectLesson(unit, lessonId, options = {}) {
+      const previousUrl = location.href;
+      choose(unit.unitIndex, { push: false, focus: false });
+      selections.set(String(unit.unitIndex), { lesson: lessonId, activity: "" });
+      restore();
+      sync();
+      // Returning from a search is a navigation, so Back restores the query.
+      // choose() also notifies search listeners; preserve the original entry.
+      history.replaceState(history.state, "", previousUrl);
+      updateUrl(true);
+      const card = document.getElementById("unit-" + unit.unitIndex);
+      const focus = options.pathway
+        ? card?.querySelector('[data-pathway="' + options.pathway + '"]')
+        : card?.querySelector(".units-lesson-heading");
+      if (focus instanceof HTMLElement) focus.focus({ preventScroll: !!options.pathway });
+    }
+
+    function lessonPathways(card, unit, lesson, heading) {
+      const baseId = /^(\d+-\d+)(?:-group[12])?$/.exec(lesson.lessonId || "")?.[1];
+      let group = card.querySelector(".units-lesson-pathways");
+      if (!baseId) {
+        if (group) group.hidden = true;
+        return;
+      }
+      if (!group) {
+        group = document.createElement("div");
+        group.className = "units-lesson-pathways";
+        group.setAttribute("role", "group");
+        group.setAttribute("aria-label", "Choose a lesson pathway");
+        heading.after(group);
+      }
+      group.hidden = false;
+      if (group.dataset.lessonId === lesson.lessonId) return;
+      group.dataset.lessonId = lesson.lessonId;
+      group.replaceChildren();
+      const choices = [
+        [baseId, "Lesson", "Explore the idea, then practice and explain your thinking."],
+        [
+          baseId + "-group1",
+          "Extra support",
+          "Work through the same learning target in smaller steps with guidance.",
+        ],
+        [
+          baseId + "-group2",
+          "Challenge",
+          "Explain, compare, and apply the same learning target in new situations.",
+        ],
+      ];
+      const description = document.createElement("p");
+      description.className = "units-pathway-description";
+      description.id = "unit-" + unit.unitIndex + "-pathway-description";
+      group.setAttribute("aria-describedby", description.id);
+      choices.forEach(([id, label, hint]) => {
+        if (!unit.lessons.some((item) => item.lessonId === id)) return;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.dataset.pathway = id;
+        button.textContent = label;
+        button.setAttribute("aria-pressed", String(lesson.lessonId === id));
+        button.addEventListener("click", () => {
+          if (lesson.lessonId !== id) selectLesson(unit, id, { pathway: id });
+        });
+        group.appendChild(button);
+        if (lesson.lessonId === id) description.textContent = hint;
+      });
+      group.appendChild(description);
+    }
+
     function compactControls() {
       const toolbar = document.getElementById("hub-toolbar-sticky");
       if (!toolbar || toolbar.querySelector(".units-refine")) return;
@@ -68,40 +144,45 @@
       if (!heading) {
         heading = document.createElement("h3");
         heading.className = "units-lesson-heading";
+        heading.tabIndex = -1;
         card.querySelector(".selector-group--lesson").after(heading);
       }
       heading.textContent = lesson.title;
+      lessonPathways(card, unit, lesson, heading);
       let actions = card.querySelector(".units-lesson-actions");
       if (!actions) {
         actions = document.createElement("nav");
         actions.className = "units-lesson-actions";
         actions.setAttribute("aria-label", "Selected lesson resources");
         const selector = card.querySelector(".selector-group--lesson");
-        if (selector) heading.after(actions);
+        if (selector) (card.querySelector(".units-lesson-pathways") || heading).after(actions);
         else info.before(actions);
       }
       // Use the actual rendered resource links, never assume a file exists.
       const links = Array.from(info.querySelectorAll(".lesson-outline-item a[href]"));
-      /** @type {[string, (path: string) => boolean][]} */
+      const lessonPath = "/lessons/" + lesson.lessonId;
+      /** @type {[string, string[]][]} */
       const entries = [
-        ["Open lesson", (path) => path === "/lessons/" + lesson.lessonId + "/"],
-        ["Practice", (path) => path === "/lessons/" + lesson.lessonId + "/worksheet.html"],
-        ["Homework", (path) => path === "/lessons/" + lesson.lessonId + "/homework.html"],
+        ["Open lesson", [lessonPath + "/"]],
+        ["Practice", [lessonPath + "/worksheet.html", lessonPath + "-part2/worksheet.html"]],
+        ["Homework", [lessonPath + "/homework.html"]],
       ];
       const signature = lesson.lessonId + links.map((link) => link.getAttribute("href")).join("|");
       if (actions.dataset.signature !== signature) {
         actions.dataset.signature = signature;
         actions.replaceChildren();
-        entries.forEach(([label, matches], index) => {
-          const source = links.find((link) => {
-            const url = new URL(link.getAttribute("href"), location.origin);
-            return url.origin === location.origin && matches(url.pathname);
-          });
+        entries.forEach(([label, paths], index) => {
+          const source = paths
+            .map((path) =>
+              links.find((link) => {
+                const url = new URL(link.getAttribute("href"), location.origin);
+                return url.origin === location.origin && path === url.pathname;
+              }),
+            )
+            .find(Boolean);
           if (!source) return;
           const link = document.createElement("a");
-          const url = new URL(source.getAttribute("href"), location.origin);
-          url.searchParams.set("student", "1");
-          link.href = url.pathname + url.search + url.hash;
+          link.href = studentUrl(source.getAttribute("href"));
           link.textContent = label;
           if (index === 0) link.className = "units-open-lesson";
           actions.appendChild(link);
@@ -145,7 +226,11 @@
         const button = document.createElement("button");
         button.type = "button";
         button.textContent = step < 0 ? "Previous lesson" : "Next lesson";
-        const next = core[position + step];
+        const adjacent = core[position + step];
+        const pathway = /(-group[12])$/.exec(lesson.lessonId)?.[1] || "";
+        const next =
+          adjacent &&
+          (unit.lessons.find((item) => item.lessonId === adjacent.lessonId + pathway) || adjacent);
         button.disabled = !next;
         button.addEventListener("click", () => {
           if (!next) return;
@@ -194,6 +279,57 @@
           heading.append(...Array.from(oldHeading.childNodes));
           oldHeading.replaceWith(heading);
         }
+        // Identify the rendered lesson by its canonical title, including the
+        // exact small-group suffix. Resource URLs may be shared by pathways.
+        const normalize = (value) => value.replace(/\s+/g, " ").trim();
+        const titleText = normalize(item.querySelector(".search-result-header")?.textContent || "");
+        const matches = units.flatMap((unit) =>
+          unit.lessons
+            .filter((lesson) => normalize(lesson.title) === titleText)
+            .map((lesson) => ({ unit, lesson })),
+        );
+        if (matches.length === 1) {
+          const { unit, lesson } = matches[0];
+          item.setAttribute("data-lesson-id", lesson.lessonId);
+          const actions = document.createElement("div");
+          actions.className = "units-result-actions";
+          const primary = Array.from(item.querySelectorAll(".lesson-outline-item > a[href]")).find(
+            (link) => {
+              const url = new URL(link.getAttribute("href"), location.origin);
+              return (
+                url.origin === location.origin &&
+                url.pathname === "/lessons/" + lesson.lessonId + "/" &&
+                !url.searchParams.has("mode") &&
+                !url.searchParams.has("extra")
+              );
+            },
+          );
+          if (primary) {
+            const open = document.createElement("a");
+            open.href = studentUrl(primary.getAttribute("href"));
+            open.textContent = "Open lesson";
+            open.setAttribute("aria-label", "Open lesson: " + lesson.title);
+            actions.appendChild(open);
+          }
+          const detailsLink = document.createElement("a");
+          const url = new URL(location.href);
+          url.searchParams.delete("q");
+          url.searchParams.delete("a");
+          url.searchParams.set("u", String(unit.unitIndex));
+          url.searchParams.set("l", lesson.lessonId);
+          url.hash = "unit-" + unit.unitIndex;
+          detailsLink.href = url.pathname + url.search + url.hash;
+          detailsLink.textContent = "Lesson & support choices";
+          detailsLink.setAttribute("aria-label", "Lesson and support choices: " + lesson.title);
+          detailsLink.addEventListener("click", (event) => {
+            if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+              return;
+            event.preventDefault();
+            selectLesson(unit, lesson.lessonId);
+          });
+          actions.appendChild(detailsLink);
+          item.querySelector(".search-result-header").after(actions);
+        }
         const details = document.createElement("details");
         details.className = "units-result-details";
         const summary = document.createElement("summary");
@@ -203,7 +339,11 @@
         summary.textContent = "Materials · " + count + (count === 1 ? " resource" : " resources");
         details.appendChild(summary);
         Array.from(item.children).forEach((child) => {
-          if (!child.matches(".search-result-unit, .search-result-header, .lesson-standard-line"))
+          if (
+            !child.matches(
+              ".search-result-unit, .search-result-header, .lesson-standard-line, .units-result-actions",
+            )
+          )
             details.appendChild(child);
         });
         item.appendChild(details);
@@ -419,10 +559,25 @@
     api.renderHub = function () {
       remember();
       if (isFiltering() && !isSearching()) return api.renderSearchResults("");
+      const focused = document.activeElement;
+      const focusedCard = focused?.closest(".unit-card");
+      const focusId = focusedCard?.id;
+      const focusPathway = focused?.getAttribute("data-pathway");
+      const focusHeading = focused?.classList.contains("units-lesson-heading");
       const result = renderHub.apply(this, arguments);
       restore();
       compactUnitCards();
       sync();
+      // Search debounce and late resource data can repaint the selected card
+      // after navigation. Keep keyboard focus on its equivalent new control.
+      if (focused && !focused.isConnected && focusId && (focusPathway || focusHeading)) {
+        const replacement = document
+          .getElementById(focusId)
+          ?.querySelector(
+            focusPathway ? '[data-pathway="' + focusPathway + '"]' : ".units-lesson-heading",
+          );
+        if (replacement instanceof HTMLElement) replacement.focus({ preventScroll: true });
+      }
       return result;
     };
     const renderSearch = api.renderSearchResults;

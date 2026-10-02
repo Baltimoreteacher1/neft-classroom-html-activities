@@ -80,6 +80,11 @@
       "file": "tools/scorm/prune-stale.test.mjs",
       "targets": "tmpdir",
       "reason": "all writes land under mkdtempSync(join(tmpdir(), 'prune-stale-')) fixture dirs, removed at the end; nothing touches the real scorm-packages/"
+    },
+    {
+      "file": "tools/curriculum-resource-audit.test.mjs",
+      "targets": "repo-scratch",
+      "reason": "Writes synthetic configs, manifest and route fixtures only under mkdtempSync in ignored .qa-logs/resource-audit-*; subprocess source root is redirected with REPO. Static discovery excludes this scratch directory. Never writes taught lessons or tracked outputs."
     }
   ]
 }

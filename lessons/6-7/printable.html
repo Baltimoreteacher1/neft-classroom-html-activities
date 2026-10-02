@@ -21,6 +21,8 @@
   .lp-section { margin: 0 0 22px; page-break-inside: avoid; }
   .es { color: var(--muted); font-style: italic; font-size: 0.92em; }
   .context { background: #f6f6f2; border-left: 3px solid var(--accent); padding: 8px 12px; margin: 0 0 10px; }
+  .notice-figure { margin: 12px 0; break-inside: avoid; text-align: center; }
+  .notice-figure img { display: block; max-width: 100%; max-height: 340px; width: auto; height: auto; margin: 0 auto; object-fit: contain; }
   .keyidea { background: #fff8e6; border: 1px solid #e3c46a; border-radius: 6px; padding: 8px 12px; }
   .item { margin: 0 0 14px; page-break-inside: avoid; }
   .qtext { font-weight: 600; margin: 0 0 6px; }
@@ -54,21 +56,89 @@
   .wa-lbl { font-weight: 600; min-width: 150px; }
   .numline, .coordgrid { max-width: 100%; margin: 8px 0; }
   .bvs { color: var(--muted); }
-  .print-btn { position: fixed; top: 14px; right: 14px; background: var(--accent); color: #fff;
-    border: none; border-radius: 8px; padding: 10px 16px; font-size: 11pt; cursor: pointer; font-family: inherit; }
+  .resource-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; }
+  .resource-toolbar a { color: var(--accent); font-weight: 700; padding: 10px 0; }
+  .print-btn { background: var(--accent); color: #fff; min-height: 44px;
+    border: none; border-radius: 8px; padding: 10px 16px; font-size: 12pt; cursor: pointer; font-family: inherit; }
+  :focus-visible { outline: 3px solid #a9471a; outline-offset: 4px; }
+  @media (max-width: 560px) { body { padding: 16px; } .idbar { gap: 12px; } }
+  @page { size: Letter; margin: .55in; }
   footer { margin-top: 26px; border-top: 1px solid var(--rule); padding-top: 8px; color: var(--muted); font-size: 10pt; }
   @media print {
     body { padding: 0; max-width: none; font-size: 11.5pt; }
-    .print-btn { display: none; }
+    .resource-toolbar { display: none; }
     .lp-section { page-break-inside: auto; }
+    h1, h2, h3, .cititle { break-after: avoid; }
+    p { orphans: 3; widows: 3; }
   }
+
+  .item { margin: 0 0 20px; break-inside: avoid; }
+  .qtext { font-weight: 650; margin: 0 0 8px; }
+  .qnum { color: #155f67; font-weight: 750; }
+  .task-directions, .hint-line { margin: 6px 0 10px; color: #374b54; }
+  .choices { list-style: none; margin: 8px 0; padding: 0; }
+  .choices li { margin: 6px 0; }
+  .ltr { display: inline-block; border: 1px solid #536168; border-radius: 50%; width: 1.6em; height: 1.6em; text-align: center; margin-right: 6px; }
+  .work { margin-top: 10px; }
+  .wl { border-bottom: 1px solid #a9b0b3; height: 1.8em; }
+  .blank, .paper-blank { display: inline-block; min-width: 4em; min-height: 1.8em; border-bottom: 1px solid #657078; }
+  .ans .blank { min-width: 10em; }
+  .item table { table-layout: fixed; overflow-wrap: anywhere; }
+  .item th, .item td { padding: 9px; min-width: 0; }
+  .fill { height: 3em; }
+  .matchtbl .mnum, .matchtbl .mltr { width: 2.5em; }
+  .matchtbl .mans { width: 3em; border-bottom: 1px solid #333; }
+  .wordbank { margin: 12px 0; }
+  .chip { display: inline-block; border: 1px solid #89959b; padding: 7px 10px; margin: 4px 4px 4px 0; border-radius: 4px; }
+  .sortboxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; }
+  .sortbox { min-height: 150px; border: 1px solid #657078; border-radius: 4px; }
+  .order-line { display: block; height: 2.2em; border-bottom: 1px solid #657078; }
+  .point-tasks { margin: 8px 0; padding-left: 1.4em; }
+  .sorthd { padding: 8px; border-bottom: 1px solid #657078; font-weight: 700; background: #f3f5f4; }
+  .worked { padding: 10px; border: 1px solid #89959b; }
+  .wa-step { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px dashed #a9b0b3; }
+  .wa-lbl { flex: 0 0 28%; font-weight: 600; }
+  .wa-work { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .numline, .bar-figure { display: block; width: 100%; height: auto; margin: 12px 0; }
+  .division-space { display: block; width: min(100%, 480px); height: auto; margin: 12px 0; }
+  .coordgrid { display: block; width: min(100%, 420px); height: auto; margin: 12px auto; }
+  .graph-task { break-inside: avoid; }
+  .model-space { min-height: 160px; border: 1px solid #89959b; padding: 10px; }
+  .model-space span { color: #475663; font-size: .9em; }
+  @media (max-width: 560px) {
+    .item th, .item td { padding: 5px; }
+    .item table { font-size: .85em; }
+    .item .paper-blank { min-width: 0; width: 100%; }
+    .wa-step { flex-direction: column; gap: 2px; }
+  }
+  @media screen and (max-width: 600px) {
+    /* Retain the injected tools as normal document actions on small screens,
+       where their floating stack otherwise covers the reading column. */
+    body > #nsr-root { position: relative; right: auto; bottom: auto; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; margin: 24px auto 0; max-width: 900px; z-index: 10; }
+    body > #nsr-root #nsr-launcher, body > #nsr-root #nsr-workbench { min-height: 44px; font-size: .85rem; }
+    body > #nsr-root #nsr-panel { bottom: 56px; }
+    body .mwb-launcher-nav { margin-top: 16px; text-align: right; }
+    body #mwb-launcher, body #netfold-launcher { position: static !important; margin: 4px; }
+  }
+  @media print {
+    .item { color: #111; }
+    .item table { font-size: 10pt; }
+    .graph-task, .item tr, .sortbox { break-inside: avoid; }
+    .item thead { display: table-header-group; }
+    .numline, .coordgrid, .bar-figure { break-inside: avoid; }
+  }
+
 </style>
   <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->
 </head>
 <body>
-  <button class="print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+  <nav class="resource-toolbar" aria-label="Packet actions">
+    <a href="/lessons/6-7/">← Back to lesson</a>
+    <button type="button" class="print-btn" onclick="window.print()">Print / Save PDF</button>
+  </nav>
+  <main>
   <h1>Find Factors and Multiples</h1>
   <p class="doc-meta">6.NOS.4 · Unit 6 · Lesson 7</p>
   <div class="idbar">
@@ -78,6 +148,7 @@
   </div>
   <section class="lp-section"><h2>🎯 Learning Goals</h2><p><strong>Content:</strong> I can find the greatest common factor and the least common multiple of two numbers, and use each to solve a real problem.</p><p><strong>Language:</strong> I can explain my choice using the words factor, multiple, common, greatest, and least.</p></section>
   <section class="lp-section"><h2>👀 Notice &amp; Wonder</h2><p class="context">Mission Control sorted the factors of 56 and the factors of 48 into two overlapping rings. The numbers that divide BOTH 56 and 48 sit in the middle, where the rings cross.</p>
+         <figure class="notice-figure"><img src="/lessons/6-7/reveal-assets/notice-wonder.png" alt="A Venn diagram comparing the factors of 56 and 48, with shared factors in the overlap." loading="eager" decoding="sync"></figure>
          <p><strong>I notice…</strong></p><div class="work"><div class="wl"></div><div class="wl"></div></div>
          <p><strong>I wonder…</strong></p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
   <section class="lp-section" data-support-slot="vocabulary"><h2>📚 Vocabulary</h2><table class="vocabtbl"><tr><th>Word</th><th>What it means</th><th>Example</th></tr><tr><td><strong>Find Factors and Multiples</strong><br><span class="es">Hallar factores y múltiplos</span></td><td>Listing what divides a number evenly (its factors) and what it divides into evenly (its multiples), then finding what two numbers share.<br><span class="es">Listar lo que divide un número exactamente (sus factores) y lo que el número forma al contar de esa cantidad (sus múltiplos), y luego hallar lo que dos números comparten.</span></td><td>Factors of 12: 1, 2, 3, 4, 6, 12 — Each divides 12 exactly.</td></tr><tr><td><strong>Factor</strong><br><span class="es">Factor</span></td><td>A whole number that divides another number evenly, with no remainder.<br><span class="es">Un número entero que divide a otro exactamente, sin residuo.</span></td><td>4 dividing 12 exactly — It divides with nothing left over.</td></tr><tr><td><strong>Multiple</strong><br><span class="es">Múltiplo</span></td><td>The result of multiplying a number by 1, 2, 3, and so on — where you land when you skip-count by it.<br><span class="es">El resultado de multiplicar un número por 1, 2, 3, y así sucesivamente: donde caes al contar de esa cantidad.</span></td><td>24 as a multiple of 8 — 8 × 3 reaches it.</td></tr><tr><td><strong>Greatest common factor (GCF)</strong><br><span class="es">Máximo común divisor (MCD)</span></td><td>The largest number that is a factor of two or more numbers. It answers “how many equal groups can I make?”<br><span class="es">El número más grande que es factor de dos o más números. Responde “¿cuántos grupos iguales puedo formar?”</span></td><td>6 for 12 and 18 — The largest they share.</td></tr><tr><td><strong>Least common multiple (LCM)</strong><br><span class="es">Mínimo común múltiplo (mcm)</span></td><td>The smallest number that is a multiple of two or more numbers. It answers “when will these line up again?”<br><span class="es">El número más pequeño que es múltiplo de dos o más números. Responde “¿cuándo volverán a coincidir?”</span></td><td>12 for 4 and 6 — The first shared multiple.</td></tr><tr><td><strong>Factor pair</strong><br><span class="es">Par de factores</span></td><td>Two factors that multiply to make a number. In a word problem, one is the number of groups and the other is the size of each group.<br><span class="es">Dos factores que se multiplican para formar un número. En un problema, uno es la cantidad de grupos y el otro el tamaño de cada grupo.</span></td><td>4 and 9 for 36 — Their product is 36.</td></tr><tr><td><strong>Prime factorization</strong><br><span class="es">Descomposición en factores primos</span></td><td>Writing a number as a product of prime numbers, usually with a factor tree. Multiplying the primes two numbers share also gives the GCF.<br><span class="es">Escribir un número como producto de números primos, normalmente con un árbol de factores. Multiplicar los primos que dos números comparten también da el MCD.</span></td><td>30 = 2 × 3 × 5 — Every factor is prime.</td></tr><tr><td><strong>Common factor</strong><br><span class="es">Factor común</span></td><td>A factor that two numbers both have.<br><span class="es">Un factor que dos números tienen en común.</span></td><td>4, for 16 and 24 — 4 divides both numbers evenly.</td></tr><tr><td><strong>Greatest common factor</strong><br><span class="es">Máximo común divisor</span></td><td>The largest factor two numbers share.<br><span class="es">El mayor factor que dos números tienen en común.</span></td><td>8, for 16 and 24 — 8 divides both, and no larger number does.</td></tr><tr><td><strong>Least common multiple</strong><br><span class="es">Mínimo común múltiplo</span></td><td>The smallest multiple two numbers share.<br><span class="es">El menor múltiplo que dos números tienen en común.</span></td><td>18, for 6 and 9 — It is the smallest number in both lists of multiples.</td></tr></table></section>
@@ -98,11 +169,12 @@
         <p class="hint-line">Word bank: Factor, Greatest Common Factor, Common factor, Divisible</p>
         <div class="work"><div class="wl"></div><div class="wl"></div></div></div></section>
   <section class="lp-section" data-support-slot="workedExample"><h2>🚀 Launch</h2><p class="context">The station quartermaster has two jobs today. First, split the pencil and notebook stock into identical combo packs with nothing left over — that is a factor question. Second, work out when two supply runs that repeat on different cycles will land in the same week — that is a multiple question. Same lesson, opposite tools.</p><h3>Factors split things up; multiples count forward</h3><p>A factor divides a number evenly, so factors answer questions about splitting a stock into equal groups. A multiple is where you land when you skip-count, so multiples answer questions about when repeating events line up.</p><p class="keyidea"><strong>Key idea:</strong> Greatest Common Factor (GCF) &amp; Least Common Multiple (LCM). 1. GCF: Largest factor shared by two numbers — used to simplify fractions or divide into equal groups. 2. LCM: Smallest shared multiple — used to find common denominators. 3. Use prime factor trees or list method to find common factors/multiples</p><div class="cistep"><p class="cititle">Watch me build the combo packs</p><ul><li>The store has 48 pencils and 36 notebooks. Every combo pack must hold the same number of each, with nothing left over — so the number of packs has to be a factor of BOTH quantities.</li><li>Factors of 48: 1, 2, 3, 4, 6, 8, 12, 16, 24, 48. Factors of 36: 1, 2, 3, 4, 6, 9, 12, 18, 36. Listing them in order is what makes the comparison easy.</li><li>The numbers in both lists are the common factors: 1, 2, 3, 4, 6, and 12.</li><li>The greatest of those is 12, so the GCF of 48 and 36 is 12. The manager can make 12 combo packs — each holding 48 ÷ 12 = 4 pencils and 36 ÷ 12 = 3 notebooks.</li></ul></div><div class="cistep"><p class="cititle">Let's do one together — the same GCF, using prime factors</p><ul><li>A factor tree breaks each number into primes. 48 = 2 × 2 × 2 × 2 × 3, and 36 = 2 × 2 × 3 × 3.</li><li>Now look at what the two share: two 2s and one 3.</li><li>Multiply the shared primes: 2 × 2 × 3 = 12.</li><li>Same answer as the lists, 12 — which is the check. For big numbers, the factor tree is usually the faster road.</li></ul></div><div class="cistep"><p class="cititle">Your turn — now a multiples question</p><ul><li>Ayasha has painting class every 8 weeks and pottery class every 6 weeks. Both are this week. When will both fall in the same week again?</li><li>List multiples of 8: 8, 16, 24, 32 … and multiples of 6: 6, 12, 18, 24 …</li><li>Find the smallest number in both lists — that is the LCM.</li><li>Say what the LCM means for Ayasha, and explain why 48 is a common multiple but not the answer.</li></ul></div></section>
-  <section class="lp-section"><h2>🔍 Explore</h2><div class="item" data-practice-item><p class="qtext">Each question is solved by one tool. Sort it under the one that answers it.</p><div class="wordbank"><strong>Word bank:</strong> </div><div class="sortboxes"><div class="sortbox"><div class="sorthd"></div></div><div class="sortbox"><div class="sorthd"></div></div></div></div><p class="frame">Both problems say “common.” How do you decide whether a problem wants the GCF or the LCM? — If the problem ___ something into equal groups, I use the ___. If it asks when things ___ again, I use the ___.</p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
-  <section class="lp-section" data-support-slot="practice"><h2>✏️ Practice</h2><div class="item" data-practice-item><p class="qtext"><span class="qnum">1.</span> The store has 48 pencils and 36 notebooks. Complete the factor lists, then find the GCF.</p><table class="grid"><tr></tr><tr><td>48</td><td>1, 2, 3, 4, 6, 8, 12, 16, 24, 48</td><td class="fill"></td></tr><tr><td>36</td><td></td><td class="fill"></td></tr></table></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">2.</span> Using prime factors, 48 = 2 × 2 × 2 × 2 × 3 and 36 = 2 × 2 × 3 × 3. What is their GCF?</p><ol class="choices"><li><span class="ltr">A</span> 2, the only prime they share</li><li><span class="ltr">B</span> 6, from one 2 and one 3</li><li><span class="ltr">C</span> 12, from the shared 2 × 2 × 3</li><li><span class="ltr">D</span> 144, from multiplying all the primes</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">3.</span> Ayasha has painting every 8 weeks and pottery every 6 weeks, both this week. When do they next fall in the same week?</p><ol class="choices"><li><span class="ltr">A</span> In 2 weeks</li><li><span class="ltr">B</span> In 14 weeks</li><li><span class="ltr">C</span> In 24 weeks</li><li><span class="ltr">D</span> In 48 weeks</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">4.</span> Sort each real problem by the tool that solves it.</p><div class="wordbank"><strong>Word bank:</strong> </div><div class="sortboxes"><div class="sortbox"><div class="sorthd"></div></div><div class="sortbox"><div class="sorthd"></div></div></div></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">5.</span> </p><div class="worked"><div class="wa-step"><span class="wa-lbl">Problem</span><span class="wa-work">Ayasha has painting every 8 weeks and pottery every 6 weeks. When do both fall in the same week?</span></div><div class="wa-step"><span class="wa-lbl">Step 1</span><span class="wa-work">Factors of 8: 1, 2, 4, 8</span></div><div class="wa-step"><span class="wa-lbl">Step 2</span><span class="wa-work">Factors of 6: 1, 2, 3, 6</span></div><div class="wa-step"><span class="wa-lbl">Step 3</span><span class="wa-work">The greatest common factor is 2, so both classes meet in week 2.</span></div></div><p class="ea-q"><strong>Which step has the mistake, and what should it be?</strong></p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div></section>
+  <section class="lp-section"><h2>🔍 Explore</h2><div class="item" data-practice-item data-task-type="drag-sort"><p class="qtext">Each question is solved by one tool. Sort it under the one that answers it.</p><p class="hint-line">Write each item in its correct group.</p><div class="wordbank"><strong>Word bank:</strong> <span class="chip">The answer is never smaller than either number</span> <span class="chip">The answer is never bigger than either number</span> <span class="chip">What is the largest number of identical combo packs?</span> <span class="chip">How many equal groups can I split both stocks into?</span> <span class="chip">When will both classes fall in the same week again?</span> <span class="chip">Hot dogs come in 10s and buns in 8s — when do they match?</span></div><div class="sortboxes"><div class="sortbox"><div class="sorthd">Greatest common factor</div></div><div class="sortbox"><div class="sorthd">Least common multiple</div></div></div></div><p class="frame">Both problems say “common.” How do you decide whether a problem wants the GCF or the LCM? — If the problem ___ something into equal groups, I use the ___. If it asks when things ___ again, I use the ___.</p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
+  <section class="lp-section" data-support-slot="practice"><h2>✏️ Practice</h2><div class="item" data-practice-item data-task-type="fill-table"><p class="qtext"><span class="qnum">1.</span> The store has 48 pencils and 36 notebooks. Complete the factor lists, then find the GCF.</p><p class="hint-line">Complete each empty cell. Show your reasoning below.</p><table class="grid"><thead><tr><th scope="col">Number</th><th scope="col">Factors</th><th scope="col">GCF</th></tr></thead><tbody><tr><td>48</td><td>1, 2, 3, 4, 6, 8, 12, 16, 24, 48</td><td></td></tr><tr><td>36</td><td class="fill" aria-label="Your response: Factors, row 2"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: GCF, row 2"><span class="paper-blank"></span></td></tr></tbody></table><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">2.</span> Using prime factors, 48 = 2 × 2 × 2 × 2 × 3 and 36 = 2 × 2 × 3 × 3. What is their GCF?</p><ol class="choices"><li><span class="ltr">A</span> 2, the only prime they share</li><li><span class="ltr">B</span> 6, from one 2 and one 3</li><li><span class="ltr">C</span> 12, from the shared 2 × 2 × 3</li><li><span class="ltr">D</span> 144, from multiplying all the primes</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">3.</span> Ayasha has painting every 8 weeks and pottery every 6 weeks, both this week. When do they next fall in the same week?</p><ol class="choices"><li><span class="ltr">A</span> In 2 weeks</li><li><span class="ltr">B</span> In 14 weeks</li><li><span class="ltr">C</span> In 24 weeks</li><li><span class="ltr">D</span> In 48 weeks</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="drag-sort"><p class="qtext"><span class="qnum">4.</span> Sort each real problem by the tool that solves it.</p><p class="hint-line">Write each item in its correct group.</p><div class="wordbank"><strong>Word bank:</strong> <span class="chip">The answer is at most the smaller number</span> <span class="chip">Hot dogs in packs of 10, buns in packs of 8 — when do they match?</span> <span class="chip">Split 48 pencils and 36 notebooks into identical packs</span> <span class="chip">The answer is at least the larger number</span> <span class="chip">Two classes repeat every 6 and 8 weeks — when do they meet?</span> <span class="chip">Cut two ribbons into the longest equal pieces with none left over</span></div><div class="sortboxes"><div class="sortbox"><div class="sorthd">Use the GCF</div></div><div class="sortbox"><div class="sorthd">Use the LCM</div></div></div></div><div class="item" data-practice-item data-task-type="error-analysis"><p class="qtext"><span class="qnum">5.</span> Find the error</p><div class="worked"><div class="wa-step"><span class="wa-lbl">Problem</span><span class="wa-work">Ayasha has painting every 8 weeks and pottery every 6 weeks. When do both fall in the same week?</span></div><div class="wa-step"><span class="wa-lbl">Step 1</span><span class="wa-work">Factors of 8: 1, 2, 4, 8</span></div><div class="wa-step"><span class="wa-lbl">Step 2</span><span class="wa-work">Factors of 6: 1, 2, 3, 6</span></div><div class="wa-step"><span class="wa-lbl">Step 3</span><span class="wa-work">The greatest common factor is 2, so both classes meet in week 2.</span></div></div><p class="ea-q"><strong>Which step has the mistake, and what should it be?</strong></p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div></section>
   <section class="lp-section"><h2>🌍 Connect to the Real World</h2><p class="context">The school store has 48 pencils and 36 notebooks. Every combo pack must hold the same number of pencils and the same number of notebooks, using all the stock with nothing left over.</p><p class="qtext">What is the greatest number of combo packs the manager can make, and what goes in each one?</p><p class="hint-line">Try to use: factor, 12, GCF, 12, 4</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></section>
   <section class="lp-section" data-support-slot="response"><h2>🎟️ Exit Ticket</h2><p class="qtext">Two supply runs repeat every 6 weeks and every 8 weeks, and both happen this week. When will they next happen in the same week?</p><ol class="choices"><li><span class="ltr">A</span> Week 2, the greatest common factor of 6 and 8</li><li><span class="ltr">B</span> Week 14, because 6 + 8 = 14</li><li><span class="ltr">C</span> Week 24, the least common multiple of 6 and 8</li><li><span class="ltr">D</span> Week 48, because 6 × 8 = 48</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></section>
   <footer>Neft Teacher · 6-7 · Printable full-lesson packet · Complete every section, then bring it to class.</footer>
+  </main>
   <!-- Anonymous usage beacon. It has to be emitted HERE rather than added by
        tools/inject-usage-signal.mjs: this file is regenerated on every build,
        so an injected tag is silently stripped again on the next `npm run build`

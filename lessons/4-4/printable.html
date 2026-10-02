@@ -21,6 +21,8 @@
   .lp-section { margin: 0 0 22px; page-break-inside: avoid; }
   .es { color: var(--muted); font-style: italic; font-size: 0.92em; }
   .context { background: #f6f6f2; border-left: 3px solid var(--accent); padding: 8px 12px; margin: 0 0 10px; }
+  .notice-figure { margin: 12px 0; break-inside: avoid; text-align: center; }
+  .notice-figure img { display: block; max-width: 100%; max-height: 340px; width: auto; height: auto; margin: 0 auto; object-fit: contain; }
   .keyidea { background: #fff8e6; border: 1px solid #e3c46a; border-radius: 6px; padding: 8px 12px; }
   .item { margin: 0 0 14px; page-break-inside: avoid; }
   .qtext { font-weight: 600; margin: 0 0 6px; }
@@ -54,21 +56,89 @@
   .wa-lbl { font-weight: 600; min-width: 150px; }
   .numline, .coordgrid { max-width: 100%; margin: 8px 0; }
   .bvs { color: var(--muted); }
-  .print-btn { position: fixed; top: 14px; right: 14px; background: var(--accent); color: #fff;
-    border: none; border-radius: 8px; padding: 10px 16px; font-size: 11pt; cursor: pointer; font-family: inherit; }
+  .resource-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; }
+  .resource-toolbar a { color: var(--accent); font-weight: 700; padding: 10px 0; }
+  .print-btn { background: var(--accent); color: #fff; min-height: 44px;
+    border: none; border-radius: 8px; padding: 10px 16px; font-size: 12pt; cursor: pointer; font-family: inherit; }
+  :focus-visible { outline: 3px solid #a9471a; outline-offset: 4px; }
+  @media (max-width: 560px) { body { padding: 16px; } .idbar { gap: 12px; } }
+  @page { size: Letter; margin: .55in; }
   footer { margin-top: 26px; border-top: 1px solid var(--rule); padding-top: 8px; color: var(--muted); font-size: 10pt; }
   @media print {
     body { padding: 0; max-width: none; font-size: 11.5pt; }
-    .print-btn { display: none; }
+    .resource-toolbar { display: none; }
     .lp-section { page-break-inside: auto; }
+    h1, h2, h3, .cititle { break-after: avoid; }
+    p { orphans: 3; widows: 3; }
   }
+
+  .item { margin: 0 0 20px; break-inside: avoid; }
+  .qtext { font-weight: 650; margin: 0 0 8px; }
+  .qnum { color: #155f67; font-weight: 750; }
+  .task-directions, .hint-line { margin: 6px 0 10px; color: #374b54; }
+  .choices { list-style: none; margin: 8px 0; padding: 0; }
+  .choices li { margin: 6px 0; }
+  .ltr { display: inline-block; border: 1px solid #536168; border-radius: 50%; width: 1.6em; height: 1.6em; text-align: center; margin-right: 6px; }
+  .work { margin-top: 10px; }
+  .wl { border-bottom: 1px solid #a9b0b3; height: 1.8em; }
+  .blank, .paper-blank { display: inline-block; min-width: 4em; min-height: 1.8em; border-bottom: 1px solid #657078; }
+  .ans .blank { min-width: 10em; }
+  .item table { table-layout: fixed; overflow-wrap: anywhere; }
+  .item th, .item td { padding: 9px; min-width: 0; }
+  .fill { height: 3em; }
+  .matchtbl .mnum, .matchtbl .mltr { width: 2.5em; }
+  .matchtbl .mans { width: 3em; border-bottom: 1px solid #333; }
+  .wordbank { margin: 12px 0; }
+  .chip { display: inline-block; border: 1px solid #89959b; padding: 7px 10px; margin: 4px 4px 4px 0; border-radius: 4px; }
+  .sortboxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; }
+  .sortbox { min-height: 150px; border: 1px solid #657078; border-radius: 4px; }
+  .order-line { display: block; height: 2.2em; border-bottom: 1px solid #657078; }
+  .point-tasks { margin: 8px 0; padding-left: 1.4em; }
+  .sorthd { padding: 8px; border-bottom: 1px solid #657078; font-weight: 700; background: #f3f5f4; }
+  .worked { padding: 10px; border: 1px solid #89959b; }
+  .wa-step { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px dashed #a9b0b3; }
+  .wa-lbl { flex: 0 0 28%; font-weight: 600; }
+  .wa-work { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .numline, .bar-figure { display: block; width: 100%; height: auto; margin: 12px 0; }
+  .division-space { display: block; width: min(100%, 480px); height: auto; margin: 12px 0; }
+  .coordgrid { display: block; width: min(100%, 420px); height: auto; margin: 12px auto; }
+  .graph-task { break-inside: avoid; }
+  .model-space { min-height: 160px; border: 1px solid #89959b; padding: 10px; }
+  .model-space span { color: #475663; font-size: .9em; }
+  @media (max-width: 560px) {
+    .item th, .item td { padding: 5px; }
+    .item table { font-size: .85em; }
+    .item .paper-blank { min-width: 0; width: 100%; }
+    .wa-step { flex-direction: column; gap: 2px; }
+  }
+  @media screen and (max-width: 600px) {
+    /* Retain the injected tools as normal document actions on small screens,
+       where their floating stack otherwise covers the reading column. */
+    body > #nsr-root { position: relative; right: auto; bottom: auto; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; margin: 24px auto 0; max-width: 900px; z-index: 10; }
+    body > #nsr-root #nsr-launcher, body > #nsr-root #nsr-workbench { min-height: 44px; font-size: .85rem; }
+    body > #nsr-root #nsr-panel { bottom: 56px; }
+    body .mwb-launcher-nav { margin-top: 16px; text-align: right; }
+    body #mwb-launcher, body #netfold-launcher { position: static !important; margin: 4px; }
+  }
+  @media print {
+    .item { color: #111; }
+    .item table { font-size: 10pt; }
+    .graph-task, .item tr, .sortbox { break-inside: avoid; }
+    .item thead { display: table-header-group; }
+    .numline, .coordgrid, .bar-figure { break-inside: avoid; }
+  }
+
 </style>
   <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->
 </head>
 <body>
-  <button class="print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+  <nav class="resource-toolbar" aria-label="Packet actions">
+    <a href="/lessons/4-4/">← Back to lesson</a>
+    <button type="button" class="print-btn" onclick="window.print()">Print / Save PDF</button>
+  </nav>
+  <main>
   <h1>Find and Compare with Percentages</h1>
   <p class="doc-meta">6.AT.4 · Unit 4 · Lesson 4</p>
   <div class="idbar">
@@ -78,6 +148,7 @@
   </div>
   <section class="lp-section"><h2>🎯 Learning Goals</h2><p><strong>Content:</strong> I can find the percent of a number using an equation or a model.</p><p><strong>Language:</strong> I can explain my steps using the words percent, base, part, and equation.</p></section>
   <section class="lp-section"><h2>👀 Notice &amp; Wonder</h2><p class="context">Five phone battery icons are lined up in order. The first is full at 5 bars out of 5, and each one after it has one fewer bar. The last icon has 1 bar left, and the caption says about 1 hour remains.</p>
+         <figure class="notice-figure"><img src="/lessons/4-4/reveal-assets/notice-wonder.png" alt="Five battery indicators charged to different levels, from nearly full down to almost empty." loading="eager" decoding="sync"></figure>
          <p><strong>I notice…</strong></p><div class="work"><div class="wl"></div><div class="wl"></div></div>
          <p><strong>I wonder…</strong></p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
   <section class="lp-section" data-support-slot="vocabulary"><h2>📚 Vocabulary</h2><table class="vocabtbl"><tr><th>Word</th><th>What it means</th><th>Example</th></tr><tr><td><strong>Percent of a Number</strong><br><span class="es">Porcentaje de un número</span></td><td>A part of a number found by multiplying the number by the percent written as a decimal.<br><span class="es">Una parte de un número que se halla multiplicando el número por el porcentaje escrito como decimal.</span></td><td>0.30 × 80 = 24 — The percent was written as a decimal before multiplying.</td></tr><tr><td><strong>Percent</strong><br><span class="es">Porcentaje</span></td><td>A way to compare a number to 100, shown with the % sign.<br><span class="es">Una manera de comparar un número con 100, con el signo %.</span></td><td>9 out of 100 students walk to school → 9% — The comparison is already out of 100.</td></tr><tr><td><strong>Base</strong><br><span class="es">Base</span></td><td>The whole amount you start with — the number right after the word “of.”<br><span class="es">La cantidad total con la que empiezas: el número que va después de la palabra “de”.</span></td><td>The 80 in “30% of 80” — It is the whole amount, right after the word “of”.</td></tr><tr><td><strong>Part</strong><br><span class="es">Parte</span></td><td>How much of the base (the whole) you get. It is your answer.<br><span class="es">Cuánto obtienes de la base (el total). Es tu respuesta.</span></td><td>The 24 in “30% of 80 is 24” — It is the piece of the base the percent describes.</td></tr><tr><td><strong>Equation</strong><br><span class="es">Ecuación</span></td><td>A number sentence with an equal sign. The percent one is: part = percent × base.<br><span class="es">Una oración numérica con signo de igual. La de porcentaje es: parte = porcentaje × base.</span></td><td>0.25 × n = 30 — Percent times whole equals part, with the unknown whole as n.</td></tr><tr><td><strong>Discount</strong><br><span class="es">Descuento</span></td><td>Money taken off the first price to make it cheaper.<br><span class="es">Dinero que se quita del precio original para que sea más barato.</span></td><td>$20 off a $80 jacket — Money taken off the original price.</td></tr><tr><td><strong>Double number line</strong><br><span class="es">Recta numérica doble</span></td><td>Two number lines that line up percents with amounts.<br><span class="es">Dos rectas numéricas que alinean porcentajes con cantidades.</span></td><td>A line from 0 to 300 students over a line from 0% to 100% — Each amount lines up with its percent.</td></tr><tr><td><strong>Equivalent fraction</strong><br><span class="es">Fracción equivalente</span></td><td>A fraction with the same value written with different numbers.<br><span class="es">Una fracción con el mismo valor escrita con números diferentes.</span></td><td>16/20 and 80/100 — Both the top and bottom were multiplied by 5.</td></tr></table></section>
@@ -95,11 +166,12 @@
         <p class="hint-line">Word bank: Percent, Base, Part, Equation</p>
         <div class="work"><div class="wl"></div><div class="wl"></div></div></div></section>
   <section class="lp-section" data-support-slot="workedExample"><h2>🚀 Launch</h2><p class="context">It's Discount Day at the arcade! Different games are offering percent-off deals on ticket prices. The claw machine is 25% off its usual 60-ticket price, and the racing game is 40% off 80 tickets. You need to calculate the discounts to figure out how many tickets each game actually costs!</p><h3>How do I find the percent of a number?</h3><p>A percent is a piece of a whole. The whole is called the base — it is the number right after the word “of,” and “of” means multiply. Your answer is the piece you get, called the part.</p><p class="keyidea"><strong>Key idea:</strong> Finding the Percent of a Number. Formula: Part = Percent × Whole. 1. Identify the percent and the whole (base amount). 2. Convert the percent to a decimal or simplified fraction. 3. Multiply the decimal/fraction by the whole to calculate the part</p><div class="cistep"><p class="cititle">Watch me</p><ul><li>The claw machine costs 60 tickets, and it is 25% off. I need 25% of 60.</li><li>Step 1 — find the base (the whole): the number after “of” is 60.</li><li>Step 2 — the percent as a decimal: 25% means 25 out of 100, so 25 ÷ 100 = 0.25.</li><li>Step 3 — multiply: 0.25 × 60 = 15.</li><li>The discount is 15 tickets. Check: 15 is about a quarter of 60, so that makes sense.</li></ul></div><div class="cistep"><p class="cititle">Let's try together</p><ul><li>Find 40% of 80. Step 1 — what is the base? (80, the number after “of”)</li><li>Step 2 — 40% as a decimal? (40 ÷ 100 = 0.40)</li><li>Step 3 — multiply: 0.40 × 80 = ? (32)</li><li>Does 32 make sense? 40% is a little less than half, and half of 80 is 40. ✓</li></ul></div><div class="cistep"><p class="cititle">Now it's your turn</p><ul><li>For each row: circle the base (the number after “of”), write the percent as a decimal, then multiply.</li><li>That answer is the discount — how many tickets you save.</li></ul></div></section>
-  <section class="lp-section"><h2>🔍 Explore</h2><p class="context">Find the percent of each number. Use the equation: Part = Percent × Base. Convert the percent to a decimal first.</p><div class="item" data-practice-item><p class="qtext">Find the percent of each number. Use the equation: Part = Percent × Base. Convert the percent to a decimal first.</p><table class="grid"><tr></tr><tr><td>Claw Machine</td><td>60</td><td>25%</td><td>0.25</td><td class="fill"></td></tr><tr><td>Racing Game</td><td>80</td><td>40%</td><td></td><td class="fill"></td></tr><tr><td>Skee-Ball</td><td>50</td><td>30%</td><td></td><td class="fill"></td></tr><tr><td>Air Hockey</td><td>120</td><td>15%</td><td></td><td class="fill"></td></tr><tr><td>Dance Pad</td><td>90</td><td>20%</td><td></td><td class="fill"></td></tr><tr><td>Pinball</td><td>200</td><td>5%</td><td></td><td class="fill"></td></tr></table></div><p class="frame">What steps do you follow every time you find the percent of a number? — To find ___% of ___, I first convert the percent to ___, then I multiply ___ × ___ = ___.</p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
-  <section class="lp-section" data-support-slot="practice"><h2>✏️ Practice</h2><div class="item" data-practice-item><p class="qtext"><span class="qnum">1.</span> Complete each row to find the percent of a number.</p><table class="grid"><tr></tr><tr><td>10%</td><td>250</td><td class="fill"></td></tr><tr><td>75%</td><td>120</td><td class="fill"></td></tr><tr><td>35%</td><td>200</td><td class="fill"></td></tr><tr><td>8%</td><td>50</td><td class="fill"></td></tr></table></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">2.</span> An arcade prize costs 240 tickets. If you have a coupon for 15% off, how many tickets do you save?</p><ol class="choices"><li><span class="ltr">A</span> 15 tickets</li><li><span class="ltr">B</span> 24 tickets</li><li><span class="ltr">C</span> 36 tickets</li><li><span class="ltr">D</span> 204 tickets</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">3.</span> 200 ÷ 4 = 50. Each 25% section = 50 points. So 25% of 200 = 50.</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">4.</span> A student scored 72 out of 90 on a test. What percent did they score?</p><ol class="choices"><li><span class="ltr">A</span> 72%</li><li><span class="ltr">B</span> 75%</li><li><span class="ltr">C</span> 80%</li><li><span class="ltr">D</span> 90%</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">5.</span> </p><div class="worked"><div class="wa-step"><span class="wa-lbl">Find 15% of 60</span><span class="wa-work">15% of 60</span></div><div class="wa-step"><span class="wa-lbl">Change the percent to a decimal</span><span class="wa-work">15% = 0.15</span></div><div class="wa-step"><span class="wa-lbl">Multiply by the wrong number</span><span class="wa-work">0.15 × 15 = 2.25</span></div><div class="wa-step"><span class="wa-lbl">Final answer</span><span class="wa-work">15% of 60 = 2.25</span></div></div><p class="ea-q"><strong>Which step has the mistake, and what should it be?</strong></p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div></section>
+  <section class="lp-section"><h2>🔍 Explore</h2><div class="item" data-practice-item data-task-type="fill-table"><p class="qtext">Find the percent of each number. Use the equation: Part = Percent × Base. Convert the percent to a decimal first.</p><p class="hint-line">Complete each empty cell. Show your reasoning below.</p><table class="grid"><thead><tr><th scope="col">Game</th><th scope="col">Original Tickets</th><th scope="col">Discount %</th><th scope="col">Discount as Decimal</th><th scope="col">Discount Amount</th></tr></thead><tbody><tr><td>Claw Machine</td><td>60</td><td>25%</td><td>0.25</td><td>15</td></tr><tr><td>Racing Game</td><td>80</td><td>40%</td><td class="fill" aria-label="Your response: Discount as Decimal, row 2"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: Discount Amount, row 2"><span class="paper-blank"></span></td></tr><tr><td>Skee-Ball</td><td>50</td><td>30%</td><td class="fill" aria-label="Your response: Discount as Decimal, row 3"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: Discount Amount, row 3"><span class="paper-blank"></span></td></tr><tr><td>Air Hockey</td><td>120</td><td>15%</td><td class="fill" aria-label="Your response: Discount as Decimal, row 4"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: Discount Amount, row 4"><span class="paper-blank"></span></td></tr><tr><td>Dance Pad</td><td>90</td><td>20%</td><td class="fill" aria-label="Your response: Discount as Decimal, row 5"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: Discount Amount, row 5"><span class="paper-blank"></span></td></tr><tr><td>Pinball</td><td>200</td><td>5%</td><td class="fill" aria-label="Your response: Discount as Decimal, row 6"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: Discount Amount, row 6"><span class="paper-blank"></span></td></tr></tbody></table><div class="work"><div class="wl"></div><div class="wl"></div></div></div><p class="frame">What steps do you follow every time you find the percent of a number? — To find ___% of ___, I first convert the percent to ___, then I multiply ___ × ___ = ___.</p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
+  <section class="lp-section" data-support-slot="practice"><h2>✏️ Practice</h2><div class="item" data-practice-item data-task-type="fill-table"><p class="qtext"><span class="qnum">1.</span> Complete each row to find the percent of a number.</p><p class="hint-line">Complete each empty cell. Show your reasoning below.</p><table class="grid"><thead><tr><th scope="col">Percent</th><th scope="col">Base</th><th scope="col">Part</th></tr></thead><tbody><tr><td>10%</td><td>250</td><td class="fill" aria-label="Your response: Part, row 1"><span class="paper-blank"></span></td></tr><tr><td>75%</td><td>120</td><td class="fill" aria-label="Your response: Part, row 2"><span class="paper-blank"></span></td></tr><tr><td>35%</td><td>200</td><td class="fill" aria-label="Your response: Part, row 3"><span class="paper-blank"></span></td></tr><tr><td>8%</td><td>50</td><td class="fill" aria-label="Your response: Part, row 4"><span class="paper-blank"></span></td></tr></tbody></table><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">2.</span> An arcade prize costs 240 tickets. If you have a coupon for 15% off, how many tickets do you save?</p><ol class="choices"><li><span class="ltr">A</span> 15 tickets</li><li><span class="ltr">B</span> 24 tickets</li><li><span class="ltr">C</span> 36 tickets</li><li><span class="ltr">D</span> 204 tickets</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="bar-model"><p class="qtext"><span class="qnum">3.</span> A game has 200 total points. Use the bar model to find 25% of 200.</p><div class="model-space"><span>Draw and label your bar model.</span></div><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">4.</span> A student scored 72 out of 90 on a test. What percent did they score?</p><ol class="choices"><li><span class="ltr">A</span> 72%</li><li><span class="ltr">B</span> 75%</li><li><span class="ltr">C</span> 80%</li><li><span class="ltr">D</span> 90%</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="error-analysis"><p class="qtext"><span class="qnum">5.</span> Spot the Common Mistake</p><div class="worked"><div class="wa-step"><span class="wa-lbl">Find 15% of 60</span><span class="wa-work">15% of 60</span></div><div class="wa-step"><span class="wa-lbl">Change the percent to a decimal</span><span class="wa-work">15% = 0.15</span></div><div class="wa-step"><span class="wa-lbl">Multiply by the wrong number</span><span class="wa-work">0.15 × 15 = 2.25</span></div><div class="wa-step"><span class="wa-lbl">Final answer</span><span class="wa-work">15% of 60 = 2.25</span></div></div><p class="ea-q"><strong>Which step has the mistake, and what should it be?</strong></p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div></section>
   <section class="lp-section"><h2>🌍 Connect to the Real World</h2><p class="context">The arcade is donating 12% of Saturday's ticket sales to charity. They sold 1,500 tickets on Saturday. The manager says they will donate 180 tickets. A student says it should be 18 tickets.</p><p class="qtext">Who is correct, and how do you know?</p><p class="hint-line">Try to use: manager, 0.12, 180, decimal, divide, 100</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></section>
   <section class="lp-section" data-support-slot="response"><h2>🎟️ Exit Ticket</h2><p class="qtext">What is 45% of 360?</p><ol class="choices"><li><span class="ltr">A</span> 45</li><li><span class="ltr">B</span> 162</li><li><span class="ltr">C</span> 180</li><li><span class="ltr">D</span> 315</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></section>
   <footer>Neft Teacher · 4-4 · Printable full-lesson packet · Complete every section, then bring it to class.</footer>
+  </main>
   <!-- Anonymous usage beacon. It has to be emitted HERE rather than added by
        tools/inject-usage-signal.mjs: this file is regenerated on every build,
        so an injected tag is silently stripped again on the next `npm run build`

@@ -21,6 +21,8 @@
   .lp-section { margin: 0 0 22px; page-break-inside: avoid; }
   .es { color: var(--muted); font-style: italic; font-size: 0.92em; }
   .context { background: #f6f6f2; border-left: 3px solid var(--accent); padding: 8px 12px; margin: 0 0 10px; }
+  .notice-figure { margin: 12px 0; break-inside: avoid; text-align: center; }
+  .notice-figure img { display: block; max-width: 100%; max-height: 340px; width: auto; height: auto; margin: 0 auto; object-fit: contain; }
   .keyidea { background: #fff8e6; border: 1px solid #e3c46a; border-radius: 6px; padding: 8px 12px; }
   .item { margin: 0 0 14px; page-break-inside: avoid; }
   .qtext { font-weight: 600; margin: 0 0 6px; }
@@ -54,21 +56,89 @@
   .wa-lbl { font-weight: 600; min-width: 150px; }
   .numline, .coordgrid { max-width: 100%; margin: 8px 0; }
   .bvs { color: var(--muted); }
-  .print-btn { position: fixed; top: 14px; right: 14px; background: var(--accent); color: #fff;
-    border: none; border-radius: 8px; padding: 10px 16px; font-size: 11pt; cursor: pointer; font-family: inherit; }
+  .resource-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; }
+  .resource-toolbar a { color: var(--accent); font-weight: 700; padding: 10px 0; }
+  .print-btn { background: var(--accent); color: #fff; min-height: 44px;
+    border: none; border-radius: 8px; padding: 10px 16px; font-size: 12pt; cursor: pointer; font-family: inherit; }
+  :focus-visible { outline: 3px solid #a9471a; outline-offset: 4px; }
+  @media (max-width: 560px) { body { padding: 16px; } .idbar { gap: 12px; } }
+  @page { size: Letter; margin: .55in; }
   footer { margin-top: 26px; border-top: 1px solid var(--rule); padding-top: 8px; color: var(--muted); font-size: 10pt; }
   @media print {
     body { padding: 0; max-width: none; font-size: 11.5pt; }
-    .print-btn { display: none; }
+    .resource-toolbar { display: none; }
     .lp-section { page-break-inside: auto; }
+    h1, h2, h3, .cititle { break-after: avoid; }
+    p { orphans: 3; widows: 3; }
   }
+
+  .item { margin: 0 0 20px; break-inside: avoid; }
+  .qtext { font-weight: 650; margin: 0 0 8px; }
+  .qnum { color: #155f67; font-weight: 750; }
+  .task-directions, .hint-line { margin: 6px 0 10px; color: #374b54; }
+  .choices { list-style: none; margin: 8px 0; padding: 0; }
+  .choices li { margin: 6px 0; }
+  .ltr { display: inline-block; border: 1px solid #536168; border-radius: 50%; width: 1.6em; height: 1.6em; text-align: center; margin-right: 6px; }
+  .work { margin-top: 10px; }
+  .wl { border-bottom: 1px solid #a9b0b3; height: 1.8em; }
+  .blank, .paper-blank { display: inline-block; min-width: 4em; min-height: 1.8em; border-bottom: 1px solid #657078; }
+  .ans .blank { min-width: 10em; }
+  .item table { table-layout: fixed; overflow-wrap: anywhere; }
+  .item th, .item td { padding: 9px; min-width: 0; }
+  .fill { height: 3em; }
+  .matchtbl .mnum, .matchtbl .mltr { width: 2.5em; }
+  .matchtbl .mans { width: 3em; border-bottom: 1px solid #333; }
+  .wordbank { margin: 12px 0; }
+  .chip { display: inline-block; border: 1px solid #89959b; padding: 7px 10px; margin: 4px 4px 4px 0; border-radius: 4px; }
+  .sortboxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; }
+  .sortbox { min-height: 150px; border: 1px solid #657078; border-radius: 4px; }
+  .order-line { display: block; height: 2.2em; border-bottom: 1px solid #657078; }
+  .point-tasks { margin: 8px 0; padding-left: 1.4em; }
+  .sorthd { padding: 8px; border-bottom: 1px solid #657078; font-weight: 700; background: #f3f5f4; }
+  .worked { padding: 10px; border: 1px solid #89959b; }
+  .wa-step { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px dashed #a9b0b3; }
+  .wa-lbl { flex: 0 0 28%; font-weight: 600; }
+  .wa-work { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .numline, .bar-figure { display: block; width: 100%; height: auto; margin: 12px 0; }
+  .division-space { display: block; width: min(100%, 480px); height: auto; margin: 12px 0; }
+  .coordgrid { display: block; width: min(100%, 420px); height: auto; margin: 12px auto; }
+  .graph-task { break-inside: avoid; }
+  .model-space { min-height: 160px; border: 1px solid #89959b; padding: 10px; }
+  .model-space span { color: #475663; font-size: .9em; }
+  @media (max-width: 560px) {
+    .item th, .item td { padding: 5px; }
+    .item table { font-size: .85em; }
+    .item .paper-blank { min-width: 0; width: 100%; }
+    .wa-step { flex-direction: column; gap: 2px; }
+  }
+  @media screen and (max-width: 600px) {
+    /* Retain the injected tools as normal document actions on small screens,
+       where their floating stack otherwise covers the reading column. */
+    body > #nsr-root { position: relative; right: auto; bottom: auto; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; margin: 24px auto 0; max-width: 900px; z-index: 10; }
+    body > #nsr-root #nsr-launcher, body > #nsr-root #nsr-workbench { min-height: 44px; font-size: .85rem; }
+    body > #nsr-root #nsr-panel { bottom: 56px; }
+    body .mwb-launcher-nav { margin-top: 16px; text-align: right; }
+    body #mwb-launcher, body #netfold-launcher { position: static !important; margin: 4px; }
+  }
+  @media print {
+    .item { color: #111; }
+    .item table { font-size: 10pt; }
+    .graph-task, .item tr, .sortbox { break-inside: avoid; }
+    .item thead { display: table-header-group; }
+    .numline, .coordgrid, .bar-figure { break-inside: avoid; }
+  }
+
 </style>
   <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->
 </head>
 <body>
-  <button class="print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+  <nav class="resource-toolbar" aria-label="Packet actions">
+    <a href="/lessons/10-4/">← Back to lesson</a>
+    <button type="button" class="print-btn" onclick="window.print()">Print / Save PDF</button>
+  </nav>
+  <main>
   <h1>Math is Ingenuity</h1>
   <p class="doc-meta">MPP.4 · Unit 10 · Lesson 4</p>
   <div class="idbar">
@@ -78,6 +148,7 @@
   </div>
   <section class="lp-section"><h2>🎯 Learning Goals</h2><p><strong>Content:</strong> I can use ratios and models to explain how the Penny Farthing and gear-driven bicycles were ingenious solutions to a real problem.</p><p><strong>Language:</strong> I can explain a gear ratio using the words rotation, teeth, and 'for each ___, the wheel turns ___.'</p></section>
   <section class="lp-section"><h2>👀 Notice &amp; Wonder</h2><p class="context">An old photograph shows a Penny Farthing bicycle from the late 1800s — a rider perched high on an enormous front wheel, with a tiny rear wheel trailing behind.</p>
+         <figure class="notice-figure"><img src="/lessons/10-4/reveal-assets/notice-wonder.jpg" alt="A close-up of a bicycle rear cassette and chain, showing the ring of different-sized gears." loading="eager" decoding="sync"></figure>
          <p><strong>I notice…</strong></p><div class="work"><div class="wl"></div><div class="wl"></div></div>
          <p><strong>I wonder…</strong></p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
   <section class="lp-section" data-support-slot="vocabulary"><h2>📚 Vocabulary</h2><table class="vocabtbl"><tr><th>Word</th><th>What it means</th><th>Example</th></tr><tr><td><strong>ingenuity</strong><br><span class="es">ingenio</span></td><td>Coming up with different, and sometimes unique, solutions to problems.<br><span class="es">Idear soluciones diferentes, y a veces únicas, a los problemas.</span></td><td>Adding gears so one pedal turn moves the wheel farther — It solves the problem a new way.</td></tr><tr><td><strong>rotation</strong><br><span class="es">rotación</span></td><td>One full turn of a wheel, gear, or pedal all the way around.<br><span class="es">Una vuelta completa de una rueda, un engranaje o un pedal.</span></td><td>The rear wheel going around once — A complete turn, back to where it started.</td></tr><tr><td><strong>gear</strong><br><span class="es">engranaje</span></td><td>A toothed wheel that passes motion to another toothed wheel through a chain.<br><span class="es">Una rueda con dientes que transmite el movimiento a otra rueda con dientes por medio de una cadena.</span></td><td>The 32-tooth wheel the chain sits on — Its teeth carry the chain's motion.</td></tr><tr><td><strong>ratio</strong><br><span class="es">razón</span></td><td>A comparison of two quantities, like pedal rotations to wheel rotations.<br><span class="es">Una comparación de dos cantidades, como rotaciones del pedal y rotaciones de la rueda.</span></td><td>1 pedal rotation to 4 wheel rotations — It compares two quantities directly.</td></tr><tr><td><strong>equivalent ratios</strong><br><span class="es">razones equivalentes</span></td><td>Ratios that make the same comparison using different numbers.<br><span class="es">Razones que hacen la misma comparación con números diferentes.</span></td><td>2 : 8 and 1 : 4 — Both parts scaled by the same factor.</td></tr></table></section>
@@ -95,11 +166,12 @@
         <p class="hint-line">Word bank: gear ratio, rotation, divide</p>
         <div class="work"><div class="wl"></div><div class="wl"></div></div></div></section>
   <section class="lp-section" data-support-slot="workedExample"><h2>🚀 Launch</h2><p class="context">The invention of the bicycle in the late 1800s offered people a way to move about easily. Among the first bicycles created was the Penny Farthing, with a large front wheel and a small rear wheel. Ingenuity in mathematics helps us come up with different, and sometimes unique, solutions to problems.</p><h3>Math can power ingenious solutions</h3><p>The Penny Farthing is powered by the rider: pushing the pedals rotates the front wheel directly, so each pedal rotation rotates the wheel one time — a 1 to 1 ratio.</p><p class="keyidea"><strong>Key idea:</strong> Gear Ratios, Circumference &amp; Mechanical Advantage. Formula: Distance = Rotations × Circumference | Gear Ratio = Teeth_Driver / Teeth_Driven. 1. Circumference is the distance traveled in one full wheel rotation. 2. Gear ratios determine speed and rotational force (torque). 3. Apply proportional reasoning to calculate travel distance and mechanical advantage</p><div class="cistep"><p class="cititle">Watch me use a gear ratio</p><ul><li>A later bicycle design uses a chain: the pedal gear has 48 teeth, and the largest rear gear has 32 teeth.</li><li>For each rotation of the 48-tooth pedal gear, the wheel gear also turns 48 teeth.</li><li>The 32-tooth gear needs to turn 32 teeth to make one full rotation, so I find the equivalent ratio: 48 ÷ 32 = 1.5.</li><li>The rear wheel makes 1.5 rotations for each pedal rotation — this gear makes it easier to pedal at slower speeds or go uphill.</li></ul></div><div class="cistep"><p class="cititle">Let's do the smallest gear together</p><ul><li>The smallest rear gear has 12 teeth, and the pedal gear still turns 48 teeth per rotation.</li><li>One full rotation of the 12-tooth gear takes 12 teeth.</li><li>48 ÷ 12 = 4, so the rear wheel makes 4 rotations for each pedal rotation.</li><li>This gear makes it easier to pedal at faster speeds or go downhill.</li></ul></div><div class="cistep"><p class="cititle">Now you try</p><ul><li>Explain to a partner why the Penny Farthing's front wheel was so large.</li><li>Then say which rear gear — 32 teeth or 12 teeth — you would choose for a steep hill, and why.</li></ul></div></section>
-  <section class="lp-section"><h2>🔍 Explore</h2><p class="context">Both gears use the same 48-tooth pedal gear — the difference is how many teeth the rear gear needs to make one full rotation. After sorting, tell a partner what you notice about gear size and the distance the bike travels.</p><div class="item" data-practice-item><p class="qtext">Which rear gear does each fact describe? Sort them.</p><div class="wordbank"><strong>Word bank:</strong> </div><div class="sortboxes"><div class="sortbox"><div class="sorthd"></div></div><div class="sortbox"><div class="sorthd"></div></div></div></div><p class="frame">Your partner says the bigger rear gear makes the wheel turn more. Is that right, and what stays equivalent in the ratio of teeth when you switch gears? — With the ___-tooth gear the ratio is ___, so the wheel ___.</p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
-  <section class="lp-section" data-support-slot="practice"><h2>✏️ Practice</h2><div class="item" data-practice-item><p class="qtext"><span class="qnum">1.</span> The pedal gear turns 48 teeth per rotation. The largest rear gear needs 32 teeth for one full rotation. How many rotations does the rear wheel make for each pedal rotation?</p><ol class="choices"><li><span class="ltr">A</span> 0.5 rotations</li><li><span class="ltr">B</span> 1.5 rotations</li><li><span class="ltr">C</span> 2 rotations</li><li><span class="ltr">D</span> 16 rotations</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">2.</span> The smallest rear gear has 12 teeth. How many rotations will the rear wheel make for each rotation of the 48-tooth pedal gear?</p><ol class="choices"><li><span class="ltr">A</span> 0.25 rotations</li><li><span class="ltr">B</span> 3 rotations</li><li><span class="ltr">C</span> 4 rotations</li><li><span class="ltr">D</span> 36 rotations</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">3.</span> You are about to ride up a steep hill. Which rear gear should the chain be on, and why?</p><ol class="choices"><li><span class="ltr">A</span> The 12-tooth gear, because 4 rotations per pedal is always better</li><li><span class="ltr">B</span> The 32-tooth gear, because it makes the bike go faster</li><li><span class="ltr">C</span> It does not matter which gear you use on a hill</li><li><span class="ltr">D</span> The 32-tooth gear, because 1.5 rotations per pedal makes pedaling easier at slow speeds</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">4.</span> Why do you think the larger gear makes it easier to pedal at slower speeds?</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">5.</span> With the chain on the 12-tooth gear, the rider makes 10 pedal rotations. How many rotations does the rear wheel make?</p><ol class="choices"><li><span class="ltr">A</span> 14 rotations</li><li><span class="ltr">B</span> 22 rotations</li><li><span class="ltr">C</span> 40 rotations</li><li><span class="ltr">D</span> 120 rotations</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">6.</span> When the chain is on the largest gear the rear wheel makes 1.5 rotations per pedal rotation; on the smallest gear it makes 4. What do you notice about the size of the wheel gears and the distance the bike travels?</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item><p class="qtext"><span class="qnum">7.</span> The pedal gear has 48 teeth. Complete the table of wheel rotations per pedal turn.</p><table class="grid"><tr><th>Rear gear (teeth)</th><th>Ratio 48 ÷ teeth</th><th>Wheel rotations per pedal turn</th></tr><tr><td>12</td><td>48 ÷ 12</td><td class="fill"></td></tr><tr><td>16</td><td>48 ÷ 16</td><td class="fill"></td></tr><tr><td>24</td><td>48 ÷ 24</td><td class="fill"></td></tr></table></div></section>
+  <section class="lp-section"><h2>🔍 Explore</h2><div class="item" data-practice-item data-task-type="drag-sort"><p class="qtext">Which rear gear does each fact describe? Sort them.</p><p class="task-directions">Both gears use the same 48-tooth pedal gear — the difference is how many teeth the rear gear needs to make one full rotation. After sorting, tell a partner what you notice about gear size and the distance the bike travels.</p><p class="hint-line">Write each item in its correct group.</p><div class="wordbank"><strong>Word bank:</strong> <span class="chip">The bike travels the shortest distance per pedal rotation</span> <span class="chip">The bike travels the greatest distance per pedal rotation</span> <span class="chip">Makes it easier to pedal at faster speeds or go downhill</span> <span class="chip">Needs to turn 12 teeth to make one full rotation</span> <span class="chip">The rear wheel makes 1.5 rotations per pedal rotation</span> <span class="chip">Makes it easier to pedal at slower speeds or go uphill</span> <span class="chip">The rear wheel makes 4 rotations per pedal rotation</span> <span class="chip">Needs to turn 32 teeth to make one full rotation</span></div><div class="sortboxes"><div class="sortbox"><div class="sorthd">Largest rear gear (32 teeth)</div></div><div class="sortbox"><div class="sorthd">Smallest rear gear (12 teeth)</div></div></div></div><p class="frame">Your partner says the bigger rear gear makes the wheel turn more. Is that right, and what stays equivalent in the ratio of teeth when you switch gears? — With the ___-tooth gear the ratio is ___, so the wheel ___.</p><div class="work"><div class="wl"></div><div class="wl"></div></div></section>
+  <section class="lp-section" data-support-slot="practice"><h2>✏️ Practice</h2><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">1.</span> The pedal gear turns 48 teeth per rotation. The largest rear gear needs 32 teeth for one full rotation. How many rotations does the rear wheel make for each pedal rotation?</p><ol class="choices"><li><span class="ltr">A</span> 0.5 rotations</li><li><span class="ltr">B</span> 1.5 rotations</li><li><span class="ltr">C</span> 2 rotations</li><li><span class="ltr">D</span> 16 rotations</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">2.</span> The smallest rear gear has 12 teeth. How many rotations will the rear wheel make for each rotation of the 48-tooth pedal gear?</p><ol class="choices"><li><span class="ltr">A</span> 0.25 rotations</li><li><span class="ltr">B</span> 3 rotations</li><li><span class="ltr">C</span> 4 rotations</li><li><span class="ltr">D</span> 36 rotations</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">3.</span> You are about to ride up a steep hill. Which rear gear should the chain be on, and why?</p><ol class="choices"><li><span class="ltr">A</span> The 12-tooth gear, because 4 rotations per pedal is always better</li><li><span class="ltr">B</span> The 32-tooth gear, because it makes the bike go faster</li><li><span class="ltr">C</span> It does not matter which gear you use on a hill</li><li><span class="ltr">D</span> The 32-tooth gear, because 1.5 rotations per pedal makes pedaling easier at slow speeds</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="open-response"><p class="qtext"><span class="qnum">4.</span> Why do you think the larger gear makes it easier to pedal at slower speeds?</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="multiple-choice"><p class="qtext"><span class="qnum">5.</span> With the chain on the 12-tooth gear, the rider makes 10 pedal rotations. How many rotations does the rear wheel make?</p><ol class="choices"><li><span class="ltr">A</span> 14 rotations</li><li><span class="ltr">B</span> 22 rotations</li><li><span class="ltr">C</span> 40 rotations</li><li><span class="ltr">D</span> 120 rotations</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p><div class="work"><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="open-response"><p class="qtext"><span class="qnum">6.</span> When the chain is on the largest gear the rear wheel makes 1.5 rotations per pedal rotation; on the smallest gear it makes 4. What do you notice about the size of the wheel gears and the distance the bike travels?</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></div><div class="item" data-practice-item data-task-type="fill-table"><p class="qtext"><span class="qnum">7.</span> The pedal gear has 48 teeth. Complete the table of wheel rotations per pedal turn.</p><p class="hint-line">Complete each empty cell. Show your reasoning below.</p><table class="grid"><thead><tr><th scope="col">Rear gear (teeth)</th><th scope="col">Ratio 48 ÷ teeth</th><th scope="col">Wheel rotations per pedal turn</th></tr></thead><tbody><tr><td>12</td><td class="fill" aria-label="Your response: Ratio 48 ÷ teeth, row 1"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: Wheel rotations per pedal turn, row 1"><span class="paper-blank"></span></td></tr><tr><td>16</td><td class="fill" aria-label="Your response: Ratio 48 ÷ teeth, row 2"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: Wheel rotations per pedal turn, row 2"><span class="paper-blank"></span></td></tr><tr><td>24</td><td class="fill" aria-label="Your response: Ratio 48 ÷ teeth, row 3"><span class="paper-blank"></span></td><td class="fill" aria-label="Your response: Wheel rotations per pedal turn, row 3"><span class="paper-blank"></span></td></tr></tbody></table><div class="work"><div class="wl"></div><div class="wl"></div></div></div></section>
   <section class="lp-section"><h2>🌍 Connect to the Real World</h2><p class="context">Humans have long looked for ways to travel easily and quickly. One modern option is a motorized unicycle. Imagine what a future mode of individual transportation might look like.</p><p class="qtext">How will your future vehicle be powered, and what math will be used in its design or use?</p><p class="hint-line">Try to use: powered, ratio, design, distance</p><div class="work"><div class="wl"></div><div class="wl"></div><div class="wl"></div><div class="wl"></div></div></section>
   <section class="lp-section" data-support-slot="response"><h2>🎟️ Exit Ticket</h2><p class="qtext">Which statement best captures what this lesson means by 'Math is Ingenuity'?</p><ol class="choices"><li><span class="ltr">A</span> Math can help us come up with creative solutions to everyday problems</li><li><span class="ltr">B</span> Math is only useful for inventors who lived in the 1800s</li><li><span class="ltr">C</span> Ingenuity means avoiding math and just guessing</li><li><span class="ltr">D</span> Every bicycle must have a 1 to 1 pedal ratio</li></ol><p class="ans"><strong>Answer:</strong> <span class="blank"></span></p></section>
   <footer>Neft Teacher · 10-4 · Printable full-lesson packet · Complete every section, then bring it to class.</footer>
+  </main>
   <!-- Anonymous usage beacon. It has to be emitted HERE rather than added by
        tools/inject-usage-signal.mjs: this file is regenerated on every build,
        so an injected tag is silently stripped again on the next `npm run build`
