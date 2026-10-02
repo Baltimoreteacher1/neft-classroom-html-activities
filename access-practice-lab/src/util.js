@@ -4,9 +4,9 @@ export const BASE = "/access-practice-lab";
 export const CORE_DOMAINS = ["Listening", "Reading", "Speaking", "Writing"];
 export const LEVEL_KEYS = ["A", "B", "C"];
 export const TIERS = {
-  A: { name: "Starting", range: "WIDA 1.0–2.4", es: "Comenzando" },
-  B: { name: "Growing", range: "WIDA 2.5–3.5", es: "Creciendo" },
-  C: { name: "Expanding", range: "WIDA 3.6–4.5+", es: "Ampliando" },
+  A: { name: "Starting", range: "More support", es: "Comenzando" },
+  B: { name: "Growing", range: "Some support", es: "Creciendo" },
+  C: { name: "Expanding", range: "More independence", es: "Ampliando" },
 };
 export const DOMAIN_META = {
   Listening: { glyph: "🎧", room: "Listening Studio", verb: "Listen", es: "Escuchar" },

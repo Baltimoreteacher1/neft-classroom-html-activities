@@ -3,6 +3,7 @@
 // student the microphone is hearing them (the commonest "it didn't work").
 const takes = new Map(); // key → [{ url, seconds }]
 let active = null; // { key, recorder, stream, chunks, started, raf, ctx }
+let requestGeneration = 0;
 
 export const canRecord = () =>
   Boolean(navigator.mediaDevices?.getUserMedia && window.MediaRecorder);
@@ -10,11 +11,25 @@ export const takesFor = (key) => takes.get(key) || [];
 export const isRecording = (key) => active?.key === key;
 
 export async function start(key, { onLevel, onStop } = {}) {
-  if (active) await stop();
+  const generation = ++requestGeneration;
+  await stopActive();
+  if (generation !== requestGeneration) return null;
   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  const recorder = new MediaRecorder(stream);
+  if (generation !== requestGeneration) {
+    stream.getTracks().forEach((track) => track.stop());
+    return null;
+  }
+  let recorder;
+  try {
+    recorder = new MediaRecorder(stream);
+  } catch (error) {
+    stream.getTracks().forEach((track) => track.stop());
+    throw error;
+  }
   const chunks = [];
   const state = { key, recorder, stream, chunks, started: Date.now(), raf: 0, ctx: null };
+  let finishStop;
+  state.stopped = new Promise((resolve) => { finishStop = resolve; });
   recorder.addEventListener("dataavailable", (e) => e.data.size && chunks.push(e.data));
   recorder.addEventListener("stop", () => {
     stream.getTracks().forEach((t) => t.stop());
@@ -22,7 +37,7 @@ export async function start(key, { onLevel, onStop } = {}) {
     state.ctx?.close().catch(() => {});
     const blob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
     const list = takes.get(key) || [];
-    list.push({
+    if (blob.size) list.push({
       url: URL.createObjectURL(blob),
       seconds: Math.round((Date.now() - state.started) / 1000),
     });
@@ -30,7 +45,8 @@ export async function start(key, { onLevel, onStop } = {}) {
     while (list.length > 3) URL.revokeObjectURL(list.shift().url);
     takes.set(key, list);
     if (active === state) active = null;
-    onStop?.(list);
+    try { onStop?.(list); }
+    finally { finishStop(); }
   });
   try {
     const Ctx = window.AudioContext || window.webkitAudioContext;
@@ -50,19 +66,30 @@ export async function start(key, { onLevel, onStop } = {}) {
       tick();
     }
   } catch {}
-  recorder.start();
+  try {
+    recorder.start();
+  } catch (error) {
+    stream.getTracks().forEach((track) => track.stop());
+    cancelAnimationFrame(state.raf);
+    state.ctx?.close().catch(() => {});
+    finishStop();
+    throw error;
+  }
   active = state;
   return state;
 }
 
-export function stop() {
+function stopActive() {
   if (!active) return Promise.resolve();
-  const { recorder } = active;
-  return new Promise((resolve) => {
-    recorder.addEventListener("stop", () => resolve(), { once: true });
-    if (recorder.state !== "inactive") recorder.stop();
-    else resolve();
-  });
+  const { recorder, stopped } = active;
+  if (recorder.state !== "inactive") recorder.stop();
+  return stopped;
+}
+
+export function stop() {
+  // Invalidate permission prompts too: getUserMedia may resolve after navigation.
+  requestGeneration++;
+  return stopActive();
 }
 
 export function clear(key) {

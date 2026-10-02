@@ -1924,8 +1924,16 @@ details[open] > summary {
 }
 @media (max-width: 640px) {
   .hero {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
+  .hero > *, .room-hero > * { min-width: 0; max-width: 100%; }
+  .window-card { min-width: 0; }
+  .band-switch { flex-wrap: wrap; max-width: 100%; border-radius: var(--radius); }
+  .lab-top, .lab-tools { flex-wrap: wrap; }
+  .lab-top { gap: .4rem; }
+  .lab-tools { min-width: 0; max-width: 100%; }
+  .lab-brand { min-width: 0; }
+  .lab-tools .top-link { padding-inline: .45rem; }
   .lab-tools .top-link span {
     display: none;
   }

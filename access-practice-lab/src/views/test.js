@@ -7,13 +7,15 @@ import { loadTest } from "../content.js";
 import { band as bandOf, correctAnswerText, isAnswered, isAuto, isCorrect } from "../grade.js";
 import { choiceTarget, inputHTML, reduceAnswer, seedAnswer } from "../items.js";
 import { visualsHTML } from "../media.js";
-import { isRecording, takesFor } from "../recorder.js";
+import { clear as clearTake, isRecording, stop as stopRecording, takesFor } from "../recorder.js";
+import { stop as stopSpeech } from "../speech.js";
 import { clearTestRecord, getStudentName, loadTestRecord, saveTestRecord } from "../store.js";
 import { BASE, announce, asList, bandLabel, html, raw } from "../util.js";
 
 const IGN = raw("data-nsr-ignore");
 let T = null; // { test, flat, rec }
 let timerId = 0;
+let renderGeneration = 0;
 
 function flatten(test) {
   const flat = [];
@@ -24,13 +26,40 @@ function flatten(test) {
   );
   return flat;
 }
-const persist = () => saveTestRecord(T.test.id, T.rec);
+const persist = () => {
+  saveTestRecord(T.test.id, T.rec);
+  T.savedSnapshot = JSON.stringify(loadTestRecord(T.test.id));
+};
+
+// Planning notes are preparation, not evidence of a spoken response.
+export function responseDone(item, domain, answer, oralPractice = false, hasTake = false) {
+  return item.type === "constructed" && domain === "Speaking"
+    ? Boolean(oralPractice || hasTake)
+    : isAnswered(item, answer);
+}
+const done = (f) => responseDone(
+  f.item, f.section.domain, T.rec.answers[f.item.id],
+  T.rec.oralPractice?.[f.item.id], takesFor(`${T.test.id}:${f.item.id}`).length > 0,
+);
+
+/** Pause on any route departure, including browser Back and same-view test changes. */
+export function unmount() {
+  renderGeneration++;
+  clearInterval(timerId);
+  if (T?.rec.phase === "running") {
+    T.rec.phase = "intro";
+    persist();
+  }
+}
+
+/** Discard cached state after importing or clearing device progress. */
+export function invalidate() {
+  renderGeneration++;
+  clearInterval(timerId);
+  T = null;
+}
 const answered = () =>
-  T.flat.filter(
-    (f) =>
-      isAnswered(f.item, T.rec.answers[f.item.id]) ||
-      (f.item.type === "constructed" && takesFor(`${T.test.id}:${f.item.id}`).length),
-  ).length;
+  T.flat.filter(done).length;
 
 function grade() {
   const sections = (T.test.sections || []).map((s, si) => {
@@ -41,7 +70,8 @@ function grade() {
     ).length;
     const open = items.filter((it) => !isAuto(it));
     const openDone = open.filter(
-      (it) => isAnswered(it, T.rec.answers[it.id]) || takesFor(`${T.test.id}:${it.id}`).length,
+      (it) => responseDone(it, s.domain, T.rec.answers[it.id], T.rec.oralPractice?.[it.id],
+        takesFor(`${T.test.id}:${it.id}`).length > 0),
     ).length;
     return {
       domain: s.domain,
@@ -85,7 +115,7 @@ function startTimer() {
 
 function introHTML() {
   const test = T.test;
-  const inProgress = Object.keys(T.rec.answers || {}).length > 0;
+  const inProgress = Boolean(T.rec.startedAt || Object.keys(T.rec.answers || {}).length);
   return html`<section class="panel test-intro">
     <p class="eyebrow">
       Practice test · ${bandLabel(test.band)}${test.tier ? ` · ${test.tier}` : ""}
@@ -150,7 +180,11 @@ function inputFor(f) {
           class="field"
           ><span>Planning notes (optional)</span
           ><textarea rows="3" data-test-note ${IGN}>${a || ""}</textarea>
-        </label>`;
+        </label><label class="timer-opt"><input type="checkbox" data-test-oral
+          ${T.rec.oralPractice?.[item.id] ? raw("checked") : ""} ${IGN} />
+          I said my answer aloud to a teacher or partner.</label>
+        <p class="fine">Planning notes do not count as a spoken answer. Recordings stay in this tab;
+          ask your teacher to listen before closing or reloading it.</p>`;
     return html`${
         item.wordBank?.length
           ? html`<ul class="wordbank">
@@ -202,15 +236,13 @@ function runnerHTML(ctx) {
         <h2>Questions</h2>
         <div class="dots">
           ${T.flat.map((g, i) => {
-            const done =
-              isAnswered(g.item, T.rec.answers[g.item.id]) ||
-              takesFor(`${T.test.id}:${g.item.id}`).length > 0;
+            const completed = done(g);
             const fl = (T.rec.flags || []).includes(g.item.id);
             return html`<button
               type="button"
-              class="dot ${i === T.rec.index ? "is-current" : ""} ${done ? "is-done" : ""} ${fl ? "is-flag" : ""}"
+              class="dot ${i === T.rec.index ? "is-current" : ""} ${completed ? "is-done" : ""} ${fl ? "is-flag" : ""}"
               data-jump="${i}"
-              aria-label="Question ${i + 1}${done ? ", answered" : ""}${fl ? ", flagged" : ""}"
+              aria-label="Question ${i + 1}${completed ? ", answered" : ""}${fl ? ", flagged" : ""}"
             >
               ${i + 1}
             </button>`;
@@ -237,19 +269,17 @@ function reviewHTML() {
     </p>
     <ol class="review-list">
       ${T.flat.map((f, i) => {
-        const done =
-          isAnswered(f.item, T.rec.answers[f.item.id]) ||
-          takesFor(`${T.test.id}:${f.item.id}`).length > 0;
+        const completed = done(f);
         return html`<li>
           <button
             type="button"
-            class="review-row ${done ? "is-done" : "is-blank"}"
+            class="review-row ${completed ? "is-done" : "is-blank"}"
             data-jump="${i}"
           >
             <span
               >${i + 1}. ${f.section.domain} — ${f.item.title || f.item.skill || "Question"}</span
             ><span
-              >${done ? "Answered" : "Not answered"}${(T.rec.flags || []).includes(f.item.id) ? " · ★" : ""}</span
+              >${completed ? "Answered" : "Not answered"}${(T.rec.flags || []).includes(f.item.id) ? " · ★" : ""}</span
             >
           </button>
         </li>`;
@@ -314,9 +344,14 @@ function resultsHTML() {
 }
 
 export async function render(ctx) {
+  const generation = ++renderGeneration;
   const id = ctx.route.testId;
-  if (!T || T.test.id !== id) {
+  const saved = loadTestRecord(id);
+  if (!T || T.test.id !== id || T.savedSnapshot !== JSON.stringify(saved)) {
+    clearInterval(timerId);
     const test = await loadTest(id).catch(() => null);
+    // The app discards stale HTML; do not let it replace this module's state either.
+    if (generation !== renderGeneration) return { title: "", html: html`` };
     if (!test)
       return {
         title: "Test not found",
@@ -325,9 +360,10 @@ export async function render(ctx) {
           <a class="btn" href="${BASE}/tests">All practice tests</a>
         </section>`,
       };
-    const rec = loadTestRecord(id);
+    const rec = saved;
     T = {
       test,
+      savedSnapshot: JSON.stringify(saved),
       flat: flatten(test),
       minutes: (test.sections || []).reduce((n, s) => n + (Number(s.estMinutes) || 8), 0),
       rec: { phase: "intro", index: 0, answers: {}, flags: [], ...rec },
@@ -350,7 +386,11 @@ export function mount() {
   else clearInterval(timerId);
 }
 
-function go(ctx, patch) {
+async function go(ctx, patch) {
+  stopSpeech();
+  const current = T;
+  await stopRecording();
+  if (T !== current) return;
   Object.assign(T.rec, patch);
   persist();
   ctx.rerender();
@@ -382,9 +422,15 @@ export function onClick(e, ctx) {
     return go(ctx, { phase: "running", startedAt: T.rec.startedAt || new Date().toISOString() });
   }
   if (t.closest("[data-restart]")) {
-    clearTestRecord(T.test.id);
-    T.rec = { phase: "intro", index: 0, answers: {}, flags: [] };
-    return go(ctx, {});
+    const current = T;
+    stopRecording().then(() => {
+      if (T !== current) return;
+      for (const f of T.flat) clearTake(`${T.test.id}:${f.item.id}`);
+      clearTestRecord(T.test.id);
+      T.rec = { phase: "intro", index: 0, answers: {}, flags: [] };
+      go(ctx, {});
+    });
+    return true;
   }
   if (t.closest("[data-prev]")) return go(ctx, { index: Math.max(0, T.rec.index - 1) });
   if (t.closest("[data-next]"))
@@ -401,12 +447,16 @@ export function onClick(e, ctx) {
   }
   if (t.closest("[data-submit]")) {
     clearInterval(timerId);
-    announce("Test submitted.");
-    return go(ctx, { phase: "results", results: grade() });
+    const current = T;
+    stopRecording().then(() => {
+      if (T !== current) return;
+      announce("Test submitted.");
+      go(ctx, { phase: "results", results: grade() });
+    });
+    return true;
   }
   if (t.closest("[data-exit]")) {
-    clearInterval(timerId);
-    persist();
+    unmount();
     return ctx.navigate(`${BASE}/tests`);
   }
 }
@@ -422,6 +472,13 @@ export function onChange(e, ctx) {
   }
   const f = T.flat[T.rec.index];
   if (T.rec.phase !== "running" || !f) return;
+  if (t.matches("[data-test-oral]")) {
+    T.rec.oralPractice ||= {};
+    T.rec.oralPractice[f.item.id] = t.checked;
+    persist();
+    ctx.rerender();
+    return;
+  }
   const next = reduceAnswer(f.item, T.rec.answers[f.item.id], t);
   if (next !== undefined) {
     T.rec.answers[f.item.id] = next;

@@ -3,6 +3,7 @@
 // wall of 28 cards.
 import { crumbsHTML, ringHTML, tierPickerHTML } from "../components.js";
 import { bandDomains, loadDomain, ordered } from "../content.js";
+import { activityStatus } from "../practice-plan.js";
 import { loadRecord } from "../store.js";
 import { BASE, DOMAIN_META, TIERS, bandLabel, html } from "../util.js";
 import { tierFor } from "./home.js";
@@ -70,8 +71,8 @@ export async function render(ctx) {
     cats.push({ id: "more", title: "More practice", activityIds: extra.map((a) => a.id) });
 
   const row = (a) => {
-    const r = record.results[a.id];
-    const status = done.has(a.id) ? "done" : r ? "tried" : "new";
+    const savedStatus = activityStatus(record, a.id);
+    const status = savedStatus === "done" ? "done" : savedStatus === "new" ? "new" : "tried";
     return html`<li class="act-row is-${status}">
       <a href="${activityHref(domain, level, a.id)}">
         <span class="act-status" aria-hidden="true"
@@ -116,6 +117,7 @@ export async function render(ctx) {
             </details>`
           : ""
       }
+      <p><a class="btn" href="${BASE}/library?grades=${band}&domain=${domain}&level=${level}">Search activities & build a practice set →</a></p>
       <section class="strands" aria-label="All activities">
         ${cats.map((c) => {
           const acts = c.activityIds.map((id) => byId.get(id)).filter(Boolean);

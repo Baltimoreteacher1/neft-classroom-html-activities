@@ -46,34 +46,44 @@ export function speak(segments, { lang = "en-US", rate = 0.9, onSegment } = {}) 
   const voice = pickVoice(lang);
   return new Promise((resolve) => {
     let i = 0;
+    let settled = false;
+    const finish = (completed) => {
+      if (settled) return;
+      settled = true;
+      if (current === token) current = null;
+      resolve(completed);
+    };
+    token.finish = finish;
     const next = () => {
-      if (current !== token) return resolve(false);
-      if (i >= list.length) {
-        current = null;
-        return resolve(true);
-      }
+      if (current !== token) return finish(false);
+      if (i >= list.length) return finish(true);
       const u = new SpeechSynthesisUtterance(list[i]);
       u.lang = lang;
       if (voice) u.voice = voice;
       u.rate = rate;
       onSegment?.(i);
       u.onend = () => {
+        if (current !== token) return finish(false);
         i++;
         // A short pause between sentences, like a test narrator.
         setTimeout(next, 280);
       };
-      u.onerror = () => {
-        current = null;
-        resolve(false);
-      };
-      window.speechSynthesis.speak(u);
+      u.onerror = () => finish(false);
+      try {
+        window.speechSynthesis.speak(u);
+      } catch {
+        finish(false);
+      }
     };
     next();
   });
 }
 
 export function stop() {
+  const previous = current;
   current = null;
+  // Some browsers cancel silently, without dispatching end/error events.
+  previous?.finish?.(false);
   try {
     window.speechSynthesis?.cancel();
   } catch {}

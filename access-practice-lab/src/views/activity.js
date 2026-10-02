@@ -179,11 +179,11 @@ function writingHTML(a) {
   const goal = wordGoal(cur.level);
   const bank = [...(a.wordBank || []), ...(a.vocabulary || []).map((v) => v[0])].slice(0, 12);
   const result = writingChecks.get(a.id);
-  const lower = text.toLowerCase();
+  const usedWords = new Set(analyzeWriting(text, a, cur.level).usedWords);
   return html`${
       bank.length
         ? html`<ul class="wordbank" aria-label="Word bank">
-            ${bank.map((w) => html`<li class="${lower.includes(String(w).toLowerCase()) ? "is-used" : ""}">${w}</li>`)}
+            ${bank.map((w) => html`<li class="${usedWords.has(String(w).split("/")[0].trim().toLowerCase()) ? "is-used" : ""}">${w}</li>`)}
           </ul>`
         : ""
     }
@@ -222,14 +222,14 @@ ${text}</textarea>
       result
         ? html`<div class="feedback ${result.met >= 3 ? "is-right" : "is-hint"}" role="status">
               <p class="fb-title">
-                ${result.met >= 3 ? "✓ Strong writing practice" : "Almost there"}
+                ${result.met >= 3 ? "Writing observations" : "Ideas for revision"}
               </p>
               <ul class="checks">
                 ${result.checks.map((c) => html`<li class="${c.ok ? "ok" : "todo"}">${c.ok ? "✓" : "○"} ${c.ok ? c.label : c.tip}</li>`)}
               </ul>
               ${result.usedWords.length ? html`<p class="fine">Word-bank words you used: ${result.usedWords.join(", ")}</p>` : ""}
               <p class="fine">
-                Your teacher can read this for a real score — this is a practice check.
+                These checks notice surface features, not meaning or a score. Did you answer every part and include a specific detail? Ask your teacher for feedback.
               </p>
             </div>
             ${a.models ? modelLadderHTML(a.models, cur.level) : ""}`
@@ -475,8 +475,8 @@ export function onInput(e) {
     meter.textContent = `${n} / about ${goal} words`;
     const bar = document.querySelector(".meter-bar > span");
     if (bar) bar.style.width = `${Math.min(100, Math.round((n / goal) * 100))}%`;
-    const lower = e.target.value.toLowerCase();
+    const usedWords = new Set(analyzeWriting(e.target.value, a, cur.level).usedWords);
     for (const li of document.querySelectorAll(".wordbank li"))
-      li.classList.toggle("is-used", lower.includes(li.textContent.toLowerCase()));
+      li.classList.toggle("is-used", usedWords.has(li.textContent.split("/")[0].trim().toLowerCase()));
   }
 }

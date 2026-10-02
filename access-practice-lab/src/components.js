@@ -34,6 +34,7 @@ export function listenPlayerHTML(
       <span class="listen-icon" aria-hidden="true">▶</span>
       <span class="listen-label">${n ? "Listen again" : label}</span>
     </button>
+    <button type="button" class="ghost" data-stop-audio>■ Stop audio</button>
     <div class="listen-meta" id="lp-${key}">
       <span class="listen-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
       <span
@@ -101,7 +102,8 @@ export function recorderHTML(
           </ol>`
         : ""
     }
-    <p class="fine">Your recording stays on this device. It is never uploaded.</p>
+    <p class="fine">Listen to your answer. Choose one detail to add, then record again if you want.</p>
+    <p class="fine">Recordings stay in this tab and disappear when you close or reload this tab. They are never uploaded.</p>
     ${models ? modelLadderHTML(models, level) : ""}
   </section>`;
 }
@@ -112,8 +114,8 @@ export function modelLadderHTML(models, level) {
   return html`<details class="ladder">
     <summary>🪜 Hear answers that grow</summary>
     <p class="fine">
-      The same question, answered three ways. Which one sounds like you? Which one is your next
-      step?
+      The same question, answered with different amounts of detail. Borrow a useful phrase,
+      then explain your own idea. These examples are not WIDA scores.
     </p>
     <ol>
       ${rows.map(
@@ -212,7 +214,7 @@ export function vocabHTML(activity, shared) {
 }
 
 export function tierPickerHTML(domain, level, hrefFor) {
-  return html`<nav class="tier-picker" aria-label="Choose your level">
+  return html`<nav class="tier-picker" aria-label="Choose your practice support">
     ${LEVEL_KEYS.map(
       (k) =>
         html`<a
@@ -223,7 +225,7 @@ export function tierPickerHTML(domain, level, hrefFor) {
           <strong>${TIERS[k].name}</strong><span>${TIERS[k].range}</span>
         </a>`,
     )}
-  </nav>`;
+  </nav><p class="fine">Choose the support that helps today. These practice choices are not WIDA scores or placement levels.</p>`;
 }
 
 export function bandSwitchHTML(band, bands) {

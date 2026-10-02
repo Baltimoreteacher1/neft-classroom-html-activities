@@ -20,7 +20,7 @@ export async function render(ctx) {
   const card = (t) => {
     const rec = loadTestRecord(t.id);
     const status = rec.results
-      ? `Done · ${rec.results.correct}/${rec.results.total} right`
+      ? rec.results.total ? `Done · ${rec.results.correct}/${rec.results.total} auto-checked answers correct` : "Practice complete · teacher review needed"
       : Object.keys(rec.answers || {}).length
         ? "In progress"
         : "Not started";
@@ -46,7 +46,8 @@ export async function render(ctx) {
           <p class="eyebrow">${bandLabel(ctx.band)}</p>
           <h1 tabindex="-1">🧪 Practice tests</h1>
           <p class="lead">
-            Practice the real test order: Listening, Reading, Speaking, then Writing. No clock
+            Practice listening, reading, speaking, and writing. These classroom activities build
+            language confidence; they do not predict an ACCESS score. No clock
             unless you turn one on.
           </p>
           ${bandSwitchHTML(ctx.band, ctx.bands)}

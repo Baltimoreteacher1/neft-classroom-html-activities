@@ -1,0 +1,19 @@
+/* Guided daily sessions share the lab's accessible tokens and controls. */
+.session-plan { margin-block: 1.5rem; border-top: 4px solid var(--brand); }
+.session-heading { display: flex; justify-content: space-between; align-items: start; gap: 1rem; }
+.session-heading p { max-width: 64ch; }
+.session-heading > .btn { flex-shrink: 0; }
+.session-controls { display: grid; grid-template-columns: 1fr 1.3fr .7fr; gap: 1rem; }
+.session-controls .field { min-width: 0; }
+.session-controls select { width: 100%; min-height: 48px; padding: .65rem; border: 1px solid var(--ink-2); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink); font: inherit; }
+.session-summary { font-weight: 700; margin-top: 1rem; }
+.session-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; padding-left: 1.6rem; }
+.session-list li { padding: .7rem; background: var(--surface-2); border-radius: var(--radius-sm); }
+.session-list li > * { display: block; }
+.session-list a { font-weight: 700; padding-block: .35rem; overflow-wrap: anywhere; }
+.session-domain { font-size: .95rem; color: var(--ink-2); }
+@media (max-width: 760px) {
+  .session-heading { flex-direction: column; }
+  .session-controls, .session-list { grid-template-columns: 1fr; }
+}
+@media print { .session-controls, .session-heading > .btn { display: none; } }

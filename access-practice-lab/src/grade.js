@@ -86,8 +86,8 @@ export const SPEAKING_CHECKS = [
   },
   {
     id: "clear",
-    label: "I spoke clearly and in full sentences.",
-    es: "Hablé claro y en oraciones completas.",
+    label: "I shared my meaning with words, phrases, or sentences.",
+    es: "Comuniqué mis ideas con palabras, frases u oraciones.",
   },
 ];
 
@@ -102,7 +102,16 @@ export function analyzeWriting(text, activity, level) {
   const bank = [...(activity.wordBank || []), ...(activity.vocabulary || []).map((v) => v[0])]
     .map((w) => String(w).split("/")[0].trim().toLowerCase())
     .filter(Boolean);
-  const usedWords = [...new Set(bank.filter((w) => lower.includes(w)))];
+  // Match complete words and phrases, including Unicode letters. A word such
+  // as "rain" must not count merely because the response contains "train".
+  const tokens = (value) => value.normalize("NFKC").toLowerCase().match(/[\p{L}\p{N}]+/gu) || [];
+  const responseTokens = tokens(lower);
+  const usedWords = [...new Set(bank.filter((word) => {
+    const phrase = tokens(word);
+    return phrase.length > 0 && responseTokens.some((_, start) =>
+      phrase.every((token, offset) => responseTokens[start + offset] === token),
+    );
+  }))];
   const connectors = (
     t.match(
       /\b(because|but|so|and then|then|first|next|finally|however|also|for example|as a result|therefore)\b/gi,
@@ -114,8 +123,8 @@ export function analyzeWriting(text, activity, level) {
   const checks = [
     {
       ok: words >= goal,
-      label: `About ${goal} words or more`,
-      tip: `Add more detail — aim for about ${goal} words.`,
+      label: `Optional drafting target: about ${goal} words`,
+      tip: "Reread the question. Add a useful detail if your answer needs one; longer is not always better.",
     },
     {
       ok: connectors.length > 0,
@@ -123,14 +132,14 @@ export function analyzeWriting(text, activity, level) {
       tip: "Join two ideas with because, so, or then.",
     },
     {
-      ok: usedWords.length > 0,
-      label: "Uses word-bank words",
-      tip: "Use at least one word from the word bank.",
+      ok: !bank.length || usedWords.length > 0,
+      label: bank.length ? "Includes a word-bank word" : "No word bank for this task",
+      tip: "Try a word from the bank if it helps explain your idea. Check that it fits your meaning.",
     },
     {
       ok: sentences >= (level === "A" ? 1 : 2) && capitalStart,
-      label: "Complete sentences",
-      tip: "Start with a capital letter and end each sentence with a period.",
+      label: "Capital letter and end punctuation",
+      tip: "Check capital letters and end punctuation. Then read aloud to see whether each sentence makes sense.",
     },
   ];
   return {

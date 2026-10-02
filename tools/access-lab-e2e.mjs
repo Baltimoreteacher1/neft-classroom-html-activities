@@ -105,6 +105,81 @@ try {
   await page.waitForFunction(() => document.body.dataset.labBand === "3-5");
   ok(/Grades 3–5/.test(await page.textContent(".eyebrow")), "band switch shows grades 3–5");
 
+  // Guided sessions retain preferences and draft work across navigation/reload.
+  await page.selectOption("#planFocus", "Writing");
+  await page.selectOption("#planLevel", "B");
+  await page.selectOption("#planCount", "2");
+  ok(
+    (await page.locator(".session-list li").count()) === 2,
+    "planner creates requested session length",
+  );
+  ok(
+    (await page.locator(".session-domain").allTextContents()).every(
+      (t) => t.includes("Writing") && t.includes("Growing"),
+    ),
+    "planner respects skill and support",
+  );
+  await page.reload({ waitUntil: "networkidle" });
+  ok((await page.inputValue("#planFocus")) === "Writing", "planner preferences survive reload");
+  await page.locator(".session-list a").first().click();
+  await page.waitForSelector("[data-note]");
+  await page.fill("[data-note]", "A draft I will continue later.");
+  await go("/?grades=3-5");
+  ok(
+    (await page.textContent(".session-list li:first-child")).includes("Continue work"),
+    "planner surfaces saved unfinished writing",
+  );
+  await page.getByRole("link", { name: "Continue my practice" }).click();
+  await page.waitForSelector("[data-note]");
+  ok(
+    (await page.inputValue("[data-note]")).includes("draft I will continue"),
+    "guided session resumes saved draft",
+  );
+
+  // Search, filters, assignment links, empty state, and URL restoration.
+  await go("/library?grades=3-5");
+  ok(
+    (await page.locator(".library-item").count()) === 144,
+    "library lists the selected band's complete four-skill collection",
+  );
+  await page.selectOption("#libraryDomain", "Writing");
+  await page.selectOption("#libraryLevel", "B");
+  await page.selectOption("#libraryStatus", "draft");
+  ok(
+    (await page.locator(".library-item").count()) === 1,
+    "library finds unfinished work with combined filters",
+  );
+  await page.locator("[data-pick]").first().click();
+  ok((await page.locator(".library-picked li").count()) === 1, "add activity builds practice set");
+  const assignment = await page.inputValue("#assignmentLink");
+  ok(
+    new URL(assignment).searchParams.get("grades") === "3-5" &&
+      !assignment.includes("draft I will"),
+    "assignment link keeps grade band and excludes responses",
+  );
+  await page.reload({ waitUntil: "networkidle" });
+  ok(
+    (await page.locator(".library-picked li").count()) === 1 &&
+      (await page.inputValue("#libraryStatus")) === "draft",
+    "library URL restores filters and selected activities",
+  );
+  await page.fill("#librarySearch", "zzzz-no-matching-task");
+  ok(
+    await page.getByRole("heading", { name: "No matching activities" }).isVisible(),
+    "search has a useful empty state",
+  );
+  ok(
+    await page.locator("#librarySearch").evaluate((el) => document.activeElement === el),
+    "live search preserves keyboard focus",
+  );
+  await page.click("[data-clear-filters]");
+  await page.getByRole("link", { name: "Start this set" }).click();
+  await page.waitForSelector("[data-note]");
+  ok(
+    (await page.inputValue("[data-note]")).includes("draft I will continue"),
+    "shared set launches its selected activity",
+  );
+
   // Old shared URL shape still resolves (6–8 id → band switches automatically)
   await go("/Speaking/A/speak-ask-for-help");
   ok(
@@ -121,6 +196,10 @@ try {
   await page.locator(".choice", { hasText: "Say it again now." }).click();
   await page.click("[data-check]");
   ok(await page.isVisible(".feedback.is-hint"), "first miss shows a hint");
+  ok(
+    await page.locator(".feedback").evaluate((el) => document.activeElement === el),
+    "answer check moves keyboard focus to feedback",
+  );
   await page.click("[data-retry]");
   await page.locator(".choice", { hasText: "Say it again now." }).click();
   await page.click("[data-check]");
@@ -218,6 +297,27 @@ try {
     "results do not predict a WIDA level",
   );
 
+  // A paused timed test retains its position and cannot keep ticking on another route.
+  await go("/test/g35-listening-mini");
+  await page.check("[data-timer]");
+  await page.click("[data-start]");
+  await page.waitForSelector("#qTitle");
+  await page.click('[data-jump="1"]');
+  await page.click("[data-exit]");
+  await page.waitForSelector("#app h1");
+  const paused = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem("accessPracticeLab:v1:test:g35-listening-mini")),
+  );
+  ok(
+    paused.phase === "intro" && paused.index === 1,
+    "Save & exit pauses timed test and keeps position",
+  );
+  await go("/test/g35-listening-mini");
+  ok(
+    await page.getByRole("button", { name: "Resume test" }).isVisible(),
+    "paused test offers explicit resume",
+  );
+
   // Listening test: script not printed
   await go("/test/wida-listening-leon");
   await page.click("[data-start]");
@@ -250,6 +350,7 @@ try {
     "/Listening/A/g35-l-a-fraction-circle",
     "/test/g35-form-a",
     "/passport",
+    "/library?grades=3-5",
   ]) {
     await go(p);
     ok(

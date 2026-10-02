@@ -16,6 +16,7 @@ import { $, BASE, announce, bandOfId, copyText, toHtml } from "./util.js";
 import * as activityView from "./views/activity.js";
 import * as familyView from "./views/family.js";
 import * as homeView from "./views/home.js";
+import * as libraryView from "./views/library.js";
 import * as passportView from "./views/passport.js";
 import * as roadView from "./views/road.js";
 import * as roomView from "./views/room.js";
@@ -23,9 +24,10 @@ import * as testView from "./views/test.js";
 import * as testsView from "./views/tests.js";
 import * as toolsView from "./views/tools.js";
 
-export const BUILD = "2026.10.01";
+export const BUILD = "2026.10.02";
 const VIEWS = {
   home: homeView,
+  library: libraryView,
   room: roomView,
   activity: activityView,
   play: activityView,
@@ -49,7 +51,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   const [a, b, c, d] = parts;
   if (!a) return r;
   if (a === "test") return { ...r, view: "test", testId: b || "" };
-  if (["tests", "family", "passport", "tools"].includes(a)) return { ...r, view: a };
+  if (["tests", "family", "passport", "tools", "library"].includes(a)) return { ...r, view: a };
   if (a === "road") return { ...r, view: "road", week: Number(b) || 0 };
   if (a === "play")
     return {
@@ -77,6 +79,7 @@ const app = {
   prefs: getPrefs(),
   view: null,
   rendering: 0,
+  location: "",
 };
 
 export const ctx = {
@@ -136,6 +139,11 @@ function focusKey(el) {
     "data-set-band",
     "data-selfcheck",
     "data-tab-key",
+    "data-check",
+    "data-retry",
+    "data-check-writing",
+    "data-save-speaking",
+    "data-stop-audio",
   ]) {
     if (el.hasAttribute?.(attr)) {
       const extra = el.dataset.cat || el.dataset.dir || el.dataset.rate || "";
@@ -151,6 +159,17 @@ function focusKey(el) {
 async function render({ keepFocus = false, scroll = false } = {}) {
   const token = ++app.rendering;
   const route = parseRoute();
+  const locationKey = location.pathname + location.search;
+  const routeChanged = app.location !== locationKey;
+  if (routeChanged) {
+    app.view?.unmount?.();
+    stopSpeech();
+    rec.stop();
+    app.location = locationKey;
+  }
+  // Restore/import/clear actions may replace preferences outside this module.
+  app.prefs = getPrefs();
+  document.documentElement.style.setProperty("--lab-scale", String(app.prefs.textSize || 1));
   app.route = route;
   app.band = resolveBand(route);
   if (route.grades && route.grades === app.band && app.prefs.band !== app.band)
@@ -179,8 +198,14 @@ async function render({ keepFocus = false, scroll = false } = {}) {
   document.body.dataset.labView = route.view;
   document.body.dataset.labBand = app.band;
   view.mount?.(root, ctx);
-  if (fk) root.querySelector(fk)?.focus({ preventScroll: true });
-  else if (!keepFocus) {
+  if (fk) {
+    const target = root.querySelector(fk)
+      || root.querySelector(".feedback, .saved-note")
+      || root.querySelector("[data-check]")
+      || root.querySelector("h1");
+    if (target && !target.matches("button, input, select, textarea, a[href]")) target.tabIndex = -1;
+    target?.focus({ preventScroll: true });
+  } else if (!keepFocus) {
     if (scroll) window.scrollTo({ top: 0 });
     root.querySelector("h1")?.focus({ preventScroll: true });
   }
@@ -189,6 +214,12 @@ async function render({ keepFocus = false, scroll = false } = {}) {
 // ── shared interactions ───────────────────────────────────────────────────────
 async function common(e) {
   const t = e.target;
+  if (t.closest("[data-stop-audio]")) {
+    stopSpeech();
+    document.querySelectorAll(".listen-player.is-playing").forEach((el) => el.classList.remove("is-playing"));
+    announce("Audio stopped.");
+    return true;
+  }
   const say = t.closest("[data-say]");
   if (say) return (speak(say.dataset.say, { rate: app.prefs.rate }), true);
   const sayEs = t.closest("[data-say-es]");
@@ -196,12 +227,13 @@ async function common(e) {
   const listen = t.closest("[data-listen]");
   if (listen) {
     const key = listen.dataset.listen;
+    const startedAt = app.location;
     const player = listen.closest(".listen-player");
     player?.classList.add("is-playing");
     notePlay(key);
     const done = await speak(scripts.get(key) || [], { rate: app.prefs.rate });
     player?.classList.remove("is-playing");
-    if (done !== null) render({ keepFocus: true });
+    if (done && app.location === startedAt) render({ keepFocus: true });
     return true;
   }
   const rate = t.closest("[data-rate]");
@@ -221,8 +253,10 @@ async function common(e) {
   const recStart = t.closest("[data-rec-start]");
   if (recStart) {
     const key = recStart.dataset.recStart;
+    const owner = app.view;
+    const startedAt = app.location;
     try {
-      await rec.start(key, {
+      const recording = await rec.start(key, {
         onLevel: (lvl, secs) => {
           const m = $(".rec-meter");
           if (m) m.style.setProperty("--lvl", lvl.toFixed(2));
@@ -230,12 +264,13 @@ async function common(e) {
           if (s) s.textContent = `${secs}s`;
         },
         onStop: () => {
-          app.view?.onRecorded?.(key, ctx);
-          render({ keepFocus: true });
+          owner?.onRecorded?.(key, ctx);
+          if (app.location === startedAt) render({ keepFocus: true });
         },
       });
-      render({ keepFocus: true });
+      if (recording && app.location === startedAt) render({ keepFocus: true });
     } catch {
+      if (app.location !== startedAt) return true;
       announce(
         "The microphone is blocked. Allow the microphone in your browser, or practice aloud with a partner.",
       );
@@ -288,6 +323,7 @@ document.addEventListener("change", (e) => app.view?.onChange?.(e, ctx));
 document.addEventListener("input", (e) => app.view?.onInput?.(e, ctx));
 document.addEventListener("keydown", (e) => app.view?.onKey?.(e, ctx));
 window.addEventListener("popstate", () => render({ scroll: true }));
+window.addEventListener("pagehide", () => { app.view?.unmount?.(); stopSpeech(); rec.stop(); });
 
 async function boot() {
   document.documentElement.style.setProperty("--lab-scale", String(app.prefs.textSize || 1));
