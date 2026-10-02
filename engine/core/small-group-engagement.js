@@ -1,5 +1,6 @@
 import { getPreferredLang, setPreferredLang } from "./i18n.js";
 import { renderLaunchStoryBeats } from "./premium.js";
+import { mountCardReader } from "./reading-flow.js";
 import { figureBlock } from "./small-group-labs.js";
 import {
   markScene,
@@ -579,6 +580,7 @@ export function createVocabularySection(config, variant, onDone, store = null) {
   }
 
   const renderCards = () => {
+    grid.previousElementSibling?.matches(".reading-cards") && grid.previousElementSibling.remove();
     grid.innerHTML = "";
     words.forEach((word) => {
       const card = el("article", "sg-vcard");
@@ -649,9 +651,20 @@ export function createVocabularySection(config, variant, onDone, store = null) {
       card.appendChild(definition);
       grid.appendChild(card);
     });
+    if (grid.parentNode)
+      mountCardReader(grid, {
+        label: "Word",
+        initial: store?.get("readingWord"),
+        onChange: (index) => store?.set("readingWord", index),
+      });
   };
   renderCards();
   section.appendChild(grid);
+  mountCardReader(grid, {
+    label: "Word",
+    initial: store?.get("readingWord"),
+    onChange: (index) => store?.set("readingWord", index),
+  });
 
   const match = el("div", "sg-match");
   match.appendChild(el("div", "sg-eyebrow", "Quick word match"));

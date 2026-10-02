@@ -195,6 +195,7 @@ test.describe("presenting a small-group studio", () => {
     await page.keyboard.press("Escape");
     await expect(page.locator("body")).not.toHaveClass(/nt-present/);
     await expect(page.locator(".sgp-veil")).toHaveCount(0);
-    await expect(words.nth(1), "the studio is handed back intact").toBeVisible();
+    await expect(words.first(), "the original reading card returns").toBeVisible();
+    await expect(words.nth(1), "the studio returns to one word at a time").toBeHidden();
   });
 });

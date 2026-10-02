@@ -1,0 +1,79 @@
+/* Calm reading surfaces shared by interactive and small-group lessons. */
+.reading-guide { margin: 12px 0 20px; padding: 12px 16px; border-block: 1px solid #d5dee5; background: #fff; color: #17344a; }
+.reading-current { margin: 0 0 6px; font-size: 18px; font-weight: 700; line-height: 1.5; }
+.reading-outline > summary, .reading-intro-details > summary { width: fit-content; min-height: 36px; padding: 6px 0; cursor: pointer; color: #24566c; font-size: 16px; font-weight: 600; }
+.reading-outline[open] > summary { margin-bottom: 12px; }
+.reading-cards { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin: 16px 0; color: #17344a; }
+.reading-cards > span { flex: 1; text-align: center; font-size: 16px; }
+.reading-cards button { min-height: 44px; padding: 9px 14px; border: 1px solid #adbcc8; border-radius: 8px; background: #fff; color: #17344a; font: inherit; font-size: 16px; cursor: pointer; }
+.reading-cards button:disabled { color: #62717d; background: #edf1f4; cursor: default; }
+.reading-cards button:focus-visible, .reading-guide summary:focus-visible, .reading-intro-details summary:focus-visible { outline: 3px solid #087d88; outline-offset: 3px; }
+body:not(.nt-present) [data-reading-hidden] { display: none !important; }
+body:not(.nt-present) .reading-card-stack.sg-vgrid { grid-template-columns: minmax(0, 1fr); }
+.reading-card-stack .sg-vcard { max-width: 720px; width: 100%; margin-inline: auto; }
+#app .reading-hero { display: block; padding: 16px 22px; margin-bottom: 12px; }
+#app .reading-hero .sg-hero-grid { display: block; }
+#app .reading-hero h1 { text-transform: none; font-size: clamp(22px, 3vw, 30px); margin: 0 0 8px; }
+#app .reading-hero .sg-kicker { display: none; }
+#app .reading-hero .sg-obj { margin: 0 0 8px; }
+.reading-intro-details > :not(summary) { margin-block: 12px; }
+body:has(.reading-hero) .sg-tabs { position: static; margin-block: 12px 18px; padding: 8px; box-shadow: none; }
+body:has(.reading-hero) .sg-tabs .lbl small { display: none; }
+body:has(.reading-hero) .sg-tabpanel .sg-h { margin-bottom: 12px; }
+body:has(.reading-hero) .sg-h .n, body:has(.reading-hero) .sg-h .eyebrow { display: none; }
+/* The cross-part action belongs after the last step, never beside a different Next. */
+body:not(.nt-present) .sg-panel:has(.sg-substep:not([hidden]) ~ .sg-substep) > .sg-next { display: none; }
+body:has(.reading-guide) .lesson-hero { padding-block: 12px; }
+body:has(.reading-guide) .section-header { margin-bottom: 12px; }
+body:has(.reading-guide) .flagship-scene-hud { margin-block: 8px; }
+@media (max-width: 600px) {
+  .reading-guide { padding: 10px; }
+  .reading-cards { gap: 8px; }
+  .reading-cards > span { flex-basis: 100%; order: -1; }
+  .reading-cards button { flex: 1; }
+  #app .reading-hero { padding: 14px; }
+}
+@media print {
+  body:not(.nt-present) [data-reading-hidden] { display: block !important; }
+  .reading-guide, .reading-cards { display: none !important; }
+  .reading-intro-details > :not(summary) { display: block !important; }
+}
+body.nt-present .reading-guide, body.nt-present .reading-cards { display: none; }
+/* Keep the actual task above the fold on a Chromebook. */
+body:has(.reading-guide) .main { padding-top: 16px; }
+body:has(.reading-guide) .lesson-hero { padding: 14px 20px; margin-block: 12px 18px; border-radius: 10px; box-shadow: none; }
+body:has(.reading-guide) .lesson-hero-title { font-size: clamp(22px, 2.5vw, 30px); line-height: 1.25; margin: 4px 0; }
+body:has(.reading-guide) .lesson-hero-meta { padding: 0; background: none; color: #526578; border: 0; font-size: 14px; }
+body:has(.reading-guide) .section-header { padding: 12px 16px; margin: 12px 0; box-shadow: none; background: transparent; }
+body:has(.reading-guide) .section-title { font-size: 21px; }
+body:has(.reading-guide) .section-desc { font-size: 16px; }
+body:has(.reading-guide) .act-steps { margin-top: 12px; }
+body:has(.reading-guide) .flagship-scene-hud { display: block; padding: 10px 16px; border-radius: 8px; box-shadow: none; }
+.flagship-scene-hud > summary { cursor: pointer; min-height: 32px; padding: 4px 0; }
+.flagship-scene-hud[open] .flagship-scene-body { padding-block: 8px; }
+.reading-bonus { margin-top: 18px; padding: 12px; border-top: 1px solid #d5dee5; }
+.reading-bonus > summary { cursor: pointer; min-height: 36px; font-size: 16px; }
+@media print {
+  .reading-bonus > div, .flagship-scene-hud > .flagship-scene-body { display: block !important; }
+}
+body.editorial:has(.reading-guide) .lesson-hero-top { align-items: center; }
+body.editorial:has(.reading-guide) .lesson-hero-top > .lesson-hero-badges { flex-direction: row; gap: 12px; }
+body.editorial:has(.reading-guide) .lesson-hero-meta { background: transparent; padding: 0; color: #526578; margin: 0; letter-spacing: .03em; }
+body.editorial:has(.reading-guide) .lesson-hero::after { content: none; }
+body:has(.reading-guide) .phase.active { gap: 12px; }
+@media (min-width: 700px) {
+  .reading-guide { display: flex; align-items: baseline; justify-content: flex-start; flex-wrap: wrap; gap: 4px 24px; padding-block: 8px; }
+  .reading-current { margin: 0; }
+  .reading-outline[open] { flex-basis: 100%; }
+}
+body.editorial:has(.reading-guide) .lesson-hero { padding: 10px 18px; margin-block: 8px 12px; }
+body.editorial:has(.reading-guide) .lesson-hero-title { font-size: clamp(22px, 2.2vw, 28px); }
+body:has(.reading-guide) .section-header { margin-block: 4px; padding-block: 8px; }
+body:has(.reading-guide) .lesson-course-nav { margin-bottom: 8px; }
+body:has(.reading-guide) .card-warmup-phase { padding: 16px !important; }
+body:has(.reading-guide) .card-warmup-phase > p { margin-block: 10px !important; }
+body:has(.reading-guide) .card-warmup-phase .reading-cards { margin-block: 10px; }
+body:has(.reading-guide) .reading-guide { margin-block: 4px 12px; }
+/* Explicitly remove a closed outline from layout, including geometry probes. */
+.reading-outline:not([open]) > .act-step-strip,
+.reading-outline:not([open]) > .sg-substeps { display: none; }

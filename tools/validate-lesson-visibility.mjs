@@ -342,6 +342,15 @@ for (const id of SAMPLE) {
  * not reproduce when the check ran alone.
  * -------------------------------------------------------------------------- */
 async function checkWarmupAnswerable(page, id) {
+  // The reading view deliberately shows one question and folds the optional
+  // bonus. Use the real student controls before measuring the review surface;
+  // a DOM click would pass even if the disclosure were covered or unreachable.
+  const showAll = page
+    .locator(".card-warmup-phase .reading-cards")
+    .getByRole("button", { name: "Show all", exact: true });
+  if (await showAll.count()) await showAll.click();
+  const bonusDisclosure = page.locator(".card-warmup-phase .reading-bonus:not([open]) > summary");
+  if (await bonusDisclosure.count()) await bonusDisclosure.click();
   const shape = await page.evaluate(() => {
     /* Visible means PAINTED: laid out, non-zero, not hidden, not transparent. */
     const painted = (node, min = 8) => {

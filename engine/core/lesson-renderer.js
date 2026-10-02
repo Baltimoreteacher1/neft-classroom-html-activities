@@ -97,6 +97,7 @@ import {
   renderLaunchStoryBeats,
 } from "./premium.js";
 import { createProblemCard, problemTypeLabel } from "./problem-shell.js";
+import { mountCardReader, mountStepGuide } from "./reading-flow.js";
 import { mountReadingProgress } from "./reading-progress.js";
 import { mountRetrievalOpener } from "./retrieval.js";
 import { ensureCanvasBridge } from "./scorm-bridge.js";
@@ -3394,11 +3395,21 @@ export function renderWarmupPhase(el, state, ctx, config, opts = {}) {
     const retrievalHost = document.createElement("div");
     retrievalHost.style.display = "contents";
     questionsContainer.append(retrievalHost);
-    mountRetrievalOpener(retrievalHost, config, state, 0, { variant: "bonus", max: 1 }).catch(
-      () => {
+    const bonusDetails = document.createElement("details");
+    bonusDetails.className = "reading-bonus";
+    const bonusSummary = document.createElement("summary");
+    bonusSummary.textContent = "Bonus · Remember When";
+    bonusDetails.append(bonusSummary);
+    const bonusContent = document.createElement("div");
+    bonusDetails.append(bonusContent);
+    retrievalHost.append(bonusDetails);
+    mountRetrievalOpener(bonusContent, config, state, 0, { variant: "bonus", max: 1 })
+      .then(() => {
+        if (!bonusContent.childElementCount) bonusDetails.remove();
+      })
+      .catch(() => {
         /* the bonus is additive — never block Warmup on it */
-      },
-    );
+      });
   }
 
   const btnRow = document.createElement("div");
@@ -3492,6 +3503,13 @@ export function renderWarmupPhase(el, state, ctx, config, opts = {}) {
   }
   card.append(questionsContainer);
   card.append(btnRow);
+  const questionReader = mountCardReader(questionsContainer, {
+    count: warmup.questions.length,
+    initial: state.getResponse(0, "warmup_card") || 0,
+    onChange: (index) => state.saveResponse(0, "warmup_card", index),
+  });
+  // Submission keeps every question and its feedback available for review.
+  checkBtn.addEventListener("click", () => questionReader?.showAll());
 
   // The Math Notes entry card that used to sit here is gone: Math Notes is the
   // next STEP of Act 1, and the strip's single Next button is the one door to
@@ -6519,6 +6537,10 @@ export function renderActSteps(el, state, phaseIdx, steps) {
   const panels = document.createElement("div");
   wrap.append(strip, panels);
   el.append(wrap);
+  const updateGuide = mountStepGuide(
+    strip,
+    steps.map((step) => step.label),
+  );
 
   /** @type {HTMLElement[]} */
   const hosts = [];
@@ -6535,6 +6557,7 @@ export function renderActSteps(el, state, phaseIdx, steps) {
       c.classList.toggle("is-done", j !== i && visited.has(j));
       c.setAttribute("aria-selected", j === i ? "true" : "false");
     });
+    updateGuide(i, save);
     visited.add(i);
     actStepNav = { wrap, steps, index: i, show: (j) => show(j, true) };
     document.dispatchEvent(new CustomEvent("nt:actstep-changed", { detail: { index: i } }));

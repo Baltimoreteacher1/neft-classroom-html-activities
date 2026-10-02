@@ -95,7 +95,7 @@ const SAMPLE = (() => {
  * "covers" empty strip. The chips are the painted thing a teacher reads and a
  * student taps, and a control on top of one is unambiguously in the way —
  * which is exactly what the Presenter widget did to chips 4 through 6. */
-const PROTECTED = [".act-step-chip"];
+const PROTECTED = [".act-step-chip", ".reading-current", ".reading-outline > summary"];
 
 /* Fixed elements that are not controls and cannot be "in the way": a 3px
  * reading-progress hairline, and anything the page has already made
