@@ -58,7 +58,12 @@ test("Cloudflare's extensionless editor URL stays in teacher mode", () => {
 });
 test("freshness uses school date, handles missing/stale/future weeks and Sunday boundary", () => {
   assert.equal(schoolDate(new Date("2026-09-28T01:00:00Z")), "2026-09-27");
-  assert.equal(weekPhase("2026-09-21", new Date("2026-09-28T01:00:00Z")), "current");
+  // School time, not UTC: 03:00Z Saturday is still Friday 11 pm in Baltimore.
+  assert.equal(weekPhase("2026-09-21", new Date("2026-09-26T03:00:00Z")), "current");
+  // A weekend belongs to the week about to start (pacing-week.js weekStartFor).
+  assert.equal(weekPhase("2026-09-21", new Date("2026-09-26T16:00:00Z")), "past");
+  assert.equal(weekPhase("2026-09-28", new Date("2026-09-26T16:00:00Z")), "current");
+  assert.equal(weekPhase("2026-09-28", new Date("2026-09-28T01:00:00Z")), "current");
   assert.equal(weekPhase("2026-09-21", new Date("2026-09-28T12:00:00Z")), "past");
   assert.equal(weekPhase("2026-09-28", new Date("2026-09-24T12:00:00Z")), "upcoming");
   assert.equal(weekPhase("2026-99-99"), "empty");

@@ -309,3 +309,19 @@
 .curriculum-units-page .units-lesson-pathways button,
 .curriculum-units-page .units-result-actions a { border-radius: 8px; }
 .curriculum-units-page .badge { font-size: 13px; border-radius: 4px; padding: 1px 8px; }
+
+/* The shared course bar must hold its own layout on every page that carries
+   the shell. /curriculum/practice-workbooks/ styles a bare `nav { display:
+   flex }` for its breadcrumb, which also matched this bar: the inner row
+   became a flex item sized to its content and the page scrolled sideways by
+   240px on a 360px phone. */
+.curriculum-product .ewl-course-nav { display: block; gap: 0; flex-wrap: nowrap; }
+.curriculum-product .ewl-course-nav__inner { min-width: 0; }
+.curriculum-product .ewl-course-nav ul { max-width: 100%; }
+
+/* Breadcrumb rows and footer link lists are not inline text, so they get a
+   44px target like every other control (they measured 19-22px tall). */
+.curriculum-product footer a,
+.curriculum-product .wrap > nav:not(.ewl-course-nav) a {
+  display: inline-flex; align-items: center; min-height: 44px;
+}
