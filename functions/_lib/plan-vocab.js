@@ -3820,6 +3820,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/review-expeditions/",
+    title: "Expedition Atlas — Grade 6 Review Expeditions (Reveal Math Units 2–9)",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/showcase/",
     title: "Student Work Gallery",
     category: "Hub",
@@ -3850,6 +3856,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/unit-2-adventure-review/",
+    title: "Tidewater Survey — Unit 2 Review Adventure (Statistics and Data Displays)",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/unit-3-adventure-review/",
     title: "Expedition Meridian — Unit 3 Review Adventure (Ratios and Rates)",
     category: "Hub",
@@ -3858,6 +3870,43 @@ export const ACTIVITIES = [
   {
     path: "/curriculum/unit-3-test-review/",
     title: "Unit 3 Test Review | Grade 6 Family Homework",
+    category: "Hub",
+    unit: null,
+  },
+  {
+    path: "/curriculum/unit-4-adventure-review/",
+    title: "The Hundred Lanterns — Unit 4 Review Adventure (Percents)",
+    category: "Hub",
+    unit: null,
+  },
+  {
+    path: "/curriculum/unit-5-adventure-review/",
+    title: "The Architect's Vault — Unit 5 Review Adventure (Area, Surface Area, and Volume)",
+    category: "Hub",
+    unit: null,
+  },
+  {
+    path: "/curriculum/unit-6-adventure-review/",
+    title: "The Clockwork Foundry — Unit 6 Review Adventure (Expressions)",
+    category: "Hub",
+    unit: null,
+  },
+  {
+    path: "/curriculum/unit-7-adventure-review/",
+    title:
+      "Polar Station Zero — Unit 7 Review Adventure (Rational Numbers and the Coordinate Plane)",
+    category: "Hub",
+    unit: null,
+  },
+  {
+    path: "/curriculum/unit-8-adventure-review/",
+    title: "The Balance Keepers — Unit 8 Review Adventure (Equations and Inequalities)",
+    category: "Hub",
+    unit: null,
+  },
+  {
+    path: "/curriculum/unit-9-adventure-review/",
+    title: "Skyline Relay — Unit 9 Review Adventure (Relationships Between Two Variables)",
     category: "Hub",
     unit: null,
   },
