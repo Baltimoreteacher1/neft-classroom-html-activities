@@ -224,6 +224,21 @@ the strongest one(s) relevant to what you changed:
 > bloat tripled the student notes page one template paragraph at a time and no
 > gate measured reading load; raise a budget only deliberately, in the same
 > commit as the generator change, with a reason),
+> `tools/audit-allowlist.test.mjs` (an accepted security advisory must survive
+> npm **renumbering** it — the gate keyed `accepted` on `via.source`, the integer
+> npm prints beside an advisory and reassigns at will, so the two reviewed,
+> in-date `image-size` acceptances written down as 1138808/1138809 stopped
+> matching the moment npm started calling the same advisories 1239765/1239766.
+> It then did both wrong things at once: BLOCKED two advisories somebody had
+> already reasoned about, and reported those same entries as dead weight to
+> delete — and taking that advice destroys the written reasoning for a real
+> risk. Entries are matched by the GHSA id in `advisory`, which is assigned once
+> and never changes, and which both entries already carried. The decision
+> procedure is now an exported `classify()` taking a report and returning a
+> verdict, because the only way to reach it before was a live `npm audit`, which
+> needs a network and answers differently next month — that is why this sat
+> unnoticed. Mutation-proven: putting the lookup back on the integer fails four
+> cases),
 > `tools/lint-coverage.test.mjs` (every shipped script must be visible to Biome),
 > `tools/typecheck-ratchet.test.mjs` (the `@ts-nocheck` count may only shrink),
 > `tools/curriculum-hub-assets.test.mjs` (the hub's extracted assets are stamped
