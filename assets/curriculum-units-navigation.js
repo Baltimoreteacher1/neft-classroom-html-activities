@@ -271,7 +271,64 @@
       });
     }
 
+    // "Aug 24 – Sep 8 · 11 school days" under the unit title, from the same
+    // generated pacing dates the dashboard's course cards use. The unit being
+    // taught today is marked. Decorative colour never carries the meaning.
+    const MONTHS = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    function pacingDate(text) {
+      const m = /^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/.exec(String(text || "").trim());
+      if (!m) return null;
+      const year = m[3].length === 2 ? 2000 + Number(m[3]) : Number(m[3]);
+      return new Date(year, Number(m[1]) - 1, Number(m[2]));
+    }
+    function shortDate(d) {
+      return `${MONTHS[d.getMonth()]} ${d.getDate()}`;
+    }
+    function decorateUnitHeaders() {
+      const dates = window.__NT_PACING_DATES;
+      if (!dates || typeof dates !== "object") return;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      cards().forEach((card, index) => {
+        const unit = units[index];
+        const range = unit && dates[unit.unitIndex];
+        const meta = card.querySelector(".unit-card-meta");
+        if (!range || !meta || meta.querySelector(".unit-card-dates")) return;
+        const start = pacingDate(range.start_date);
+        const end = pacingDate(range.end_date);
+        if (!start || !end) return;
+        const line = document.createElement("p");
+        line.className = "unit-card-dates";
+        const days = Number(range.instructional_days);
+        line.textContent =
+          `Taught ${shortDate(start)} – ${shortDate(end)}` +
+          (days > 0 ? ` · ${days} school day${days === 1 ? "" : "s"}` : "");
+        if (start <= today && today <= end) {
+          const now = document.createElement("span");
+          now.className = "unit-card-now";
+          now.textContent = "Now";
+          line.prepend(now, " ");
+          card.classList.add("is-current-unit");
+        }
+        meta.appendChild(line);
+      });
+    }
+
     function compactUnitCards() {
+      decorateUnitHeaders();
       cards().forEach((card) => {
         const resources = card.querySelector(".unit-resources-row");
         if (!resources || resources.closest(".units-resource-drawer")) return;
@@ -721,6 +778,7 @@
     }).observe(hub, { childList: true, subtree: true });
     compactControls();
     applyLocation();
+    compactUnitCards();
   }
 
   if (document.readyState === "loading")
