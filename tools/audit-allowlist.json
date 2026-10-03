@@ -8,11 +8,17 @@
     "cases, so an accepted risk cannot quietly become a permanent one.",
     "",
     "Do not add an entry to make a build green. Add one when the honest answer is",
-    "'there is no fix and the exposure is understood', and write down why."
+    "'there is no fix and the exposure is understood', and write down why.",
+    "",
+    "An entry is matched by its GHSA id in 'advisory'. Do NOT key one on npm's",
+    "numeric advisory id: npm renumbers them. These two entries were written",
+    "down as 1138808/1138809 and npm now calls the same advisories",
+    "1239765/1239766, which made both acceptances stop matching at once --",
+    "blocking advisories that had a reviewed, in-date decision while reporting",
+    "those same entries as dead weight to delete."
   ],
   "accepted": [
     {
-      "id": 1138808,
       "package": "image-size",
       "advisory": "GHSA-w3rx-r6r6-pgpr",
       "title": "ICNS parser allows denial of service through an infinite loop",
@@ -37,7 +43,6 @@
       ]
     },
     {
-      "id": 1138809,
       "package": "image-size",
       "advisory": "GHSA-5p2g-fcmc-qvqq",
       "title": "JXL and HEIF parsers allow denial of service through infinite loops",
