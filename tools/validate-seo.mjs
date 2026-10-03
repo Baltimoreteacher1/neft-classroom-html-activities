@@ -55,10 +55,11 @@
  */
 
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { isTeacherSurface } from "../functions/_lib/teacher-surface.js";
+import { HEAD_BYTES, robotsMetaNoindex } from "../scripts/lib/robots-meta.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const CANONICAL_ORIGIN = "https://eduwonderlab.com";
@@ -183,6 +184,34 @@ export function servedPath(file) {
 }
 
 /**
+ * The inverse: the file a URL path is served FROM, or null.
+ *
+ * Shared by the "does this URL exist on disk?" check and the "does this page
+ * say noindex?" check, which must agree about what a path resolves to — two
+ * copies of this rule is how one of them starts reading a different file.
+ * `exists` is injectable so the resolution order can be self-tested without
+ * touching the tree.
+ */
+export function fileForPath(p, exists = isFile) {
+  const rel = p.replace(/^\/+/, "");
+  const candidates = [rel, `${rel}index.html`, `${rel.replace(/\/$/, "")}/index.html`];
+  return candidates.find((c) => c && exists(c)) ?? null;
+}
+
+/* It must be a FILE. existsSync() says true for a DIRECTORY, so `/personal/leia/`
+   resolved to the directory `personal/leia`, which is not HTML and was never
+   read — the noindex detector silently passed every directory-style URL, which
+   is nearly all of them. Found by mutation: re-adding a known noindex page to
+   the sitemap did not fail the gate. */
+function isFile(f) {
+  try {
+    return statSync(join(root, f)).isFile();
+  } catch {
+    return false;
+  }
+}
+
+/**
  * The URL a `<meta http-equiv="refresh">` stub sends visitors to, or null.
  *
  * A page whose whole job is to forward SHOULD canonicalize to its destination
@@ -214,7 +243,14 @@ export function refreshTarget(html) {
 
 function selfTest() {
   const t = [];
+  /* `ran` is counted, not asserted. This returned a hardcoded `26` until
+     2026-10-03, so the banner reported 26 self-tests whatever the function
+     actually did: fourteen checks were added and the number did not move, and
+     deleting half of them would not have moved it either. A gate that reports
+     a literal cannot report that it stopped checking. */
+  let ran = 0;
   const check = (name, actual, expected) => {
+    ran += 1;
     if (actual !== expected) t.push(`${name}: expected ${expected}, got ${actual}`);
   };
 
@@ -296,6 +332,80 @@ function selfTest() {
     null,
   );
 
+  // noindex. The two shipped cases, plus the shapes that must NOT be read as a
+  // directive — the word in page copy is not an instruction to a crawler, and
+  // reading it as one would silently drop a real page out of the sitemap.
+  check(
+    "noindex read",
+    robotsMetaNoindex('<head><meta name="robots" content="noindex" /></head>'),
+    true,
+  );
+  check(
+    "noindex, nofollow read",
+    robotsMetaNoindex('<head><meta name="robots" content="noindex, nofollow"></head>'),
+    true,
+  );
+  check(
+    "index, follow is not noindex",
+    robotsMetaNoindex('<head><meta name="robots" content="index, follow"></head>'),
+    false,
+  );
+  check("no robots meta", robotsMetaNoindex("<head><title>x</title></head>"), false);
+  check(
+    "the word in page copy is not a directive",
+    robotsMetaNoindex("<head><title>x</title></head><body>we set noindex there</body>"),
+    false,
+  );
+
+  // The path -> file resolver, with a stubbed tree so the order is pinned
+  // rather than inferred from whatever happens to exist on disk.
+  const tree = new Set(["a/index.html", "b.html", "c/downloads/x.pdf"]);
+  const has = (f) => tree.has(f);
+  check("dir resolves to its index", fileForPath("/a/", has), "a/index.html");
+  check("file resolves to itself", fileForPath("/b.html", has), "b.html");
+  check("non-html resolves too", fileForPath("/c/downloads/x.pdf", has), "c/downloads/x.pdf");
+  check("nothing to resolve", fileForPath("/nope/", has), null);
+  // The directory trap, against the REAL tree: existsSync() answers true for a
+  // directory, so this returned `personal/leia` — not HTML, never read, and the
+  // noindex detector silently passed every directory-style URL, which is
+  // nearly all of them.
+  check(
+    "directory url resolves to its index, not the directory",
+    fileForPath("/personal/leia/"),
+    "personal/leia/index.html",
+  );
+
+  // Robots must mirror the gate's SUBSTRING match, not an .html suffix: these
+  // are the exact paths that were crawlable-but-401 before 2026-10-03.
+  const mirror = parseRobots(
+    [
+      "User-agent: *",
+      "Allow: /assets/",
+      "Allow: /assets/*teacher",
+      "Disallow: /*teacher",
+      "Disallow: /*answer-key",
+    ].join("\n"),
+  ).rules;
+  check(
+    "teacher pdf is disallowed",
+    robotsAllows(mirror, "/lessons/1-1/downloads/1-1-notes-teacher.pdf"),
+    false,
+  );
+  check(
+    "answer-key docx is disallowed",
+    robotsAllows(mirror, "/curriculum/reveal-documents/unit-2/teacher/u2-answer-key.docx"),
+    false,
+  );
+  // The longest-match trap: "/assets/" (8) does NOT out-rank "/*teacher" (9),
+  // so the explicit /assets/*teacher Allow is what keeps the PUBLIC hub's own
+  // script crawlable. Without it Googlebot renders the hub without it.
+  check(
+    "shared teacher-named asset stays crawlable",
+    robotsAllows(mirror, "/assets/curriculum-teacher-workflow.js"),
+    true,
+  );
+  check("student lesson stays crawlable", robotsAllows(mirror, "/lessons/1-1/"), true);
+
   // The gate predicate itself, on the three URLs that were submitted.
   for (const p of ["/dashboard/", "/teacher-tools/", "/teacher-data-dashboard/"]) {
     check(`gate sees ${p}`, isTeacherSurface(p), true);
@@ -325,7 +435,13 @@ function selfTest() {
     for (const line of t) console.error(`  ${line}`);
     process.exit(1);
   }
-  return 26;
+  /* A floor, so a future edit that deletes checks wholesale fails here instead
+     of quietly reporting a smaller number nobody reads. */
+  if (ran < 30) {
+    console.error(`FAIL validate:seo — only ${ran} self-tests ran; expected at least 30.`);
+    process.exit(1);
+  }
+  return ran;
 }
 
 /* ------------------------------------------------------------------- sweep */
@@ -344,7 +460,15 @@ const tracked = execFileSync("git", ["ls-files"], {
 // carry an indexing signal. One is tracked — a stray `.pdf-render-*.html`
 // scratch copy of a teacher notes page — and judging it would report a defect
 // on a page no crawler can reach.
-const isPublished = (f) => !f.split("/").some((seg) => seg.startsWith("."));
+// Markdown is not served either: vite.config.js copies every top-level folder
+// into dist/ but filters `.md` out (one exception, student-practice.md), for
+// the deliberate reason that answer-key.md and teacher-guide.md must not ship
+// where a student with the URL could read them. So a robots rule for
+// /canvas-packages/unit-3/TEACHER-GUIDE.md would be a rule about a URL that
+// 404s — the sweep must mirror what the BUILD publishes, not what git tracks.
+const isPublished = (f) =>
+  !f.split("/").some((seg) => seg.startsWith(".")) &&
+  (!/\.md$/i.test(f) || /(^|\/)student-practice\.md$/i.test(f));
 const htmlFiles = tracked.filter((f) => f.endsWith(".html") && isPublished(f));
 
 const robotsText = readFileSync(join(root, "robots.txt"), "utf8");
@@ -354,10 +478,20 @@ if (sitemapDecl !== `${CANONICAL_ORIGIN}/sitemap.xml`) {
   fail("robots-sitemap", `robots.txt declares Sitemap: ${sitemapDecl || "(none)"}`);
 }
 
-/* 1. Robots coverage, both directions, over every tracked HTML page. */
+/* 1. Robots coverage, both directions, over every tracked file the site SERVES
+      — not merely the HTML ones.
+
+   This swept `htmlFiles` until 2026-10-03, and the gate it mirrors does not:
+   isTeacherSurface() is checked against the request path, whatever its
+   extension. 814 teacher-gated PDFs, .docx and .csv files therefore answered
+   401 while robots.txt allowed them — /lessons/1-1/downloads/1-1-notes-teacher.pdf
+   among them — so a crawler kept spending requests to be refused, which is the
+   exact waste this gate exists to end, and the gate reported PASS throughout.
+   An HTML-only sweep cannot see a non-HTML hole. */
+const servedFiles = tracked.filter(isPublished);
 const notDisallowed = [];
 const wronglyDisallowed = [];
-for (const file of htmlFiles) {
+for (const file of servedFiles) {
   const path = servedPath(file);
   const gated = isTeacherSurface(path);
   const allowed = robotsAllows(robotsRules, path);
@@ -415,6 +549,26 @@ if (gatedInSitemap.length) {
   );
 }
 
+/* A sitemap entry is a request to index that URL. A page carrying
+   <meta name="robots" content="noindex"> is a request not to. Submitting both
+   is the same class of defect as the host mismatch this gate was written for —
+   two signals about one URL, disagreeing, with Google left to pick. It is not
+   hypothetical: the moment the sitemap started reading the whole catalog it
+   submitted 24 such pages, 16 of them the /personal/ family pages, which are
+   marked `noindex, nofollow` because they are nobody's business but the
+   family's. Read from each page's own head, never from a list here. */
+const noindexInSitemap = sitemapPaths.filter((p) => {
+  const file = fileForPath(p);
+  if (!file || !file.endsWith(".html")) return false;
+  return robotsMetaNoindex(readFileSync(join(root, file), "utf8").slice(0, HEAD_BYTES));
+});
+if (noindexInSitemap.length) {
+  fail(
+    "sitemap-noindex",
+    `${noindexInSitemap.length} submitted URL(s) whose own page says noindex:\n    ${noindexInSitemap.slice(0, 10).join("\n    ")}`,
+  );
+}
+
 const blockedInSitemap = sitemapPaths.filter((p) => !robotsAllows(robotsRules, p));
 if (blockedInSitemap.length) {
   fail(
@@ -444,12 +598,7 @@ if (blockedInSitemap.length) {
  * manual command until someone can see that step's output.
  */
 
-const unresolvable = sitemapPaths.filter((p) => {
-  const rel = p.replace(/^\//, "");
-  return ![rel, `${rel}index.html`, `${rel.replace(/\/$/, "")}/index.html`].some(
-    (c) => c && existsSync(join(root, c)),
-  );
-});
+const unresolvable = sitemapPaths.filter((p) => !fileForPath(p));
 if (unresolvable.length) {
   fail(
     "sitemap-resolves",

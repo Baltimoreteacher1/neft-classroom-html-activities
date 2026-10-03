@@ -8,6 +8,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { isTeacherSurface } from "../functions/_lib/teacher-surface.js";
+import { HEAD_BYTES, robotsMetaNoindex } from "./lib/robots-meta.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -39,11 +40,37 @@ const emitted = new Set();
 // Paths the catalog offers that the teacher gate would refuse. Reported, not
 // silently dropped — a catalog entry moving behind the gate is worth seeing.
 const refused = new Set();
+// Paths whose own page says noindex. Reported for the same reason.
+const noindexed = new Set();
 const lines = [];
 
 function comment(text) {
   lines.push(`  <!-- ${text} -->`);
 }
+
+/**
+ * Does the page served at this path ask not to be indexed?
+ *
+ * The robots-meta parse itself lives in scripts/lib/robots-meta.mjs, shared
+ * with tools/validate-seo.mjs: the generator that excludes these pages and the
+ * gate that fails when one slips in must not hold two different opinions about
+ * what "noindex" means. Read from the page, never from a list here — a list is
+ * one more thing to go stale, and the page is the only authority on its own
+ * robots meta.
+ */
+function declaresNoindex(p) {
+  const rel = p.replace(/^\/+/, "");
+  const candidates = rel.endsWith(".html")
+    ? [rel]
+    : [join(rel, "index.html"), `${rel.replace(/\/$/, "")}.html`];
+  for (const candidate of candidates) {
+    const file = join(root, candidate);
+    if (!existsSync(file)) continue;
+    return robotsMetaNoindex(readFileSync(file, "utf8").slice(0, HEAD_BYTES));
+  }
+  return false;
+}
+
 function url(p) {
   if (!p || emitted.has(p)) return;
   // A sitemap entry asks Google to index that URL. A teacher surface answers
@@ -55,6 +82,17 @@ function url(p) {
   // it is gated, not the day someone remembers this file.
   if (isTeacherSurface(p)) {
     refused.add(p);
+    return;
+  }
+  // A page carrying <meta name="robots" content="noindex"> has asked not to be
+  // indexed. Submitting it in the sitemap asks for the opposite, and that is
+  // the same defect as the host mismatch above — two signals about one URL,
+  // disagreeing, resolved by Google rather than by us. 24 paths arrived this
+  // way the moment the sitemap started reading the whole catalog, 16 of them
+  // the /personal/ family pages, which are marked noindex, nofollow because
+  // they are nobody's business but the family's.
+  if (declaresNoindex(p)) {
+    noindexed.add(p);
     return;
   }
   emitted.add(p);
@@ -135,9 +173,14 @@ const xml =
   `\n</urlset>\n`;
 
 function reportRefused() {
-  if (!refused.size) return;
-  console.log(`Excluded ${refused.size} teacher-gated path(s) (they answer 401):`);
-  for (const p of [...refused].sort()) console.log(`  ${p}`);
+  if (refused.size) {
+    console.log(`Excluded ${refused.size} teacher-gated path(s) (they answer 401):`);
+    for (const p of [...refused].sort()) console.log(`  ${p}`);
+  }
+  if (noindexed.size) {
+    console.log(`Excluded ${noindexed.size} path(s) whose page declares noindex:`);
+    for (const p of [...noindexed].sort()) console.log(`  ${p}`);
+  }
 }
 
 const target = join(root, "sitemap.xml");

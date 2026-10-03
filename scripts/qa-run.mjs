@@ -205,7 +205,7 @@ const COVERAGE = [
   // predicate that decides what 401s. validate:seo is added to that rule
   // instead, so coverage only ever grows.
   [
-    /^(robots\.txt|sitemap\.xml|scripts\/generate-sitemap\.mjs|tools\/validate-seo\.mjs)$/,
+    /^(robots\.txt|sitemap\.xml|scripts\/generate-sitemap\.mjs|scripts\/lib\/robots-meta\.mjs|tools\/validate-seo\.mjs)$/,
     ["validate:seo", "test", "check"],
   ],
 
