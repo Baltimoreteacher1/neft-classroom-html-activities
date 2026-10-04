@@ -80,7 +80,6 @@
             <!-- EWL Universal Arcade Enhancements Header -->
       <div class="ewl-arcade-header-bar">
         <div class="ewl-arcade-title-group">
-          <a href="/math/games/" class="ewl-back-hub-btn">⬅️ Arcade Hub</a>
           <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
           <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
         </div>
@@ -151,36 +150,61 @@
           }
           return b;
         }
-        function makeQ(text, correct, wrongs, hint, tier) {
-          // De-duplicate distractors against the correct answer AND each other.
-          // Several generators can, for specific parameter draws (e.g. a=2,c=2
-          // makes a+c === a*c), produce a wrong option string identical to the
-          // correct one or to another wrong — which would show two identical
-          // buttons (one scored wrong). Keep only distinct wrongs.
+        function makeQ(text, correct, wrongs, help, tier, skill) {
+          // wrongs: [value, why] pairs — each distractor is a named
+          // misconception, so a wrong pick gets feedback about THAT mistake.
+          // De-duplicate distractors against the correct answer AND each other
+          // (e.g. a=2,c=2 makes a+c === a*c) so no two buttons look identical.
           const seen = new Set([String(correct)]);
           const cleanWrongs = [];
-          wrongs.forEach((w) => {
+          const why = {};
+          wrongs.forEach(([w, reason]) => {
             const s = String(w);
             if (!seen.has(s)) {
               seen.add(s);
               cleanWrongs.push(s);
+              why[s] = reason;
             }
           });
           const opts = shuffle([String(correct), ...cleanWrongs]);
-          return { text, correct: String(correct), options: opts, hint, tier };
+          // method = Tier-1 hint (no answer); nudge = Tier-2 concrete first
+          // step (still not the final answer); step = full worked solution,
+          // shown only after the part is solved or every wrong part is used.
+          return {
+            text,
+            correct: String(correct),
+            options: opts,
+            hint: help.method,
+            method: help.method,
+            nudge: help.nudge,
+            step: help.step,
+            why,
+            tier,
+            skill,
+          };
         }
+        const coef = (n, v) => (n === 1 ? v : `${n}${v}`);
         // TIER 1: Simple evaluation
         for (let i = 0; i < 6; i++) {
           const c = Phaser.Math.Between(2, 9),
-            x = Phaser.Math.Between(1, 10);
+            x = Phaser.Math.Between(2, 10);
           const ans = c * x;
           qs.push(
             makeQ(
               `Evaluate ${c}x when x = ${x}`,
-              String(ans),
-              [String(ans + c), String(ans - x), String(c + x)],
-              `Multiply ${c} × ${x} = ${ans}`,
+              ans,
+              [
+                [ans + c, `that is one group of ${c} too many. ${c}x means exactly ${x} groups of ${c}.`],
+                [ans - x, "check your multiplication fact again."],
+                [c + x, `${c}x means ${c} TIMES x, not ${c} plus x.`],
+              ],
+              {
+                method: `A number next to a letter means multiply. Put ${x} in for x.`,
+                nudge: `${c}x = ${c} × ${x}. Find that product.`,
+                step: `${c}x = ${c} × ${x} = ${ans}`,
+              },
               1,
+              "substitute and multiply",
             ),
           );
         }
@@ -188,30 +212,47 @@
         for (let i = 0; i < 4; i++) {
           const a = Phaser.Math.Between(1, 5),
             b = Phaser.Math.Between(2, 7),
-            n = Phaser.Math.Between(1, 8);
+            n = Phaser.Math.Between(2, 8);
           const ans = a + b * n;
           qs.push(
             makeQ(
               `Evaluate ${a} + ${b}n when n = ${n}`,
-              String(ans),
-              [String(a * b + n), String(b * n), String(a + b + n)],
-              `First: ${b}×${n}=${b * n}, then add ${a}`,
+              ans,
+              [
+                [a * b + n, `you multiplied ${a} × ${b}. The ${b} belongs to n: multiply ${b} × n first.`],
+                [b * n, `you found ${b}n but forgot to add the ${a}.`],
+                [a + b + n, `${b}n means ${b} × n, so multiply before you add.`],
+              ],
+              {
+                method: "Order of operations: multiply before you add.",
+                nudge: `First find ${b}n = ${b} × ${n}. Then add ${a}.`,
+                step: `${b} × ${n} = ${b * n}, then ${a} + ${b * n} = ${ans}`,
+              },
               1,
+              "order of operations",
             ),
           );
         }
         // TIER 2: Distributive property
         for (let i = 0; i < 5; i++) {
           const a = Phaser.Math.Between(2, 6),
-            b = Phaser.Math.Between(1, 9),
             c = Phaser.Math.Between(1, 9);
           qs.push(
             makeQ(
               `Which is equivalent to ${a}(x + ${c})?`,
               `${a}x + ${a * c}`,
-              [`${a}x + ${c}`, `x + ${a * c}`, `${a}x + ${a + c}`],
-              `Distribute: ${a}×x = ${a}x, ${a}×${c} = ${a * c}`,
+              [
+                [`${a}x + ${c}`, `the ${a} multiplies BOTH terms inside. You multiplied x but not ${c}.`],
+                [`x + ${a * c}`, `the ${a} multiplies BOTH terms inside. You multiplied ${c} but not x.`],
+                [`${a}x + ${a + c}`, `${a} × ${c} is multiplication, not ${a} + ${c}.`],
+              ],
+              {
+                method: "Distributive property: multiply the outside number by EACH term inside the parentheses.",
+                nudge: `${a} × x = ${a}x. Now multiply ${a} × ${c}.`,
+                step: `${a}(x + ${c}) = ${a} × x + ${a} × ${c} = ${a}x + ${a * c}`,
+              },
               2,
+              "distributive property",
             ),
           );
         }
@@ -222,33 +263,47 @@
           const ans = co * a * a + 1;
           qs.push(
             makeQ(
-              `Evaluate ${co}a² + 1 when a = ${a}`,
-              String(ans),
-              [String(co * a + 1), String(co * a * a), String(co + a * a + 1)],
-              `${a}²=${a * a}, then ${co}×${a * a}=${co * a * a}, add 1`,
+              `Evaluate ${coef(co, "a²")} + 1 when a = ${a}`,
+              ans,
+              [
+                [co * a + 1, `a² means a × a = ${a} × ${a}, not just ${a}.`],
+                [co * a * a, "you skipped the + 1 at the end."],
+                [co + a * a + 1, `${coef(co, "a²")} means ${co} × a², so multiply — do not add the ${co}.`],
+              ],
+              {
+                method: "Exponents first: a² means a × a. Then multiply, then add.",
+                nudge: `${a}² = ${a} × ${a} = ${a * a}. Now finish: ${co} × ${a * a} + 1.`,
+                step: `${a}² = ${a * a}, ${co} × ${a * a} = ${co * a * a}, then + 1 = ${ans}`,
+              },
               2,
+              "exponents",
             ),
           );
         }
         // TIER 3: Combine like terms
         for (let i = 0; i < 4; i++) {
           const a = Phaser.Math.Between(2, 7),
-            b = Phaser.Math.Between(1, 8),
+            b = Phaser.Math.Between(3, 9),
             c = Phaser.Math.Between(1, 5),
-            d = Phaser.Math.Between(1, b);
+            d = Phaser.Math.Between(1, b - 1);
           const xc = a + c,
             nc = b - d;
           qs.push(
             makeQ(
-              `Simplify: ${a}x + ${b} + ${c}x − ${d}`,
+              `Simplify: ${a}x + ${b} + ${coef(c, "x")} − ${d}`,
               `${xc}x + ${nc}`,
               [
-                `${xc}x + ${b + d}`,
-                `${a + c + b}x − ${d}`,
-                `${a * c}x + ${nc}`,
+                [`${xc}x + ${b + d}`, `it is MINUS ${d}, so subtract: ${b} − ${d}.`],
+                [`${a + c + b}x − ${d}`, `${b} has no x, so it is not a like term with the x-terms.`],
+                [`${a * c}x + ${nc}`, "to combine like terms, ADD the x-coefficients — do not multiply them."],
               ],
-              `Combine x-terms: ${a}x+${c}x=${xc}x; constants: ${b}−${d}=${nc}`,
+              {
+                method: "Like terms have the same variable part. Combine x-terms together and numbers together.",
+                nudge: `x-terms: ${a}x + ${coef(c, "x")}. Numbers: ${b} − ${d}. Do each one.`,
+                step: `${a}x + ${coef(c, "x")} = ${xc}x and ${b} − ${d} = ${nc}, so ${xc}x + ${nc}`,
+              },
               3,
+              "combining like terms",
             ),
           );
         }
@@ -264,10 +319,19 @@
             qs.push(
               makeQ(
                 `Evaluate ${c}(${a}y − ${b}) when y = ${y}`,
-                String(ans),
-                [String(c * a * y - b), String(ans + c), String(ans - b)],
-                `Inside: ${a}×${y}−${b}=${inner}. Then ${c}×${inner}=${ans}`,
+                ans,
+                [
+                  [c * a * y - b, `the ${c} multiplies the WHOLE group (${a}y − ${b}), including the ${b}.`],
+                  [ans + c, "check the multiplication of the outside number again."],
+                  [ans - b, `work inside the parentheses first, then multiply by ${c}.`],
+                ],
+                {
+                  method: "Parentheses first: find the value inside, then multiply by the outside number.",
+                  nudge: `Inside: ${a} × ${y} − ${b} = ${inner}. Now multiply by ${c}.`,
+                  step: `${a} × ${y} − ${b} = ${inner}, then ${c} × ${inner} = ${ans}`,
+                },
                 3,
+                "parentheses and order of operations",
               ),
             );
           }
@@ -689,20 +753,21 @@
             .text(
               cx,
               660,
-              "Click / Tap answers on the conveyor belt | Language-Friendly",
-              { fontSize: "13px", color: "#64748b" },
+              "No clock — take your time. Tap a part, then pull the lever. Wrong part? Get a hint and try again.",
+              { fontSize: "16px", color: "#cbd5e1" },
             )
             .setOrigin(0.5);
           this.add
             .text(
               cx,
               685,
-              "Arrow Keys to highlight | Enter to select | 1-4 for quick pick",
-              { fontSize: "12px", color: "#475569" },
+              "Keys: 1-4 or ← → to choose • Enter to lock it in or go on • Enter here starts STANDARD",
+              { fontSize: "15px", color: "#94a3b8" },
             )
             .setOrigin(0.5);
-
-          // Back-to-hub link (returns to the Unit 6 collection page).
+          this.input.keyboard.once("keydown-ENTER", () =>
+            this.scene.start("Game", { difficulty: 1 }),
+          );
 
           this.cameras.main.fadeIn(500);
         }
@@ -738,14 +803,19 @@
           }
           this.qIndex = 0;
           this.score = 0;
-          this.lives = 3;
+          this.firstTry = 0; // parts solved first try with no help
+          this.wrongTries = 0; // wrong picks on the current part
+          this.usedFifty = false;
+          this.missTally = {}; // skill -> wrong picks, for "practice next"
+          this.nextBtn = null;
           this.streak = 0;
           this.bestStreak = 0;
           this.combo = 1;
           this.totalQ = Math.min(15, this.questions.length);
           this.answered = false;
           this.startTime = Date.now();
-          this.conveyorSpeed = this.difficulty === 2 ? 2.5 : 1.5;
+          // Decorative belt drift only — it never changes or speeds up.
+          this.conveyorSpeed = 1;
           this.selectedIdx = -1;
           this.questionStartTime = 0;
           // Power-ups
@@ -801,7 +871,7 @@
             })
             .setDepth(11);
           this.hudLives = this.add
-            .text(330, 16, "", { fontSize: "16px", color: "#ef4444" })
+            .text(330, 16, "", { fontSize: "16px", color: "#86efac" })
             .setDepth(11);
 
           // Streak counter with visual pulse container
@@ -915,7 +985,7 @@
           // Robot
           this.robotG = this.add
             .graphics()
-            .setPosition(W / 2, 600)
+            .setPosition(W - 300, 600)
             .setDepth(4);
           this.drawRobot(this.robotG, 0x3b82f6);
           if (!this.reduceMotion) {
@@ -931,24 +1001,25 @@
 
           // Feedback text
           this.fbText = this.add
-            .text(W / 2, 680, "", {
-              fontSize: "16px",
-              color: "#94a3b8",
+            .text(340, 520, "", {
+              fontSize: "20px",
+              color: "#cbd5e1",
+              fontStyle: "bold",
               align: "center",
               wordWrap: { width: 600 },
             })
-            .setOrigin(0.5)
+            .setOrigin(0.5, 0)
             .setDepth(8);
 
           // Hint text
           this.hintText = this.add
-            .text(W / 2, 720, "", {
-              fontSize: "13px",
-              color: "#64748b",
+            .text(340, 600, "", {
+              fontSize: "18px",
+              color: "#fde68a",
               align: "center",
               wordWrap: { width: 600 },
             })
-            .setOrigin(0.5)
+            .setOrigin(0.5, 0)
             .setDepth(8);
 
           // Lever — the explicit "lock it in" control. Selecting a choice
@@ -1208,8 +1279,10 @@
               box.bg.setFillStyle(0x111122, 0.3).setStrokeStyle(1, 0x333344);
               box.txt.setText("--");
               box.bg.removeInteractive();
+              box.eliminated = true;
               this.removedChoices.push(i);
             });
+            this.usedFifty = true;
             this.showFloatingText(W / 2, 350, "50/50!", "#3b82f6");
           } else if (key === "doublePoints") {
             this.powerUps.doublePoints--;
@@ -1281,6 +1354,8 @@
           this.selectedIdx = -1;
           this.doublePointsActive = false;
           this.removedChoices = [];
+          this.wrongTries = 0;
+          this.usedFifty = false;
           this.questionStartTime = Date.now();
           const q = this.questions[this.qIndex];
 
@@ -1324,6 +1399,8 @@
             if (b.numLabel) b.numLabel.destroy();
           });
           this.answerBoxes = [];
+          // flagship-studio reads answerBtns[i].eliminated to disable retired parts.
+          this.answerBtns = this.answerBoxes;
           // Create new answer boxes on conveyor
           const opts = q.options;
           const spacing = 200;
@@ -1435,19 +1512,28 @@
 
         submitAnswer(idx) {
           if (this.answered) return;
-          this.answered = true;
-          this.leverLabel.setAlpha(0);
+          if (this.removedChoices.includes(idx)) return;
           const q = this.questions[this.qIndex];
-          const chosen = this.answerBoxes[idx].optText;
+          const box = this.answerBoxes[idx];
+          const chosen = box.optText;
           const correct = chosen === q.correct;
+          this.leverLabel.setAlpha(0);
 
           // Pull lever animation
           this.drawLever(this.lever, true);
           sfx.lever();
+          this.time.delayedCall(350, () => this.drawLever(this.lever, false));
 
           if (correct) {
+            this.answered = true;
             this.totalCorrect++;
+            const tries = this.wrongTries;
+            if (tries === 0 && !this.usedFifty) this.firstTry++;
             let pts = q.tier * 10 * (1 + Math.min(this.streak, 5) * 0.1);
+            // Full points for an unaided first try; fewer once help was used.
+            if (tries === 1) pts *= 0.5;
+            else if (tries >= 2) pts *= 0.25;
+            else if (this.usedFifty) pts *= 0.5;
             pts = Math.round(pts);
 
             // Double points
@@ -1457,199 +1543,148 @@
             }
 
             this.score += pts;
-            this.streak++;
-            if (this.streak > this.bestStreak) this.bestStreak = this.streak;
-            this.combo = Math.min(this.streak, 5);
+            if (tries === 0) {
+              this.streak++;
+              if (this.streak > this.bestStreak) this.bestStreak = this.streak;
+            } else {
+              this.streak = 0;
+            }
+            this.combo = Math.max(1, Math.min(this.streak, 5));
 
-            // Green flash on correct box
-            this.answerBoxes[idx].bg.setFillStyle(0x22c55e);
-            this.answerBoxes[idx].bg.setStrokeStyle(3, 0x22c55e);
+            box.bg.setFillStyle(0x22c55e);
+            box.bg.setStrokeStyle(3, 0x22c55e);
+            if (!this.reduceMotion)
+              this.tweens.add({
+                targets: box.bg,
+                scaleX: { from: 1.15, to: 1 },
+                scaleY: { from: 1.15, to: 1 },
+                duration: 200,
+              });
 
-            // Click feedback
-            this.tweens.add({
-              targets: this.answerBoxes[idx].bg,
-              scaleX: { from: 1.15, to: 1 },
-              scaleY: { from: 1.15, to: 1 },
-              duration: 200,
-            });
-
-            const streakText =
-              this.streak >= 3 ? ` STREAK x${this.streak}!` : "";
-            this.fbText.setText(`CORRECT! +${pts} pts${streakText}`);
-            this.fbText.setColor("#22c55e");
-            eeAnnounce(`Correct. Plus ${pts} points.${streakText}`);
+            const streakText = this.streak >= 3 ? ` STREAK x${this.streak}!` : "";
+            const lead = tries === 0 ? `CORRECT! +${pts} pts${streakText}` : `CORRECT with help! +${pts} pts`;
+            this.fbText.setText(lead);
+            this.fbText.setColor("#4ade80");
+            // Reinforce the method with the full worked step.
+            this.hintText.setText("How it works: " + q.step);
+            eeAnnounce(`${lead}. ${q.step}`);
             sfx.correct();
+            this.showFloatingText(box.bg.x, box.bg.y - 40, `+${pts}`, "#22c55e", "28px");
 
-            // Floating score text
-            const box = this.answerBoxes[idx];
-            this.showFloatingText(
-              box.bg.x,
-              box.bg.y - 40,
-              `+${pts}`,
-              "#22c55e",
-              "28px",
-            );
-
-            // Streak milestone effects
             if (this.streak === 3) {
               sfx.streak3();
-              this.showFloatingText(
-                W / 2,
-                H / 2 - 50,
-                "STREAK x3!",
-                "#f59e0b",
-                "32px",
-              );
+              this.showFloatingText(W / 2, H / 2 - 50, "STREAK x3!", "#f59e0b", "32px");
             } else if (this.streak === 5) {
               sfx.streak5();
-              this.showFloatingText(
-                W / 2,
-                H / 2 - 50,
-                "STREAK x5! AMAZING!",
-                "#ef4444",
-                "34px",
-              );
+              this.showFloatingText(W / 2, H / 2 - 50, "STREAK x5! AMAZING!", "#ef4444", "34px");
             } else if (this.streak === 7) {
               sfx.streak7();
-              this.showFloatingText(
-                W / 2,
-                H / 2 - 50,
-                "STREAK x7! UNSTOPPABLE!",
-                "#a78bfa",
-                "36px",
-              );
+              this.showFloatingText(W / 2, H / 2 - 50, "STREAK x7! UNSTOPPABLE!", "#a78bfa", "36px");
             }
-
-            // Streak counter pulse
             if (this.streak >= 2) {
               this.hudStreak.setText(`STREAK: ${this.streak}x`);
               this.streakBg.setSize(130, 28).setFillStyle(0xf59e0b, 0.15);
-              this.tweens.add({
-                targets: this.streakContainer,
-                scaleX: { from: 1.3, to: 1 },
-                scaleY: { from: 1.3, to: 1 },
-                duration: 300,
-                ease: "Back.easeOut",
-              });
+              if (!this.reduceMotion)
+                this.tweens.add({
+                  targets: this.streakContainer,
+                  scaleX: { from: 1.3, to: 1 },
+                  scaleY: { from: 1.3, to: 1 },
+                  duration: 300,
+                  ease: "Back.easeOut",
+                });
             }
 
-            // Confetti burst — scales with streak
-            const confettiCount = Math.min(10 + this.streak * 5, 40);
-            this.confettiEmitter.setQuantity(confettiCount);
-            this.confettiEmitter.emitParticleAt(box.bg.x, box.bg.y);
-
-            // Sparks
-            this.sparkEmitter.setPosition(box.bg.x, box.bg.y);
-            this.sparkEmitter.explode(20);
-
-            // Screen shake scales with streak
-            const shakeIntensity = Math.min(0.004 + this.streak * 0.003, 0.025);
-            this.cameras.main.shake(150, shakeIntensity);
-
-            // Animate correct box sliding right (accepted)
-            this.tweens.add({
-              targets: [box.bg, box.txt],
-              x: W + 200,
-              duration: 600,
-              ease: "Power2",
-              delay: 300,
-            });
-            // Reject wrong boxes (fall)
+            if (!this.reduceMotion) {
+              const confettiCount = Math.min(10 + this.streak * 5, 40);
+              this.confettiEmitter.setQuantity(confettiCount);
+              this.confettiEmitter.emitParticleAt(box.bg.x, box.bg.y);
+              this.sparkEmitter.setPosition(box.bg.x, box.bg.y);
+              this.sparkEmitter.explode(20);
+              this.cameras.main.shake(120, 0.003);
+            }
+            // Other parts dim out; the accepted part stays put to be read.
             this.answerBoxes.forEach((b, i) => {
               if (i !== idx) {
-                b.bg.setFillStyle(0x7f1d1d, 0.5);
-                this.tweens.add({
-                  targets: [b.bg, b.txt, b.highlight, b.numLabel],
-                  y: 800,
-                  alpha: 0,
-                  duration: 500,
-                  ease: "Power2",
-                  delay: 200 + i * 80,
-                });
+                b.bg.setFillStyle(0x1e293b, 0.4);
+                b.txt.setAlpha(0.4);
               }
             });
+            this.showNextButton();
           } else {
-            this.lives--;
-            if (this.lives <= 0) {
-              // No-fail: refill lives instead of ending the run early.
-              this.lives = 3;
-              this.showFloatingText(
-                W / 2,
-                340,
-                "Refilled — keep going!",
-                "#22c55e",
-                "24px",
-              );
-              eeAnnounce("Lives refilled. Keep going!");
-            }
+            // Wrong: this part is rejected, the student tries again.
+            this.wrongTries++;
             this.streak = 0;
             this.combo = 1;
             this.hudStreak.setText("");
             this.streakBg.setFillStyle(0x000000, 0);
-
-            // Red flash
-            this.answerBoxes[idx].bg.setFillStyle(0xef4444);
-            this.answerBoxes[idx].bg.setStrokeStyle(3, 0xef4444);
-            // Show correct
-            const correctIdx = this.answerBoxes.findIndex(
-              (b) => b.optText === q.correct,
-            );
-            if (correctIdx >= 0) {
-              this.answerBoxes[correctIdx].bg.setFillStyle(0x22c55e, 0.5);
-              this.answerBoxes[correctIdx].bg.setStrokeStyle(2, 0x22c55e);
-            }
-            this.fbText.setText("DEFECTIVE PART! The answer was: " + q.correct);
-            this.fbText.setColor("#ef4444");
-            this.hintText.setText(q.hint);
-            eeAnnounce(
-              "Incorrect. The answer was " + q.correct + ". Hint: " + q.hint,
-            );
+            this.selectedIdx = -1;
+            box.bg.setFillStyle(0x7f1d1d, 0.6).setStrokeStyle(2, 0xef4444);
+            box.txt.setAlpha(0.45);
+            box.bg.removeInteractive();
+            box.eliminated = true;
+            this.removedChoices.push(idx);
+            this.missTally[q.skill] = (this.missTally[q.skill] || 0) + 1;
+            const why = (q.why && q.why[chosen]) || "That part does not match.";
+            const left = this.answerBoxes.filter((b, i) => !this.removedChoices.includes(i));
             sfx.wrong();
-            sfx.glassBreak();
-
-            // Dramatic wrong answer effects
-            this.cameras.main.shake(350, 0.025);
-
-            // Red screen flash
-            this.redFlash.setAlpha(0.35);
-            this.tweens.add({
-              targets: this.redFlash,
-              alpha: 0,
-              duration: 500,
-            });
-
-            // Smoke
-            this.smokeEmitter.setPosition(
-              this.answerBoxes[idx].bg.x,
-              this.answerBoxes[idx].bg.y,
-            );
-            this.smokeEmitter.explode(15);
-
-            // Floating wrong text
-            this.showFloatingText(W / 2, 400, "DEFECTIVE!", "#ef4444", "30px");
-
-            // Robot turns red briefly
+            this.redFlash.setAlpha(0.12);
+            this.tweens.add({ targets: this.redFlash, alpha: 0, duration: 400 });
             this.drawRobot(this.robotG, 0xef4444);
-            this.time.delayedCall(500, () =>
-              this.drawRobot(this.robotG, 0x3b82f6),
-            );
+            this.time.delayedCall(500, () => this.drawRobot(this.robotG, 0x3b82f6));
+            if (left.length <= 1) {
+              // Only the right part is left: show the full worked step.
+              this.answered = true;
+              const ci = this.answerBoxes.findIndex((b) => b.optText === q.correct);
+              if (ci >= 0) {
+                this.answerBoxes[ci].bg.setFillStyle(0x166534).setStrokeStyle(3, 0x22c55e);
+              }
+              this.fbText.setText(`Not quite — ${why}`);
+              this.fbText.setColor("#fca5a5");
+              this.hintText.setText(`Worked step: ${q.step}. The part is ${q.correct}.`);
+              eeAnnounce(`Not quite. ${why} Worked step: ${q.step}. The answer is ${q.correct}.`);
+              this.showNextButton();
+            } else {
+              const hint = this.wrongTries === 1 ? "Hint: " + q.method : "Try this step: " + q.nudge;
+              this.fbText.setText(`Not quite — ${why}`);
+              this.fbText.setColor("#fca5a5");
+              this.hintText.setText(hint);
+              eeAnnounce(`Not quite. ${why} ${hint} Pick another part.`);
+            }
           }
           this.updateHUD();
-          // Auto advance
-          this.time.delayedCall(correct ? 1500 : 2500, () => {
-            this.qIndex++;
-            if (this.qIndex < this.totalQ) {
-              this.loadQuestion();
-              if (this.difficulty === 2)
-                this.conveyorSpeed = Math.min(4, this.conveyorSpeed + 0.1);
-            } else {
-              this.endGame();
-            }
-          });
+        }
+
+        // Self-paced: the student moves on when ready (button, Enter or Space).
+        showNextButton() {
+          const last = this.qIndex + 1 >= this.totalQ;
+          const label = last ? "SEE RESULTS ▶" : "NEXT PART ▶";
+          const bg = this.add
+            .rectangle(W - 140, 640, 230, 56, 0x22c55e)
+            .setStrokeStyle(2, 0xbbf7d0)
+            .setDepth(30)
+            .setInteractive({ useHandCursor: true });
+          const t = this.add
+            .text(W - 140, 640, label, { fontSize: "20px", color: "#052e16", fontStyle: "bold" })
+            .setOrigin(0.5)
+            .setDepth(31);
+          bg.on("pointerdown", () => this.advance());
+          this.nextBtn = [bg, t];
+        }
+
+        advance() {
+          if (!this.answered || !this.nextBtn) return;
+          this.nextBtn.forEach((o) => o.destroy());
+          this.nextBtn = null;
+          this.qIndex++;
+          if (this.qIndex < this.totalQ) this.loadQuestion();
+          else this.endGame();
         }
 
         handleKey(e) {
-          if (this.answered) return;
+          if (this.answered) {
+            if (e.key === "Enter" || e.key === " ") this.advance();
+            return;
+          }
           if (e.key >= "1" && e.key <= "4") {
             const idx = parseInt(e.key) - 1;
             if (
@@ -1715,11 +1750,7 @@
         updateHUD() {
           this.hudQ.setText(`PART ${this.qIndex + 1}/${this.totalQ}`);
           this.hudScore.setText(`SCORE: ${this.score}`);
-          this.hudLives.setText(
-            "LIVES: " +
-              "■".repeat(Math.max(0, this.lives)) +
-              "□".repeat(Math.max(0, 3 - this.lives)),
-          );
+          this.hudLives.setText(`FIRST TRY: ${this.firstTry}`);
           if (this.streak < 2) {
             this.hudStreak.setText("");
             this.streakBg.setFillStyle(0x000000, 0);
@@ -1769,6 +1800,8 @@
               bestStreak: this.bestStreak,
               time: elapsed,
               difficulty: this.difficulty,
+              firstTry: this.firstTry,
+              missTally: this.missTally,
             });
           });
         }
@@ -1948,9 +1981,9 @@
             },
             { label: "Best Streak", val: d.bestStreak, color: "#f59e0b" },
             {
-              label: "Time",
-              val: `${Math.floor(d.time / 60)}:${(d.time % 60 < 10 ? "0" : "") + (d.time % 60)}`,
-              color: "#94a3b8",
+              label: "First Try",
+              val: `${d.firstTry || 0}/${d.total}`,
+              color: "#93c5fd",
             },
           ];
           stats.forEach((s, i) => {
@@ -2073,6 +2106,28 @@
             });
           });
 
+          // Skills practiced + what to practice next (from the most-missed skill).
+          const miss = Object.entries(d.missTally || {}).sort((a, b) => b[1] - a[1]);
+          const nextTip = miss.length
+            ? `Practice next: ${miss[0][0]} — you had ${miss[0][1]} retr${miss[0][1] === 1 ? "y" : "ies"} there.`
+            : "Practice next: try a harder mode — every part was right on the first try!";
+          this.add
+            .text(cx, btnY + 62, nextTip, {
+              fontSize: "18px",
+              color: "#fde68a",
+              fontStyle: "bold",
+              align: "center",
+              wordWrap: { width: 860 },
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(
+              cx,
+              btnY + 100,
+              "Skills: substitute and evaluate • order of operations • exponents • distributive property • combining like terms",
+              { fontSize: "15px", color: "#cbd5e1", align: "center", wordWrap: { width: 860 } },
+            )
+            .setOrigin(0.5);
           // Footer
           this.add
             .text(
@@ -2186,7 +2241,7 @@
       </div>
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
-<script src="/assets/game-studio.js?v=20261002" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261002" defer></script>
+<script src="/assets/game-studio.js?v=20261003" defer></script>
+<script src="/math/games/shared/flagship-studio.js?v=20261003" defer></script>
 </body>
 </html>

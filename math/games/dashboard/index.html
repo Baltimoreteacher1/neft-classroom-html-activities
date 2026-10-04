@@ -176,6 +176,12 @@
        * ================================================================== */
       (function () {
         var LS_PREFIX = "nsr:";
+        // This is a results page, not a game: the injected game-fx layer's
+        // once-per-session "Mission Brief" game dialog would cover it, so mark
+        // it as already seen for this path (game-fx checks this key).
+        try {
+          sessionStorage.setItem("gfx-brief:" + location.pathname, "1");
+        } catch (_e) {}
         
         window.triggerBackupImport = function() {
           document.getElementById('file-import-backups').click();
@@ -347,6 +353,34 @@
                 stars: num(state.stars),
                 lastPlayed: rec.updatedAt || rec.createdAt || "",
                 source: "save-resume",
+              }),
+            );
+          });
+
+          // (A2) Practice Arcade run summaries: pa-summary-<lesson|unit-N> ->
+          //      {score, stars, firstTry, total, playedAt}. The arcade keeps its
+          //      best run per lesson here; without this source a device that
+          //      played only the Practice Arcade showed "No game data".
+          keys.forEach(function (k) {
+            var m = /^pa-summary-(.+)$/.exec(k);
+            if (!m) return;
+            var v = parseJSON(lsGet(k));
+            if (!v || typeof v !== "object") return;
+            var id = m[1];
+            var unit = /^unit-(\d+)$/.exec(id);
+            var total = num(v.total);
+            var first = num(v.firstTry);
+            rows.push(
+              row({
+                student: dev.name || "",
+                period: dev.period || "",
+                activityId: "practice-arcade:" + id,
+                game: unit ? "Practice Arcade · Unit " + unit[1] + " Review" : "Practice Arcade · Lesson " + id,
+                score: v.score,
+                percent: total ? Math.round(((first || 0) / total) * 100) : null,
+                stars: v.stars,
+                lastPlayed: v.playedAt ? new Date(v.playedAt).toISOString() : "",
+                source: "practice-arcade",
               }),
             );
           });

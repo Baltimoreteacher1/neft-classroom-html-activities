@@ -3599,7 +3599,12 @@
       }
 
       function downloadTxt() {
-        const txt = document.getElementById("reportBox").textContent;
+        let txt = document.getElementById("reportBox").textContent;
+        /* Build the summary first instead of a Download button that silently
+           does nothing until "Generate Summary" has been pressed. */
+        if (!txt && typeof buildReport === "function" && buildReport() !== false) {
+          txt = document.getElementById("reportBox")?.textContent;
+        }
         if (!txt) return;
         const a = document.createElement("a");
         a.href = "data:text/plain;charset=utf-8," + encodeURIComponent(txt);

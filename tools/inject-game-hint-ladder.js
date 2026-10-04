@@ -46,9 +46,9 @@ const GAMES = {
     sr: "#ff-sr",
     standard: "6.NOS.4",
     hints: [
-      "What factors do these numbers share? Start by listing the factors of each.",
-      "GCF is the biggest factor they share; LCM is the smallest multiple they share. Which does the task ask for?",
-      "Set it up: compare your lists (or prime factors) and pick the shared value — you name the final one.",
+      "Is this number prime, or can it be split? Try dividing by 2, 3, or 5.",
+      "Pick a factor pair whose product equals the number. Keep splitting until every branch is prime.",
+      "Count how many times each prime appears — that count is its exponent.",
     ],
   },
   "math/games/u2-fraction-frenzy": {

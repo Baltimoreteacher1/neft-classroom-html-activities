@@ -172,8 +172,12 @@ body.declutter-projects .dc-step1-launch-btn:hover {
 /* ---- 3. Floating / On-Demand "Math Glossary" Drawer ---- */
 body.declutter-projects .dc-glossary-btn {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  /* Sits ABOVE the shared bottom-right launcher stack (#nsr-root: Save /
+     Resume, plus Math Workbench on pages that load it — up to ~97px tall).
+     At bottom:24px the two overlapped on every wizard page. */
+  bottom: calc(108px + env(safe-area-inset-bottom, 0px));
+  right: 16px;
+  min-height: 44px;
   z-index: 990;
   background: #0f2b3c;
   color: #ffffff;
@@ -204,10 +208,10 @@ body.declutter-projects .dc-glossary-btn:focus-visible {
 body.declutter-projects .dc-glossary-modal {
   display: none;
   position: fixed;
-  bottom: 74px;
-  right: 24px;
-  width: min(420px, calc(100vw - 48px));
-  max-height: min(480px, calc(100vh - 120px));
+  bottom: calc(162px + env(safe-area-inset-bottom, 0px));
+  right: 16px;
+  width: min(420px, calc(100vw - 32px));
+  max-height: min(480px, calc(100vh - 190px));
   background: #ffffff;
   border: 1px solid rgba(15, 43, 60, 0.18);
   border-radius: 16px;

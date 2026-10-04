@@ -120,7 +120,7 @@
     notice.hidden = false;
     notificationTimer = setTimeout(() => {
       notice.hidden = true;
-    }, 4200);
+    }, 2800);
   }
   function recordComplete(detail) {
     // A round score is a game result, not a claim of learning mastery.

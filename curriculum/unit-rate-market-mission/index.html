@@ -261,11 +261,7 @@
   .game-hud::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.05) 0 2px,transparent 2px 9px);pointer-events:none}
   .hud-group{display:flex;flex-direction:column;gap:2px;position:relative;z-index:1}
   .hud-k{font-size:.6rem;text-transform:uppercase;letter-spacing:.15em;font-weight:950;color:#9dd3d8}
-  .hearts{display:flex;gap:4px;font-size:1.22rem;line-height:1}
-  .heart{transition:.2s ease;filter:drop-shadow(0 2px 4px rgba(0,0,0,.28))}
-  .heart.gone{opacity:.24;filter:grayscale(1);transform:scale(.82)}
-  .heart.losing{animation:heartPop .45s ease both}
-  @keyframes heartPop{0%{transform:scale(1)}35%{transform:scale(1.45) rotate(-9deg)}100%{transform:scale(.82);opacity:.24}}
+  .cases-now{font-size:1.02rem;font-weight:950;letter-spacing:-.01em}
   .coin-wrap{display:flex;align-items:center;gap:6px;font-size:1.3rem;font-weight:950;letter-spacing:-.02em}
   .coin-wrap .c{font-size:1.1rem}
   .coin-wrap.bump{animation:coinBump .4s ease}
@@ -453,6 +449,33 @@
   @keyframes shake{25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-2px)}}
   .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
+  /* Better Buy Battle unit-price boxes */
+  .unit-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:.88rem;font-weight:850;color:var(--navy)}
+  .up-note{font-size:.82rem;font-weight:850;margin-top:6px;min-height:1.1em;color:var(--muted);line-height:1.4}
+  .store .up-note:not(:empty){color:var(--navy)}
+  .inline-input.ok{border-color:var(--good);background:var(--good-bg)}
+  .inline-input.no{border-color:#e6a49f;background:var(--bad-bg)}
+  /* My Results by skill */
+  .skill-rows{display:grid;gap:9px;margin-top:16px}
+  .skill-row{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fbfdfd}
+  .sk-top{display:flex;justify-content:space-between;gap:10px;font-weight:900;color:var(--navy);font-size:.92rem}
+  .sk-count{color:var(--muted);font-size:.84rem}
+  .sk-bar{height:8px;border-radius:999px;background:#e7eef0;overflow:hidden;margin:7px 0 6px}
+  .sk-bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--teal),#54b3b7);border-radius:999px}
+  .sk-detail{font-size:.82rem;color:var(--muted);font-weight:800}
+  .todo{margin-top:16px;background:var(--warn-bg);border:1px solid #efd99f;border-left:5px solid var(--gold);border-radius:12px;padding:12px 14px}
+  .todo h5{margin:0 0 6px;font-size:.95rem;color:#5b3f00}
+  .todo ul{margin:0;padding-left:20px;color:#5b3f00;line-height:1.55;font-size:.9rem}
+  /* Comfortable tap targets on touch screens */
+  @media (pointer:coarse){
+    .speak,.srow-help,.stepper button{min-width:44px;min-height:44px}
+    .tab-btn,.btn,.choice,.power{min-height:44px}
+  }
+  /* Calm motion: honour the device setting (the studio "Calm motion" switch is read in JS) */
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+    .confetti,.coin-fly{display:none!important}
+  }
   @media (max-width:900px){
     .hero{grid-template-columns:1fr;padding:28px}.formula-card{max-width:520px;transform:none}
     .vocab{grid-template-columns:repeat(2,minmax(0,1fr))}.progress-card{grid-template-columns:1fr}
@@ -462,14 +485,15 @@
     .wrap{padding:16px 12px 40px}.top-inner{padding:9px 12px;gap:9px}.brand{min-width:0;flex:1}.brand small{display:none}.brand-mark{width:40px;height:40px;border-radius:12px}.brand h1{font-size:.96rem}
     .student-box{order:3;width:100%}.student-box input{flex:1;width:auto}.hud{margin-left:auto}.pill{font-size:.75rem;padding:6px 9px}
     .tabs{top:106px;margin-top:12px;border-radius:13px;padding:5px}.tab-btn{padding:9px 11px;font-size:.82rem}
-    .hero{border-radius:20px;padding:24px 20px}.hero h2{font-size:2rem}.hero p{font-size:.95rem}.hero-chips{margin-top:14px}
-    .grid-2,.grid-3,.vocab,.builder,.store-grid,.calc-grid,.badge-grid,.pack-lanes,.tface-grid,.choices.two{grid-template-columns:1fr}
+    .hero{border-radius:20px;padding:20px 18px;gap:16px}.hero h2{font-size:1.65rem}.hero p{font-size:.95rem;line-height:1.5}.hero-chips{display:none}
+    .formula-card{padding:14px}
+    .grid-2,.grid-3,.vocab,.builder,.store-grid,.calc-grid,.pack-lanes,.tface-grid,.choices.two{grid-template-columns:1fr}
     .shelf{grid-template-columns:1fr}.case-body{padding:15px}.game-hud{padding:12px 14px;gap:11px}
     .combo-wrap,.rank-wrap{min-width:110px}.aisle-chip{min-width:112px}.boss-face{width:48px;height:48px;font-size:1.5rem}
     .tag .tag-price{font-size:1.36rem}
     .worked{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}
     .section-head{margin-top:20px}.section-head h3{font-size:1.35rem}.mini-goal{font-size:.75rem}
-    .card{padding:17px}.progress-card{padding:20px}
+    .card{padding:17px}.progress-card{padding:20px}.badge{padding:10px 6px}.badge strong{font-size:.74rem}
   }
   @media print{
     .topbar,.tabs,.hero,.actions,.speak,.btn,.page-footer{display:none!important}
@@ -576,7 +600,7 @@
   <section id="battle" class="panel">
     <div class="section-head">
       <div><h3>Better Buy Battle</h3><p>Find each unit price, then choose the better buy. For equal products, the lower cost per 1 is the better unit price.</p></div>
-      <div class="mini-goal">5 matchups • instant feedback</div>
+      <div class="mini-goal">5 matchups • find both unit prices, then choose</div>
     </div>
     <div id="battleGrid" class="grid-2"></div>
   </section>
@@ -591,13 +615,13 @@
 
   <section id="challenge" class="panel">
     <div class="section-head">
-      <div><h3>Deal Detective</h3><p>Work three aisles and face the Markup Manager. Spot the lowest unit price, price-gun the tags, sort the shelf, and answer the manager. Build a combo for bigger coin payouts — but three mistakes in an aisle and you work that aisle again.</p></div>
+      <div><h3>Deal Detective</h3><p>Work three aisles and face the Markup Manager. Spot the lowest unit price, price-gun the tags, sort the shelf, and answer the manager. First-try answers build a combo for bigger coin payouts. A miss only resets the combo — you always keep going, and there is no clock.</p></div>
       <div class="mini-goal">3 aisles + 1 boss • 13 cases</div>
     </div>
 
     <div class="game-shell" id="gameShell">
       <div class="game-hud">
-        <div class="hud-group"><span class="hud-k">Lives</span><div class="hearts" id="gHearts"></div></div>
+        <div class="hud-group"><span class="hud-k">Cases</span><div class="cases-now" id="gCases">0 / 13</div></div>
         <div class="hud-group"><span class="hud-k">Coins</span><div class="coin-wrap" id="gCoinWrap"><span class="c">🪙</span><span id="gCoins">0</span></div></div>
         <div class="hud-group combo-wrap"><span class="hud-k">Combo</span><div class="combo-label" id="gComboLabel">×1 <span class="fire">🔥</span></div><div class="combo-bar" id="gComboBar"><span></span></div></div>
         <div class="hud-group rank-wrap"><span class="hud-k">Rank</span><div class="rank-now" id="gRankNow">Trainee</div><div class="rank-bar" id="gRankBar"><span></span></div></div>
@@ -628,6 +652,11 @@
           <div class="badge" id="badgeCart"><span class="icon">🛒</span><strong>Cart Quest</strong></div>
           <div class="badge" id="badgeChallenge"><span class="icon">🔎</span><strong>Deal Detective</strong></div>
           <div class="badge" id="badgeMaster"><span class="icon">⭐</span><strong>Rate Master</strong></div>
+        </div>
+        <div class="skill-rows" id="skillRows" aria-label="Results by skill"></div>
+        <div class="todo">
+          <h5>📌 What to practice next</h5>
+          <ul id="todoList"><li>Finish a section to see your list.</li></ul>
         </div>
         <div class="actions">
           <button class="btn gold" onclick="window.print()">Print My Results</button>
@@ -681,6 +710,7 @@ const AISLES = [
   {id:'a4', name:'The Back Office', icon:'👔'}
 ];
 
+// Ids must not repeat across tabs: progress is keyed by id, and the Quick Sort cards already use s1–s6.
 const gameRounds = [
   /* ---------- Aisle 1 · Snack Street ---------- */
   {id:'d1', aisle:0, kind:'scan', aisleName:'juice', unit:'per bottle', answer:1,
@@ -696,7 +726,7 @@ const gameRounds = [
   {id:'d2', aisle:1, kind:'scan', aisleName:'marker', unit:'per marker', answer:0,
    tags:[{n:'Bright Set',c:5,label:'5 markers',p:4.25},{n:'Mega Set',c:9,label:'9 markers',p:8.10},{n:'Jumbo Set',c:12,label:'12 markers',p:11.40}],
    hint:'The biggest box is not automatically the best buy. Work out all three costs per 1 marker.'},
-  {id:'s1', aisle:1, kind:'sort', unit:'per roll',
+  {id:'ss1', aisle:1, kind:'sort', unit:'per roll',
    tags:[{n:'Mini Pack',c:4,label:'4 rolls',p:6.80},{n:'Twin Pack',c:6,label:'6 rolls',p:9.54},{n:'Mega Pack',c:10,label:'10 rolls',p:14.50}],
    q:'Sort the paper-towel shelf: tap them from LOWEST unit price to HIGHEST.',
    hint:'Find all three costs per 1 roll first, then put the smallest one first.'},
@@ -713,7 +743,7 @@ const gameRounds = [
   {id:'ch3', aisle:2, kind:'mgr', text:'Store A sells 8 folders for $6.40. Store B sells 15 folders for $12.00. Which statement is true?', options:['Store A has the lower unit price','Store B has the lower unit price','They have the same unit price','There is not enough information'], answer:2, explain:'$6.40 ÷ 8 = $0.80 and $12.00 ÷ 15 = $0.80. The unit prices are equal.', hint:'Find both unit prices before you decide. Sometimes the answer is “neither is cheaper.”'},
 
   /* ---------- Aisle 4 · The Back Office (boss stage) ---------- */
-  {id:'s2', aisle:3, kind:'sort', unit:'per pouch',
+  {id:'ss2', aisle:3, kind:'sort', unit:'per pouch',
    tags:[{n:'Snack Size',c:6,label:'6 pouches',p:4.50},{n:'Family Size',c:8,label:'8 pouches',p:5.60},{n:'Party Size',c:10,label:'10 pouches',p:6.50}],
    q:'The manager scrambled the juice-pouch shelf. Sort it from LOWEST unit price to HIGHEST.',
    hint:'$4.50 ÷ 6, $5.60 ÷ 8, $6.50 ÷ 10. Smallest cost per 1 goes first.'},
@@ -732,22 +762,35 @@ const gameRounds = [
    explain:'Unit prices: Pack Deal $0.25 each, Bulk Bin $0.24 each — the Bulk Bin looks cheaper per pencil. But whole packs decide it: 4 × $6.00 = $24.00 beats 3 × $8.64 = $25.92. The Pack Deal saves $1.92.'}
 ];
 
-const defaultState = {name:'', score:0, completed:{}, attempts:{}, locked:{}, gameBest:0, gameBestStreak:0, work:{}};
+const defaultState = {name:'', score:0, completed:{}, attempts:{}, locked:{}, gameBest:0, gameBestStreak:0, work:{}, pts:{}, hinted:{}};
 let state = loadState();
 
 function loadState(){
+  const fresh=()=>JSON.parse(JSON.stringify(defaultState));
   try{
     const raw=localStorage.getItem('unitRateMarketMissionV1');
-    return raw ? Object.assign({}, defaultState, JSON.parse(raw)) : JSON.parse(JSON.stringify(defaultState));
-  }catch(e){return JSON.parse(JSON.stringify(defaultState));}
+    // Start from a fresh copy so a save without some field never shares (and mutates) the defaults.
+    return raw ? Object.assign(fresh(), JSON.parse(raw)) : fresh();
+  }catch(e){return fresh();}
 }
-function saveState(){localStorage.setItem('unitRateMarketMissionV1',JSON.stringify(state));updateHUD();}
+function saveState(){try{localStorage.setItem('unitRateMarketMissionV1',JSON.stringify(state));}catch(e){/* private mode: keep going in memory */}updateHUD();}
+/* Full points for an unaided first try, half after a miss or a step-by-step hint, none once the answer is shown. */
+const FULL=10, HELPED=5;
+function earnedFor(...keys){return keys.some(k=>(state.attempts[k]||0)>0 || state.hinted[k]) ? HELPED : FULL}
+function pointsLine(pts){return pts===FULL?'+'+FULL+' points (first try!)':'+'+pts+' points'}
+function markHinted(id){if(!state.hinted[id]){state.hinted[id]=true;saveState();}}
+function calmMotion(){
+  try{
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches) return true;
+    return JSON.parse(localStorage.getItem('ewl-game-studio-v1')||'{}').reducedMotion===true;
+  }catch(e){return false}
+}
 function announce(msg){document.getElementById('live').textContent=msg;}
 function fmtMoney(n){return '$'+Number(n).toFixed(2)}
 function closeEnough(a,b,t=.011){return Math.abs(Number(a)-Number(b))<t}
 function cleanNum(v){return Number(String(v).replace('$','').trim())}
-function award(id, pts=10){
-  if(!state.completed[id]){state.completed[id]=true;state.score+=pts;saveState();}
+function award(id, pts=FULL){
+  if(!state.completed[id]){state.completed[id]=true;state.score+=pts;state.pts[id]=pts;saveState();}
 }
 function bumpAttempt(id){state.attempts[id]=(state.attempts[id]||0)+1;saveState();return state.attempts[id];}
 function done(id){return !!state.completed[id]}
@@ -776,6 +819,7 @@ function updateHUD(){
   setBadge('badgeCart', cartQs.every(q=>done(q.id)));
   setBadge('badgeChallenge', gameRounds.every(q=>done(q.id)));
   setBadge('badgeMaster', percent()===100);
+  renderSkillRows();
   document.querySelectorAll('.tab-btn').forEach(btn=>{
     const t=btn.dataset.tab;
     const map={sort:sortQs,build:buildQs,battle:battleQs,cart:cartQs,challenge:gameRounds};
@@ -783,11 +827,44 @@ function updateHUD(){
   });
 }
 function setBadge(id,on){document.getElementById(id)?.classList.toggle('earned',on)}
+/* My Results: how each skill went (first try / after help / shown), and what to practice next. */
+const SKILLS=[
+  {tab:'sort', label:'Rate or unit rate', bank:()=>sortQs, tip:'Check the second amount. A unit rate has exactly 1 of it (“per 1”).'},
+  {tab:'build', label:'Unit Rate Builder', bank:()=>buildQs, tip:'Divide the top AND the bottom by the bottom number, so the bottom becomes 1.'},
+  {tab:'battle', label:'Better Buy Battle', bank:()=>battleQs, tip:'Find the cost for ONE item at each store (cost ÷ amount), then choose the lower one.'},
+  {tab:'cart', label:'Cart Quest', bank:()=>cartQs, tip:'You cannot buy part of a pack: round the number of packs UP, then compare the totals.'},
+  {tab:'challenge', label:'Deal Detective', bank:()=>gameRounds, tip:'Solve every tag’s unit price before you pick. The biggest pack is not always the best deal.'}
+];
+function renderSkillRows(){
+  const rows=document.getElementById('skillRows'), todo=document.getElementById('todoList');
+  if(!rows||!todo) return;
+  const items=[];
+  rows.innerHTML=SKILLS.map(sk=>{
+    const bank=sk.bank(), n=bank.length;
+    const fin=bank.filter(q=>done(q.id)), full=fin.filter(q=>state.pts[q.id]===FULL).length;
+    const helped=fin.filter(q=>state.pts[q.id]===HELPED).length, shown=fin.filter(q=>state.pts[q.id]===0).length;
+    if(fin.length<n) items.push('<strong>'+sk.label+'</strong> — '+(n-fin.length)+' left to finish.');
+    else if(shown||helped) items.push('<strong>'+sk.label+'</strong> — '+sk.tip);
+    const pct=Math.round(fin.length/n*100);
+    return '<div class="skill-row"><div class="sk-top"><span class="sk-name">'+sk.label+'</span><span class="sk-count">'+fin.length+' / '+n+' done</span></div>'+
+      '<div class="sk-bar" aria-hidden="true"><span style="width:'+pct+'%"></span></div>'+
+      '<div class="sk-detail">⭐ '+full+' first try · 🤝 '+helped+' with help · 👀 '+shown+' shown</div></div>';
+  }).join('');
+  todo.innerHTML=items.length?items.map(t=>'<li>'+t+'</li>').join(''):'<li>Nothing to fix — every section is finished with full credit. 🎉</li>';
+}
 
+function scrollToPanel(id){
+  // Bring the chosen section to the top, just under the sticky bar and tab strip (the hero is tall on phones).
+  const panel=document.getElementById(id); if(!panel) return;
+  const bar=document.querySelector('.topbar'), tabs=document.querySelector('.tabs');
+  const offset=(bar?bar.offsetHeight:0)+(tabs?tabs.offsetHeight:0)+12;
+  const y=panel.getBoundingClientRect().top+window.scrollY-offset;
+  if(Math.abs(window.scrollY-y)>4) window.scrollTo({top:Math.max(0,y),behavior:calmMotion()?'auto':'smooth'});
+}
 function goTab(id){
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
-  window.scrollTo({top:150,behavior:'smooth'});
+  scrollToPanel(id);
   updateHUD();
 }
 document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>goTab(b.dataset.tab)));
@@ -802,6 +879,7 @@ function speak(text){
 }
 
 function confetti(){
+  if(calmMotion()) return;
   const box=document.getElementById('celebrate');
   const colors=['#14858d','#17324d','#f2b84b','#38a169','#d65b54'];
   for(let i=0;i<28;i++){
@@ -869,7 +947,11 @@ function rackRowHTML(it,unit,i){
         '<div class="sbody"><div class="sres"><span class="money-input"><input class="fin" data-f="res" inputmode="decimal" placeholder="?" aria-label="unit rate" /></span><b>'+unit+'</b></div></div></div>'+
     '</div><div class="srow-note"></div></div>';
 }
-function rackNoun(unit,noun){return noun || (unit.replace(/^per /,'')+'s')}
+function rackNoun(unit,noun){
+  if(noun) return noun;
+  const one=unit.replace(/^per /,'');
+  return /(ch|sh|s|x|z)$/.test(one) ? one+'es' : one+'s';
+}
 function rackHTML(items,unit,headline){
   return '<div class="rack"><div class="rack-head"><span class="rh">🧮 '+(headline||'Build each ratio, then solve it')+'</span>'+
     '<span class="rs"><span class="rack-count">0</span> of '+items.length+' solved</span></div>'+
@@ -984,7 +1066,7 @@ function renderSort(){
 function answerSort(q,btn){
   if(done(q.id)) return;
   const fb=document.getElementById('fb-'+q.id);
-  if(btn.dataset.a===q.answer){btn.classList.add('correct');document.querySelectorAll('#card-'+q.id+' .choice').forEach(b=>b.disabled=true);award(q.id);feedback(fb,'good','✓ Correct! +10 points<div class="explain">'+q.explain+'</div>');confetti();announce('Correct');}
+  if(btn.dataset.a===q.answer){btn.classList.add('correct');document.querySelectorAll('#card-'+q.id+' .choice').forEach(b=>b.disabled=true);const pts=earnedFor(q.id);award(q.id,pts);feedback(fb,'good','✓ Correct! '+pointsLine(pts)+'<div class="explain">'+q.explain+'</div>');confetti();announce('Correct');}
   else{
     btn.classList.add('wrong');setTimeout(()=>btn.classList.remove('wrong'),650);const n=bumpAttempt(q.id);
     if(n<2) feedback(fb,'hint','Not yet. Hint: '+q.hint);
@@ -1006,11 +1088,21 @@ function renderBuilders(){
     </div>
     <div class="check-row"><button class="btn primary check">Check</button><button class="btn secondary hint-btn">Hint</button></div><div class="feedback" id="fb-${q.id}"></div><div class="says-slot"></div>`;
     card.querySelector('.speak').onclick=()=>speak(q.text+' Find the unit rate.');
-    card.querySelector('.hint-btn').onclick=()=>feedback(card.querySelector('.feedback'),'hint',q.hint);
+    card.querySelector('.hint-btn').onclick=()=>builderHint(q,card);
     card.querySelector('.check').onclick=()=>answerBuilder(q,card);
     if(done(q.id)){showBuilderSolved(q,card)}
     w.appendChild(card);
   });
+}
+/* Hint 1 names the method without the numbers. Hint 2 (after a miss, or a second press) gives the divisor. */
+function builderHint(q,card){
+  if(done(q.id)) return;
+  const fb=card.querySelector('.feedback');
+  const tier=(state.attempts[q.id]||0)>0 || card.dataset.hint==='1' ? 2 : 1;
+  card.dataset.hint='1';
+  if(tier===1){feedback(fb,'hint','Hint 1: Look at the <strong>bottom</strong> of the rate. What number do you divide it by to make it 1? Divide the top by that <strong>same</strong> number.');return;}
+  markHinted(q.id);
+  feedback(fb,'hint','Hint 2: '+q.hint);
 }
 function showBuilderSolved(q,card){
   card.querySelector('.divisor-top').value=q.divisor;card.querySelector('.divisor-bottom').value=q.divisor;const r=card.querySelector(q.money?'.result-money':'.result-num');r.value=q.money?q.result.toFixed(2):q.result;
@@ -1030,36 +1122,98 @@ function answerBuilder(q,card){
     return;
   }
   if(closeEnough(dTop,q.divisor,.001)&&closeEnough(dBot,q.divisor,.001)&&closeEnough(r,q.result,q.money?.011:.001)){
-    award(q.id);feedback(fb,'good','✓ Correct! +10 points. '+q.hint+' The denominator becomes 1.');
+    const pts=earnedFor(q.id);award(q.id,pts);feedback(fb,'good','✓ Correct! '+pointsLine(pts)+'. '+q.hint+' The denominator becomes 1.');
     card.querySelectorAll('input,button.check').forEach(x=>x.disabled=true);confetti();saysInto(card.querySelector('.says-slot'));
   }
   else{const n=bumpAttempt(q.id);shake();if(n<2) feedback(fb,'hint','Try again. '+q.hint);else reveal();}
 }
 
+/* Better Buy Battle: the student finds BOTH unit prices before the A/B choice unlocks,
+   so the pick is earned by division rather than guessed. */
+function battleNums(label){const m=String(label).match(/\$([\d.]+)\s+for\s+(\d+)/);return {p:Number(m[1]),c:Number(m[2])}}
 function renderBattles(){
   const g=document.getElementById('battleGrid');g.innerHTML='';
   battleQs.forEach((q,i)=>{
     const c=document.createElement('div');c.className='card question-card';c.id='card-'+q.id;
-    c.innerHTML=`<div class="q-top"><div><div class="q-num">Battle ${i+1}</div><div class="q-title">${q.item}: Which store has the better unit price?</div></div><button class="speak">🔊</button></div>
-    <div class="store-grid"><div class="store storeA"><div class="label">Store A</div><div class="price">${q.a}</div><div class="unit">Find the cost ${q.unit}.</div></div><div class="store storeB"><div class="label">Store B</div><div class="price">${q.b}</div><div class="unit">Find the cost ${q.unit}.</div></div></div>
-    <div class="choices"><button class="choice" data-a="A">Store A</button><button class="choice" data-a="B">Store B</button></div><div class="feedback"></div>`;
-    c.querySelector('.speak').onclick=()=>speak(q.item+'. Store A: '+q.a+'. Store B: '+q.b+'. Which store has the better unit price?');
+    const storeHTML=(k,label)=>'<div class="store store'+k+'"><div class="label">Store '+k+'</div><div class="price">'+label+'</div>'+
+      '<div class="unit-row"><span class="money-input"><input class="inline-input up-in" data-k="'+k+'" inputmode="decimal" placeholder="0.00" aria-label="Store '+k+' cost '+q.unit+'" /></span><span>'+q.unit+'</span></div>'+
+      '<div class="up-note" aria-live="polite"></div></div>';
+    c.innerHTML=`<div class="q-top"><div><div class="q-num">Battle ${i+1}</div><div class="q-title">${q.item}: Which store has the better unit price?</div></div><button class="speak" aria-label="Read this battle aloud">🔊</button></div>
+    <div class="store-grid">${storeHTML('A',q.a)}${storeHTML('B',q.b)}</div>
+    <div class="shelf-gate">🔒 <span class="gate-msg">Find both unit prices (cost ÷ amount) to unlock the choice.</span></div>
+    <div class="choices two"><button class="choice" data-a="A" disabled>Store A</button><button class="choice" data-a="B" disabled>Store B</button></div>
+    <div class="check-row"><button class="btn secondary hint-btn">Hint</button><button class="btn secondary show-btn" hidden>Show me the unit prices</button></div>
+    <div class="feedback"></div><div class="says-slot"></div>`;
+    c.querySelector('.speak').onclick=()=>speak(q.item+'. Store A: '+q.a+'. Store B: '+q.b+'. Find each cost '+q.unit+', then choose the better unit price.');
+    c.querySelectorAll('.up-in').forEach(inp=>inp.addEventListener('input',()=>checkBattlePrice(q,c,inp)));
     c.querySelectorAll('.choice').forEach(b=>b.onclick=()=>answerBattle(q,c,b));
+    c.querySelector('.hint-btn').onclick=()=>battleHint(q,c);
+    c.querySelector('.show-btn').onclick=()=>{markHinted(q.id);fillBattlePrices(q,c);};
     if(done(q.id)) showBattleSolved(q,c);
     g.appendChild(c);
   });
+}
+function battleUnit(q,k){return k==='A'?q.ua:q.ub}
+function checkBattlePrice(q,c,inp){
+  if(done(q.id)) return;
+  const k=inp.dataset.k, note=inp.closest('.store').querySelector('.up-note');
+  const raw=String(inp.value).trim();
+  inp.classList.remove('ok','no');note.textContent='';
+  if(raw===''){unlockBattle(q,c);return;}
+  const v=cleanNum(raw), want=battleUnit(q,k), n=battleNums(k==='A'?q.a:q.b);
+  if(closeEnough(v,want,.006)){inp.classList.add('ok');note.textContent='✓ '+fmtMoney(want)+' '+q.unit;}
+  else if(!Number.isNaN(v) && raw.replace(/[$\s]/g,'').length>=String(want.toFixed(2)).length-1){
+    inp.classList.add('no');
+    if(closeEnough(v,n.c/n.p,.006)) note.textContent='Flipped: that is items per dollar. Put the cost on top: '+fmtMoney(n.p)+' ÷ '+n.c+'.';
+    else if(closeEnough(v,n.p,.006)) note.textContent='That is the price for the whole pack. Divide it by '+n.c+'.';
+    else note.textContent='Not yet. Divide the cost by the amount.';
+  }
+  unlockBattle(q,c);
+}
+function battlePricesOK(q,c){return [...c.querySelectorAll('.up-in')].every(inp=>closeEnough(cleanNum(inp.value),battleUnit(q,inp.dataset.k),.006) && String(inp.value).trim()!=='')}
+function unlockBattle(q,c){
+  const ok=battlePricesOK(q,c), gate=c.querySelector('.shelf-gate');
+  c.querySelectorAll('.choice').forEach(b=>{if(!done(q.id)) b.disabled=!ok});
+  gate.classList.toggle('open',ok);
+  gate.innerHTML=ok?'🔓 <span class="gate-msg">Both unit prices found — now pick the lower one.</span>':'🔒 <span class="gate-msg">Find both unit prices (cost ÷ amount) to unlock the choice.</span>';
+}
+function fillBattlePrices(q,c){
+  c.querySelectorAll('.up-in').forEach(inp=>{inp.value=battleUnit(q,inp.dataset.k).toFixed(2);checkBattlePrice(q,c,inp);});
+  c.querySelector('.show-btn').hidden=true;
+}
+function battleHint(q,c){
+  if(done(q.id)) return;
+  const fb=c.querySelector('.feedback');
+  const a=battleNums(q.a), b=battleNums(q.b);
+  if(c.dataset.hint!=='1'){
+    c.dataset.hint='1';
+    feedback(fb,'hint','Hint 1: A unit price is the cost for ONE. Put the <strong>cost on top</strong> and the <strong>amount on the bottom</strong>, then divide.');
+    return;
+  }
+  markHinted(q.id);
+  feedback(fb,'hint','Hint 2: Store A: '+fmtMoney(a.p)+' ÷ '+a.c+' = ? &nbsp;·&nbsp; Store B: '+fmtMoney(b.p)+' ÷ '+b.c+' = ?');
+  c.querySelector('.show-btn').hidden=battlePricesOK(q,c);
 }
 function battleExplanation(q){
   const a=fmtMoney(q.ua),b=fmtMoney(q.ub);const diff=Math.abs(q.ua-q.ub);
   return `Store A: <strong>${a} ${q.unit}</strong>. Store B: <strong>${b} ${q.unit}</strong>. Store ${q.answer} is lower by about <strong>${fmtMoney(diff)} ${q.unit}</strong>.`;
 }
 function showBattleSolved(q,c){
-  c.querySelectorAll('.choice').forEach(b=>{b.disabled=true;if(b.dataset.a===q.answer)b.classList.add('correct')});c.querySelector('.store'+q.answer).classList.add('win');feedback(c.querySelector('.feedback'),'good','✓ '+battleExplanation(q));
+  c.querySelectorAll('.up-in').forEach(inp=>{inp.value=battleUnit(q,inp.dataset.k).toFixed(2);inp.classList.add('ok');inp.disabled=true;});
+  c.querySelectorAll('.up-note').forEach(n=>n.textContent='');
+  const gate=c.querySelector('.shelf-gate'); if(gate) gate.remove();
+  c.querySelectorAll('.choice').forEach(b=>{b.disabled=true;if(b.dataset.a===q.answer)b.classList.add('correct')});
+  c.querySelectorAll('.hint-btn,.show-btn').forEach(b=>b.hidden=true);
+  c.querySelector('.store'+q.answer).classList.add('win');feedback(c.querySelector('.feedback'),'good','✓ '+battleExplanation(q));
 }
 function answerBattle(q,c,b){
-  if(done(q.id))return;
-  if(b.dataset.a===q.answer){award(q.id);showBattleSolved(q,c);confetti();}
-  else{const n=bumpAttempt(q.id);b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),650);if(n<2)feedback(c.querySelector('.feedback'),'hint','Try again. Divide each cost by its quantity, then compare the costs per 1.');else{feedback(c.querySelector('.feedback'),'bad','Answer revealed after two tries. '+battleExplanation(q));award(q.id,0);showBattleSolved(q,c)}}
+  if(done(q.id)||!battlePricesOK(q,c))return;
+  if(b.dataset.a===q.answer){
+    const pts=earnedFor(q.id);award(q.id,pts);showBattleSolved(q,c);
+    feedback(c.querySelector('.feedback'),'good','✓ Better buy found! '+pointsLine(pts)+'<div class="explain">'+battleExplanation(q)+'</div>');
+    confetti();saysInto(c.querySelector('.says-slot'));announce('Correct');
+  }
+  else{const n=bumpAttempt(q.id);b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),650);if(n<2)feedback(c.querySelector('.feedback'),'hint','Not yet. Look at the two unit prices you found. The better buy is the <strong>lower</strong> cost for one.');else{award(q.id,0);showBattleSolved(q,c);feedback(c.querySelector('.feedback'),'bad','Answer shown after two tries. '+battleExplanation(q))}}
 }
 
 /* ===== Cart Quest: three-round guided missions ===== */
@@ -1150,14 +1304,14 @@ function renderCart(){
       lane.querySelectorAll('.stepper button').forEach(btn=>btn.onclick=()=>bumpLane(q,c,lane.dataset.lane,Number(btn.dataset.d)));
     });
     c.querySelector('.lock').onclick=()=>cartStep2(q,c);
-    c.querySelector('.hint2').onclick=()=>feedback(c.querySelector('.fb2'),'hint','Divide the number needed by the pack size, then round <strong>up</strong> for any remainder — 50 items ÷ 12 per pack = 4.16…, so 5 whole packs. Then items = packs × pack size, and cost = packs × pack price.');
+    c.querySelector('.hint2').onclick=()=>feedback(c.querySelector('.fb2'),'hint','Divide the number needed by the pack size, then round <strong>up</strong> for any remainder. Example with other numbers: 50 items ÷ 12 per pack = 4.16…, so 5 whole packs. Then items = packs × pack size, and cost = packs × pack price.');
     c.querySelectorAll('.mstep[data-step="3"] .choice').forEach(btn=>btn.onclick=()=>cartStep3(q,c,btn));
 
     w.appendChild(c);
     wireScratch(c);
     cartRacks[q.id]=wireRack(c,
       [{n:'Store A',label:aPlain,c:q.aPack,p:q.aCost},{n:'Store B',label:bPlain,c:q.bPack,p:q.bCost}],
-      'each', null, ()=>unlockCartChoice(c), 'items');
+      'each', (row,helped)=>{if(helped && !done(q.id)) markHinted(q.id);}, ()=>unlockCartChoice(c), 'items');
     c.querySelectorAll('.lane .lm-in').forEach(inp=>inp.addEventListener('input',()=>checkLaneMath(q,c,inp.closest('.lane').dataset.lane)));
     drawLane(q,c,'A');drawLane(q,c,'B');
     if(done(q.id)) showCartSolved(q,c);
@@ -1294,8 +1448,8 @@ function cartStep3(q,c,btn){
   if(btn.dataset.a===q.totalWinner){
     btn.classList.add('correct');
     c.querySelector('.tface[data-t="'+q.totalWinner+'"]').classList.add('win');
-    award(q.id);
-    feedback(fb,'good','✓ Mission complete! +10 points<div class="explain">'+cartExplanation(q)+'</div>');
+    const pts=earnedFor(q.id,q.id+':1',q.id+':2',q.id+':3');award(q.id,pts);
+    feedback(fb,'good','✓ Mission complete! '+pointsLine(pts)+'<div class="explain">'+cartExplanation(q)+'</div>');
     saysInto(c.querySelector('.says-slot'));
     clearStep(c,3);confetti();announce('Mission complete.');updateHUD();
   }else{
@@ -1328,8 +1482,9 @@ function showCartSolved(q,c){
 }
 
 /* ===== Deal Detective: arcade game (tab 6) ===== */
-const MAX_HEARTS=3, MAX_COMBO=5, PEEK_FREE=1, SOLVE_BONUS=3;
-const POWERS={scan:{icon:'🔍',label:'Scanner',cost:15},hint:{icon:'💡',label:'Hint',cost:10},heart:{icon:'❤️',label:'Extra life',cost:30}};
+/* No lives and no clock: a miss only resets the combo, and every case can be finished. */
+const MAX_COMBO=5, PEEK_FREE=1, SOLVE_BONUS=3;
+const POWERS={scan:{icon:'🔍',label:'Scanner',cost:15},hint:{icon:'💡',label:'Hint',cost:10}};
 const RANKS=[
   {at:0,   name:'Trainee'},
   {at:60,  name:'Junior Detective'},
@@ -1341,7 +1496,7 @@ const RANKS=[
 let game=null;
 
 function newRun(startAt){
-  return {i:startAt||0, coins:0, combo:0, bestCombo:0, hearts:MAX_HEARTS, marks:[], tries:{},
+  return {i:startAt||0, coins:0, combo:0, bestCombo:0, marks:[], tries:{},
           answered:false, peeks:0, hintShown:false, picks:[], bossStep:0, aisleStart:startAt||0, rack:null};
 }
 function startGame(reset){
@@ -1364,9 +1519,8 @@ function nextRank(c){return RANKS.find(x=>c<x.at)||null}
 
 /* ---------- HUD ---------- */
 function drawGameHUD(){
-  const hearts=document.getElementById('gHearts');
-  if(hearts) hearts.innerHTML=Array.from({length:MAX_HEARTS},(_,k)=>
-    '<span class="heart'+(k<game.hearts?'':' gone')+'">'+(k<game.hearts?'❤️':'🤍')+'</span>').join('');
+  const cases=document.getElementById('gCases');
+  if(cases) cases.textContent=gameRounds.filter(r=>done(r.id)).length+' / '+gameRounds.length+' solved';
   const coins=document.getElementById('gCoins'); if(coins) coins.textContent=game.coins;
   const cl=document.getElementById('gComboLabel');
   if(cl){cl.innerHTML='×'+comboMult()+' <span class="fire">🔥</span>';cl.classList.toggle('hot',game.combo>=2);}
@@ -1397,6 +1551,7 @@ function drawMap(){
 
 /* ---------- juice ---------- */
 function coinBurst(n){
+  if(calmMotion()) return;
   const wrap=document.getElementById('gCoinWrap');
   if(wrap){wrap.classList.remove('bump');void wrap.offsetWidth;wrap.classList.add('bump');}
   const body=document.getElementById('gBody'); if(!body) return;
@@ -1417,11 +1572,8 @@ function banner(title,sub,ms){
   shell.appendChild(b);
   setTimeout(()=>{b.classList.add('out');setTimeout(()=>b.remove(),340);},ms||1250);
 }
-function loseHeart(){
-  game.hearts=Math.max(0,game.hearts-1);game.combo=0;
-  const hearts=document.querySelectorAll('#gHearts .heart');
-  const el=hearts[game.hearts];
-  if(el){el.classList.add('losing');}
+function breakCombo(){
+  game.combo=0;
   drawGameHUD();
 }
 
@@ -1429,10 +1581,9 @@ function loseHeart(){
 function renderGame(){
   drawGameHUD();
   const body=document.getElementById('gBody'); if(!body) return;
-  if(game.hearts<=0){body.innerHTML=caughtHTML();wireCaught();return;}
   if(game.i>=gameRounds.length){body.innerHTML=finaleHTML();wireFinale();return;}
   const r=gameRounds[game.i];
-  game.answered=false;game.peeks=0;game.hintShown=false;game.picks=[];game.bossStep=0;
+  game.answered=false;game.peeks=0;game.hintShown=false;game.helped=false;game.picks=[];game.bossStep=0;
   body.innerHTML = caseHTML(r);
   wireRound(r);
   drawGameHUD();
@@ -1468,7 +1619,6 @@ function shopHTML(r){
     btns+='<button class="power" data-power="scan">'+POWERS.scan.icon+' '+label+'<span class="cost">free</span></button>';
   }
   btns+='<button class="power" data-power="hint">'+POWERS.hint.icon+' '+POWERS.hint.label+'<span class="cost">'+POWERS.hint.cost+'</span></button>';
-  btns+='<button class="power" data-power="heart">'+POWERS.heart.icon+' '+POWERS.heart.label+'<span class="cost">'+POWERS.heart.cost+'</span></button>';
   return '<div class="shop">'+btns+'</div>';
 }
 function tagUnit(t){return t.p/t.c}
@@ -1527,6 +1677,7 @@ function wireRound(r){
     game.rack=wireRack(body,rackItems,r.unit,
       (i,helped)=>{
         if(!helped){game.coins+=SOLVE_BONUS;coinBurst(SOLVE_BONUS);announce('Solved. Plus '+SOLVE_BONUS+' coins.');}
+        else game.helped=true;
         drawGameHUD();refreshPowers(r);
       },
       ()=>unlockShelf(r));
@@ -1578,7 +1729,6 @@ function refreshPowers(r){
       b.querySelector('.cost').textContent = free?'free':POWERS.scan.cost;
       b.disabled = !free && game.coins<POWERS.scan.cost;
     } else if(k==='hint'){ b.disabled=game.hintShown || game.coins<POWERS.hint.cost; }
-    else { b.disabled = game.hearts>=MAX_HEARTS || game.coins<POWERS.heart.cost; }
   });
 }
 function usePower(r,kind,btn){
@@ -1590,14 +1740,10 @@ function usePower(r,kind,btn){
     feedback(body.querySelector('.gfb'),'hint','💡 '+r.hint);
     drawGameHUD();refreshPowers(r);return;
   }
-  if(kind==='heart'){
-    if(game.coins<POWERS.heart.cost||game.hearts>=MAX_HEARTS) return;
-    game.coins-=POWERS.heart.cost;game.hearts++;banner('❤️ Extra life','You are back to '+game.hearts+' lives',900);
-    drawGameHUD();refreshPowers(r);return;
-  }
   // scanner
   const free=game.peeks<PEEK_FREE;
   if(!free && game.coins<POWERS.scan.cost) return;
+  game.helped=true;
   if(game.rack){
     if(!game.rack.revealRow()){btn.dataset.spent='1';refreshPowers(r);return;}
     if(!free) game.coins-=POWERS.scan.cost;
@@ -1638,9 +1784,10 @@ function bumpTries(r){game.tries[r.id]=(game.tries[r.id]||0)+1;return game.tries
 
 function win(r,extra){
   const gained=caseValue();
+  const firstTry=!game.tries[r.id] && !game.hintShown && !game.helped;
   game.coins+=gained;game.combo++;game.bestCombo=Math.max(game.bestCombo,game.combo);
   game.marks[game.i]='hit';game.answered=true;
-  award(r.id);
+  award(r.id,firstTry?10:5);
   revealCase(r);
   const body=document.getElementById('gBody');
   feedback(body.querySelector('.gfb'),'good','✓ '+(extra||'Correct!')+' <strong>+'+gained+' coins</strong>'+
@@ -1652,13 +1799,12 @@ function win(r,extra){
   drawGameHUD();updateHUD();refreshPowers(r);showNext(r);
 }
 function lose(r,msg){
-  loseHeart();
+  breakCombo();
   const body=document.getElementById('gBody');
   const card=body.querySelector('.case-card');
   card.classList.add('shake');setTimeout(()=>card.classList.remove('shake'),300);
   const tries=bumpTries(r);
-  if(game.hearts<=0){setTimeout(()=>renderGame(),700);return true;}
-  if(tries<2){feedback(body.querySelector('.gfb'),'hint','💔 Lost a life. '+(msg||'')+' '+r.hint);announce('Try again.');drawGameHUD();return false;}
+  if(tries<2){feedback(body.querySelector('.gfb'),'hint','Not yet — one more try. '+(msg||'')+' '+r.hint);announce('Not yet. Try again.');drawGameHUD();return false;}
   game.marks[game.i]='miss';game.answered=true;
   award(r.id,0);revealCase(r);
   feedback(body.querySelector('.gfb'),'bad','The manager takes this one.<div class="explain">'+caseExplain(r)+'</div>');
@@ -1697,8 +1843,8 @@ function pickSort(r,idx,el){
     const ok=game.picks.every((v,i)=>v===correct[i]);
     if(ok) win(r,'Shelf sorted!');
     else{
-      const dead=lose(r,'That order is not cheapest-to-priciest.');
-      if(!dead && !game.answered){
+      lose(r,'That order is not cheapest-to-priciest.');
+      if(!game.answered){
         game.picks=[];
         document.querySelectorAll('#gBody .tag').forEach(t=>{t.classList.remove('picked');const o=t.querySelector('.pick-order');if(o)o.remove();});
         if(state) state.textContent='Tap them in order: cheapest per 1 first.';
@@ -1788,8 +1934,8 @@ function showNext(r){
   box.innerHTML='<button class="btn primary nextCase">'+(last?'See my detective rank →':(aisleEnds?'Leave '+AISLES[r.aisle].name+' →':'Next case →'))+'</button>';
   box.querySelector('.nextCase').onclick=()=>{
     if(aisleEnds){
-      const bonus=25;game.coins+=bonus;game.hearts=MAX_HEARTS;
-      banner('✅ '+AISLES[r.aisle].name+' cleared!','+'+bonus+' coins · lives restored',1400);
+      const bonus=25;game.coins+=bonus;
+      banner('✅ '+AISLES[r.aisle].name+' cleared!','+'+bonus+' coins',1400);
       game.i++;game.aisleStart=game.i;
       setTimeout(()=>renderGame(),700);
     }else{game.i++;renderGame();}
@@ -1797,24 +1943,6 @@ function showNext(r){
 }
 
 /* ---------- end screens ---------- */
-function caughtHTML(){
-  const a=AISLES[gameRounds[Math.min(game.aisleStart,gameRounds.length-1)].aisle];
-  return '<div class="rank-card"><div class="rank-badge">🚫</div><h4>The manager caught you</h4>'+
-    '<p class="small">Three mistakes in one aisle. Your coins are safe — walk '+a.name+' again with full lives.</p>'+
-    '<div class="rank-stats"><div class="rank-stat"><span class="k">Coins kept</span><b>'+game.coins+'</b></div>'+
-    '<div class="rank-stat"><span class="k">Best combo</span><b>×'+Math.min(1+game.bestCombo,MAX_COMBO)+'</b></div></div>'+
-    '<div class="actions" style="justify-content:center"><button class="btn gold retry">Work '+a.name+' again</button>'+
-    '<button class="btn secondary restart">Start over from Aisle 1</button></div></div>';
-}
-function wireCaught(){
-  const b=document.getElementById('gBody');
-  b.querySelector('.retry').onclick=()=>{
-    game.hearts=MAX_HEARTS;game.combo=0;game.i=game.aisleStart;game.tries={};
-    for(let k=game.aisleStart;k<gameRounds.length && gameRounds[k].aisle===gameRounds[game.aisleStart].aisle;k++) game.marks[k]=undefined;
-    banner('❤️❤️❤️','Lives restored',900);renderGame();
-  };
-  b.querySelector('.restart').onclick=replayGame;
-}
 function finaleHTML(){
   if(game.coins>(state.gameBest||0)) state.gameBest=game.coins;
   const bc=Math.min(1+game.bestCombo,MAX_COMBO);

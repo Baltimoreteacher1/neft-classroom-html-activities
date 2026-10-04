@@ -7,7 +7,7 @@
     <title>Math Placement Quest — Grade 6 Diagnostic Game</title>
     <meta
       name="description"
-      content="Help the explorer navigate the grid by solving Grade 6 diagnostic math challenges."
+      content="A calm Grade 6 readiness check: one question from each math topic, new numbers every time, with a Level result and topics to practice next."
     />
     <style>
       :root {
@@ -147,8 +147,32 @@
           grid-template-columns: 1fr;
         }
       }
-          .quest-review-link {display:block;margin:10px 0;padding:12px;color:#bfe8ff;background:#102c43;border:1px solid #37627e;border-radius:10px;text-decoration:none;font-weight:650;}
-      .quest-review-link:focus-visible {outline:3px solid #ffd17b;outline-offset:3px;}
+          .intro {display:flex;flex-direction:column;gap:14px;font-size:18px;line-height:1.55;}
+      .intro h2 {font-size:26px;color:#fff;}
+      .intro-list {padding-left:22px;display:grid;gap:6px;}
+      .intro-last {color:#bfe8ff;font-size:16px;}
+      .start-btn {align-self:flex-start;min-height:52px;padding:12px 28px;border:0;border-radius:12px;background:#38bdf8;color:#04121c;font:800 19px/1.2 "Outfit",system-ui,sans-serif;cursor:pointer;}
+      .start-btn:hover {background:#7dd3fc;}
+      .start-btn:focus-visible {outline:3px solid #ffd17b;outline-offset:3px;}
+      .q-domain {font-size:15px;font-weight:700;color:#7dd3fc;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;}
+      #question-text {font-weight:700;font-size:20px;line-height:1.45;margin-bottom:12px;}
+      .choice-btn {display:flex;align-items:center;gap:12px;}
+      .choice-key {display:inline-grid;place-items:center;min-width:28px;height:28px;border-radius:8px;background:#0f172a;border:1px solid #475569;font-size:15px;color:#cbd5e1;}
+      .choice-btn.is-right {border-color:#10b981;background:rgba(16,185,129,.22);}
+      .choice-btn.is-wrong {border-color:#f59e0b;background:rgba(245,158,11,.18);}
+      .feedback-line {font-size:17px;line-height:1.5;}
+      .feedback-line.bad {color:#fcd34d;}
+      .next-btn {justify-content:center;font-weight:800;}
+      #results-screen h2 {color:#34d399;font-size:26px;font-weight:800;}
+      #feedback-text {font-size:18px;max-width:560px;}
+      .topic-table {width:100%;max-width:640px;border-collapse:collapse;font-size:16px;text-align:left;}
+      .topic-table th,.topic-table td {padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.12);}
+      .topic-table th {color:#94a3b8;font-size:14px;text-transform:uppercase;}
+      .topic-table td.ok, .topic-table td.todo {white-space:nowrap;}
+      .topic-table td.ok {color:#34d399;font-weight:700;}
+      .topic-table td.todo {color:#fcd34d;font-weight:700;}
+      .next-steps {font-size:17px;color:#fde68a;max-width:600px;}
+      @media(max-width:600px){.topic-table{font-size:15px}.topic-table th,.topic-table td{padding:6px 4px}.intro{font-size:17px}}
       .stats-row {flex-wrap:wrap;font-size:16px;}.choice-btn {font-size:18px;min-height:52px;}.header-bar{flex-wrap:wrap;gap:14px;} #quest-next{margin-top:16px;background:#14664e;} [hidden]{display:none!important;}
       @media(max-width:600px){body{padding:12px}.container{padding:16px}.question-box{padding:16px}.quest-map{padding:8px}}
      .nt-chrome-dock{display:none!important;}
@@ -169,233 +193,393 @@
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
   <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
     <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-    <script src="/assets/game-studio.js?v=20261002" defer></script>
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
     <link rel="stylesheet" href="/math/games/shared/cabinet-tools.css?v=20261002">
     <script src="/math/games/shared/cabinet-tools.js?v=20261002" defer></script>
 </head>
   <body>
-
-    <div class="container">
+    <main class="container" id="pq-main">
       <div class="header-bar">
         <h1>🧭 Math Placement Quest</h1>
-        <div class="stats-row">
-          <span>Question: <span id="q-num">1</span>/<span id="q-total">11</span></span>
-          <span>Score: <span id="q-score">0</span></span>
+        <div class="stats-row" id="pq-stats" hidden>
+          <span>Question <span id="q-num">1</span> of <span id="q-total">11</span></span>
+          <span>Correct: <span id="q-score">0</span></span>
         </div>
       </div>
 
-      <!-- Stepping stones quest map SVG -->
-      <div class="quest-map">
-        <svg
-          width="600"
-          height="80"
-          viewBox="0 0 600 80"
-          style="background: #020617"
-        >
-          <!-- Connective path line -->
+      <!-- Intro: what this is, how long, one Start button -->
+      <section id="intro-screen" class="intro" aria-labelledby="intro-title">
+        <h2 id="intro-title">Find your starting level</h2>
+        <p class="intro-lead">
+          Answer <strong>11 questions</strong>, one from each Grade 6 math topic. There is
+          <strong>no timer</strong>. It takes about 10 minutes.
+        </p>
+        <ul class="intro-list">
+          <li>Each question is checked <strong>one time</strong>. That shows what you already know.</li>
+          <li>After each answer you see why the right answer works.</li>
+          <li>At the end you get your <strong>Level</strong> and the topics to practice next.</li>
+        </ul>
+        <p id="intro-last" class="intro-last" hidden></p>
+        <button type="button" id="pq-start" class="start-btn">Start the quest ▶</button>
+      </section>
+
+      <!-- Stepping stones quest map (stones are built by script, one per topic) -->
+      <div class="quest-map" id="pq-map" hidden>
+        <svg width="600" height="80" viewBox="0 0 600 80" style="background: #020617">
           <path
             d="M 40 40 Q 150 15, 300 40 T 560 40"
             fill="none"
-            stroke="#1e293b"
+            stroke="#334155"
             stroke-width="6"
             stroke-dasharray="10 5"
           />
-
-          <!-- Moving Explorer Character Icon -->
-          <circle
-            id="map-player"
-            cx="40"
-            cy="40"
-            r="14"
-            fill="#38bdf8"
-            stroke="#fff"
-            stroke-width="2"
-            style="transition: all 0.5s ease"
-          />
-
-          <!-- Stepping stones -->
+          <circle id="map-player" cx="40" cy="40" r="14" fill="#38bdf8" stroke="#fff" stroke-width="2" style="transition: all 0.5s ease" />
           <circle cx="40" cy="40" r="8" fill="#10b981" />
-          <circle cx="92" cy="31" r="8" fill="#475569" id="stone-1" />
-          <circle cx="144" cy="26" r="8" fill="#475569" id="stone-2" />
-          <circle cx="196" cy="27" r="8" fill="#475569" id="stone-3" />
-          <circle cx="248" cy="33" r="8" fill="#475569" id="stone-4" />
-          <circle cx="300" cy="40" r="8" fill="#475569" id="stone-5" />
-          <circle cx="352" cy="45" r="8" fill="#475569" id="stone-6" />
-          <circle cx="404" cy="47" r="8" fill="#475569" id="stone-7" />
-          <circle cx="456" cy="46" r="8" fill="#475569" id="stone-8" />
-          <circle cx="508" cy="43" r="8" fill="#475569" id="stone-9" />
-          <circle cx="560" cy="40" r="8" fill="#475569" id="stone-10" />
         </svg>
       </div>
 
       <!-- Play Screen -->
-      <div id="play-screen" class="question-box">
-        <p
-          id="question-text"
-          aria-live="polite"
-          style="font-weight: 700; font-size: 17px; margin-bottom: 12px"
-        ></p>
-        <div
-          class="choices-grid"
-          id="choices-container"
-          role="group"
-          aria-labelledby="question-text"
-        ></div>
-        <p
-          id="feedback-line"
-          class="feedback-line"
-          role="status"
-          aria-live="polite"
-        ></p>
-      </div>
+      <section id="play-screen" class="question-box" hidden aria-label="Question">
+        <p id="q-domain" class="q-domain"></p>
+        <p id="question-text" aria-live="polite"></p>
+        <div class="choices-grid" id="choices-container" role="group" aria-labelledby="question-text"></div>
+        <p id="feedback-line" class="feedback-line" role="status" aria-live="polite"></p>
+      </section>
 
       <!-- Results Screen -->
-      <div id="results-screen" class="result-screen">
-        <svg class="badge-svg" viewBox="0 0 100 100">
-          <polygon
-            points="50,5 90,25 90,75 50,95 10,75 10,25"
-            fill="#6366f1"
-            stroke="#fff"
-            stroke-width="3"
-          />
+      <section id="results-screen" class="result-screen" aria-labelledby="result-title">
+        <svg class="badge-svg" viewBox="0 0 100 100" aria-hidden="true">
+          <polygon points="50,5 90,25 90,75 50,95 10,75 10,25" fill="#6366f1" stroke="#fff" stroke-width="3" />
           <circle cx="50" cy="50" r="30" fill="#4f46e5" />
-          <text
-            x="50"
-            y="58"
-            font-size="24"
-            font-weight="bold"
-            fill="#fff"
-            text-anchor="middle"
-          >
-            👑
-          </text>
+          <text id="badge-level" x="50" y="60" font-size="26" font-weight="bold" fill="#fff" text-anchor="middle">L1</text>
         </svg>
-        <h2
-          style="
-            color: var(--emerald);
-            font-size: 26px;
-            font-weight: 800;
-            margin-top: 10px;
-          "
-        >
-          Quest Completed!
-        </h2>
-        <p style="font-size: 16px; max-width: 500px" id="feedback-text"></p>
-        <button
-          onclick="window.location.reload()"
-          class="choice-btn"
-          style="
-            text-align: center;
-            background: var(--sky);
-            color: #000;
-            border: none;
-            margin-top: 20px;
-            font-weight: 800;
-            padding: 12px 30px;
-          "
-        >
-          Play Again
-        </button>
-      </div>
-    </div>
+        <h2 id="result-title">Quest complete!</h2>
+        <p id="feedback-text"></p>
+        <table class="topic-table" aria-label="Your answer for each topic">
+          <thead>
+            <tr><th scope="col">Topic</th><th scope="col">Result</th><th scope="col">Practice game</th></tr>
+          </thead>
+          <tbody id="topic-rows"></tbody>
+        </table>
+        <p id="next-steps" class="next-steps"></p>
+        <button type="button" id="pq-again" class="start-btn">Take it again · new numbers</button>
+      </section>
+    </main>
 
     <script>
-      const questions = [
-        {
-          q: "What is the greatest common factor (GCF) of 16 and 24?",
-          c: ["4", "8", "16", "48"],
-          a: 1,
-          domain: "Unit 1: Prime Factors",
-          why: "16 = 2×8 and 24 = 3×8, so 8 is the biggest factor they share.",
+      // ════════════════════════════════════════════════════════════════════
+      //  MATH PLACEMENT QUEST — Grade 6 readiness check (one item per topic)
+      //
+      //  Every item is GENERATED with new numbers each play, and every wrong
+      //  choice is a real misconception with its own explanation. Each item
+      //  is graded ONCE (it is a diagnostic), then the student continues.
+      //  The result is a Level (Level 0 extra support / Level 1 / Level 2)
+      //  plus the topics to practice. Unit numbers follow the current Reveal
+      //  Math order (statistics = Unit 2, coordinate plane = Unit 7, ...).
+      //  No links out: practice games are named, not linked (self-contained).
+      // ════════════════════════════════════════════════════════════════════
+      const RI = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+      const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+      const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+      const num = (v) => String(Number(v.toFixed(2))); // 2.50 -> "2.5"
+      const LAST_KEY = "pq-last-result-v1";
+
+      // Build an item: choices = [{t: text, why: misconception or null}].
+      // The first entry is the correct one; duplicates are dropped and the
+      // list is padded from `extra` so there are always four.
+      function item(domain, game, q, correct, why, wrongs, extra) {
+        const c = [{ t: correct, why: null }];
+        wrongs.concat(extra || []).forEach(([t, w]) => {
+          if (c.length < 4 && t && !c.some((x) => x.t === t)) c.push({ t, why: w });
+        });
+        // Rare number collisions: pad with near misses so there are 4 choices.
+        const m = /^(\$?)(\d+(?:\.\d+)?)(.*)$/.exec(correct);
+        for (let k = 1; c.length < 4 && m && k < 9; k++) {
+          const v = Number(m[2]) + (k % 2 ? 1 : -1) * Math.ceil(k / 2);
+          const t = m[1] + num(v) + m[3];
+          if (v > 0 && !c.some((x) => x.t === t)) c.push({ t, why: "Recheck the arithmetic one step at a time." });
+        }
+        return { domain, game, q, c, why };
+      }
+
+      const GEN = [
+        function gcf() {
+          const g = pick([4, 6, 8, 9, 12]);
+          let m, n;
+          do {
+            m = RI(2, 5);
+            n = RI(m + 1, 7);
+          } while (gcd(m, n) !== 1);
+          const a = g * m,
+            b = g * n;
+          const f = g === 9 ? 3 : g / 2; // a smaller common factor
+          return item(
+            "Unit 6 · Factors (GCF)",
+            "Factor Frenzy",
+            "What is the greatest common factor (GCF) of " + a + " and " + b + "?",
+            String(g),
+            a + " = " + g + " × " + m + " and " + b + " = " + g + " × " + n + ". " + g + " is the biggest factor they share.",
+            [
+              [String(f), f + " is a common factor, but not the GREATEST one. Look for a bigger factor of both."],
+              [String((a * b) / g), "That is the least common MULTIPLE. The GCF is a FACTOR, so it is not bigger than either number."],
+              [String(a), a + " is not a factor of " + b + ". A common factor must divide BOTH numbers."],
+            ],
+            [[String(g * 2), g * 2 + " does not divide both numbers."]],
+          );
         },
-        {
-          q: "Compute: 12.45 + 3.8",
-          c: ["12.83", "15.25", "16.25", "16.5"],
-          a: 2,
-          domain: "Unit 1: Decimals",
-          why: "Line up the decimal points: 12.45 + 3.80 = 16.25.",
+        function decimals() {
+          let X, Y;
+          do {
+            X = RI(1001, 1999); // hundredths: 10.01 .. 19.99
+            Y = RI(11, 99); // tenths: 1.1 .. 9.9
+          } while (X % 10 === 0 || Y % 10 === 0);
+          const fx = (X / 100).toFixed(2),
+            fy = (Y / 10).toFixed(1);
+          const show = (c) => (c / 100).toFixed(2);
+          return item(
+            "Unit 2 · Adding Decimals",
+            "Decimal Dash",
+            "Compute: " + fx + " + " + fy,
+            show(X + Y * 10),
+            "Line up the decimal points: " + fx + " + " + fy + "0 = " + show(X + Y * 10) + ".",
+            [
+              [show(X + Y), "The decimal points were not lined up. Write " + fy + " as " + fy + "0, then add place by place."],
+              [show(X + Y * 10 + 100), "Check the regrouping. Add each place carefully from right to left."],
+              [show(X + Y * 10 - 10), "Check the tenths place. Add each place carefully from right to left."],
+            ],
+          );
         },
-        {
-          q: "Divide: 3/4 ÷ 1/8",
-          c: ["6", "3/32", "1/6", "4"],
-          a: 0,
-          domain: "Unit 2: Fraction Division",
-          why: "Dividing asks how many 1/8s fit in 3/4 — that's 3/4 × 8 = 6.",
+        function fractionDivide() {
+          let a, b;
+          do {
+            b = RI(3, 6);
+            a = RI(2, b - 1);
+          } while (gcd(a, b) !== 1);
+          const k = RI(2, 4),
+            d = b * k; // a/b ÷ 1/d = a·d/b = a·k (a whole number)
+          return item(
+            "Unit 6 · Dividing Fractions",
+            "Fraction Frenzy",
+            "Divide: " + a + "/" + b + " ÷ 1/" + d,
+            String(a * k),
+            "Dividing asks how many 1/" + d + "s fit in " + a + "/" + b + ": " + a + "/" + b + " × " + d + " = " + a * k + ".",
+            [
+              [a + "/" + b * d, "That multiplies the fractions straight across. To divide, multiply by the RECIPROCAL: × " + d + "."],
+              ["1/" + a * k, "That is upside down. Many small 1/" + d + " pieces fit, so the answer is bigger than 1."],
+              [String(k), "Close: " + k + " pieces of 1/" + d + " make 1/" + b + ". But you have " + a + "/" + b + ", so multiply by " + a + "."],
+            ],
+          );
         },
-        {
-          q: "A recipe uses 3 cups of flour for every 2 cups of sugar. What is the unit rate of flour per cup of sugar?",
-          c: ["1.5 cups", "0.67 cups", "5 cups", "6 cups"],
-          a: 0,
-          domain: "Unit 3: Ratios & Rates",
-          why: "Per ONE cup of sugar means 3 ÷ 2 = 1.5 cups of flour.",
+        function unitRate() {
+          const [x, y] = pick([[3, 2], [5, 2], [7, 2], [5, 4], [9, 4], [7, 5], [8, 5]]);
+          const thing = pick([["cups of flour", "cup of sugar", "cups of sugar"], ["laps", "minute", "minutes"], ["pages", "hour", "hours"]]);
+          return item(
+            "Unit 3 · Ratios & Unit Rates",
+            "Ratio Rush",
+            "There are " + x + " " + thing[0] + " for every " + y + " " + thing[2] + ". How many " + thing[0] + " per " + thing[1] + "?",
+            num(x / y),
+            "Per ONE " + thing[1] + " means divide: " + x + " ÷ " + y + " = " + num(x / y) + ".",
+            [
+              [num(y / x), "That is " + y + " ÷ " + x + ", the rate the other way around. Divide by the 'per' amount: " + x + " ÷ " + y + "."],
+              [String(x + y), "Adding does not give a rate. A unit rate divides: " + x + " ÷ " + y + "."],
+              [String(x * y), "Multiplying does not give a rate. A unit rate divides: " + x + " ÷ " + y + "."],
+            ],
+          );
         },
-        {
-          q: "A shirt is on sale for 25% off its original price of $40. What is the sale price?",
-          c: ["$10", "$25", "$30", "$38"],
-          a: 2,
-          domain: "Unit 4: Percents",
-          why: "25% of $40 is $10 off, so you pay $40 − $10 = $30.",
+        function percentOff() {
+          let P, pct;
+          do {
+            P = pick([20, 30, 40, 50, 60, 80]);
+            pct = pick([10, 20, 25, 30, 50]);
+          } while ((P * pct) % 100 !== 0 || P - pct <= 0 || (P * pct) / 100 === P - (P * pct) / 100);
+          const off = (P * pct) / 100;
+          return item(
+            "Unit 4 · Percents",
+            "Percent Power",
+            "A shirt costs $" + P + ". It is on sale for " + pct + "% off. What is the sale price?",
+            "$" + (P - off),
+            pct + "% of $" + P + " is $" + off + " off, so you pay $" + P + " − $" + off + " = $" + (P - off) + ".",
+            [
+              ["$" + off, "$" + off + " is the amount OFF (the discount). Subtract it from $" + P + " to get the sale price."],
+              ["$" + (P - pct), "A percent is not dollars. Find " + pct + "% OF $" + P + " first, then subtract."],
+              ["$" + (P + off), "On sale means the price goes DOWN. Subtract the discount."],
+            ],
+          );
         },
-        {
-          q: "Find the area of a triangle with a base of 8 cm and a height of 5 cm.",
-          c: ["40 cm²", "20 cm²", "13 cm²", "10 cm²"],
-          a: 1,
-          domain: "Unit 5: Area",
-          why: "A triangle is half a rectangle: ½ × 8 × 5 = 20 cm².",
+        function triangleArea() {
+          let b, h;
+          do {
+            b = RI(4, 12);
+            h = RI(3, 10);
+          } while ((b * h) % 2 !== 0 || b === h);
+          return item(
+            "Unit 5 · Area",
+            "Area Attack",
+            "Find the area of a triangle with a base of " + b + " cm and a height of " + h + " cm.",
+            (b * h) / 2 + " cm²",
+            "A triangle is half of a rectangle: ½ × " + b + " × " + h + " = " + (b * h) / 2 + " cm².",
+            [
+              [b * h + " cm²", "That is the area of the whole RECTANGLE. A triangle is half of it: ÷ 2."],
+              [b + h + " cm²", "Area multiplies base × height (then halves it). Adding finds a length, not an area."],
+              [2 * (b + h) + " cm²", "That adds lengths around the outside. Area = ½ × base × height."],
+            ],
+          );
         },
-        {
-          q: "Evaluate: 3² - 2 × 3",
-          c: ["3", "15", "21", "9"],
-          a: 0,
-          domain: "Unit 6: Expressions & Exponents",
-          why: "Exponents and multiplication first: 9 − 6 = 3.",
+        function orderOfOps() {
+          let a, b, c, v;
+          do {
+            a = RI(3, 6);
+            b = RI(2, 4);
+            c = RI(2, 4);
+            v = a * a - b * c;
+          } while (v <= 0 || (a * a - b) * c === v);
+          return item(
+            "Unit 6 · Expressions & Exponents",
+            "Expression Express",
+            "Evaluate: " + a + "² − " + b + " × " + c,
+            String(v),
+            "Exponents first: " + a + "² = " + a * a + ". Then multiply: " + b + " × " + c + " = " + b * c + ". Then subtract: " + a * a + " − " + b * c + " = " + v + ".",
+            [
+              [String((a * a - b) * c), "That works left to right. Multiply BEFORE you subtract."],
+              [String(a * 2 - b * c), a + "² means " + a + " × " + a + ", not " + a + " × 2."],
+              [String(a * a + b * c), "Check the sign: the expression subtracts " + b + " × " + c + "."],
+            ],
+            [[String(v + 1), "Recheck the arithmetic one step at a time."]],
+          );
         },
-        {
-          q: "Solve for x: x + 9 = 25",
-          c: ["34", "16", "14", "1.5"],
-          a: 1,
-          domain: "Unit 7: Equations",
-          why: "Undo the +9 by subtracting 9 from both sides: x = 25 − 9 = 16.",
+        function equation() {
+          const p = RI(6, 19),
+            x = RI(5, 30),
+            q = x + p;
+          return item(
+            "Unit 8 · Equations",
+            "Equation Quest",
+            "Solve for x:  x + " + p + " = " + q,
+            String(x),
+            "Undo + " + p + " by subtracting " + p + " from both sides: x = " + q + " − " + p + " = " + x + ".",
+            [
+              [String(q + p), "You added " + p + ". To undo + " + p + ", SUBTRACT " + p + " from both sides."],
+              [String(x + 1), "Check the subtraction: " + q + " − " + p + "."],
+              [String(p), p + " is the number added to x. Check: does " + p + " + " + p + " = " + q + "?"],
+            ],
+          );
         },
-        {
-          q: "Find the median of this data set: 3, 5, 8, 9, 12",
-          c: ["7.4", "8", "9", "12"],
-          a: 1,
-          domain: "Unit 8: Statistics",
-          why: "The median is the middle value when ordered — 8 is 3rd of 5.",
+        function median() {
+          const pool = new Set();
+          while (pool.size < 5) pool.add(RI(1, 20));
+          const vals = [...pool];
+          const sorted = vals.slice().sort((p, q) => p - q);
+          let shown;
+          do {
+            shown = vals.slice().sort(() => Math.random() - 0.5);
+          } while (shown[2] === sorted[2]);
+          const mean = sorted.reduce((s, v) => s + v, 0) / 5;
+          return item(
+            "Unit 2 · Statistics",
+            "Data Dash",
+            "Find the median of this data set: " + shown.join(", "),
+            String(sorted[2]),
+            "Put the numbers in order: " + sorted.join(", ") + ". The middle (3rd of 5) is " + sorted[2] + ".",
+            [
+              [String(shown[2]), shown[2] + " is in the middle of the list as written. Put the numbers IN ORDER first."],
+              [num(mean), "That is the MEAN (add, then divide). The median is the middle number in order."],
+              [String(sorted[4] - sorted[0]), "That is the RANGE (greatest − least). The median is the middle number in order."],
+            ],
+            [
+              [String(sorted[4]), "That is the greatest value. The median is the middle number in order."],
+              [String(sorted[0]), "That is the least value. The median is the middle number in order."],
+            ],
+          );
         },
-        {
-          q: "Which point lies in Quadrant II of the coordinate plane?",
-          c: ["(2, 3)", "(-2, 3)", "(-2, -3)", "(2, -3)"],
-          a: 1,
-          domain: "Unit 9: Coordinate Plane",
-          why: "Quadrant II is up-left: x is negative, y is positive.",
+        function quadrant() {
+          const a = RI(2, 7),
+            b = RI(2, 7);
+          const pts = {
+            I: "(" + a + ", " + b + ")",
+            II: "(−" + a + ", " + b + ")",
+            III: "(−" + a + ", −" + b + ")",
+            IV: "(" + a + ", −" + b + ")",
+          };
+          const sign = { I: "x positive, y positive", II: "x negative, y positive", III: "x negative, y negative", IV: "x positive, y negative" };
+          const target = pick(["II", "III", "IV"]);
+          const wrongs = ["I", "II", "III", "IV"]
+            .filter((k) => k !== target)
+            .map((k) => [pts[k], pts[k] + " is in Quadrant " + k + " (" + sign[k] + "). Quadrant " + target + " has " + sign[target] + "."]);
+          return item(
+            "Unit 7 · Coordinate Plane",
+            "Coordinate Quest",
+            "Which point is in Quadrant " + target + " of the coordinate plane?",
+            pts[target],
+            "Quadrant " + target + " has " + sign[target] + ": " + pts[target] + ".",
+            wrongs,
+          );
+        },
+        function volume() {
+          const l = RI(2, 6),
+            w = RI(2, 6),
+            h = RI(3, 7);
+          return item(
+            "Unit 5 · Volume",
+            "Volume Blast",
+            "A rectangular prism is " + l + " cm long, " + w + " cm wide, and " + h + " cm tall. What is its volume?",
+            l * w * h + " cm³",
+            "Volume counts cubic units: " + l + " × " + w + " × " + h + " = " + l * w * h + " cm³.",
+            [
+              [l + w + h + " cm³", "You added the edges. Volume MULTIPLIES length × width × height."],
+              [l * w + " cm³", "That is one layer (length × width). Multiply by the height to stack " + h + " layers."],
+              [2 * (l * w + l * h + w * h) + " cm³", "That is the surface area (the outside faces). Volume counts the cubes inside."],
+            ],
+            [[l * w * h + l * w + " cm³", "Count the layers again: there are " + h + " layers."]],
+          );
         },
       ];
+      window.PlacementQuest = { GEN };
 
-      questions.push({q: "A rectangular prism is 4 cm long, 3 cm wide, and 5 cm high. What is its volume?", c: ["12 cm³", "20 cm³", "60 cm³", "47 cm³"], a: 2, domain: "Unit 10: Volume", why: "Volume counts cubic units: 4 × 3 × 5 = 60 cm³."});
-
-      // Coordinate nodes mapped to stones (start + stone-1..stone-10)
-      const coordinates = [
-        { x: 40, y: 40 },
-        { x: 92, y: 31 },
-        { x: 144, y: 26 },
-        { x: 196, y: 27 },
-        { x: 248, y: 33 },
-        { x: 300, y: 40 },
-        { x: 352, y: 45 },
-        { x: 404, y: 47 },
-        { x: 456, y: 46 },
-        { x: 508, y: 43 },
-        { x: 560, y: 40 },
-      ];
-
+      let questions = [];
       let currentIdx = 0;
-      let score = 0;
       let correctCount = 0;
       let questPaused = false;
       let answered = false; // one graded answer per question (real diagnostic)
-      const missedDomains = [];
+      let results = []; // per question: true / false
+
+      function $(id) {
+        return document.getElementById(id);
+      }
+
+      function buildStones() {
+        const svg = document.querySelector(".quest-map svg");
+        svg.setAttribute("role", "img");
+        svg.setAttribute("aria-label", "Quest progress across all " + questions.length + " math topics");
+        document.querySelectorAll('[id^="stone-"]').forEach((node) => node.remove());
+        questions.forEach((_, index) => {
+          const node = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          node.id = "stone-" + (index + 1);
+          node.setAttribute("cx", 40 + ((index + 1) * 520) / questions.length);
+          node.setAttribute("cy", 40);
+          node.setAttribute("r", 10);
+          node.setAttribute("fill", "#334155");
+          svg.insertBefore(node, $("map-player"));
+        });
+        const player = $("map-player");
+        player.setAttribute("cx", 40);
+        player.setAttribute("cy", 40);
+      }
+
+      function startQuest() {
+        questions = GEN.map((g) => g());
+        currentIdx = 0;
+        correctCount = 0;
+        results = [];
+        $("q-total").textContent = questions.length;
+        $("q-score").textContent = "0";
+        $("intro-screen").hidden = true;
+        $("results-screen").style.display = "none";
+        $("pq-stats").hidden = false;
+        $("pq-map").hidden = false;
+        $("play-screen").hidden = false;
+        buildStones();
+        loadQuestion();
+      }
 
       function loadQuestion() {
         if (currentIdx >= questions.length) {
@@ -403,142 +587,131 @@
           return;
         }
         answered = false;
-        document.getElementById("quest-next").hidden = true;
-
-        document.getElementById("q-num").textContent = currentIdx + 1;
-
+        $("quest-next").hidden = true;
+        $("q-num").textContent = currentIdx + 1;
         const q = questions[currentIdx];
-        document.getElementById("question-text").textContent = q.q;
-
-        const feedback = document.getElementById("feedback-line");
+        $("q-domain").textContent = q.domain;
+        $("question-text").textContent = q.q;
+        const feedback = $("feedback-line");
         feedback.textContent = "";
         feedback.className = "feedback-line";
-
-        const container = document.getElementById("choices-container");
+        const container = $("choices-container");
         container.innerHTML = "";
-
-        const order = q.c.map((choice, index) => ({choice, index}));
-        for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
-        order.forEach(({choice, index}, position) => {
+        const order = q.c.map((choice, index) => ({ choice, index }));
+        for (let i = order.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [order[i], order[j]] = [order[j], order[i]];
+        }
+        order.forEach(({ choice, index }, position) => {
           const btn = document.createElement("button");
           btn.className = "choice-btn";
           btn.type = "button";
-          btn.textContent = (position + 1) + ". " + choice;
+          btn.innerHTML = '<span class="choice-key" aria-hidden="true"></span><span class="choice-txt"></span>';
+          btn.querySelector(".choice-key").textContent = String(position + 1);
+          btn.querySelector(".choice-txt").textContent = choice.t;
+          btn.setAttribute("aria-label", "Choice " + (position + 1) + ": " + choice.t);
           btn.dataset.option = index;
           btn.onclick = () => selectChoice(index, btn);
           container.appendChild(btn);
         });
         // Move keyboard focus to the first option so the question is announced.
         const first = container.querySelector("button");
-        if (first) first.focus();
+        if (first) first.focus({ preventScroll: true });
       }
 
-      // A true diagnostic: each question is graded ONCE, then we always advance.
-      // Correct answers earn points; wrong answers reveal the right choice and
-      // record the domain to review. Nobody is forced to retry until "right,"
-      // so the final Level Badge reflects real readiness.
+      // A true diagnostic: each question is graded ONCE, then we always
+      // advance. A wrong pick explains the specific mix-up behind THAT choice
+      // and shows the worked answer, so the miss still teaches.
       function selectChoice(index, btn) {
         if (answered || questPaused) return;
         answered = true;
-
         const q = questions[currentIdx];
-        const correct = index === q.a;
-        const buttons = document.querySelectorAll(
-          "#choices-container .choice-btn",
-        );
-        buttons.forEach((b, i) => {
+        const correct = index === 0;
+        results[currentIdx] = correct;
+        document.querySelectorAll("#choices-container .choice-btn").forEach((b) => {
           b.disabled = true;
-          if (Number(b.dataset.option) === q.a) {
-            b.style.borderColor = "#10b981";
-            b.style.background = "rgba(16,185,129,0.18)";
-          }
+          if (Number(b.dataset.option) === 0) b.classList.add("is-right");
         });
-
-        const feedback = document.getElementById("feedback-line");
+        const feedback = $("feedback-line");
+        const stone = $("stone-" + (currentIdx + 1));
         if (correct) {
-          score += 1000;
           correctCount++;
-          document.getElementById("q-score").textContent = score;
-          if (btn) {
-            btn.style.borderColor = "#10b981";
-            btn.style.background = "rgba(16,185,129,0.28)";
-          }
-          feedback.textContent = "✓ Correct!" + (q.why ? " " + q.why : "");
+          $("q-score").textContent = correctCount;
+          feedback.textContent = "✓ Correct! " + q.why;
           feedback.className = "feedback-line good";
-          const stone = document.getElementById(`stone-${currentIdx + 1}`);
           if (stone) stone.setAttribute("fill", "#10b981");
           document.body.classList.add("gfx-correct");
           setTimeout(() => document.body.classList.remove("gfx-correct"), 200);
         } else {
-          missedDomains.push(q.domain);
-          if (btn) {
-            btn.style.borderColor = "#f43f5e";
-            btn.style.background = "rgba(244,63,94,0.22)";
-          }
-          feedback.textContent =
-            "✗ Not quite — the correct answer is shown." +
-            (q.why ? " " + q.why : "");
+          if (btn) btn.classList.add("is-wrong");
+          feedback.textContent = "Not this time. " + q.c[index].why + " The answer is " + q.c[0].t + ": " + q.why;
           feedback.className = "feedback-line bad";
-          const stone = document.getElementById(`stone-${currentIdx + 1}`);
-          if (stone) stone.setAttribute("fill", "#f43f5e");
+          if (stone) stone.setAttribute("fill", "#f59e0b");
           document.body.classList.add("gfx-wrong");
           setTimeout(() => document.body.classList.remove("gfx-wrong"), 200);
         }
-
         // Advance the explorer icon on every answer (right or wrong).
-        const nextCoord = {x: 40 + (currentIdx + 1) * 520 / questions.length, y: 40};
-        const player = document.getElementById("map-player");
+        const player = $("map-player");
         if (player) {
-          player.setAttribute("cx", nextCoord.x);
-          player.setAttribute("cy", nextCoord.y);
+          player.setAttribute("cx", 40 + ((currentIdx + 1) * 520) / questions.length);
+          player.setAttribute("cy", 40);
         }
-
-        document.dispatchEvent(new CustomEvent("game:feedback", {detail: {correct, message: feedback.textContent}}));
-        const next = document.getElementById("quest-next");
+        document.dispatchEvent(
+          new CustomEvent("game:feedback", { detail: { correct, message: feedback.textContent } }),
+        );
+        const next = $("quest-next");
+        next.textContent = currentIdx + 1 >= questions.length ? "See my results →" : "Next question →";
         next.hidden = false;
-        next.focus();
+        next.focus({ preventScroll: true });
+        next.scrollIntoView({ block: "nearest" });
+      }
+
+      function levelFor(rate) {
+        if (rate >= 0.8) return { n: 2, name: "Level 2", desc: "You are ready for grade-level challenges. Start the unit games on Level 2." };
+        if (rate >= 0.45) return { n: 1, name: "Level 1", desc: "You are on your way. Start the unit games on Level 1, then move up." };
+        return { n: 0, name: "Level 0 · extra support", desc: "Start with the step coach: play the unit games on Level 1 and use every hint." };
       }
 
       function showResults() {
-        document.getElementById("play-screen").style.display = "none";
-        document.getElementById("results-screen").style.display = "flex";
-
+        $("play-screen").hidden = true;
+        $("results-screen").style.display = "flex";
         const total = questions.length;
         const rate = correctCount / total;
-        const stars = rate >= .9 ? 3 : rate >= .5 ? 2 : 1;
+        const stars = rate >= 0.9 ? 3 : rate >= 0.5 ? 2 : 1;
+        const lvl = levelFor(rate);
+        $("badge-level").textContent = "L" + lvl.n;
+        $("result-title").textContent = "Your placement: " + lvl.name;
+        $("feedback-text").textContent =
+          "You answered " + correctCount + " of " + total + " correctly. " + lvl.desc;
+        const rows = $("topic-rows");
+        rows.replaceChildren();
+        questions.forEach((q, i) => {
+          const tr = document.createElement("tr");
+          const ok = !!results[i];
+          [q.domain, ok ? "✓ Ready" : "Practice", q.game].forEach((text, c) => {
+            const td = document.createElement("td");
+            td.textContent = text;
+            if (c === 1) td.className = ok ? "ok" : "todo";
+            tr.append(td);
+          });
+          rows.append(tr);
+        });
+        const focus = questions.filter((q, i) => !results[i]);
+        $("next-steps").textContent = focus.length
+          ? "Practice next: " + focus.map((q) => q.game).join(", ") + ". Ask your teacher which one to open first."
+          : "You answered every question correctly. Outstanding readiness!";
+        try {
+          localStorage.setItem(LAST_KEY, JSON.stringify({ correct: correctCount, total, level: lvl.n, at: Date.now() }));
+        } catch (e) {}
 
-        let placement = "Explorer";
-        if (rate >= .9) placement = "Math Overlord";
-        else if (rate >= .7) placement = "Equation Knight";
-        else if (rate >= .5) placement = "Fraction Champion";
-        else if (rate >= .3) placement = "Ratio Scout";
-
-        // De-duplicate the domains that were missed → concrete review targets.
-        const focus = missedDomains.filter(
-          (d, i) => missedDomains.indexOf(d) === i,
-        );
-        const focusHtml = focus.length
-          ? "Areas to review: <strong>" + focus.join(", ") + "</strong>."
-          : "You answered every question correctly — outstanding readiness!";
-
-        document.getElementById("feedback-text").innerHTML =
-          "You answered <strong>" +
-          correctCount +
-          " of " +
-          total +
-          "</strong> correctly (" +
-          score +
-          " points) and earned the <strong>" +
-          placement +
-          " Badge</strong>!<br><br>" +
-          focusHtml;
-
-        // Report to the EduPulse gradebook (guarded; safe no-op without bridge).
+        // Report to the EduPulse gradebook (guarded; safe no-op without
+        // bridge). Score = questions correct out of total.
         try {
           if (window.EduPulse)
             window.EduPulse.record({
               activityTitle: document.title,
-              score: score,
+              score: correctCount,
+              maxScore: total,
               stars: stars,
               standard: "Grade 6 Diagnostic",
               problemsAttempted: total,
@@ -550,45 +723,73 @@
         // Report final score to an embedding LMS, if any.
         if (window.parent && window.parent.postMessage) {
           window.parent.postMessage(
-            {
-              type: "game_completed",
-              score: score,
-              maxScore: questions.length * 1000,
-              completed: true,
-            },
+            { type: "game_completed", score: correctCount, maxScore: total, completed: true },
             "*",
           );
         }
-
-        document.dispatchEvent(new CustomEvent("game:complete", {detail: {score, correct: correctCount, total, accuracy: Math.round(correctCount / total * 100), message: "Diagnostic complete: " + correctCount + " of " + total + " correct."}}));
-        const routes = ["u1-factor-frenzy", "u1-decimal-dash", "u2-fraction-frenzy", "u3-ratio-rush", "u4-percent-power", "u5-area-attack", "u6-expression-express", "u7-equation-quest", "u8-data-dash", "u9-coordinate-quest", "u10-volume-blast"];
-        const review = document.getElementById("quest-review");
-        review.replaceChildren();
-        questions.forEach((question, index) => {
-          if (!focus.includes(question.domain)) return;
-          const link = document.createElement("a"); link.href = "/math/games/" + routes[index] + "/";
-          link.className = "quest-review-link"; link.textContent = "Practice " + question.domain;
-          review.append(link);
-        });
+        document.dispatchEvent(
+          new CustomEvent("game:complete", {
+            detail: {
+              score: correctCount,
+              correct: correctCount,
+              total,
+              accuracy: Math.round(rate * 100),
+              message: "Placement complete: " + correctCount + " of " + total + " correct. " + lvl.name + ".",
+            },
+          }),
+        );
         document.body.classList.add("won");
+        $("pq-again").focus({ preventScroll: true });
       }
 
       window.addEventListener("DOMContentLoaded", () => {
-        document.getElementById("q-total").textContent = questions.length;
-        const next = document.createElement("button"); next.id = "quest-next"; next.className = "choice-btn"; next.type = "button"; next.textContent = "Continue expedition →"; next.hidden = true;
-        document.getElementById("choices-container").after(next);
-        next.addEventListener("click", () => { if (!answered || questPaused) return; currentIdx++; loadQuestion(); });
-        const review = document.createElement("div"); review.id = "quest-review"; document.getElementById("feedback-text").after(review);
-        const svg = document.querySelector(".quest-map svg");
-        svg.setAttribute("role", "img"); svg.setAttribute("aria-label", "Expedition progress across all 11 math topics");
-        document.querySelectorAll('[id^="stone-"]').forEach((node) => node.remove());
-        questions.forEach((_, index) => { const node = document.createElementNS("http://www.w3.org/2000/svg", "circle"); node.id = "stone-" + (index + 1); node.setAttribute("cx", 40 + (index + 1) * 520 / questions.length); node.setAttribute("cy", 40); node.setAttribute("r", 10); node.setAttribute("fill", "#334155"); svg.insertBefore(node, svg.querySelector("#map-player")); });
-        window.GameStudio && window.GameStudio.register({title: "Placement Quest", instructions: ["Answer one question for each math topic. Choose with the buttons or keys 1–4.", "Each answer is graded once. Read the explanation, then choose Continue.", "Your result includes links to practice topics you want to review."], pause() {questPaused = true;}, resume() {questPaused = false;}});
-        document.addEventListener("keydown", event => {
-          if (questPaused || event.target.closest('dialog, .studio-toolbar')) return;
-          if (/^[1-4]$/.test(event.key) && !answered) document.querySelectorAll("#choices-container button")[Number(event.key)-1]?.click();
+        const next = document.createElement("button");
+        next.id = "quest-next";
+        next.className = "choice-btn next-btn";
+        next.type = "button";
+        next.textContent = "Next question →";
+        next.hidden = true;
+        $("choices-container").after(next);
+        next.addEventListener("click", () => {
+          if (!answered || questPaused) return;
+          currentIdx++;
+          loadQuestion();
         });
-        loadQuestion();
+        $("pq-start").addEventListener("click", startQuest);
+        $("pq-again").addEventListener("click", () => {
+          $("results-screen").style.display = "none";
+          startQuest();
+        });
+        try {
+          const last = JSON.parse(localStorage.getItem(LAST_KEY) || "null");
+          if (last && last.total) {
+            const el = $("intro-last");
+            el.textContent = "Last time: " + last.correct + " of " + last.total + " correct (Level " + last.level + "). The numbers are new each time.";
+            el.hidden = false;
+          }
+        } catch (e) {}
+        window.GameStudio &&
+          window.GameStudio.register({
+            title: "Placement Quest",
+            instructions: [
+              "Answer one question for each Grade 6 math topic (11 in all). There is no timer.",
+              "Tap a choice, or press keys 1–4. Each answer is checked one time.",
+              "Read why the answer works, then choose Next question (or press Enter).",
+              "At the end you see your Level and which practice games to play next.",
+            ],
+            pause() {
+              questPaused = true;
+            },
+            resume() {
+              questPaused = false;
+            },
+          });
+        document.addEventListener("keydown", (event) => {
+          if (questPaused || event.target.closest("dialog, .studio-toolbar, input, textarea")) return;
+          if (/^[1-4]$/.test(event.key) && !answered && !$("play-screen").hidden)
+            document.querySelectorAll("#choices-container button")[Number(event.key) - 1]?.click();
+        });
+        $("pq-start").focus({ preventScroll: true });
       });
     </script>
     <!-- EduPulse reporting (sends the diagnostic result to the gradebook). -->
@@ -612,7 +813,7 @@
         <div class="ewl-coach-icon">💡</div>
         <div class="ewl-coach-content">
           <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
-          <p id="ewl-coach-text" data-en="Calm self-paced review lab: practice, match, sort, and solve at your own pace!" data-es="Práctica a tu propio ritmo: clasifica, empareja y resuelve.">Calm self-paced review lab: practice, match, sort, and solve at your own pace!</p>
+          <p id="ewl-coach-text" data-en="Take your time. Each answer is checked once, so read every choice before you pick." data-es="Tómate tu tiempo. Cada respuesta se revisa una vez, así que lee todas las opciones antes de elegir.">Take your time. Each answer is checked once, so read every choice before you pick.</p>
         </div>
       </div>
 

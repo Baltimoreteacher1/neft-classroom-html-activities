@@ -562,7 +562,6 @@
             <!-- EWL Universal Arcade Enhancements Header -->
       <div class="ewl-arcade-header-bar">
         <div class="ewl-arcade-title-group">
-          <a href="/math/games/" class="ewl-back-hub-btn">⬅️ Arcade Hub</a>
           <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
           <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
         </div>
@@ -1323,7 +1322,11 @@
           window.EduPulse &&
             EduPulse.record({
               activityTitle: ACTIVITY_TITLE,
-              score: S.score,
+              // Report correct steps out of attempted steps; points are not a
+              // fraction of anything ("705/34" was shown on the Canvas card).
+              score: S.correctActions,
+              maxScore: S.totalActions,
+              points: S.score,
               stars: stars,
               problemsCorrect: S.correctActions,
               problemsAttempted: S.totalActions,
@@ -1424,7 +1427,7 @@
       </div>
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
-<script src="/assets/game-studio.js?v=20261002" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261002" defer></script>
+<script src="/assets/game-studio.js?v=20261003" defer></script>
+<script src="/math/games/shared/flagship-studio.js?v=20261003" defer></script>
 </body>
 </html>

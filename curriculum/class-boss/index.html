@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->
     <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-    <script src="/assets/game-studio.js?v=20261002" defer></script>
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
 </head>
 
   <body>
@@ -27,10 +27,6 @@
 
     <div class="wrap">
       <div class="topbar">
-        <a class="back-link" href="/curriculum/">
-          <span aria-hidden="true">←</span>
-          <span data-i18n="back">Back to curriculum</span>
-        </a>
         <div class="topbar-tools">
           <button
             id="langBtn"
@@ -106,30 +102,36 @@
 
         <!-- RIGHT: the student's turn -->
         <section class="battle" id="battle" aria-labelledby="battleHeading">
-          <div class="card raid-prep">
-            <h2 class="card-title">Choose your practice focus</h2>
-            <label for="raidFocus">Attack to practice</label>
-            <select id="raidFocus"><option value="">All three attacks</option></select>
-            <p>Choose one mistake to work on, or rotate through all three. Every correct answer still helps the class.</p>
-            <p id="raidSession" role="status" aria-live="polite">Your expedition: 0 challenges solved.</p>
-          </div>
-
           <div class="card">
-            <h2 id="battleHeading" class="card-title" data-i18n="yourTurn">Your turn</h2>
-            <div id="questionBlock" tabindex="-1">
-              <p class="question" id="questionText" data-i18n="loading">
-                Loading this week's boss…
+            <div class="battle-head">
+              <h2 id="battleHeading" class="card-title" data-i18n="yourTurn">Your turn</h2>
+              <p id="raidSession" class="round-progress" role="status" aria-live="polite">
+                Challenge 1 of 10
               </p>
-              <p class="question-tag" id="questionTag"></p>
+            </div>
+            <div class="raid-prep">
+              <label for="raidFocus" data-i18n="prepLabel">Attack to practice</label>
+              <select id="raidFocus"><option value="" data-i18n="prepAll">All three attacks</option></select>
             </div>
 
-            <div class="choices" id="choices"></div>
+            <div id="questionArea">
+              <div id="questionBlock" tabindex="-1">
+                <p class="question" id="questionText" data-i18n="loading">
+                  Loading this week's boss…
+                </p>
+                <p class="question-tag" id="questionTag"></p>
+              </div>
 
-            <div class="feedback" id="feedback" aria-live="assertive" aria-atomic="true"></div>
+              <div class="choices" id="choices"></div>
 
-            <button class="next-btn" id="nextBtn" type="button" hidden>
-              <span data-i18n="next">Next question</span>
-            </button>
+              <div class="feedback" id="feedback" aria-live="assertive" aria-atomic="true"></div>
+
+              <button class="next-btn" id="nextBtn" type="button" hidden>
+                <span id="nextLabel">Next challenge</span>
+              </button>
+            </div>
+
+            <div class="round-summary" id="roundSummary" hidden></div>
 
             <p class="no-fail" data-i18n="noFail">
               Nothing is being scored against you. A wrong answer just shows you the fix and gives

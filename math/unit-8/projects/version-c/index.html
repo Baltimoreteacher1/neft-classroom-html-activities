@@ -1613,14 +1613,14 @@
             </summary>
             <p>
               <span class="en-text"
-                >If the variable is multiplied by a number (like 3x = 36), the inverse operation is
-                division. Divide both sides of the equation by that number (36 ÷ 3) to get the
-                solution x = 12.</span
+                >If the variable is multiplied by a number (like 5x = 40), the inverse operation is
+                division. Divide both sides of the equation by that number (40 ÷ 5) to get the
+                solution x = 8. Now undo YOUR lock's operation the same way.</span
               >
               <span class="es-text"
-                >Si la variable está multiplicada por un número (como 3x = 36), la operación inversa
-                es la división. Divide ambos lados de la ecuación por ese número (36 ÷ 3) para
-                obtener la solución x = 12.</span
+                >Si la variable está multiplicada por un número (como 5x = 40), la operación inversa
+                es la división. Divide ambos lados de la ecuación por ese número (40 ÷ 5) para
+                obtener la solución x = 8. Ahora deshaz la operación de TU candado de la misma forma.</span
               >
             </p>
           </details>
@@ -3334,7 +3334,12 @@
       }
 
       function downloadTxt() {
-        const txt = document.getElementById("reportBox")?.textContent;
+        let txt = document.getElementById("reportBox")?.textContent;
+        /* Build the summary first instead of a Download button that silently
+           does nothing until "Generate Summary" has been pressed. */
+        if (!txt && typeof buildReport === "function" && buildReport() !== false) {
+          txt = document.getElementById("reportBox")?.textContent;
+        }
         if (txt) {
           const a = document.createElement("a");
           a.href = "data:text/plain;charset=utf-8," + encodeURIComponent(txt);

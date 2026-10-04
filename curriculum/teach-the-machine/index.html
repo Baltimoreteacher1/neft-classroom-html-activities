@@ -17,14 +17,12 @@
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->
+    <link rel="stylesheet" href="/assets/game-studio.css?v=20261002" />
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
 </head>
   <body>
     <div class="wrap">
-      <nav class="topbar" aria-label="Page">
-        <a class="back-link" href="/curriculum/">
-          <span aria-hidden="true">&larr;</span>
-          <span data-i18n="back">Back to curriculum</span>
-        </a>
+      <nav class="topbar" aria-label="Language">
         <span class="spacer"></span>
         <div class="lang-toggle" role="group" aria-label="Language / Idioma">
           <button type="button" id="lang-en" aria-pressed="true" lang="en">EN</button>
@@ -53,6 +51,10 @@
                 <p class="learner-blurb" id="learner-blurb"></p>
               </div>
             </div>
+            <div class="learner-pick">
+              <label for="learner-select" id="learner-select-label">Choose a learner</label>
+              <select id="learner-select"></select>
+            </div>
 
             <div
               class="log"
@@ -64,21 +66,21 @@
             ></div>
 
             <form class="composer" id="composer">
-              <div class="chip-row" id="starters">
-                <span class="chip-label" id="starters-label"></span>
-              </div>
-              <div class="chip-row" id="wordbank">
-                <span class="chip-label" id="wordbank-label"></span>
-              </div>
-
-              <label class="sr-only" for="entry" id="entry-label">Your explanation</label>
-              <textarea id="entry" rows="6" spellcheck="true"></textarea>
+              <label class="entry-label" for="entry" id="entry-label">Your explanation</label>
+              <textarea id="entry" rows="5" spellcheck="true"></textarea>
 
               <div class="actions">
                 <button class="btn" type="submit" id="send"></button>
                 <button class="btn btn-quiet" type="button" id="restart"></button>
               </div>
               <p class="coach-note" id="coach" aria-live="polite"></p>
+
+              <div class="chip-row" id="starters">
+                <span class="chip-label" id="starters-label"></span>
+              </div>
+              <div class="chip-row" id="wordbank">
+                <span class="chip-label" id="wordbank-label"></span>
+              </div>
               <p class="note-offline" id="source-note"></p>
             </form>
           </section>
@@ -94,6 +96,7 @@
               <p class="sc-foot" id="sc-foot"></p>
             </div>
             <div class="actions">
+              <button class="btn" type="button" id="next-learner"></button>
               <button class="btn btn-quiet" type="button" id="copy-summary"></button>
               <button class="btn btn-quiet" type="button" id="print-summary"></button>
             </div>
@@ -121,6 +124,7 @@
             >
               <div class="bar-fill" id="bar-fill"></div>
             </div>
+            <p class="taught-line" id="taught-line"></p>
           </section>
         </aside>
       </div>

@@ -77,9 +77,9 @@
       if(this.answered || this.answerBtns?.[i]?.eliminated)return;
       const q=currentQuestion(this);
       const choice=this.answerBoxes?.[i]?.optText ?? this.answerBtns?.[i]?.optText ?? q?.options?.[i];
-      if(q && choice!=null)track(choice===q.correct,choice===q.correct?'Correct. '+(q.explain||''): 'Review: '+(q.explain||'Compare your choice with the model.'));
+      if(q && choice!=null)track(choice===q.correct,choice===q.correct?'Correct. '+(q.explain||''): 'Not yet — check your work and try another choice.');
     });
-    wrap(s,'pick',function(i){if(!this.locked && this.current?.choices?.[i])track(!!this.current.choices[i].correct,this.current.explain);});
+    wrap(s,'pick',function(i){if(!this.locked && this.current?.choices?.[i])track(!!this.current.choices[i].correct,this.current.choices[i].correct?this.current.explain:'Not yet — check your work and try another choice.');});
     wrap(s,'forge',function(){if(!this.locked && this.current){const r=this.judge();track(r.correct,r.correct?this.current.explain:r.why);}});
     wrap(s,'grabCell',function(row,i){if(!row.scored)track(row.data.bestIdxs.includes(i),'Compare each original price × (1 − discount ÷ 100).');});
     wrap(s,'resolveCorrect',()=>track(true,'Construction complete. Building added to your city.'));

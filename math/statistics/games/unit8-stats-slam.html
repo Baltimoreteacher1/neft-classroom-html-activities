@@ -135,7 +135,6 @@
             <!-- EWL Universal Arcade Enhancements Header -->
       <div class="ewl-arcade-header-bar">
         <div class="ewl-arcade-title-group">
-          <a href="/math/games/" class="ewl-back-hub-btn">⬅️ Arcade Hub</a>
           <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
           <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
         </div>
@@ -368,6 +367,38 @@
       const sfx = new SFX();
 
       // --- QUESTION BANK ---
+      // ── Help ladder (calm, earned): Tier 1 = method hint that never states the
+      // answer; Tier 2 = the worked step with the last value left for the
+      // student; after that the full solution. Wrong answers never auto-advance.
+      function methodHint(q) {
+        const t = q.text;
+        if (/MAD/.test(t))
+          return "MAD: find the mean, find how far each value is from the mean, then find the mean of those distances.";
+        if (/IQR/.test(t)) return "IQR = upper quartile (Q3) minus lower quartile (Q1).";
+        if (/statistical question/i.test(t))
+          return "A statistical question expects MANY different answers — you would collect data that varies.";
+        if (/Removing it/.test(t))
+          return "Find the mean WITH the 42 (5 values), then the mean WITHOUT it (4 values), then subtract.";
+        if (/Best measure/.test(t))
+          return "Look for a value far from the others (an outlier). Which measure of center does an outlier pull the most?";
+        if (/Which is true/.test(t))
+          return "Consistent means the scores stay close together. Which team's scores are less spread out?";
+        if (/median/i.test(t))
+          return "Median: put the values in order from least to greatest and find the middle. With an even count, average the two middle values.";
+        if (/mode/i.test(t)) return "Mode: the value that appears MOST often.";
+        if (/range/i.test(t)) return "Range: greatest value minus least value.";
+        if (/mean/i.test(t)) return "Mean: add all the values, then divide by how many values there are.";
+        return "Read the data again and use the measure the question names.";
+      }
+      function workedStep(q) {
+        if (/mode/i.test(q.text) && !/MAD/.test(q.text))
+          return "Count how many times each value appears. The mode appears 3 times.";
+        const parts = q.explain.split(/(?<=\.)\s+(?=[A-Z$])/);
+        if (parts.length > 1) return parts.slice(0, -1).join(" ") + " Now finish the last step.";
+        const cut = q.explain.replace(/\s*[=≈]\s*[^=≈]+$/, "");
+        return cut !== q.explain ? cut + " = ?" : q.explain;
+      }
+
       function genQuestions() {
         const qs = [];
         function shuf(a) {
@@ -1248,6 +1279,7 @@
             return;
           }
           this.answered = false;
+          this.attempts = 0;
           this.selectedIdx = -1;
           this.questionStartTime = Date.now();
           this.doublePointsActive = false;
@@ -1638,16 +1670,23 @@
           const chosen = this.answerBtns[idx].optText;
           const correct = chosen === q.correct;
 
+          const tries = this.attempts || 0;
           if (correct) {
-            // Calculate score (no time-based bonus — calm, self-paced)
+            // Calculate score (no time-based bonus — calm, self-paced).
+            // Full points for an unaided first try; fewer after help.
+            const helpFactor = [1, 0.5, 0.25, 0][Math.min(tries, 3)];
             let basePoints = q.tier * 10;
-            let streakBonus = Math.min(this.streak, 5) * 5;
-            let subtotal = basePoints + streakBonus;
+            let streakBonus = tries === 0 ? Math.min(this.streak, 5) * 5 : 0;
+            let subtotal = Math.round((basePoints + streakBonus) * helpFactor);
             if (this.doublePointsActive) subtotal *= 2;
 
             this.score += subtotal;
-            this.streak++;
-            this.wins++;
+            if (tries === 0) {
+              this.streak++;
+              this.wins++;
+            } else {
+              this.losses++;
+            }
             if (this.streak > this.bestStreak) this.bestStreak = this.streak;
             this.comboMultiplier = Math.min(
               1 + Math.floor(this.streak / 2) * 0.5,
@@ -1656,7 +1695,7 @@
 
             // Update progress dots
             if (this.progDots[this.qIndex]) {
-              this.progDots[this.qIndex].setFillStyle(0x22c55e);
+              this.progDots[this.qIndex].setFillStyle(tries === 0 ? 0x22c55e : 0xf59e0b);
             }
 
             this.answerBtns[idx].bg.setFillStyle(0x22c55e);
@@ -1717,8 +1756,14 @@
               "SCORE! +" +
                 subtotal +
                 " pts" +
-                (this.streak >= 3 ? " STREAK x" + this.streak + "!" : ""),
+                (tries > 0 ? " (with help)" : "") +
+                (tries === 0 && this.streak >= 3 ? " STREAK x" + this.streak + "!" : "") +
+                "  ✔ " + q.explain,
             );
+            try {
+              const sr = document.getElementById("sr-status");
+              if (sr) sr.textContent = "Correct. " + q.explain;
+            } catch (e) {}
             this.fbObj.setColor("#22c55e");
             sfx.buzzer();
             if (this.streak < 3) sfx.crowd();
@@ -1765,71 +1810,47 @@
             // Confetti at answer button
             this.spawnConfetti(btn.bg.x, btn.bg.y, 10 + this.streak * 2);
           } else {
-            this.lives--;
-            if (this.lives <= 0) {
-              // No-fail: refill lives instead of ending the run early.
-              this.lives = 3;
-              this.showFloatingText(
-                W / 2,
-                H / 2 + 40,
-                "Refilled — keep going!",
-                "#22c55e",
-                "22px",
-              );
-              try {
-                const sr = document.getElementById("sr-status");
-                if (sr) sr.textContent = "Lives refilled. Keep going!";
-              } catch (e) {}
-            }
+            // Not yet: rule this choice out, give the next rung of help, and
+            // let the student try again. Nothing advances on its own.
+            this.attempts = tries + 1;
             this.streak = 0;
             this.comboMultiplier = 1;
-            this.losses++;
-
-            // Update progress dots
+            const btn = this.answerBtns[idx];
+            btn.eliminated = true;
+            btn.bg.setFillStyle(0xef4444, 0.45);
+            btn.bg.setStrokeStyle(3, 0xef4444);
+            if (btn.txt) btn.txt.setAlpha(0.5);
+            btn.bg.disableInteractive();
             if (this.progDots[this.qIndex]) {
-              this.progDots[this.qIndex].setFillStyle(0xef4444);
+              this.progDots[this.qIndex].setFillStyle(0xf59e0b);
             }
-
-            this.answerBtns[idx].bg.setFillStyle(0xef4444);
-            this.answerBtns[idx].bg.setStrokeStyle(3, 0xef4444);
-            const ci = this.answerBtns.findIndex(
-              (b) => b.optText === q.correct,
-            );
-            if (ci >= 0) {
-              this.answerBtns[ci].bg.setFillStyle(0x22c55e, 0.5);
-              this.answerBtns[ci].bg.setStrokeStyle(2, 0x22c55e);
-            }
-            this.fbObj.setText("MISS! " + q.explain);
-            this.fbObj.setColor("#ef4444");
             sfx.miss();
-            sfx.glassBreak();
-
-            this.showFloatingText(
-              this.answerBtns[idx].bg.x,
-              this.answerBtns[idx].bg.y - 30,
-              "MISS!",
-              "#ef4444",
-              "22px",
-            );
-
-            // Heavy screen shake + red flash (gated for reduced motion)
-            safeShake(this, 400, 0.025);
-            if (!RM.on) this.cameras.main.flash(300, 255, 0, 0, true);
-
-            // Red vignette overlay
-            const vignette = this.add
-              .rectangle(W / 2, H / 2, W, H, 0xff0000, 0.15)
-              .setDepth(15);
-            if (RM.on) {
-              this.time.delayedCall(400, () => vignette.destroy());
+            this.showFloatingText(btn.bg.x, btn.bg.y - 30, "Not yet", "#f59e0b", "20px");
+            const left = this.answerBtns.filter((b) => !b.eliminated).length;
+            let msg;
+            if (this.attempts === 1) {
+              msg = "Not yet — " + chosen + " is not it. Hint: " + methodHint(q);
+            } else if (this.attempts === 2 && left > 1) {
+              msg = "Try this step: " + workedStep(q);
             } else {
-              this.tweens.add({
-                targets: vignette,
-                alpha: 0,
-                duration: 800,
-                onComplete: () => vignette.destroy(),
-              });
+              msg = "Here is the full solution: " + q.explain + " Tap the matching answer to go on.";
             }
+            this.fbObj.setText(msg);
+            this.fbObj.setColor("#fbbf24");
+            // The shared Mission Control panel prints the full explanation on
+            // any wrong pick; replace it with this rung of the help ladder.
+            try {
+              const fm = document.querySelector(".fm-feedback");
+              if (fm) fm.textContent = msg;
+            } catch (e) {}
+            try {
+              const sr = document.getElementById("sr-status");
+              if (sr) sr.textContent = msg;
+            } catch (e) {}
+            safeShake(this, 150, 0.004);
+            this.answered = false;
+            this.updateHUD();
+            return;
           }
           this.updateHUD();
           this.time.delayedCall(correct ? 1500 : 2500, () => {
@@ -2205,13 +2226,9 @@
 
           const stats = [
             { l: "Points", v: d.score, c: "#fbbf24" },
-            { l: "Correct", v: `${d.correct}/${d.total}`, c: "#22c55e" },
+            { l: "First Try", v: `${d.correct}/${d.total}`, c: "#22c55e" },
             { l: "Best Streak", v: d.bestStreak, c: "#f59e0b" },
-            {
-              l: "Time",
-              v: `${Math.floor(d.time / 60)}:${(d.time % 60 < 10 ? "0" : "") + (d.time % 60)}`,
-              c: "#94a3b8",
-            },
+            { l: "Games", v: `${d.total}/${d.total}`, c: "#94a3b8" },
           ];
           stats.forEach((s, i) => {
             const x = cx - 240 + i * 165,
@@ -2457,7 +2474,7 @@
       </div>
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
-<script src="/assets/game-studio.js?v=20261002" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261002" defer></script>
+<script src="/assets/game-studio.js?v=20261003" defer></script>
+<script src="/math/games/shared/flagship-studio.js?v=20261003" defer></script>
 </body>
 </html>

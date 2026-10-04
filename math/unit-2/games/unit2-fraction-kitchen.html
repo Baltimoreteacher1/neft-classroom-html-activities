@@ -83,7 +83,6 @@
             <!-- EWL Universal Arcade Enhancements Header -->
       <div class="ewl-arcade-header-bar">
         <div class="ewl-arcade-title-group">
-          <a href="/math/games/" class="ewl-back-hub-btn">⬅️ Arcade Hub</a>
           <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
           <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
         </div>
@@ -98,9 +97,6 @@
     <!-- nt-game-topbar-injected:begin (tools/inject-game-topbar.js) -->
     <header class="nt-game-topbar" role="banner"><span class="ngt-title">Fraction Kitchen — Pour Master</span></header>
     <!-- nt-game-topbar-injected:end -->
-    <a class="nt-back-hub" href="../index.html" aria-label="Back to Unit 2 hub"
-      >← Back to Unit&nbsp;2</a
-    >
     <div id="game"></div>
     <!-- Visually-hidden live region: mirrors the current pour order for
          assistive tech and the shared hint ladder. Additive only. -->
@@ -117,15 +113,17 @@
         white-space: nowrap;
       "
     ></div>
+    <!-- Polite live region for pour amount + serve feedback (calm mode). -->
+    <div id="fk-fb" role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;"></div>
     <script>
       // ───────────────────────────────────────────────────────────
       // FRACTION KITCHEN — POUR MASTER  (Neft Teacher)
       // Grade 6: 6.NOS.A.1, 6.NOS.B — fractions, equivalent fractions, division.
       //
-      // REAL GAME: A physics pouring/timing game. Liquid streams into a
-      // graduated measuring jug at a steady rate. HOLD to pour, RELEASE to
-      // stop. Stop the rising liquid level EXACTLY on the target fraction
-      // line (e.g. 3/4 full). The jug is divided into the recipe's
+      // REAL GAME: A calm pouring game. Each press pours ONE jug division
+      // into a graduated measuring jug; pour back if you go too far, then
+      // SERVE. No timing: the student decides how many marks make the
+      // order (e.g. 3/4 full). The jug is divided into the recipe's
       // denominator, so the player is literally reasoning about fraction
       // size as they aim. Equivalent-fraction twists (the line says 6/8 but
       // the jug shows fourths) make them convert on the fly. Real fluid
@@ -275,7 +273,7 @@
             .text(
               W / 2,
               320,
-              "Each order needs a fraction of a jug, like 3/4.\nHOLD to pour slowly, RELEASE near the target line.\nNo timer, no rush — overfilling just starts the next order.",
+              "Each order needs a fraction of a jug, like 3/4.\nPour ONE mark at a time, then SERVE when the jug matches.\nNo timer, no rush — you can pour back if you go too far.",
               {
                 fontFamily: "Segoe UI",
                 fontSize: "21px",
@@ -289,7 +287,7 @@
             .text(
               W / 2,
               440,
-              "HOLD  Space / Click / Tap  to pour slowly    •    Watch for equivalent fractions!",
+              "↑ or Space = pour one mark   •   ↓ = pour back   •   Enter = serve",
               {
                 fontFamily: "Segoe UI",
                 fontSize: "18px",
@@ -341,7 +339,16 @@
           this.cameras.main.setBackgroundColor("#241a3d");
           this.score = 0;
           this.round = 1;
-          this.lives = 3;
+          this.lives = 3; // legacy field: no lives are ever lost (calm mode)
+          this.attempts = 0; // serves on the current order
+          this.firstTry = 0; // orders served right on the first try
+          this.helped = 0; // orders that needed a retry
+          this.served = 0;
+          this.maxRounds = 12;
+          this.recent = [];
+          this.marks = 0;
+          this.streamUntil = 0;
+          this.tier = this.sys.settings.data?.studioTier || 2;
           this.combo = 0;
           this.pouring = false;
           this.fill = 0; // 0..1 of jug
@@ -477,22 +484,141 @@
             .setAlpha(0)
             .setDepth(20);
 
-          const down = () => {
-            if (!this.locked) this.pouring = true;
+          // ── Calm controls: pour ONE jug mark per press, pour back, serve.
+          //    No hold-and-release timing: the fraction reasoning decides.
+          this.amountText = this.add
+            .text(this.jugX + this.jugW / 2 + 24, this.jugBottom - 10, "", {
+              fontFamily: "Segoe UI",
+              fontSize: "22px",
+              fontStyle: "800",
+              color: "#ffffff",
+              backgroundColor: "#1a1230",
+              padding: { x: 10, y: 6 },
+            })
+            .setOrigin(0, 1)
+            .setDepth(20);
+          this.coachText = this.add
+            .text(24, 140, "", {
+              fontFamily: "Segoe UI",
+              fontSize: "19px",
+              color: "#f0e6ff",
+              wordWrap: { width: 250 },
+              lineSpacing: 6,
+            })
+            .setDepth(20);
+          this.feedbackText = this.add
+            .text(W / 2, 664, "", {
+              fontFamily: "Segoe UI",
+              fontSize: "20px",
+              fontStyle: "700",
+              color: "#ffe08a",
+              align: "center",
+              backgroundColor: "#241a3d",
+              wordWrap: { width: 940 },
+            })
+            .setOrigin(0.5, 1)
+            .setDepth(25);
+          const mkBtn = (x, label, fill, txtColor, fn) => {
+            const r = this.add
+              .rectangle(x, 716, 250, 64, fill)
+              .setStrokeStyle(3, 0xffffff, 0.5)
+              .setInteractive({ useHandCursor: true })
+              .setDepth(22);
+            this.add
+              .text(x, 716, label, {
+                fontFamily: "Segoe UI",
+                fontSize: "24px",
+                fontStyle: "800",
+                color: txtColor,
+              })
+              .setOrigin(0.5)
+              .setDepth(23);
+            r.on("pointerdown", () => {
+              sfx.init();
+              fn();
+            });
           };
-          const up = () => {
-            if (this.pouring && !this.locked) this.release();
-          };
-          this.input.on("pointerdown", down);
-          this.input.on("pointerup", up);
-          this.input.keyboard.on("keydown-SPACE", down);
-          this.input.keyboard.on("keyup-SPACE", up);
+          mkBtn(W / 2 - 280, "▼ Pour back", 0x4c3d7a, "#ffffff", () => this.stepMarks(-1));
+          mkBtn(W / 2, "▲ Pour 1 mark", 0xffd166, "#1a1230", () => this.stepMarks(1));
+          mkBtn(W / 2 + 280, "✓ Serve", 0x51cf66, "#0b2a12", () => this.release());
+          const kb = this.input.keyboard;
+          kb.on("keydown-SPACE", () => this.stepMarks(1));
+          kb.on("keydown-UP", () => this.stepMarks(1));
+          kb.on("keydown-PLUS", () => this.stepMarks(1));
+          kb.on("keydown-DOWN", () => this.stepMarks(-1));
+          kb.on("keydown-MINUS", () => this.stepMarks(-1));
+          kb.on("keydown-BACKSPACE", () => this.stepMarks(-1));
+          kb.on("keydown-ENTER", () => this.release());
 
           this.nextOrder();
         }
 
+        // Pour (or pour back) exactly one jug division. Animated, never timed.
+        stepMarks(dir) {
+          if (this.locked || !this.order) return;
+          const den = this.order.jugDen;
+          // Mid-animation the fill is between marks: trust the mark count.
+          const cur = this.tweens.isTweening(this) ? this.marks : Math.round(this.fill * den);
+          const next = Math.max(0, Math.min(den, cur + dir));
+          if (next === cur) {
+            this.say(
+              dir > 0
+                ? `The jug is full: ${den}/${den} = 1 whole. Pour back or serve.`
+                : "The jug is empty. Pour one mark first.",
+            );
+            return;
+          }
+          this.marks = next;
+          if (dir > 0) sfx.pour();
+          this.tweens.killTweensOf(this);
+          if (reduceMotion()) {
+            this.fill = next / den;
+          } else {
+            this.tweens.add({
+              targets: this,
+              fill: next / den,
+              duration: 320,
+              ease: "Sine.out",
+            });
+            if (dir > 0) {
+              this.liquidAmp = 5;
+              this.streamUntil = this.time.now + 320;
+            }
+          }
+          this.drawLiquid();
+          this.showAmount(next);
+        }
+
+        showAmount(m) {
+          const den = this.order.jugDen;
+          this.amountText.setText(`In the jug: ${m}/${den}`);
+          const sr = document.getElementById("fk-fb");
+          if (sr) sr.textContent = `In the jug: ${m} of ${den} marks.`;
+        }
+
+        say(msg) {
+          this.feedbackText.setText(msg);
+          const sr = document.getElementById("fk-fb");
+          if (sr) sr.textContent = msg;
+        }
+
         nextOrder() {
-          this.order = makeOrder(this.round, this.sys.settings.data?.studioTier || 2);
+          // New numbers every order: never repeat one of the last 4 orders.
+          let ord = null;
+          for (let tries = 0; tries < 12; tries++) {
+            ord = makeOrder(this.round, this.tier);
+            const sig = ord.jugDen + ":" + ord.targetNum + ":" + ord.shownNum + "/" + ord.shownDen;
+            if (!this.recent.includes(sig)) {
+              this.recent.push(sig);
+              if (this.recent.length > 4) this.recent.shift();
+              break;
+            }
+          }
+          this.order = ord;
+          this.orderIndex = this.round;
+          this.attempts = 0;
+          this.marks = 0;
+          this.tweens.killTweensOf(this);
           this.fill = 0;
           this.pouring = false;
           this.locked = false;
@@ -510,7 +636,7 @@
               .rectangle(this.jugX, y, this.jugW, 2, 0x7d8bb5, 0.8)
               .setOrigin(0.5);
             const lbl = this.add
-              .text(this.jugX - this.jugW / 2 - 14, y, `${i}/${den}`, {
+              .text(this.jugX - this.jugW / 2 - 14, y, this.tier === 1 ? `${i}/${den}` : `${i}`, {
                 fontFamily: "Consolas, monospace",
                 fontSize: "16px",
                 color: "#b9a7d6",
@@ -524,33 +650,16 @@
           this.targetY = ty;
           this.targetBand.y = ty;
           this.targetGlow.y = ty;
-          this.targetBand.setFillStyle(0x51cf66, 0.9);
-          this.targetGlow.setFillStyle(0x51cf66, 0.35);
+          // The answer line stays hidden until the order is served right:
+          // drawing it up front turned the fraction task into "stop at green".
+          this.targetBand.setFillStyle(0x51cf66, 0);
+          this.targetGlow.setFillStyle(0x51cf66, 0);
           // Target line glow + pulse BEFORE the pour. Both stop the moment the
           // player commits (handled in release()/spill()).
           this.tweens.killTweensOf(this.targetBand);
           this.tweens.killTweensOf(this.targetGlow);
-          if (reduceMotion()) {
-            this.targetBand.setAlpha(0.95);
-            this.targetGlow.setAlpha(0.35);
-          } else {
-            this.tweens.add({
-              targets: this.targetBand,
-              alpha: { from: 0.4, to: 0.95 },
-              duration: 500,
-              yoyo: true,
-              repeat: -1,
-            });
-            this.tweens.add({
-              targets: this.targetGlow,
-              alpha: { from: 0.12, to: 0.5 },
-              scaleY: { from: 0.7, to: 1.35 },
-              duration: 700,
-              yoyo: true,
-              repeat: -1,
-              ease: "Sine.inOut",
-            });
-          }
+          this.targetBand.setAlpha(0);
+          this.targetGlow.setAlpha(0);
 
           const o = this.order;
           this.orderText.setText(
@@ -560,7 +669,16 @@
           // shared hint ladder). Additive: never touches gameplay/scoring.
           const fkSr = document.getElementById("fk-sr");
           if (fkSr)
-            fkSr.textContent = `Order for ${o.food}: fill the jug to ${o.shownNum}/${o.shownDen}. The jug is marked in ${o.jugDen}ths.`;
+            fkSr.textContent = `Order ${this.round} of 12 for ${o.food}: fill the jug to ${o.shownNum}/${o.shownDen}. The jug has ${o.jugDen} equal parts.`;
+          this.coachText.setText(
+            this.tier === 1
+              ? `Coach:\n1. The jug has ${o.jugDen} equal parts.\n2. The bottom number of ${o.shownNum}/${o.shownDen} tells the size of each part.\n3. The top number tells how many parts to pour.\n4. Press ▲ once for each part, then ✓ Serve.`
+              : o.equiv
+                ? `Plan:\nThe order is in ${o.shownDen}ths but the jug is in ${o.jugDen}ths.\nFind an equal fraction with ${o.jugDen} on the bottom, then pour that many marks.`
+                : `Plan:\nEach mark is 1/${o.jugDen} of the jug.\nHow many marks make ${o.shownNum}/${o.shownDen}?`,
+          );
+          this.showAmount(0);
+          this.say("Pour one mark at a time. Serve when you think it matches.");
 
           // Equivalent-fraction hint: dedicated text that scales + glows so
           // students notice they must convert against the jug's gradations.
@@ -705,43 +823,75 @@
         }
 
         release() {
+          if (this.locked || !this.order) return;
           this.pouring = false;
-          this.locked = true;
-          this.stopPourFx();
-          const err = Math.abs(this.fill - this.order.fraction);
-          const tol = 1 / this.order.jugDen;
-          let pts = 0,
-            label,
-            color;
-          if (err <= tol * 0.18) {
-            pts = 100 + this.combo * 20;
-            this.combo++;
-            label = "PERFECT POUR!";
-            color = "#51cf66";
-            sfx.perfect();
-          } else if (err <= tol * 0.95) {
-            pts = 50;
-            this.combo = 0;
-            label = "Close enough!";
-            color = "#a9e34b";
-            sfx.good();
-          } else {
-            // Missed the line — no penalty, just try the next order (calm).
-            pts = 0;
-            this.combo = 0;
-            label = "Just over — try the next one!";
-            color = "#ff922b";
-            sfx.spill();
+          this.tweens.killTweensOf(this);
+          const o = this.order;
+          const den = o.jugDen;
+          const m = Math.round(this.fill * den);
+          this.fill = m / den;
+          this.drawLiquid();
+          this.marks = m;
+          this.attempts++;
+          const [sn, sd] = simplify(o.targetNum, den);
+          if (m === o.targetNum) {
+            this.locked = true;
+            this.stopPourFx();
+            let pts;
+            let label;
+            if (this.attempts === 1) {
+              pts = 100 + this.combo * 20;
+              this.combo++;
+              this.firstTry++;
+              label = "PERFECT POUR!";
+              sfx.perfect();
+            } else {
+              pts = this.attempts === 2 ? 50 : 25;
+              this.combo = 0;
+              this.helped++;
+              label = "Order served!";
+              sfx.good();
+            }
+            // Reveal the target line only now, as confirmation.
+            this.targetBand.setAlpha(0.95);
+            this.say(
+              o.equiv
+                ? `Yes! ${o.shownNum}/${o.shownDen} = ${sn}/${sd} = ${o.targetNum}/${den}, so ${o.targetNum} of the ${den} marks.`
+                : `Yes! ${o.shownNum}/${o.shownDen} means ${o.targetNum} of the ${den} equal parts of the jug.`,
+            );
+            this.score += pts;
+            this.served++;
+            this.flashLabel(label, "#51cf66", pts);
+            this.updateHUD();
+            this.time.delayedCall(1900, () => {
+              this.round++;
+              if (this.round > 12) return this.endGame(true);
+              this.nextOrder();
+            });
+            return;
           }
-          this.score += pts;
-          this.flashLabel(label, color, pts);
+          // Not yet: no penalty, keep the jug as it is so the student can fix it.
+          this.combo = 0;
+          sfx.spill();
+          const dirWord = m > o.targetNum ? "more" : "less";
+          let msg;
+          if (m === 0) {
+            msg = "The jug is empty. Press ▲ Pour 1 mark first, then serve.";
+          } else if (this.attempts === 1) {
+            // Tier 1: method hint, no answer.
+            msg = o.equiv
+              ? `You served ${m}/${den}. That is ${dirWord} than ${o.shownNum}/${o.shownDen}. Write ${o.shownNum}/${o.shownDen} with ${den} on the bottom: simplify or multiply the top and bottom by the same number.`
+              : `You served ${m}/${den}. That is ${dirWord} than ${o.shownNum}/${o.shownDen}. The bottom number ${o.shownDen} means ${den} equal parts. The top number says how many parts to fill.`;
+          } else {
+            // Tier 2: concrete worked step.
+            const k = den / sd;
+            msg = o.equiv
+              ? `Step: ${o.shownNum}/${o.shownDen} simplifies to ${sn}/${sd}. ${sn}/${sd} = ${sn}×${k}/${sd}×${k} = ${o.targetNum}/${den}. Fill to mark ${o.targetNum}.`
+              : `Step: ${o.shownNum}/${o.shownDen} means ${o.targetNum} ${o.targetNum === 1 ? "part" : "parts"} out of ${den}. Count ${o.targetNum} ${o.targetNum === 1 ? "mark" : "marks"} up from the bottom.`;
+          }
+          this.say(msg);
+          this.flashLabel("Not yet — adjust and serve again", "#ff922b", 0);
           this.updateHUD();
-          this.time.delayedCall(1300, () => {
-            if (this.lives <= 0) return this.endGame(false);
-            this.round++;
-            if (this.round > 12) return this.endGame(true);
-            this.nextOrder();
-          });
         }
 
         spill() {
@@ -766,7 +916,7 @@
 
         flashLabel(text, color, pts) {
           const t = this.add
-            .text(W / 2, 700, text + (pts ? "  +" + pts : ""), {
+            .text(W / 2, 180, text + (pts ? "  +" + pts : ""), {
               fontFamily: "Segoe UI",
               fontSize: "34px",
               fontStyle: "900",
@@ -778,7 +928,7 @@
             .setDepth(30);
           this.tweens.add({
             targets: t,
-            y: 660,
+            y: 150,
             alpha: 0,
             duration: 1200,
             ease: "Cubic.out",
@@ -788,7 +938,7 @@
 
         updateHUD() {
           this.hud.setText(
-            `SCORE ${this.score}    ${"♥".repeat(Math.max(0, this.lives))}`,
+            `SCORE ${this.score}`,
           );
           this.comboText.setText(
             "ORDER " +
@@ -808,7 +958,13 @@
                 score: this.score,
               });
           } catch (e) {}
-          this.scene.start("Results", { score: this.score, won });
+          this.scene.start("Results", {
+            score: this.score,
+            won,
+            firstTry: this.firstTry,
+            helped: this.helped,
+            tier: this.tier,
+          });
         }
 
         update(time, delta) {
@@ -841,22 +997,13 @@
 
           // ── Gameplay: slow, steady pour (calm — no reflex timing, no round
           //    speed-up). Teacher preference: students fill at their own pace.
-          if (!this.locked) {
-            if (this.pouring) {
-              const rate = 0.00011 * delta;
-              this.fill += rate;
-              this.tiltTarget = -28; // spout tilts as it pours
-              sfx.pour();
-              if (this.fill >= 1) {
-                this.fill = 1;
-                this.liquidAmp = 0;
-                this.drawLiquid();
-                return this.spill();
-              }
-            } else {
-              this.tiltTarget = 0;
-            }
+          if (!this.locked && this.pouring) {
+            // A "hold to pour" press from the mission panel pours ONE mark.
+            this.pouring = false;
+            this.stepMarks(1);
           }
+          const streaming = !this.locked && time < this.streamUntil;
+          this.tiltTarget = streaming ? -28 : 0;
 
           // Ease the pour-spout tilt toward its target (smooth pour-in/out).
           if (rm) {
@@ -868,12 +1015,12 @@
           }
 
           // Ripple amplitude swells while pouring, settles when not.
-          const ampTarget = !this.locked && this.pouring && !rm ? 6 : 0;
+          const ampTarget = streaming && !rm ? 6 : 0;
           this.liquidAmp +=
             (ampTarget - this.liquidAmp) * Math.min(1, 0.12 * dt);
 
           this.drawLiquid();
-          this.drawStream(!this.locked && this.pouring);
+          this.drawStream(streaming);
         }
       }
 
@@ -909,11 +1056,17 @@
               color: "#ff7eb6",
             })
             .setOrigin(0.5);
+          const ft = this.r.firstTry || 0;
+          const hp = this.r.helped || 0;
           this.add
             .text(
               W / 2,
-              430,
-              "A perfect pour means the liquid's fraction of the jug\nmatched the recipe exactly.",
+              440,
+              `Served right on the first try: ${ft} of 12   •   Fixed after a hint: ${hp}\n` +
+                "Skill: fractions of a whole and equivalent fractions (6.NOS)\n" +
+                (ft >= 10
+                  ? "Next: try the Challenge level with equivalent fractions."
+                  : "Next: practice writing a fraction with a new denominator, like 1/2 = 2/4 = 3/6."),
               {
                 fontFamily: "Segoe UI",
                 fontSize: "18px",
@@ -924,10 +1077,10 @@
             )
             .setOrigin(0.5);
           const btn = this.add
-            .rectangle(W / 2, 540, 240, 64, 0xffd166)
+            .rectangle(W / 2, 580, 240, 64, 0xffd166)
             .setInteractive({ useHandCursor: true });
           this.add
-            .text(W / 2, 540, "COOK AGAIN", {
+            .text(W / 2, 580, "COOK AGAIN", {
               fontFamily: "Segoe UI",
               fontSize: "26px",
               fontStyle: "800",
@@ -990,7 +1143,7 @@
             staticHints: [
               "Look at the jug: how many equal parts do the lines split it into? Each line marks one unit fraction of the whole jug.",
               "If the order's fraction uses a different denominator than the jug's lines, find an equivalent fraction that matches the jug's parts.",
-              "Set it up: decide how many jug lines up from the bottom the order needs, then pour slowly and release right at that line.",
+              "Set it up: decide how many jug lines up from the bottom the order needs, then pour one mark per line and serve.",
             ],
           });
       });
@@ -1010,7 +1163,7 @@
       </div>
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
-<script src="/assets/game-studio.js?v=20261002" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261002" defer></script>
+<script src="/assets/game-studio.js?v=20261003" defer></script>
+<script src="/math/games/shared/flagship-studio.js?v=20261003" defer></script>
 </body>
 </html>

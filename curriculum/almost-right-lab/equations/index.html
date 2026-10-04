@@ -249,6 +249,8 @@
       @media (prefers-reduced-motion: reduce) {
         *, *::before, *::after { transition: none !important; animation: none !important; }
       }
+      .start-btn-top { margin: 0 0 18px; }
+      .mission-stars { color: #8a5a00; font-weight: 700; letter-spacing: 1px; }
     </style>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
@@ -257,8 +259,6 @@
   <body>
 
     <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a href="/curriculum/">Curriculum Hub</a>
-      <span aria-hidden="true">›</span>
       <a href="/curriculum/almost-right-lab/">The Almost-Right Lab</a>
       <span aria-hidden="true">›</span>
       <span aria-current="page">One-Step Equations</span>
@@ -328,18 +328,18 @@
         <!-- Mission Path -->
         <div class="missions-card" aria-label="Mission list">
           <div class="card-heading">Mission Path — One-Step Equations</div>
-          <div class="mission-list" role="list" id="mission-list">
-            <!-- populated by JS -->
-          </div>
           <a
             href="/curriculum/almost-right-lab/equations/mission-1/"
-            class="start-btn"
+            class="start-btn start-btn-top"
             id="primary-mission-btn"
             aria-label="Start Mission 1"
           >
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><polygon points="6,4 16,10 6,16" fill="currentColor"/></svg>
             Start Mission 1
           </a>
+          <div class="mission-list" role="list" id="mission-list">
+            <!-- populated by JS -->
+          </div>
         </div>
       </div>
 
@@ -443,6 +443,7 @@
         let nextMission = null;
         MISSIONS.forEach((m, i) => {
           const done = progress.completedMissions.includes(m.id);
+          const stars = (progress.missionStars && progress.missionStars[m.id]) || 0;
           // Mission 1 always unlocked; rest unlock sequentially
           const prevDone = i === 0 || progress.completedMissions.includes(MISSIONS[i-1].id);
           const unlocked = prevDone;
@@ -464,7 +465,7 @@
             <div class="mission-num" aria-hidden="true">${done ? "✓" : i+1}</div>
             <div class="mission-text">
               <div class="mission-name">${m.icon} ${m.title}</div>
-              <div class="mission-skill">${m.skill}</div>
+              <div class="mission-skill">${m.skill}${stars ? ` · <span class="mission-stars" aria-label="Best: ${stars} of 3 stars">${"★".repeat(stars)}${"☆".repeat(3 - stars)}</span>` : ""}</div>
             </div>
             ${done ? '<span class="mission-badge done" aria-hidden="true">Done</span>' : !unlocked ? '<span class="mission-badge locked-badge" aria-hidden="true">🔒</span>' : ""}
           `;
@@ -477,11 +478,16 @@
           const idx = MISSIONS.findIndex(m => m.id === nextMission.id) + 1;
           btn.href = `/curriculum/almost-right-lab/equations/${nextMission.id}/`;
           btn.setAttribute("aria-label", `Start Mission ${idx}: ${nextMission.title}`);
-          btn.querySelector("span, svg + *") ;
-          btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><polygon points="6,4 16,10 6,16" fill="currentColor"/></svg> ${idx === 1 && progress.completedMissions.length === 0 ? "Start" : "Continue"} — Mission ${idx}`;
+                    btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><polygon points="6,4 16,10 6,16" fill="currentColor"/></svg> ${idx === 1 && progress.completedMissions.length === 0 ? "Start" : "Continue"} — Mission ${idx}`;
         } else if (progress.completedMissions.length === MISSIONS.length) {
-          btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 10l4 4 6-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> All Missions Complete! 🏆`;
-          btn.href = "#";
+          // Every mission is done: the button replays the one with the fewest
+          // stars, so there is always a real next step (it used to be href="#").
+          const ms = progress.missionStars || {};
+          const weakest = MISSIONS.reduce((lo, m) => ((ms[m.id] || 0) < (ms[lo.id] || 0) ? m : lo), MISSIONS[0]);
+          const wi = MISSIONS.indexOf(weakest) + 1;
+          btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 10l4 4 6-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> All 5 done! Replay Mission ${wi} for more stars`;
+          btn.href = `/curriculum/almost-right-lab/equations/${weakest.id}/`;
+          btn.setAttribute("aria-label", `All missions complete. Replay Mission ${wi}: ${weakest.title}`);
           btn.style.background = "var(--green)";
           btn.style.boxShadow = "0 4px 16px rgba(44,125,107,0.3)";
         }

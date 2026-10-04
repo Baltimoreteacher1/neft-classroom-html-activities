@@ -3987,13 +3987,13 @@
       }
 
       function downloadTxt() {
-        const txt = document.getElementById("reportBox").textContent;
+        let txt = document.getElementById("reportBox").textContent;
         if (!txt) {
-          const msg = isSpanish
-            ? "¡Por favor haz clic en Generar Resumen primero!"
-            : "Please click Generate Summary first!";
-          alert(msg);
-          return;
+          /* Build the summary for the student instead of blocking Download with
+             an alert. buildReport() explains itself if a step is still missing. */
+          if (typeof buildReport !== "function" || buildReport() === false) return;
+          txt = document.getElementById("reportBox")?.textContent;
+          if (!txt) return;
         }
         const a = document.createElement("a");
         a.href = "data:text/plain;charset=utf-8," + encodeURIComponent(txt);

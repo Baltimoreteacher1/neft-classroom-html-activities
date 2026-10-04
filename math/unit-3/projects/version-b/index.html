@@ -1298,12 +1298,12 @@
           </div>
           <div class="instruct lvl1-only">
             <span class="en-text"
-              >🟢 <strong>Level 1 tip:</strong> Try friendly numbers, like 60 points in 30 minutes
-              (2 points per minute).</span
+              >🟢 <strong>Level 1 tip:</strong> Unit rate = points ÷ minutes. Example with other
+              numbers: 45 points in 15 minutes is 45 ÷ 15 = 3 points per minute.</span
             >
             <span class="es-text"
-              >🟢 <strong>Consejo de Nivel 1:</strong> Prueba con números fáciles, como 60 puntos en
-              30 minutos (2 puntos por minuto).</span
+              >🟢 <strong>Consejo de Nivel 1:</strong> Tasa unitaria = puntos ÷ minutos. Ejemplo con
+              otros números: 45 puntos en 15 minutos es 45 ÷ 15 = 3 puntos por minuto.</span
             >
           </div>
           <!-- Level 2 challenge -->
@@ -1373,14 +1373,14 @@
               <span class="en-text"
                 >Divide the total points by the total minutes played. This gives you the unit rate
                 (points per 1 minute).<br /><strong>Example:</strong>
-                40 points ÷ 20 minutes =
-                <strong>2 points per minute</strong>.</span
+                45 points ÷ 15 minutes =
+                <strong>3 points per minute</strong>. Now use your athlete's numbers.</span
               >
               <span class="es-text"
                 >Divide los puntos totales entre los minutos totales jugados. Esto te da la tasa
                 unitaria (puntos por 1 minuto).<br /><strong>Ejemplo:</strong>
-                40 puntos ÷ 20 minutos =
-                <strong>2 puntos por minuto</strong>.</span
+                45 puntos ÷ 15 minutos =
+                <strong>3 puntos por minuto</strong>. Ahora usa los números de tu atleta.</span
               >
             </p>
           </details>
@@ -2482,7 +2482,7 @@
           </label>
           <textarea
             id="pitch"
-            placeholder="My athlete is Steph Curry. They scored 60 points in 30 minutes, which is a unit rate of 2 points per minute. In a game of 30 minutes, they average 60 points..."
+            placeholder="My athlete is ___. They scored ___ points in ___ minutes, so ___ ÷ ___ = ___ points per minute. In a game of ___ minutes, they would score about..."
           ></textarea>
 
           <!-- Checklist -->
@@ -2878,7 +2878,7 @@
           "part-reflect":
             "My athlete has a rate of ___ PPG, and my partner's has ___ PPG. Scaled to ___ games...",
           pitch:
-            "My athlete is Steph Curry. They scored 60 points in 30 minutes, which is a unit rate of 2 points per minute. In a game of 30 minutes, they average 60 points...",
+            "My athlete is ___. They scored ___ points in ___ minutes, so ___ ÷ ___ = ___ points per minute. In a game of ___ minutes, they would score about...",
           "world-mean-input": "",
           "world-outlier-input": "The outlier is Phenom. Their rate is...",
         },
@@ -2902,7 +2902,7 @@
           "part-reflect":
             "Mi atleta tiene una tasa de ___ PPG, y el de mi compañero tiene ___ PPG. Escalado a ___ juegos...",
           pitch:
-            "Mi atleta es Steph Curry. Anotó 60 puntos en 30 minutos, lo cual es una tasa unitaria de 2 puntos por minuto. En un juego de 30 minutos, promedia 60 puntos...",
+            "Mi atleta es ___. Anotó ___ puntos en ___ minutos, así que ___ ÷ ___ = ___ puntos por minuto. En un juego de ___ minutos, anotaría unos...",
           "world-mean-input": "",
           "world-outlier-input": "El valor atípico es Phenom. Su tasa es...",
         },
@@ -3591,13 +3591,14 @@
       }
 
       function downloadTxt() {
-        const txt = document.getElementById("reportBox").textContent;
+        let txt = document.getElementById("reportBox").textContent;
         const isEs = isSpanish();
         if (!txt) {
-          alert(
-            isEs ? "¡Por favor genera el resumen primero!" : "Please generate the summary first!",
-          );
-          return;
+          /* Build the summary for the student instead of blocking Download with
+             an alert. buildReport() explains itself if a step is still missing. */
+          if (typeof buildReport !== "function" || buildReport() === false) return;
+          txt = document.getElementById("reportBox")?.textContent;
+          if (!txt) return;
         }
         const a = document.createElement("a");
         a.href = "data:text/plain;charset=utf-8," + encodeURIComponent(txt);

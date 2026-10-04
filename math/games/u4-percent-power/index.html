@@ -81,6 +81,26 @@
           opacity: 0.4 !important;
         }
       }
+      /* Step-2 answer choices mirrored as real buttons in the controls panel
+         (44px+ tap targets on phones; screen-reader friendly). */
+      .game-choice-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 4px 0 14px;
+      }
+      .game-choice-bar button {
+        flex: 1 1 96px;
+        font-size: 20px !important;
+      }
+      .game-choice-bar button[aria-pressed="true"] {
+        outline: 3px solid #ffd17b;
+        outline-offset: 2px;
+      }
+      .game-choice-bar button:disabled {
+        opacity: 0.45;
+        text-decoration: line-through;
+      }
       #pp-sr {
         position: absolute;
         width: 1px;
@@ -130,9 +150,9 @@
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
   <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
     <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-    <script src="/assets/game-studio.js?v=20261002" defer></script>
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
     <link rel="stylesheet" href="/math/games/shared/phaser-studio.css?v=20261002">
-    <script src="/math/games/shared/phaser-studio.js?v=20261002"></script>
+    <script src="/math/games/shared/phaser-studio.js?v=20261003"></script>
     <link rel="stylesheet" href="/math/games/shared/cabinet-tools.css?v=20261002">
     <script src="/math/games/shared/cabinet-tools.js?v=20261002" defer></script>
 </head>
@@ -308,15 +328,16 @@
       }
 
       // ── Problem generator (bar model) ───────────────────────────────────
-      // Every problem reduces to one tactile action: set the bar to a target
-      // percent (a multiple of 5). Returns
-      //   { kind, label, prompt, whole, targetPct, why }
-      // Four framings scale with level so the same action teaches percent of a
-      // number (both directions), %↔decimal, and sale price:
-      //   level 1-2 : find the part   ("Shade 75% of 20")
-      //   level 3   : + decimal → bar ("Shade the bar to show 0.25")
-      //   level 4-5 : + find percent  ("How much of 20 is 15? Shade it.")
-      //   level 6+  : + sale price    ("$20, 25% off — shade what you PAY")
+      // Every problem starts with one tactile action: shade the bar (the whole
+      // = 100%) to a target percent (a multiple of 5). Framings ramp by level:
+      //   level 1-2 : find the part   ("What is 75% of 20?" → shade, then pick 15)
+      //   level 3   : + decimal → percent ("Shade the bar to show 0.25")
+      //   level 4-5 : + find the percent ("15 is what percent of 20?")
+      //   level 6+  : + sale price     ("$20, 25% off — shade what you PAY")
+      // "Find the part" and "Sale price" have a STEP 2: the student picks the
+      // value the shading is worth from choices built from real misconceptions.
+      // Nothing on screen computes the answer for them — the percent dial only
+      // echoes their own shading, and value labels on the bar are Tier-2 help.
       const PCTS = [10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90];
       function pickWholeFor(pct) {
         // A whole that makes the part a whole number, kept student-friendly.
@@ -324,10 +345,23 @@
         const ok = bases.filter((b) => Number.isInteger((pct / 100) * b));
         return ok[randInt(0, ok.length - 1)];
       }
+      // Correct value + misconception distractors (each carries the reason a
+      // student would pick it, so a wrong pick gets a specific explanation).
+      function buildChoices(correct, distractors, money) {
+        const seen = new Set([correct]);
+        const opts = [{ value: correct, correct: true, why: "" }];
+        distractors.forEach((d) => {
+          if (opts.length >= 4 || !(d.value > 0) || seen.has(d.value)) return;
+          seen.add(d.value);
+          opts.push({ value: d.value, correct: false, why: d.why });
+        });
+        return shuffle(opts).map((o) => ({ ...o, label: (money ? "$" : "") + o.value }));
+      }
       function barProblem(level) {
         const pct = PCTS[randInt(0, PCTS.length - 1)];
         const whole = pickWholeFor(pct);
         const part = (pct / 100) * whole;
+        const tenth = whole / 10;
         const dec = String(pct / 100);
         let kind;
         if (level <= 2) kind = "part";
@@ -339,82 +373,153 @@
           const r = Math.random();
           kind = r < 0.3 ? "part" : r < 0.5 ? "decimal" : r < 0.75 ? "percent" : "sale";
         }
+        const recount = (v, unit) => ({
+          value: v,
+          why: "Close, but recount the 10% blocks. Each block is " + unit + ".",
+        });
         if (kind === "decimal")
           return {
             kind,
             targetPct: pct,
             whole,
-            label: "Decimal → bar",
-            prompt: "Shade the bar to show " + dec,
-            why: dec + " = " + pct + "%.",
+            tenth,
+            dec,
+            label: "Decimal → percent",
+            prompt: "Shade the bar to show " + dec + ".",
+            why: dec + " = " + pct + " hundredths = " + pct + "%.",
           };
         if (kind === "percent")
           return {
             kind,
             targetPct: pct,
             whole,
+            part,
+            tenth,
             label: "Find the percent",
-            prompt: "How much of " + whole + " is " + part + "? Shade it.",
-            why: part + " out of " + whole + " = " + pct + "%.",
+            prompt: part + " is what percent of " + whole + "? Shade it.",
+            why:
+              "Each 10% of " + whole + " is " + tenth + ". " + part + " out of " + whole + " = " + pct + "%.",
           };
         if (kind === "sale") {
+          const off = pct;
           const paid = 100 - pct;
-          const paidVal = (paid / 100) * whole;
+          const offVal = (off / 100) * whole;
+          const paidVal = whole - offVal;
           return {
             kind,
             targetPct: paid,
             whole,
+            tenth,
+            off,
+            money: true,
             label: "Sale price",
-            prompt: "$" + whole + ", " + pct + "% off — shade what you PAY",
-            why: pct + "% off → you pay " + paid + "% = $" + paidVal + ".",
+            prompt: "A $" + whole + " shirt is " + off + "% off. Shade the percent you PAY.",
+            why:
+              "100% − " + off + "% off = " + paid + "% paid. " + paid + "% of $" + whole + " = $" + paidVal + ".",
+            ask: {
+              q: "You pay " + paid + "% of $" + whole + ". How many dollars is that?",
+              options: buildChoices(
+                paidVal,
+                [
+                  {
+                    value: offVal,
+                    why: "$" + offVal + " is the discount, the money taken OFF. You pay the rest.",
+                  },
+                  { value: whole, why: "$" + whole + " is the price before the sale." },
+                  {
+                    value: paid,
+                    why: paid + " is the PERCENT you pay, not the dollars. Each 10% is $" + tenth + ".",
+                  },
+                  recount(paidVal + tenth, "$" + tenth),
+                  recount(paidVal - tenth, "$" + tenth),
+                ],
+                true,
+              ),
+            },
           };
         }
         return {
           kind: "part",
           targetPct: pct,
           whole,
+          part,
+          tenth,
           label: "Find the part",
-          prompt: "Shade " + pct + "% of " + whole,
-          why: pct + "% of " + whole + " = " + part + ".",
+          prompt: "What is " + pct + "% of " + whole + "? First, shade " + pct + "% of the bar.",
+          why: "Each 10% of " + whole + " is " + tenth + ". So " + pct + "% of " + whole + " = " + part + ".",
+          ask: {
+            q: pct + "% of " + whole + " = ?",
+            options: buildChoices(part, [
+              {
+                value: pct,
+                why: pct + " is the percent. The question asks for that part OF " + whole + ".",
+              },
+              {
+                value: whole - part,
+                why:
+                  whole - part + " is the part you did NOT shade (" + (100 - pct) + "%). Count the shaded part.",
+              },
+              recount(part + tenth, String(tenth)),
+              recount(part - tenth, String(tenth)),
+            ]),
+          },
         };
       }
 
-      // ── Earned-help hint text (Tier 1). Guides the METHOD without stating the
-      // numeric answer; framing-aware so each problem type gets a real strategy.
-      function scaffoldHint(p) {
-        const tenth = p.whole / 10;
-        if (p.kind === "decimal")
-          return "Turn the decimal into a percent: move the point two places right (× 100).";
-        if (p.kind === "percent") {
-          const part = (p.targetPct / 100) * p.whole;
+      // Misconception-specific feedback for a wrong shading (never states the
+      // target percent).
+      function shadeMistake(p, m) {
+        const t = p.targetPct;
+        if (m === 0) return "The bar is empty. Drag the handle or press → to shade it.";
+        if (p.kind === "sale" && m === p.off)
+          return "You shaded the " + m + "% taken OFF. Shade what is LEFT for you to pay.";
+        if (p.kind === "percent" && m === p.part && p.part !== t)
           return (
-            "Start with 10%: 10% of " +
-            p.whole +
-            " = " +
-            tenth +
-            ". How many 10%s make " +
-            part +
-            "?"
+            "You shaded " + m + "%, but " + p.part + " is the amount, not the percent. Compare " + p.part + " to the whole, " + p.whole + "."
           );
-        }
-        if (p.kind === "sale") {
-          const off = 100 - p.targetPct;
-          return (
-            "Off + paid = 100%. If " +
-            off +
-            "% is taken off, what percent do you PAY? Then shade that."
-          );
-        }
-        return (
-          "Find 10% first: 10% of " +
-          p.whole +
-          " = " +
-          tenth +
-          ", then build up to " +
-          p.targetPct +
-          "%."
-        );
+        if (p.kind === "decimal" && m * 10 === t)
+          return "Careful: the first digit after the point is TENTHS. Each tenth is 10% of the bar.";
+        if (m === 100 - t) return "You shaded the other part of the bar. Check which part the question asks for.";
+        return m > t ? "You shaded too much." : "You shaded too little.";
       }
+
+      // ── Earned help. Tier 1 = a method hint that does NOT state the answer.
+      // Tier 2 = a concrete step, plus value labels under the bar's ticks.
+      function scaffoldHint(p, phase) {
+        if (phase === "value")
+          return (
+            "Find 10% first: divide " + (p.money ? "$" : "") + p.whole + " by 10. Then count the shaded 10% blocks."
+          );
+        if (p.kind === "decimal")
+          return "To change a decimal to a percent, move the decimal point two places right.";
+        if (p.kind === "percent")
+          return "Find 10% of " + p.whole + " first. Then count how many of those make " + p.part + ".";
+        if (p.kind === "sale")
+          return "The whole bar is 100% of the price. Take away the percent off. Shade what is left.";
+        return "The bar is 100%. Each tick mark is another 10%.";
+      }
+      function concreteHint(p, phase) {
+        const half = p.targetPct % 10 ? " and a half" : "";
+        if (phase === "value")
+          return (
+            "The numbers under the bar now count by " +
+            (p.money ? "$" : "") +
+            p.tenth +
+            ". Read the number where your shading ends."
+          );
+        if (p.kind === "decimal")
+          return p.dec + " has " + Math.floor(p.targetPct / 10) + half + " tenths. Each tenth is one 10% block.";
+        if (p.kind === "percent")
+          return "The numbers under the bar now count by " + p.tenth + ". Find " + p.part + " and shade up to it.";
+        if (p.kind === "sale") return "Start at 100%. Subtract " + p.off + "%. Shade that many percent.";
+        return "Shade " + Math.floor(p.targetPct / 10) + half + " of the 10% blocks.";
+      }
+      const KIND_TIP = {
+        part: "Find the part: find 10% first, then count the blocks.",
+        decimal: "Decimal → percent: move the decimal point two places right.",
+        percent: "Find the percent: compare the part to the whole with 10% blocks.",
+        sale: "Sale price: you pay 100% minus the percent off.",
+      };
 
       const config = {
         type: Phaser.AUTO,
@@ -495,74 +600,62 @@
       TitleScene.prototype.constructor = TitleScene;
       TitleScene.prototype.create = function () {
         const cx = W / 2;
+        const T = (size, color, extra) => ({
+          fontFamily: "Segoe UI, sans-serif",
+          fontSize: size + "px",
+          color,
+          ...(extra || {}),
+        });
         this.add.rectangle(cx, H / 2, W, H, 0x122413);
         this.add
-          .text(cx, 120, "PERCENT POWER", {
+          .text(cx, 92, "PERCENT POWER", {
             fontFamily: "Impact, sans-serif",
-            fontSize: "64px",
+            fontSize: "60px",
             color: "#ffd24a",
             stroke: "#0a160b",
             strokeThickness: 6,
           })
           .setOrigin(0.5);
-        this.add
-          .text(cx, 175, "Bar Model Builder", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "26px",
-            color: "#8fd6a0",
-          })
-          .setOrigin(0.5);
+        this.add.text(cx, 146, "Bar Model Builder", T(24, "#8fd6a0")).setOrigin(0.5);
         this.add
           .text(
             cx,
-            230,
-            "Shade the bar to BUILD the answer. Drag the handle (or use\n← →) to set the percent, then Lock In! Stuck? Keep trying —\nhints appear to help you solve it.",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "16px",
-              color: "#bfe0c8",
-              align: "center",
-            },
+            196,
+            "The bar is the whole (100%). Shade it to answer percent questions,\nthen find the number it shows. No timer. Take your time.",
+            T(17, "#d6eedc", { align: "center", lineSpacing: 4 }),
           )
           .setOrigin(0.5);
+        // Tiny worked demo: what a shaded bar means.
+        const bx0 = 260,
+          bw = 300,
+          by = 262;
+        this.add.rectangle(bx0, by, bw, 28, 0x0c2532).setOrigin(0, 0.5).setStrokeStyle(2, 0x2d874b);
+        this.add.rectangle(bx0, by, bw * 0.4, 28, 0x2d874b).setOrigin(0, 0.5);
+        for (let i = 1; i < 10; i++) this.add.rectangle(bx0 + (bw * i) / 10, by, 2, 28, 0x2f6b40);
         this.add
-          .text(cx, 295, "Drag or ← → / A·D by 5% · 6.AT.4 · Lessons 4.1–4.5", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "14px",
-            color: "#7fae8c",
-          })
+          .text(cx, 296, "Example: 40% of 50 → 4 blocks of 5 → 20", T(16, "#ffe9a8", { fontStyle: "bold" }))
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 326, "6.AT.4 · Unit 4 · Percent of a number, percents and decimals, sale prices", T(15, "#a9d4b4"))
           .setOrigin(0.5);
 
-        const hs = localStorage.getItem(LS_KEY);
-        if (hs)
-          this.add
-            .text(cx, 330, "High Score: " + hs, {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "16px",
-              color: "#ffd24a",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5);
-
-        const btn = this.add
-          .rectangle(cx, 400, 240, 58, 0x2d874b)
-          .setInteractive({ useHandCursor: true });
-        const btnT = this.add
-          .text(cx, 400, "START ▶", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "24px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
+        const btn = this.add.rectangle(cx, 392, 260, 58, 0x2d874b).setInteractive({ useHandCursor: true });
+        const btnT = this.add.text(cx, 392, "START ▶", T(24, "#ffffff", { fontStyle: "bold" })).setOrigin(0.5);
+        const reduce = window.GameStudio
+          ? window.GameStudio.settings.reducedMotion
+          : window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (!reduce)
+          this.tweens.add({
+            targets: [btn, btnT],
+            scaleX: 1.04,
+            scaleY: 1.04,
+            duration: 900,
+            yoyo: true,
+            repeat: -1,
+          });
+        this.add
+          .text(cx, 434, "Starts at Level 1 with a step-by-step coach.", T(15, "#a9d4b4"))
           .setOrigin(0.5);
-        this.tweens.add({
-          targets: [btn, btnT],
-          scaleX: 1.05,
-          scaleY: 1.05,
-          duration: 800,
-          yoyo: true,
-          repeat: -1,
-        });
         const start = () => {
           SFX.init();
           SFX.coin();
@@ -570,8 +663,6 @@
           ppLevel = 1;
           ppAuto = false;
           ppEndless = false;
-          // Show the vocab gate before the first round; on a replay (already
-          // seen this session) jump straight to the game.
           this.scene.start(ppVocabSeen ? "Game" : "Vocab");
         };
         btn.on("pointerover", () => btn.setFillStyle(0x36a35b));
@@ -580,9 +671,8 @@
         this.input.keyboard.on("keydown-SPACE", start);
         this.input.keyboard.on("keydown-ENTER", start);
 
-        // ✨ Auto: let the shared adaptive helper pick a STARTING level from
-        // past runs. Geometry-safe — this game makes one problem at a time, so
-        // Auto only chooses where the difficulty ramp begins (1..8).
+        // ✨ Auto: the shared adaptive helper picks a STARTING level (1..8)
+        // from past runs. Geometry-safe — one problem at a time.
         const pickAuto = () => {
           SFX.init();
           SFX.coin();
@@ -593,20 +683,21 @@
           this.scene.start(ppVocabSeen ? "Game" : "Vocab");
         };
         const autoBtn = this.add
-          .text(cx, 460, "✨ Auto — picks your start level", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
-            fontStyle: "bold",
-            color: "#ffd24a",
-          })
-          .setOrigin(0.5)
+          .rectangle(cx, 488, 300, 46, 0x1a3a48)
+          .setStrokeStyle(2, 0xffd24a)
           .setInteractive({ useHandCursor: true });
-        autoBtn.on("pointerover", () => autoBtn.setColor("#ffffff"));
-        autoBtn.on("pointerout", () => autoBtn.setColor("#ffd24a"));
+        this.add
+          .text(cx, 488, "✨ Auto: pick my start level (A)", T(17, "#ffd24a", { fontStyle: "bold" }))
+          .setOrigin(0.5);
+        autoBtn.on("pointerover", () => autoBtn.setFillStyle(0x244c5c));
+        autoBtn.on("pointerout", () => autoBtn.setFillStyle(0x1a3a48));
         autoBtn.on("pointerdown", pickAuto);
         this.input.keyboard.on("keydown-A", pickAuto);
 
-        srSay("Percent Power Bar Model Builder. Press Start to play.");
+        const hs = localStorage.getItem(LS_KEY);
+        if (hs) this.add.text(cx, 548, "High score: " + hs, T(16, "#ffd24a", { fontStyle: "bold" })).setOrigin(0.5);
+
+        srSay("Percent Power, Bar Model Builder. Press Start to play, or A for Auto level.");
       };
 
       // ── VOCAB GATE ──
@@ -737,6 +828,19 @@
       };
 
       // ── GAME ──
+      // Calm motion = the OS setting OR the studio "Calm motion" toggle.
+      function calmMotion() {
+        if (window.GameStudio) return !!window.GameStudio.settings.reducedMotion;
+        return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+      }
+      const PP_STREAK_KEY = "pp_bar_builder_beststreak";
+      const TXT = (size, color, extra) => ({
+        fontFamily: "Segoe UI, sans-serif",
+        fontSize: size + "px",
+        color,
+        ...(extra || {}),
+      });
+
       function GameScene() {
         Phaser.Scene.call(this, "Game");
       }
@@ -744,147 +848,96 @@
       GameScene.prototype.constructor = GameScene;
 
       GameScene.prototype.init = function () {
-        this.reduceMotion = !!(
-          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        );
+        this.reduceMotion = calmMotion();
         this.score = 0;
         this.streak = 0;
+        this.bestStreak = 0;
         this.level = ppLevel; // starting level (Auto may pick 1..8)
         this.startLevel = ppLevel; // ramp baseline for this run
+        this.support = ppLevel <= 2; // Support start → live step coach
         this.auto = ppAuto; // carried into Result for adaptive recordRun
         this.endless = ppEndless; // endless runs never auto-end
-        this.attempts = 0; // graded lock-ins (accuracy denominator)
-        this.solved = 0; // problems answered correctly
+        this.attempts = 0; // graded submissions (shade + value steps)
+        this.correctSubs = 0; // graded submissions that were right
+        this.solved = 0; // problems finished correctly
+        this.firstTry = 0; // solved with no wrong try and no help
+        this.round = 0;
         this.target = this.endless ? Infinity : 10; // win: solve this many problems
         this.problem = null;
+        this.phase = "shade"; // 'shade' → (optional) 'value' → 'done'
         this.locked = false;
         this.dragging = false;
-        this.markerPct = 50; // current shaded percent (multiple of 5)
-        this.moves = 0; // adjustments on the current problem (help trigger)
-        this.wrongThisProblem = 0;
-        this.scaffoldTier = 0; // 0 none · 1 benchmark hint · 2 live part readout
-        this.usedHelp = false; // scaffold shown or wrong try → reduced score
+        this.markerPct = 0;
+        this.lastDir = 0;
+        this.reversals = 0; // direction changes on this problem (struggle signal)
+        this.wrongShade = 0;
+        this.wrongValue = 0;
+        this.scaffoldTier = 0; // 0 none · 1 method hint · 2 concrete step + labels
+        this.usedHelp = false;
+        this.choices = [];
+        this.choiceIdx = 0;
+        this.stats = {}; // kind → { seen, clean }
       };
 
       GameScene.prototype.create = function () {
         this.add.rectangle(W / 2, H / 2, W, H, 0x122413);
-
-        // HUD (same layout as the shell's other games)
-        const hudStyle = {
-          fontFamily: "Segoe UI, sans-serif",
-          fontSize: "18px",
-          fontStyle: "bold",
-        };
-        this.scoreText = this.add.text(16, 12, "Score: 0", {
-          ...hudStyle,
-          color: "#8fd6a0",
-        });
-        // Decorative hearts: this is no-fail practice, so they never decrease.
-        this.add.text(16, 36, "❤❤❤", {
-          ...hudStyle,
-          color: "#ff8f8f",
-        });
+        const hud = { fontFamily: "Segoe UI, sans-serif", fontSize: "18px", fontStyle: "bold" };
+        this.scoreText = this.add.text(16, 12, "Score: 0", { ...hud, color: "#8fd6a0" });
         this.streakText = this.add
-          .text(W - 16, 12, "Streak: 0", { ...hudStyle, color: "#ffd24a" })
+          .text(W - 16, 12, "Streak: 0", { ...hud, color: "#ffd24a" })
           .setOrigin(1, 0);
         this.levelText = this.add
-          .text(W - 16, 36, "Level " + this.level, {
-            ...hudStyle,
-            color: "#bfe0c8",
-          })
+          .text(W - 16, 36, "Level " + this.level, { ...hud, color: "#bfe0c8" })
           .setOrigin(1, 0);
-        this.progressText = this.add
-          .text(W / 2, 12, "0 / " + (this.endless ? "∞" : this.target), {
-            ...hudStyle,
-            color: "#bfe0c8",
-          })
-          .setOrigin(0.5, 0);
+        this.progressText = this.add.text(W / 2, 12, "", { ...hud, color: "#ffffff" }).setOrigin(0.5, 0);
 
-        // Endless mode: a small "Finish ✓" HUD control that ends the run now
-        // (same Result transition the win uses, with current stats).
+        // Endless mode: "Finish ✓" ends the run now with current stats.
         if (this.endless) {
           this.finishBtn = this.add
-            .text(16, 60, "Finish ✓", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "15px",
-              fontStyle: "bold",
-              color: "#ffd24a",
-            })
+            .text(16, 38, "Finish ✓", TXT(16, "#ffd24a", { fontStyle: "bold" }))
             .setInteractive({ useHandCursor: true });
           this.finishBtn.on("pointerover", () => this.finishBtn.setColor("#ffffff"));
           this.finishBtn.on("pointerout", () => this.finishBtn.setColor("#ffd24a"));
           this.finishBtn.on("pointerdown", () => {
-            if (this.locked) return;
-            this.endGame();
+            if (!this.locked) this.endGame();
           });
         }
 
-        // Problem banner
-        this.bannerLabel = this.add
-          .text(W / 2, 78, "", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "14px",
-            color: "#7fae8c",
-          })
-          .setOrigin(0.5);
+        // Problem banner: skill label + the question.
+        this.bannerLabel = this.add.text(W / 2, 70, "", TXT(16, "#9fd8ae")).setOrigin(0.5);
         this.bannerText = this.add
-          .text(W / 2, 110, "", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "28px",
-            fontStyle: "bold",
-            color: "#ffffff",
-            align: "center",
-            wordWrap: { width: W - 80 },
-          })
+          .text(W / 2, 108, "", TXT(26, "#ffffff", { fontStyle: "bold", align: "center", wordWrap: { width: W - 80 } }))
           .setOrigin(0.5);
-
+        // Feedback stays on screen until the next action (no auto-fade).
         this.feedback = this.add
-          .text(W / 2, 168, "", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "17px",
-            fontStyle: "bold",
-            color: "#ffd24a",
-            stroke: "#0a160b",
-            strokeThickness: 3,
-            align: "center",
-            wordWrap: { width: W - 80 },
-          })
+          .text(
+            W / 2,
+            168,
+            "",
+            TXT(17, "#ffd24a", {
+              fontStyle: "bold",
+              stroke: "#0a160b",
+              strokeThickness: 3,
+              align: "center",
+              wordWrap: { width: W - 80 },
+            }),
+          )
           .setOrigin(0.5)
           .setAlpha(0);
 
-        // Earned-help hint line (Tier 1 benchmark). Hidden until unlocked.
-        this.hintText = this.add
-          .text(W / 2, 436, "", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
-            fontStyle: "bold",
-            color: "#ffd24a",
-            stroke: "#0a160b",
-            strokeThickness: 3,
-            align: "center",
-            wordWrap: { width: W - 120 },
-          })
-          .setOrigin(0.5)
-          .setAlpha(0);
-
-        // Live readouts — the heart of the mechanic: the percent and the part
-        // it equals, both updating as the bar is shaded.
+        // The percent dial echoes the student's OWN shading — never the answer.
         this.pctReadout = this.add
-          .text(W / 2, 232, "50%", {
+          .text(W / 2, 236, "0%", {
             fontFamily: "Impact, sans-serif",
-            fontSize: "56px",
+            fontSize: "52px",
             color: "#ffd24a",
             stroke: "#0a160b",
             strokeThickness: 5,
           })
           .setOrigin(0.5);
-        this.partReadout = this.add
-          .text(W / 2, 282, "", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "22px",
-            fontStyle: "bold",
-            color: "#8fd6a0",
-          })
+        // Support tier: a live coach that names the next action.
+        this.coachText = this.add
+          .text(W / 2, 290, "", TXT(17, "#ffe9a8", { fontStyle: "bold", align: "center", wordWrap: { width: W - 100 } }))
           .setOrigin(0.5);
 
         // Bar track + tenth ticks + end labels (0 … whole)
@@ -893,66 +946,53 @@
           .setOrigin(0, 0.5)
           .setStrokeStyle(2, 0x2d874b);
         for (let i = 1; i < 10; i++) {
-          this.add.rectangle(pctToX(i * 10), BAR_Y, 2, BAR_H, 0x1f4a2c).setOrigin(0.5);
+          this.add.rectangle(pctToX(i * 10), BAR_Y, 2, BAR_H, 0x2f6b40).setOrigin(0.5);
         }
-        this.fill = this.add.rectangle(BAR_X0, BAR_Y, BAR_W / 2, BAR_H, 0x2d874b).setOrigin(0, 0.5);
-        this.add
-          .text(BAR_X0, BAR_Y + BAR_H / 2 + 12, "0", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
-            color: "#bfe0c8",
-          })
-          .setOrigin(0, 0);
-        this.endR = this.add
-          .text(BAR_X1, BAR_Y + BAR_H / 2 + 12, "", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
-            color: "#bfe0c8",
-          })
-          .setOrigin(1, 0);
+        this.fill = this.add.rectangle(BAR_X0, BAR_Y, 0, BAR_H, 0x2d874b).setOrigin(0, 0.5);
+        const labelY = BAR_Y + BAR_H / 2 + 10;
+        this.add.text(BAR_X0, labelY, "0", TXT(16, "#bfe0c8")).setOrigin(0.5, 0);
+        this.endR = this.add.text(BAR_X1, labelY, "", TXT(16, "#bfe0c8")).setOrigin(0.5, 0);
+        // Tier-2 help: value labels under each 10% tick (hidden until earned).
+        this.tickLabels = [];
+        for (let i = 1; i < 10; i++) {
+          this.tickLabels.push(
+            this.add.text(pctToX(i * 10), labelY, "", TXT(15, "#ffe9a8", { fontStyle: "bold" })).setOrigin(0.5, 0).setVisible(false),
+          );
+        }
 
         // Handle (large touch target) + knob
         this.handle = this.add
-          .rectangle(pctToX(50), BAR_Y, 14, BAR_H + 30, 0xffe07a)
+          .rectangle(pctToX(0), BAR_Y, 14, BAR_H + 30, 0xffe07a)
           .setStrokeStyle(2, 0xb87b1d)
           .setDepth(10);
         this.knob = this.add
-          .circle(pctToX(50), BAR_Y - BAR_H / 2 - 22, 16, 0xffd24a)
+          .circle(pctToX(0), BAR_Y - BAR_H / 2 - 22, 16, 0xffd24a)
           .setStrokeStyle(3, 0xb87b1d)
           .setDepth(10);
 
+        // Earned-help hint line (Tier 1 / Tier 2). Hidden until unlocked.
+        this.hintText = this.add
+          .text(
+            W / 2,
+            446,
+            "",
+            TXT(16, "#ffd24a", { fontStyle: "bold", stroke: "#0a160b", strokeThickness: 3, align: "center", wordWrap: { width: W - 100 } }),
+          )
+          .setOrigin(0.5)
+          .setAlpha(0);
+
         // Lock-in button
-        this.lockBtn = this.add
-          .rectangle(W / 2, 482, 240, 54, 0x2d874b)
-          .setInteractive({ useHandCursor: true });
-        this.add
-          .text(W / 2, 482, "LOCK IN ✓", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "22px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
+        this.lockBtn = this.add.rectangle(W / 2, 498, 240, 54, 0x2d874b).setInteractive({ useHandCursor: true });
+        this.lockLabel = this.add
+          .text(W / 2, 498, "LOCK IN ✓", TXT(22, "#ffffff", { fontStyle: "bold" }))
           .setOrigin(0.5);
         this.lockBtn.on("pointerover", () => this.lockBtn.setFillStyle(0x36a35b));
         this.lockBtn.on("pointerout", () => this.lockBtn.setFillStyle(0x2d874b));
         this.lockBtn.on("pointerdown", () => this.lockIn());
 
-        // Hint
-        this.add
-          .text(
-            W / 2,
-            532,
-            "Drag the handle or press ← → (A·D) to adjust by 5%. Enter = lock in.",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "14px",
-              color: "#7fae8c",
-              align: "center",
-            },
-          )
-          .setOrigin(0.5);
+        // Key help (changes with the step).
+        this.keysText = this.add.text(W / 2, 556, "", TXT(15, "#a9d4b4", { align: "center" })).setOrigin(0.5);
 
-        // Particles (reused from the shell)
         this.burst = this.add
           .particles(0, 0, "spark", {
             speed: { min: 80, max: 240 },
@@ -965,25 +1005,26 @@
           })
           .setDepth(20);
 
-        // Input: drag on the bar band; arrows / A·D nudge ±5%; Enter/Space lock.
+        // Input: drag on the bar band; arrows / A·D nudge ±5% (or move the
+        // choice highlight in Step 2); Enter/Space lock; 1-4 pick a choice.
         const inBand = (y) => Math.abs(y - BAR_Y) <= BAR_H / 2 + 40;
         this.input.on("pointerdown", (p) => {
-          if (this.locked) return;
+          if (this.locked || this.phase !== "shade") return;
           if (inBand(p.y)) {
             this.dragging = true;
-            this.registerMove();
             this.setMarker(xToPct(p.x));
           }
         });
         this.input.on("pointermove", (p) => {
-          if (this.dragging && !this.locked) this.setMarker(xToPct(p.x));
+          if (this.dragging && !this.locked && this.phase === "shade") this.setMarker(xToPct(p.x));
         });
         this.input.on("pointerup", () => {
           this.dragging = false;
         });
         const nudge = (d) => {
           if (this.locked) return;
-          this.registerMove();
+          if (this.phase === "value") return this.moveChoice(d > 0 ? 1 : -1);
+          if (this.phase !== "shade") return;
           this.setMarker(this.markerPct + d);
           SFX.coin();
         };
@@ -993,165 +1034,340 @@
         this.input.keyboard.on("keydown-D", () => nudge(5));
         this.input.keyboard.on("keydown-ENTER", () => this.lockIn());
         this.input.keyboard.on("keydown-SPACE", () => this.lockIn());
+        ["ONE", "TWO", "THREE", "FOUR"].forEach((k, i) =>
+          this.input.keyboard.on("keydown-" + k, () => {
+            if (this.phase === "value" && !this.locked) this.submitChoice(i);
+          }),
+        );
 
-        this.cameras.main.fadeIn(400);
+        this.events.once("shutdown", () => this.hideChoices());
+        if (!this.reduceMotion) this.cameras.main.fadeIn(400);
         this.newProblem();
       };
 
       GameScene.prototype.setMarker = function (pct) {
-        this.markerPct = Phaser.Math.Clamp(pct, 0, 100);
+        const next = Phaser.Math.Clamp(pct, 0, 100);
+        if (next !== this.markerPct) {
+          const dir = next > this.markerPct ? 1 : -1;
+          if (this.lastDir && dir !== this.lastDir) {
+            this.reversals += 1;
+            // Struggle signal: lots of back-and-forth → offer the Tier-1 hint.
+            if (this.reversals === 6) this.setScaffold(1);
+          }
+          this.lastDir = dir;
+        }
+        this.markerPct = next;
         const x = pctToX(this.markerPct);
         this.fill.width = (BAR_W * this.markerPct) / 100;
         this.handle.x = x;
         this.knob.x = x;
         this.pctReadout.setText(this.markerPct + "%");
-        // The part readout is EARNED — only shown once the Tier-2 scaffold
-        // unlocks, so students compute the part instead of hunting for it.
-        if (this.problem && this.scaffoldTier >= 2) {
-          const part = (this.problem.whole * this.markerPct) / 100;
-          const partStr = Number.isInteger(part) ? String(part) : part.toFixed(1);
-          this.partReadout.setText("= " + partStr + " of " + this.problem.whole);
-        } else {
-          this.partReadout.setText("");
-        }
-      };
-
-      // ── Earned help ─────────────────────────────────────────────────────
-      // Each adjustment on the current problem is a "move." After enough moves
-      // (or a wrong lock-in) the scaffold ladder unlocks — help, not answers.
-      GameScene.prototype.registerMove = function () {
-        if (this.locked) return;
-        this.moves += 1;
-        if (this.moves === 6) this.setScaffold(1);
-        else if (this.moves === 12) this.setScaffold(2);
+        this.updateCoach();
       };
 
       GameScene.prototype.setScaffold = function (tier) {
         if (!this.problem || tier <= this.scaffoldTier) return;
         this.scaffoldTier = tier;
         this.usedHelp = true;
-        const hint = scaffoldHint(this.problem);
-        const note = tier >= 2 ? "  ·  Now watch the part update as you move." : "";
-        this.hintText.setText("💡 " + hint + note).setAlpha(1);
-        // Tier 2 switches on the live part readout (refresh to populate it).
-        if (tier >= 2) this.setMarker(this.markerPct);
-        srSay("Hint: " + hint);
+        const p = this.problem;
+        const text = tier >= 2 ? concreteHint(p, this.phase) : scaffoldHint(p, this.phase);
+        this.hintText.setText((tier >= 2 ? "🔎 " : "💡 ") + text).setAlpha(1);
+        if (tier >= 2) this.showTickLabels();
+        srSay("Hint: " + text);
+      };
+      GameScene.prototype.showTickLabels = function () {
+        const p = this.problem;
+        this.tickLabels.forEach((t, i) => t.setText((p.money ? "$" : "") + (p.tenth * (i + 1))).setVisible(true));
+      };
+
+      GameScene.prototype.updateCoach = function () {
+        if (!this.coachText) return;
+        if (this.phase === "value") {
+          this.keysText.setText("← → choose a number · Enter = pick it · or press 1–" + this.choices.length);
+        } else {
+          this.keysText.setText("Drag the handle or press ← → (5% each) · Enter = Lock In");
+        }
+        if (!this.support || this.locked) {
+          this.coachText.setText("");
+          return;
+        }
+        let msg;
+        if (this.phase === "value") msg = "Next: use the shaded bar to find the number. Pick it with ← → and Enter.";
+        else if (this.markerPct === 0) msg = "Next: press → (or drag the handle) to shade the bar. Each press adds 5%.";
+        else msg = "Next: when your shading answers the question, press Enter to Lock In.";
+        this.coachText.setText("👉 " + msg);
       };
 
       GameScene.prototype.newProblem = function () {
         this.locked = false;
-        this.moves = 0;
-        this.wrongThisProblem = 0;
+        this.phase = "shade";
+        this.round += 1;
+        this.reversals = 0;
+        this.lastDir = 0;
+        this.wrongShade = 0;
+        this.wrongValue = 0;
         this.scaffoldTier = 0;
         this.usedHelp = false;
-        if (this.hintText) this.hintText.setAlpha(0).setText("");
+        this.hideChoices();
+        this.hintText.setAlpha(0).setText("");
+        this.feedback.setAlpha(0).setText("");
+        this.tickLabels.forEach((t) => t.setVisible(false));
         this.problem = barProblem(this.level);
-        this.bannerLabel.setText(this.problem.label);
-        this.bannerText.setText(this.problem.prompt);
-        this.endR.setText(String(this.problem.whole));
+        const p = this.problem;
+        this.bannerLabel.setText(p.label + (p.ask ? " · Step 1 of 2: shade the bar" : ""));
+        this.bannerText.setText(p.prompt);
+        this.endR.setText((p.money ? "$" : "") + p.whole);
         this.fill.setFillStyle(0x2d874b);
-        // Start empty (0%) every problem so the student always builds up to the
-        // target — starting at 50% pre-solved any 50% problem with no movement.
+        this.lockBtn.setVisible(true);
+        this.lockLabel.setVisible(true);
+        // Start empty (0%) so the student always builds up to the target.
         this.setMarker(0);
-        srSay(
-          this.problem.label +
-            ": " +
-            this.problem.prompt +
-            ". Drag the handle to shade your answer, then lock it in.",
-        );
+        this.reversals = 0;
+        this.lastDir = 0;
+        this.updateHUD();
+        srSay(p.label + ". " + p.prompt + " Drag the handle or use the arrow keys, then lock in.");
       };
 
       GameScene.prototype.lockIn = function () {
         if (this.locked || !this.problem) return;
-        this.locked = true;
+        if (this.phase === "value") return this.submitChoice(this.choiceIdx);
+        if (this.phase !== "shade") return;
+        const p = this.problem;
         this.attempts += 1;
-        const correct = this.markerPct === this.problem.targetPct;
-        if (correct) {
+        if (this.markerPct === p.targetPct) {
+          this.correctSubs += 1;
           SFX.good();
-          this.solved++;
           this.fill.setFillStyle(0x36a35b);
-          this.burst.setPosition(pctToX(this.markerPct), BAR_Y);
-          this.burst.explode(16);
-          if (this.usedHelp) {
-            // Solved with a scaffold (or after a wrong try): still a win, fewer
-            // points, and the independent-solve streak resets.
+          if (!this.reduceMotion) {
+            this.burst.setPosition(pctToX(this.markerPct), BAR_Y);
+            this.burst.explode(16);
+          }
+          if (p.ask) {
+            this.feedback.setText("The bar is right! Now use it to find the number.").setColor("#8fd6a0").setAlpha(1);
+            this.enterValuePhase();
+          } else {
+            this.finishProblem(true);
+          }
+          return;
+        }
+        SFX.bad();
+        this.wrongShade += 1;
+        this.usedHelp = true;
+        this.streak = 0;
+        this.fill.setFillStyle(0xd4952a);
+        if (this.wrongShade >= 3) {
+          // No-fail last resort: show the shading, explain, and keep going.
+          this.locked = true;
+          this.feedback.setText("Here is the shading. " + p.why).setColor("#ffd24a").setAlpha(1);
+          srSay("Here is the shading. " + p.why);
+          this.tweens.add({
+            targets: [this.handle, this.knob],
+            x: pctToX(p.targetPct),
+            duration: this.reduceMotion ? 0 : 600,
+            onComplete: () => {
+              this.setMarker(p.targetPct);
+              this.fill.setFillStyle(0x2d874b);
+              if (p.ask) {
+                this.locked = false;
+                this.enterValuePhase();
+              } else this.finishProblem(false);
+            },
+          });
+          return;
+        }
+        const why = shadeMistake(p, this.markerPct);
+        this.setScaffold(this.wrongShade === 1 ? 1 : 2);
+        this.feedback.setText("Not quite. " + why + " Try again.").setColor("#ffd24a").setAlpha(1);
+        srSay("Not quite. " + why + " Try again.");
+        this.updateHUD();
+        this.time.delayedCall(700, () => {
+          if (this.phase === "shade") this.fill.setFillStyle(0x2d874b);
+        });
+      };
+
+      // ── Step 2: pick the value the shading is worth ─────────────────────
+      GameScene.prototype.enterValuePhase = function () {
+        const p = this.problem;
+        this.phase = "value";
+        this.bannerLabel.setText(p.label + " · Step 2 of 2: find the number");
+        this.bannerText.setText(p.ask.q);
+        this.lockBtn.setVisible(false);
+        this.lockLabel.setVisible(false);
+        // A Tier-1 hint from Step 1 is about shading — swap it for this step.
+        if (this.scaffoldTier === 1) this.hintText.setText("💡 " + scaffoldHint(p, "value"));
+        this.showChoices(p.ask.options);
+        this.updateCoach();
+        srSay(
+          p.ask.q +
+            " Choices: " +
+            p.ask.options.map((o, i) => i + 1 + ", " + o.label).join("; ") +
+            ". Use left and right, then Enter, or press a number key.",
+        );
+      };
+      GameScene.prototype.showChoices = function (options) {
+        this.hideChoices();
+        const bw = 150,
+          gap = 18;
+        const total = options.length * bw + (options.length - 1) * gap;
+        let x = W / 2 - total / 2 + bw / 2;
+        this.choices = options.map((opt, i) => {
+          const rect = this.add
+            .rectangle(x, 498, bw, 54, 0x1b4a2c)
+            .setStrokeStyle(3, 0x5fb37a)
+            .setInteractive({ useHandCursor: true });
+          const txt = this.add.text(x, 498, opt.label, TXT(24, "#ffffff", { fontStyle: "bold" })).setOrigin(0.5);
+          const num = this.add.text(x - bw / 2 + 8, 476, String(i + 1), TXT(13, "#bfe0c8")).setOrigin(0, 0);
+          rect.on("pointerdown", () => {
+            if (!this.locked) this.submitChoice(i);
+          });
+          x += bw + gap;
+          return { opt, rect, txt, num, used: false };
+        });
+        // Mirror the choices as real buttons in the controls panel.
+        const host = document.querySelector(".cabinet-console");
+        if (host) {
+          const bar = document.createElement("div");
+          bar.className = "game-choice-bar";
+          bar.setAttribute("role", "group");
+          bar.setAttribute("aria-label", "Answer choices");
+          this.choices.forEach((c, i) => {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.textContent = c.opt.label;
+            b.setAttribute("aria-label", "Choice " + (i + 1) + ": " + c.opt.label);
+            b.addEventListener("click", () => {
+              if (!this.locked) this.submitChoice(i);
+            });
+            c.dom = b;
+            bar.append(b);
+          });
+          host.insertBefore(bar, host.querySelector(".cabinet-controls"));
+          this.domBar = bar;
+        }
+        this.choiceIdx = 0;
+        this.paintChoices();
+      };
+      GameScene.prototype.hideChoices = function () {
+        (this.choices || []).forEach((c) => {
+          c.rect.destroy();
+          c.txt.destroy();
+          c.num.destroy();
+        });
+        this.choices = [];
+        if (this.domBar) this.domBar.remove();
+        this.domBar = null;
+      };
+      GameScene.prototype.paintChoices = function () {
+        this.choices.forEach((c, i) => {
+          const on = i === this.choiceIdx;
+          if (c.dom) {
+            c.dom.setAttribute("aria-pressed", String(on && !c.used));
+            c.dom.disabled = !!c.used || this.locked;
+          }
+          if (c.done) return;
+          c.rect.setFillStyle(c.used ? 0x3b2f17 : on ? 0x2d874b : 0x1b4a2c);
+          c.rect.setStrokeStyle(on ? 5 : 3, on ? 0xffd24a : c.used ? 0x8a6a2a : 0x5fb37a);
+          c.txt.setColor(c.used ? "#c9b48a" : "#ffffff");
+        });
+      };
+      GameScene.prototype.moveChoice = function (d) {
+        if (!this.choices.length) return;
+        let i = this.choiceIdx;
+        for (let n = 0; n < this.choices.length; n++) {
+          i = (i + d + this.choices.length) % this.choices.length;
+          if (!this.choices[i].used) break;
+        }
+        this.choiceIdx = i;
+        this.paintChoices();
+        SFX.coin();
+        srSay(this.choices[i].opt.label);
+      };
+      GameScene.prototype.submitChoice = function (i) {
+        if (this.locked || this.phase !== "value") return;
+        const c = this.choices[i];
+        if (!c || c.used) return;
+        const p = this.problem;
+        this.attempts += 1;
+        if (c.opt.correct) {
+          this.correctSubs += 1;
+          c.done = true;
+          c.rect.setFillStyle(0x36a35b).setStrokeStyle(5, 0xffffff);
+          SFX.good();
+          this.finishProblem(true);
+          return;
+        }
+        SFX.bad();
+        this.wrongValue += 1;
+        this.usedHelp = true;
+        this.streak = 0;
+        c.used = true;
+        if (this.wrongValue >= 2) {
+          const right = this.choices.find((k) => k.opt.correct);
+          right.done = true;
+          right.rect.setFillStyle(0x36a35b).setStrokeStyle(5, 0xffffff);
+          this.paintChoices();
+          this.feedback.setText(c.opt.why + " The answer is " + right.opt.label + ". " + p.why).setColor("#ffd24a").setAlpha(1);
+          srSay(c.opt.why + " The answer is " + right.opt.label + ". " + p.why);
+          this.finishProblem(false, true);
+          return;
+        }
+        this.setScaffold(2);
+        this.moveChoice(1);
+        this.feedback.setText("Not quite. " + c.opt.why + " Try another.").setColor("#ffd24a").setAlpha(1);
+        srSay("Not quite. " + c.opt.why + " Try another.");
+        this.updateHUD();
+      };
+
+      GameScene.prototype.finishProblem = function (correct, keepFeedback) {
+        const p = this.problem;
+        this.locked = true;
+        this.phase = "done";
+        this.choices.forEach((c) => {
+          if (c.dom) c.dom.disabled = true;
+        });
+        const st = (this.stats[p.kind] = this.stats[p.kind] || { seen: 0, clean: 0 });
+        st.seen += 1;
+        if (correct) {
+          this.solved += 1;
+          if (!this.usedHelp) {
+            // Unaided first try: full points + streak bonus.
+            st.clean += 1;
+            this.firstTry += 1;
+            this.streak += 1;
+            this.bestStreak = Math.max(this.bestStreak, this.streak);
+            this.score += 20 + Math.min(this.streak, 5) * 5;
+            this.flash(W / 2, 200, "Correct! ✓", "#8fd6a0");
+            this.feedback.setText("Correct! " + p.why).setColor("#8fd6a0").setAlpha(1);
+            srSay("Correct. " + p.why);
+          } else {
+            // Helped solve: still counts, fewer points, streak resets.
             this.streak = 0;
             this.score += 10;
             this.flash(W / 2, 200, "You worked it out! ✓", "#8fd6a0");
-            this.feedback.setText("Nice — you got it. " + this.problem.why).setAlpha(1);
-            srSay("Correct with help. " + this.problem.why);
-          } else {
-            // Clean first-try solve with no help — full points + streak bonus.
-            this.streak++;
-            const bonus = Math.min(this.streak, 5) * 5;
-            this.score += 20 + bonus;
-            this.flash(W / 2, 200, "Correct! ✓", "#8fd6a0");
-            this.feedback.setText("Correct! " + this.problem.why).setAlpha(1);
-            srSay("Correct. " + this.problem.why);
+            this.feedback.setText("You got it. " + p.why).setColor("#8fd6a0").setAlpha(1);
+            srSay("Correct with help. " + p.why);
           }
-          this.hintText.setAlpha(0);
-          this.afterAttempt(true);
-        } else {
-          SFX.bad();
-          this.wrongThisProblem += 1;
-          this.usedHelp = true;
-          this.streak = 0;
-          if (this.wrongThisProblem >= 3) {
-            // No-fail last resort: after 3 tries, teach the answer and move on.
-            this.fill.setFillStyle(0xd4952a);
-            this.feedback.setText("Here's how it works — " + this.problem.why).setAlpha(1);
-            srSay("The answer. " + this.problem.why);
-            const ghost = this.add
-              .rectangle(
-                BAR_X0,
-                BAR_Y,
-                (BAR_W * this.problem.targetPct) / 100,
-                BAR_H,
-                0x8fd6a0,
-                0.35,
-              )
-              .setOrigin(0, 0.5)
-              .setDepth(5);
-            this.tweens.add({
-              targets: [this.handle, this.knob],
-              x: pctToX(this.problem.targetPct),
-              duration: this.reduceMotion ? 0 : 600,
-              onComplete: () => {
-                ghost.destroy();
-                this.hintText.setAlpha(0);
-                this.afterAttempt(false);
-              },
-            });
-          } else {
-            // Wrong, but they keep the SAME problem — unlock a hint and let them
-            // try again. Calm amber blip, no lost hearts, no answer reveal.
-            this.setScaffold(this.wrongThisProblem === 1 ? 1 : 2);
-            this.fill.setFillStyle(0xd4952a);
-            this.feedback.setText("Not quite — try again.").setAlpha(1);
-            srSay("Not quite. Try again with the hint.");
-            this.updateHUD();
-            this.locked = false;
-            this.time.delayedCall(700, () => {
-              this.feedback.setAlpha(0);
-              this.fill.setFillStyle(0x2d874b);
-            });
-          }
+        } else if (!keepFeedback) {
+          this.feedback.setText("Here is how it works. " + p.why).setColor("#ffd24a").setAlpha(1);
         }
+        this.coachText.setText("");
+        this.afterAttempt();
       };
 
-      GameScene.prototype.afterAttempt = function (correct) {
-        // Level up every 3 correct, ramping from this run's starting level.
+      GameScene.prototype.afterAttempt = function () {
+        // Level up every 3 solved, ramping from this run's starting level.
         const newLevel = Math.min(8, this.startLevel + Math.floor(this.solved / 3));
         if (newLevel > this.level) {
           this.level = newLevel;
           SFX.level();
-          this.flash(W / 2, 200, "LEVEL " + this.level + "!", "#ffd24a");
+          this.flash(W / 2, 236, "LEVEL " + this.level + "!", "#ffd24a");
         }
         this.updateHUD();
         if (this.solved >= this.target) {
           this.endGame();
           return;
         }
+        this.keysText.setText("Read the explanation. Press Enter or Continue when you are ready.");
         this.studioNextRound(() => {
           this.feedback.setAlpha(0);
           this.newProblem();
@@ -1160,21 +1376,14 @@
 
       GameScene.prototype.flash = function (x, y, text, color) {
         const ft = this.add
-          .text(x, y, text, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "26px",
-            fontStyle: "bold",
-            color: color,
-            stroke: "#0a160b",
-            strokeThickness: 4,
-          })
+          .text(x, y, text, TXT(26, color, { fontStyle: "bold", stroke: "#0a160b", strokeThickness: 4 }))
           .setOrigin(0.5)
           .setDepth(40);
         this.tweens.add({
           targets: ft,
-          y: y - 50,
+          y: this.reduceMotion ? y : y - 50,
           alpha: { from: 1, to: 0 },
-          duration: this.reduceMotion ? 500 : 900,
+          duration: this.reduceMotion ? 900 : 900,
           onComplete: () => ft.destroy(),
         });
       };
@@ -1183,11 +1392,14 @@
         this.scoreText.setText("Score: " + this.score);
         this.streakText.setText("Streak: " + this.streak);
         this.levelText.setText("Level " + this.level);
-        this.progressText.setText(this.solved + " / " + (this.endless ? "∞" : this.target));
+        const n = Math.min(this.solved + 1, this.target);
+        this.progressText.setText(
+          this.endless ? "Challenge " + (this.solved + 1) + " · " + this.solved + " solved" : "Challenge " + n + " of " + this.target,
+        );
       };
 
       // Reached only by solving all target problems (mistakes never end the
-      // game), so the Result scene is always a win.
+      // game) or by Finish in endless mode.
       GameScene.prototype.endGame = function () {
         this.locked = true;
         this.time.delayedCall(500, () => {
@@ -1198,7 +1410,13 @@
             level: this.level,
             auto: this.auto,
             endless: this.endless,
-            accuracy: this.attempts ? this.solved / this.attempts : 1,
+            startLevel: this.startLevel,
+            firstTry: this.firstTry,
+            bestStreak: this.bestStreak,
+            stats: this.stats,
+            attempts: this.attempts,
+            correctSubs: this.correctSubs,
+            accuracy: this.attempts ? this.correctSubs / this.attempts : 1,
           });
         });
       };
@@ -1216,13 +1434,10 @@
         const d = this.data2;
         const cx = W / 2;
         this.add.rectangle(cx, H / 2, W, H, 0x122413);
-        // Endless runs (or an early Finish) have no finite target; grade against
-        // the standard goal of 10 so stars and the adaptive win-signal stay
-        // meaningful. A normal run still ends only at solved == target → 3 stars.
+        // Endless runs grade against the standard goal of 10.
         const endless = !!d.endless;
         const goal = endless ? 10 : d.target;
         const stars = d.solved >= goal ? 3 : d.solved >= goal * 0.6 ? 2 : 1;
-        // Adaptive: only record a run when the level was auto-picked.
         if (d.auto && window.NTAdaptive) {
           window.NTAdaptive.recordRun("u4-percent-power", {
             won: d.solved >= goal,
@@ -1231,94 +1446,93 @@
             max: 8,
           });
         }
-        // High score
-        let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
-        if (d.score > hs) {
-          hs = d.score;
-          try {
-            localStorage.setItem(LS_KEY, String(hs));
-          } catch (e) {}
-        }
+        let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10) || 0;
+        const newBest = d.score > hs;
+        let bestStreak = 0;
+        try {
+          bestStreak = parseInt(localStorage.getItem(PP_STREAK_KEY) || "0", 10) || 0;
+          if (newBest) localStorage.setItem(LS_KEY, String(d.score));
+          if ((d.bestStreak || 0) > bestStreak) {
+            bestStreak = d.bestStreak;
+            localStorage.setItem(PP_STREAK_KEY, String(bestStreak));
+          }
+        } catch (e) {}
+        if (newBest) hs = d.score;
 
         this.add
-          .text(cx, 110, "CITY OF SAVINGS!", {
+          .text(cx, 70, "CITY OF SAVINGS!", {
             fontFamily: "Impact, sans-serif",
-            fontSize: "48px",
+            fontSize: "46px",
             color: "#8fd6a0",
             stroke: "#0a160b",
             strokeThickness: 5,
           })
           .setOrigin(0.5);
-
-        const starStr = "★".repeat(stars) + "☆".repeat(3 - stars);
         this.add
-          .text(cx, 185, starStr, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "48px",
-            color: "#ffd24a",
-          })
+          .text(cx, 128, "★".repeat(stars) + "☆".repeat(3 - stars), TXT(44, "#ffd24a"))
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 182, "Score: " + d.score + (newBest ? "  · New high score!" : ""), TXT(28, "#ffffff", { fontStyle: "bold" }))
           .setOrigin(0.5);
 
-        this.add
-          .text(cx, 255, "Score: " + d.score, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "30px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
+        // What happened, what was practiced, and what to practice next.
+        const stats = d.stats || {};
+        const kinds = Object.keys(stats);
+        const names = { part: "Find the part", decimal: "Decimal → percent", percent: "Find the percent", sale: "Sale price" };
+        let weak = null;
+        kinds.forEach((k) => {
+          const miss = stats[k].seen - stats[k].clean;
+          if (miss > 0 && (!weak || miss > stats[weak].seen - stats[weak].clean)) weak = k;
+        });
+        const acc = Math.round((d.accuracy != null ? d.accuracy : 1) * 100);
+        const lines = [
+          (endless ? "Solved " + d.solved + " problems" : "Solved " + d.solved + " of " + d.target + " problems") +
+            " · " + (d.firstTry || 0) + " on the first try with no help",
+          "Accuracy: " + acc + "% of your answers were right · Best streak ever: " + bestStreak,
+          "Skills practiced: " + (kinds.length ? kinds.map((k) => names[k]).join(", ") : "percent of a number"),
+          weak
+            ? "Practice next → " + KIND_TIP[weak]
+            : d.level < 8
+              ? "Practice next → try ✨ Auto. It starts you at a harder level."
+              : "Practice next → keep your streak going with ♾️ Keep Playing.",
+        ];
+        this.summary = this.add
+          .text(cx, 290, lines.join("\n"), TXT(17, "#d6eedc", { align: "center", lineSpacing: 10, wordWrap: { width: W - 70 } }))
           .setOrigin(0.5);
-        this.add
-          .text(
-            cx,
-            295,
-            endless
-              ? "Solved " + d.solved + " problems"
-              : "Solved " + d.solved + " of " + d.target + " problems",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "18px",
-              color: "#bfe0c8",
-            },
-          )
-          .setOrigin(0.5);
-        this.add
-          .text(cx, 325, "High Score: " + hs, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
-            color: "#ffd24a",
-          })
-          .setOrigin(0.5);
+        // The controls panel reads bannerText: mirror the summary there so it
+        // is readable at phone width and by screen readers.
+        this.bannerText = this.summary;
+        this.add.text(cx, 372, "High score: " + hs, TXT(16, "#ffd24a")).setOrigin(0.5);
 
         SFX.win();
-
-        // EduPulse reporting (guarded; safe no-op without bridge).
+        // EduPulse / Canvas code: report problems solved out of the goal (not
+        // arcade points over a problem count, which printed e.g. "195/10").
         try {
           window.EduPulse &&
             EduPulse.record({
               activityTitle: document.title,
-              score: d.score,
+              score: d.solved,
+              maxScore: goal,
+              percent: acc,
               stars: stars,
+              level: d.level,
               standard: "6.AT.4",
-              problemsAttempted: d.solved,
+              problemsCorrect: d.correctSubs,
+              problemsAttempted: d.attempts,
             });
         } catch (e) {}
-        srSay("You won! Final score " + d.score + ", " + stars + " stars.");
+        srSay("Round complete. Score " + d.score + ", " + stars + " stars. " + lines.join(" "));
 
-        const btn = this.add
-          .rectangle(cx, 400, 220, 54, 0x2d874b)
-          .setInteractive({ useHandCursor: true });
-        const btnT = this.add
-          .text(cx, 400, "PLAY AGAIN 🔁", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "20px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
-          .setOrigin(0.5);
+        const btn = this.add.rectangle(cx, 430, 240, 54, 0x2d874b).setInteractive({ useHandCursor: true });
+        this.add.text(cx, 430, "PLAY AGAIN 🔁", TXT(20, "#ffffff", { fontStyle: "bold" })).setOrigin(0.5);
         const again = () => {
-          // Fresh Level-1 run (adaptive off), same as today's replay.
-          ppLevel = 1;
-          ppAuto = false;
+          // Fresh run with new numbers at the same starting point.
+          ppLevel = d.auto
+            ? window.NTAdaptive
+              ? window.NTAdaptive.pickLevel("u4-percent-power", 1, 8)
+              : 1
+            : d.startLevel || 1;
+          ppAuto = !!d.auto;
           ppEndless = false;
           this.scene.start("Game");
         };
@@ -1328,20 +1542,12 @@
         this.input.keyboard.on("keydown-SPACE", again);
         this.input.keyboard.on("keydown-ENTER", again);
 
-        // ♾️ Keep Playing: restart the Game at the SAME level in endless mode
-        // (carries the auto flag so adaptive still records the endless run).
+        // ♾️ Keep Playing: same level, endless (Finish ✓ ends it).
         const keepBtn = this.add
-          .rectangle(cx, 466, 240, 48, 0x2563a8)
+          .rectangle(cx, 496, 240, 50, 0x2563a8)
           .setStrokeStyle(2, 0x7dd3fc)
           .setInteractive({ useHandCursor: true });
-        this.add
-          .text(cx, 466, "♾️ Keep Playing", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "18px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
-          .setOrigin(0.5);
+        this.add.text(cx, 496, "♾️ Keep Playing", TXT(18, "#ffffff", { fontStyle: "bold" })).setOrigin(0.5);
         const keepPlaying = () => {
           ppLevel = d.level;
           ppEndless = true;
@@ -1351,6 +1557,9 @@
         keepBtn.on("pointerover", () => keepBtn.setFillStyle(0x2f74c2));
         keepBtn.on("pointerout", () => keepBtn.setFillStyle(0x2563a8));
         keepBtn.on("pointerdown", keepPlaying);
+        this.add
+          .text(cx, 556, "Enter = Play again · Every round has new numbers.", TXT(15, "#a9d4b4"))
+          .setOrigin(0.5);
       };
 
       // ── Launch ──
@@ -1358,7 +1567,12 @@
       // Native math controls now have a readable, touch-accessible console.
       window.PhaserStudio.mount({
         game: ppGame, id: "u4-percent-power", GameScene, ResultScene, audio: SFX,
-        instructions: ["Use \u2190/\u2192 or the \u22125%/+5% buttons to shade the target percentage. Enter checks your answer.", "Read the whole amount and the part carefully. Percent means per hundred."],
+        instructions: [
+          "Read the question at the top. The long bar is the whole amount (100%). Each tick mark is 10%.",
+          "Shade the bar: drag the handle, or press \u2190 \u2192 to change it by 5%. Press Enter or LOCK IN to check.",
+          "Some questions have Step 2: pick the number your shading is worth. Use \u2190 \u2192 and Enter, or press 1\u20134.",
+          "Not right? Read the tip and try again. A hint appears after a try. First-try answers with no help earn the most points.",
+        ],
         setLevel(level) { ppLevel = level === 1 ? 1 : 4; ppAuto = false; ppEndless = false; ppGame.scene.getScenes(true).forEach(scene => ppGame.scene.stop(scene.sys.settings.key)); ppGame.scene.start(ppVocabSeen ? "Game" : "Vocab"); }
       });
 
@@ -1372,8 +1586,9 @@
             "aria-label",
             "Percent Power Bar Model Builder math game. A percent problem " +
               "appears at the top; drag the handle, or use the left and right " +
-              "arrow keys or A and D, to shade the bar to the correct percent, " +
-              "then press Lock In, Enter, or Space.",
+              "arrow keys, to shade the bar, then press Enter. Some problems " +
+              "have a second step: choose the number the shading is worth with " +
+              "the arrow keys and Enter, or press 1 to 4.",
           );
           cv.setAttribute("aria-roledescription", "math game");
           if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");

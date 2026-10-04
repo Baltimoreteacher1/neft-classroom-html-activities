@@ -7,7 +7,7 @@
     <title>Coordinate Quest — Integers &amp; Coordinate Plane Game | Neft Teacher</title>
     <meta
       name="description"
-      content="A calm plot-it coordinate-plane game for Grade 6 (6.NOS.6, 6.NOS.9, 6.GR.3): read an ordered pair and place the point on the exact grid cell. Level 1 stays in Quadrant I; Level 2 adds all four quadrants plus reflect-across-an-axis, distance-between-points, and finish-the-rectangle missions. No timer, no fail — misses teach by lighting up the correct spot."
+      content="A calm plot-it coordinate-plane game for Grade 6 (6.NOS.6, 6.NOS.9): read an ordered pair and place the point on the exact grid cell. Level 1 stays in Quadrant I; Level 2 adds all four quadrants plus reflect-across-an-axis, distance-between-points, and finish-the-rectangle missions. No timer, no fail — misses teach by lighting up the correct spot."
     />
     <style>
       * {
@@ -88,6 +88,22 @@
         white-space: nowrap;
         border: 0;
       }
+      /* The studio's toast repeats feedback the canvas already shows and sat
+         on top of the Lock In button at 1366x768. Keep it for screen readers
+         (it is the live region) but take it off screen visually. */
+      body:has(.cabinet-viewport) .studio-notice {
+        position: fixed !important;
+        bottom: auto !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        clip-path: inset(50%) !important;
+        transform: none !important;
+        border: 0 !important;
+      }
     </style>
     <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
     <script>
@@ -133,9 +149,9 @@
       rel="stylesheet"
     />
       <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-    <script src="/assets/game-studio.js?v=20261002" defer></script>
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
     <link rel="stylesheet" href="/math/games/shared/phaser-studio.css?v=20261002">
-    <script src="/math/games/shared/phaser-studio.js?v=20261002"></script>
+    <script src="/math/games/shared/phaser-studio.js?v=20261003"></script>
     <link rel="stylesheet" href="/math/games/shared/cabinet-tools.css?v=20261002">
     <script src="/math/games/shared/cabinet-tools.js?v=20261002" defer></script>
 </head>
@@ -184,7 +200,7 @@
 
     <script>
       // ════════════════════════════════════════════════════════════════════
-      //  COORDINATE QUEST — STAR PLOTTER   ·   6.NOS.6 / 6.NOS.9 / 6.GR.3
+      //  COORDINATE QUEST — STAR PLOTTER   ·   6.NOS.6 / 6.NOS.9
       //  Math-as-mechanic, calm, no timer/reflex. The action IS the math: read
       //  an ordered pair, then MOVE a marker (click a cell, or arrow keys) and
       //  PLACE the star on the EXACT grid intersection. Lock In checks the exact
@@ -200,7 +216,7 @@
       //                            · DISTANCE missions (6.NOS.9): plot the 2nd
       //                              point, then answer |a − b| by counting the
       //                              highlighted unit steps (choice buttons).
-      //                            · RECTANGLE missions (6.GR.3): plot the 4th
+      //                            · RECTANGLE missions (6.NOS.9): plot the 4th
       //                              vertex, then give one side length.
       // ════════════════════════════════════════════════════════════════════
       const W = 820,
@@ -214,7 +230,9 @@
       const GRID_LEFT = GRID_CX - GRID_PX / 2; // 242
       const R1MAX = 8; // Level 1: Quadrant I, 0..8
       const R2MAX = 6; // Level 2: four quadrants, -6..6
-      const WIN_TARGET = 10; // solve this many to win
+      const WIN_TARGET = 10; // every run is 10 rounds; misses never end it
+      // Points shrink as help is used: unaided first try earns the most.
+      const HELP_POINTS = [20, 12, 6, 0];
 
       const C = {
         bg: 0x0a1a2e,
@@ -248,7 +266,12 @@
         return a;
       }
       const RM_QUERY = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
-      const reducedMotion = () => !!(RM_QUERY && RM_QUERY.matches);
+      // Calm motion = the OS setting OR the studio "Calm motion" toggle.
+      const reducedMotion = () =>
+        !!(
+          (RM_QUERY && RM_QUERY.matches) ||
+          (window.GameStudio && window.GameStudio.settings.reducedMotion)
+        );
       // Real minus sign for negatives (matches the rest of the math UI).
       const fmt = (n) => (n < 0 ? "−" + Math.abs(n) : String(n));
       // Parenthesized negatives for |a − b| style strings: |3 − (−4)|.
@@ -365,7 +388,7 @@
               " is how far UP.",
           };
         }
-        // ── Level 2: plot · reflect · distance (6.NOS.9) · rectangle (6.GR.3) ──
+        // ── Level 2: plot · reflect · distance (6.NOS.9) · rectangle (6.NOS.9) ──
         const r = Math.random();
         if (r < 0.28) return makePlotProblem();
         if (r < 0.52) return makeReflectProblem();
@@ -525,7 +548,7 @@
         };
       }
 
-      // 6.GR.3 — three vertices of a rectangle are shown. Part 1: plot the 4th
+      // 6.NOS.9 — three vertices of a rectangle are shown. Part 1: plot the 4th
       // vertex. Part 2: give the length of the side along the new vertex
       // (whole-number coordinates inside the Level-2 grid).
       function makePolygonProblem() {
@@ -686,7 +709,7 @@
           )
           .setOrigin(0.5);
         this.add
-          .text(cx, 292, "Click a cell or use ← → ↑ ↓ · 6.NOS.6 · 6.NOS.9 · 6.GR.3 · Unit 9", {
+          .text(cx, 292, "Unit 7 · Coordinate Plane · 6.NOS.6 · 6.NOS.7 · 6.NOS.9", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "14px",
             color: C.sub,
@@ -716,14 +739,15 @@
             color: "#ffffff",
           })
           .setOrigin(0.5);
-        this.tweens.add({
-          targets: [btn, btnT],
-          scaleX: 1.05,
-          scaleY: 1.05,
-          duration: 800,
-          yoyo: true,
-          repeat: -1,
-        });
+        if (!reducedMotion())
+          this.tweens.add({
+            targets: [btn, btnT],
+            scaleX: 1.05,
+            scaleY: 1.05,
+            duration: 800,
+            yoyo: true,
+            repeat: -1,
+          });
         const start = () => {
           SFX.init();
           SFX.coin();
@@ -894,14 +918,14 @@
         this.makeCard(cx - 196, 1, "LEVEL 1", "Support", 0x1a6fb5, [
           "Quadrant I only",
           "Positive whole numbers",
-          "Axis labels + gridlines",
-          "Hints + guide lines on",
+          "A step coach: across, then up",
+          "Guide lines show your path",
         ]);
         this.makeCard(cx + 196, 2, "LEVEL 2", "Enrichment", 0x0e8a7d, [
           "All four quadrants",
           "Positive & negative numbers",
           "Reflect · distance · rectangle missions",
-          "Fewer hints",
+          "Hints unlock after a miss",
         ]);
 
         // Auto: let the adaptive helper pick the level from recent runs.
@@ -1004,6 +1028,12 @@
         this.target = this.endless ? Infinity : WIN_TARGET;
         this.problem = null;
         this.locked = false;
+        this.round = 0; // rounds finished (solved or shown)
+        this.firstTry = 0;
+        this.hintsUsed = 0;
+        this.misses = 0; // wrong Lock Ins on THIS round (drives the hint tiers)
+        this.tally = {}; // problem kind -> { seen, firstTry }
+        this.nextMode = false;
         this.phase = "plot"; // "plot" (place the marker) or "answer" (choices)
         // Coordinate range + pixel step for the chosen level.
         if (this.chosenLevel === 1) {
@@ -1047,9 +1077,10 @@
           color: C.goodS,
         });
         // Calm, no-fail HUD: the heart line is static (mistakes never drain it).
-        this.livesText = this.add.text(16, 36, "❤ No-fail practice", {
+        this.livesText = this.add.text(16, 36, "No-fail practice", {
           ...hudStyle,
-          color: "#ff8f8f",
+          fontSize: "16px",
+          color: C.sub,
         });
         this.streakText = this.add
           .text(W - 16, 12, "Streak: 0", { ...hudStyle, color: C.goldS })
@@ -1061,7 +1092,7 @@
           })
           .setOrigin(1, 0);
         this.progressText = this.add
-          .text(cx, 12, "0 / " + (this.endless ? "∞" : this.target), {
+          .text(cx, 12, "", {
             ...hudStyle,
             color: C.ink,
           })
@@ -1076,17 +1107,15 @@
             .setInteractive({ useHandCursor: true });
           finishBtn.on("pointerover", () => finishBtn.setScale(1.05));
           finishBtn.on("pointerout", () => finishBtn.setScale(1));
-          finishBtn.on("pointerdown", () => {
-            if (this.locked) return;
-            this.endGame();
-          });
+          finishBtn.on("pointerdown", () => this.endGame());
         }
 
         // ── Problem banner ──
         this.bannerLabel = this.add
           .text(cx, 60, "", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "14px",
+            fontSize: "15px",
+            fontStyle: "bold",
             color: C.sub,
           })
           .setOrigin(0.5);
@@ -1114,6 +1143,8 @@
 
         // Guide lines (Level-1 scaffold): marker → each axis.
         this.guideG = this.add.graphics().setDepth(8);
+        // Hint-2 drawings (gold dashed path lines), cleared every round.
+        this.helpG = this.add.graphics().setDepth(7);
 
         // Highlighted counting segment + rectangle outline (distance/rectangle
         // missions, part 2). Labels live in segLabels so they can be cleared.
@@ -1136,9 +1167,11 @@
             this.add
               .text(0, 0, "", {
                 fontFamily: "Segoe UI, sans-serif",
-                fontSize: "14px",
+                fontSize: "15px",
                 fontStyle: "bold",
                 color: C.accentS,
+                backgroundColor: "#0a1a2ecc",
+                padding: { x: 3, y: 1 },
               })
               .setOrigin(0.5)
               .setDepth(12)
@@ -1159,9 +1192,9 @@
 
         // ── Feedback line ──
         this.feedback = this.add
-          .text(cx, 500, "", {
+          .text(cx, 504, "", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
+            fontSize: "17px",
             fontStyle: "bold",
             color: C.goldS,
             stroke: "#061018",
@@ -1187,15 +1220,17 @@
           .setOrigin(0.5);
         this.lockBtn.on("pointerover", () => this.lockBtn.setFillStyle(0x37a667));
         this.lockBtn.on("pointerout", () => this.lockBtn.setFillStyle(0x2f8f5a));
-        this.lockBtn.on("pointerdown", () => this.lockIn());
+        this.lockBtn.on("pointerdown", () => (this.nextMode ? this.pressNext() : this.lockIn()));
 
-        // ── Hint line ──
+        // ── Hint / step-coach line (mirrored to the console prompt) ──
         this.hintText = this.add
-          .text(cx, 576, "", {
+          .text(cx, 578, "", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "13px",
+            fontSize: "16px",
+            fontStyle: "bold",
             color: C.sub,
             align: "center",
+            wordWrap: { width: W - 40 },
           })
           .setOrigin(0.5);
 
@@ -1215,7 +1250,7 @@
         // ── Input ──
         // Click a grid cell to place the marker (recoverable; Lock In confirms).
         this.input.on("pointerdown", (p) => {
-          if (this.locked) return;
+          if (this.locked || this.nextMode) return;
           if (
             p.x >= GRID_LEFT - 24 &&
             p.x <= GRID_LEFT + GRID_PX + 24 &&
@@ -1249,7 +1284,7 @@
 
         this.events.once("shutdown", () => JUICE.audio.musicStop());
         JUICE.audio.musicStart();
-        this.cameras.main.fadeIn(400);
+        this.cameras.main.fadeIn(this.reduceMotion ? 0 : 400);
         this.newProblem();
       };
 
@@ -1287,7 +1322,8 @@
         const stepLbl = this.chosenLevel === 1 ? 1 : 2;
         const lblStyle = {
           fontFamily: "Segoe UI, sans-serif",
-          fontSize: "12px",
+          fontSize: "14px",
+          fontStyle: "bold",
           color: C.sub,
         };
         for (let gx = R.xmin; gx <= R.xmax; gx++) {
@@ -1345,6 +1381,7 @@
         this.markerDot.setPosition(px, py);
         this.readout.setText("Marker:  (" + fmt(this.mx) + ", " + fmt(this.my) + ")");
         this.drawGuides();
+        this.updateCoach();
       };
 
       GameScene.prototype.drawGuides = function () {
@@ -1362,8 +1399,10 @@
       GameScene.prototype.newProblem = function () {
         this.locked = false;
         this.phase = "plot";
-        this.missedOnce = false; // one free retry before the answer is shown
+        this.misses = 0;
         this.answerMissedOnce = false;
+        this.helpG.clear();
+        this.setNextMode(false);
         this.answerDone = false;
         this.problem = makeProblem(this.chosenLevel);
         const p = this.problem;
@@ -1371,7 +1410,7 @@
           plot: "Plot a point",
           reflect: "Reflect",
           distance: "Distance mission (6.NOS.9)",
-          polygon: "Rectangle mission (6.GR.3)",
+          polygon: "Rectangle mission (6.NOS.9)",
         };
         this.bannerLabel.setText(KIND_LABEL[p.kind] || "Plot a point");
         this.bannerText.setText(p.prompt);
@@ -1408,11 +1447,13 @@
         if (showHint && p.hint) {
           this.hintText.setText(p.hint);
         } else {
-          this.hintText.setText("Click a cell or use the arrow keys, then Lock In.");
+          this.hintText.setText("Click a cell or use the arrow keys, then Lock In.").setColor(C.sub);
         }
+        if (showHint && p.hint) this.hintText.setColor(C.sub);
 
         // Reset marker to the origin each round.
         this.setMarker(0, 0);
+        this.updateHUD();
         const srGivens =
           p.kind === "polygon"
             ? " Corners shown: " +
@@ -1428,6 +1469,7 @@
       };
 
       GameScene.prototype.lockIn = function () {
+        if (this.nextMode) return this.pressNext();
         if (this.locked || !this.problem || this.phase !== "plot") return;
         this.locked = true;
         const p = this.problem;
@@ -1436,79 +1478,217 @@
         if (correct) {
           SFX.good();
           JUICE.audio.correct(this.streak);
+          this.helpG.clear();
           this.markerRing.setStrokeStyle(3, C.good);
           this.markerDot.setFillStyle(C.good);
           const px = this.sx(this.mx),
             py = this.sy(this.my);
-          this.burst.setPosition(px, py);
-          this.burst.explode(16);
-          JUICE.burst(this, px, py, [0x4fd18b, 0x5ad1ff, 0xffffff], 16);
+          if (!this.reduceMotion) {
+            this.burst.setPosition(px, py);
+            this.burst.explode(16);
+            JUICE.burst(this, px, py, [0x4fd18b, 0x5ad1ff, 0xffffff], 16);
+          }
           if (p.answer) {
             // Two-part mission: the point is placed — now ask for the length.
             this.score += 10;
             JUICE.floatText(this, px, py - 28, "+10", C.goodS, 26);
-            this.feedback.setText("Placed! " + p.why).setAlpha(1);
+            this.feedback.setText("Placed! " + p.why).setColor(C.goodS).setAlpha(1);
             this.updateHUD();
             srSay("Correct placement. " + p.why);
             this.time.delayedCall(700, () => this.beginAnswerPhase());
             return;
           }
-          this.attempts++;
           this.solved++;
-          this.streak++;
-          const bonus = Math.min(this.streak, 5) * 5;
-          const gained = 20 + bonus;
+          const first = this.misses === 0;
+          let gained = HELP_POINTS[Math.min(this.misses, 3)];
+          if (first) {
+            this.streak++;
+            gained += Math.min(this.streak, 5) * 5;
+          }
           this.score += gained;
-          JUICE.shake(this, 0.004 + Math.min(this.streak, 5) * 0.001);
+          if (!this.reduceMotion) JUICE.shake(this, 0.004 + Math.min(this.streak, 5) * 0.001);
           JUICE.floatText(this, px, py - 28, "+" + gained, C.goodS, 30);
-          const xp = 8 + Math.min(this.streak, 5) * 2;
-          JUICE.award(xp, "u9-coordinate-quest");
-          if (this.streak >= 2) JUICE.confetti(this, 1);
-          this.feedback.setText("Correct! " + p.why).setAlpha(1);
-          srSay("Correct. " + p.why);
-          this.afterAttempt();
-        } else if (!this.missedOnce) {
-          // First miss on this problem: give a calm retry — the answer is NOT
-          // revealed, so the student can rethink and try again.
-          this.missedOnce = true;
-          this.locked = false;
-          this.streak = 0;
-          SFX.bad();
-          JUICE.audio.wrong();
-          const tip = p.hint || "Check the sign and size of each coordinate, then Lock In.";
-          this.feedback.setText("Not quite — try again. " + tip).setAlpha(1);
-          this.updateHUD();
-          srSay("Not quite. Try again. " + tip);
-        } else {
-          this.attempts++;
-          SFX.bad();
-          JUICE.audio.wrong();
-          this.streak = 0;
-          this.markerRing.setStrokeStyle(3, C.bad);
-          this.markerDot.setFillStyle(C.bad);
-          this.feedback.setText("Not quite — " + p.why).setAlpha(1);
-          this.updateHUD();
-          srSay("Not quite. " + p.why);
-          // Teach: light up the correct cell, glide the marker to it, continue.
-          const tx = this.sx(p.tx),
-            ty = this.sy(p.ty);
-          this.ghost.setPosition(tx, ty).setVisible(true);
-          this.tweens.add({
-            targets: [this.markerRing, this.markerDot],
-            x: tx,
-            y: ty,
-            duration: this.reduceMotion ? 0 : 600,
-            onComplete: () => {
-              this.guideG.clear();
-              if (p.answer) {
-                // Still ask the length question — the points are now visible.
-                this.time.delayedCall(700, () => this.beginAnswerPhase());
-              } else {
-                this.afterAttempt();
-              }
-            },
-          });
+          JUICE.award(8 + Math.min(this.streak, 5) * 2, "u9-coordinate-quest");
+          if (this.streak >= 2 && !this.reduceMotion) JUICE.confetti(this, 1);
+          const msg = (first ? "Correct on the first try! " : "Correct! You used the hint well. ") + p.why;
+          this.feedback.setText(msg).setColor(C.goodS).setAlpha(1);
+          srSay(msg);
+          this.afterAttempt(true);
+          return;
         }
+        SFX.bad();
+        JUICE.audio.wrong();
+        this.streak = 0;
+        this.misses++;
+        this.hintsUsed++;
+        if (this.misses < 3) {
+          // Hint 1 = name the mix-up + the method (no answer).
+          // Hint 2 = a concrete step drawn on the grid (still not placed).
+          const tip = this.misses === 1 ? this.tier1() : this.tier2();
+          const label = this.misses === 1 ? "Hint 1 of 2: " : "Hint 2 of 2: ";
+          this.locked = false;
+          this.feedback.setText(label + tip).setColor(C.goldS).setAlpha(1);
+          this.updateHUD();
+          srSay("Not quite. " + label + tip + " Move the marker, then lock in again.");
+          return;
+        }
+        // Third miss: teach — light up the correct cell, glide the marker to
+        // it, explain, and continue. The round still counts as finished.
+        this.helpG.clear();
+        this.markerRing.setStrokeStyle(3, C.bad);
+        this.markerDot.setFillStyle(C.bad);
+        const msg = "Here is the spot: " + p.why;
+        this.feedback.setText(msg).setColor(C.goldS).setAlpha(1);
+        this.updateHUD();
+        srSay(msg);
+        const tx = this.sx(p.tx),
+          ty = this.sy(p.ty);
+        this.ghost.setPosition(tx, ty).setVisible(true);
+        this.tweens.add({
+          targets: [this.markerRing, this.markerDot],
+          x: tx,
+          y: ty,
+          duration: this.reduceMotion ? 0 : 600,
+          onComplete: () => {
+            this.guideG.clear();
+            if (p.answer) {
+              // Still ask the length question — the points are now visible.
+              this.time.delayedCall(700, () => this.beginAnswerPhase());
+            } else {
+              this.afterAttempt(false);
+            }
+          },
+        });
+      };
+
+      // Hint 1: spot the likely mix-up from WHERE the marker is, and name the
+      // method. Never states the target point.
+      GameScene.prototype.tier1 = function () {
+        const p = this.problem;
+        const mx = this.mx,
+          my = this.my,
+          tx = p.tx,
+          ty = p.ty;
+        if (mx === ty && my === tx && tx !== ty)
+          return "You swapped x and y. The FIRST number (x) moves left or right. The SECOND number (y) moves up or down.";
+        if (p.kind === "reflect" && p.given) {
+          const g = p.given;
+          if (mx === g.x && my === g.y)
+            return "That is P itself. The image is P's mirror picture on the OTHER side of the axis.";
+          if (mx === -g.x && my === -g.y)
+            return "You flipped BOTH signs. A reflection across one axis flips only ONE sign.";
+          const acrossX = tx === g.x;
+          if (acrossX && mx === -g.x && my === g.y)
+            return "You reflected across the y-axis. Across the x-axis, x stays the same and only y changes sign.";
+          if (!acrossX && mx === g.x && my === -g.y)
+            return "You reflected across the x-axis. Across the y-axis, y stays the same and only x changes sign.";
+        }
+        if (mx === -tx && my === ty && tx !== 0)
+          return "Check the sign of x. Negative x goes LEFT of 0. Positive x goes RIGHT.";
+        if (my === -ty && mx === tx && ty !== 0)
+          return "Check the sign of y. Negative y goes DOWN from 0. Positive y goes UP.";
+        if (mx === -tx && my === -ty)
+          return "Both signs are flipped. Negative x goes LEFT, negative y goes DOWN.";
+        if (Math.abs(mx - tx) + Math.abs(my - ty) === 1)
+          return "So close: you are 1 unit away. Count the grid lines again, starting from 0.";
+        if (p.kind === "polygon")
+          return "Opposite sides of a rectangle line up. The missing corner shares its x with one corner and its y with another.";
+        if (p.kind === "distance")
+          return p.hint || "B shares one coordinate with A. Keep that one and change the other.";
+        return "Start at the origin (0, 0). Move across for x first, then up or down for y.";
+      };
+
+      // Hint 2: draw one concrete step on the grid with the student's goal.
+      GameScene.prototype.tier2 = function () {
+        const p = this.problem;
+        const g = this.helpG;
+        g.clear();
+        g.lineStyle(3, C.gold, 0.75);
+        const dashV = (gx, y0, y1) => {
+          const a = Math.min(this.sy(y0), this.sy(y1)),
+            b = Math.max(this.sy(y0), this.sy(y1));
+          for (let y = a; y < b; y += 14) g.lineBetween(this.sx(gx), y, this.sx(gx), Math.min(y + 7, b));
+        };
+        const dashH = (gy, x0, x1) => {
+          const a = Math.min(this.sx(x0), this.sx(x1)),
+            b = Math.max(this.sx(x0), this.sx(x1));
+          for (let x = a; x < b; x += 14) g.lineBetween(x, this.sy(gy), Math.min(x + 7, b), this.sy(gy));
+        };
+        const R = this.range;
+        if (p.kind === "polygon") {
+          // Lines through the two corners that share the missing corner's x / y.
+          const sameX = p.givens.find((c) => c.x === p.tx);
+          const sameY = p.givens.find((c) => c.y === p.ty);
+          if (sameX) dashV(sameX.x, R.ymin, R.ymax);
+          if (sameY) dashH(sameY.y, R.xmin, R.xmax);
+          return "Follow the two gold lines: one goes straight up and down through a corner, one goes straight across through another. The missing corner is where they cross.";
+        }
+        if (p.kind === "distance") {
+          const A = p.given;
+          if (A.y === p.ty) {
+            dashH(A.y, R.xmin, R.xmax);
+            return "B is on the gold line across from A (y = " + fmt(A.y) + "). Slide along it until x = " + fmt(p.tx) + ".";
+          }
+          dashV(A.x, R.ymin, R.ymax);
+          return "B is on the gold line through A (x = " + fmt(A.x) + "). Slide up or down until y = " + fmt(p.ty) + ".";
+        }
+        if (p.kind === "reflect") {
+          const P = p.given;
+          if (p.tx === P.x) {
+            dashV(P.x, R.ymin, R.ymax);
+            return "Stay on the gold line (x = " + fmt(P.x) + "). P is " + Math.abs(P.y) + " units " + (P.y > 0 ? "above" : "below") + " the x-axis, so its image is " + Math.abs(P.y) + " units " + (P.y > 0 ? "below" : "above") + " it.";
+          }
+          dashH(P.y, R.xmin, R.xmax);
+          return "Stay on the gold line (y = " + fmt(P.y) + "). P is " + Math.abs(P.x) + " units " + (P.x > 0 ? "right of" : "left of") + " the y-axis, so its image is " + Math.abs(P.x) + " units " + (P.x > 0 ? "left of" : "right of") + " it.";
+        }
+        // Plain plot: mark x on the x-axis and draw the path up/down from it.
+        g.fillStyle(C.gold, 1).fillCircle(this.sx(p.tx), this.sy(0), 7);
+        dashV(p.tx, 0, p.ty > 0 ? R.ymax : R.ymin);
+        return "Step 1: x = " + fmt(p.tx) + " is marked on the x-axis. Step 2: from there, go " + (p.ty > 0 ? "UP " : "DOWN ") + Math.abs(p.ty) + " along the gold line for y.";
+      };
+
+      // Level 1 live step coach: names the next move from where the marker is.
+      GameScene.prototype.updateCoach = function () {
+        if (this.chosenLevel !== 1 || !this.problem || this.phase !== "plot" || this.nextMode) return;
+        const p = this.problem;
+        let t;
+        if (this.mx !== p.tx)
+          t =
+            "Step 1: move " +
+            (this.mx < p.tx ? "RIGHT" : "LEFT") +
+            " along the x-axis to x = " +
+            p.tx +
+            "  (now x = " +
+            this.mx +
+            ")";
+        else if (this.my !== p.ty)
+          t =
+            "Step 2: x = " +
+            p.tx +
+            " ✓  Now move " +
+            (this.my < p.ty ? "UP" : "DOWN") +
+            " to y = " +
+            p.ty +
+            "  (now y = " +
+            this.my +
+            ")";
+        else t = "Step 3: you are at (" + p.tx + ", " + p.ty + ") ✓  Press LOCK IN.";
+        this.hintText.setText(t).setColor(this.mx === p.tx && this.my === p.ty ? C.goodS : "#ffe08a");
+      };
+
+      // NEXT ROUND mode: the Lock In button becomes Next so the way forward is
+      // on screen. It presses the shared console's Continue button so the
+      // studio's pacing (feedback stays until the student continues) holds.
+      GameScene.prototype.setNextMode = function (on) {
+        this.nextMode = on;
+        this.lockBtn.setVisible(true).setFillStyle(on ? 0x2563a8 : 0x2f8f5a);
+        this.lockLabel.setVisible(true).setText(on ? "NEXT ROUND ▶" : "LOCK IN ✓");
+        if (on) this.hintText.setText("Read the feedback, then press NEXT ROUND (or Enter).").setColor(C.sub);
+      };
+      GameScene.prototype.pressNext = function () {
+        const b = document.querySelector(".cabinet-next");
+        if (b && !b.hidden && !b.disabled) b.click();
+        else if (!b && this.pendingNext) this.pendingNext();
       };
 
       // ── Part 2 of distance / rectangle missions: answer the length ──
@@ -1524,7 +1704,7 @@
         this.bannerLabel.setText(
           p.kind === "distance"
             ? "Distance mission (6.NOS.9) · Part 2"
-            : "Rectangle mission (6.GR.3) · Part 2",
+            : "Rectangle mission (6.NOS.9) · Part 2",
         );
         this.bannerText.setText(p.answer.question);
         this.hintText.setText(
@@ -1559,7 +1739,7 @@
             this.add
               .text(px + (dy !== 0 ? 14 : 0), py - (dx !== 0 ? 14 : 0), String(i), {
                 fontFamily: "Segoe UI, sans-serif",
-                fontSize: "12px",
+                fontSize: "14px",
                 fontStyle: "bold",
                 color: C.goldS,
               })
@@ -1614,7 +1794,7 @@
           const keyTag = this.add
             .text(bx - bw / 2 + 10, 522, String(i + 1), {
               fontFamily: "Segoe UI, sans-serif",
-              fontSize: "11px",
+              fontSize: "13px",
               color: C.sub,
             })
             .setOrigin(0.5);
@@ -1624,6 +1804,19 @@
           this.choiceObjs.push(btn, txt, keyTag);
           this.choiceRects.push(btn);
         });
+      };
+
+      // Misconception-aware nudge for a wrong length pick (no answer given).
+      GameScene.prototype.answerHint = function (picked) {
+        const ans = this.problem.answer;
+        const seg = this.problem.segment;
+        const a = seg.x1 === seg.x2 ? seg.y1 : seg.x1;
+        const b = seg.x1 === seg.x2 ? seg.y2 : seg.x2;
+        if (a * b < 0 && picked === Math.abs(Math.abs(a) - Math.abs(b)))
+          return "Not quite. The points are on OPPOSITE sides of 0, so ADD their distances to the axis. Count the gold dots, then pick again.";
+        if (Math.abs(picked - ans.correct) === 1)
+          return "Not quite. Off by one: count the SPACES between points (the numbered gold dots), not the grid lines.";
+        return "Not quite. Count the numbered gold dots along the line, then pick again.";
       };
 
       GameScene.prototype.hideChoices = function () {
@@ -1642,51 +1835,76 @@
           this.answerDone = true;
           SFX.good();
           JUICE.audio.correct(this.streak);
-          this.attempts++;
           this.solved++;
-          this.streak++;
-          const gained = 20 + Math.min(this.streak, 5) * 5;
+          const first = this.misses === 0 && !this.answerMissedOnce;
+          let gained = HELP_POINTS[Math.min(this.misses + (this.answerMissedOnce ? 1 : 0), 3)];
+          if (first) {
+            this.streak++;
+            gained += Math.min(this.streak, 5) * 5;
+          }
           this.score += gained;
           this.choiceRects[i].setFillStyle(0x2f8f5a);
           JUICE.floatText(this, W / 2, 470, "+" + gained, C.goodS, 30);
           JUICE.award(8 + Math.min(this.streak, 5) * 2, "u9-coordinate-quest");
-          if (this.streak >= 2) JUICE.confetti(this, 1);
-          this.feedback.setText("Correct! " + ans.why).setAlpha(1);
+          if (this.streak >= 2 && !this.reduceMotion) JUICE.confetti(this, 1);
+          this.feedback.setText("Correct! " + ans.why).setColor(C.goodS).setAlpha(1);
           srSay("Correct. " + ans.why);
-          this.afterAttempt();
+          this.afterAttempt(true);
         } else if (!this.answerMissedOnce) {
           // Calm retry: no reveal, just a nudge back to counting.
           this.answerMissedOnce = true;
+          this.hintsUsed++;
           this.streak = 0;
           SFX.bad();
           JUICE.audio.wrong();
           this.feedback
-            .setText("Not quite — count the dots along the gold line, then pick again.")
+            .setText(this.answerHint(this.choiceVals[i]))
+            .setColor(C.goldS)
             .setAlpha(1);
           this.updateHUD();
           srSay("Not quite. Count the unit steps along the highlighted line, then pick again.");
         } else {
           this.answerDone = true;
-          this.attempts++;
           this.streak = 0;
           SFX.bad();
           JUICE.audio.wrong();
           const ci = this.choiceVals.indexOf(ans.correct);
           if (ci >= 0) this.choiceRects[ci].setFillStyle(0x2f8f5a);
-          this.feedback.setText("The answer is " + ans.correct + ". " + ans.why).setAlpha(1);
+          this.feedback
+            .setText("The answer is " + ans.correct + ". " + ans.why)
+            .setColor(C.goldS)
+            .setAlpha(1);
           this.updateHUD();
           srSay("The answer is " + ans.correct + ". " + ans.why);
-          this.afterAttempt();
+          this.afterAttempt(false);
         }
       };
 
-      GameScene.prototype.afterAttempt = function () {
-        // No-fail practice: mistakes teach; they never end the game.
+      GameScene.prototype.afterAttempt = function (solved) {
+        // No-fail practice: mistakes teach; they never end the game. Every
+        // problem is one round; 10 rounds make a run.
+        const kind = this.problem.kind;
+        const row = this.tally[kind] || (this.tally[kind] = { seen: 0, firstTry: 0 });
+        row.seen++;
+        if (solved && this.misses === 0 && !this.answerMissedOnce) {
+          row.firstTry++;
+          this.firstTry++;
+        }
+        this.round++;
+        this.attempts = this.round;
         this.updateHUD();
-        if (this.solved >= this.target) {
+        if (this.round >= this.target) {
           this.endGame();
           return;
         }
+        // The Next button takes the Lock In slot (choice buttons sit there in
+        // a mission's Part 2; the feedback line already names the answer).
+        this.hideChoices();
+        this.setNextMode(true);
+        this.pendingNext = () => {
+          this.feedback.setAlpha(0);
+          this.newProblem();
+        };
         this.studioNextRound(() => {
           this.feedback.setAlpha(0);
           this.newProblem();
@@ -1697,21 +1915,30 @@
         this.scoreText.setText("Score: " + this.score);
         this.streakText.setText("Streak: " + this.streak);
         this.levelText.setText("Level " + this.chosenLevel);
-        this.progressText.setText(this.solved + " / " + (this.endless ? "∞" : this.target));
+        const shown = this.endless ? this.round + 1 : Math.min(this.round + 1, this.target);
+        this.progressText.setText(
+          this.endless
+            ? "Round " + shown + " · Solved " + this.solved
+            : "Round " + shown + " of " + this.target + " · Solved " + this.solved,
+        );
       };
 
       GameScene.prototype.endGame = function () {
         this.locked = true;
-        JUICE.confetti(this, 2);
+        if (!this.reduceMotion) JUICE.confetti(this, 2);
         JUICE.award(40, "u9-coordinate-quest-complete");
         this.time.delayedCall(500, () => {
           this.scene.start("Result", {
             score: this.score,
             solved: this.solved,
-            target: this.endless ? this.solved : this.target,
+            rounds: this.round,
+            target: this.endless ? Math.max(this.round, 1) : this.target,
+            firstTry: this.firstTry,
+            hintsUsed: this.hintsUsed,
+            tally: this.tally,
             level: this.chosenLevel,
             auto: this.autoMode,
-            accuracy: this.attempts ? this.solved / this.attempts : 1,
+            accuracy: this.round ? this.firstTry / this.round : 1,
           });
         });
       };
@@ -1729,69 +1956,103 @@
         const d = this.data2;
         const cx = W / 2;
         this.add.rectangle(cx, H / 2, W, H, C.bg);
+        const rounds = Math.max(d.rounds || 0, 1);
+        const rate = d.solved / rounds;
 
         // Adaptive: log the run so Auto can pick the next level.
         if (d.auto && window.NTAdaptive)
           window.NTAdaptive.recordRun("u9-coordinate-quest", {
-            won: d.solved >= d.target,
+            won: rate >= 0.7,
             accuracy: typeof d.accuracy === "number" ? d.accuracy : 1,
             min: 1,
             max: 2,
           });
 
-        const stars = d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
+        const stars = rate >= 0.9 ? 3 : rate >= 0.6 ? 2 : 1;
 
-        let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
-        if (d.score > hs) {
+        let hs = 0;
+        try {
+          hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10) || 0;
+        } catch (e) {}
+        const newBest = d.score > hs;
+        if (newBest) {
           hs = d.score;
           try {
             localStorage.setItem(LS_KEY, String(hs));
           } catch (e) {}
         }
+        const txt = (y, s, size, color, bold) =>
+          this.add
+            .text(cx, y, s, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: size + "px",
+              fontStyle: bold ? "bold" : "normal",
+              color: color,
+              align: "center",
+              wordWrap: { width: W - 100 },
+            })
+            .setOrigin(0.5);
 
         this.add
-          .text(cx, 108, "QUEST COMPLETE!", {
+          .text(cx, 64, rate >= 0.8 ? "QUEST COMPLETE!" : "RUN COMPLETE!", {
             fontFamily: "Impact, sans-serif",
-            fontSize: "48px",
+            fontSize: "46px",
             color: C.goodS,
             stroke: "#061018",
             strokeThickness: 5,
           })
           .setOrigin(0.5);
-
-        this.add
-          .text(cx, 182, "★".repeat(stars) + "☆".repeat(3 - stars), {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "48px",
-            color: C.goldS,
-          })
-          .setOrigin(0.5);
-
-        this.add
-          .text(cx, 252, "Score: " + d.score, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "30px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
-          .setOrigin(0.5);
-        this.add
-          .text(cx, 292, "Plotted " + d.solved + " of " + d.target + " points · Level " + d.level, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "18px",
-            color: C.ink,
-          })
-          .setOrigin(0.5);
-        this.add
-          .text(cx, 322, "High Score: " + hs, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
-            color: C.goldS,
-          })
-          .setOrigin(0.5);
+        txt(122, "★".repeat(stars) + "☆".repeat(3 - stars), 44, C.goldS, false);
+        txt(176, "Score " + d.score + (newBest ? "  ·  NEW BEST!" : "  ·  Best " + hs), 28, "#ffffff", true);
+        txt(
+          216,
+          "Solved " +
+            d.solved +
+            " of " +
+            rounds +
+            " · " +
+            d.firstTry +
+            " on the first try · " +
+            d.hintsUsed +
+            (d.hintsUsed === 1 ? " hint" : " hints") +
+            " used · Level " +
+            d.level,
+          18,
+          C.ink,
+          false,
+        );
+        const names = { plot: "Plot points", reflect: "Reflect", distance: "Distance", polygon: "Rectangles" };
+        const tally = d.tally || {};
+        const keys = Object.keys(tally);
+        txt(
+          252,
+          "Skills practiced: " +
+            (keys.length
+              ? keys.map((k) => names[k] + " " + tally[k].firstTry + "/" + tally[k].seen + " first try").join("  ·  ")
+              : "none yet"),
+          17,
+          C.sub,
+          false,
+        );
+        const tips = {
+          plot: "x first (left/right), then y (up/down). Watch the signs.",
+          reflect: "across the x-axis flip y; across the y-axis flip x.",
+          distance: "count unit steps, or add the two distances to the axis.",
+          polygon: "the missing corner shares an x with one corner and a y with another.",
+        };
+        let weakest = null;
+        keys.forEach((k) => {
+          const r = tally[k].firstTry / tally[k].seen;
+          if (weakest === null || r < weakest.r) weakest = { k, r };
+        });
+        let next;
+        if (weakest && weakest.r < 0.6) next = "Practice next: " + names[weakest.k] + ": " + tips[weakest.k];
+        else if (d.level === 1) next = "Practice next: you are ready for Level 2 (all four quadrants).";
+        else next = "Practice next: keep going in Level 2 and aim for 10 on the first try.";
+        txt(300, next, 18, "#ffe08a", true);
 
         SFX.win();
-        JUICE.audio.fanfare();
+        if (!reducedMotion()) JUICE.audio.fanfare();
 
         // Score reporting goes through NeftScore (attempt() at each judge
         // above), which loads the bridge itself and beacons on pagehide —
@@ -1801,46 +2062,49 @@
         try {
           window.NeftScore && NeftScore.finish();
         } catch (e) {}
-        srSay("Quest complete! Final score " + d.score + ", " + stars + " stars.");
+        srSay(
+          "Run complete. Score " +
+            d.score +
+            ". Solved " +
+            d.solved +
+            " of " +
+            rounds +
+            ", " +
+            d.firstTry +
+            " on the first try. " +
+            next,
+        );
 
-        const btn = this.add
-          .rectangle(cx, 398, 240, 54, 0x2f8f5a)
-          .setStrokeStyle(3, 0xffffff, 0.8)
-          .setInteractive({ useHandCursor: true });
-        this.add
-          .text(cx, 398, "PLAY AGAIN 🔁", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "20px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
-          .setOrigin(0.5);
+        const mkBtn = (y, label, fill, hover, cb) => {
+          const b = this.add
+            .rectangle(cx, y, 300, 54, fill)
+            .setStrokeStyle(2, 0xffffff, 0.7)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(cx, y, label, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "20px",
+              fontStyle: "bold",
+              color: "#ffffff",
+            })
+            .setOrigin(0.5);
+          b.on("pointerover", () => b.setFillStyle(hover));
+          b.on("pointerout", () => b.setFillStyle(fill));
+          b.on("pointerdown", cb);
+        };
         const again = () => this.scene.start("Level");
-        btn.on("pointerover", () => btn.setFillStyle(0x37a667));
-        btn.on("pointerout", () => btn.setFillStyle(0x2f8f5a));
-        btn.on("pointerdown", again);
-        this.input.keyboard.on("keydown-SPACE", again);
-        this.input.keyboard.on("keydown-ENTER", again);
-
+        mkBtn(390, "PLAY AGAIN · new points", 0x2f8f5a, 0x37a667, again);
         // Endless: keep practicing at the same level without leaving.
-        const keepBtn = this.add
-          .text(cx, 456, "♾️ Keep Playing", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "20px",
-            fontStyle: "bold",
-            color: C.accentS,
-          })
-          .setOrigin(0.5)
-          .setInteractive({ useHandCursor: true });
         const keepPlaying = () =>
           this.scene.start("Game", {
             level: d.level,
             endless: true,
             auto: !!d.auto,
           });
-        keepBtn.on("pointerover", () => keepBtn.setScale(1.05));
-        keepBtn.on("pointerout", () => keepBtn.setScale(1));
-        keepBtn.on("pointerdown", keepPlaying);
+        mkBtn(458, "♾️ Keep playing this level", 0x2563a8, 0x2f74c2, keepPlaying);
+        txt(510, "Enter = play again", 15, C.sub, false);
+        this.input.keyboard.on("keydown-SPACE", again);
+        this.input.keyboard.on("keydown-ENTER", again);
       };
 
       // ── Launch ──
@@ -1854,10 +2118,18 @@
         scene: [BootScene, TitleScene, VocabScene, LevelScene, GameScene, ResultScene],
       };
       const cqGame = new Phaser.Game(config);
+      window.cqGame = cqGame; // stable handle for automated QA harnesses
       // Native math controls now have a readable, touch-accessible console.
       window.PhaserStudio.mount({
         game: cqGame, id: "u9-coordinate-quest", GameScene, ResultScene, audio: SFX,
-        instructions: ["Plot the ordered pair: move horizontally for x and vertically for y. Use arrow keys, then Enter to lock the point.", "For distance missions, choose answer 1\u20134 after plotting. Count unit steps; distance is nonnegative."],
+        instructions: [
+          "Goal: put the star on the exact point, then press Lock In. 10 rounds, no timer.",
+          "Click a spot on the grid, or move the marker with the arrow keys. Enter = Lock In.",
+          "An ordered pair is (x, y). Go across for x first (right is positive, left is negative), then up or down for y.",
+          "Level 1: the step coach tells you the next move. Level 2: all four quadrants, plus reflect, distance, and rectangle missions.",
+          "Missions have two parts: plot the point, then pick the length with buttons 1\u20134. Count the numbered gold dots.",
+          "A miss unlocks Hint 1 (what went wrong), then Hint 2 (a gold line on the grid). First-try answers earn the most points.",
+        ],
         setLevel(level) { lastLevel = level; cqGame.scene.getScenes(true).forEach(scene => cqGame.scene.stop(scene.sys.settings.key)); cqGame.scene.start(vocabSeen ? "Game" : "Vocab", {level}); }
       });
 
@@ -1876,6 +2148,15 @@
               "question: tap a number button or press 1, 2, 3, or 4 to answer.",
           );
           cv.setAttribute("aria-roledescription", "math game");
+          // Arrow keys and Space drive the game; stop them from ALSO scrolling
+          // the page (it is taller than a Chromebook screen). Registered after
+          // Phaser's own window listener, so the game still gets every key;
+          // keys typed into buttons, inputs and dialogs are left alone.
+          window.addEventListener("keydown", function (e) {
+            if (e.target !== cv && e.target !== document.body) return;
+            if ([" ", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(e.key) > -1)
+              e.preventDefault();
+          });
           if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
           cv.addEventListener("pointerdown", function () {
             try {
@@ -1911,7 +2192,7 @@
         if (window.NeftHintLadder)
           window.NeftHintLadder.watch({
             sourceSelector: "#cq-sr",
-            standard: "6.NOS.6 / 6.NOS.9 / 6.GR.3",
+            standard: "6.NOS.6 / 6.NOS.9",
             staticHints: [
               "Which number is the x (across) and which is the y (up/down)? Check the signs too.",
               "Move along the x-axis first, then up or down for y; negatives go left/down.",

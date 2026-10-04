@@ -364,6 +364,16 @@
   @keyframes shake{25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-2px)}}
   .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
+  /* Comfortable tap targets on touch screens */
+  @media (pointer:coarse){
+    .speak,.srow-help{min-width:44px;min-height:44px}
+    .tab-btn,.btn,.choice{min-height:44px}
+  }
+  /* Calm motion: honour the device setting (the studio "Calm motion" switch is read in JS) */
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+    .confetti{display:none!important}
+  }
   @media (max-width:900px){
     .hero{grid-template-columns:1fr;padding:28px}.formula-card{max-width:520px;transform:none}
     .vocab{grid-template-columns:repeat(2,minmax(0,1fr))}.progress-card{grid-template-columns:1fr}
@@ -374,7 +384,7 @@
     .wrap{padding:16px 12px 40px}.top-inner{padding:9px 12px;gap:9px}.brand{min-width:0;flex:1}.brand small{display:none}.brand-mark{width:40px;height:40px;border-radius:12px}.brand h1{font-size:.96rem}
     .student-box{order:3;width:100%}.student-box input{flex:1;width:auto}.hud{margin-left:auto}.pill{font-size:.75rem;padding:6px 9px}
     .tabs{top:106px;margin-top:12px;border-radius:13px;padding:5px}.tab-btn{padding:9px 11px;font-size:.82rem}
-    .hero{border-radius:20px;padding:24px 20px}.hero h2{font-size:2rem}.hero p{font-size:.95rem}.hero-chips{margin-top:14px}
+    .hero{border-radius:20px;padding:20px 18px;gap:14px}.hero h2{font-size:1.65rem}.hero p{font-size:.95rem;line-height:1.5}.hero-chips,.hero .formula-card{display:none}
     .grid-2,.vocab,.builder,.store-grid,.badge-grid,.covered,.choices.two,.sign-lines,.route-grid{grid-template-columns:1fr}
     .worked{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}
     .section-head{margin-top:20px}.section-head h3{font-size:1.35rem}.mini-goal{font-size:.75rem}
@@ -868,7 +878,7 @@ const REVIEW_ROUTES = {
   core:{label:'Core path', time:'about 20 minutes', tabs:['family','ratios','equiv','rates','unit','value','mixed','results'], limit:3},
   full:{label:'Full path', time:'about 30 minutes', tabs:['family','ratios','equiv','rates','unit','value','mixed','results'], limit:Infinity}
 };
-const defaultState = {name:'', route:'core', missionDone:false, score:0, points:{}, completed:{}, attempts:{}, work:{}};
+const defaultState = {name:'', route:'core', missionDone:false, score:0, points:{}, completed:{}, attempts:{}, work:{}, hinted:{}};
 let state = loadState();
 
 function loadState(){
@@ -882,6 +892,7 @@ function loadState(){
     next.completed={...(saved.completed||{})};
     next.attempts={...(saved.attempts||{})};
     next.work={...(saved.work||{})};
+    next.hinted={...(saved.hinted||{})};
     return next;
   }catch(e){return JSON.parse(JSON.stringify(defaultState));}
 }
@@ -904,15 +915,33 @@ function award(id, pts=10){
   }
 }
 function bumpAttempt(id){state.attempts[id]=(state.attempts[id]||0)+1;saveState();return state.attempts[id];}
+/* Full points for an unaided first try, half after a miss or a step hint, none once the answer is shown. */
+const FULL=10, HELPED=5;
+function earnedFor(id){return (state.attempts[id]||0)>0 || state.hinted[id] ? HELPED : FULL}
+function pointsLine(pts){return pts===FULL?'+'+FULL+' points (first try!)':'+'+pts+' points'}
+/* Hint 1 names the method without the numbers (no cost). Hint 2 — after a miss or a second press — is the concrete step. */
+function tieredHint(card,q,tier1,tier2){
+  if(done(q.id)) return;
+  const fb=card.querySelector('.feedback');
+  if((state.attempts[q.id]||0)===0 && card.dataset.hint!=='1'){card.dataset.hint='1';feedback(fb,'hint','Hint 1: '+tier1);return;}
+  if(!state.hinted[q.id]){state.hinted[q.id]=true;saveState();}
+  feedback(fb,'hint','Hint 2: '+tier2);
+}
+function calmMotion(){
+  try{
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches) return true;
+    return JSON.parse(localStorage.getItem('ewl-game-studio-v1')||'{}').reducedMotion===true;
+  }catch(e){return false}
+}
 function done(id){return !!state.completed[id]}
 
 const SECTIONS = [
-  {tab:'ratios', badge:'badgeRatios', label:'Part 1 · Writing Ratios',              bank:ratioQs},
-  {tab:'equiv',  badge:'badgeEquiv',  label:'Part 2 · Equivalent Ratios',           bank:equivQs},
-  {tab:'rates',  badge:'badgeRates',  label:'Part 3 · Rates',                       bank:rateQs},
-  {tab:'unit',   badge:'badgeUnit',   label:'Part 4 · Unit Rates',                  bank:unitQs},
-  {tab:'value',  badge:'badgeValue',  label:'Part 5 · Best Value',                  bank:valueQs},
-  {tab:'mixed',  badge:'badgeMixed',  label:'Part 6 · Mixed Review',                bank:mixedQs}
+  {tab:'ratios', badge:'badgeRatios', label:'Part 1 · Writing Ratios',              bank:ratioQs, tip:'Say which amount is named first, and check whether the second amount is a part or the whole.'},
+  {tab:'equiv',  badge:'badgeEquiv',  label:'Part 2 · Equivalent Ratios',           bank:equivQs, tip:'Find the scale factor first, then MULTIPLY the other amount by it — never add.'},
+  {tab:'rates',  badge:'badgeRates',  label:'Part 3 · Rates',                       bank:rateQs,  tip:'Count up by the rate one column at a time and keep the units lined up.'},
+  {tab:'unit',   badge:'badgeUnit',   label:'Part 4 · Unit Rates',                  bank:unitQs,  tip:'Cost on top, amount on the bottom, divide both by the bottom number, then drop the 1.'},
+  {tab:'value',  badge:'badgeValue',  label:'Part 5 · Best Value',                  bank:valueQs, tip:'Find both unit prices before choosing. The lower cost for one wins.'},
+  {tab:'mixed',  badge:'badgeMixed',  label:'Part 6 · Mixed Review',                bank:mixedQs, tip:'First decide which skill the question is asking for, then use that skill.'}
 ];
 function currentRoute(){return REVIEW_ROUTES[state.route] || REVIEW_ROUTES.core}
 function routeBank(tab,bank){
@@ -993,10 +1022,18 @@ function updateHUD(){
 
   const todo = document.getElementById('todoList');
   if(todo){
-    const open = activeSections().filter(s=>!routeBank(s.tab,s.bank).every(q=>done(q.id)));
-    todo.innerHTML = open.length
-      ? open.map(s=>'<li>'+s.label+' — '+routeBank(s.tab,s.bank).filter(q=>!done(q.id)).length+' left</li>').join('')
-      : '<li>Nothing left. Every section is finished. 🎉</li>';
+    // Unfinished sections first, then finished ones where a question needed help or was shown.
+    const items = [];
+    activeSections().forEach(s=>{
+      const bank = routeBank(s.tab,s.bank);
+      const left = bank.filter(q=>!done(q.id)).length;
+      const shaky = bank.filter(q=>done(q.id) && state.points && Number(state.points[q.id])<FULL).length;
+      if(left) items.push('<strong>'+s.label+'</strong> — '+left+' left');
+      else if(shaky) items.push('<strong>'+s.label+'</strong> — '+shaky+' of '+bank.length+' needed help. '+s.tip);
+    });
+    todo.innerHTML = items.length
+      ? items.map(t=>'<li>'+t+'</li>').join('')
+      : '<li>Nothing left. Every section is finished with full points. 🎉</li>';
   }
 
   SECTIONS.forEach(s=>{
@@ -1012,11 +1049,19 @@ function updateHUD(){
   updateFamilyMission();
 }
 
+function scrollToPanel(id){
+  // Bring the chosen section to the top, just under the sticky bar and tab strip (the hero is tall on phones).
+  const panel=document.getElementById(id); if(!panel) return;
+  const bar=document.querySelector('.topbar'), tabs=document.querySelector('.tabs');
+  const offset=(bar?bar.offsetHeight:0)+(tabs?tabs.offsetHeight:0)+12;
+  const y=panel.getBoundingClientRect().top+window.scrollY-offset;
+  if(Math.abs(window.scrollY-y)>4) window.scrollTo({top:Math.max(0,y),behavior:calmMotion()?'auto':'smooth'});
+}
 function goTab(id){
   if(!currentRoute().tabs.includes(id)) id='family';
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.id===id));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===id));
-  window.scrollTo({top:150, behavior:'smooth'});
+  scrollToPanel(id);
   updateHUD();
 }
 
@@ -1050,6 +1095,7 @@ function speak(text){
   const u = new SpeechSynthesisUtterance(text); u.rate=.92; u.pitch=1; speechSynthesis.speak(u);
 }
 function confetti(){
+  if(calmMotion()) return;
   const box = document.getElementById('celebrate');
   const colors = ['#14858d','#17324d','#f2b84b','#38a169','#d65b54'];
   for(let i=0;i<24;i++){
@@ -1123,7 +1169,7 @@ function renderRatios(){
       <div class="check-row"><button class="btn primary check" type="button">Check</button><button class="btn secondary hint-btn" type="button">Hint</button></div>
       <div class="feedback"></div><div class="says-slot"></div>`;
     card.querySelector('.speak').onclick = ()=>speak(q.ctx+' '+q.ask);
-    card.querySelector('.hint-btn').onclick = ()=>feedback(card.querySelector('.feedback'),'hint',esc(q.hint));
+    card.querySelector('.hint-btn').onclick = ()=>tieredHint(card,q,'Find the two amounts the question names. The one named <strong>first</strong> goes first. Is the second amount one part, or the whole group?',esc(q.hint));
     card.querySelectorAll('.choice').forEach(b=>b.onclick=()=>{
       if(done(q.id)) return;
       card.querySelectorAll('.choice').forEach(x=>x.classList.remove('selected'));
@@ -1159,10 +1205,10 @@ function checkRatio(q,card){
   const okA = closeEnough(a,q.a,.001), okB = closeEnough(b,q.b,.001), okK = k===q.kind;
   mark(fa,okA); mark(fb,okB);
   if(okA && okB && okK){
-    award(q.id);
+    const pts=earnedFor(q.id); award(q.id,pts);
     picked.classList.add('correct');
     lockCard(card);
-    feedback(fbEl,'good','✓ Correct! +10 points. '+ratioSolution(q));
+    feedback(fbEl,'good','✓ Correct! '+pointsLine(pts)+'. '+ratioSolution(q));
     confetti(); saysInto(card.querySelector('.says-slot')); announce('Correct');
     return;
   }
@@ -1201,7 +1247,7 @@ function renderEquiv(){
       <div class="check-row"><button class="btn primary check" type="button">Check</button><button class="btn secondary hint-btn" type="button">Hint</button></div>
       <div class="feedback"></div><div class="says-slot"></div>`;
     card.querySelector('.speak').onclick = ()=>speak(q.ctx+' How much '+q.bName+' is needed?');
-    card.querySelector('.hint-btn').onclick = ()=>feedback(card.querySelector('.feedback'),'hint',esc(q.hint));
+    card.querySelector('.hint-btn').onclick = ()=>tieredHint(card,q,'Compare the two '+esc(q.aName)+' amounts. What did the first one get <strong>multiplied</strong> by? Do the same to the '+esc(q.bName)+'.',esc(q.hint));
     card.querySelector('.check').onclick = ()=>checkEquiv(q,card);
     if(done(q.id)) showEquivSolved(q,card);
     w.appendChild(card);
@@ -1231,8 +1277,8 @@ function checkEquiv(q,card){
   const okF = closeEnough(f,q.factor,.001), okB = closeEnough(b,q.answerB,.001);
   mark(ff,okF); mark(fb,okB);
   if(okF && okB){
-    award(q.id); lockCard(card);
-    feedback(fbEl,'good','✓ Correct! +10 points. '+equivSolution(q));
+    const pts=earnedFor(q.id); award(q.id,pts); lockCard(card);
+    feedback(fbEl,'good','✓ Correct! '+pointsLine(pts)+'. '+equivSolution(q));
     confetti(); saysInto(card.querySelector('.says-slot')); announce('Correct');
     return;
   }
@@ -1274,7 +1320,7 @@ function renderRates(){
       <div class="check-row"><button class="btn primary check" type="button">Check</button><button class="btn secondary hint-btn" type="button">Hint</button></div>
       <div class="feedback"></div><div class="says-slot"></div>`;
     card.querySelector('.speak').onclick = ()=>speak(q.ctx+' '+q.question);
-    card.querySelector('.hint-btn').onclick = ()=>feedback(card.querySelector('.feedback'),'hint',esc(q.hint));
+    card.querySelector('.hint-btn').onclick = ()=>tieredHint(card,q,'Each new column adds the <strong>same</strong> amount. Keep the two units lined up, one row each.',esc(q.hint));
     card.querySelector('.check').onclick = ()=>checkRate(q,card);
     if(done(q.id)) showRateSolved(q,card);
     w.appendChild(card);
@@ -1308,8 +1354,8 @@ function checkRate(q,card){
   const okAns = closeEnough(cleanNum(ans.value), q.answer, .001);
   mark(ans, okAns);
   if(allCells && okAns){
-    award(q.id); lockCard(card);
-    feedback(fbEl,'good','✓ Correct! +10 points. '+rateSolution(q));
+    const pts=earnedFor(q.id); award(q.id,pts); lockCard(card);
+    feedback(fbEl,'good','✓ Correct! '+pointsLine(pts)+'. '+rateSolution(q));
     confetti(); saysInto(card.querySelector('.says-slot')); announce('Correct');
     return;
   }
@@ -1384,7 +1430,7 @@ function renderUnit(){
     row.querySelectorAll('.fin').forEach(f=>{f.readOnly=true});
     row.querySelector('.srow-help').disabled = true;
     clearNote(row); countUp();
-    award(bank[i].id, st.helped ? 0 : 10);
+    award(bank[i].id, st.helped ? HELPED : FULL);
     if(!silent && !st.helped){confetti();announce('Correct');}
   }
   function evaluate(row,i){
@@ -1478,7 +1524,7 @@ function renderValue(){
       <div class="check-row"><button class="btn secondary hint-btn" type="button">Hint</button></div>
       <div class="feedback"></div><div class="says-slot"></div>`;
     card.querySelector('.speak').onclick = ()=>speak(q.item+'. Option A: '+q.aLabel+'. Option B: '+q.bLabel+'. Which is the better buy?');
-    card.querySelector('.hint-btn').onclick = ()=>feedback(card.querySelector('.feedback'),'hint','Divide each total cost by its amount: cost on top, amount on the bottom. Then compare the two costs per 1.');
+    card.querySelector('.hint-btn').onclick = ()=>tieredHint(card,q,'Divide each total cost by its amount: cost on top, amount on the bottom. Then compare the two costs per 1.','Option A: '+q.aCost.toFixed(2)+' ÷ '+q.aQty+' = ? &nbsp;·&nbsp; Option B: '+q.bCost.toFixed(2)+' ÷ '+q.bQty+' = ? The smaller answer is the better buy.');
     card.querySelectorAll('.choice').forEach(b=>b.onclick=()=>checkValue(q,card,b));
     if(done(q.id)) showValueSolved(q,card);
     w.appendChild(card);
@@ -1515,7 +1561,8 @@ function checkValue(q,card,btn){
   mark(fa,okA); mark(fb,okB);
   const okPick = btn.dataset.a === ans;
   if(okA && okB && okPick){
-    award(q.id); showValueSolved(q,card);
+    const pts=earnedFor(q.id); award(q.id,pts); showValueSolved(q,card);
+    feedback(card.querySelector('.feedback'),'good','✓ '+pointsLine(pts)+'. '+valueSolution(q));
     confetti(); saysInto(card.querySelector('.says-slot')); announce('Correct');
     return;
   }
@@ -1534,17 +1581,25 @@ function checkValue(q,card,btn){
 }
 
 /* ===== Part 6 · Mixed review ============================================= */
+/* The bank lists the right answer first. Show the choices in a fixed, per-question mixed order so the
+   correct one is not always "A" (data-i keeps the bank index, so checking is unchanged). */
+function choiceOrder(q){
+  let sum=0; for(const ch of q.id) sum+=ch.charCodeAt(0);
+  const others=q.choices.map((_,i)=>i).filter(i=>i!==q.answer);
+  others.splice(sum%q.choices.length,0,q.answer);
+  return others;
+}
 function renderMixed(){
   const w = document.getElementById('mixedWrap'); w.innerHTML='';
   routeBank('mixed',mixedQs).forEach((q,i)=>{
     const card = document.createElement('div');
     card.className='card question-card'; card.id='card-'+q.id;
     card.innerHTML = `<div class="q-top"><div><div class="q-num skill">Question ${i+1}</div><div class="q-title">${esc(q.q)}</div></div><button class="speak" type="button" aria-label="Read this question aloud">🔊</button></div>
-      <div class="choices">${q.choices.map((c,ci)=>'<button class="choice" type="button" data-i="'+ci+'">'+esc(c)+'</button>').join('')}</div>
+      <div class="choices">${choiceOrder(q).map(ci=>'<button class="choice" type="button" data-i="'+ci+'">'+esc(q.choices[ci])+'</button>').join('')}</div>
       <div class="check-row"><button class="btn secondary hint-btn" type="button">Hint</button></div>
       <div class="feedback"></div><div class="says-slot"></div>`;
     card.querySelector('.speak').onclick = ()=>speak(q.q+'. '+q.choices.join('. '));
-    card.querySelector('.hint-btn').onclick = ()=>feedback(card.querySelector('.feedback'),'hint',esc(q.hint));
+    card.querySelector('.hint-btn').onclick = ()=>tieredHint(card,q,'Read what the question asks for. Is it about writing a ratio, an equivalent ratio, a rate, a unit rate, or the better buy?',esc(q.hint));
     card.querySelectorAll('.choice').forEach(b=>b.onclick=()=>checkMixed(q,card,b));
     if(done(q.id)) showMixedSolved(q,card);
     w.appendChild(card);
@@ -1562,7 +1617,8 @@ function checkMixed(q,card,btn){
   if(done(q.id)) return;
   const fbEl = card.querySelector('.feedback');
   if(Number(btn.dataset.i) === q.answer){
-    award(q.id); showMixedSolved(q,card);
+    const pts=earnedFor(q.id); award(q.id,pts); showMixedSolved(q,card);
+    feedback(fbEl,'good','✓ '+pointsLine(pts)+'. '+mixedSolution(q));
     confetti(); saysInto(card.querySelector('.says-slot')); announce('Correct');
     return;
   }

@@ -131,9 +131,9 @@
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
   <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
     <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-    <script src="/assets/game-studio.js?v=20261002" defer></script>
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
     <link rel="stylesheet" href="/math/games/shared/phaser-studio.css?v=20261002">
-    <script src="/math/games/shared/phaser-studio.js?v=20261002"></script>
+    <script src="/math/games/shared/phaser-studio.js?v=20261003"></script>
     <link rel="stylesheet" href="/math/games/shared/cabinet-tools.css?v=20261002">
     <script src="/math/games/shared/cabinet-tools.js?v=20261002" defer></script>
 </head>
@@ -349,6 +349,8 @@
         return r;
       }
       const numTile = (v) => ({ kind: "num", label: String(v), value: v });
+      // Exponent tile (6.AT.5): shows the power, carries its value.
+      const powTile = (b, e) => ({ kind: "num", label: b + (e === 3 ? "³" : "²"), value: Math.pow(b, e), pow: true });
       const opTile = (o) => ({ kind: "op", label: o, value: o });
       const varTile = (v) => ({ kind: "var", label: "x", value: v });
       const tileLabel = (t) => t.label;
@@ -417,6 +419,7 @@
           tray: shuffle(tray),
           exprStr: a + " " + op + " " + b,
           why: a + " " + op + " " + b + " = " + goal + ".",
+          prompt: "Build an expression that equals " + goal + ".",
         };
       }
       function genLevel2(step) {
@@ -426,12 +429,28 @@
           xVal,
           varPos,
           tries = 0;
+        // About 4 in 10 Level-2 builds include an exponent tile (3², 2³ …).
+        const usePow = Math.random() < 0.4;
+        let powPos = -1,
+          powDef = null;
         do {
           xVal = randInt(2, 6);
           varPos = randInt(0, 2);
           ops = [pick(["+", "−", "×"]), pick(["+", "−", "×"])];
           vals = [randInt(2, 9), randInt(2, 9), randInt(2, 9)];
           vals[varPos] = xVal;
+          powPos = -1;
+          powDef = null;
+          if (usePow) {
+            powPos = (varPos + randInt(1, 2)) % 3;
+            powDef = pick([
+              [2, 2],
+              [3, 2],
+              [4, 2],
+              [2, 3],
+            ]);
+            vals[powPos] = Math.pow(powDef[0], powDef[1]);
+          }
           goal = evalSeq(vals, ops);
           tries++;
         } while ((goal < 3 || goal > 99) && tries < 80);
@@ -441,32 +460,67 @@
           vals = [5, 3, 2];
           ops = ["×", "+"];
           goal = 17;
+          powPos = -1;
+          powDef = null;
         }
         const solution = [];
         for (let i = 0; i < 3; i++) {
           if (i > 0) solution.push(opTile(ops[i - 1]));
-          solution.push(i === varPos ? varTile(xVal) : numTile(vals[i]));
+          solution.push(
+            i === varPos ? varTile(xVal) : i === powPos ? powTile(powDef[0], powDef[1]) : numTile(vals[i]),
+          );
         }
         const operands = solution.filter((t) => t.kind !== "op");
         const opsTiles = solution.filter((t) => t.kind === "op");
-        const dn = distinctNum(vals);
+        // Misconception distractor for powers: 3² is NOT 3 × 2 (= 6).
+        const powWrong = powDef ? powDef[0] * powDef[1] : null;
+        const dn = powWrong && vals.indexOf(powWrong) === -1 ? powWrong : distinctNum(vals);
         const dop = pick(["+", "−", "×"]);
         const tray = [...operands, numTile(dn), ...opsTiles, opTile(dop)];
         if (step >= 4) tray.push(opTile(pick(["+", "−", "×"])));
         const exprStr = solution.map(tileLabel).join(" ");
         const subStr = solution.map(tileSub).join(" ");
+        const powNote = powDef
+          ? " (" + powTile(powDef[0], powDef[1]).label + " = " + Array(powDef[1]).fill(powDef[0]).join(" × ") + " = " + Math.pow(powDef[0], powDef[1]) + ")"
+          : "";
         return {
           goal,
           varVal: xVal,
+          hasPow: !!powDef,
+          powNote,
           slots: solution.map((t) => ({
             accept: t.kind === "op" ? "op" : "num",
           })),
           solution,
           tray: shuffle(tray),
           exprStr,
-          why: "x = " + xVal + ", so " + subStr + " = " + goal + ".",
+          why: "x = " + xVal + ", so " + subStr + " = " + goal + "." + powNote,
+          prompt: "Build an expression that equals " + goal + ". Let x = " + xVal + ".",
         };
       }
+      // Order-of-operations walk-through of a build, e.g.
+      // "3 + 4 × 2  →  3 + 8  =  11". Used only as earned Tier-2 help.
+      function evalSteps(nums, ops) {
+        if (!ops.some((o) => o === "×") || ops.every((o) => o === "×")) return null;
+        const v = [nums[0]];
+        const o = [];
+        for (let i = 0; i < ops.length; i++) {
+          if (ops[i] === "×") v[v.length - 1] = v[v.length - 1] * nums[i + 1];
+          else {
+            o.push(ops[i]);
+            v.push(nums[i + 1]);
+          }
+        }
+        let mid = String(v[0]);
+        for (let i = 0; i < o.length; i++) mid += " " + o[i] + " " + v[i + 1];
+        return mid;
+      }
+      const EE_STREAK_KEY = "ee_expr_assembler_beststreak";
+      function calmMotion() {
+        if (window.GameStudio) return !!window.GameStudio.settings.reducedMotion;
+        return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+      }
+
       function makeProblem(track, step) {
         return track === 2 ? genLevel2(step) : genLevel1(step);
       }
@@ -511,6 +565,11 @@
           term: "Term",
           emoji: "➕",
           def: "One part of an expression, separated by + or − signs. In 5x + 2, the terms are 5x and 2.",
+        },
+        {
+          term: "Exponent",
+          emoji: "🔢",
+          def: "A small raised number that tells how many times to multiply a number by itself. 3² = 3 × 3 = 9, not 6.",
         },
         {
           term: "Order of Operations",
@@ -576,7 +635,7 @@
           .text(
             cx,
             268,
-            "Drag number & operator tiles into the slots to BUILD an\nexpression that equals the target. Calm — no timer!",
+            "Put number and sign tiles in the boxes to BUILD an expression\nthat equals the gold number. Work out the value yourself. No timer.",
             {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "16px",
@@ -586,10 +645,10 @@
           )
           .setOrigin(0.5);
         this.add
-          .text(cx, 318, "6.AT.5–4 · Lessons 6.1–6.7", {
+          .text(cx, 318, "6.AT.5 · 6.AT.6 · Unit 6 · Expressions, exponents, order of operations", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "14px",
-            color: "#a080c0",
+            fontSize: "15px",
+            color: "#c2a8de",
           })
           .setOrigin(0.5);
 
@@ -615,14 +674,15 @@
             color: "#ffffff",
           })
           .setOrigin(0.5);
-        this.tweens.add({
-          targets: [btn, btnT],
-          scaleX: 1.05,
-          scaleY: 1.05,
-          duration: 800,
-          yoyo: true,
-          repeat: -1,
-        });
+        if (!calmMotion())
+          this.tweens.add({
+            targets: [btn, btnT],
+            scaleX: 1.04,
+            scaleY: 1.04,
+            duration: 900,
+            yoyo: true,
+            repeat: -1,
+          });
         const start = () => {
           SFX.init();
           JUICE.audio.unlock();
@@ -673,13 +733,13 @@
           {
             title: "LEVEL 1",
             sub: "Builder Basics · Support",
-            body: "Build 2-number expressions\nwith one operation.\nHints stay on.",
+            body: "Build 2-number expressions\nwith one sign.\nA step coach helps you.",
             y: 250,
           },
           {
             title: "LEVEL 2",
             sub: "Order Master · Enrichment",
-            body: "Build longer expressions —\n× before + and −, plus a\nvariable x to plug in. Fewer hints.",
+            body: "Longer builds: × before + and −,\na variable x to plug in,\nand exponents like 3².",
             y: 400,
           },
         ];
@@ -704,9 +764,9 @@
             })
             .setOrigin(0, 0.5);
           const bt = this.add
-            .text(cx - 230, d.y + 36, d.body, {
+            .text(cx - 230, d.y + 30, d.body, {
               fontFamily: "Segoe UI, sans-serif",
-              fontSize: "14px",
+              fontSize: "15px",
               color: "#e0d0f0",
             })
             .setOrigin(0, 0.5);
@@ -747,24 +807,27 @@
           this.scene.start(eeVocabSeen ? "Game" : "Vocab");
         };
         const autoBtn = this.add
-          .text(cx, 502, "✨ Auto — picks your level", {
+          .rectangle(cx, 502, 300, 44, 0x2e1f46)
+          .setStrokeStyle(2, 0xffd24a)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx, 502, "✨ Auto: pick my level (A)", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
+            fontSize: "17px",
             fontStyle: "bold",
             color: "#ffd24a",
           })
-          .setOrigin(0.5)
-          .setInteractive({ useHandCursor: true });
-        autoBtn.on("pointerover", () => autoBtn.setColor("#ffffff"));
-        autoBtn.on("pointerout", () => autoBtn.setColor("#ffd24a"));
+          .setOrigin(0.5);
+        autoBtn.on("pointerover", () => autoBtn.setFillStyle(0x3c2a5e));
+        autoBtn.on("pointerout", () => autoBtn.setFillStyle(0x2e1f46));
         autoBtn.on("pointerdown", pickAuto);
         this.input.keyboard.on("keydown-A", pickAuto);
 
         const back = this.add
-          .text(cx, 540, "← Back", {
+          .text(cx, 552, "← Back", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "15px",
-            color: "#a080c0",
+            fontSize: "17px",
+            color: "#c2a8de",
           })
           .setOrigin(0.5)
           .setInteractive({ useHandCursor: true });
@@ -928,12 +991,14 @@
       GameScene.prototype.constructor = GameScene;
 
       GameScene.prototype.init = function () {
-        this.reduceMotion = !!(
-          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        );
+        this.reduceMotion = calmMotion();
         this.score = 0;
         this.streak = 0;
+        this.bestStreak = 0;
+        this.firstTry = 0; // solved on the first lock-in with no help
         this.solved = 0;
+        this.helpTier = 0; // 0 none · 1 method hint · 2 step-by-step check
+        this.stats = {}; // kind → { seen, clean }
         this.auto = eeAuto; // carried into Result for adaptive recordRun
         this.endless = eeEndless; // endless runs never auto-end
         this.attemptsAll = 0; // cumulative graded lock-ins (for accuracy)
@@ -971,9 +1036,9 @@
           })
           .setOrigin(1, 0);
         this.progressText = this.add
-          .text(W / 2, 12, "0 / " + (this.endless ? "∞" : this.target), {
+          .text(W / 2, 12, "", {
             ...hudStyle,
-            color: "#e0d0f0",
+            color: "#ffffff",
           })
           .setOrigin(0.5, 0);
 
@@ -981,7 +1046,7 @@
         // (same Result transition the win uses, with current stats).
         if (this.endless) {
           this.finishBtn = this.add
-            .text(16, 40, "Finish ✓", {
+            .text(16, 38, "Finish ✓", {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "15px",
               fontStyle: "bold",
@@ -998,10 +1063,10 @@
 
         // Target banner — the value to build toward.
         this.add
-          .text(W / 2, 74, "Build an expression that equals", {
+          .text(W / 2, 72, "Build an expression that equals", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "15px",
-            color: "#a080c0",
+            fontSize: "17px",
+            color: "#d2b8ee",
           })
           .setOrigin(0.5);
         this.goalText = this.add
@@ -1022,7 +1087,9 @@
           })
           .setOrigin(0.5);
 
-        // Live evaluation readout (the heart of the mechanic).
+        // Build readout: shows the expression being built with "= ?". The
+        // VALUE is the student's to work out — a live value turned the game
+        // into guess-and-check. A step-by-step check is earned Tier-2 help.
         this.readout = this.add
           .text(W / 2, 320, "", {
             fontFamily: "Segoe UI, sans-serif",
@@ -1033,7 +1100,7 @@
           .setOrigin(0.5);
 
         this.feedback = this.add
-          .text(W / 2, 360, "", {
+          .text(W / 2, 340, "", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "16px",
             fontStyle: "bold",
@@ -1043,15 +1110,15 @@
             align: "center",
             wordWrap: { width: W - 80 },
           })
-          .setOrigin(0.5)
+          .setOrigin(0.5, 0)
           .setAlpha(0);
 
         // Lock-in button
         this.lockBtn = this.add
-          .rectangle(W / 2, 508, 220, 50, 0x2d874b)
+          .rectangle(W / 2, 506, 240, 52, 0x2d874b)
           .setInteractive({ useHandCursor: true });
         this.add
-          .text(W / 2, 508, "LOCK IN ✓", {
+          .text(W / 2, 506, "LOCK IN ✓", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "21px",
             fontStyle: "bold",
@@ -1062,38 +1129,30 @@
         this.lockBtn.on("pointerout", () => this.lockBtn.setFillStyle(0x2d874b));
         this.lockBtn.on("pointerdown", () => this.lockIn());
 
-        // Hint button (Level 1 only — support tier keeps hints on).
-        if (this.track === 1) {
-          this.hintBtn = this.add
-            .rectangle(W / 2 + 150, 508, 110, 44, 0x42305f)
-            .setInteractive({ useHandCursor: true });
-          this.add
-            .text(W / 2 + 150, 508, "💡 Hint", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "16px",
-              fontStyle: "bold",
-              color: "#e0c8ff",
-            })
-            .setOrigin(0.5);
-          this.hintBtn.on("pointerover", () => this.hintBtn.setFillStyle(0x54407a));
-          this.hintBtn.on("pointerout", () => this.hintBtn.setFillStyle(0x42305f));
-          this.hintBtn.on("pointerdown", () => this.showHint());
-        }
-
+        // Key help + Support-tier live coach (names the next action).
         this.hintLine = this.add
           .text(
             W / 2,
-            552,
-            this.track === 2
-              ? "× happens before + and −. Drag the x tile to plug the variable in."
-              : "Drag tiles into the slots. Tap a placed tile to send it back.",
+            548,
+            "Tap a tile to place it (tap again to send it back), or drag it. Keys: ← → box, ↑ ↓ tile, Enter check.",
             {
               fontFamily: "Segoe UI, sans-serif",
-              fontSize: "13px",
-              color: "#a080c0",
+              fontSize: "15px",
+              color: "#c2a8de",
               align: "center",
+              wordWrap: { width: W - 60 },
             },
           )
+          .setOrigin(0.5);
+        this.coachText = this.add
+          .text(W / 2, 580, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "17px",
+            fontStyle: "bold",
+            color: "#ffe9a8",
+            align: "center",
+            wordWrap: { width: W - 60 },
+          })
           .setOrigin(0.5);
 
         // Brief calm amber tint for a not-yet attempt (no-fail practice).
@@ -1192,7 +1251,9 @@
 
       GameScene.prototype.newProblem = function () {
         this.locked = false;
-        this.attempts = 0; // wrong tries on THIS problem (1st = retry, 2nd = teach)
+        this.attempts = 0; // wrong tries on THIS problem (1st = hint, 2nd = check, 3rd = teach)
+        this.helpTier = 0;
+        this.feedback.setAlpha(0).setText("");
         this.clearBoard();
         this.problem = makeProblem(this.track, this.solved);
         const p = this.problem;
@@ -1202,6 +1263,7 @@
         this.selectedSlot = 0;
         this.updateFocus();
         this.refreshReadout();
+        this.updateHUD();
         srSay(
           "Build an expression that equals " +
             p.goal +
@@ -1418,7 +1480,7 @@
       GameScene.prototype.moveCursor = function (dir) {
         if (this.locked || !this.slots.length) return;
         this.selectedSlot = Phaser.Math.Clamp(this.selectedSlot + dir, 0, this.slots.length - 1);
-        SFX.reject();
+        SFX.place();
         this.updateFocus();
       };
       GameScene.prototype.updateFocus = function () {
@@ -1441,13 +1503,14 @@
         this.refreshReadout();
       };
 
-      // ── Live readout ─────────────────────────────────────────────────────
+      // ── Build readout (no value until earned) ───────────────────────────
       GameScene.prototype.readState = function () {
         const parts = [];
         const nums = [];
         const ops = [];
         let filled = true;
         let hasVar = false;
+        let hasPow = false;
         this.slots.forEach((s) => {
           if (s.tileId == null) {
             filled = false;
@@ -1455,61 +1518,50 @@
             return;
           }
           const t = this.tileById(s.tileId);
-          parts.push({ label: t.label, sub: tileSub(t) });
+          parts.push({ label: t.label, sub: tileSub(t), value: t.value, pow: t.label !== String(t.value) && t.kind === "num" });
           if (t.kind === "var") hasVar = true;
+          if (t.kind === "num" && t.label !== String(t.value)) hasPow = true;
           if (s.accept === "op") ops.push(t.value);
           else nums.push(t.value);
         });
         const value = filled ? evalSeq(nums, ops) : null;
-        return { parts, value, filled, hasVar };
+        return { parts, value, filled, hasVar, hasPow, nums, ops };
+      };
+      // Plug-in line: x → its value, powers → their value.
+      GameScene.prototype.plugged = function (st) {
+        return st.parts.map((q) => (q.value != null && (q.pow || q.sub !== q.label) ? String(q.value) : q.label)).join(" ");
       };
       GameScene.prototype.refreshReadout = function () {
         const st = this.readState();
         const expr = st.parts.map((p) => p.label).join(" ");
-        if (!st.filled) {
-          this.readout.setColor("#c8a0e0");
-          this.readout.setText(expr + "  = ?");
-          // Announce the in-progress build to screen-reader users (WCAG: the
-          // #ee-sr live region must actually be populated as tiles change).
-          srSay(
-            "Building: " +
-              (expr.trim() ? expr : "empty") +
-              ". Goal " +
-              (this.problem ? this.problem.goal : "") +
-              ".",
-          );
-          return;
-        }
-        const hit = st.value === this.problem.goal;
-        this.readout.setColor(hit ? "#8fd6a0" : "#e0d0f0");
-        const sub = st.hasVar ? "  →  " + st.parts.map((p) => p.sub).join(" ") : "";
-        this.readout.setText(expr + sub + "  =  " + st.value);
-        srSay(
-          expr +
-            " equals " +
-            st.value +
-            ". Goal " +
-            this.problem.goal +
-            ". " +
-            (hit ? "Matches — lock it in." : ""),
-        );
+        this.updateCoach(st);
+        // Never a live value: the student evaluates. (Tier-2 help walks
+        // through the build they LOCKED IN, inside the feedback line.)
+        this.readout.setColor("#e0d0f0");
+        this.readout.setText(expr + "  = ?");
+        srSay("Building: " + (expr.trim() ? expr : "empty") + ". Goal " + (this.problem ? this.problem.goal : "") + ".");
+      };
+      GameScene.prototype.walkThrough = function (st) {
+        const expr = st.parts.map((p) => p.label).join(" ");
+        const plug = st.hasVar || st.hasPow ? " → " + this.plugged(st) : "";
+        const mid = evalSteps(st.nums, st.ops);
+        return expr + plug + (mid ? " → " + mid + " (× first)" : "") + " = " + st.value;
       };
 
-      GameScene.prototype.showHint = function () {
-        if (this.locked || !this.problem) return;
-        const p = this.problem;
-        const op = p.solution.find((t) => t.kind === "op");
-        this.feedback
-          .setText(
-            "Hint: this build uses " +
-              (op ? op.label : "+") +
-              ". Place the values around the sign so it equals " +
-              p.goal +
-              ".",
-          )
-          .setColor("#e0c8ff")
-          .setAlpha(1);
-        srSay("Hint. This expression uses the " + (op ? op.label : "plus") + " sign.");
+      // Support tier: name the next action (never the answer).
+      GameScene.prototype.updateCoach = function (st) {
+        if (!this.coachText) return;
+        if (this.track !== 1 || this.locked || !this.problem) {
+          this.coachText.setText("");
+          return;
+        }
+        const empty = this.slots.findIndex((s) => s.tileId == null);
+        let msg;
+        if (empty === 0) msg = "Next: tap a NUMBER tile to put it in the first box.";
+        else if (empty >= 0)
+          msg = this.slots[empty].accept === "op" ? "Next: tap a SIGN tile (+, −, or ×) for the middle box." : "Next: tap a number tile for the last box.";
+        else msg = "Next: work it out in your head. Does it make " + this.problem.goal + "? If yes, press Enter. If not, swap a tile.";
+        this.coachText.setText("👉 " + msg);
       };
 
       // ── Resolve a Lock In ────────────────────────────────────────────────
@@ -1517,119 +1569,111 @@
         if (this.locked || !this.problem) return;
         const st = this.readState();
         if (!st.filled) {
-          this.feedback
-            .setText("Fill every slot first, then Lock In.")
-            .setColor("#ffd24a")
-            .setAlpha(1);
+          this.feedback.setText("Fill every box first, then Lock In.").setColor("#ffd24a").setAlpha(1);
           SFX.reject();
-          srSay("Fill every slot first.");
+          srSay("Fill every box first.");
           return;
         }
         this.locked = true;
         this.attemptsAll++;
         const p = this.problem;
         const correct = st.value === p.goal;
+        const kind = p.hasPow ? "power" : p.varVal != null ? "variable" : "plain";
+        this.stats[kind] = this.stats[kind] || { seen: 0, clean: 0 };
         if (correct) {
           SFX.good();
           JUICE.audio.correct(this.streak);
           this.solved++;
-          this.streak++;
-          const bonus = Math.min(this.streak, 5) * 5;
-          const gained = 20 + bonus;
+          this.correctSubs = (this.correctSubs || 0) + 1;
+          const clean = this.attempts === 0 && this.helpTier === 0;
+          this.stats[kind].seen++;
+          let gained;
+          if (clean) {
+            this.stats[kind].clean++;
+            this.firstTry++;
+            this.streak++;
+            this.bestStreak = Math.max(this.bestStreak, this.streak);
+            gained = 20 + Math.min(this.streak, 5) * 5 + (this.track === 2 ? 10 : 0);
+          } else {
+            this.streak = 0;
+            gained = 10;
+          }
           this.score += gained;
           this.slots.forEach((s) => s.rect.setStrokeStyle(3, 0x36a35b));
           JUICE.burst(this, W / 2, SLOT_Y, [0x34d399, 0xb06fd4, 0xffffff], 18);
-          JUICE.shake(this, 0.004 + Math.min(this.streak, 5) * 0.001);
           JUICE.floatText(this, W / 2, SLOT_Y - 40, "+" + gained, "#34d399", 38);
           JUICE.award(gained, "u6-expression-express");
           if (this.streak >= 2) JUICE.confetti(this, 1);
-          // Explain the STUDENT'S build (any valid ordering counts), not just
-          // the generator's canonical one.
-          const builtWhy = st.hasVar
-            ? "x = " +
-              p.varVal +
-              ", so " +
-              st.parts.map((q) => q.sub).join(" ") +
-              " = " +
-              st.value +
-              "."
-            : st.parts.map((q) => q.label).join(" ") + " = " + st.value + ".";
+          // Explain the STUDENT'S build (any valid ordering counts) with the
+          // order-of-operations steps.
+          const expr = st.parts.map((q) => q.label).join(" ");
+          const builtWhy = (st.hasVar ? "x = " + p.varVal + ", so " : "") + this.walkThrough(st) + ".";
+          this.readout.setColor("#8fd6a0").setText(expr + "  =  " + st.value + "  ✓");
           this.feedback
-            .setText("Correct!  " + builtWhy)
+            .setText((clean ? "Correct!  " : "You got it!  ") + builtWhy)
             .setColor("#8fd6a0")
             .setAlpha(1);
           srSay("Correct. " + builtWhy);
+          this.coachText.setText("");
           this.afterAttempt();
-        } else {
-          SFX.bad();
-          JUICE.audio.wrong();
-          this.streak = 0;
-          this.attempts++;
-          this.flashAmber();
-          JUICE.shake(this, 0.009);
-          this.slots.forEach((s) => s.rect.setStrokeStyle(3, 0xc23b3b));
-          this.updateHUD();
-          if (this.attempts < 2) {
-            // First miss: diagnostic hint + retry the SAME problem (no reveal,
-            // no penalty). Tiles stay where the student put them so they can
-            // adjust instead of starting over.
-            const diag =
-              st.value > p.goal
-                ? "your build equals " +
-                  st.value +
-                  " — too high. Try a smaller number or a different sign."
-                : "your build equals " +
-                  st.value +
-                  " — too low. Try a bigger number or a different sign.";
-            const oo = st.parts.some((q) => q.label === "×")
-              ? " Remember: × happens before + and −."
-              : "";
-            this.feedback
-              .setText("Not quite — " + diag + oo + " Adjust a tile and lock in again!")
-              .setColor("#ff8f8f")
-              .setAlpha(1);
-            srSay(
-              "Not quite. Your build equals " +
-                st.value +
-                ", the target is " +
-                p.goal +
-                ". " +
-                diag +
-                " Try again.",
-            );
-            this.time.delayedCall(this.reduceMotion ? 400 : 700, () => {
-              this.slots.forEach((s) => s.rect.setStrokeStyle(2, 0x6a4f8c));
-              this.locked = false;
-            });
-            return;
-          }
-          // Second miss: teach — show why, reveal one correct assembly, move on.
-          this.feedback
-            .setText(
-              "Your build equals " +
-                st.value +
-                ", but the target is " +
-                p.goal +
-                ". One correct build:  " +
-                p.exprStr +
-                " = " +
-                p.goal,
-            )
-            .setColor("#ff8f8f")
-            .setAlpha(1);
-          srSay(
-            "Not quite. Your build equals " +
-              st.value +
-              ". One correct build is " +
-              p.exprStr +
-              " equals " +
-              p.goal +
-              ". " +
-              p.why,
-          );
-          this.showSolution();
-          this.time.delayedCall(this.reduceMotion ? 600 : 1500, () => this.afterAttempt());
+          return;
         }
+        SFX.bad();
+        JUICE.audio.wrong();
+        this.streak = 0;
+        this.attempts++;
+        this.flashAmber();
+        JUICE.shake(this, 0.009);
+        this.slots.forEach((s) => s.rect.setStrokeStyle(3, 0xc23b3b));
+        this.updateHUD();
+        const hasMul = st.ops.some((o) => o === "×");
+        const hasAdd = st.ops.some((o) => o !== "×");
+        // Misconception check: did they work left to right instead of × first?
+        let ltr = null;
+        if (hasMul && hasAdd) {
+          ltr = st.nums[0];
+          st.ops.forEach((o, i) => {
+            const n = st.nums[i + 1];
+            ltr = o === "×" ? ltr * n : o === "+" ? ltr + n : ltr - n;
+          });
+        }
+        if (this.attempts < 3) {
+          // Tier 1 after the first miss: what is off + a method hint (no
+          // reveal). Tier 2 after the second: the step-by-step check.
+          this.helpTier = this.attempts;
+          const dir = st.value > p.goal ? "too high. Try a smaller number or a different sign." : "too low. Try a bigger number or a different sign.";
+          let tip = "";
+          if (ltr === p.goal) tip = " Careful: you worked left to right. Do × BEFORE + and −.";
+          else if (hasMul && hasAdd && this.attempts < 2) tip = " Remember: × happens before + and −.";
+          if (st.hasPow) tip += " An exponent means repeated multiplying: 3² = 3 × 3.";
+          let head = "Not quite. Your build equals " + st.value + ", ";
+          if (this.helpTier >= 2) {
+            const op = p.solution.find((t) => t.kind === "op");
+            head = "Not quite. Check it step by step: " + this.walkThrough(st) + ". That is ";
+            tip += " Hint: one way uses the " + (op ? op.label : "+") + " sign.";
+          }
+          this.feedback
+            .setText(head + dir + tip)
+            .setColor("#ffb0b0")
+            .setAlpha(1);
+          srSay(head + dir + tip);
+          this.time.delayedCall(this.reduceMotion ? 300 : 600, () => {
+            this.slots.forEach((s) => s.rect.setStrokeStyle(2, 0x6a4f8c));
+            this.locked = false;
+            this.refreshReadout();
+          });
+          return;
+        }
+        // Third miss: teach — show why, reveal one correct assembly, move on.
+        this.stats[kind].seen++;
+        this.feedback
+          .setText("Your build equals " + st.value + ". The goal is " + p.goal + ". One correct build: " + p.exprStr + ". " + p.why)
+          .setColor("#ffb0b0")
+          .setAlpha(1);
+        srSay("Not quite. Your build equals " + st.value + ". One correct build is " + p.exprStr + ". " + p.why);
+        this.coachText.setText("");
+        this.showSolution();
+        this.time.delayedCall(this.reduceMotion ? 300 : 900, () => this.afterAttempt());
       };
 
       // Teach: clear the student's tiles and reveal one correct assembly.
@@ -1664,7 +1708,11 @@
           this.endGame();
           return;
         }
+        this.hintLine.setText("Read the explanation. Press Enter or Continue when you are ready.");
         this.studioNextRound(() => {
+          this.hintLine.setText(
+            "Tap a tile to place it (tap again to send it back), or drag it. Keys: ← → box, ↑ ↓ tile, Enter check.",
+          );
           this.feedback.setAlpha(0);
           this.newProblem();
         });
@@ -1679,7 +1727,11 @@
       GameScene.prototype.updateHUD = function () {
         this.scoreText.setText("Score: " + this.score);
         this.streakText.setText("Streak: " + this.streak);
-        this.progressText.setText(this.solved + " / " + (this.endless ? "∞" : this.target));
+        this.progressText.setText(
+          this.endless
+            ? "Challenge " + (this.solved + 1) + " · " + this.solved + " solved"
+            : "Challenge " + Math.min(this.solved + 1, this.target) + " of " + this.target,
+        );
       };
 
       GameScene.prototype.endGame = function () {
@@ -1692,7 +1744,12 @@
             track: this.track,
             auto: this.auto,
             endless: this.endless,
-            accuracy: this.attemptsAll ? this.solved / this.attemptsAll : 1,
+            firstTry: this.firstTry,
+            bestStreak: this.bestStreak,
+            stats: this.stats,
+            attempts: this.attemptsAll,
+            correctSubs: this.correctSubs || 0,
+            accuracy: this.attemptsAll ? (this.correctSubs || 0) / this.attemptsAll : 1,
           });
         });
       };
@@ -1709,6 +1766,7 @@
       ResultScene.prototype.create = function () {
         const d = this.data2;
         const cx = W / 2;
+        const T = (size, color, extra) => ({ fontFamily: "Segoe UI, sans-serif", fontSize: size + "px", color, ...(extra || {}) });
         this.add.rectangle(cx, H / 2, W, H, 0x221636);
         // Endless runs have no finite target; grade against the standard goal
         // of 10 so stars and the adaptive win-signal stay meaningful.
@@ -1724,16 +1782,21 @@
             max: 2,
           });
         }
-        let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
-        if (d.score > hs) {
-          hs = d.score;
-          try {
-            localStorage.setItem(LS_KEY, String(hs));
-          } catch (e) {}
-        }
+        let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10) || 0;
+        const newBest = d.score > hs;
+        let bestStreak = 0;
+        try {
+          bestStreak = parseInt(localStorage.getItem(EE_STREAK_KEY) || "0", 10) || 0;
+          if (newBest) localStorage.setItem(LS_KEY, String(d.score));
+          if ((d.bestStreak || 0) > bestStreak) {
+            bestStreak = d.bestStreak;
+            localStorage.setItem(EE_STREAK_KEY, String(bestStreak));
+          }
+        } catch (e) {}
+        if (newBest) hs = d.score;
 
         this.add
-          .text(cx, 110, "FULL STEAM AHEAD!", {
+          .text(cx, 70, "FULL STEAM AHEAD!", {
             fontFamily: "Impact, sans-serif",
             fontSize: "44px",
             color: "#b06fd4",
@@ -1741,70 +1804,67 @@
             strokeThickness: 5,
           })
           .setOrigin(0.5);
+        this.add.text(cx, 128, "★".repeat(stars) + "☆".repeat(3 - stars), T(44, "#ffd24a")).setOrigin(0.5);
         this.add
-          .text(cx, 185, "★".repeat(stars) + "☆".repeat(3 - stars), {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "48px",
-            color: "#ffd24a",
-          })
+          .text(cx, 182, "Score: " + d.score + (newBest ? "  · New high score!" : ""), T(28, "#ffffff", { fontStyle: "bold" }))
           .setOrigin(0.5);
-        this.add
-          .text(cx, 255, "Score: " + d.score, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "30px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
+
+        const stats = d.stats || {};
+        const kinds = Object.keys(stats).filter((k) => stats[k].seen > 0);
+        const names = { plain: "One-step expressions", variable: "Plugging in a variable", power: "Exponents" };
+        const tips = {
+          plain: "One-step builds: say the expression out loud and work it out before you Lock In.",
+          variable: "Variables: plug in the value of x first, then do × before + and −.",
+          power: "Exponents: 3² means 3 × 3 = 9, not 3 × 2.",
+        };
+        let weak = null;
+        kinds.forEach((k) => {
+          const miss = stats[k].seen - stats[k].clean;
+          if (miss > 0 && (!weak || miss > stats[weak].seen - stats[weak].clean)) weak = k;
+        });
+        const acc = Math.round((d.accuracy != null ? d.accuracy : 1) * 100);
+        const lines = [
+          (endless ? "Built " + d.solved + " expressions" : "Built " + d.solved + " of " + d.target + " expressions") +
+            " · " + (d.firstTry || 0) + " on the first try with no help",
+          "Accuracy: " + acc + "% of your Lock Ins were right · Best streak ever: " + bestStreak,
+          "Skills practiced: " + (kinds.length ? kinds.map((k) => names[k]).join(", ") : "order of operations") + ", order of operations",
+          weak
+            ? "Practice next → " + tips[weak]
+            : d.track === 1
+              ? "Practice next → try Level 2: longer builds, a variable and exponents."
+              : "Practice next → keep your streak going with ♾️ Keep Playing.",
+        ];
+        this.summary = this.add
+          .text(cx, 290, lines.join("\n"), T(17, "#ece0fa", { align: "center", lineSpacing: 10, wordWrap: { width: W - 70 } }))
           .setOrigin(0.5);
-        this.add
-          .text(
-            cx,
-            295,
-            endless
-              ? "Built " + d.solved + " expressions"
-              : "Built " + d.solved + " of " + d.target + " expressions",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "18px",
-              color: "#e0d0f0",
-            },
-          )
-          .setOrigin(0.5);
-        this.add
-          .text(cx, 325, "High Score: " + hs, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
-            color: "#ffd24a",
-          })
-          .setOrigin(0.5);
+        // The controls panel reads bannerText: mirror the summary there so it
+        // is readable at phone width and by screen readers.
+        this.bannerText = this.summary;
+        this.add.text(cx, 372, "High score: " + hs, T(16, "#ffd24a")).setOrigin(0.5);
 
         SFX.win();
         JUICE.audio.fanfare();
         JUICE.confetti(this, 2);
 
+        // EduPulse / Canvas code: builds solved out of the goal.
         try {
           window.EduPulse &&
             EduPulse.record({
               activityTitle: document.title,
-              score: d.score,
+              score: d.solved,
+              maxScore: goal,
+              percent: acc,
               stars: stars,
+              level: d.track,
               standard: "6.AT.5",
-              problemsAttempted: d.solved,
+              problemsCorrect: d.correctSubs,
+              problemsAttempted: d.attempts,
             });
         } catch (e) {}
-        srSay("You won! Final score " + d.score + ", " + stars + " stars.");
+        srSay("Round complete. Score " + d.score + ", " + stars + " stars. " + lines.join(" "));
 
-        const btn = this.add
-          .rectangle(cx, 400, 220, 54, 0x7a3fb0)
-          .setInteractive({ useHandCursor: true });
-        this.add
-          .text(cx, 400, "PLAY AGAIN 🔁", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "20px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
-          .setOrigin(0.5);
+        const btn = this.add.rectangle(cx, 430, 240, 54, 0x7a3fb0).setInteractive({ useHandCursor: true });
+        this.add.text(cx, 430, "PLAY AGAIN 🔁", T(20, "#ffffff", { fontStyle: "bold" })).setOrigin(0.5);
         // PLAY AGAIN always starts a fresh finite run at the same level, so
         // clear endless (module flags persist across scene restarts).
         const again = () => {
@@ -1817,32 +1877,12 @@
         this.input.keyboard.on("keydown-SPACE", again);
         this.input.keyboard.on("keydown-ENTER", again);
 
-        const change = this.add
-          .text(cx, 458, "Change level", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "15px",
-            color: "#c8a0e0",
-          })
-          .setOrigin(0.5)
-          .setInteractive({ useHandCursor: true });
-        change.on("pointerover", () => change.setColor("#ffd24a"));
-        change.on("pointerout", () => change.setColor("#c8a0e0"));
-        change.on("pointerdown", () => this.scene.start("Level"));
-
-        // ♾️ Keep Playing: restart the Game at the same level in endless mode
-        // (carries the auto flag so adaptive still records the endless run).
+        // ♾️ Keep Playing: same level in endless mode (Finish ✓ ends it).
         const keepBtn = this.add
-          .rectangle(cx, 520, 240, 48, 0x2563a8)
+          .rectangle(cx - 130, 496, 240, 50, 0x2563a8)
           .setStrokeStyle(2, 0x7dd3fc)
           .setInteractive({ useHandCursor: true });
-        this.add
-          .text(cx, 520, "♾️ Keep Playing", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "18px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
-          .setOrigin(0.5);
+        this.add.text(cx - 130, 496, "♾️ Keep Playing", T(18, "#ffffff", { fontStyle: "bold" })).setOrigin(0.5);
         const keepPlaying = () => {
           eeTrack = d.track;
           eeEndless = true;
@@ -1852,6 +1892,15 @@
         keepBtn.on("pointerover", () => keepBtn.setFillStyle(0x2f74c2));
         keepBtn.on("pointerout", () => keepBtn.setFillStyle(0x2563a8));
         keepBtn.on("pointerdown", keepPlaying);
+        const change = this.add
+          .rectangle(cx + 130, 496, 240, 50, 0x42305f)
+          .setStrokeStyle(2, 0xb06fd4)
+          .setInteractive({ useHandCursor: true });
+        this.add.text(cx + 130, 496, "Change level", T(18, "#ffffff", { fontStyle: "bold" })).setOrigin(0.5);
+        change.on("pointerover", () => change.setFillStyle(0x54407a));
+        change.on("pointerout", () => change.setFillStyle(0x42305f));
+        change.on("pointerdown", () => this.scene.start("Level"));
+        this.add.text(cx, 556, "Enter = Play again · Every round has new numbers.", T(15, "#c2a8de")).setOrigin(0.5);
       };
 
       // ── Launch ──
@@ -1859,7 +1908,13 @@
       // Native math controls now have a readable, touch-accessible console.
       window.PhaserStudio.mount({
         game: eeGame, id: "u6-expression-express", GameScene, ResultScene, audio: SFX,
-        instructions: ["Arrange tiles to make an expression equal the target. \u2190/\u2192 choose a slot; \u2191/\u2193 cycle its tiles; Enter checks your build.", "Backspace removes a tile. Follow the order of operations."],
+        instructions: [
+          "Look at the big gold number. Build an expression that equals it.",
+          "Tap a tile to put it in the next empty box. Tap it again to send it back. You can also drag tiles.",
+          "Keyboard: \u2190 \u2192 pick a box, \u2191 \u2193 change the tile in it, Backspace empties it, Enter checks your build.",
+          "Work out the value yourself. Do \u00d7 before + and \u2212. On Level 2, plug in x, and remember 3\u00b2 = 3 \u00d7 3.",
+          "Not right? Read the tip and try again. More help appears after each try. First-try builds earn the most points.",
+        ],
         setLevel(level) { eeTrack = level; eeAuto = false; eeEndless = false; eeGame.scene.getScenes(true).forEach(scene => eeGame.scene.stop(scene.sys.settings.key)); eeGame.scene.start(eeVocabSeen ? "Game" : "Vocab"); }
       });
       window.eeGame = eeGame; // stable handle for automated QA harnesses

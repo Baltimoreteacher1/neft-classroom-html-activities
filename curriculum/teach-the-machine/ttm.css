@@ -109,19 +109,6 @@ a:focus-visible {
   padding: 18px 0 4px;
 }
 
-.back-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 8px 14px;
-  border-radius: 999px;
-  background: var(--card);
-  border: 1px solid var(--line);
-  font-weight: 700;
-  font-size: 15px;
-}
-
 .spacer {
   flex: 1 1 auto;
 }
@@ -333,7 +320,7 @@ a:focus-visible {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 10px;
+  margin: 14px 0 0;
 }
 
 .chip-label {
@@ -444,6 +431,52 @@ textarea:focus {
 }
 
 .coach-note:empty {
+  display: none;
+}
+
+.entry-label {
+  display: block;
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+
+.learner-pick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  margin: 0 0 14px;
+  font-size: 16px;
+}
+
+.learner-pick label {
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.learner-pick select {
+  flex: 1 1 240px;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 44px;
+  font: inherit;
+  font-size: 16px;
+  padding: 8px 10px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--ink);
+}
+
+.taught-line {
+  margin-top: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--green);
+}
+
+.taught-line:empty {
   display: none;
 }
 
@@ -624,5 +657,29 @@ details.model-answer p {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Grid items default to min-width:auto, so one long <option> could widen the
+   whole column past a phone screen. */
+.board,
+.rail {
+  min-width: 0;
+}
+
+/* The language switch shares the title row on wide screens, so the learner
+   and the writing box start higher on a 1366x768 Chromebook. */
+@media (min-width: 760px) {
+  .wrap {
+    position: relative;
+  }
+  .topbar {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    padding: 0;
+  }
+  .hero {
+    padding-right: 140px;
   }
 }

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "_note": "Extension expedition solve-along for orbital mission planning.",
+  "_note": "Extension expedition solve-along. Worked examples use PARALLEL numbers — never the page's default inputs (430 crew / 18 seats, 94.50 / 4.50, 18 m ÷ 2/3, 9 1/3 ÷ 1 1/6) — so the example teaches the method without printing the project answer.",
   "solves": [
     {
       "step": "step-1",
@@ -10,8 +10,8 @@
         "es": "Asignación de cápsulas de escape"
       },
       "prompt": {
-        "en": "An orbital station has 430 crew members. Each emergency shuttle pod holds 18 astronauts. How many shuttle pods are required?",
-        "es": "Una estación orbital tiene 430 tripulantes. En cada cápsula de escape caben 18 astronautas. ¿Cuántas cápsulas se requieren?"
+        "en": "A research outpost has 250 crew members. Each emergency shuttle pod holds 12 astronauts. How many shuttle pods are required?",
+        "es": "Un puesto de investigación tiene 250 tripulantes. En cada cápsula de escape caben 12 astronautas. ¿Cuántas cápsulas se requieren?"
       },
       "steps": [
         {
@@ -19,10 +19,10 @@
             "en": "Divide crew by shuttle capacity.",
             "es": "Divide la tripulación entre la capacidad de la cápsula."
           },
-          "math": "430 ÷ 18 = 23 R 16",
+          "math": "250 ÷ 12 = 20 R 10",
           "why": {
-            "en": "23 shuttles fill completely (23 × 18 = 414 astronauts), leaving 16 astronauts.",
-            "es": "23 cápsulas se llenan completamente (23 × 18 = 414 astronautas), dejando 16 astronautas."
+            "en": "20 shuttles fill completely (20 × 12 = 240 astronauts), leaving 10 astronauts.",
+            "es": "20 cápsulas se llenan por completo (20 × 12 = 240 astronautas) y quedan 10 astronautas."
           }
         },
         {
@@ -30,16 +30,16 @@
             "en": "Round up to evacuate all personnel.",
             "es": "Redondea hacia arriba para evacuar a todo el personal."
           },
-          "math": "23 + 1 = 24",
+          "math": "20 + 1 = 21",
           "why": {
-            "en": "No astronaut can be abandoned on station, so 24 shuttles are required.",
-            "es": "No se puede abandonar a ningún astronauta, así que se requieren 24 cápsulas."
+            "en": "The 10 astronauts left over still need seats, so one more pod is required.",
+            "es": "Los 10 astronautas que sobran también necesitan asiento, así que se requiere una cápsula más."
           }
         }
       ],
       "answer": {
-        "en": "24 shuttle pods.",
-        "es": "24 cápsulas de escape."
+        "en": "21 shuttle pods.",
+        "es": "21 cápsulas de escape."
       },
       "yourTurn": {
         "items": [
@@ -65,6 +65,172 @@
                 "why": {
                   "en": "21 full pods and 1 pod for the 14 remaining crew.",
                   "es": "21 cápsulas llenas y 1 para los 14 tripulantes restantes."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "step": "step-2",
+      "strand": "Dividing decimals · Lesson 2-7",
+      "title": {
+        "en": "Make the divisor a whole number",
+        "es": "Convierte el divisor en un número entero"
+      },
+      "prompt": {
+        "en": "A supply depot has 52.50 energy credits. Each fuel cell costs 3.50 credits. How many whole fuel cells can it buy?",
+        "es": "Un depósito tiene 52.50 créditos de energía. Cada celda de combustible cuesta 3.50 créditos. ¿Cuántas celdas completas puede comprar?"
+      },
+      "steps": [
+        {
+          "do": {
+            "en": "Multiply BOTH numbers by 10 so the divisor is a whole number.",
+            "es": "Multiplica AMBOS números por 10 para que el divisor sea un número entero."
+          },
+          "math": "52.50 ÷ 3.50 → 525 ÷ 35",
+          "why": {
+            "en": "Scaling both numbers by the same power of 10 keeps the quotient the same.",
+            "es": "Multiplicar ambos números por la misma potencia de 10 mantiene el mismo cociente."
+          }
+        },
+        {
+          "do": {
+            "en": "Divide the whole numbers.",
+            "es": "Divide los números enteros."
+          },
+          "math": "35 × 15 = 525, so 525 ÷ 35 = 15",
+          "why": {
+            "en": "Build the quotient in friendly chunks: 35 × 10 = 350 and 35 × 5 = 175.",
+            "es": "Arma el cociente por partes fáciles: 35 × 10 = 350 y 35 × 5 = 175."
+          }
+        }
+      ],
+      "answer": {
+        "en": "15 fuel cells.",
+        "es": "15 celdas de combustible."
+      },
+      "yourTurn": {
+        "items": [
+          {
+            "ask": {
+              "en": "28.80 credits, 1.20 credits per cell. How many whole cells?",
+              "es": "28.80 créditos, 1.20 créditos por celda. ¿Cuántas celdas completas?"
+            },
+            "unit": {
+              "en": "fuel cells",
+              "es": "celdas"
+            },
+            "answer": 24,
+            "expr": "288 / 12",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Multiply both by 10, then divide.",
+                  "es": "Multiplica ambos por 10 y luego divide."
+                },
+                "math": "28.80 ÷ 1.20 → 288 ÷ 12 = 24",
+                "why": {
+                  "en": "12 × 24 = 288, so 24 whole fuel cells.",
+                  "es": "12 × 24 = 288, así que 24 celdas completas."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "step": "step-3",
+      "strand": "Dividing fractions and mixed numbers · Lessons 6-1 & 6-2",
+      "title": {
+        "en": "Divide by a fraction: multiply by its reciprocal",
+        "es": "Divide entre una fracción: multiplica por su recíproco"
+      },
+      "prompt": {
+        "en": "A 7 1/2 kg bag of protein mix is packed into 1 1/4 kg survival packs. How many full packs can be made?",
+        "es": "Una bolsa de 7 1/2 kg de mezcla de proteína se reparte en paquetes de 1 1/4 kg. ¿Cuántos paquetes completos se pueden hacer?"
+      },
+      "steps": [
+        {
+          "do": {
+            "en": "Change both mixed numbers to fractions.",
+            "es": "Convierte ambos números mixtos en fracciones."
+          },
+          "math": "7 1/2 = 15/2   1 1/4 = 5/4",
+          "why": {
+            "en": "You cannot flip a mixed number, so rewrite it as one fraction first.",
+            "es": "No se puede voltear un número mixto, así que primero escríbelo como una sola fracción."
+          }
+        },
+        {
+          "do": {
+            "en": "Keep, change, flip — then multiply.",
+            "es": "Deja, cambia, voltea y luego multiplica."
+          },
+          "math": "15/2 ÷ 5/4 = 15/2 × 4/5 = 60/10 = 6",
+          "why": {
+            "en": "Dividing by 5/4 is the same as multiplying by its reciprocal, 4/5.",
+            "es": "Dividir entre 5/4 es lo mismo que multiplicar por su recíproco, 4/5."
+          }
+        }
+      ],
+      "answer": {
+        "en": "6 full survival packs.",
+        "es": "6 paquetes completos."
+      },
+      "yourTurn": {
+        "items": [
+          {
+            "ask": {
+              "en": "12 m of tether, 3/4 m per clip. How many clips?",
+              "es": "12 m de línea, 3/4 m por enganche. ¿Cuántos enganches?"
+            },
+            "unit": {
+              "en": "clips",
+              "es": "enganches"
+            },
+            "answer": 16,
+            "expr": "12 * 4 / 3",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Multiply by the reciprocal 4/3.",
+                  "es": "Multiplica por el recíproco 4/3."
+                },
+                "math": "12 × 4/3 = 48/3 = 16",
+                "why": {
+                  "en": "Each metre holds 4/3 of a clip, so 12 metres hold 16 clips.",
+                  "es": "Cada metro contiene 4/3 de enganche, así que 12 metros contienen 16."
+                }
+              }
+            ]
+          },
+          {
+            "ask": {
+              "en": "5 1/4 kg of rations, 1 3/4 kg per pack. How many packs?",
+              "es": "5 1/4 kg de raciones, 1 3/4 kg por paquete. ¿Cuántos paquetes?"
+            },
+            "unit": {
+              "en": "packs",
+              "es": "paquetes"
+            },
+            "answer": 3,
+            "expr": "(21 / 4) * (4 / 7)",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Rewrite as fractions, then multiply by the reciprocal.",
+                  "es": "Escribe como fracciones y multiplica por el recíproco."
+                },
+                "math": "21/4 ÷ 7/4 = 21/4 × 4/7 = 84/28 = 3",
+                "why": {
+                  "en": "Both are in fourths, so the question is really 21 fourths ÷ 7 fourths.",
+                  "es": "Ambos están en cuartos, así que la pregunta es 21 cuartos ÷ 7 cuartos."
                 }
               }
             ]

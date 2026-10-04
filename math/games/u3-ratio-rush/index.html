@@ -87,6 +87,11 @@
         white-space: nowrap;
         border: 0;
       }
+      /* Keep the whole board (including LOCK IN / NEXT) above the fold on a
+         1366x768 Chromebook. */
+      .cabinet-viewport {
+        width: min(100%, 960px, calc((100dvh - 84px) * 820 / 600)) !important;
+      }
     </style>
     <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
     <script>
@@ -128,9 +133,9 @@
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
   <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
     <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-    <script src="/assets/game-studio.js?v=20261002" defer></script>
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
     <link rel="stylesheet" href="/math/games/shared/phaser-studio.css?v=20261002">
-    <script src="/math/games/shared/phaser-studio.js?v=20261002"></script>
+    <script src="/math/games/shared/phaser-studio.js?v=20261003"></script>
     <link rel="stylesheet" href="/math/games/shared/cabinet-tools.css?v=20261002">
     <script src="/math/games/shared/cabinet-tools.js?v=20261002" defer></script>
 </head>
@@ -631,7 +636,7 @@
           .text(
             cx,
             232,
-            "Line up the two number lines so the pair stays in ratio.\nSlide the knob (or use ← →), watch the live readout, then Lock In!",
+            "Line up the two number lines so the pair stays in ratio.\nFind the scale factor, slide the gold knob (or use ← →), then Lock In!",
             {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "16px",
@@ -981,7 +986,11 @@
         this.streak = 0;
         this.level = 1;
         this.solved = 0; // problems answered correctly
-        this.attempts = 0; // graded lock-ins (for accuracy)
+        this.attempts = 0; // problems resolved (solved or shown) — accuracy denominator
+        this.firstTry = 0; // problems right on the first Lock In (unaided)
+        this.helpedBy = { one: 0, full: 0, unit: 0 }; // problems that needed help, by kind
+        this.helpMarks = []; // Tier-2 double-number-line pairs
+        this.awaitNext = false; // explanation is up; the button reads NEXT
         this.target = this.endless ? Infinity : 10; // win condition: solve this many problems
         this.problem = null;
         this.locked = false;
@@ -1004,11 +1013,6 @@
           ...hudStyle,
           color: "#8ff0d8",
         });
-        // Decorative hearts: this is no-fail practice, so they never decrease.
-        this.add.text(16, 36, "❤❤❤", {
-          ...hudStyle,
-          color: "#ff8f8f",
-        });
         this.streakText = this.add
           .text(W - 16, 12, "Streak: 0", { ...hudStyle, color: "#ffd24a" })
           .setOrigin(1, 0);
@@ -1019,7 +1023,7 @@
           })
           .setOrigin(1, 0);
         this.progressText = this.add
-          .text(W / 2, 12, "0 / " + (this.endless ? "∞" : this.target), {
+          .text(W / 2, 12, "Solved 0 / " + (this.endless ? "∞" : this.target), {
             ...hudStyle,
             color: "#bfe6da",
           })
@@ -1030,7 +1034,7 @@
         // the decorative hearts at (16, 36).
         if (this.endless) {
           this.finishBtn = this.add
-            .text(16, 62, "Finish ✓", {
+            .text(16, 40, "Finish ✓", {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "15px",
               fontStyle: "bold",
@@ -1089,13 +1093,19 @@
             strokeThickness: 5,
           })
           .setOrigin(0.5);
-        this.chipBg = this.add.rectangle(W / 2, 250, 240, 30, 0x163f44).setStrokeStyle(2, 0x1f8a6b);
+        // Coach panel. It used to be a live "Equivalent ✓ / Not equal ✗" chip,
+        // which let a student slide the knob until it turned green without
+        // reasoning at all. Now it names the next step (Level 1) or poses the
+        // thinking question (Level 2) and never judges the current position.
+        this.chipBg = this.add.rectangle(W / 2, 254, W - 100, 48, 0x163f44).setStrokeStyle(2, 0x1f8a6b);
         this.chipText = this.add
-          .text(W / 2, 250, "", {
+          .text(W / 2, 254, "", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
+            fontSize: "15px",
             fontStyle: "bold",
             color: "#bfe6da",
+            align: "center",
+            wordWrap: { width: W - 120 },
           })
           .setOrigin(0.5);
 
@@ -1107,7 +1117,7 @@
         this.lockBtn = this.add
           .rectangle(W / 2, 505, 240, 52, 0x1f8a6b)
           .setInteractive({ useHandCursor: true });
-        this.add
+        this.lockLabel = this.add
           .text(W / 2, 505, "LOCK IN ✓", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "22px",
@@ -1117,7 +1127,9 @@
           .setOrigin(0.5);
         this.lockBtn.on("pointerover", () => this.lockBtn.setFillStyle(0x27a883));
         this.lockBtn.on("pointerout", () => this.lockBtn.setFillStyle(0x1f8a6b));
-        this.lockBtn.on("pointerdown", () => this.lockIn());
+        // After a round resolves the same button becomes NEXT, so mouse and
+        // touch players never have to scroll to the console to continue.
+        this.lockBtn.on("pointerdown", () => (this.awaitNext ? rrNext() : this.lockIn()));
 
         // Hint
         this.add
@@ -1140,7 +1152,7 @@
             .text(
               W / 2,
               572,
-              "Tip: the glowing dots show the starting ratio — keep your pair equal to it.",
+              "Tip: the glowing dots show the starting ratio. Whatever you do to one number, do to the other.",
               {
                 fontFamily: "Segoe UI, sans-serif",
                 fontSize: "12px",
@@ -1201,8 +1213,8 @@
         this.input.keyboard.on("keydown-DOWN", () => switchLine("bottom"));
         this.input.keyboard.on("keydown-W", () => switchLine("top"));
         this.input.keyboard.on("keydown-S", () => switchLine("bottom"));
-        this.input.keyboard.on("keydown-ENTER", () => this.lockIn());
-        this.input.keyboard.on("keydown-SPACE", () => this.lockIn());
+        this.input.keyboard.on("keydown-ENTER", () => (this.awaitNext ? rrNext() : this.lockIn()));
+        this.input.keyboard.on("keydown-SPACE", () => (this.awaitNext ? rrNext() : this.lockIn()));
 
         this.cameras.main.fadeIn(400);
         this.newProblem();
@@ -1289,30 +1301,87 @@
       GameScene.prototype.refreshReadout = function () {
         const p = this.problem;
         if (!p) return;
-        const c = this.topVal,
-          d = this.botVal;
-        this.ratioReadout.setText(c + " : " + d);
-        const equiv = p.a * d === p.b * c;
-        let txt,
-          color = "#bfe6da",
-          fill = 0x163f44;
-        if (c === 0 || d === 0) {
-          txt = "Move both above 0";
-        } else if (p.kind === "full" && c === p.a && d === p.b) {
-          txt = "Same ratio — make a NEW one";
-          color = "#ffd24a";
-          fill = 0x3a3416;
-        } else if (equiv) {
-          txt = "Equivalent ✓";
-          color = "#8ff0d8";
-          fill = 0x12463a;
-        } else {
-          txt = "Not equal ✗";
-          color = "#ff9f9f";
-          fill = 0x3a1616;
+        // The big readout only restates the student's own knob values; it
+        // never says whether they are equivalent (that is the student's job).
+        this.ratioReadout.setText(this.topVal + " : " + this.botVal);
+        if (!this.coachSet) {
+          this.coachSet = true;
+          this.chipText.setText(this.coachLine()).setColor("#bfe6da");
+          this.chipBg.setFillStyle(0x163f44);
         }
-        this.chipText.setText(txt).setColor(color);
-        this.chipBg.setFillStyle(fill);
+      };
+
+      // Level 1: an explicit step coach that names the NEXT action with the
+      // problem's own numbers but never the result. Level 2: one thinking
+      // question. Fixed for the whole problem, so it cannot be used as a
+      // hot/cold detector.
+      GameScene.prototype.coachLine = function () {
+        const p = this.problem;
+        if (this.track === 1) {
+          if (p.kind === "one")
+            return (
+              "Step 1: How many times bigger is " +
+              p.topFixed +
+              " than " +
+              p.a +
+              "? (" +
+              p.topFixed +
+              " ÷ " +
+              p.a +
+              ")   Step 2: Multiply " +
+              p.b +
+              " by that number.   Step 3: Slide the gold knob there and Lock In."
+            );
+          if (p.kind === "unit")
+            return (
+              "Step 1: To make " +
+              p.a +
+              " into 1, divide by " +
+              p.a +
+              ".   Step 2: Divide " +
+              p.b +
+              " by " +
+              p.a +
+              " too.   Step 3: Slide the gold knob there and Lock In."
+            );
+          return (
+            "Step 1: Pick a number like 2 or 3.   Step 2: Multiply BOTH " +
+            p.a +
+            " and " +
+            p.b +
+            " by it.   Step 3: Move both knobs and Lock In."
+          );
+        }
+        if (p.kind === "one") return "Think: what scale factor turns " + p.a + " into " + p.topFixed + "?";
+        if (p.kind === "unit") return "Think: what happens to " + p.b + " when " + p.a + " becomes 1?";
+        return "Think: what can you multiply BOTH " + p.a + " and " + p.b + " by?";
+      };
+
+      GameScene.prototype.clearHelpMarks = function () {
+        this.helpMarks.forEach((m) => m.destroy());
+        this.helpMarks = [];
+      };
+
+      // Tier-2 visual: the double number line itself — paired multiples
+      // a:b, 2a:2b, 3a:3b ... joined by a line, so equal ratios can be SEEN.
+      GameScene.prototype.drawPairs = function () {
+        const p = this.problem;
+        this.clearHelpMarks();
+        const pairs = [];
+        if (p.kind === "unit") pairs.push([p.a, p.b]);
+        else for (let k = 1; k * p.a <= MAXV && k * p.b <= MAXV; k++) pairs.push([k * p.a, k * p.b]);
+        pairs.forEach(([t, u]) => {
+          const g = this.add.graphics().setDepth(3);
+          g.lineStyle(2, 0x8ff0d8, 0.55);
+          g.lineBetween(tickX(t), TOP_Y + 8, tickX(u), BOT_Y - 8);
+          this.helpMarks.push(g);
+          [
+            [t, TOP_Y],
+            [u, BOT_Y],
+          ].forEach(([v, y]) => {
+            this.helpMarks.push(this.add.circle(tickX(v), y, 8, 0x8ff0d8, 0.55).setDepth(5));
+          });
+        });
       };
 
       GameScene.prototype.refreshActiveCue = function () {
@@ -1326,7 +1395,11 @@
 
       GameScene.prototype.newProblem = function () {
         this.locked = false;
-        this.attemptsThis = 0; // wrong tries on THIS problem (1st = retry, 2nd = teach)
+        this.attemptsThis = 0; // wrong tries on THIS problem (hint, step, then teach)
+        this.awaitNext = false;
+        this.coachSet = false;
+        this.lockLabel.setText("LOCK IN ✓");
+        this.clearHelpMarks();
         const p = makeProblem(this.level, this.track);
         this.problem = p;
 
@@ -1383,7 +1456,7 @@
       };
 
       GameScene.prototype.lockIn = function () {
-        if (this.locked || !this.problem) return;
+        if (this.locked || this.awaitNext || !this.problem) return;
         const p = this.problem;
         const c = this.topVal,
           d = this.botVal;
@@ -1391,15 +1464,22 @@
         const sameAsBase = c === p.a && d === p.b;
         const correct = c > 0 && d > 0 && equiv && !(p.kind === "full" && sameAsBase);
         this.locked = true;
-        this.attempts++;
 
         if (correct) {
           SFX.good();
           JUICE.audio.correct(this.streak);
           this.solved++;
           this.streak++;
-          const bonus = Math.min(this.streak, 5) * 5;
-          const gained = 20 + bonus;
+          // Full points for an unaided first try; fewer once help was used.
+          const tries = this.attemptsThis || 0;
+          let gained;
+          if (tries === 0) {
+            this.firstTry++;
+            gained = 20 + Math.min(this.streak, 5) * 5;
+          } else {
+            this.helpedBy[p.kind] = (this.helpedBy[p.kind] || 0) + 1;
+            gained = tries === 1 ? 12 : 6;
+          }
           this.score += gained;
           this.burst.setPosition(tickX(d), BOT_Y);
           this.burst.explode(16);
@@ -1409,102 +1489,147 @@
           JUICE.award(gained, "u3-ratio-rush");
           if (this.streak >= 2) JUICE.confetti(this, 1);
           this.flash(W / 2, 180, "Correct! ✓", "#8ff0d8");
-          this.feedback.setText("Correct! " + p.why).setAlpha(1);
-          srSay("Correct. " + p.why);
+          // For "full", any equivalent ratio is right — explain THEIR ratio.
+          const why =
+            p.kind === "full"
+              ? p.a + ":" + p.b + " = " + c + ":" + d + " (both parts × " + (c / p.a) + ")."
+              : p.why;
+          this.feedback
+            .setText((tries === 0 ? "Correct on your first try! " : "You fixed it! ") + why)
+            .setAlpha(1);
+          this.chipText.setText("Equivalent ✓ — " + why).setColor("#8ff0d8");
+          this.chipBg.setFillStyle(0x12463a);
+          srSay("Correct. " + why);
           this.afterAttempt(true);
-        } else {
-          SFX.bad();
-          JUICE.audio.wrong();
-          JUICE.shake(this, 0.008);
-          this.streak = 0;
-          this.attemptsThis = (this.attemptsThis || 0) + 1;
-          if (this.attemptsThis < 2) {
-            // First miss: method-only diagnostic + retry the SAME problem.
-            // Knobs stay where the student put them; nothing is revealed.
-            let diag;
-            if (!(c > 0 && d > 0)) {
-              diag = "Both knobs need a value past 0. Slide each knob first.";
-            } else if (p.kind === "full" && sameAsBase) {
+          return;
+        }
+        SFX.bad();
+        JUICE.audio.wrong();
+        JUICE.shake(this, 0.008);
+        this.streak = 0;
+        this.attemptsThis = (this.attemptsThis || 0) + 1;
+        if (this.attemptsThis < 3) {
+          // Miss 1 = Tier 1 (method only). Miss 2 = Tier 2 (a concrete step
+          // with this problem's numbers + the paired multiples drawn on the
+          // number lines). Knobs stay where the student put them.
+          let diag;
+          if (!(c > 0 && d > 0)) {
+            diag = "Both knobs need a value past 0. Slide each knob first.";
+          } else if (p.kind === "full" && sameAsBase) {
+            diag =
+              "That's the starting ratio itself — multiply BOTH parts by the same number to build an EQUIVALENT ratio.";
+          } else if (this.attemptsThis === 1) {
+            diag =
+              c +
+              ":" +
+              d +
+              " is not equivalent to " +
+              p.a +
+              ":" +
+              p.b +
+              ". Whatever you multiply or divide the top by, do the SAME to the bottom.";
+          } else {
+            this.drawPairs();
+            if (p.kind === "one")
               diag =
-                "That's the starting ratio itself — multiply BOTH parts by the same number to build an EQUIVALENT ratio.";
-            } else {
+                p.topFixed +
+                " ÷ " +
+                p.a +
+                " = " +
+                p.topFixed / p.a +
+                ", so the scale factor is " +
+                p.topFixed / p.a +
+                ". Multiply " +
+                p.b +
+                " by " +
+                p.topFixed / p.a +
+                ". The lines show matching pairs.";
+            else if (p.kind === "unit")
               diag =
-                "Your knobs show " +
-                c +
-                ":" +
-                d +
-                ", which isn't equivalent to " +
+                p.a +
+                " ÷ " +
+                p.a +
+                " = 1, so divide " +
+                p.b +
+                " by " +
+                p.a +
+                " too. What is " +
+                p.b +
+                " ÷ " +
+                p.a +
+                "?";
+            else
+              diag =
+                "The lines join matching pairs: " +
                 p.a +
                 ":" +
                 p.b +
-                ". Whatever you multiply or divide the top by, do the SAME to the bottom.";
-            }
-            this.feedback.setText("Not quite — " + diag + " Try again!").setAlpha(1);
-            srSay("Not quite. " + diag + " Try again.");
-            this.locked = false;
-            return;
+                ", " +
+                2 * p.a +
+                ":" +
+                2 * p.b +
+                (3 * p.a <= MAXV && 3 * p.b <= MAXV ? ", …" : "") +
+                ". Pick one that is not " +
+                p.a +
+                ":" +
+                p.b +
+                ".";
           }
-          this.feedback.setText("Not quite — " + p.why).setAlpha(1);
-          srSay("Not quite. " + p.why);
-          // Teach: show the correct value(s) with green ghost markers and glide
-          // the movable knob(s) to the right spot, then continue.
-          const ghosts = [];
-          const makeGhost = (line, val) => {
-            const refs = line === "top" ? this.topLine : this.botLine;
-            ghosts.push(this.add.circle(tickX(val), refs.y, 13, 0x8ff0d8, 0.5).setDepth(6));
-          };
-          const tweenTargets = [];
-          if (p.topFixed === null) {
-            makeGhost("top", p.targetTop);
-            tweenTargets.push({
-              o: this.topLine.knob,
-              x: tickX(p.targetTop),
-            });
-            tweenTargets.push({
-              o: this.topLine.knobVal,
-              x: tickX(p.targetTop),
-            });
-            this.topLine.knobVal.setText(String(p.targetTop));
-          }
-          if (p.botFixed === null) {
-            makeGhost("bottom", p.targetBot);
-            tweenTargets.push({
-              o: this.botLine.knob,
-              x: tickX(p.targetBot),
-            });
-            tweenTargets.push({
-              o: this.botLine.knobVal,
-              x: tickX(p.targetBot),
-            });
-            this.botLine.knobVal.setText(String(p.targetBot));
-          }
-          this.ratioReadout.setText(p.targetTop + " : " + p.targetBot);
-          let done = false;
-          const finish = () => {
-            if (done) return;
-            done = true;
-            ghosts.forEach((g) => g.destroy());
-            this.afterAttempt(false);
-          };
-          if (this.reduceMotion || tweenTargets.length === 0) {
-            tweenTargets.forEach((t) => (t.o.x = t.x));
-            this.time.delayedCall(400, finish);
-          } else {
-            this.tweens.add({
-              targets: tweenTargets.map((t) => t.o),
-              duration: 600,
-              ease: "Quad.Out",
-              x: function (target) {
-                const m = tweenTargets.find((t) => t.o === target);
-                return m ? m.x : target.x;
-              },
-              onComplete: finish,
-            });
-          }
+          this.feedback.setText("Not quite — " + diag + " Try again!").setAlpha(1);
+          srSay("Not quite. " + diag + " Try again.");
+          this.locked = false;
+          return;
+        }
+        this.helpedBy[p.kind] = (this.helpedBy[p.kind] || 0) + 1;
+        this.feedback.setText("Here is one way — " + p.why).setAlpha(1);
+        srSay("Here is one way. " + p.why);
+        // Teach: show the correct value(s) with green ghost markers and glide
+        // the movable knob(s) to the right spot, then continue.
+        const ghosts = [];
+        const makeGhost = (line, val) => {
+          const refs = line === "top" ? this.topLine : this.botLine;
+          ghosts.push(this.add.circle(tickX(val), refs.y, 13, 0x8ff0d8, 0.5).setDepth(6));
+        };
+        const tweenTargets = [];
+        if (p.topFixed === null) {
+          makeGhost("top", p.targetTop);
+          tweenTargets.push({ o: this.topLine.knob, x: tickX(p.targetTop) });
+          tweenTargets.push({ o: this.topLine.knobVal, x: tickX(p.targetTop) });
+          this.topLine.knobVal.setText(String(p.targetTop));
+        }
+        if (p.botFixed === null) {
+          makeGhost("bottom", p.targetBot);
+          tweenTargets.push({ o: this.botLine.knob, x: tickX(p.targetBot) });
+          tweenTargets.push({ o: this.botLine.knobVal, x: tickX(p.targetBot) });
+          this.botLine.knobVal.setText(String(p.targetBot));
+        }
+        this.ratioReadout.setText(p.targetTop + " : " + p.targetBot);
+        let done = false;
+        const finish = () => {
+          if (done) return;
+          done = true;
+          ghosts.forEach((g) => g.destroy());
+          this.afterAttempt(false);
+        };
+        if (this.reduceMotion || tweenTargets.length === 0) {
+          tweenTargets.forEach((t) => (t.o.x = t.x));
+          this.time.delayedCall(400, finish);
+        } else {
+          this.tweens.add({
+            targets: tweenTargets.map((t) => t.o),
+            duration: 600,
+            ease: "Quad.Out",
+            x: function (target) {
+              const m = tweenTargets.find((t) => t.o === target);
+              return m ? m.x : target.x;
+            },
+            onComplete: finish,
+          });
         }
       };
 
       GameScene.prototype.afterAttempt = function (correct) {
+        this.attempts++; // one resolution per problem (accuracy denominator)
         // Level up every 2 correct (raises the framing: one → full → unit).
         const newLevel = Math.min(8, 1 + Math.floor(this.solved / 2));
         if (newLevel > this.level) {
@@ -1517,6 +1642,8 @@
           this.endGame();
           return;
         }
+        this.awaitNext = true;
+        this.lockLabel.setText("NEXT ▶");
         this.studioNextRound(() => {
           this.feedback.setAlpha(0);
           this.newProblem();
@@ -1548,7 +1675,9 @@
         this.scoreText.setText("Score: " + this.score);
         this.streakText.setText("Streak: " + this.streak);
         this.levelText.setText(this.track === 1 ? "Level 1 · Support" : "Level 2 · Enrich");
-        this.progressText.setText(this.solved + " / " + (this.endless ? "∞" : this.target));
+        this.progressText.setText(
+          "Solved " + this.solved + " / " + (this.endless ? "∞" : this.target),
+        );
       };
 
       // Reached by solving all target problems (mistakes never end the game),
@@ -1563,7 +1692,11 @@
             track: this.track,
             auto: this.auto,
             endless: this.endless,
-            accuracy: this.attempts ? this.solved / this.attempts : 1,
+            attempted: this.attempts,
+            firstTry: this.firstTry,
+            helpedBy: this.helpedBy,
+            // First-try (unaided) accuracy drives stars and the adaptive picker.
+            accuracy: this.attempts ? this.firstTry / this.attempts : 1,
           });
         });
       };
@@ -1586,7 +1719,11 @@
         // runs only end at solved === target, so they always earn 3 stars.
         const endless = !!d.endless;
         const goal = endless ? 10 : d.target;
-        const stars = d.solved >= goal ? 3 : d.solved >= goal * 0.6 ? 2 : 1;
+        // Stars from FIRST-TRY accuracy (help is good; unaided is the goal).
+        const attempted = d.attempted > 0 ? d.attempted : Math.max(1, d.solved);
+        const firstTry = typeof d.firstTry === "number" ? d.firstTry : d.solved;
+        const acc = firstTry / attempted;
+        const stars = acc >= 0.85 ? 3 : acc >= 0.6 ? 2 : 1;
         // Adaptive: only record a run when the level was auto-picked.
         if (d.auto && window.NTAdaptive) {
           window.NTAdaptive.recordRun("u3-ratio-rush", {
@@ -1605,54 +1742,67 @@
           } catch (e) {}
         }
 
+        const body = (y, text, color, size, bold) =>
+          this.add
+            .text(cx, y, text, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: (size || 18) + "px",
+              fontStyle: bold ? "bold" : "normal",
+              color: color || "#bfe6da",
+              align: "center",
+              wordWrap: { width: W - 140 },
+              lineSpacing: 4,
+            })
+            .setOrigin(0.5);
         this.add
-          .text(cx, 110, "RATIOS MASTERED!", {
+          .text(cx, 66, "RATIOS MASTERED!", {
             fontFamily: "Impact, sans-serif",
-            fontSize: "48px",
+            fontSize: "46px",
             color: "#8ff0d8",
             stroke: "#06201f",
             strokeThickness: 5,
           })
           .setOrigin(0.5);
-
-        const starStr = "★".repeat(stars) + "☆".repeat(3 - stars);
-        this.add
-          .text(cx, 185, starStr, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "48px",
-            color: "#ffd24a",
-          })
-          .setOrigin(0.5);
-
-        this.add
-          .text(cx, 255, "Score: " + d.score, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "30px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
-          .setOrigin(0.5);
-        this.add
-          .text(
-            cx,
-            295,
-            endless
-              ? "Solved " + d.solved + " problems"
-              : "Solved " + d.solved + " of " + d.target + " problems",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "18px",
-              color: "#bfe6da",
-            },
-          )
-          .setOrigin(0.5);
-        this.add
-          .text(cx, 325, "High Score: " + hs, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
-            color: "#ffd24a",
-          })
-          .setOrigin(0.5);
+        body(122, "★".repeat(stars) + "☆".repeat(3 - stars), "#ffd24a", 44);
+        body(176, "Score: " + d.score + "   (best " + hs + ")", "#ffffff", 26, true);
+        body(
+          216,
+          (endless ? "Solved " + d.solved : "Solved " + d.solved + " of " + d.target) +
+            "  ·  Right on the first try: " +
+            firstTry +
+            " of " +
+            attempted,
+          "#8ff0d8",
+          18,
+        );
+        body(
+          252,
+          "Skills: equivalent ratios, missing values, and unit rates on a double number line (6.AT.1–6.AT.3)",
+          "#bfe6da",
+          16,
+        );
+        // What to practice next: the problem type that needed the most help.
+        const helped = d.helpedBy || {};
+        const NEXT = {
+          one: "Practice next: missing values — find the scale factor (top ÷ base), then use it on the other number.",
+          full: "Practice next: equivalent ratios — multiply BOTH parts by the same number.",
+          unit: "Practice next: unit rates — divide BOTH parts by the first number so it becomes 1.",
+        };
+        let worst = null;
+        Object.keys(NEXT).forEach((k) => {
+          if ((helped[k] || 0) > 0 && (!worst || helped[k] > helped[worst])) worst = k;
+        });
+        body(
+          300,
+          worst
+            ? NEXT[worst]
+            : d.track === 1
+              ? "Great work! Next: try Level 2 for full equivalent ratios and unit rates."
+              : "Excellent! Next: ♾️ Keep Playing to build a long streak.",
+          "#ffe08a",
+          17,
+          true,
+        );
 
         SFX.win();
         JUICE.audio.fanfare();
@@ -1663,13 +1813,28 @@
           window.EduPulse &&
             EduPulse.record({
               activityTitle: document.title,
-              score: d.score,
+              // Canvas code: problems solved out of the goal + first-try percent
+              // (arcade points over a problem count printed e.g. "195/10").
+              score: d.solved,
+              maxScore: goal,
+              percent: Math.round(acc * 100),
               stars: stars,
               standard: "6.AT.3",
-              problemsAttempted: d.solved,
+              problemsCorrect: firstTry,
+              problemsAttempted: attempted,
             });
         } catch (e) {}
-        srSay("You won! Final score " + d.score + ", " + stars + " stars.");
+        srSay(
+          "Finished! Score " +
+            d.score +
+            ", " +
+            stars +
+            " stars. Right on the first try: " +
+            firstTry +
+            " of " +
+            attempted +
+            ".",
+        );
 
         const btn = this.add
           .rectangle(cx, 400, 220, 54, 0x1f8a6b)
@@ -1718,11 +1883,39 @@
 
       // ── Launch ──
       const rrGame = new Phaser.Game(config);
+      // In-canvas NEXT (and Enter/Space while the explanation is up) hand off to
+      // the shared studio's Continue so its pacing stays the single path.
+      let rrAdvancing = false; // re-entrancy guard: send() re-emits Enter when nothing is pending
+      function rrNext() {
+        if (rrAdvancing || typeof rrStudio === "undefined" || !rrStudio) return;
+        rrAdvancing = true;
+        try {
+          rrStudio.send("Enter");
+        } finally {
+          rrAdvancing = false;
+        }
+      }
       // Native math controls now have a readable, touch-accessible console.
-      window.PhaserStudio.mount({
-        game: rrGame, id: "u3-ratio-rush", GameScene, ResultScene, audio: SFX,
-        instructions: ["Keep the two quantities in the same ratio. \u2191/\u2193 select a line; \u2190/\u2192 adjust its marker; Enter checks both quantities.", "Find the same scale factor for the top and bottom lines."],
-        setLevel(level) { rrTrack = level; rrAuto = false; rrEndless = false; rrGame.scene.getScenes(true).forEach(scene => rrGame.scene.stop(scene.sys.settings.key)); rrGame.scene.start(rrVocabSeen ? "Game" : "Vocab"); }
+      const rrStudio = window.PhaserStudio.mount({
+        game: rrGame,
+        id: "u3-ratio-rush",
+        GameScene,
+        ResultScene,
+        audio: SFX,
+        instructions: [
+          "Goal: the two number lines are a ratio table. Move the GOLD knob(s) so the pair (top : bottom) is equal to the given ratio. Solve 10 to finish.",
+          "Move a knob: drag it, or press \u2190 \u2192 (A/D). Press \u2191 \u2193 to switch lines when both knobs move. Grey knobs are fixed.",
+          "Think first: find the scale factor (how many times bigger), and do the same thing to BOTH numbers. For a unit rate, make the top number 1.",
+          "Press LOCK IN (or Enter) to check. Not yet? Hint 1 tells you the method. Hint 2 gives the scale factor step and draws matching pairs. After 3 tries the game shows one answer — no one fails.",
+          "Points: most for right on the first try, fewer after a hint. Press NEXT when you have read the explanation.",
+        ],
+        setLevel(level) {
+          rrTrack = level;
+          rrAuto = false;
+          rrEndless = false;
+          rrGame.scene.getScenes(true).forEach((scene) => rrGame.scene.stop(scene.sys.settings.key));
+          rrGame.scene.start(rrVocabSeen ? "Game" : "Vocab");
+        },
       });
       window.rrGame = rrGame; // stable handle for automated QA harnesses
 

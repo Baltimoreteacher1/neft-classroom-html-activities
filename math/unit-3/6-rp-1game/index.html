@@ -323,14 +323,14 @@
                 t: 1,
                 label: "Level 1",
                 sub: "Support",
-                desc: "Small ratios · always shows the rule · 5 lives",
+                desc: "Make a ratio & finish a drink · coaching after a try · no timer",
                 col: C.green,
               },
               {
                 t: 2,
                 label: "Level 2",
                 sub: "Challenge",
-                desc: "Scaling & missing values · less help · 3 lives",
+                desc: "Scale big batches & missing values · no timer",
                 col: C.gold,
               },
             ];
@@ -372,22 +372,24 @@
                 card.setStrokeStyle(3, C.stroke);
                 card.setScale(1);
               });
-              card.on("pointerdown", () => {
+              const go = () => {
                 ensureAudio();
                 sfxClick();
                 this.cameras.main.fadeOut(350, 0, 0, 0);
                 this.time.delayedCall(350, () =>
                   this.scene.start("GameScene", { tier: d.t }),
                 );
-              });
+              };
+              card.on("pointerdown", go);
+              this.input.keyboard.once("keydown-" + ["ONE", "TWO"][i], go);
             });
 
             this.add
               .text(
                 W / 2,
                 712,
-                "Tap +Add / −  ·  keys 1 & 2 add, Backspace removes, Enter serves, H for a hint",
-                { fontSize: "12px", color: "#6f5ba0" },
+                "Press 1 or 2 to pick a level  ·  In the kitchen: keys 1 & 2 add, Backspace removes, Enter serves, H for a hint",
+                { fontSize: "15px", color: "#b9a6e8" },
               )
               .setOrigin(0.5);
             this.cameras.main.fadeIn(400);
@@ -441,6 +443,9 @@
             this.level = 1;
             this.roundIx = 0;
             this.counts = [0, 0]; // current scoops in tube A / B
+            this.firstTry = 0; // served correctly on the first serve, no hint
+            this.missByType = {};
+            this.typesSeen = {};
 
             // backdrop
             this.add.rectangle(W / 2, H / 2, W, H, 0x1a0d35);
@@ -641,6 +646,21 @@
               })
               .setOrigin(0.5);
 
+            // Enter serves. If the shared "Launch mission" button still has
+            // focus, Enter would relaunch and wipe the round — move focus to
+            // the game canvas so the kitchen keys work as labelled.
+            const cv = this.game.canvas;
+            if (cv) {
+              cv.setAttribute("tabindex", "0");
+              cv.setAttribute("role", "application");
+              cv.setAttribute(
+                "aria-label",
+                "Ratio Kitchen: press 1 or 2 to add a scoop, Backspace to remove, Enter to serve, H for a hint. The order and feedback are read aloud.",
+              );
+              const ae = document.activeElement;
+              if (ae && ae.id === "fm-start") cv.focus({ preventScroll: true });
+            }
+
             // keyboard
             this.input.keyboard.on("keydown", (e) => {
               if (e.key === "1") this.addScoop(0);
@@ -693,6 +713,8 @@
             const r = this.round;
             this.counts = [r.preseed[0], r.preseed[1]];
             this.attempts = 0;
+            this.hintTier = 0;
+            this.typesSeen[r.type] = true;
             this.feedback.setText("");
 
             // customer + order
@@ -926,10 +948,14 @@
             sfxWrong();
             this.attempts++;
             this.streak = 0;
-            this.cameras.main.shake(160, 0.006);
+            this.missByType[r.type] = (this.missByType[r.type] || 0) + 1;
             let msg;
             if (ca === 0 || cb === 0)
               msg = "Add some of BOTH ingredients first.";
+            else if (!ratioOk && crossMatch(ca, cb, r.b, r.a))
+              msg = `Check the order: the drink needs ${r.a} ${r.ia.name} for every ${r.b} ${r.ib.name}. Your tubes are switched.`;
+            else if (!ratioOk && ca - cb === r.a - r.b)
+              msg = `${ca}:${cb} keeps the same DIFFERENCE as ${r.a}:${r.b}, but ratios grow by MULTIPLYING both parts by the same number.`;
             else if (!ratioOk)
               msg = `That's ${ca}:${cb}. Is ${ca}:${cb} equivalent to ${r.a}:${r.b}? Check by multiplying.`;
             else if (r.capacity && total < r.capacity)
@@ -937,7 +963,13 @@
             else if (r.capacity && total > r.capacity)
               msg = `Right ratio, but over the fill line. Remove ${total - r.capacity}.`;
             else msg = "Not quite — compare your tubes to the order.";
-            this.flash(this.feedback, "❌ " + msg, "#ffb4b4");
+            this.flash(
+              this.feedback,
+              "❌ " + msg + " Tap 💡 Hint (H) for help.",
+              "#ffb4b4",
+              Infinity,
+            );
+            this.say(msg + " Hint (H) is ready if you need it.");
             this.orderRatio.setColor("#ffd34d");
 
             // a wrong serve costs a life only after a nudge, so support tier stays gentle
@@ -969,14 +1001,24 @@
             this.streak++;
             if (this.streak > this.bestStreak) this.bestStreak = this.streak;
             const combo = Math.min(4, 1 + Math.floor(this.streak / 3));
-            const firstTry = this.attempts === 0 ? 60 : 0;
+            const unaided = this.attempts === 0 && this.hintTier === 0;
+            if (unaided) this.firstTry++;
+            const firstTry = unaided ? 60 : 0;
+            const k = this.counts[0] / this.round.a;
             const pts = (100 + firstTry + this.streak * 8) * combo;
             this.score += pts;
             this.orderRatio.setColor("#2ec26b");
             this.flash(
               this.feedback,
-              `✅ Perfect! ${this.counts[0]}:${this.counts[1]} = ${this.round.a}:${this.round.b}  +${pts}${combo > 1 ? " x" + combo : ""}`,
+              `✅ ${this.counts[0]}:${this.counts[1]} = ${this.round.a}:${this.round.b}` +
+                (k > 1 ? ` (both parts × ${k})` : "") +
+                `  +${pts}${combo > 1 ? " x" + combo : ""}`,
               "#bff7cf",
+            );
+            this.say(
+              `Served! ${this.counts[0]}:${this.counts[1]} = ${this.round.a}:${this.round.b}` +
+                (k > 1 ? ` because both parts were multiplied by ${k}.` : ".") +
+                ` +${pts} points.`,
             );
             this.popServe();
 
@@ -1035,19 +1077,54 @@
             if (this.roundLocked || window.GameStudio?.paused) return;
             sfxClick();
             const r = this.round;
+            // Help is earned: try a serve first. Tier 1 = method (no answer),
+            // Tier 2 (after a second wrong serve, or a second tap) = a concrete step.
+            if (this.attempts === 0) {
+              this.flash(
+                this.feedback,
+                "\u{1F4A1} Give it a try first — pour, then press SERVE. Hints unlock after a try.",
+                "#ffe9a8",
+                Infinity,
+              );
+              this.say("Give it a try first: pour, then press Serve. Hints unlock after a try.");
+              return;
+            }
+            this.hintTier = Math.min(2, Math.max(this.hintTier + 1, this.attempts >= 2 ? 2 : 1));
             let h;
-            if (r.type === "missing")
-              h = `\u{1F4A1} The rule is ${r.a} ${r.ia.name} : ${r.b} ${r.ib.name}. You have ${this.counts[0]} ${r.ia.name} — that's ${this.counts[0] / r.a} group${this.counts[0] / r.a === 1 ? "" : "s"} of the rule.`;
-            else if (r.type === "batch")
-              h = `\u{1F4A1} Each "group" is ${r.a}+${r.b}=${r.a + r.b} scoops. How many groups make ${r.capacity}? Add that many of each.`;
-            else
-              h = `\u{1F4A1} For every ${r.a} ${r.ia.name}, add ${r.b} ${r.ib.name}. Keep the same number of groups in each tube.`;
-            this.flash(this.feedback, h, "#ffe9a8", 3200);
+            if (this.hintTier === 1) {
+              if (r.type === "missing")
+                h = `\u{1F4A1} Think in groups: one group is ${r.a} ${r.ia.name} with ${r.b} ${r.ib.name}. How many groups of ${r.ia.name} are already poured?`;
+              else if (r.type === "batch")
+                h = `\u{1F4A1} One group is ${r.a} + ${r.b} scoops. Find how many groups fill the line, then use that many groups of each.`;
+              else
+                h = `\u{1F4A1} For every ${r.a} ${r.ia.name}, add ${r.b} ${r.ib.name}. Both tubes need the same number of groups.`;
+            } else {
+              const g = r.preseed[0] / r.a;
+              if (r.type === "missing")
+                h = `\u{1F4A1} ${r.preseed[0]} ${r.ia.name} ÷ ${r.a} = ${g} groups. Now pour ${g} groups of ${r.b} ${r.ib.name}: ${g} × ${r.b}.`;
+              else if (r.type === "batch")
+                h = `\u{1F4A1} ${r.capacity} ÷ ${r.a + r.b} = ${r.capacity / (r.a + r.b)} groups. Pour ${r.capacity / (r.a + r.b)} × ${r.a} ${r.ia.name} and ${r.capacity / (r.a + r.b)} × ${r.b} ${r.ib.name}.`;
+              else
+                h = `\u{1F4A1} Start with exactly one group: ${r.a} ${r.ia.name} and ${r.b} ${r.ib.name}. Then serve.`;
+            }
+            this.say("Hint: " + h.replace("\u{1F4A1} ", ""));
+            this.flash(this.feedback, h, "#ffe9a8", Infinity);
+          }
+
+          // Mirror coaching to the screen-reader live region and to the
+          // readable mission panel above the canvas (visible without scrolling).
+          say(msg) {
+            const plain = String(msg).replace(/^[\u{1F4A1}❌✅]\s*/u, "");
+            const rk = document.getElementById("rk-sr");
+            if (rk) rk.textContent = plain;
+            const fm = document.querySelector(".flagship-mission .fm-feedback");
+            if (fm) fm.textContent = plain;
           }
 
           flash(obj, msg, color = "#ffffff", hold = 2400) {
             obj.setText(msg).setColor(color).setAlpha(1);
             this.tweens.killTweensOf(obj);
+            if (hold === Infinity) return; // stays until the next action
             this.tweens.add({
               targets: obj,
               alpha: 1,
@@ -1085,6 +1162,9 @@
                 served: this.served,
                 bestStreak: this.bestStreak,
                 level: this.level,
+                firstTry: this.firstTry,
+                missByType: this.missByType,
+                typesSeen: Object.keys(this.typesSeen),
               }),
             );
           }
@@ -1104,7 +1184,16 @@
             this.cameras.main.setBackgroundColor(C.bg);
             this.cameras.main.fadeIn(450);
             const goal = this.tier === 1 ? 10 : 12;
-            const pct = goal > 0 ? Math.round((this.correct / goal) * 100) : 0;
+            // Accuracy = drinks served right on the first serve, without a hint.
+            const firstTry = this.firstTry || 0;
+            const pct = goal > 0 ? Math.round((firstTry / goal) * 100) : 0;
+            let best = 0;
+            try {
+              best = Number(localStorage.getItem("ratio_kitchen_best")) || 0;
+              if (this.score > best)
+                localStorage.setItem("ratio_kitchen_best", String(this.score));
+            } catch (e) {}
+            const newBest = this.score > best;
 
             try {
               window.EduPulse &&
@@ -1112,7 +1201,7 @@
                   activityTitle: document.title,
                   score: this.correct,
                   maxScore: goal,
-                  problemsCorrect: this.correct,
+                  problemsCorrect: firstTry,
                   problemsAttempted: this.served,
                   standard: "6.AT.A.1",
                 });
@@ -1134,10 +1223,10 @@
             }
 
             this.add
-              .text(W / 2, 110, emoji, { fontSize: "76px" })
+              .text(W / 2, 80, emoji, { fontSize: "64px" })
               .setOrigin(0.5);
             this.add
-              .text(W / 2, 196, "KITCHEN CLOSED", {
+              .text(W / 2, 150, "KITCHEN CLOSED", {
                 fontSize: "46px",
                 fontFamily: "Arial Black",
                 color: "#f6c343",
@@ -1146,7 +1235,7 @@
               })
               .setOrigin(0.5);
             this.add
-              .text(W / 2, 250, rank, {
+              .text(W / 2, 198, rank, {
                 fontSize: "24px",
                 fontFamily: "Arial",
                 fontStyle: "bold",
@@ -1154,27 +1243,31 @@
               })
               .setOrigin(0.5);
             this.add
-              .text(W / 2, 312, this.score.toLocaleString(), {
+              .text(W / 2, 250, this.score.toLocaleString(), {
                 fontSize: "58px",
                 fontFamily: "Arial Black",
                 color: "#f6c343",
               })
               .setOrigin(0.5);
             this.add
-              .text(W / 2, 352, "POINTS", {
-                fontSize: "13px",
-                color: "#8a76bf",
-              })
+              .text(
+                W / 2,
+                290,
+                newBest
+                  ? "POINTS  ·  NEW PERSONAL BEST!"
+                  : `POINTS  ·  Personal best ${Math.max(best, this.score).toLocaleString()}`,
+                { fontSize: "16px", color: "#c9b6ff" },
+              )
               .setOrigin(0.5);
 
             const stats = [
               { l: "Drinks served", v: `${this.correct}/${goal}` },
+              { l: "First-try, no hint", v: `${firstTry} (${pct}%)` },
               { l: "Best streak", v: this.bestStreak },
-              { l: "Level reached", v: this.level },
             ];
             stats.forEach((s, i) => {
               const x = 282 + i * 230,
-                y = 440;
+                y = 370;
               this.add
                 .rectangle(x, y, 200, 96, C.panel)
                 .setStrokeStyle(2, C.stroke);
@@ -1186,25 +1279,62 @@
                 })
                 .setOrigin(0.5);
               this.add
-                .text(x, y + 26, s.l, { fontSize: "13px", color: "#c9b6ff" })
+                .text(x, y + 26, s.l, { fontSize: "15px", color: "#c9b6ff" })
                 .setOrigin(0.5);
             });
+
+            // Skills practiced + what to practice next
+            const SKILL = {
+              make: "Make an equivalent ratio",
+              batch: "Scale a batch to a total",
+              missing: "Find a missing value",
+            };
+            const seen = (this.typesSeen || []).map((t) => SKILL[t]).filter(Boolean);
+            const miss = this.missByType || {};
+            const worst = Object.keys(miss).sort((a, b) => miss[b] - miss[a])[0];
+            const next = worst
+              ? `Practice next: ${SKILL[worst]} — use the groups idea (${miss[worst]} retr${miss[worst] === 1 ? "y" : "ies"}).`
+              : this.tier === 1
+                ? "Practice next: try Level 2 for big batches and missing values."
+                : "Practice next: you are ready for ratio tables and unit rates!";
+            this.add
+              .text(W / 2, 448, "Skills practiced: " + seen.join(" · "), {
+                fontSize: "16px",
+                color: "#e6dcff",
+                align: "center",
+                wordWrap: { width: 820 },
+              })
+              .setOrigin(0.5, 0);
+            this.add
+              .text(W / 2, 484, next, {
+                fontSize: "17px",
+                fontStyle: "bold",
+                color: "#ffe9a8",
+                align: "center",
+                wordWrap: { width: 820 },
+              })
+              .setOrigin(0.5, 0);
+            const rk = document.getElementById("rk-sr");
+            if (rk)
+              rk.textContent = `Kitchen closed. ${this.score} points. ${firstTry} of ${goal} served on the first try. ${next}`;
 
             const again = this.add
               .rectangle(W / 2 - 130, 580, 240, 58, C.gold)
               .setInteractive({ useHandCursor: true });
             this.add
-              .text(W / 2 - 130, 580, "COOK AGAIN", {
-                fontSize: "22px",
+              .text(W / 2 - 130, 580, "COOK AGAIN (Enter)", {
+                fontSize: "18px",
                 fontFamily: "Arial Black",
                 color: "#1a0d35",
               })
               .setOrigin(0.5);
-            again.on("pointerdown", () => {
+            const cookAgain = () => {
               ensureAudio();
               sfxClick();
               this.scene.start("GameScene", { tier: this.tier });
-            });
+            };
+            again.on("pointerdown", cookAgain);
+            this.input.keyboard.once("keydown-ENTER", cookAgain);
             again.on("pointerover", () => again.setScale(1.05));
             again.on("pointerout", () => again.setScale(1));
 
@@ -1213,21 +1343,27 @@
               .setStrokeStyle(2, C.stroke)
               .setInteractive({ useHandCursor: true });
             this.add
-              .text(W / 2 + 130, 580, "CHANGE LEVEL", {
-                fontSize: "20px",
+              .text(W / 2 + 130, 580, "CHANGE LEVEL (L)", {
+                fontSize: "18px",
                 fontFamily: "Arial Black",
                 color: "#fff",
               })
               .setOrigin(0.5);
-            menu.on("pointerdown", () => {
+            const changeLevel = () => {
               ensureAudio();
               sfxClick();
               this.scene.start("TitleScene");
-            });
+            };
+            menu.on("pointerdown", changeLevel);
+            this.input.keyboard.once("keydown-L", changeLevel);
             menu.on("pointerover", () => menu.setScale(1.05));
             menu.on("pointerout", () => menu.setScale(1));
 
-            for (let i = 0; i < 28; i++) {
+            const calm =
+              window.__flagshipReduced ||
+              (window.matchMedia &&
+                window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+            for (let i = 0; i < (calm ? 0 : 28); i++) {
               const p = this.add
                 .circle(
                   Math.random() * W,
@@ -1244,7 +1380,7 @@
                 alpha: 0,
                 duration: 2000 + Math.random() * 2000,
                 delay: Math.random() * 1000,
-                repeat: -1,
+                repeat: 2,
                 ease: "Power1",
               });
             }
@@ -1310,7 +1446,7 @@
   
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
-<script src="/assets/game-studio.js?v=20261002" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261002" defer></script>
+<script src="/assets/game-studio.js?v=20261003" defer></script>
+<script src="/math/games/shared/flagship-studio.js?v=20261003" defer></script>
 </body>
 </html>

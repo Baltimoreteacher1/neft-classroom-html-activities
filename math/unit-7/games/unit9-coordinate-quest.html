@@ -133,7 +133,6 @@
             <!-- EWL Universal Arcade Enhancements Header -->
       <div class="ewl-arcade-header-bar">
         <div class="ewl-arcade-title-group">
-          <a href="/math/games/" class="ewl-back-hub-btn">⬅️ Arcade Hub</a>
           <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
           <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
         </div>
@@ -357,7 +356,16 @@
 
       // --- QUESTIONS ---
       function genQuestions() {
+        // Every mission draws NEW numbers, so a replay is a new mission.
+        // Each item carries a hint ladder: h1 = method (never the answer),
+        // h2 = a concrete step or visual, full = the worked explanation shown
+        // only after the third try. `why` maps a wrong choice to the
+        // misconception it usually signals.
         const qs = [];
+        const R = (a, b) => Phaser.Math.Between(a, b);
+        const fmt = (n) => (n < 0 ? "−" + Math.abs(n) : String(n));
+        const pt = (x, y) => `(${fmt(x)}, ${fmt(y)})`;
+        const nz = (a, b) => R(a, b) * (R(0, 1) ? 1 : -1);
         function shuf(a) {
           const b = [...a];
           for (let i = b.length - 1; i > 0; i--) {
@@ -366,154 +374,303 @@
           }
           return b;
         }
-        function mk(text, correct, wrongs, explain, tier, coord) {
-          const opts = shuf([correct, ...wrongs]);
+        function mk(text, correct, wrongs, explain, tier, coord, extra) {
+          const seen = new Set([correct]);
+          const ws = [];
+          wrongs.forEach((w) => {
+            if (!seen.has(w) && ws.length < 3) {
+              seen.add(w);
+              ws.push(w);
+            }
+          });
+          const e = extra || {};
           return {
             text,
             correct,
-            options: opts,
-            explain,
+            options: shuf([correct, ...ws]),
+            explain: e.h1,
+            h1: e.h1,
+            h2: e.h2,
+            full: explain,
+            why: e.why || {},
+            skill: e.skill || "Coordinate plane",
             tier,
             coord: coord || null,
+            hintCoord: e.hintCoord || null,
+            target: e.target || coord || null,
           };
         }
-        // Tier 1: Quadrants, QI plotting, absolute value
-        for (let i = 0; i < 2; i++) {
-          const x = Phaser.Math.Between(1, 9),
-            y = Phaser.Math.Between(1, 9);
-          qs.push(
-            mk(
-              `Navigate to (${x}, ${y}). Which quadrant?`,
-              "Quadrant I",
-              ["Quadrant II", "Quadrant III", "Quadrant IV"],
-              `(${x},${y}): both positive = Quadrant I`,
-              1,
-              { x, y },
-            ),
+        const QUAD = { I: [1, 1], II: [-1, 1], III: [-1, -1], IV: [1, -1] };
+        const quadOf = (x, y) =>
+          x > 0 ? (y > 0 ? "I" : "IV") : y > 0 ? "II" : "III";
+        const QH1 =
+          "Look at the signs. x tells right (+) or left (−) of the y-axis. y tells up (+) or down (−) from the x-axis.";
+        const QH2 =
+          "Quadrants go counterclockwise from the top right: I (+, +), II (−, +), III (−, −), IV (+, −). Match your two signs. The point is now plotted on the grid.";
+        function signWhy(x, y, ox, oy) {
+          const m = [];
+          if (Math.sign(x) !== ox)
+            m.push(
+              `x = ${fmt(x)} is ${x > 0 ? "positive (right of the y-axis)" : "negative (left of the y-axis)"}`,
+            );
+          if (Math.sign(y) !== oy)
+            m.push(
+              `y = ${fmt(y)} is ${y > 0 ? "positive (above the x-axis)" : "negative (below the x-axis)"}`,
+            );
+          return "Check the sign: " + m.join(", and ") + ".";
+        }
+        function quadQ(x, y, tier, lead) {
+          const qn = quadOf(x, y);
+          const why = {};
+          Object.keys(QUAD).forEach((o) => {
+            if (o !== qn)
+              why["Quadrant " + o] = signWhy(x, y, QUAD[o][0], QUAD[o][1]);
+          });
+          return mk(
+            `${lead} ${pt(x, y)}. Which quadrant?`,
+            "Quadrant " + qn,
+            Object.keys(QUAD)
+              .filter((o) => o !== qn)
+              .map((o) => "Quadrant " + o),
+            `${pt(x, y)}: x is ${x > 0 ? "+" : "−"} and y is ${y > 0 ? "+" : "−"}, so it is in Quadrant ${qn}.`,
+            tier,
+            null,
+            {
+              h1: QH1,
+              h2: QH2,
+              why,
+              skill: "Quadrants and signs",
+              hintCoord: { x, y },
+              target: { x, y },
+            },
           );
         }
+        // Tier 1: Quadrant I, absolute value
+        for (let i = 0; i < 2; i++)
+          qs.push(quadQ(R(1, 8), R(1, 8), 1, "Navigate to"));
         for (let i = 0; i < 2; i++) {
-          const n = Phaser.Math.Between(2, 15);
+          const n = R(2, 15);
           qs.push(
             mk(
-              `What is |−${n}|?`,
+              `What is |${fmt(-n)}|?`,
               String(n),
-              [String(-n), "0", String(n + 1)],
-              `|−${n}| = ${n}. Distance from 0 is always positive.`,
+              [fmt(-n), "0", String(n + 1), String(n - 1)],
+              `|${fmt(-n)}| = ${n}. Absolute value is the distance from 0, and a distance is never negative.`,
               1,
+              null,
+              {
+                h1: "Absolute value means distance from 0 on a number line.",
+                h2: `Start at ${fmt(-n)} on a number line and count the steps to 0.`,
+                why: {
+                  [fmt(-n)]:
+                    "Absolute value is a distance. A distance is never negative.",
+                  0: "0 is where you start counting. How many steps away from 0 is the number?",
+                },
+                skill: "Absolute value",
+              },
             ),
           );
         }
-        qs.push(
-          mk(
-            "Which point is in Quadrant I?",
-            "(4, 7)",
-            ["(−2, 5)", "(3, −1)", "(−6, −4)"],
-            "QI: both x and y positive. (4,7) works.",
-            1,
-            { x: 4, y: 7 },
-          ),
-        );
-        // Tier 2: All 4 quadrants, reflections, comparing integers
-        const q2pairs = [
-          { x: -4, y: 6, q: "II" },
-          { x: -7, y: -2, q: "III" },
-          { x: 5, y: -3, q: "IV" },
-        ];
-        q2pairs.forEach((p) => {
+        {
+          const a = R(1, 8),
+            b = R(1, 8);
+          const opts = [
+            [-R(1, 8), R(1, 8)],
+            [R(1, 8), -R(1, 8)],
+            [-R(1, 8), -R(1, 8)],
+          ];
+          const why = {};
+          opts.forEach(([x, y]) => {
+            why[pt(x, y)] = signWhy(x, y, 1, 1).replace(
+              "Check the sign:",
+              "Quadrant I needs both coordinates positive.",
+            );
+          });
           qs.push(
             mk(
-              `Waypoint at (${p.x}, ${p.y}). Which quadrant?`,
-              `Quadrant ${p.q}`,
-              [
-                ...["I", "II", "III", "IV"]
-                  .filter((q) => q !== p.q)
-                  .map((q) => `Quadrant ${q}`),
-              ].slice(0, 3),
-              `(${p.x},${p.y}): check signs => Q${p.q}`,
-              2,
-              { x: p.x, y: p.y },
+              "Which point is in Quadrant I?",
+              pt(a, b),
+              opts.map(([x, y]) => pt(x, y)),
+              `Quadrant I points have x > 0 and y > 0. ${pt(a, b)} is the only one.`,
+              1,
+              null,
+              {
+                h1: QH1,
+                h2: "Quadrant I is the top-right section: both x and y must be positive. Check each choice for a minus sign.",
+                why,
+                skill: "Quadrants and signs",
+                target: { x: a, y: b },
+              },
             ),
           );
-        });
-        qs.push(
-          mk(
-            "Which integer is greater: −3 or −8?",
-            "−3",
-            ["−8", "Equal", "Cannot tell"],
-            "−3 is right of −8 on number line, so −3 > −8.",
-            2,
-          ),
+        }
+        // Tier 2: all four quadrants, comparing integers, reflections
+        [
+          [-1, 1],
+          [-1, -1],
+          [1, -1],
+        ].forEach(([sx, sy]) =>
+          qs.push(quadQ(sx * R(1, 8), sy * R(1, 8), 2, "Waypoint at")),
         );
-        qs.push(
-          mk(
-            "Reflect (5, 3) across the y-axis. New coordinates?",
-            "(−5, 3)",
-            ["(5, −3)", "(−5, −3)", "(3, 5)"],
-            "y-axis reflection: (x,y) → (−x,y). So (−5,3).",
+        {
+          let a = R(2, 12),
+            b = R(2, 12);
+          while (b === a) b = R(2, 12);
+          const big = -Math.min(a, b),
+            small = -Math.max(a, b);
+          qs.push(
+            mk(
+              `Which integer is greater: ${fmt(-a)} or ${fmt(-b)}?`,
+              fmt(big),
+              [fmt(small), "They are equal", "Cannot tell"],
+              `${fmt(big)} is to the right of ${fmt(small)} on a number line, so ${fmt(big)} > ${fmt(small)}.`,
+              2,
+              null,
+              {
+                h1: "Picture both numbers on a number line. The greater number is the one farther to the right.",
+                h2: `Which one is closer to 0: ${fmt(-a)} or ${fmt(-b)}? For negative numbers, the one closer to 0 is greater.`,
+                why: {
+                  [fmt(small)]:
+                    "A bigger digit does not mean a bigger negative number. Negative numbers get smaller as they move left, away from 0.",
+                  "They are equal": "The numbers are different, so one is greater.",
+                  "Cannot tell":
+                    "You can always compare two integers by placing them on a number line.",
+                },
+                skill: "Comparing integers",
+              },
+            ),
+          );
+        }
+        function reflQ(axis) {
+          let x = nz(2, 8),
+            y = nz(1, 8);
+          while (Math.abs(x) === Math.abs(y)) y = nz(1, 8);
+          const ans = axis === "y" ? [-x, y] : [x, -y];
+          const other = axis === "y" ? [x, -y] : [-x, y];
+          const why = {
+            [pt(...other)]: `That point is a reflection across the ${axis === "y" ? "x" : "y"}-axis. Reflecting across the ${axis}-axis changes the sign of ${axis === "y" ? "x" : "y"} only.`,
+            [pt(-x, -y)]:
+              "Both signs changed. A reflection across one axis changes only ONE coordinate.",
+            [pt(y, x)]:
+              "Swapping x and y is not a reflection across an axis. Keep the order (x, y).",
+          };
+          return mk(
+            `Reflect ${pt(x, y)} across the ${axis}-axis. New coordinates?`,
+            pt(...ans),
+            [pt(...other), pt(-x, -y), pt(y, x)],
+            `${axis}-axis reflection: (x, y) → ${axis === "y" ? "(−x, y)" : "(x, −y)"}. So ${pt(x, y)} → ${pt(...ans)}.`,
             2,
-            { x: -5, y: 3 },
-          ),
-        );
-        qs.push(
-          mk(
-            "Reflect (2, −6) across the x-axis. New coordinates?",
-            "(2, 6)",
-            ["(−2, −6)", "(−2, 6)", "(2, −6)"],
-            "x-axis reflection: (x,y) → (x,−y). So (2,6).",
-            2,
-            { x: 2, y: 6 },
-          ),
-        );
-        // Tier 3: Distance, ordering, word problems
-        qs.push(
-          mk(
-            "Distance between (3, −2) and (3, 5)?",
-            "7 units",
-            ["3 units", "5 units", "2 units"],
-            "Same x: distance = |−2 − 5| = 7",
+            { x, y },
+            {
+              h1: `Across the ${axis}-axis, the point flips to the other side of that axis. Its distance from the ${axis}-axis stays the same.`,
+              h2: `Only the ${axis === "y" ? "x" : "y"}-coordinate changes sign. The ${axis === "y" ? "y" : "x"}-coordinate (${fmt(axis === "y" ? y : x)}) stays the same.`,
+              why,
+              skill: "Reflections",
+              target: { x: ans[0], y: ans[1] },
+            },
+          );
+        }
+        qs.push(reflQ("y"));
+        qs.push(reflQ("x"));
+        // Tier 3: distance on a line, ordering, word problems
+        function distQ(vertical) {
+          const c = R(-6, 6),
+            p = -R(1, 7),
+            q = R(1, 7);
+          const d = q - p;
+          const A = vertical ? pt(c, p) : pt(p, c),
+            B = vertical ? pt(c, q) : pt(q, c);
+          const sub = Math.abs(q + p);
+          const why = {
+            [`${sub} units`]: `The points are on opposite sides of the ${vertical ? "x" : "y"}-axis. Add the two distances to the axis instead of subtracting them.`,
+          };
+          return mk(
+            `Distance between ${A} and ${B}?`,
+            `${d} units`,
+            [`${sub} units`, `${Math.abs(p)} units`, `${q} units`, `${d + 1} units`, `${d - 1} units`],
+            `Same ${vertical ? "x" : "y"}: |${fmt(p)}| + |${fmt(q)}| = ${Math.abs(p)} + ${q} = ${d} units.`,
             3,
-            { x: 3, y: -2 },
-          ),
-        );
+            vertical ? { x: c, y: p } : { x: p, y: c },
+            {
+              h1: `The ${vertical ? "x" : "y"}-coordinates match, so the points are on a ${vertical ? "vertical" : "horizontal"} line. Find how far apart the other coordinates are.`,
+              h2: `Find each point's distance to the ${vertical ? "x" : "y"}-axis: |${fmt(p)}| and |${fmt(q)}|. The points are on opposite sides, so add those distances.`,
+              why,
+              skill: "Distance on the coordinate plane",
+              target: vertical ? { x: c, y: q } : { x: q, y: c },
+            },
+          );
+        }
+        qs.push(distQ(true));
+        qs.push(distQ(false));
         qs.push(
           mk(
             "Order least to greatest: −4, 1.5, −7, 0, 3",
             "−7, −4, 0, 1.5, 3",
             ["−4, −7, 0, 1.5, 3", "3, 1.5, 0, −4, −7", "0, −4, −7, 1.5, 3"],
-            "Number line: −7 < −4 < 0 < 1.5 < 3",
+            "On a number line: −7 < −4 < 0 < 1.5 < 3.",
             3,
+            null,
+            {
+              h1: "Place each number on a number line. The least number is farthest to the left.",
+              h2: "Negative numbers come first. The negative farther from 0 is smaller. Then 0, then the positives.",
+              why: {
+                "−4, −7, 0, 1.5, 3":
+                  "−7 is farther left than −4, so −7 is less than −4.",
+                "3, 1.5, 0, −4, −7": "That order is greatest to least. Start with the least.",
+                "0, −4, −7, 1.5, 3": "Negative numbers are less than 0, so they come before 0.",
+              },
+              skill: "Ordering rational numbers",
+            },
           ),
         );
-        qs.push(
-          mk(
-            "Diver at −40 ft, bird at +25 ft. Distance between them?",
-            "65 feet",
-            ["15 feet", "40 feet", "25 feet"],
-            "|−40 − 25| = 65 feet",
-            3,
-          ),
-        );
-        qs.push(
-          mk(
-            "Distance between (−5, 4) and (2, 4)?",
-            "7 units",
-            ["3 units", "5 units", "9 units"],
-            "Same y: |−5 − 2| = 7 units",
-            3,
-            { x: -5, y: 4 },
-          ),
-        );
-        qs.push(
-          mk(
-            "Sub at (−3, −8) surfaces to (−3, 0). How far?",
-            "8 units",
-            ["3 units", "11 units", "5 units"],
-            "Same x: |−8 − 0| = 8 units",
-            3,
-            { x: -3, y: -8 },
-          ),
-        );
+        {
+          const dv = 5 * R(2, 12),
+            bd = 5 * R(2, 8);
+          const tot = dv + bd;
+          qs.push(
+            mk(
+              `A diver is at ${fmt(-dv)} ft. A bird is at +${bd} ft. Distance between them?`,
+              `${tot} feet`,
+              [`${Math.abs(dv - bd)} feet`, `${dv} feet`, `${bd} feet`, `${tot + 5} feet`],
+              `|${fmt(-dv)} − ${bd}| = ${dv} + ${bd} = ${tot} feet.`,
+              3,
+              null,
+              {
+                h1: "Sea level is 0. Find how far each one is from 0.",
+                h2: `The diver is ${dv} ft below 0 and the bird is ${bd} ft above 0. They are on opposite sides of 0, so add.`,
+                why: {
+                  [`${Math.abs(dv - bd)} feet`]:
+                    "You subtracted. The diver and bird are on opposite sides of 0, so add their distances from 0.",
+                },
+                skill: "Distance with integers",
+              },
+            ),
+          );
+        }
+        {
+          const x = nz(1, 7),
+            d = R(2, 8);
+          qs.push(
+            mk(
+              `A sub at ${pt(x, -d)} rises to ${pt(x, 0)}. How far?`,
+              `${d} units`,
+              [`${Math.abs(x)} units`, `${d + Math.abs(x)} units`, `${d + 1} units`, `${d - 1} units`],
+              `Same x: |${fmt(-d)} − 0| = ${d} units.`,
+              3,
+              { x, y: -d },
+              {
+                h1: "The x-coordinate stays the same, so only the y-coordinate changes.",
+                h2: `Count from y = ${fmt(-d)} up to y = 0.`,
+                why: {
+                  [`${Math.abs(x)} units`]:
+                    "The x-coordinate does not change here. Look at how much y changes.",
+                },
+                skill: "Distance on the coordinate plane",
+                target: { x, y: 0 },
+              },
+            ),
+          );
+        }
         return shuf(qs).slice(0, 15);
       }
 
@@ -888,7 +1045,11 @@
           this.qIndex = 0;
           this.correctAnswers = 0;
           this.score = 0;
-          this.lives = 3;
+          this.tries = 0;
+          this.helped = false;
+          this.solved = 0;
+          this.missedSkills = {};
+          this.studioTier = studioTier;
           this.streak = 0;
           this.bestStreak = 0;
           this.multiplier = 1;
@@ -949,6 +1110,10 @@
         }
 
         navSelect() {
+          if (this.awaitingNext) {
+            this.advance();
+            return;
+          }
           if (this.answered || !this.answerBtns) return;
           if (this.selectedIdx < 0) {
             // Nothing highlighted yet: highlight the first available choice.
@@ -1327,6 +1492,7 @@
           if (this.answered) return;
           if (type === "fiftyFifty" && this.powerUps.fiftyFifty > 0) {
             this.powerUps.fiftyFifty--;
+            this.helped = true;
             sfx.powerUp();
             const q = this.questions[this.qIndex];
             let removed = 0;
@@ -1459,6 +1625,10 @@
             return;
           }
           this.answered = false;
+          this.tries = 0;
+          this.helped = false;
+          this.advanced = false;
+          this.awaitingNext = false;
           this.selectedIdx = -1;
           // Clear any lingering focus ring from the previous question.
           if (this.focusRing) {
@@ -1627,23 +1797,24 @@
 
           // Feedback
           this.fbObj = this.add
-            .text(200, 490, "", {
-              fontSize: "14px",
+            .text(200, 445, "", {
+              fontSize: "16px",
               color: "#94a3b8",
               align: "center",
-              wordWrap: { width: 350 },
+              wordWrap: { width: 370 },
             })
-            .setOrigin(0.5)
+            .setOrigin(0.5, 0)
             .setDepth(8);
           this.qGroup.add(this.fbObj);
           this.hintObj = this.add
-            .text(200, 520, "", {
-              fontSize: "11px",
-              color: "#64748b",
+            .text(200, 530, "", {
+              fontSize: "15px",
+              color: "#e2e8f0",
               align: "center",
-              wordWrap: { width: 350 },
+              wordWrap: { width: 370 },
+              lineSpacing: 4,
             })
-            .setOrigin(0.5)
+            .setOrigin(0.5, 0)
             .setDepth(8);
           this.qGroup.add(this.hintObj);
 
@@ -1663,32 +1834,26 @@
         submitAnswer(idx) {
           if (this.answered) return;
           if (this.answerBtns[idx].eliminated) return;
-          this.answered = true;
           const q = this.questions[this.qIndex];
           const chosen = this.answerBtns[idx].optText;
           const correct = chosen === q.correct;
-          const answerTime = (Date.now() - this.questionStartTime) / 1000;
+          // No-fail hint ladder: the first two misses earn a hint and another
+          // try; only the third miss shows the worked answer.
+          if (!correct && this.tries < 2) {
+            this.retryWrong(idx, q, chosen);
+            return;
+          }
+          this.answered = true;
 
           if (correct) {
-            this.correctAnswers++;
-            // Score calculation
-            let pts = q.tier * 10 + Math.min(this.streak, 5) * 5;
-            let timeBonus = 0;
-            if (answerTime < 5) {
-              timeBonus = 15;
-              this.showFloatingText(
-                300,
-                470,
-                "SPEED BONUS! +15",
-                "#22d3ee",
-                14,
-              );
-              sfx.speedBonus();
-            } else if (answerTime < 10) {
-              timeBonus = 8;
-              this.showFloatingText(300, 470, "QUICK! +8", "#22d3ee", 12);
-            }
-            pts += timeBonus;
+            const firstTry = this.tries === 0 && !this.helped;
+            if (firstTry) this.correctAnswers++;
+            else this.missedSkills[q.skill] = (this.missedSkills[q.skill] || 0) + 1;
+            this.solved++;
+            // Calm scoring: no time bonus. Full points for an unaided first
+            // try; fewer points when a hint, a miss or 50/50 helped.
+            let pts = q.tier * 10 + (firstTry ? Math.min(this.streak, 5) * 5 : 0);
+            if (!firstTry) pts = Math.round(pts * (this.tries >= 2 ? 0.25 : 0.5));
 
             // Multiplier from streak
             this.multiplier = 1 + Math.floor(this.streak / 2) * 0.5;
@@ -1701,7 +1866,8 @@
             }
 
             this.score += pts;
-            this.streak++;
+            if (firstTry) this.streak++;
+            else this.streak = 0;
             if (this.streak > this.bestStreak) this.bestStreak = this.streak;
 
             this.answerBtns[idx].bg.setFillStyle(0x22c55e);
@@ -1754,14 +1920,20 @@
               if (!reducedMotion()) this.cameras.main.flash(300, 100, 50, 200);
             }
 
-            let fbText = "WAYPOINT REACHED! +" + pts;
+            let fbText =
+              (firstTry ? "WAYPOINT REACHED! +" : "Reached with help! +") + pts;
             if (this.streak >= 3) fbText += " WARP x" + this.streak;
             if (this.multiplier > 1) fbText += ` (${this.multiplier}x)`;
             this.fbObj.setText(fbText);
             this.fbObj.setColor("#22c55e");
+            this.hintObj.setText(q.full);
+            announce("Correct. " + q.full);
             sfx.collect();
 
-            if (q.coord) this.moveShipToGrid(q.coord);
+            if (q.target) {
+              this.plotWaypoint(q.target);
+              this.moveShipToGrid(q.target);
+            }
 
             // Confetti burst with scaling intensity
             const particleCount = 15 + this.streak * 3;
@@ -1819,8 +1991,6 @@
               });
             }
           } else {
-            this.lives--;
-            if (this.lives <= 0) this.lives = 3; // Refill: finish every learning mission.
             this.streak = 0;
             this.multiplier = 1;
             this.doublePointsActive = false;
@@ -1833,19 +2003,12 @@
               this.answerBtns[ci].bg.setFillStyle(0x22c55e, 0.5);
               this.answerBtns[ci].bg.setStrokeStyle(2, 0x22c55e);
             }
-            this.fbObj.setText("ASTEROID HIT! Answer: " + q.correct);
-            this.fbObj.setColor("#ef4444");
-            this.hintObj.setText(q.explain);
-
-            sfx.glassBreak();
-            sfx.alarm();
-
-            // More dramatic wrong answer effects — screenshake + camera flash
-            // are disabled under reduced motion.
-            if (!reducedMotion()) {
-              this.cameras.main.shake(350, 0.02);
-              this.cameras.main.flash(200, 255, 50, 50);
-            }
+            this.fbObj.setText("Let's look at it together. Answer: " + q.correct);
+            this.fbObj.setColor("#fbbf24");
+            this.hintObj.setText(q.full);
+            announce(`The answer is ${q.correct}. ${q.full} Press Enter or Next to continue.`);
+            if (q.target) this.plotWaypoint(q.target);
+            this.missedSkills[q.skill] = (this.missedSkills[q.skill] || 0) + 1;
 
             // Red vignette pulse. Under reduced motion, show a brief static
             // red wash instead of an animated fade so the "wrong" feedback is
@@ -1878,10 +2041,67 @@
             }
           }
           this.updateHUD();
-          this.time.delayedCall(correct ? 1500 : 2500, () => {
-            this.qIndex++;
-            this.loadQuestion();
-          });
+          if (correct) {
+            this.time.delayedCall(1700, () => this.advance());
+          } else {
+            this.showNextButton();
+          }
+        }
+
+        advance() {
+          if (this.advanced) return;
+          this.advanced = true;
+          if (this.nextBtn) {
+            this.nextBtn.destroy(true);
+            this.nextBtn = null;
+          }
+          this.qIndex++;
+          this.loadQuestion();
+        }
+
+        showNextButton() {
+          // After a revealed answer, wait for the student: read the worked
+          // step at your own pace, then press Next (or Enter / Space).
+          this.awaitingNext = true;
+          const c = this.add.container(200, 668).setDepth(20);
+          const bg = this.add
+            .rectangle(0, 0, 180, 46, 0x7c3aed)
+            .setStrokeStyle(2, 0xa78bfa)
+            .setInteractive({ useHandCursor: true });
+          const t = this.add
+            .text(0, 0, "NEXT ▶", { fontSize: "18px", color: "#ffffff", fontStyle: "bold" })
+            .setOrigin(0.5);
+          bg.on("pointerdown", () => this.advance());
+          c.add([bg, t]);
+          this.nextBtn = c;
+        }
+
+        retryWrong(idx, q, chosen) {
+          this.tries++;
+          this.streak = 0;
+          this.multiplier = 1;
+          const b = this.answerBtns[idx];
+          b.eliminated = true;
+          b.bg.setFillStyle(0x7f1d1d);
+          b.bg.setStrokeStyle(2, 0xef4444);
+          b.bg.setAlpha(0.6);
+          b.txt.setAlpha(0.6);
+          if (this.qDots[this.qIndex]) this.qDots[this.qIndex].setFillStyle(0xf59e0b);
+          const why = (q.why && q.why[chosen]) || "Check your thinking with the hint below.";
+          const hint = this.tries === 1 ? q.h1 : q.h2;
+          this.fbObj.setText("Not yet. " + why);
+          this.fbObj.setColor("#fca5a5");
+          this.hintObj.setText("Hint " + this.tries + ": " + hint);
+          // Tier 2 can be visual: plot the point the question is about.
+          if (this.tries === 2 && q.hintCoord) this.plotWaypoint(q.hintCoord);
+          // The studio panel reads q.explain for its next message — keep it
+          // one rung ahead so it never states the answer early.
+          q.explain = this.tries === 1 ? q.h2 : q.full;
+          sfx.glassBreak && sfx.glassBreak();
+          this.selectedIdx = -1;
+          this.highlightSel && this.highlightSel();
+          announce(`Not yet. ${why} Hint: ${hint} Try again.`);
+          this.updateHUD();
         }
 
         updateStreakDisplay() {
@@ -1915,6 +2135,10 @@
         }
 
         handleKey(e) {
+          if (this.awaitingNext && (e.key === "Enter" || e.key === " ")) {
+            this.advance();
+            return;
+          }
           if (this.answered) return;
           if (e.key >= "1" && e.key <= "4") {
             const i = parseInt(e.key) - 1;
@@ -2024,33 +2248,16 @@
         updateHUD() {
           this.hudQ.setText(`MISSION ${this.qIndex + 1}/${this.totalQ}`);
           this.hudScore.setText(`SCORE: ${this.score}`);
-          this.hudLives.setText(
-            "SHIELDS: " + "■".repeat(this.lives) + "□".repeat(3 - this.lives),
-          );
+          // No lives and no clock: every mission is self-paced and no-fail.
+          this.hudLives.setText(this.tries > 0 && !this.answered ? `TRY ${this.tries + 1} OF 3` : "");
           this.hudStreak.setText(
             this.streak >= 2 ? `WARP x${this.streak}` : "",
           );
           this.hudMultiplier.setText(
             this.multiplier > 1 ? `${this.multiplier}x` : "",
           );
-          const el = Math.floor((Date.now() - this.startTime) / 1000);
-          const m = Math.floor(el / 60),
-            s = el % 60;
-          this.hudTimer.setText(`${m}:${s < 10 ? "0" : ""}${s}`);
-
-          // Speed indicator
-          if (!this.answered) {
-            const elapsed = (Date.now() - this.questionStartTime) / 1000;
-            if (elapsed < 5) {
-              this.speedIndicator.setText("FAST").setColor("#22c55e");
-            } else if (elapsed < 10) {
-              this.speedIndicator.setText("GOOD").setColor("#22d3ee");
-            } else {
-              this.speedIndicator.setText("").setColor("#94a3b8");
-            }
-          } else {
-            this.speedIndicator.setText("");
-          }
+          this.hudTimer.setText("");
+          this.speedIndicator.setText("");
         }
 
         update() {
@@ -2082,6 +2289,9 @@
               correct: Math.max(0, correct),
               bestStreak: this.bestStreak,
               time: elapsed,
+              solved: this.solved,
+              missedSkills: this.missedSkills,
+              studioTier: this.studioTier,
             });
           });
         }
@@ -2275,13 +2485,9 @@
           const statsY = isNewHigh ? 345 : 340;
           const stats = [
             { l: "Score", v: d.score, c: "#22d3ee" },
-            { l: "Waypoints", v: `${d.correct}/${d.total}`, c: "#22c55e" },
+            { l: "First-try waypoints", v: `${d.correct}/${d.total}`, c: "#22c55e" },
             { l: "Best Warp", v: d.bestStreak, c: "#a78bfa" },
-            {
-              l: "Time",
-              v: `${Math.floor(d.time / 60)}:${(d.time % 60 < 10 ? "0" : "") + (d.time % 60)}`,
-              c: "#94a3b8",
-            },
+            { l: "Solved with help", v: `${Math.max(0, (d.solved || 0) - d.correct)}`, c: "#fbbf24" },
           ];
           stats.forEach((s, i) => {
             const x = cx - 240 + i * 165,
@@ -2324,10 +2530,17 @@
             .text(
               cx,
               statsY + 60,
-              `Sectors explored: ${Math.min(d.correct, 15)} of ${d.total}`,
+              (() => {
+                const miss = Object.entries(d.missedSkills || {}).sort((a, b) => b[1] - a[1]);
+                return miss.length
+                  ? `Skills: quadrants, absolute value, reflections, distance.  Practice next: ${miss[0][0]}`
+                  : "Skills: quadrants, absolute value, reflections, distance.  Every waypoint on the first try!";
+              })(),
               {
-                fontSize: "14px",
-                color: "#94a3b8",
+                fontSize: "15px",
+                color: "#cbd5e1",
+                align: "center",
+                wordWrap: { width: W - 80 },
               },
             )
             .setOrigin(0.5);
@@ -2347,7 +2560,7 @@
           btn1.on("pointerdown", () => {
             sfx.click();
             this.cameras.main.fade(400, 0, 0, 0);
-            this.time.delayedCall(400, () => this.scene.start("Game"));
+            this.time.delayedCall(400, () => this.scene.start("Game", { studioTier: d.studioTier || 2 }));
           });
           btn1.on("pointerover", () => {
             btn1.setFillStyle(0x6d28d9);
@@ -2418,7 +2631,7 @@
           this.input.keyboard.on("keydown", (e) => {
             if (e.key === "Enter" || e.key === " ") {
               this.cameras.main.fade(400, 0, 0, 0);
-              this.time.delayedCall(400, () => this.scene.start("Game"));
+              this.time.delayedCall(400, () => this.scene.start("Game", { studioTier: d.studioTier || 2 }));
             }
             if (e.key === "Escape") {
               this.cameras.main.fade(400, 0, 0, 0);
@@ -2518,12 +2731,12 @@
         <div class="ewl-coach-icon">💡</div>
         <div class="ewl-coach-content">
           <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
-          <p id="ewl-coach-text" data-en="Keep equations balanced by applying inverse operations!" data-es="¡Mantén las ecuaciones equilibradas con operaciones inversas!">Keep equations balanced by applying inverse operations!</p>
+          <p id="ewl-coach-text" data-en="Read the signs first: x tells left or right, y tells up or down." data-es="Lee primero los signos: x indica izquierda o derecha, y indica arriba o abajo.">Read the signs first: x tells left or right, y tells up or down.</p>
         </div>
       </div>
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
-<script src="/assets/game-studio.js?v=20261002" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261002" defer></script>
+<script src="/assets/game-studio.js?v=20261003" defer></script>
+<script src="/math/games/shared/flagship-studio.js?v=20261003" defer></script>
 </body>
 </html>

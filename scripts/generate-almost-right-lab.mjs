@@ -551,7 +551,7 @@ function makePage(mission) {
       }
     </style>
     <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-    <script src="/assets/game-studio.js?v=20261002" defer></script>
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
   </head>
   <body>
 

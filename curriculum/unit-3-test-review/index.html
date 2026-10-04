@@ -1457,6 +1457,32 @@
         border: 0;
       }
 
+      /* Comfortable tap targets on touch screens */
+      @media (pointer: coarse) {
+        .speak {
+          min-width: 44px;
+          min-height: 44px;
+        }
+        .tab-btn,
+        .btn,
+        .choice {
+          min-height: 44px;
+        }
+      }
+      /* Calm motion: honour the device setting (the studio "Calm motion" switch is read in JS) */
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+        .confetti {
+          display: none !important;
+        }
+      }
       @media (max-width: 900px) {
         .hero {
           grid-template-columns: 1fr;
@@ -1529,16 +1555,19 @@
         }
         .hero {
           border-radius: 20px;
-          padding: 24px 20px;
+          padding: 20px 18px;
+          gap: 14px;
         }
         .hero h2 {
-          font-size: 2rem;
+          font-size: 1.65rem;
         }
         .hero p {
           font-size: 0.95rem;
+          line-height: 1.5;
         }
-        .hero-chips {
-          margin-top: 14px;
+        .hero-chips,
+        .hero .formula-card {
+          display: none;
         }
         .grid-2,
         .vocab,
@@ -2880,6 +2909,7 @@
         attempts: {},
         work: {},
         plot: {},
+        hinted: {},
         missionDone: false,
       };
       let state = loadState();
@@ -2888,7 +2918,7 @@
           const saved = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
           if (!saved || typeof saved !== "object") return JSON.parse(JSON.stringify(defaultState));
           const next = JSON.parse(JSON.stringify(defaultState));
-          ["points", "completed", "attempts", "work", "plot"].forEach((k) => {
+          ["points", "completed", "attempts", "work", "plot", "hinted"].forEach((k) => {
             if (saved[k] && typeof saved[k] === "object") next[k] = { ...saved[k] };
           });
           next.name = typeof saved.name === "string" ? saved.name : "";
@@ -2939,6 +2969,44 @@
         saveState();
         return state.attempts[id];
       }
+      /* Full points for an unaided first try, half after a miss or a step hint, none once the answer is shown. */
+      const FULL = 10,
+        HELPED = 5;
+      function earnedFor(id) {
+        return (state.attempts[id] || 0) > 0 || state.hinted[id] ? HELPED : FULL;
+      }
+      function pointsLine(pts) {
+        return pts === FULL ? "+" + FULL + " points (first try!)" : "+" + pts + " points";
+      }
+      function calmMotion() {
+        try {
+          if (matchMedia("(prefers-reduced-motion: reduce)").matches) return true;
+          return JSON.parse(localStorage.getItem("ewl-game-studio-v1") || "{}").reducedMotion === true;
+        } catch (e) {
+          return false;
+        }
+      }
+      /* Hint 1 names the method without the numbers (no cost). Hint 2 — after a miss or a second press — is the concrete step. */
+      const METHOD_HINTS = {
+        ratios: "Find the two amounts the question names, in the order it names them. Use the whole, or the boxes, to find one part.",
+        rates: "A unit rate is the amount for ONE. Put the quantity the question asks about on top, then divide so the bottom is 1.",
+        tables: "Each column is the first column multiplied by the same number. Find that number, then use it on both rows.",
+        problems: "Find the unit rate first (the amount for 1). Then use it to scale up or to compare.",
+        convert: "Is the new unit bigger or smaller? Smaller units mean MORE of them (multiply). Bigger units mean fewer (divide).",
+      };
+      function tieredHint(q, card, tab) {
+        if (done(q.id)) return;
+        if ((state.attempts[q.id] || 0) === 0 && card.dataset.hint !== "1") {
+          card.dataset.hint = "1";
+          feedback(card, "hint", "Hint 1: " + esc(METHOD_HINTS[tab] || q.hint));
+          return;
+        }
+        if (!state.hinted[q.id]) {
+          state.hinted[q.id] = true;
+          saveState();
+        }
+        feedback(card, "hint", "Hint 2: " + esc(q.hint));
+      }
       function score() {
         return ALL_QS.reduce((n, q) => n + Number(state.points[q.id] || 0), 0);
       }
@@ -2987,7 +3055,7 @@
         SECTIONS.forEach((s) => {
           const left = s.qs.filter((q) => !done(q.id)).length;
           const missed = s.qs
-            .filter((q) => done(q.id) && !state.points[q.id] && q.type !== "explain")
+            .filter((q) => done(q.id) && Number(state.points[q.id]) < FULL && q.type !== "explain")
             .map((q) => q.label.replace(/ · .*/, ""));
           if (left) todo.push(esc(s.label) + " — " + left + " still to try");
           if (missed.length)
@@ -3023,6 +3091,17 @@
         button.textContent = state.missionDone ? "Completed together ✓" : "We did it together ✓";
         button.disabled = state.missionDone;
       }
+      function scrollToPanel(id) {
+        // Bring the chosen section to the top, just under the sticky bar and tab strip (the hero is tall on phones).
+        const panel = document.getElementById(id);
+        if (!panel) return;
+        const bar = document.querySelector(".topbar"),
+          tabs = document.querySelector(".tabs");
+        const offset = (bar ? bar.offsetHeight : 0) + (tabs ? tabs.offsetHeight : 0) + 12;
+        const y = panel.getBoundingClientRect().top + window.scrollY - offset;
+        if (Math.abs(window.scrollY - y) > 4)
+          window.scrollTo({ top: Math.max(0, y), behavior: calmMotion() ? "auto" : "smooth" });
+      }
       function goTab(id) {
         if (!TABS.includes(id)) id = "family";
         document
@@ -3031,7 +3110,7 @@
         document
           .querySelectorAll(".tab-btn")
           .forEach((b) => b.classList.toggle("active", b.dataset.tab === id));
-        window.scrollTo({ top: 150, behavior: "smooth" });
+        scrollToPanel(id);
         updateHUD();
       }
       function updateFlowNav() {
@@ -3068,6 +3147,7 @@
         speechSynthesis.speak(u);
       }
       function confetti() {
+        if (calmMotion()) return;
         const box = document.getElementById("celebrate");
         const colors = ["#14858d", "#17324d", "#f2b84b", "#38a169", "#d65b54"];
         for (let i = 0; i < 24; i++) {
@@ -3229,7 +3309,7 @@
           );
         if (q.type === "plot")
           return (
-            '<div class="plot-wrap"><svg class="plot-svg" tabindex="0" role="application" aria-label="Coordinate grid. ' +
+            '<div class="plot-wrap"><svg class="plot-svg" role="img" aria-label="Coordinate grid. ' +
             esc(q.plot.xLabel) +
             " across, " +
             esc(q.plot.yLabel) +
@@ -3272,8 +3352,7 @@
             '</div><div class="feedback"></div><div class="says-slot"></div>';
           card.querySelector(".speak").onclick = () =>
             speak(q.ctx + " " + q.ask + (q.choices ? " " + q.choices.join(". ") : ""));
-          if (q.hint)
-            card.querySelector(".hint-btn").onclick = () => feedback(card, "hint", esc(q.hint));
+          if (q.hint) card.querySelector(".hint-btn").onclick = () => tieredHint(q, card, s.tab);
           if (q.type === "mc")
             card
               .querySelectorAll(".choice")
@@ -3288,9 +3367,10 @@
 
       /* ===== Checking ========================================================= */
       function correct(q, card) {
-        award(q.id);
+        const pts = earnedFor(q.id);
+        award(q.id, pts);
         showSolved(q, card, false);
-        feedback(card, "good", "✓ That's it! +10 points. " + q.sol);
+        feedback(card, "good", "✓ That's it! " + pointsLine(pts) + ". " + q.sol);
         confetti();
         saysInto(card.querySelector(".says-slot"));
         announce("Correct");

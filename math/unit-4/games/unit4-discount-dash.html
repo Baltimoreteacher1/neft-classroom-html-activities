@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/math-mobile.css" />
-    <title>Discount Dash — Sale Runner</title>
+    <title>Discount Dash — Best Deal Shopper</title>
     <style>
       * {
         margin: 0;
@@ -61,7 +61,6 @@
             <!-- EWL Universal Arcade Enhancements Header -->
       <div class="ewl-arcade-header-bar">
         <div class="ewl-arcade-title-group">
-          <a href="/math/games/" class="ewl-back-hub-btn">⬅️ Arcade Hub</a>
           <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
           <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
         </div>
@@ -74,7 +73,7 @@
       </div>
   
     <!-- nt-game-topbar-injected:begin (tools/inject-game-topbar.js) -->
-    <header class="nt-game-topbar" role="banner"><span class="ngt-title">Discount Dash — Sale Runner</span></header>
+    <header class="nt-game-topbar" role="banner"><span class="ngt-title">Discount Dash — Best Deal Shopper</span></header>
     <!-- nt-game-topbar-injected:end -->
     <div id="game"></div>
     <!-- Visually-hidden live region: mirrors each deal row for assistive
@@ -92,26 +91,46 @@
         white-space: nowrap;
       "
     ></div>
+    <!-- Spoken coach feedback (right/wrong + hints) for screen readers. -->
+    <div
+      id="dd-fb"
+      role="status"
+      aria-live="polite"
+      style="
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      "
+    ></div>
     <script>
       // ───────────────────────────────────────────────────────────
       // DISCOUNT DASH — SALE RUNNER  (Neft Teacher)
       // Grade 6: 6.AT.A.3c — percent of a quantity (discounts, sale price).
       //
-      // REAL GAME: A 3-lane, SELF-PACED aisle runner. Deal rows drift in at a
-      // gentle constant speed, then STOP at the decision zone and wait as long
-      // as the student needs. Each lane shows the SAME item at its own price
-      // and "% off"; the student taps the lane with the BEST DEAL — the lowest
-      // sale price = original × (1 − pct/100). Correct grabs bank the savings
-      // and build a combo; wrong grabs cost a heart, but hearts refill at zero
-      // (no-fail) and the run always finishes its full round count.
+      // REAL GAME: A calm, TURN-BASED 3-lane shopping aisle. One deal row sits
+      // on the shelf and waits — nothing moves until the student picks. Each
+      // lane shows the SAME item at its own price and "% off"; the student
+      // picks the lane with the BEST DEAL — the lowest sale price =
+      // original × (1 − pct/100). A wrong pick earns a method hint (Tier 1),
+      // a second wrong pick earns worked sale prices (Tier 2); the student
+      // always finishes the deal (no-fail). Full points for an unaided first
+      // pick, fewer when helped. No clock, no speed, no lives.
       // ───────────────────────────────────────────────────────────
       const W = 1024,
         H = 768;
       const LS_KEY = "discountdash_runner_hi";
       const LANES = [W / 2 - 240, W / 2, W / 2 + 240];
-      // Self-paced run: fixed number of deal rows, gentle constant scroll.
+      // Turn-based run: fixed number of deal rows; layout rows (canvas px).
       const TOTAL_ROUNDS = 12;
-      const BASE_SPEED = 1.1;
+      const ROW_Y = 200; // deal cards sit here and never move
+      const COACH_Y = 352; // persistent coach / feedback line
+      const CART_Y = 560; // the shopper's cart under the chosen lane
+      const NEXT_Y = 660; // "Next deal" button after a solved deal
+      // Most points possible: every deal first try, streak bonus capped at +50.
+      const MAX_SCORE = Array.from({ length: TOTAL_ROUNDS }, (_, i) => 100 + Math.min(i, 5) * 10).reduce((a, b) => a + b, 0);
 
       // ── Reduced-motion guard (bespoke FX respect prefers-reduced-motion) ──
       // Live-tracked so an OS-level toggle is honored without a reload.
@@ -221,15 +240,15 @@
           this.cameras.main.setBackgroundColor("#10243f");
           this.add
             .text(W / 2, 140, "DISCOUNT DASH", {
-              fontFamily: "Segoe UI",
+              fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
               fontSize: "66px",
               fontStyle: "900",
               color: "#ffe066",
             })
             .setOrigin(0.5);
           this.add
-            .text(W / 2, 208, "SALE RUNNER", {
-              fontFamily: "Segoe UI",
+            .text(W / 2, 208, "BEST DEAL SHOPPER", {
+              fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
               fontSize: "28px",
               fontStyle: "700",
               color: "#74c0fc",
@@ -240,9 +259,9 @@
             .text(
               W / 2,
               320,
-              "Stroll the aisle. Each lane shows the same kind of item\nat its own price and % off. Every row STOPS and waits —\ntake your time, then pick the lane with the LOWEST sale price!",
+              "12 deals. Each lane shows the same kind of item\nat its own price and % off. Nothing moves until you choose —\ntake your time, then pick the lane with the LOWEST sale price!",
               {
-                fontFamily: "Segoe UI",
+                fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
                 fontSize: "21px",
                 color: "#dbe4ff",
                 align: "center",
@@ -254,9 +273,9 @@
             .text(
               W / 2,
               440,
-              "Tap a lane, or ← → / A D + Enter    •    sale price = price × (1 − %/100)",
+              "Tap a deal card, or ← → / 1 2 3 + Enter    •    sale price = price × (100 − % off) ÷ 100",
               {
-                fontFamily: "Segoe UI",
+                fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
                 fontSize: "18px",
                 color: "#94a3b8",
               },
@@ -265,7 +284,7 @@
           const hi = parseInt(localStorage.getItem(LS_KEY) || "0");
           this.add
             .text(W / 2, 500, "Best savings total: " + hi, {
-              fontFamily: "Segoe UI",
+              fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
               fontSize: "18px",
               color: "#ffd43b",
             })
@@ -275,20 +294,21 @@
             .setInteractive({ useHandCursor: true });
           const t = this.add
             .text(W / 2, 600, "START SPREE", {
-              fontFamily: "Segoe UI",
+              fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
               fontSize: "28px",
               fontStyle: "800",
               color: "#10243f",
             })
             .setOrigin(0.5);
-          this.tweens.add({
-            targets: [btn, t],
-            scale: 1.05,
-            duration: 700,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.inOut",
-          });
+          if (!reducedMotion())
+            this.tweens.add({
+              targets: [btn, t],
+              scale: 1.05,
+              duration: 700,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.inOut",
+            });
           const go = () => {
             sfx.init();
             this.scene.start("Game");
@@ -296,7 +316,6 @@
           btn.on("pointerdown", go);
           this.input.keyboard.once("keydown-ENTER", go);
 
-          // Back-to-hub link (returns to the Unit 4 collection page).
         }
       }
 
@@ -308,33 +327,29 @@
           this.cameras.main.setBackgroundColor("#10243f");
           this.score = 0;
           this.savings = 0;
-          this.lives = 3;
           this.combo = 0;
-          this.round = 1;
+          this.firstTry = 0; // deals solved on the first pick, no help
+          this.helped = 0; // deals solved after a hint
+          this.round = 0;
           this.lane = 1;
-          this.speed = BASE_SPEED;
           this.gameOver = false;
-          this.rows = [];
-          this.rowGap = 360;
-          this.distSinceRow = 0;
-          // Self-paced decision: the row that is stopped at the decision zone,
-          // waiting for the student to pick a lane (no time pressure).
-          this.waitingRow = null;
-          this.prompt = null;
+          // Turn-based: exactly one deal row is on the shelf at a time and it
+          // never moves. Nothing happens until the student picks a lane.
+          this.row = null;
+          this.walk = 0; // cosmetic aisle stroll between deals (ms left)
+          this.nextBtn = null;
 
-          // ── Parallax mall storefront background (multi-speed layers) ──
-          // Three depth bands of procedural storefronts scroll DOWN with the
-          // aisle at different speeds (far = slow). Pure decoration behind the
-          // play surface; never intercepts input. Honors reduced-motion.
+          // ── Parallax mall storefront background (multi-depth layers) ──
+          // Purely decorative; it only drifts during the short stroll between
+          // deals (never while a deal waits). Honors reduced-motion.
           this.bgLayers = this.buildStorefronts();
-          // Subtle pointer parallax sway of the whole mall (skybox feel).
           this.bgSwayX = 0;
           this.input.on("pointermove", (p) => {
             if (reducedMotion()) return;
             this.bgSwayX = ((p.x / W) * 2 - 1) * 18;
           });
 
-          // scrolling floor stripes
+          // floor stripes
           this.stripes = [];
           for (let i = 0; i < 14; i++) {
             const s = this.add
@@ -350,64 +365,68 @@
 
           // player shopper
           this.player = this.add
-            .text(LANES[this.lane], H - 130, "🛒", { fontSize: "70px" })
+            .text(LANES[this.lane], CART_Y, "🛒", { fontSize: "64px" })
             .setOrigin(0.5)
             .setDepth(10);
 
           // HUD
-          this.hud = this.add
-            .text(20, 16, "", {
-              fontFamily: "Segoe UI",
-              fontSize: "22px",
+          const hudStyle = (c, s = "22px") => ({
+            fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+            fontSize: s,
+            fontStyle: "700",
+            color: c,
+            backgroundColor: "#0a1830",
+            padding: { x: 10, y: 4 },
+          });
+          this.hud = this.add.text(20, 14, "", hudStyle("#ffe066")).setDepth(20);
+          this.savHud = this.add.text(W - 20, 14, "", hudStyle("#51cf66")).setOrigin(1, 0).setDepth(20);
+          this.comboHud = this.add.text(W / 2, 14, "", hudStyle("#ffd8e8")).setOrigin(0.5, 0).setDepth(20);
+
+          // Coach line (persistent — feedback never fades before it is read).
+          this.coach = this.add
+            .text(W / 2, COACH_Y, "", {
+              fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+              fontSize: "24px",
               fontStyle: "700",
-              color: "#ffe066",
-            })
-            .setDepth(20);
-          this.savHud = this.add
-            .text(W - 20, 16, "", {
-              fontFamily: "Segoe UI",
-              fontSize: "22px",
-              fontStyle: "700",
-              color: "#51cf66",
-            })
-            .setOrigin(1, 0)
-            .setDepth(20);
-          this.comboHud = this.add
-            .text(W / 2, 16, "", {
-              fontFamily: "Segoe UI",
-              fontSize: "20px",
-              color: "#ff7eb6",
+              color: "#dbe4ff",
+              backgroundColor: "#0a1830",
+              padding: { x: 16, y: 10 },
+              align: "center",
+              wordWrap: { width: 900 },
+              lineSpacing: 4,
             })
             .setOrigin(0.5, 0)
-            .setDepth(20);
+            .setDepth(25);
+          this.prompt = this.add
+            .text(W / 2, H - 26, "", {
+              fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+              fontSize: "18px",
+              color: "#a5d8ff",
+            })
+            .setOrigin(0.5)
+            .setDepth(25);
 
-          // input
-          this.input.keyboard.on("keydown-LEFT", () => this.move(-1));
-          this.input.keyboard.on("keydown-RIGHT", () => this.move(1));
-          this.input.keyboard.on("keydown-A", () => this.move(-1));
-          this.input.keyboard.on("keydown-D", () => this.move(1));
-          this.input.keyboard.on("keydown-ENTER", () => this.confirmGrab());
-          this.input.keyboard.on("keydown-SPACE", () => this.confirmGrab());
-          this.input.on("pointerdown", (p) => {
-            if (this.waitingRow) {
-              // Row is stopped: a tap picks that lane directly.
-              let li = 0,
-                bd = Infinity;
-              LANES.forEach((lx, i) => {
-                const d = Math.abs(p.x - lx);
-                if (d < bd) {
-                  bd = d;
-                  li = i;
-                }
-              });
-              this.setLane(li);
-              this.confirmGrab();
-            } else if (p.x < W / 2 - 60) this.move(-1);
-            else if (p.x > W / 2 + 60) this.move(1);
-          });
+          // input — every action has a key: ←/→ or A/D to move, 1/2/3 to jump
+          // to a lane, Enter/Space to pick (or to go on to the next deal).
+          const kb = this.input.keyboard;
+          kb.on("keydown-LEFT", () => this.move(-1));
+          kb.on("keydown-RIGHT", () => this.move(1));
+          kb.on("keydown-A", () => this.move(-1));
+          kb.on("keydown-D", () => this.move(1));
+          kb.on("keydown-ONE", () => this.setLane(0));
+          kb.on("keydown-TWO", () => this.setLane(1));
+          kb.on("keydown-THREE", () => this.setLane(2));
+          kb.on("keydown-ENTER", () => this.primaryAction());
+          kb.on("keydown-SPACE", () => this.primaryAction());
 
-          this.spawnRow();
-          this.updateHUD();
+          this.nextDeal();
+        }
+
+        // Enter/Space: pick the current lane, or continue after a solved deal.
+        primaryAction() {
+          if (this.gameOver) return;
+          if (this.row && this.row.scored) this.nextDeal();
+          else this.confirmGrab();
         }
 
         // Build procedural mall storefronts in three parallax bands. Returns
@@ -505,38 +524,56 @@
             this.tweens.add({
               targets: this.player,
               x: LANES[this.lane],
-              duration: 120,
+              duration: reducedMotion() ? 0 : 140,
               ease: "Quad.out",
             });
           }
+          this.updateHUD();
         }
 
-        // Student confirms the stopped row at the current lane (Enter/Space,
-        // or a lane tap which calls setLane first). Fully self-paced.
-        confirmGrab() {
-          const row = this.waitingRow;
-          if (!row || row.scored || this.gameOver) return;
-          this.waitingRow = null;
-          if (this.prompt) {
-            this.prompt.destroy();
-            this.prompt = null;
+        say(msg, color) {
+          this.coach.setText(msg).setColor(color || "#dbe4ff");
+          const fb = document.getElementById("dd-fb");
+          if (fb) fb.textContent = msg;
+        }
+
+        // Put the next deal row on the shelf. It sits still and waits.
+        nextDeal() {
+          if (this.gameOver) return;
+          if (this.row && !this.row.scored) return;
+          if (this.round >= TOTAL_ROUNDS) {
+            this.endGame();
+            return;
           }
-          this.grabCell(row, this.lane);
-        }
-
-        showGrabPrompt() {
-          if (this.prompt) return;
-          this.prompt = this.add
-            .text(W / 2, H - 40, "Take your time — tap the lane with the LOWEST sale price", {
-              fontFamily: "Segoe UI",
-              fontSize: "20px",
-              fontStyle: "700",
-              color: "#74c0fc",
-              backgroundColor: "#0a1830",
-              padding: { x: 14, y: 6 },
-            })
-            .setOrigin(0.5)
-            .setDepth(25);
+          if (this.nextBtn) {
+            this.nextBtn.forEach((o) => o.destroy());
+            this.nextBtn = null;
+          }
+          if (this.row) {
+            const old = this.row;
+            old.cells.forEach((c) => {
+              if (reducedMotion()) c.destroy();
+              else
+                this.tweens.add({
+                  targets: c,
+                  y: H + 120,
+                  alpha: 0,
+                  duration: 420,
+                  ease: "Quad.in",
+                  onComplete: () => c.destroy(),
+                });
+            });
+            this.walk = reducedMotion() ? 0 : 420;
+          }
+          this.round++;
+          this.spawnRow();
+          this.say(
+            this.round === 1
+              ? "Each lane has its own price and % off. Find each SALE price, then pick the lowest."
+              : "New deal! Work out each sale price, then pick the lowest.",
+          );
+          this.prompt.setText("Tap a deal card  •  or ← → / 1 2 3 and Enter  •  take all the time you need");
+          this.updateHUD();
         }
 
         spawnRow() {
@@ -547,37 +584,62 @@
           const ddSr = document.getElementById("dd-sr");
           if (ddSr)
             ddSr.textContent =
-              `Deal row ${this.round + 1}: ${data.emoji} — ` +
+              `Deal row ${this.round} of ${TOTAL_ROUNDS}: ${data.emoji} — ` +
               data.cells
                 .map((cell, i) => `Lane ${i + 1}: ${money(cell.base)} at ${cell.pct}% off`)
                 .join(". ") +
               ". Which lane has the lowest sale price?";
-          const y = -120;
           const cells = data.cells.map((cell, i) => {
-            const c = this.add.container(LANES[i], y).setDepth(5);
-            const pad = this.add.rectangle(0, 0, 200, 150, 0x1d3a63).setStrokeStyle(3, 0x3b6cb5);
-            const emo = this.add.text(0, -42, data.emoji, { fontSize: "40px" }).setOrigin(0.5);
-            const wasT = this.add
-              .text(0, 2, money(cell.base), {
-                fontFamily: "Segoe UI",
-                fontSize: "16px",
-                color: "#94a3b8",
+            const c = this.add.container(LANES[i], ROW_Y).setDepth(5);
+            const pad = this.add
+              .rectangle(0, 0, 210, 170, 0x1d3a63)
+              .setStrokeStyle(3, 0x3b6cb5)
+              .setInteractive({ useHandCursor: true });
+            pad.on("pointerdown", () => {
+              this.setLane(i);
+              this.confirmGrab();
+            });
+            const lane = this.add
+              .text(0, -66, "LANE " + (i + 1), {
+                fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+                fontSize: "15px",
+                fontStyle: "700",
+                color: "#a5d8ff",
               })
               .setOrigin(0.5);
-            wasT.setStyle({ fontStyle: "italic" });
-            const pctT = this.add
-              .text(0, 26, cell.pct + "% OFF", {
-                fontFamily: "Segoe UI",
+            const emo = this.add.text(0, -32, data.emoji, { fontSize: "38px" }).setOrigin(0.5);
+            const wasT = this.add
+              .text(0, 10, "Price " + money(cell.base), {
+                fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
                 fontSize: "24px",
+                fontStyle: "700",
+                color: "#e9ecef",
+              })
+              .setOrigin(0.5);
+            const pctT = this.add
+              .text(0, 40, cell.pct + "% OFF", {
+                fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+                fontSize: "30px",
                 fontStyle: "900",
                 color: "#ffe066",
               })
               .setOrigin(0.5);
-            c.add([pad, emo, wasT, pctT]);
-            // ── Deal card eased rotation/flip on approach ──
-            // Each pad flips open (scaleY 0→1) with a small lean as the row
-            // appears, then settles flat. Cosmetic only: the y-scroll in
-            // update() owns position, so we only animate scaleY/angle here.
+            // Sale price is hidden until the deal is solved (or worked as a
+            // Tier-2 hint for a lane the student already ruled out).
+            const saleT = this.add
+              .text(0, 112, "", {
+                fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+                fontSize: "18px",
+                fontStyle: "700",
+                color: "#ffffff",
+                backgroundColor: "#0a1830",
+                padding: { x: 8, y: 4 },
+                align: "center",
+              })
+              .setOrigin(0.5);
+            c.add([pad, lane, emo, wasT, pctT, saleT]);
+            c.pad = pad;
+            c.saleT = saleT;
             if (reducedMotion()) {
               c.setScale(1).setAngle(0);
             } else {
@@ -594,42 +656,69 @@
             }
             return c;
           });
-          this.rows.push({
-            data,
-            cells,
-            y,
-            scored: false,
-            roundNum: this.round,
-          });
+          if (!this.shelf)
+            this.shelf = this.add
+              .rectangle(W / 2, ROW_Y + 18, 760, 236, 0x0a1830, 0.88)
+              .setStrokeStyle(2, 0x2c4a72)
+              .setDepth(3);
+          this.row = { data, cells, wrong: [], scored: false, roundNum: this.round };
+        }
+
+        // Worked sale price for one lane: price × (100 − %) ÷ 100.
+        worked(i) {
+          const c = this.row.data.cells[i];
+          return money(c.base) + " × " + (100 - c.pct) + "% = " + money(c.sale);
+        }
+
+        // Mission-control (flagship-studio) contract: it reads waitingRow and
+        // calls setLane()+confirmGrab(), and wraps grabCell() to track accuracy.
+        get waitingRow() {
+          return this.row && !this.row.scored ? this.row : null;
+        }
+
+        confirmGrab() {
+          this.grabCell(this.row, this.lane);
         }
 
         grabCell(row, laneIdx) {
-          row.scored = true;
+          if (!row || row.scored || this.gameOver) return;
+          if (row.wrong.includes(laneIdx)) {
+            this.say("You already checked Lane " + (laneIdx + 1) + ". Try a different lane.", "#ffd43b");
+            return;
+          }
           const rm = reducedMotion();
+          const d = row.data;
           // Ties at the same rounded-cents sale price: either lane is correct.
-          const isBest = row.data.bestIdxs.includes(laneIdx);
-          if (isBest) {
-            const cell = row.data.cells[laneIdx];
-            const saved = cell.base - cell.sale;
-            this.combo++;
-            const pts = 100 + this.combo * 15;
+          if (d.bestIdxs.includes(laneIdx)) {
+            row.scored = true;
+            const tries = row.wrong.length;
+            const cell = d.cells[laneIdx];
+            const saved = Math.round((cell.base - cell.sale) * 100) / 100;
+            let pts;
+            if (tries === 0) {
+              this.combo++;
+              this.firstTry++;
+              pts = 100 + Math.min(this.combo - 1, 5) * 10;
+            } else {
+              this.combo = 0;
+              this.helped++;
+              pts = tries === 1 ? 50 : 25;
+            }
             this.score += pts;
             const prevSav = this.savings;
-            this.savings += saved;
+            this.savings = Math.round((this.savings + saved) * 100) / 100;
             sfx.grab();
-            this.popText("BEST DEAL!  saved " + money(saved) + "  +" + pts, "#51cf66");
-            // ── Best-deal lane gold glow (revealed only AFTER the grab, so it
-            // never gives away the answer) — pulses around the grabbed pad. ──
+            // Reveal every lane's worked sale price so the comparison is visible.
+            row.cells.forEach((c, i) => {
+              c.saleT.setText("Sale " + money(d.cells[i].sale));
+              if (i !== laneIdx) c.setAlpha(0.6);
+            });
             this.flashBestLane(row.cells[laneIdx]);
-            // Animated savings ticker counts the HUD up to the new total.
             this.tickSavings(prevSav, this.savings);
-            // Combo multiplier badge scaling pop.
             this.popCombo();
-            // DOM-level spark burst over the canvas via the shared FX kit.
             try {
               window.GameFX && window.GameFX.celebrate(this.game.canvas);
             } catch (e) {}
-            // sparkle (capped; skipped under reduced-motion)
             if (!rm) {
               for (let i = 0; i < 10; i++) {
                 const s = this.add
@@ -645,36 +734,84 @@
                 });
               }
             }
-          } else {
-            this.combo = 0;
-            this.lives--;
-            sfx.bad();
-            if (!rm) this.cameras.main.shake(160, 0.008);
-            // ── Wrong-deal brief red flash overlay ──
-            this.wrongFlash();
-            const best = row.data.cells[row.data.bestIdx];
-            this.popText(
-              "Overpaid! Best sale price was " +
-                money(best.sale) +
-                " (" +
-                money(best.base) +
-                " at " +
-                best.pct +
-                "% off)",
-              "#ff6b6b",
+            const lead = tries === 0 ? "Best deal — first try! +" + pts : "Best deal! +" + pts + " (with help)";
+            this.say(
+              lead +
+                "\nLane " +
+                (laneIdx + 1) +
+                ": " +
+                this.worked(laneIdx) +
+                " is the lowest sale price. You saved " +
+                money(saved) +
+                ".",
+              "#8ce99a",
             );
-          }
-          if (this.lives <= 0) {
-            // No-fail: refill hearts and keep the spree going.
-            this.lives = 3;
-            this.time.delayedCall(700, () => this.popText("♥ Refilled — keep going!", "#51cf66"));
+            this.showNext();
+          } else {
+            row.wrong.push(laneIdx);
+            this.combo = 0;
+            sfx.bad();
+            this.wrongFlash();
+            const cellC = row.cells[laneIdx];
+            cellC.pad.setStrokeStyle(4, 0xff6b6b);
+            cellC.setAlpha(0.55);
+            if (row.wrong.length === 1) {
+              // Tier 1 — method hint, misconception-specific, no answer.
+              const picked = d.cells[laneIdx];
+              const maxPct = Math.max(...d.cells.map((c) => c.pct));
+              const minBase = Math.min(...d.cells.map((c) => c.base));
+              let why;
+              if (picked.pct === maxPct)
+                why =
+                  "Lane " +
+                  (laneIdx + 1) +
+                  " has the biggest % off, but its price starts higher. The biggest % off is not always the lowest price.";
+              else if (picked.base === minBase)
+                why =
+                  "Lane " +
+                  (laneIdx + 1) +
+                  " has the lowest starting price, but the discounts are different. Starting low is not enough.";
+              else why = "Lane " + (laneIdx + 1) + " is not the lowest sale price.";
+              this.say(
+                "Not quite. " +
+                  why +
+                  "\nHint: you pay (100 − % off)% of the price. Find each lane's sale price, then compare.",
+                "#ffd43b",
+              );
+            } else {
+              // Tier 2 — concrete worked step for the lanes already ruled out.
+              row.wrong.forEach((i) => row.cells[i].saleT.setText("Sale " + money(d.cells[i].sale)));
+              this.say(
+                "Let's work it out. " +
+                  row.wrong.map((i) => "Lane " + (i + 1) + ": " + this.worked(i)).join(".  ") +
+                  ".\nNow find the sale price of the last lane the same way and compare.",
+                "#ffd43b",
+              );
+            }
           }
           this.updateHUD();
-          // The run always finishes at its normal round count (when the last
-          // spawned row has been decided).
-          if (row.roundNum >= TOTAL_ROUNDS) {
-            this.time.delayedCall(1400, () => this.endGame());
-          }
+        }
+
+        showNext() {
+          const last = this.round >= TOTAL_ROUNDS;
+          const label = last ? "SEE RESULTS ▶" : "NEXT DEAL ▶";
+          const bg = this.add
+            .rectangle(W / 2, NEXT_Y, 280, 60, 0xffe066)
+            .setStrokeStyle(3, 0xffffff)
+            .setDepth(26)
+            .setInteractive({ useHandCursor: true });
+          const t = this.add
+            .text(W / 2, NEXT_Y, label, {
+              fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+              fontSize: "24px",
+              fontStyle: "800",
+              color: "#10243f",
+            })
+            .setOrigin(0.5)
+            .setDepth(27);
+          bg.on("pointerdown", () => this.nextDeal());
+          this.nextBtn = [bg, t];
+          this.prompt.setText("Press Enter or tap " + (last ? "SEE RESULTS" : "NEXT DEAL") + " when you are ready");
         }
 
         // Gold glow + quick pop around the pad the player correctly grabbed.
@@ -762,7 +899,7 @@
         // Brief full-screen red flash on a wrong (overpaid) grab.
         wrongFlash() {
           const f = this.add
-            .rectangle(W / 2, H / 2, W, H, 0xff3b3b, reducedMotion() ? 0.12 : 0.3)
+            .rectangle(W / 2, H / 2, W, H, 0xff3b3b, reducedMotion() ? 0.08 : 0.14)
             .setDepth(30);
           this.tweens.add({
             targets: f,
@@ -773,44 +910,18 @@
           });
         }
 
-        popText(msg, color) {
-          const t = this.add
-            .text(W / 2, H - 230, msg, {
-              fontFamily: "Segoe UI",
-              fontSize: "26px",
-              fontStyle: "800",
-              color,
-              backgroundColor: "#0a1830",
-              padding: { x: 14, y: 6 },
-            })
-            .setOrigin(0.5)
-            .setDepth(25);
-          this.tweens.add({
-            targets: t,
-            y: H - 290,
-            alpha: 0,
-            duration: 1100,
-            onComplete: () => t.destroy(),
-          });
-        }
-
         updateHUD() {
-          this.hud.setText("SCORE " + this.score + "    " + "♥".repeat(Math.max(0, this.lives)));
-          // Skip while the savings ticker tween is mid-count so it isn't
-          // clobbered; it lands on the exact total in its onComplete.
+          this.hud.setText("SCORE " + this.score);
           if (!(this.savTween && this.savTween.isPlaying())) {
             this.savHud.setText("SAVED  " + money(this.savings));
           }
           this.comboHud.setText(
-            "ROUND " +
-              this.round +
-              "/" +
-              TOTAL_ROUNDS +
-              (this.combo > 1 ? "   x" + this.combo : ""),
+            "Deal " + this.round + " of " + TOTAL_ROUNDS + (this.combo > 1 ? "   streak x" + this.combo : ""),
           );
         }
 
         endGame() {
+          if (this.gameOver) return;
           this.gameOver = true;
           const hi = parseInt(localStorage.getItem(LS_KEY) || "0");
           if (this.score > hi) localStorage.setItem(LS_KEY, this.score);
@@ -819,69 +930,39 @@
               EduPulse.record({
                 activityTitle: document.title,
                 score: this.score,
+                maxScore: MAX_SCORE,
+                percent: Math.round((this.score / MAX_SCORE) * 100),
+                problemsCorrect: this.firstTry,
+                problemsAttempted: TOTAL_ROUNDS,
               });
           } catch (e) {}
           this.scene.start("Results", {
             score: this.score,
             savings: this.savings,
+            firstTry: this.firstTry,
+            helped: this.helped,
+            newBest: this.score > hi,
+            tier: this.sys.settings.data?.studioTier,
           });
         }
 
         update(time, delta) {
           if (this.gameOver) return;
-          const dt = delta / 16.67;
-          // While a row waits at the decision zone the aisle pauses entirely:
-          // the math choice is never made under time pressure.
-          const v = this.waitingRow ? 0 : this.speed * dt;
-          const rm = reducedMotion();
-
-          // ── Parallax storefront drift (far layers move slower) ──
-          // Under reduced-motion we freeze the drift but keep the scenery.
+          // The aisle only moves during the short stroll between deals.
+          if (this.walk <= 0) return;
+          this.walk -= delta;
+          const v = (delta / 16.67) * 6;
           if (this.bgLayers) {
-            const swayTarget = rm ? 0 : this.bgSwayX || 0;
             this.bgLayers.forEach((L) => {
-              if (!rm) {
-                L.cont.y += v * L.speed;
-                if (L.cont.y >= L.span) L.cont.y -= L.span;
-              }
-              // ease container x toward parallax sway target
-              L.cont.x += (swayTarget * L.speed - L.cont.x) * 0.08;
+              L.cont.y += v * L.speed;
+              if (L.cont.y >= L.span) L.cont.y -= L.span;
+              L.cont.x += ((this.bgSwayX || 0) * L.speed - L.cont.x) * 0.08;
             });
           }
-
-          // scroll stripes
           this.stripes.forEach((s) => {
             s.y += v;
             if (s.y > H + 30) s.y -= 14 * 60;
           });
-
-          // move rows down; a row that reaches the decision zone STOPS and
-          // waits for the student's lane choice (no forced auto-grab).
-          for (let i = this.rows.length - 1; i >= 0; i--) {
-            const row = this.rows[i];
-            row.y += v;
-            if (!row.scored && row.y >= H - 150) {
-              row.y = H - 150;
-              if (!this.waitingRow) {
-                this.waitingRow = row;
-                this.showGrabPrompt();
-              }
-            }
-            row.cells.forEach((c) => (c.y = row.y));
-            if (row.y > H + 100) {
-              row.cells.forEach((c) => c.destroy());
-              this.rows.splice(i, 1);
-            }
-          }
-
-          // spawn next row by distance — gentle constant speed, fixed round count
-          this.distSinceRow += v;
-          if (this.distSinceRow >= this.rowGap && this.round < TOTAL_ROUNDS) {
-            this.distSinceRow = 0;
-            this.round++;
-            this.spawnRow();
-            this.updateHUD();
-          }
         }
       }
 
@@ -894,58 +975,58 @@
         }
         create() {
           this.cameras.main.setBackgroundColor("#10243f");
-          this.add
-            .text(W / 2, 200, "CHECKOUT!", {
-              fontFamily: "Segoe UI",
-              fontSize: "60px",
-              fontStyle: "900",
-              color: "#ffe066",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(W / 2, 300, "Score: " + (this.r.score || 0), {
-              fontFamily: "Segoe UI",
-              fontSize: "34px",
-              color: "#ffffff",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(W / 2, 360, "Total saved: $" + (this.r.savings || 0).toFixed(2), {
-              fontFamily: "Segoe UI",
-              fontSize: "26px",
-              color: "#51cf66",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(W / 2, 410, "Best: " + localStorage.getItem(LS_KEY), {
-              fontFamily: "Segoe UI",
-              fontSize: "20px",
-              color: "#74c0fc",
-            })
-            .setOrigin(0.5);
-          this.add
-            .text(W / 2, 470, "Best deal = lowest sale price = price × (1 − % off ÷ 100).", {
-              fontFamily: "Segoe UI",
-              fontSize: "18px",
-              color: "#94a3b8",
-            })
-            .setOrigin(0.5);
+          const r = this.r;
+          const first = r.firstTry || 0;
+          const acc = Math.round((first / TOTAL_ROUNDS) * 100);
+          const txt = (y, s, size, color, bold) =>
+            this.add
+              .text(W / 2, y, s, {
+                fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+                fontSize: size,
+                fontStyle: bold ? "800" : "400",
+                color,
+                align: "center",
+                wordWrap: { width: 880 },
+              })
+              .setOrigin(0.5);
+          txt(110, "CHECKOUT!", "58px", "#ffe066", true);
+          txt(190, "Score: " + (r.score || 0) + (r.newBest ? "   ★ New best!" : ""), "32px", "#ffffff", true);
+          txt(
+            240,
+            "Best deal on the first try: " + first + " of " + TOTAL_ROUNDS + " (" + acc + "%)" +
+              "   •   With a hint: " + (r.helped || 0),
+            "22px",
+            "#dbe4ff",
+          );
+          txt(282, "Total saved: " + money(r.savings || 0), "24px", "#51cf66", true);
+          txt(318, "Best score: " + (localStorage.getItem(LS_KEY) || r.score || 0), "20px", "#74c0fc");
+          txt(
+            380,
+            "Skills practiced: percent of a quantity • sale price = price × (100 − % off) ÷ 100 • comparing prices",
+            "19px",
+            "#c5d3f0",
+          );
+          const next =
+            acc >= 80
+              ? "Practice next: try Level 2 (L2 Challenge) — closer discounts and bigger prices."
+              : acc >= 50
+                ? "Practice next: find each sale price before you pick. Write price × (100 − % off) ÷ 100 for every lane."
+                : "Practice next: find 10% of a price first (divide by 10). 20% is double that, 5% is half of it.";
+          txt(440, next, "20px", "#ffd43b", true);
           const btn = this.add
-            .rectangle(W / 2, 560, 240, 64, 0xffe066)
+            .rectangle(W / 2, 540, 300, 66, 0xffe066)
             .setInteractive({ useHandCursor: true });
-          this.add
-            .text(W / 2, 560, "SHOP AGAIN", {
-              fontFamily: "Segoe UI",
-              fontSize: "26px",
-              fontStyle: "800",
-              color: "#10243f",
-            })
-            .setOrigin(0.5);
-          btn.on("pointerdown", () => this.scene.start("Title"));
-          this.input.keyboard.once("keydown-ENTER", () => this.scene.start("Title"));
+          txt(540, "SHOP AGAIN ▶", "26px", "#10243f", true);
+          txt(600, "New prices every time. Press Enter or tap.", "17px", "#94a3b8");
+          const again = () => this.scene.start("Game", { studioTier: r.tier || 2 });
+          btn.on("pointerdown", again);
+          this.input.keyboard.once("keydown-ENTER", again);
+          const fb = document.getElementById("dd-fb");
+          if (fb)
+            fb.textContent =
+              "Checkout. Score " + (r.score || 0) + ". First-try best deals " + first + " of " + TOTAL_ROUNDS + ". " + next;
         }
       }
-
       const config = {
         type: Phaser.AUTO,
         width: W,
@@ -972,9 +1053,9 @@
           cv.setAttribute("role", "application");
           cv.setAttribute(
             "aria-label",
-            "Discount Dash sale runner math game. Steer into the lane with " +
-              "the lowest sale price. Use the left and right arrow keys or A " +
-              "and D to change lanes, and Enter to start.",
+            "Discount Dash best-deal math game. Pick the lane with the " +
+              "lowest sale price. Use the left and right arrow keys, A and D, " +
+              "or 1, 2, 3 to choose a lane, and Enter to pick or continue.",
           );
           cv.setAttribute("aria-roledescription", "math game");
           if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
@@ -1028,7 +1109,7 @@
       </div>
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
-<script src="/assets/game-studio.js?v=20261002" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261002" defer></script>
+<script src="/assets/game-studio.js?v=20261003" defer></script>
+<script src="/math/games/shared/flagship-studio.js?v=20261003" defer></script>
 </body>
 </html>

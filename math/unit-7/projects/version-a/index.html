@@ -4277,12 +4277,13 @@
 
       function downloadTxt() {
         const isEs = document.body.classList.contains("es");
-        const txt = document.getElementById("reportBox").textContent;
+        let txt = document.getElementById("reportBox").textContent;
         if (!txt) {
-          alert(
-            isEs ? "¡Genera primero el resumen del informe!" : "Generate the report summary first!",
-          );
-          return;
+          /* Build the summary for the student instead of blocking Download with
+             an alert. buildReport() explains itself if a step is still missing. */
+          if (typeof buildReport !== "function" || buildReport() === false) return;
+          txt = document.getElementById("reportBox")?.textContent;
+          if (!txt) return;
         }
         const a = document.createElement("a");
         a.href = "data:text/plain;charset=utf-8," + encodeURIComponent(txt);

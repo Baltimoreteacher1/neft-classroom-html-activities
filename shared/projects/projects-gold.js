@@ -347,43 +347,123 @@
 
     var overlay = document.createElement("div");
     overlay.id = "gold-level-overlay";
+
+    /* Plain-language meaning for each level, so a student knows what they are
+       choosing. The level cannot be changed afterwards (see lockLevel), so the
+       card says so before the click, not after. */
+    var LEVELS = [
+      {
+        n: 0,
+        en: "🟠 Level 0 · Extra Support",
+        es: "🟠 Nivel 0 · Apoyo extra",
+        dEn: "Worked examples and step-by-step help on every step.",
+        dEs: "Ejemplos resueltos y ayuda paso a paso en cada paso.",
+      },
+      {
+        n: 1,
+        en: "🟢 Level 1 · With Support",
+        es: "🟢 Nivel 1 · Con apoyo",
+        dEn: "Hints and sentence starters when you need them.",
+        dEs: "Pistas y frases de inicio cuando las necesites.",
+      },
+      {
+        n: 2,
+        en: "🔵 Level 2 · Challenge",
+        es: "🔵 Nivel 2 · Desafío",
+        dEn: "Fewer hints and an extra challenge on each step.",
+        dEs: "Menos pistas y un reto extra en cada paso.",
+      },
+    ];
+    var optionsHtml = LEVELS.map(function (l) {
+      return (
+        '  <button class="gold-level-option opt-lv' +
+        l.n +
+        '" type="button" data-level="' +
+        l.n +
+        '" aria-describedby="gold-level-desc-' +
+        l.n +
+        '">' +
+        '    <span class="gold-level-name"><span class="en-text">' +
+        l.en +
+        '</span><span class="es-text">' +
+        l.es +
+        "</span></span>" +
+        '    <span class="gold-level-desc" id="gold-level-desc-' +
+        l.n +
+        '"><span class="en-text">' +
+        l.dEn +
+        '</span><span class="es-text">' +
+        l.dEs +
+        "</span></span>" +
+        "  </button>"
+      );
+    }).join("");
+
     overlay.innerHTML =
-      '<div class="gold-level-card">' +
-      '  <div class="gold-level-emoji">🎉</div>' +
-      '  <h1 class="gold-level-title">' +
+      '<div class="gold-level-card" role="dialog" aria-modal="true" aria-labelledby="gold-level-title" aria-describedby="gold-level-heading">' +
+      '  <h2 class="gold-level-title" id="gold-level-title">' +
       titleHtml +
-      "</h1>" +
+      "</h2>" +
       '  <p class="gold-level-sub">' +
       subHtml +
       "</p>" +
-      '  <h3 class="gold-level-heading">' +
+      '  <h3 class="gold-level-heading" id="gold-level-heading">' +
       '    <span class="en-text">Choose your support level to begin:</span>' +
       '    <span class="es-text">Elige tu nivel de apoyo para comenzar:</span>' +
       "  </h3>" +
-      '  <button class="gold-level-option opt-lv0" type="button" data-level="0">' +
-      '    <span class="en-text">🟠 Level 0 · Extra Support</span>' +
-      '    <span class="es-text">🟠 Nivel 0 · Apoyo Extra</span>' +
-      "  </button>" +
-      '  <button class="gold-level-option opt-lv1" type="button" data-level="1">' +
-      '    <span class="en-text">🟢 Level 1 — With Support</span>' +
-      '    <span class="es-text">🟢 Nivel 1 — Con apoyo</span>' +
-      "  </button>" +
-      '  <button class="gold-level-option opt-lv2" type="button" data-level="2">' +
-      '    <span class="en-text">🔵 Level 2 — Challenge</span>' +
-      '    <span class="es-text">🔵 Nivel 2 — Desafío</span>' +
-      "  </button>" +
+      optionsHtml +
+      '  <p class="gold-level-note">' +
+      '    <span class="en-text">You choose once. Your level stays the same for this whole project.</span>' +
+      '    <span class="es-text">Eliges una sola vez. Tu nivel se queda igual en todo este proyecto.</span>' +
+      "  </p>" +
       "</div>";
 
     document.body.appendChild(overlay);
 
-    overlay.querySelectorAll(".gold-level-option").forEach(function (btn) {
+    var previouslyFocused = document.activeElement;
+    var options = Array.prototype.slice.call(overlay.querySelectorAll(".gold-level-option"));
+
+    /* Keep keyboard focus inside the dialog until a level is chosen. There is
+       deliberately no Escape-to-close: the project cannot start without a
+       level, so dismissing the dialog would leave a dead page behind it. */
+    function trapFocus(e) {
+      if (e.key !== "Tab" || !options.length) return;
+      var first = options[0];
+      var last = options[options.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      } else if (!overlay.contains(document.activeElement)) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+    document.addEventListener("keydown", trapFocus, true);
+    try {
+      if (options[0]) options[0].focus();
+    } catch (_e) {}
+
+    options.forEach(function (btn) {
       btn.addEventListener("click", function () {
         var lvl = parseInt(btn.dataset.level, 10);
         lockLevel(lvl);
+        document.removeEventListener("keydown", trapFocus, true);
 
         overlay.classList.add("fade-out");
         setTimeout(function () {
           overlay.remove();
+          /* Return focus to the page so keyboard users are not stranded on
+             <body>: the first heading of the project, else what had focus. */
+          var target = document.querySelector(".hero h1") || previouslyFocused;
+          if (target && typeof target.focus === "function") {
+            if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+            try {
+              target.focus();
+            } catch (_e) {}
+          }
         }, 250);
       });
     });

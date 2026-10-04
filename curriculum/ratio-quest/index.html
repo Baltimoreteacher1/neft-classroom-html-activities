@@ -1532,6 +1532,44 @@
       .result {
         text-align: center;
       }
+      .visit-report {
+        text-align: left;
+        max-width: 520px;
+        margin: 12px auto;
+        background: #fff;
+        border: 3px solid var(--line);
+        border-radius: 16px;
+        padding: 12px 16px;
+      }
+      .visit-report h3 {
+        margin: 0 0 8px;
+        font-size: 1.05rem;
+      }
+      .visit-report ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 4px;
+      }
+      .visit-report li {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        font-weight: 700;
+      }
+      .visit-report li b {
+        color: #b37b00;
+        white-space: nowrap;
+      }
+      .visit-report li.help span::after {
+        content: " · needed help";
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .visit-report .next {
+        margin: 10px 0 0;
+      }
       .result .big {
         font-size: 3.4rem;
       }
@@ -1580,8 +1618,65 @@
         .stamps {
           grid-template-columns: 1fr;
         }
+        /* One scrollable row of HUD chips instead of four stacked rows, so the order starts on screen 1. */
         .hud {
-          flex-wrap: wrap;
+          flex-wrap: nowrap;
+          overflow-x: auto;
+          gap: 6px;
+          padding: 8px 10px;
+          scrollbar-width: none;
+        }
+        .hud .chip {
+          flex: 0 0 auto;
+          padding: 6px 11px;
+          font-size: 0.88rem;
+          min-height: 44px;
+        }
+        .hud .grow {
+          display: none;
+        }
+        .scene-art {
+          height: 66px;
+        }
+        .npc-card {
+          grid-template-columns: 64px 1fr;
+          padding: 10px 12px;
+        }
+        .npc-card svg {
+          width: 64px;
+          grid-row: span 2;
+        }
+        .npc-role {
+          display: none;
+        }
+        .speech {
+          min-height: 0;
+          padding: 8px 12px;
+          font-size: 0.95rem;
+        }
+      }
+      /* Chromebook (1366x768): a slimmer banner keeps each order's action button above the fold. */
+      @media (max-height: 820px) and (min-width: 821px) {
+        .scene-art {
+          height: 96px;
+        }
+        .scene-body {
+          padding-top: 10px;
+        }
+        .npc-card svg {
+          width: 96px;
+        }
+        .speech {
+          min-height: 0;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
         }
       }
     </style>
@@ -1910,7 +2005,17 @@
           if (bits.length) requestAnimationFrame(loop);
           else running = false;
         };
+        // Calm motion: the device setting or the studio "Calm motion" switch turns particles off.
+        const calm = (() => {
+          try {
+            if (matchMedia("(prefers-reduced-motion: reduce)").matches) return true;
+            return JSON.parse(localStorage.getItem("ewl-game-studio-v1") || "{}").reducedMotion === true;
+          } catch (e) {
+            return false;
+          }
+        })();
         const emit = (n, make) => {
+          if (calm) return;
           for (let i = 0; i < n; i++) bits.push(make());
           if (!running) {
             running = true;
@@ -2542,6 +2647,19 @@
         ["bananas", "muffins"],
         ["sticks of butter", "loaves"],
       ];
+      // "1 eggs" reads wrong: name the amount in the singular when it is exactly 1.
+      const SINGULAR = {
+        eggs: "egg",
+        "cups of flour": "cup of flour",
+        "cups of sugar": "cup of sugar",
+        "scoops of cocoa": "scoop of cocoa",
+        "cups of milk": "cup of milk",
+        bananas: "banana",
+        muffins: "muffin",
+        "sticks of butter": "stick of butter",
+        loaves: "loaf",
+      };
+      const amt = (n, name) => `${n} ${n === 1 ? SINGULAR[name] || name : name}`;
       const bakeryOrders = [
         scaleOrder,
         chartOrder,
@@ -2570,7 +2688,7 @@
     <div class="task">Scale the recipe to fill the order. Set the batch dial, then fill in the missing amount.</div>
     <div class="oven-wrap">
       <div>
-        <div class="recipe"><small>Recipe · 1 batch</small>${a} ${ia} : ${b} ${ib}</div>
+        <div class="recipe"><small>Recipe · 1 batch</small>${amt(a, ia)} : ${amt(b, ib)}</div>
         <div class="ticket" style="margin-top:12px">📋 <b>Order:</b> "I need <b>${known} ${knownName}</b> worth. How many ${missName}?"</div>
         <div class="dial" id="dial">${[2, 3, 4, 5, 6].map((m) => `<button data-m="${m}">×${m}</button>`).join("")}</div>
         <div class="row" style="justify-content:center"><span class="lbl" style="min-width:0">${missName}:</span><input class="num" id="ans" inputmode="numeric"></div>
@@ -2614,7 +2732,7 @@
             markInputs([[$("#ans"), false]]);
             fb(
               "bad",
-              `Right batch size! Now multiply ${missLeft ? a : b} ${missName} by ${k}.`,
+              `Right batch size! Now multiply ${amt(missLeft ? a : b, missName)} by ${k}.`,
             );
             round.miss();
           }
@@ -4906,6 +5024,45 @@
           ]),
       };
 
+      /* Skill names for the end-of-visit report, keyed by the order builder each order calls. */
+      const ORDER_SKILL = {
+        brewOrder: "Build a ratio and write it 3 ways",
+        shelfOrder: "Part-to-part and part-to-whole ratios",
+        scaleOrder: "Scale a recipe with equivalent ratios",
+        chartOrder: "Complete a ratio table",
+        crateOrder: "Match equivalent ratios",
+        parcelOrder: "Ratio, rate, or unit rate?",
+        mailbagOrder: "Ratio, rate, or unit rate?",
+        signOrder: "Find a unit rate",
+        bestBuyOrder: "Compare unit prices",
+        shoppingOrder: "Use a unit rate to find a cost",
+        chalPotionWhole: "Part-to-whole ratios",
+        chalPotionBuild: "Build an equivalent mixture",
+        chalPotionMulti: "Ratio statements (select all)",
+        chalShelfHard: "Write several ratios from a picture",
+        chalPotionError: "Find the ratio mistake",
+        chalPotionCompare: "Compare two mixtures",
+        chalTableHard: "Ratio table with skipped columns",
+        chalScaleEbsr: "Scale a recipe (Part A / Part B)",
+        chalWhichEquiv: "Equivalent ratios (select all)",
+        chalReduceFirst: "Simplify, then scale",
+        chalTableError: "Find the ratio table mistake",
+        chalStampMulti: "Rates and unit rates (select all)",
+        chalRateEbsr: "Unit rate (Part A / Part B)",
+        chalUnitError: "Find the unit rate mistake",
+        chalEquivRates: "Equivalent rates",
+        chalRateStatements: "Rate statements (select all)",
+        chalBudgetSteps: "Multi-step budget problem",
+        chalWhoFaster: "Compare rates: who is faster?",
+        chalPriceTable: "Unit price table",
+        chalDealMulti: "Better deal (select all)",
+      };
+      function orderSkill(fn) {
+        if (ORDER_SKILL[fn.name]) return ORDER_SKILL[fn.name];
+        const m = String(fn).match(/\b([A-Za-z]+Order|chal[A-Za-z]+)\s*\(/);
+        return (m && ORDER_SKILL[m[1]]) || "Ratio order";
+      }
+
       /* ============================================================
    SCREENS
    ============================================================ */
@@ -5191,7 +5348,8 @@
           total = orders.length,
           isShop = id !== "finale" && id !== "merchant";
         let n = 0,
-          earned = [];
+          earned = [],
+          skills = [];
         const s = screen(`${hud()}<div class="scene" style="--c:${npc.color}">
       <div class="scene-art">${ART.sceneBanner(id)}</div>
       <div class="scene-body"><div class="scene-inner">
@@ -5266,6 +5424,7 @@
               next.focus();
             },
           };
+          skills[n] = orderSkill(orders[n]);
           orders[n](body, api);
         }
         function finishShop() {
@@ -5294,6 +5453,7 @@
       <p style="font-weight:800;font-size:1.15rem">${stars} of ${total * 3} stars this visit</p>
       <p class="coins">🪙 ${S.coins} coins in your purse</p>
       ${id === "finale" ? `<p>The <b>Golden Trophy</b> now sits on your stall.</p>` : allDone && !P().finale ? `<p>🎪 All four shops done — <b>Grand Market Day</b> is open on the map!</p>` : S.merchant && isShop ? `<p>🎒 A <b>Traveling Merchant</b> just rolled into town — look for the cart on the map!</p>` : ""}
+      ${visitReport(earned, skills)}
       ${isShop ? `<div class="chest" id="chest"><p style="margin:0 0 8px;font-weight:900">🎁 Treasure chest! Pick one card.</p><div class="tcards">${[0, 1, 2].map((i) => `<button class="tcard" data-i="${i}">?</button>`).join("")}</div><div id="chestResult" class="feedback"></div></div>` : ""}
       <div class="actions" style="justify-content:center"><button class="big-btn" id="toMap">🗺️ Back to town</button><button class="big-btn quiet" id="again">Play again</button></div></div>`;
           $("#toMap", board).onclick = () => showMap();
@@ -5301,6 +5461,19 @@
           if (isShop) treasureChest(board);
         }
         renderOrder();
+      }
+
+      // What went well and what to practice next, from this visit's stars (3 = first try).
+      function visitReport(earned, skills) {
+        const first = earned.filter((x) => x === 3).length;
+        const rows = earned
+          .map((st, i) => `<li class="${st === 3 ? "ok" : "help"}"><span>${i + 1}. ${skills[i]}</span><b aria-label="${st} stars">${"★".repeat(st)}${"☆".repeat(3 - st)}</b></li>`)
+          .join("");
+        const shaky = [...new Set(skills.filter((_, i) => earned[i] < 3))];
+        const next = shaky.length
+          ? `<p class="next"><b>Practice next:</b> ${shaky.slice(0, 2).join(" · ")}. Play this shop again for new numbers.</p>`
+          : `<p class="next"><b>First try on every order!</b> Try the ⚡ Challenge version for tougher orders.</p>`;
+        return `<div class="visit-report"><h3>Visit report · ${first} of ${earned.length} on the first try</h3><ul>${rows}</ul>${next}</div>`;
       }
 
       // Three face-down cards: coins, or sometimes a free stall decoration.

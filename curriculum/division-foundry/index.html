@@ -1300,7 +1300,7 @@
       }
     </style>
       <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-    <script src="/assets/game-studio.js?v=20261002" defer></script>
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
 </head>
   <body>
     <a class="sr" href="#main">Skip to the game</a>
@@ -1597,9 +1597,9 @@
 
         /* Contract text per job, read from the same hoisted data the stations use. */
         function contractText(shopId, lv) {
-          if (shopId === "tower") return W1_JOBS[lv].story;
+          if (shopId === "tower") return w1Job(lv).story;
           if (shopId === "slide") {
-            var j2 = W2_JOBS[lv];
+            var j2 = w2Job(lv);
             return "A batch to portion out: " + j2.a + " ÷ " + j2.b + ".";
           }
           if (shopId === "tape") return w3Data(lv).prompt;
@@ -1759,6 +1759,7 @@
           var row = el("contractRow");
           row.innerHTML = "";
           var offers = rollContracts();
+          // One ticket pays a bonus. It is NOT a speed order: nothing is timed.
           var rushIdx = Math.floor(Math.random() * offers.length);
           offers.forEach(function (c, i) {
             var d = DIFF[c.shop.id][c.lv];
@@ -1780,10 +1781,10 @@
                 " of 3. Pays up to " +
                 payGold +
                 " dollars." +
-                (rush ? " Rush order: pays extra." : ""),
+                (rush ? " Bonus order: pays extra." : ""),
             );
             b.innerHTML =
-              (rush ? '<span class="t-rush">⭐ RUSH · +50% PAY</span>' : "") +
+              (rush ? '<span class="t-rush">⭐ BONUS ORDER · +50% PAY</span>' : "") +
               '<span class="t-top"><span class="t-ava" aria-hidden="true">' +
               client.em +
               "</span>" +
@@ -1911,7 +1912,7 @@
             "🌶️".repeat(d) +
             " · up to $" +
             top +
-            (rush ? " · ⭐ RUSH +50%" : "");
+            (rush ? " · ⭐ BONUS +50%" : "");
           el("playH").textContent = s.name;
           var p = el("playPips");
           p.innerHTML = "";
@@ -2212,6 +2213,7 @@
           var key = k(run.shop.id, run.lv);
           if ((state.stars[key] || 0) < st) state.stars[key] = st;
           run.completed = true;
+          delete VARIANT[run.shop.id + ":" + run.lv];
           var pay = payFor(run.shop.id, run.lv, st);
           if (run.rush) pay = Math.round(pay * 1.5);
           state.ingots += pay;
@@ -2244,7 +2246,7 @@
               : st === 2
                 ? " — with a fix along the way."
                 : " — a rough one, but served.") +
-            (run.rush ? " ⭐ Rush bonus included!" : "") +
+            (run.rush ? " ⭐ Bonus-order pay included!" : "") +
             "</span>";
           el("bLock").disabled = true;
           el("bHint").disabled = true;
@@ -2555,15 +2557,75 @@
         /* ── Workshop 1 · Lesson 2.6 ─────────────────────────────────────── */
         var W1_JOBS = [
           { a: 168, b: 12, story: "168 pretzels, packed 12 to a tray. How many trays?" },
-          { a: 340, b: 5, story: "340 ounces of lemonade poured into 5 equal jugs." },
+          {
+            a: 340,
+            b: 5,
+            story: "340 ounces of lemonade poured into 5 equal jugs. How many ounces in each jug?",
+          },
           {
             a: 1344,
             b: 12,
-            story: "1,344 napkins shared into 12 dispensers — the lesson\u2019s own numbers.",
+            story:
+              "1,344 napkins shared equally into 12 dispensers — the lesson\u2019s own numbers. How many napkins in each?",
           },
-          { a: 936, b: 4, story: "936 tortilla chips split into 4 equal baskets." },
-          { a: 2565, b: 15, story: "2,565 gummy bears packed 15 to a bag." },
+          {
+            a: 936,
+            b: 4,
+            story: "936 tortilla chips split into 4 equal baskets. How many chips in each basket?",
+          },
+          { a: 2565, b: 15, story: "2,565 gummy bears packed 15 to a bag. How many bags?" },
         ];
+        /* Fresh numbers on a repeat order. The FIRST time a student takes an
+           order it is the authored problem above (the lesson's own numbers);
+           once it has been served, the same order comes back with new numbers
+           of the same size, so a replay is never a memorised answer. The
+           variant is held until that order is served, so the ticket on the
+           board and the problem in the kitchen always agree. */
+        var VARIANT = {};
+        function rnd(lo, hi) {
+          return lo + Math.floor(Math.random() * (hi - lo + 1));
+        }
+        function fmtN(n) {
+          return n >= 1000 ? n.toLocaleString("en-US") : String(n);
+        }
+        var W1_STORIES = [
+          function (a, b) {
+            return fmtN(a) + " pretzels, packed " + b + " to a tray. How many trays?";
+          },
+          function (a, b) {
+            return fmtN(a) + " ounces of lemonade poured into " + b + " equal jugs. How many ounces in each jug?";
+          },
+          function (a, b) {
+            return fmtN(a) + " napkins shared equally into " + b + " dispensers. How many napkins in each?";
+          },
+          function (a, b) {
+            return fmtN(a) + " tortilla chips split into " + b + " equal baskets. How many chips in each basket?";
+          },
+          function (a, b) {
+            return fmtN(a) + " gummy bears packed " + b + " to a bag. How many bags?";
+          },
+        ];
+        function w1Job(lv) {
+          var base = W1_JOBS[lv];
+          if (!starsOf("tower", lv)) return base;
+          var key = "tower:" + lv;
+          if (!VARIANT[key]) {
+            var bLen = String(base.b).length,
+              qLen = String(base.a / base.b).length,
+              aLen = String(base.a).length,
+              a,
+              b,
+              q;
+            for (var guard = 0; guard < 200; guard++) {
+              b = bLen === 1 ? rnd(3, 9) : rnd(11, 19);
+              q = rnd(Math.pow(10, qLen - 1), Math.pow(10, qLen) - 1);
+              a = b * q;
+              if (a !== base.a && String(a).length === aLen) break;
+            }
+            VARIANT[key] = { a: a, b: b, story: W1_STORIES[lv](a, b) };
+          }
+          return VARIANT[key];
+        }
         var W1 = {
           id: "tower",
           lesson: "2.6",
@@ -2573,7 +2635,7 @@
           closing:
             "Four moves, in the same order, every single time — and the page they lived on was yours.",
           build: function (lv, a) {
-            var j = W1_JOBS[lv];
+            var j = w1Job(lv);
             var q = Math.floor(j.a / j.b);
             return notebookFirst(
               a,
@@ -2647,6 +2709,30 @@
           { a: 12.5, b: 0.25 },
           { a: 40.32, b: 1.44 },
         ];
+        /* Same idea as w1Job: a served decimal order returns with new numbers.
+           The divisor keeps the same number of decimal places, and the dividend
+           is divisor × a whole quotient, so after the minimal slide BOTH are
+           whole — which the tower needs. */
+        function w2Job(lv) {
+          var base = W2_JOBS[lv];
+          if (!starsOf("slide", lv)) return base;
+          var key = "slide:" + lv;
+          if (!VARIANT[key]) {
+            var scale = /\.\d\d$/.test(String(base.b)) ? 100 : 10,
+              bInt,
+              q,
+              a;
+            for (var guard = 0; guard < 200; guard++) {
+              bInt = scale === 10 ? rnd(2, 99) : rnd(11, 199);
+              if (bInt % 10 === 0) continue;
+              q = rnd(3, 60);
+              a = (bInt * q) / scale;
+              if (a !== base.a) break;
+            }
+            VARIANT[key] = { a: a, b: bInt / scale };
+          }
+          return VARIANT[key];
+        }
         var W2 = {
           id: "slide",
           lesson: "2.7",
@@ -2655,7 +2741,7 @@
           blurb: "Decimal division, solved in your notebook — the slide bench opens if you slip.",
           closing: "Slide BOTH points the same number of places and the answer does not change.",
           build: function (lv, a) {
-            var j = W2_JOBS[lv];
+            var j = w2Job(lv);
             var q = Math.round(j.a * 100) / Math.round(j.b * 100);
             return notebookFirst(
               a,
@@ -2685,7 +2771,7 @@
             /* Every dividend in W2_JOBS lands WHOLE after the minimal slide — the
          tower renders whole numbers. (9.36 ÷ 0.4 used to sit in the list; its
          slide gives 93.6 ÷ 4, which the tower cannot draw.) */
-            var j = W2_JOBS[lv];
+            var j = w2Job(lv);
             // Exact ratio comparison via scaled integers — the values have at most
             // two decimal places, and float products of decimals are not reliable.
             var A100 = Math.round(j.a * 100),

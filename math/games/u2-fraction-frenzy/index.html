@@ -87,6 +87,11 @@
         white-space: nowrap;
         border: 0;
       }
+      /* Keep the whole board (including LOCK IN / NEXT) above the fold on a
+         1366x768 Chromebook. */
+      .cabinet-viewport {
+        width: min(100%, 960px, calc((100dvh - 84px) * 820 / 600)) !important;
+      }
     </style>
     <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
     <script>
@@ -129,9 +134,9 @@
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
   <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
     <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-    <script src="/assets/game-studio.js?v=20261002" defer></script>
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
     <link rel="stylesheet" href="/math/games/shared/phaser-studio.css?v=20261002">
-    <script src="/math/games/shared/phaser-studio.js?v=20261002"></script>
+    <script src="/math/games/shared/phaser-studio.js?v=20261003"></script>
     <link rel="stylesheet" href="/math/games/shared/cabinet-tools.css?v=20261002">
     <script src="/math/games/shared/cabinet-tools.js?v=20261002" defer></script>
 </head>
@@ -333,26 +338,33 @@
               ? "1 whole"
               : a / b + " wholes"
             : "enough pieces to show " + divStr;
+        const cb = c + "/" + b;
         return {
           kind: "fracdiv",
           label: "Divide a fraction by a fraction",
           wholes,
           targetParts: b,
           targetShaded: a,
+          // Second step: the student COUNTS the groups (the quotient is never
+          // shown until they commit to a count).
+          quotient: q,
+          groupSize: c,
+          groupName: cb,
+          divStr,
           prompt:
-            "How many " +
-            c +
-            "/" +
-            b +
-            " are in " +
-            divStr +
-            "? Cut each whole into " +
-            b +
-            " equal parts, shade " +
-            shadeStr +
-            ", then see how many groups of " +
-            c +
-            " fit.",
+            tier === 1
+              ? "How many " +
+                cb +
+                " are in " +
+                divStr +
+                "? Step 1: cut each whole into " +
+                b +
+                " equal parts. Step 2: shade " +
+                shadeStr +
+                ". Step 3: count the groups of " +
+                c +
+                " pieces."
+              : "How many " + cb + " are in " + divStr + "? Build " + divStr + " on the bar, then count the groups.",
           why:
             divStr +
             " is " +
@@ -365,14 +377,12 @@
             q +
             " groups of " +
             c +
-            "/" +
-            b +
-            " — so " +
+            " pieces (" +
+            cb +
+            " each) — so " +
             divStr +
             " ÷ " +
-            c +
-            "/" +
-            b +
+            cb +
             " = " +
             q +
             ".",
@@ -468,14 +478,21 @@
             wholes,
             targetParts: d,
             targetShaded: ans,
+            quotient: ans,
+            groupSize: 1,
+            groupName: "1/" + d,
+            divStr: String(wholes),
             prompt:
               "How many 1/" +
               d +
               " are in " +
               wholes +
-              "? Cut each whole into " +
+              "? Build " +
+              wholes +
+              (wholes === 1 ? " whole" : " wholes") +
+              " out of 1/" +
               d +
-              ", then shade them all to count.",
+              " pieces, then count them.",
             why:
               wholes +
               " ÷ 1/" +
@@ -490,7 +507,8 @@
           };
         }
 
-        // model (enrichment: bigger denominators)
+        // model (enrichment: bigger denominators, no recipe in the prompt —
+        // the student decides the cut and the shade from the fraction itself)
         const dmax = stage <= 2 ? 6 : 8;
         const d = randInt(3, dmax);
         const n = randInt(1, d - 1);
@@ -500,16 +518,7 @@
           wholes: 1,
           targetParts: d,
           targetShaded: n,
-          prompt:
-            "Model " +
-            n +
-            "/" +
-            d +
-            ": cut the bar into " +
-            d +
-            " equal parts, then shade " +
-            n +
-            ".",
+          prompt: "Model " + n + "/" + d + " on the bar.",
           why: n + "/" + d + " means " + n + " of " + d + " equal parts.",
         };
       }
@@ -978,6 +987,13 @@
         this.shaded = 0; // shaded pieces, contiguous from the left
         this.cellRects = [];
         this.dividers = [];
+        this.groupMarks = []; // Tier-2 / teach outlines around each group
+        this.phase = "build"; // "build" (cut + shade) → "count" (division problems)
+        this.groups = 0; // the student's group count in the count step
+        this.phaseTries = 0; // wrong Lock Ins in the CURRENT step (hint, step, teach)
+        this.counted = false; // problem already counted as attempted
+        this.awaitNext = false; // explanation is up; the button reads NEXT
+        this.helpedBy = { model: 0, equiv: 0, divide: 0, fracdiv: 0 }; // needed help, by skill
       };
 
       GameScene.prototype.create = function () {
@@ -1004,7 +1020,7 @@
           })
           .setOrigin(1, 0);
         this.progressText = this.add
-          .text(W / 2, 12, "0 / " + (this.endless ? "∞" : this.target), {
+          .text(W / 2, 12, "Solved 0 / " + (this.endless ? "∞" : this.target), {
             ...hudStyle,
             color: "#e7c4d4",
           })
@@ -1141,7 +1157,7 @@
         this.plusBtn.on("pointerdown", () => this.setParts(this.parts + 1));
 
         // Below-bar shade hint
-        this.add
+        this.barHint = this.add
           .text(W / 2, BAR_Y + BAR_H / 2 + 22, "Tap a part to shade · ↑ ↓ to change shaded", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "13px",
@@ -1153,7 +1169,7 @@
         this.lockBtn = this.add
           .rectangle(W / 2, 488, 240, 52, 0x2d874b)
           .setInteractive({ useHandCursor: true });
-        this.add
+        this.lockLabel = this.add
           .text(W / 2, 488, "LOCK IN ✓", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "22px",
@@ -1163,7 +1179,9 @@
           .setOrigin(0.5);
         this.lockBtn.on("pointerover", () => this.lockBtn.setFillStyle(0x36a35b));
         this.lockBtn.on("pointerout", () => this.lockBtn.setFillStyle(0x2d874b));
-        this.lockBtn.on("pointerdown", () => this.lockIn());
+        // After a round resolves the same button becomes NEXT, so mouse and
+        // touch players never have to scroll to the console to continue.
+        this.lockBtn.on("pointerdown", () => (this.awaitNext ? ffNext() : this.lockIn()));
 
         // Hint
         this.add
@@ -1203,8 +1221,8 @@
         this.input.keyboard.on("keydown-DOWN", () => this.setShaded(this.shaded - 1));
         this.input.keyboard.on("keydown-W", () => this.setShaded(this.shaded + 1));
         this.input.keyboard.on("keydown-S", () => this.setShaded(this.shaded - 1));
-        this.input.keyboard.on("keydown-ENTER", () => this.lockIn());
-        this.input.keyboard.on("keydown-SPACE", () => this.lockIn());
+        this.input.keyboard.on("keydown-ENTER", () => (this.awaitNext ? ffNext() : this.lockIn()));
+        this.input.keyboard.on("keydown-SPACE", () => (this.awaitNext ? ffNext() : this.lockIn()));
 
         this.cameras.main.fadeIn(400);
         this.newProblem();
@@ -1215,8 +1233,11 @@
         return this.wholes === 1 ? 12 : Math.floor(12 / this.wholes);
       };
 
+      // In the COUNT step the same controls (− / +, ← → ↑ ↓) change the group
+      // count instead of the model, so the board never swaps mid-problem.
       GameScene.prototype.setParts = function (p) {
         if (this.locked) return;
+        if (this.phase === "count") return this.setGroups(this.groups + Math.sign(p - this.parts));
         const np = Phaser.Math.Clamp(p, 1, this.maxParts());
         if (np === this.parts) return;
         this.parts = np;
@@ -1229,6 +1250,7 @@
 
       GameScene.prototype.setShaded = function (s) {
         if (this.locked) return;
+        if (this.phase === "count") return this.setGroups(this.groups + Math.sign(s - this.shaded));
         const total = this.wholes * this.parts;
         const ns = Phaser.Math.Clamp(s, 0, total);
         if (ns === this.shaded) return;
@@ -1240,8 +1262,19 @@
         this.announceModel();
       };
 
-      GameScene.prototype.tapCell = function (i) {
+      GameScene.prototype.setGroups = function (g) {
         if (this.locked) return;
+        const ng = Phaser.Math.Clamp(g, 0, 12);
+        if (ng === this.groups) return;
+        this.groups = ng;
+        SFX.coin();
+        this.updateReadout();
+        clearTimeout(this._modelSayTimer);
+        this._modelSayTimer = setTimeout(() => srSay(ng + (ng === 1 ? " group." : " groups.")), 280);
+      };
+
+      GameScene.prototype.tapCell = function (i) {
+        if (this.locked || this.phase === "count") return;
         // Tapping the last shaded cell un-shades it; otherwise shade up to it.
         const target = this.shaded === i + 1 ? i : i + 1;
         this.setShaded(target);
@@ -1251,6 +1284,7 @@
       GameScene.prototype.drawBar = function () {
         this.cellRects.forEach((r) => r.destroy());
         this.dividers.forEach((r) => r.destroy());
+        this.clearGroupMarks();
         this.cellRects = [];
         this.dividers = [];
         const total = this.wholes * this.parts;
@@ -1289,23 +1323,85 @@
         this.updateReadout();
       };
 
+      GameScene.prototype.clearGroupMarks = function () {
+        (this.groupMarks || []).forEach((m) => m.destroy());
+        this.groupMarks = [];
+      };
+
+      // Tier-2 / teach visual for the COUNT step: outline each group of
+      // `groupSize` shaded pieces in alternating colors, numbered 1, 2, 3...
+      GameScene.prototype.drawGroupMarks = function (numbered) {
+        const p = this.problem;
+        this.clearGroupMarks();
+        if (!p || !p.groupSize) return;
+        const total = this.wholes * this.parts;
+        const cw = BAR_W / total;
+        const n = Math.floor(this.shaded / p.groupSize);
+        const colors = [0x5ad1ff, 0xffd24a];
+        for (let g = 0; g < n; g++) {
+          const x = BAR_X0 + g * p.groupSize * cw;
+          const w = p.groupSize * cw;
+          this.groupMarks.push(
+            this.add
+              .rectangle(x + 3, BAR_Y, w - 6, BAR_H - 10)
+              .setOrigin(0, 0.5)
+              .setStrokeStyle(4, colors[g % 2])
+              .setDepth(8),
+          );
+          if (numbered)
+            this.groupMarks.push(
+              this.add
+                .text(x + w / 2, BAR_Y - BAR_H / 2 - 14, String(g + 1), {
+                  fontFamily: "Segoe UI, sans-serif",
+                  fontSize: "18px",
+                  fontStyle: "bold",
+                  color: g % 2 ? "#ffd24a" : "#5ad1ff",
+                })
+                .setOrigin(0.5)
+                .setDepth(8),
+            );
+        }
+      };
+
       // Cheap path: only the shade state changed, so recolor cells in place.
       GameScene.prototype.refreshFills = function () {
         this.cellRects.forEach((r, i) => r.setFillStyle(i < this.shaded ? 0x2d874b : 0x3a1834));
         this.updateReadout();
       };
 
+      // Shaded amount in wholes (e.g. "1 2/3"). Shown instead of a raw piece
+      // count on multi-whole bars, because the piece count IS the answer to
+      // "how many 1/d are in W?" and must be counted by the student.
+      function ffAmount(shaded, parts) {
+        const w = Math.floor(shaded / parts);
+        const r = shaded % parts;
+        if (r === 0) return String(w);
+        return (w ? w + " " : "") + r + "/" + parts;
+      }
+
       GameScene.prototype.updateReadout = function () {
         const total = this.wholes * this.parts;
+        const p = this.problem;
+        if (this.phase === "count" && p) {
+          this.fracReadout.setText(this.groups + (this.groups === 1 ? " group" : " groups"));
+          this.shadeReadout.setText(
+            "How many groups of " +
+              p.groupName +
+              " (" +
+              p.groupSize +
+              (p.groupSize === 1 ? " piece" : " pieces") +
+              " each)?",
+          );
+          this.partsLabel.setText("Groups: " + this.groups);
+          return;
+        }
         if (this.wholes === 1) {
           this.fracReadout.setText(this.shaded + " / " + this.parts);
           this.shadeReadout.setText(this.shaded + " of " + total + " parts shaded");
           this.partsLabel.setText("Cut into " + this.parts);
         } else {
-          this.fracReadout.setText(this.shaded + " pieces");
-          this.shadeReadout.setText(
-            this.shaded + " of " + total + " pieces shaded  (1/" + this.parts + " each)",
-          );
+          this.fracReadout.setText("Shaded: " + ffAmount(this.shaded, this.parts));
+          this.shadeReadout.setText("Each piece is 1/" + this.parts + " of a whole");
           this.partsLabel.setText("Cut each into " + this.parts);
         }
       };
@@ -1314,9 +1410,14 @@
       // when the spoken text actually changes (so repeat keys/steps don't spam),
       // and a short timer coalesces rapid cut/shade changes into one utterance.
       GameScene.prototype.announceModel = function () {
-        const total = this.wholes * this.parts;
-        const unit = this.wholes === 1 ? "parts" : "pieces";
-        const msg = this.shaded + " of " + total + " " + unit + " shaded.";
+        const msg =
+          this.wholes === 1
+            ? this.shaded + " of " + this.parts + " parts shaded."
+            : "Each whole cut into " +
+              this.parts +
+              ". Shaded amount: " +
+              ffAmount(this.shaded, this.parts) +
+              ".";
         if (msg === this._lastModelSay) return;
         this._lastModelSay = msg;
         clearTimeout(this._modelSayTimer);
@@ -1328,6 +1429,13 @@
       GameScene.prototype.newProblem = function () {
         this.locked = false;
         this.tries = 0;
+        this.phaseTries = 0;
+        this.counted = false;
+        this.awaitNext = false;
+        this.phase = "build";
+        this.groups = 0;
+        this.lockLabel.setText("LOCK IN ✓");
+        this.barHint.setText("Tap a part to shade · ↑ ↓ to change shaded");
         this.problem = fracProblem(this.level, this.tier);
         this.wholes = this.problem.wholes;
         this.parts = 2;
@@ -1340,7 +1448,7 @@
         if (this.tier === 1) {
           this.tipText.setText(
             this.problem.kind === "fracdiv"
-              ? "Tip: shade the starting amount first, then count equal groups the size of the divisor's TOP number."
+              ? "Tip: first build the starting amount. Then you will count groups the size of the divisor's TOP number."
               : "Tip: the BOTTOM number tells how many parts to cut, the TOP tells how many to shade.",
           );
         } else {
@@ -1357,31 +1465,69 @@
         );
       };
 
+      // Built the dividend correctly → second step: count the groups.
+      GameScene.prototype.enterCountPhase = function () {
+        const p = this.problem;
+        this.phase = "count";
+        this.phaseTries = 0;
+        this.groups = 0;
+        this.barHint.setText("− / + (or ← → ↑ ↓) to set how many groups");
+        this.partsLabel.setText("Groups: 0");
+        this.updateReadout();
+        const msg =
+          "Built it! Now step 2: put the shaded pieces into groups of " +
+          p.groupSize +
+          " (one group = " +
+          p.groupName +
+          "). How many groups? Set the number with − / +, then Lock In.";
+        this.feedback.setText(msg).setAlpha(1);
+        srSay(msg);
+      };
+
       GameScene.prototype.lockIn = function () {
-        if (this.locked || !this.problem) return;
+        if (this.locked || this.awaitNext || !this.problem) return;
         this.locked = true;
         const p = this.problem;
-        this.tries++;
-        const correct = this.parts === p.targetParts && this.shaded === p.targetShaded;
-        // Progress accounting: each problem counts as attempted exactly once
-        // (on its first Lock In); it counts as correct only when that first
-        // Lock In is right. Retries still earn points but not "first try".
-        if (this.tries === 1) {
+        const correct =
+          this.phase === "count"
+            ? this.groups === p.quotient
+            : this.parts === p.targetParts && this.shaded === p.targetShaded;
+        // Progress accounting: each problem counts as attempted exactly once.
+        if (!this.counted) {
+          this.counted = true;
           this.attempted++;
-          if (correct) this.firstTryCorrect++;
         }
         // The feedback line and the Level-1 tip share the same screen band;
         // hide the tip while feedback is up so the two never overlap.
         this.tipText.setVisible(false);
+        if (correct && this.phase === "build" && p.quotient) {
+          SFX.good();
+          this.flash(W / 2, 170, "Built! ✓", "#8fd6a0");
+          this.enterCountPhase();
+          this.time.delayedCall(250, () => {
+            this.locked = false;
+          });
+          return;
+        }
         if (correct) {
           SFX.good();
           this.solved++;
           this.streak++;
-          const bonus = Math.min(this.streak, 5) * 5;
-          const gained = 20 + bonus;
+          // Full points for an unaided first try; fewer once help was used.
+          let gained;
+          if (this.tries === 0) {
+            this.firstTryCorrect++;
+            gained = 20 + Math.min(this.streak, 5) * 5;
+          } else {
+            this.helpedBy[p.kind] = (this.helpedBy[p.kind] || 0) + 1;
+            gained = this.tries === 1 ? 12 : 6;
+          }
           this.score += gained;
+          if (p.quotient) this.drawGroupMarks(true);
           this.flash(W / 2, 170, "Correct! ✓", "#8fd6a0");
-          this.feedback.setText("Correct! " + p.why).setAlpha(1);
+          this.feedback
+            .setText((this.tries === 0 ? "Correct on your first try! " : "You fixed it! ") + p.why)
+            .setAlpha(1);
           this.burst.setPosition(W / 2, BAR_Y);
           this.burst.explode(16);
           JUICE.burst(this, W / 2, BAR_Y, [0x2d874b, 0xffd24a, 0xff7ba8], 18);
@@ -1390,47 +1536,72 @@
           if (this.streak >= 2) JUICE.confetti(this, 1);
           srSay("Correct. " + p.why);
           this.afterAttempt(true);
-        } else if (this.tries === 1) {
-          // First miss: a diagnostic hint about the METHOD (never the answer),
-          // then the SAME problem stays up so the student can fix their build.
-          SFX.bad();
-          this.streak = 0;
-          this.updateHUD();
-          this.flashWrong();
-          JUICE.shake(this, 0.008);
-          const hint = this.diagnosticHint(p);
-          this.feedback.setText("Not quite — " + hint).setAlpha(1);
-          srSay("Not quite. " + hint);
+          return;
+        }
+        SFX.bad();
+        this.streak = 0;
+        this.tries++;
+        this.phaseTries++;
+        this.updateHUD();
+        this.flashWrong();
+        JUICE.shake(this, 0.008);
+        if (this.phaseTries < 3) {
+          // Miss 1 = Tier 1 (method, never the answer). Miss 2 = Tier 2 (a
+          // concrete step / visual). The SAME problem stays up both times.
+          let hint;
+          if (this.phase === "count") {
+            hint =
+              this.phaseTries === 1
+                ? "each group is " +
+                  p.groupSize +
+                  (p.groupSize === 1 ? " piece" : " pieces") +
+                  " (" +
+                  p.groupName +
+                  "). Count the shaded pieces, then see how many full groups of " +
+                  p.groupSize +
+                  " you can make."
+                : "the colored boxes on the bar each hold " +
+                  p.groupSize +
+                  (p.groupSize === 1 ? " piece" : " pieces") +
+                  ". Count the boxes.";
+            if (this.phaseTries === 2) this.drawGroupMarks(false);
+          } else {
+            hint = this.phaseTries === 1 ? this.diagnosticHint(p) : this.stepHint(p);
+          }
+          this.feedback.setText("Not quite — " + hint + " Try again!").setAlpha(1);
+          srSay("Not quite. " + hint + " Try again.");
           this.time.delayedCall(400, () => {
             this.locked = false;
           });
-        } else {
-          SFX.bad();
-          this.streak = 0;
-          this.flashWrong();
-          JUICE.shake(this, 0.008);
-          this.feedback.setText("Not quite — " + p.why).setAlpha(1);
-          srSay("Not quite. " + p.why);
-          // Teach: snap the bar to the correct cut + shading, pulse it, go on.
-          this.parts = p.targetParts;
-          this.shaded = p.targetShaded;
-          this.drawBar();
-          if (!this.reduceMotion) {
-            this.tweens.add({
-              targets: this.cellRects,
-              scaleY: 1.12,
-              yoyo: true,
-              duration: 220,
-            });
-          }
-          this.time.delayedCall(700, () => this.afterAttempt(false));
+          return;
         }
+        // Third miss in a step: teach. Snap to the correct model (and groups),
+        // explain, and continue — no lives, no fail state.
+        this.helpedBy[p.kind] = (this.helpedBy[p.kind] || 0) + 1;
+        this.feedback.setText("Here is how it works — " + p.why).setAlpha(1);
+        srSay("Here is how it works. " + p.why);
+        this.parts = p.targetParts;
+        this.shaded = p.targetShaded;
+        if (p.quotient) {
+          this.phase = "count";
+          this.groups = p.quotient;
+        }
+        this.drawBar();
+        if (p.quotient) this.drawGroupMarks(true);
+        if (!this.reduceMotion) {
+          this.tweens.add({
+            targets: this.cellRects,
+            scaleY: 1.12,
+            yoyo: true,
+            duration: 220,
+          });
+        }
+        this.time.delayedCall(700, () => this.afterAttempt(false));
       };
 
-      // First-miss coaching: name WHICH part of the build to re-check (the cut
+      // Tier 1 (first miss): name WHICH part of the build to re-check (the cut
       // count or the shade count) and the method for finding it — restating
-      // only what the prompt itself already says, never the target numbers
-      // that the student still has to reason out.
+      // only what the prompt itself already says, never the target numbers.
       GameScene.prototype.diagnosticHint = function (p) {
         const cutWord = p.wholes > 1 ? "each whole" : "the bar";
         if (this.parts !== p.targetParts) {
@@ -1438,24 +1609,75 @@
             return (
               "check your cuts. The BOTTOM number (denominator) tells how many equal parts to cut " +
               cutWord +
-              " into. Fix the cuts, then Lock In again."
+              " into."
             );
-          if (p.kind === "equiv")
-            return "check your cuts. The problem tells you exactly how many equal parts to use. Fix the cuts, then Lock In again.";
+          if (p.kind === "equiv") return "check your cuts. The problem tells you exactly how many equal parts to use.";
           return (
             "check your cuts. Cut " +
             cutWord +
-            " into the number of parts named by the fraction's BOTTOM number. Fix the cuts, then Lock In again."
+            " into the number of parts named by the fraction's BOTTOM number."
           );
         }
         if (p.kind === "model")
-          return "your cuts are right! Now check the TOP number (numerator) — that is how many parts to shade. Try again.";
+          return "your cuts are right! Now check the TOP number (numerator) — that is how many parts to shade.";
         if (p.kind === "equiv")
-          return "your cuts are right! Now shade just enough of the smaller parts to cover the SAME amount as the original fraction. Try again.";
+          return "your cuts are right! Now shade just enough of the smaller parts to cover the SAME amount as the original fraction.";
         if (p.kind === "divide")
-          return "your cuts are right! Shade ALL the pieces — you are counting how many unit fractions fit in the whole amount. Try again.";
-        return "your cuts are right! Shade the starting amount (the number being divided up) — then the groups get counted for you. Try again.";
+          return "your cuts are right! Shade every piece in the whole amount you are dividing.";
+        return "your cuts are right! Shade the starting amount (the number being divided up) — then you will count the groups.";
       };
+
+      // Tier 2 (second miss): one concrete step with the real numbers.
+      GameScene.prototype.stepHint = function (p) {
+        if (this.parts !== p.targetParts) {
+          const what = p.wholes > 1 ? "each whole" : "the bar";
+          return (
+            "you cut " +
+            what +
+            " into " +
+            this.parts +
+            ". It needs " +
+            p.targetParts +
+            " equal parts — use − / + to change it."
+          );
+        }
+        if (p.kind === "model")
+          return "shade the TOP number of parts. You shaded " + this.shaded + ".";
+        if (p.kind === "equiv") {
+          const m = gcd(p.targetParts, p.targetShaded); // base fractions are in lowest terms
+          return (
+            "each part of the original fraction is now " +
+            m +
+            " small parts, so multiply its TOP number by " +
+            m +
+            " to know how many to shade."
+          );
+        }
+        if (p.kind === "divide")
+          return (
+            p.wholes +
+            (p.wholes === 1 ? " whole" : " wholes") +
+            " × " +
+            p.targetParts +
+            " pieces each — shade all of them."
+          );
+        return (
+          p.divStr +
+          " is the same as " +
+          p.targetShaded +
+          "/" +
+          p.targetParts +
+          ", so shade " +
+          p.targetShaded +
+          " pieces of 1/" +
+          p.targetParts +
+          "."
+        );
+      };
+
+      function gcd(a, b) {
+        return b ? gcd(b, a % b) : a;
+      }
 
       GameScene.prototype.afterAttempt = function (correct) {
         // Difficulty stage rises every 3 correct (separate from the chosen tier).
@@ -1470,6 +1692,8 @@
           this.endGame();
           return;
         }
+        this.awaitNext = true;
+        this.lockLabel.setText("NEXT ▶");
         this.studioNextRound(() => {
           this.feedback.setAlpha(0);
           this.newProblem();
@@ -1512,7 +1736,9 @@
         this.scoreText.setText("Score: " + this.score);
         this.streakText.setText("Streak: " + this.streak);
         this.stageText.setText("Stage " + this.level);
-        this.progressText.setText(this.solved + " / " + (this.endless ? "∞" : this.target));
+        this.progressText.setText(
+          "Solved " + this.solved + " / " + (this.endless ? "∞" : this.target),
+        );
       };
 
       GameScene.prototype.endGame = function () {
@@ -1527,6 +1753,7 @@
             tier: this.tier,
             auto: this.auto,
             endless: this.endless,
+            helpedBy: this.helpedBy,
           });
         });
       };
@@ -1571,61 +1798,73 @@
           } catch (e) {}
         }
 
+        const body = (y, text, color, size, bold) =>
+          this.add
+            .text(cx, y, text, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: (size || 18) + "px",
+              fontStyle: bold ? "bold" : "normal",
+              color: color || "#e7c4d4",
+              align: "center",
+              wordWrap: { width: W - 140 },
+              lineSpacing: 4,
+            })
+            .setOrigin(0.5);
         this.add
-          .text(cx, 110, "FRACTION MASTER!", {
+          .text(cx, 66, "FRACTION MASTER!", {
             fontFamily: "Impact, sans-serif",
-            fontSize: "48px",
+            fontSize: "46px",
             color: "#8fd6a0",
             stroke: "#1c0c19",
             strokeThickness: 5,
           })
           .setOrigin(0.5);
-
-        const starStr = "★".repeat(stars) + "☆".repeat(3 - stars);
-        this.add
-          .text(cx, 185, starStr, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "48px",
-            color: "#ffd24a",
-          })
-          .setOrigin(0.5);
-
-        this.add
-          .text(cx, 255, "Score: " + d.score, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "30px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
-          .setOrigin(0.5);
-        this.add
-          .text(
-            cx,
-            295,
-            endless
-              ? "Built " + d.solved + " fractions"
-              : "Built " + d.solved + " of " + d.target + " fractions",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "18px",
-              color: "#e7c4d4",
-            },
-          )
-          .setOrigin(0.5);
-        this.add
-          .text(cx, 322, "Right on the first try: " + firstTry + " of " + attempted, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
-            color: "#8fd6a0",
-          })
-          .setOrigin(0.5);
-        this.add
-          .text(cx, 349, "High Score: " + hs, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
-            color: "#ffd24a",
-          })
-          .setOrigin(0.5);
+        body(122, "★".repeat(stars) + "☆".repeat(3 - stars), "#ffd24a", 44);
+        body(176, "Score: " + d.score + "   (best " + hs + ")", "#ffffff", 26, true);
+        body(
+          216,
+          (endless ? "Solved " + d.solved : "Solved " + d.solved + " of " + d.target) +
+            "  ·  Right on the first try: " +
+            firstTry +
+            " of " +
+            attempted,
+          "#8fd6a0",
+          18,
+        );
+        body(
+          252,
+          "Skills: " +
+            (d.tier === 1
+              ? "modeling fractions; dividing a fraction by a fraction (6.NOS.1)"
+              : "modeling, equivalent fractions, and dividing by fractions (6.NOS.1)"),
+          "#e7c4d4",
+          16,
+        );
+        // What to practice next: the skill that needed the most help.
+        const helped = d.helpedBy || {};
+        const NEXT = {
+          model: "Practice next: modeling — the bottom number is the cut, the top number is the shade.",
+          equiv:
+            "Practice next: equivalent fractions — split every part into the same number of smaller parts.",
+          divide: "Practice next: how many unit fractions fit — 3 ÷ 1/4 means count the 1/4 pieces in 3 wholes.",
+          fracdiv:
+            "Practice next: fraction ÷ fraction — build the first number, then count groups the size of the second.",
+        };
+        let worst = null;
+        Object.keys(NEXT).forEach((k) => {
+          if ((helped[k] || 0) > 0 && (!worst || helped[k] > helped[worst])) worst = k;
+        });
+        body(
+          300,
+          worst
+            ? NEXT[worst]
+            : d.tier === 1
+              ? "Great work! Next: try Level 2 for equivalent fractions and more division."
+              : "Excellent! Next: ♾️ Keep Playing to build a long streak.",
+          "#ffe08a",
+          17,
+          true,
+        );
 
         SFX.win();
 
@@ -1634,14 +1873,28 @@
           window.EduPulse &&
             EduPulse.record({
               activityTitle: document.title,
-              score: d.score,
+              // Canvas code: problems solved out of the goal + first-try percent
+              // (arcade points over a problem count printed e.g. "195/10").
+              score: d.solved,
+              maxScore: goal,
+              percent: Math.round(acc * 100),
               stars: stars,
               standard: "6.NOS.1",
               problemsCorrect: firstTry,
               problemsAttempted: attempted,
             });
         } catch (e) {}
-        srSay("You won! Final score " + d.score + ", " + stars + " stars.");
+        srSay(
+          "Finished! Score " +
+            d.score +
+            ", " +
+            stars +
+            " stars. Right on the first try: " +
+            firstTry +
+            " of " +
+            attempted +
+            ".",
+        );
 
         const btn = this.add
           .rectangle(cx, 400, 220, 54, 0xb83a6e)
@@ -1688,11 +1941,39 @@
 
       // ── Launch ──
       const ffGame = new Phaser.Game(config);
+      // In-canvas NEXT (and Enter/Space while the explanation is up) hand off to
+      // the shared studio's Continue so its pacing stays the single path.
+      let ffAdvancing = false; // re-entrancy guard: send() re-emits Enter when nothing is pending
+      function ffNext() {
+        if (ffAdvancing || typeof ffStudio === "undefined" || !ffStudio) return;
+        ffAdvancing = true;
+        try {
+          ffStudio.send("Enter");
+        } finally {
+          ffAdvancing = false;
+        }
+      }
       // Native math controls now have a readable, touch-accessible console.
-      window.PhaserStudio.mount({
-        game: ffGame, id: "u2-fraction-frenzy", GameScene, ResultScene, audio: SFX,
-        instructions: ["Build the target fraction: \u2190/\u2192 change equal parts, \u2191/\u2193 change shaded parts, Enter checks your model.", "Equivalent fractions must describe the same amount of the whole."],
-        setLevel(level) { ffTier = level; ffAuto = false; ffEndless = false; ffGame.scene.getScenes(true).forEach(scene => ffGame.scene.stop(scene.sys.settings.key)); ffGame.scene.start(ffVocabSeen ? "Game" : "Vocab"); }
+      const ffStudio = window.PhaserStudio.mount({
+        game: ffGame,
+        id: "u2-fraction-frenzy",
+        GameScene,
+        ResultScene,
+        audio: SFX,
+        instructions: [
+          "Goal: the bar is one whole. Cut it into equal parts and shade parts to build each fraction. Solve 10 to finish.",
+          "Cut: press − / + (or \u2190 \u2192). Shade: tap a part (or \u2191 \u2193). The BOTTOM number is how many equal parts; the TOP number is how many to shade.",
+          "Division problems (like \u201chow many 2/3 are in 2?\u201d) have 2 steps: 1) build the first number on the bar, 2) set how many groups of the second fraction fit, using − / +.",
+          "Press LOCK IN (or Enter) to check. Not yet? Hint 1 tells you the method. Hint 2 gives a concrete step or draws the groups. After 3 tries the game shows the answer — no one fails.",
+          "Points: most for right on the first try, fewer after a hint. Press NEXT when you have read the explanation.",
+        ],
+        setLevel(level) {
+          ffTier = level;
+          ffAuto = false;
+          ffEndless = false;
+          ffGame.scene.getScenes(true).forEach((scene) => ffGame.scene.stop(scene.sys.settings.key));
+          ffGame.scene.start(ffVocabSeen ? "Game" : "Vocab");
+        },
       });
 
       // Canvas accessibility (additive; no gameplay change).

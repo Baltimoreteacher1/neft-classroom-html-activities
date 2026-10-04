@@ -209,6 +209,36 @@
     head.querySelector(".dc-glossary-close").addEventListener("click", function () {
       modal.classList.remove("dc-open");
     });
+
+    /* The bottom-right corner is a shared launcher dock (Save / Resume, Math
+       Workbench, NetFold on geometry units). Each mounts on its own schedule,
+       so a fixed CSS offset cannot clear all of them: measure the dock and
+       stack this button (and its drawer) just above whatever is there. */
+    function placeGlossary() {
+      try {
+        var vw = window.innerWidth;
+        var vh = window.innerHeight;
+        var ids = ["nsr-root", "netfold-launcher", "mwb-launcher"];
+        var topMost = vh;
+        ids.forEach(function (id) {
+          var el = document.getElementById(id);
+          if (!el) return;
+          var r = el.getBoundingClientRect();
+          if (!r.width || !r.height) return;
+          if (r.right < vw - 220) return; // not in the right-hand dock
+          if (r.top < topMost) topMost = r.top;
+        });
+        var bottom = Math.max(108, Math.round(vh - topMost + 10));
+        floatBtn.style.bottom = bottom + "px";
+        modal.style.bottom = bottom + 54 + "px";
+        modal.style.maxHeight = "min(480px, calc(100vh - " + (bottom + 80) + "px))";
+      } catch (_e) {}
+    }
+    placeGlossary();
+    window.addEventListener("resize", placeGlossary);
+    [400, 1200, 3000].forEach(function (ms) {
+      setTimeout(placeGlossary, ms);
+    });
   }
 
   /* ---- 3. Step 5: Instant Partner / Classmate Benchmark Helper ---- */
@@ -284,6 +314,12 @@
     rBoxes.forEach(function (box) {
       if (box.dataset.dcResearchDone) return;
       box.dataset.dcResearchDone = "1";
+      /* The benchmark prices are smoothie ingredients. Only a research box that
+         opts in (data-benchmark="smoothie", Unit 3 Version A) gets them — they
+         used to be appended to every project's research box, so a sports or
+         space project offered strawberry prices and "Use Market Averages"
+         filled its research fields with them. */
+      if (box.dataset.benchmark !== "smoothie") return;
 
       var bench = document.createElement("div");
       bench.className = "dc-research-benchmark no-print";
@@ -322,12 +358,15 @@
 
       var details = document.createElement("details");
       details.className = "dc-rubric-drawer";
+      /* Open by default: students should see how they are scored while they
+         work. The drawer still lets them fold it away. */
+      details.open = true;
 
       var summary = document.createElement("summary");
       summary.innerHTML =
         '<span class="dc-rubric-icon">📊</span> ' +
-        '<span class="en-text">Scoring Rubric (Click to view Levels 2–4 criteria)</span>' +
-        '<span class="es-text">Rúbrica de calificación (Clic para ver criterios de Niveles 2–4)</span>';
+        '<span class="en-text">Scoring Rubric — how your project is scored</span>' +
+        '<span class="es-text">Rúbrica de calificación — cómo se califica tu proyecto</span>';
 
       var wrap = document.createElement("div");
       wrap.className = "rubric-wrap";

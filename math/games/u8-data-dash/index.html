@@ -75,6 +75,22 @@
           opacity: 0.34 !important;
         }
       }
+      /* The studio's toast repeats feedback the canvas already shows and sat
+         on top of the Lock In button at 1366x768. Keep it for screen readers
+         (it is the live region) but take it off screen visually. */
+      body:has(.cabinet-viewport) .studio-notice {
+        position: fixed !important;
+        bottom: auto !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        clip-path: inset(50%) !important;
+        transform: none !important;
+        border: 0 !important;
+      }
       #dd-sr {
         position: absolute;
         width: 1px;
@@ -128,9 +144,9 @@
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
   <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
     <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-    <script src="/assets/game-studio.js?v=20261002" defer></script>
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
     <link rel="stylesheet" href="/math/games/shared/phaser-studio.css?v=20261002">
-    <script src="/math/games/shared/phaser-studio.js?v=20261002"></script>
+    <script src="/math/games/shared/phaser-studio.js?v=20261003"></script>
     <link rel="stylesheet" href="/math/games/shared/cabinet-tools.css?v=20261002">
     <script src="/math/games/shared/cabinet-tools.js?v=20261002" defer></script>
 </head>
@@ -325,8 +341,20 @@
         if (el) el.textContent = msg;
       }
       function numStr(v) {
-        return Number.isInteger(v) ? String(v) : v.toFixed(1);
+        if (Number.isInteger(v)) return String(v);
+        // Two decimals keeps 3.75 honest (toFixed(1) showed it as "3.8");
+        // trailing zeros are trimmed so 2.50 reads 2.5.
+        return String(Number(v.toFixed(2)));
       }
+      // Calm motion = the OS setting OR the studio "Calm motion" toggle.
+      function calmMotion() {
+        const os =
+          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        return !!(os || (window.GameStudio && window.GameStudio.settings.reducedMotion));
+      }
+      // Points shrink as help is used: unaided first try earns the most.
+      const HELP_POINTS = [20, 12, 6, 0];
+      const ROUNDS = 10; // every run is 10 build rounds; mistakes never end it
 
       // ── Chosen difficulty (set on the Level Select screen) ──
       // 1 = support (mean only, axis 1–6), 2 = enrichment (mean/median/range/
@@ -402,7 +430,10 @@
         const statPool = level === 1 ? ["mean"] : ["mean", "median", "range", "mad"];
         for (let tries = 0; tries < 400; tries++) {
           const stat = statPool[randInt(0, statPool.length - 1)];
-          const gN = randInt(2, 3);
+          // Level 1 (support) keeps rounds short: 2 given dots and an answer
+          // that needs only 2-3 added dots, so the step coach can walk a
+          // student to the target in a few clear moves.
+          const gN = level === 1 ? 2 : randInt(2, 3);
           const given = new Array(span + 1).fill(0);
           if (stat === "range") {
             // Range resists a one-dot fix only when the given dots sit near
@@ -415,7 +446,7 @@
             for (let i = 0; i < gN; i++) given[randInt(0, span)]++;
           }
           // Answer plot = given + k added dots (the reachability witness).
-          const k = randInt(2, Math.min(6, DOT_CAP - gN));
+          const k = level === 1 ? randInt(2, 3) : randInt(2, Math.min(6, DOT_CAP - gN));
           const full = given.slice();
           for (let i = 0; i < k; i++) full[randInt(0, span)]++;
 
@@ -426,14 +457,14 @@
             // Integer mean; MAD an integer or half, and a real spread.
             if (!Number.isInteger(m)) continue;
             if (dv < 1 || !Number.isInteger(dv * 2)) continue;
-            problem = { stat, target: m, targetMad: dv, given };
+            problem = { stat, target: m, targetMad: dv, given, sample: full };
           } else {
             const t = statOf(full, lo, stat);
             if (t === null || !Number.isInteger(t)) continue;
             if (stat === "range" && t < 2) continue;
             // Keep the mean off the axis edges so building is a real task.
             if (stat === "mean" && (t <= lo || t >= hi)) continue;
-            problem = { stat, target: t, given };
+            problem = { stat, target: t, given, sample: full };
           }
           if (oneDotCheesable(problem, lo)) continue;
           return problem;
@@ -447,7 +478,13 @@
         //     {2,2,9,9,10,10}, mean 42 ÷ 6 = 7.
         const given = new Array(span + 1).fill(0);
         given[1] = 2;
-        return { stat: "mean", target: level === 1 ? lo + 3 : lo + 6, given };
+        const sample = given.slice();
+        if (level === 1) sample[span] += 2;
+        else {
+          sample[span - 1] += 2;
+          sample[span] += 2;
+        }
+        return { stat: "mean", target: level === 1 ? lo + 3 : lo + 6, given, sample };
       }
 
       // Compute a statistic from a counts-per-column array. Returns null when
@@ -475,6 +512,8 @@
         if (n < 2) return null;
         return vals[n - 1] - vals[0];
       }
+
+      window.DataDash = { genRound, statOf, targetMet, oneDotCheesable };
 
       const config = {
         type: Phaser.AUTO,
@@ -583,7 +622,7 @@
           )
           .setOrigin(0.5);
         this.add
-          .text(cx, 295, "Tap or ← → ↑ ↓ (A·D·W·S) · 6.DS.6 · Lessons 8.1–8.7", {
+          .text(cx, 295, "Unit 2 · Statistics · 6.DS.4 · 6.DS.6c · No timer: take your time", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "14px",
             color: "#9ec9e2",
@@ -612,14 +651,15 @@
             color: "#ffffff",
           })
           .setOrigin(0.5);
-        this.tweens.add({
-          targets: [btn, btnT],
-          scaleX: 1.05,
-          scaleY: 1.05,
-          duration: 800,
-          yoyo: true,
-          repeat: -1,
-        });
+        if (!calmMotion())
+          this.tweens.add({
+            targets: [btn, btnT],
+            scaleX: 1.05,
+            scaleY: 1.05,
+            duration: 800,
+            yoyo: true,
+            repeat: -1,
+          });
         const start = () => {
           SFX.init();
           SFX.coin();
@@ -826,7 +866,7 @@
           0x4fd18b,
           "LEVEL 1",
           "Support",
-          "Target the MEAN\nNumbers 1–6\nLive mean shown big\nwith a helper hint",
+          "Target the MEAN\nNumbers 1–6\nA step coach names your\nnext dot every time",
           1,
         );
         const chooseL2 = mkCard(
@@ -834,7 +874,7 @@
           0xffcd4d,
           "LEVEL 2",
           "Enrichment",
-          "Mean, MEDIAN, RANGE, or MAD\nNumbers 1–10\nFewer hints\nGiven dots to build around",
+          "Mean, MEDIAN, RANGE, or MAD\nNumbers 1–10\nHints unlock after a miss\nGiven dots to build around",
           2,
         );
 
@@ -890,19 +930,20 @@
       GameScene.prototype.constructor = GameScene;
 
       GameScene.prototype.init = function () {
-        this.reduceMotion = !!(
-          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        );
+        this.reduceMotion = calmMotion();
         this.score = 0;
-        this.lives = 3;
         this.streak = 0;
-        this.solved = 0;
+        this.solved = 0; // rounds built correctly (with or without help)
+        this.round = 0; // rounds finished (solved or shown)
+        this.firstTry = 0; // rounds solved on the first Lock In, no hints
+        this.hintsUsed = 0;
+        this.tally = {}; // stat -> { seen, firstTry, missed }
         this.auto = ddAuto; // carried into Result for adaptive recordRun
-        this.endless = ddEndless; // endless runs never auto-end on the target
-        this.attempts = 0; // concluded problems (accuracy denominator)
-        this.target = this.endless ? Infinity : 10; // win: build this many plots correctly
+        this.endless = ddEndless; // endless runs never auto-end
+        this.target = this.endless ? Infinity : ROUNDS;
         this.locked = false;
-        // Axis is fixed by chosen level.
+        this.misses = 0; // wrong Lock Ins on THIS round (drives the hint tiers)
+        // Axis is fixed by chosen level (never changes mid-run).
         this.lo = 1;
         this.hi = ddLevel === 1 ? 6 : 10;
         this.n = this.hi - this.lo + 1;
@@ -911,6 +952,7 @@
         this.given = new Array(this.n).fill(0);
         this.cursor = Math.floor(this.n / 2);
         this.problem = null;
+        this.showingSample = false;
       };
 
       GameScene.prototype.colX = function (i) {
@@ -930,16 +972,11 @@
           ...hud,
           color: "#4fd18b",
         });
-        this.livesText = this.add.text(16, 36, "❤❤❤", {
+        // Calm, no-fail HUD: mistakes never drain anything.
+        this.livesText = this.add.text(16, 36, "No-fail practice", {
           ...hud,
-          color: "#ff8f8f",
-        });
-        // Legend for the immovable seed dots (see redrawDots).
-        this.add.text(16, 62, "Gold dots = given data (locked)", {
-          fontFamily: "Segoe UI, sans-serif",
-          fontSize: "13px",
-          fontStyle: "bold",
-          color: "#ffcd4d",
+          fontSize: "16px",
+          color: "#9ec9e2",
         });
         this.streakText = this.add
           .text(W - 16, 12, "Streak: 0", { ...hud, color: "#ffcd4d" })
@@ -948,41 +985,39 @@
           .text(W - 16, 36, "Level " + ddLevel, { ...hud, color: "#bfe9ff" })
           .setOrigin(1, 0);
         this.progressText = this.add
-          .text(W / 2, 12, "0 / " + (this.endless ? "∞" : this.target), {
+          .text(W / 2, 12, "", {
             ...hud,
             color: "#bfe9ff",
           })
           .setOrigin(0.5, 0);
 
-        // Endless mode: a small "Finish ✓" HUD control that ends the run now
-        // (same Result transition the win uses, with current stats).
+        // Endless mode: a "Finish ✓" HUD control that ends the run now.
         if (this.endless) {
           this.finishBtn = this.add
-            .text(16, 86, "Finish ✓", {
+            .text(W - 16, 60, "Finish ✓", {
               fontFamily: "Segoe UI, sans-serif",
-              fontSize: "15px",
+              fontSize: "16px",
               fontStyle: "bold",
               color: "#ffcd4d",
             })
+            .setOrigin(1, 0)
             .setInteractive({ useHandCursor: true });
           this.finishBtn.on("pointerover", () => this.finishBtn.setColor("#ffffff"));
           this.finishBtn.on("pointerout", () => this.finishBtn.setColor("#ffcd4d"));
-          this.finishBtn.on("pointerdown", () => {
-            if (this.locked) return;
-            this.endGame();
-          });
+          this.finishBtn.on("pointerdown", () => this.endGame());
         }
 
         // Goal banner
         this.bannerLabel = this.add
-          .text(W / 2, 60, "BUILD THE LINE PLOT", {
+          .text(W / 2, 58, "", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "14px",
+            fontSize: "15px",
+            fontStyle: "bold",
             color: "#9ec9e2",
           })
           .setOrigin(0.5);
         this.bannerText = this.add
-          .text(W / 2, 90, "", {
+          .text(W / 2, 88, "", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "27px",
             fontStyle: "bold",
@@ -992,29 +1027,36 @@
           })
           .setOrigin(0.5);
 
-        // Live readout — the heart of the mechanic: the target stat updates as
-        // dots are added/removed.
+        // Live readout — the heart of the mechanic: the statistic updates as
+        // dots are added/removed. (Its text is mirrored to the console.)
         this.bigReadout = this.add
-          .text(W / 2, 142, "", {
+          .text(W / 2, 136, "", {
             fontFamily: "Impact, sans-serif",
-            fontSize: "46px",
+            fontSize: "44px",
             color: "#2bd1c4",
             stroke: "#04121c",
             strokeThickness: 5,
           })
           .setOrigin(0.5);
-        this.subReadout = this.add
-          .text(W / 2, 180, "", {
+        this.readout = this.bigReadout;
+        // Coach line: Level 1 = live step coach that names the next move;
+        // Level 2 = all four live statistics. Mirrored to the console prompt.
+        this.hintText = this.add
+          .text(W / 2, 182, "", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "17px",
             fontStyle: "bold",
             color: "#9cc4dd",
+            align: "center",
+            lineSpacing: 4,
+            wordWrap: { width: W - 60 },
           })
           .setOrigin(0.5);
+        this.subReadout = this.hintText;
 
-        // Teaching feedback (shown after Lock In; hidden otherwise).
+        // Teaching feedback after a Lock In (shares the coach line's slot).
         this.feedback = this.add
-          .text(W / 2, 180, "", {
+          .text(W / 2, 182, "", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "17px",
             fontStyle: "bold",
@@ -1022,37 +1064,50 @@
             stroke: "#04121c",
             strokeThickness: 3,
             align: "center",
-            wordWrap: { width: W - 80 },
+            lineSpacing: 4,
+            wordWrap: { width: W - 60 },
           })
           .setOrigin(0.5)
           .setAlpha(0);
+
+        // Balance line (target mean) + suggested-column glow (Level 1 coach).
+        this.targetG = this.add.graphics().setDepth(3);
+        this.targetLbl = this.add
+          .text(0, PLOT_TOP + 4, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            fontStyle: "bold",
+            color: "#ffcd4d",
+            backgroundColor: "#0a1c2c",
+            padding: { x: 4, y: 2 },
+          })
+          .setOrigin(0.5, 0)
+          .setDepth(7)
+          .setVisible(false);
 
         // Plot baseline + value columns/labels.
         this.add.rectangle(AX_X0 - 16, AX_Y, AX_X1 - AX_X0 + 32, 3, C.panelEdge).setOrigin(0, 0.5);
         this.zones = [];
         this.colLabels = [];
+        const colW = Math.min(((AX_X1 - AX_X0) / (this.n - 1)) * 0.82, 64);
+        this.suggest = this.add
+          .rectangle(0, (PLOT_TOP + AX_Y) / 2, colW, AX_Y - PLOT_TOP, C.gold, 0.14)
+          .setStrokeStyle(2, C.gold, 0.6)
+          .setDepth(1)
+          .setVisible(false);
         for (let i = 0; i < this.n; i++) {
           const x = this.colX(i);
-          // Selection highlight band (drawn first, low depth).
-          // (single shared highlight created after loop)
           const zone = this.add
-            .rectangle(
-              x,
-              (PLOT_TOP + AX_Y) / 2,
-              Math.min(((AX_X1 - AX_X0) / (this.n - 1)) * 0.82, 64),
-              AX_Y - PLOT_TOP,
-              0xffffff,
-              0.001,
-            )
+            .rectangle(x, (PLOT_TOP + AX_Y) / 2, colW, AX_Y - PLOT_TOP, 0xffffff, 0.001)
             .setInteractive({ useHandCursor: true });
           zone.on("pointerdown", () => this.addDot(i));
           this.zones.push(zone);
           this.add.rectangle(x, AX_Y, 2, 10, C.panelEdge).setOrigin(0.5, 0);
           this.colLabels.push(
             this.add
-              .text(x, AX_Y + 16, String(this.lo + i), {
+              .text(x, AX_Y + 14, String(this.lo + i), {
                 fontFamily: "Segoe UI, sans-serif",
-                fontSize: "16px",
+                fontSize: "19px",
                 fontStyle: "bold",
                 color: "#bfe9ff",
               })
@@ -1061,22 +1116,31 @@
         }
         // Keyboard selection highlight (above zones, below dots).
         this.sel = this.add
-          .rectangle(
-            this.colX(this.cursor),
-            (PLOT_TOP + AX_Y) / 2,
-            Math.min(((AX_X1 - AX_X0) / (this.n - 1)) * 0.82, 64),
-            AX_Y - PLOT_TOP,
-            C.sel,
-            0.16,
-          )
+          .rectangle(this.colX(this.cursor), (PLOT_TOP + AX_Y) / 2, colW, AX_Y - PLOT_TOP, C.sel, 0.16)
+          .setStrokeStyle(2, 0x5fb4ff, 0.7)
           .setDepth(2);
         this.dotLayer = this.add.group();
 
-        // Lock-in button
+        // Legend for the two dot colors.
+        this.add.circle(26, 520, 8, C.gold).setStrokeStyle(2, 0xffffff);
+        this.add.text(40, 510, "given (stays)", {
+          fontFamily: "Segoe UI, sans-serif",
+          fontSize: "15px",
+          color: "#ffcd4d",
+        });
+        this.add.circle(26, 546, 8, C.dot).setStrokeStyle(2, 0x0a1c2c);
+        this.add.text(40, 536, "your dots", {
+          fontFamily: "Segoe UI, sans-serif",
+          fontSize: "15px",
+          color: "#7fe6dc",
+        });
+
+        // Lock-in button (becomes NEXT ROUND while feedback is on screen).
         this.lockBtn = this.add
           .rectangle(W / 2, 528, 240, 50, 0x148f86)
+          .setStrokeStyle(2, 0xffffff, 0.7)
           .setInteractive({ useHandCursor: true });
-        this.add
+        this.lockLabel = this.add
           .text(W / 2, 528, "LOCK IN ✓", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "22px",
@@ -1085,18 +1149,20 @@
           })
           .setOrigin(0.5);
         this.lockBtn.on("pointerover", () => this.lockBtn.setFillStyle(0x1aa99e));
-        this.lockBtn.on("pointerout", () => this.lockBtn.setFillStyle(0x148f86));
-        this.lockBtn.on("pointerdown", () => this.lockIn());
+        this.lockBtn.on("pointerout", () =>
+          this.lockBtn.setFillStyle(this.nextMode ? 0x2563a8 : 0x148f86),
+        );
+        this.lockBtn.on("pointerdown", () => (this.nextMode ? this.pressNext() : this.lockIn()));
 
         // Controls hint
         this.add
           .text(
             W / 2,
-            570,
-            "Tap a column to add a dot · tap a dot to remove · ← → choose, ↑ add, ↓ remove · Enter = Lock In",
+            572,
+            "Tap a column to add a dot · tap your dot to remove it · ← → ↑ ↓ · Enter = Lock In",
             {
               fontFamily: "Segoe UI, sans-serif",
-              fontSize: "13px",
+              fontSize: "15px",
               color: "#9ec9e2",
               align: "center",
             },
@@ -1120,7 +1186,7 @@
         this.input.keyboard.on("keydown-ENTER", () => this.lockIn());
         this.input.keyboard.on("keydown-SPACE", () => this.lockIn());
 
-        this.cameras.main.fadeIn(400);
+        this.cameras.main.fadeIn(this.reduceMotion ? 0 : 400);
         this.newProblem();
       };
 
@@ -1136,10 +1202,22 @@
         srSay("Column " + (this.lo + this.cursor) + " selected.");
       };
 
+      // After a dot changes, Level 1 swaps the hint back to the live coach;
+      // Level 2 keeps the earned hint on screen while the student rebuilds.
+      GameScene.prototype.afterEdit = function () {
+        if (ddLevel === 1 && this.feedback.alpha > 0) {
+          this.feedback.setAlpha(0);
+          this.hintText.setVisible(true);
+        }
+        this.redrawDots();
+        this.updateReadout();
+      };
+
       GameScene.prototype.addDot = function (i) {
         if (this.locked) return;
         if (this.totalDots() >= DOT_CAP) {
           this.flash(W / 2, 250, "Max " + DOT_CAP + " dots", "#ffcd4d");
+          srSay("The plot is full. Remove one of your dots first.");
           SFX.miss();
           return;
         }
@@ -1148,9 +1226,8 @@
         this.counts[i]++;
         SFX.coin();
         JUICE.audio.pop();
-        this.redrawDots();
-        this.updateReadout();
-        srSay("Added a dot at " + (this.lo + i) + ".");
+        this.afterEdit();
+        srSay("Added a dot at " + (this.lo + i) + ". " + this.statusSay());
       };
 
       GameScene.prototype.removeDot = function (i) {
@@ -1169,9 +1246,12 @@
         this.counts[i]--;
         SFX.coin();
         JUICE.audio.tap();
-        this.redrawDots();
-        this.updateReadout();
-        srSay("Removed a dot at " + (this.lo + i) + ".");
+        this.afterEdit();
+        srSay("Removed a dot at " + (this.lo + i) + ". " + this.statusSay());
+      };
+
+      GameScene.prototype.statusSay = function () {
+        return this.bigReadout.text + ". " + (this.hintText.visible ? this.hintText.text : "");
       };
 
       GameScene.prototype.redrawDots = function () {
@@ -1183,8 +1263,9 @@
             // Bottom given[i] dots are the immovable seed data: gold with a
             // white ring; tapping one explains instead of removing.
             const isGiven = j < this.given[i];
+            const fill = isGiven ? C.gold : this.showingSample ? C.good : C.dot;
             const d = this.add
-              .circle(x, y, DOT_R, isGiven ? C.gold : C.dot)
+              .circle(x, y, DOT_R, fill)
               .setStrokeStyle(isGiven ? 3 : 2, isGiven ? 0xffffff : 0x0a1c2c)
               .setDepth(6)
               .setInteractive({ useHandCursor: true });
@@ -1201,6 +1282,81 @@
         SFX.miss();
         this.flash(this.colX(i), AX_Y - 60, "Given dot — it stays!", "#ffcd4d");
         srSay("The dot at " + (this.lo + i) + " is a given dot. It cannot be removed.");
+      };
+
+      // Draw (or clear) the dashed balance line at the target mean.
+      GameScene.prototype.drawTargetLine = function (show) {
+        this.targetG.clear();
+        this.targetLbl.setVisible(false);
+        if (!show || !this.problem) return;
+        const t = this.problem.target;
+        const x = this.colX(t - this.lo);
+        this.targetG.lineStyle(3, C.gold, 0.85);
+        for (let y = PLOT_TOP + 26; y < AX_Y - 4; y += 16) this.targetG.lineBetween(x, y, x, y + 8);
+        this.targetLbl
+          .setText("target " + t)
+          .setX(x)
+          .setVisible(true);
+      };
+
+      // Level 1 balance coach. The mean is the balance point: the total
+      // distance of the dots BELOW the target must equal the total distance
+      // ABOVE it. The coach counts both sides and names one dot that moves
+      // the plot toward balance without overshooting.
+      GameScene.prototype.coachStep = function () {
+        const t = this.problem.target;
+        let below = 0,
+          above = 0;
+        for (let i = 0; i < this.n; i++) {
+          const v = this.lo + i;
+          if (v < t) below += (t - v) * this.counts[i];
+          else above += (v - t) * this.counts[i];
+        }
+        const steps = (k) => k + (k === 1 ? " step" : " steps");
+        const line1 = "Balance check: " + steps(below) + " below " + t + " · " + steps(above) + " above";
+        const need = below - above;
+        if (need === 0)
+          return {
+            text: line1 + "\n✓ Balanced! The mean is " + t + ". Press LOCK IN.",
+            col: -1,
+            ok: true,
+          };
+        if (this.totalDots() >= DOT_CAP)
+          return {
+            text: line1 + "\nThe plot is full. Tap one of YOUR dots on the heavy side to remove it.",
+            col: -1,
+            ok: false,
+          };
+        if (need > 0) {
+          const step = Math.min(need, this.hi - t);
+          return {
+            text:
+              line1 +
+              "\nNext: add a dot ABOVE " +
+              t +
+              ". Tap " +
+              (t + step) +
+              " (it adds " +
+              steps(step) +
+              " above).",
+            col: t + step - this.lo,
+            ok: false,
+          };
+        }
+        const step = Math.min(-need, t - this.lo);
+        return {
+          text:
+            line1 +
+            "\nNext: add a dot BELOW " +
+            t +
+            ". Tap " +
+            (t - step) +
+            " (it adds " +
+            steps(step) +
+            " below).",
+          col: t - step - this.lo,
+          ok: false,
+        };
       };
 
       GameScene.prototype.updateReadout = function () {
@@ -1221,72 +1377,49 @@
           this.bigReadout.setText(STAT[stat].name + " = " + (cur === null ? "—" : numStr(cur)));
         }
         if (ddLevel === 1) {
-          // Support tier: a LIVE step coach. It always names the next move so
-          // the abstract "hit the mean" task becomes a follow-the-steps
-          // procedure — add a high dot to raise the mean, a low dot to lower it.
-          const t = this.problem.target;
-          const mean = statOf(this.counts, this.lo, "mean");
-          let step, col;
-          if (mean === null) {
-            step = "Step 1: tap a column to add your first dot.";
-            col = "#9cc4dd";
-          } else if (Math.abs(mean - t) < 1e-9) {
-            step = "✓ Mean = " + t + " — press LOCK IN!";
-            col = "#4fd18b";
-          } else if (mean < t) {
-            step =
-              "Mean is " +
-              numStr(mean) +
-              ", need " +
-              t +
-              " — too LOW. Add a dot on a HIGH number (try " +
-              this.hi +
-              ").";
-            col = "#ffcd4d";
-          } else {
-            step =
-              "Mean is " +
-              numStr(mean) +
-              ", need " +
-              t +
-              " — too HIGH. Add a dot on a LOW number (try " +
-              this.lo +
-              ").";
-            col = "#ffcd4d";
-          }
-          this.subReadout.setText(step).setColor(col);
+          // Support tier: a LIVE step coach that always names the next move.
+          const c = this.showingSample ? null : this.coachStep();
+          if (c) {
+            this.hintText.setText(c.text).setColor(c.ok ? "#4fd18b" : "#ffe08a");
+            this.suggest.setVisible(c.col >= 0);
+            if (c.col >= 0) this.suggest.x = this.colX(c.col);
+          } else this.suggest.setVisible(false);
         } else {
           // Enrichment: show all four live stats, fewer words.
           const mean = statOf(this.counts, this.lo, "mean");
           const med = statOf(this.counts, this.lo, "median");
           const rng = statOf(this.counts, this.lo, "range");
           const mad = statOf(this.counts, this.lo, "mad");
-          this.subReadout.setText(
-            "Dots: " +
-              tot +
-              "  ·  Mean " +
-              (mean === null ? "—" : numStr(mean)) +
-              "  ·  Median " +
-              (med === null ? "—" : numStr(med)) +
-              "  ·  Range " +
-              (rng === null ? "—" : numStr(rng)) +
-              "  ·  MAD " +
-              (mad === null ? "—" : numStr(mad)),
-          );
+          this.hintText
+            .setText(
+              "Dots: " +
+                tot +
+                "  ·  Mean " +
+                (mean === null ? "—" : numStr(mean)) +
+                "  ·  Median " +
+                (med === null ? "—" : numStr(med)) +
+                "  ·  Range " +
+                (rng === null ? "—" : numStr(rng)) +
+                "  ·  MAD " +
+                (mad === null ? "—" : numStr(mad)),
+            )
+            .setColor("#9cc4dd");
         }
       };
 
       GameScene.prototype.newProblem = function () {
         this.locked = false;
-        this.attemptsThis = 0; // wrong tries on THIS problem (1st = retry, 2nd = move on)
+        this.misses = 0;
+        this.showingSample = false;
+        this.setNextMode(false);
         this.problem = genRound(ddLevel, this.lo, this.hi);
         // The immovable given dots seed the build; the student adds on top.
         this.given = this.problem.given.slice();
         this.counts = this.problem.given.slice();
         this.cursor = Math.floor(this.n / 2);
         this.sel.x = this.colX(this.cursor);
-        this.feedback.setAlpha(0);
-        this.subReadout.setVisible(true);
+        this.feedback.setText("").setAlpha(0);
+        this.hintText.setVisible(true);
         let goal;
         if (this.problem.stat === "mad") {
           goal =
@@ -1296,26 +1429,41 @@
             numStr(this.problem.targetMad) +
             ".";
         } else {
-          goal =
-            "Add dots so the " + STAT[this.problem.stat].name + " is " + this.problem.target + ".";
+          goal = "Add dots so the " + STAT[this.problem.stat].name + " is " + this.problem.target + ".";
         }
         this.bannerText.setText(goal);
-        // Persistent procedure reminder for the support tier.
         this.bannerLabel.setText(
           ddLevel === 1
-            ? "STEPS: mean too LOW? add HIGH dots.  too HIGH? add LOW dots."
-            : "BUILD THE LINE PLOT",
+            ? "LEVEL 1 · THE MEAN IS THE BALANCE POINT"
+            : "LEVEL 2 · BUILD THE LINE PLOT · hints unlock after a miss",
         );
+        this.drawTargetLine(ddLevel === 1);
         this.redrawDots();
         this.updateReadout();
+        this.updateHUD();
         const givenN = this.given.reduce((a, b) => a + b, 0);
         srSay(
           goal +
             " " +
             givenN +
             " gold given dots are already on the plot and cannot be removed. " +
-            "Tap a column to add a dot, then lock it in.",
+            (ddLevel === 1 ? this.hintText.text : "Tap a column to add a dot, then lock it in."),
         );
+      };
+
+      // NEXT ROUND mode: the Lock In button turns into a Next button so the
+      // way forward is on screen (the console's Continue is below the fold
+      // on a Chromebook). It presses the shared console button, which keeps
+      // the studio's pacing (feedback stays until the student continues).
+      GameScene.prototype.setNextMode = function (on) {
+        this.nextMode = on;
+        this.lockBtn.setFillStyle(on ? 0x2563a8 : 0x148f86);
+        this.lockLabel.setText(on ? "NEXT ROUND ▶" : "LOCK IN ✓");
+      };
+      GameScene.prototype.pressNext = function () {
+        const b = document.querySelector(".cabinet-next");
+        if (b && !b.hidden && !b.disabled) b.click();
+        else if (!b && this.pendingNext) this.pendingNext();
       };
 
       GameScene.prototype.lockIn = function () {
@@ -1327,6 +1475,7 @@
           // target (guaranteed by the generator), so ask for a build first.
           SFX.miss();
           this.flash(W / 2, 250, "Add a dot first", "#ffcd4d");
+          srSay("Add at least one dot first.");
           return;
         }
         this.locked = true;
@@ -1336,45 +1485,72 @@
         if (correct) {
           SFX.good();
           JUICE.audio.correct(this.streak);
-          this.solved++;
-          this.streak++;
-          const bonus = Math.min(this.streak, 5) * 5;
-          const gained = 20 + bonus;
+          const first = this.misses === 0;
+          let gained = HELP_POINTS[Math.min(this.misses, 3)];
+          if (first) {
+            this.streak++;
+            this.firstTry++;
+            gained += Math.min(this.streak, 5) * 5;
+          }
           this.score += gained;
-          JUICE.burst(this, W / 2, AX_Y - 60, [0x4fd18b, 0x2bd1c4, 0xffffff], 18);
+          if (!this.reduceMotion) {
+            JUICE.burst(this, W / 2, AX_Y - 60, [0x4fd18b, 0x2bd1c4, 0xffffff], 18);
+            if (this.streak >= 2) JUICE.confetti(this, 1);
+          }
           JUICE.floatText(this, W / 2, 250, "+" + gained, "#4fd18b", 36);
           JUICE.award(gained, "u8-data-dash");
-          if (this.streak >= 2) JUICE.confetti(this, 1);
-          this.flash(W / 2, 210, "Correct! ✓", "#4fd18b");
-          this.feedback.setText("Correct! " + this.successWhy(stat, cur)).setAlpha(1);
-          this.subReadout.setVisible(false);
-          srSay("Correct. " + this.successWhy(stat, cur));
-          this.afterAttempt(true);
-        } else {
-          SFX.bad();
-          JUICE.audio.wrong();
-          this.streak = 0;
-          this.attemptsThis = (this.attemptsThis || 0) + 1;
-          const why = this.failWhy(stat, cur);
-          if (this.attemptsThis < 2) {
-            // First miss: keep the SAME build + problem for a free retry — no
-            // life lost, nothing revealed; failWhy explains current vs target
-            // and the live readout stays on to help the adjustment.
-            this.flashRed();
-            JUICE.shake(this, 0.008);
-            this.feedback.setText(why + " Adjust your dots and lock in again!").setAlpha(1);
-            srSay("Not quite. " + why + " Adjust your dots and try again.");
-            this.locked = false;
-            return;
-          }
-          this.lives--;
-          this.flashRed();
-          JUICE.shake(this, 0.008);
-          this.feedback.setText(why).setAlpha(1);
-          this.subReadout.setVisible(false);
-          srSay("Not quite. " + why);
-          this.afterAttempt(false);
+          this.flash(W / 2, 230, first ? "Correct! ✓" : "You fixed it! ✓", "#4fd18b");
+          const msg =
+            (first ? "Correct on the first try! " : "Correct! You used the hint well. ") +
+            this.successWhy(stat, cur);
+          this.feedback.setText(msg).setColor("#7cf0b0").setAlpha(1);
+          this.hintText.setVisible(false);
+          this.suggest.setVisible(false);
+          srSay(msg);
+          this.roundDone(true);
+          return;
         }
+
+        SFX.bad();
+        JUICE.audio.wrong();
+        this.streak = 0;
+        this.misses++;
+        this.hintsUsed++;
+        this.flashRed();
+        if (!this.reduceMotion) JUICE.shake(this, 0.006);
+        if (this.misses < 3) {
+          // Tier 1 = method hint (no answer). Tier 2 = a concrete step.
+          const why = this.misses === 1 ? this.tier1(stat, cur) : this.tier2(stat, cur);
+          const label = this.misses === 1 ? "Hint 1 of 2: " : "Hint 2 of 2: ";
+          this.feedback
+            .setText(label + why)
+            .setColor("#ffe08a")
+            .setAlpha(1);
+          this.hintText.setVisible(false);
+          if (this.misses === 2 && stat === "mean") this.drawTargetLine(true);
+          srSay("Not quite. " + label + why + " Change your dots, then lock in again.");
+          this.locked = false;
+          return;
+        }
+        // Third miss: show one plot that works, explain it, and move on.
+        this.counts = this.problem.sample.slice();
+        this.showingSample = true;
+        this.redrawDots();
+        this.updateReadout();
+        this.suggest.setVisible(false);
+        const added = [];
+        for (let i = 0; i < this.n; i++)
+          for (let k = this.given[i]; k < this.counts[i]; k++) added.push(this.lo + i);
+        const sampleVal = statOf(this.counts, this.lo, stat);
+        const msg =
+          "Here is one plot that works (green dots): add " +
+          added.join(", ") +
+          ". " +
+          this.successWhy(stat, sampleVal);
+        this.feedback.setText(msg).setColor("#ffe08a").setAlpha(1);
+        this.hintText.setVisible(false);
+        srSay(msg);
+        this.roundDone(false);
       };
 
       // Teaching text that shows the student's ACTUAL statistic (the "correct
@@ -1383,9 +1559,10 @@
         if (stat === "mean") {
           const tot = this.totalDots();
           const sum = Math.round(cur * tot);
-          return "Mean = " + sum + " ÷ " + tot + " = " + numStr(cur) + ".";
+          return "Mean = sum ÷ count = " + sum + " ÷ " + tot + " = " + numStr(cur) + ".";
         }
-        if (stat === "median") return "The middle value is " + numStr(cur) + ".";
+        if (stat === "median")
+          return "In order, the middle of the " + this.totalDots() + " dots is " + numStr(cur) + ".";
         if (stat === "mad") {
           const mean = statOf(this.counts, this.lo, "mean");
           return (
@@ -1393,65 +1570,163 @@
             numStr(mean) +
             " and MAD = " +
             numStr(cur) +
-            " — on average each dot sits " +
+            ": on average each dot sits " +
             numStr(cur) +
             " from the mean."
           );
         }
-        return "Greatest − least = " + numStr(cur) + ".";
+        const vals = this.values();
+        return (
+          "Greatest − least = " + vals[vals.length - 1] + " − " + vals[0] + " = " + numStr(cur) + "."
+        );
       };
-      GameScene.prototype.failWhy = function (stat, cur) {
+
+      GameScene.prototype.values = function () {
+        const v = [];
+        for (let i = 0; i < this.n; i++) for (let c = 0; c < this.counts[i]; c++) v.push(this.lo + i);
+        return v;
+      };
+
+      // Hint 1: name the method and the likely mix-up — never the answer.
+      GameScene.prototype.tier1 = function (stat, cur) {
         const t = this.problem.target;
-        if (stat === "mean") {
-          const tot = this.totalDots();
-          const sum = Math.round(cur * tot);
+        if (stat === "mean")
           return (
             "Your mean is " +
             numStr(cur) +
-            " (sum " +
-            sum +
-            " ÷ " +
-            tot +
-            " dots), but you need " +
+            ", not " +
             t +
-            ". " +
-            STAT.mean.hint
+            ". Mean = sum of ALL dots ÷ number of dots (gold dots count too). Dots above " +
+            t +
+            " pull the mean up; dots below pull it down."
+          );
+        if (stat === "median")
+          return (
+            "Your median is " +
+            numStr(cur) +
+            ", not " +
+            t +
+            ". List ALL the dots in order (gold too) and find the middle. With an even count, use halfway between the two middle dots."
+          );
+        if (stat === "range")
+          return (
+            "Your range is " +
+            numStr(cur) +
+            ", not " +
+            t +
+            ". Range = greatest − least, so only the two END dots matter. Move an end dot out or in."
+          );
+        const mean = statOf(this.counts, this.lo, "mean");
+        return (
+          "Your mean is " +
+          numStr(mean) +
+          " and MAD is " +
+          numStr(cur) +
+          ". Fix the mean first (" +
+          t +
+          "). Then: dots far from the mean make the MAD bigger; dots close to it make it smaller."
+        );
+      };
+
+      // Hint 2: a concrete next step with the student's own numbers.
+      GameScene.prototype.tier2 = function (stat, cur) {
+        const t = this.problem.target;
+        const vals = this.values();
+        const n = vals.length;
+        if (stat === "mean") {
+          let below = 0,
+            above = 0;
+          vals.forEach((v) => {
+            if (v < t) below += t - v;
+            else above += v - t;
+          });
+          const side = below > above ? "ABOVE" : "BELOW";
+          return (
+            "Use the balance line at " +
+            t +
+            ": your dots sit " +
+            below +
+            " steps below it and " +
+            above +
+            " above. Add or move dots " +
+            side +
+            " " +
+            t +
+            " until both sides match."
           );
         }
         if (stat === "median") {
-          return "Your median is " + numStr(cur) + ", but you need " + t + ". " + STAT.median.hint;
-        }
-        if (stat === "mad") {
-          const mean = statOf(this.counts, this.lo, "mean");
+          const mid =
+            n % 2 ? "dot #" + (n + 1) / 2 : "halfway between dot #" + n / 2 + " and dot #" + (n / 2 + 1);
+          const dir = cur < t ? "ABOVE " + t : "BELOW " + t;
           return (
-            "Your mean is " +
-            numStr(mean) +
-            " and your MAD is " +
+            "You have " +
+            n +
+            " dots, so the median is " +
+            mid +
+            " in order. It is " +
             numStr(cur) +
-            ", but you need mean " +
+            " now. Add dots " +
+            dir +
+            " to slide the middle toward " +
             t +
-            " and MAD " +
-            numStr(this.problem.targetMad) +
-            ". " +
-            STAT.mad.hint
+            "."
           );
         }
-        return "Your range is " + numStr(cur) + ", but you need " + t + ". " + STAT.range.hint;
+        if (stat === "range") {
+          const least = vals[0],
+            most = vals[n - 1];
+          const opts = [];
+          if (least + t <= this.hi) opts.push("a greatest value of " + (least + t));
+          if (most - t >= this.lo) opts.push("a least value of " + (most - t));
+          return (
+            "Least = " +
+            least +
+            ", greatest = " +
+            most +
+            ", so range = " +
+            (most - least) +
+            ". For a range of " +
+            t +
+            " try " +
+            (opts.length ? opts.join(" or ") : "moving both ends") +
+            "."
+          );
+        }
+        const mean = statOf(this.counts, this.lo, "mean");
+        const dist = vals.map((v) => Math.abs(v - mean));
+        return (
+          "Distances from the mean " +
+          numStr(mean) +
+          ": " +
+          dist.map(numStr).join(", ") +
+          ". Their average is " +
+          numStr(cur) +
+          ". You need mean " +
+          t +
+          " and an average distance of " +
+          numStr(this.problem.targetMad) +
+          "."
+        );
       };
 
-      GameScene.prototype.afterAttempt = function (correct) {
-        this.attempts++; // one concluded problem (free first-retry is not counted)
+      // One round is over (solved, or a worked plot was shown).
+      GameScene.prototype.roundDone = function (solved) {
+        const stat = this.problem.stat;
+        const row = this.tally[stat] || (this.tally[stat] = { seen: 0, firstTry: 0, missed: 0 });
+        row.seen++;
+        if (solved && this.misses === 0) row.firstTry++;
+        if (!solved) row.missed++;
+        this.round++;
+        if (solved) this.solved++;
+        this.attempts = this.round;
         this.updateHUD();
-        if (this.lives <= 0) {
-          // No-fail practice: refill hearts and keep going. Mistakes teach;
-          // they never end the game (calm, self-paced classroom mode).
-          this.lives = 3;
-          this.updateHUD();
-        }
-        if (this.solved >= this.target) {
+        if (this.round >= this.target) {
           this.endGame();
           return;
         }
+        this.setNextMode(true);
+        this.pendingNext = () => this.newProblem();
         this.studioNextRound(() => {
           this.newProblem();
         });
@@ -1471,40 +1746,48 @@
           .setDepth(40);
         this.tweens.add({
           targets: ft,
-          y: y - 50,
+          y: this.reduceMotion ? y : y - 50,
           alpha: { from: 1, to: 0 },
-          duration: this.reduceMotion ? 500 : 900,
+          duration: this.reduceMotion ? 1200 : 900,
           onComplete: () => ft.destroy(),
         });
       };
 
       GameScene.prototype.flashRed = function () {
         if (this.reduceMotion) return;
-        this.redFlash.setAlpha(0.35);
+        this.redFlash.setAlpha(0.25);
         this.tweens.add({ targets: this.redFlash, alpha: 0, duration: 350 });
       };
 
       GameScene.prototype.updateHUD = function () {
         this.scoreText.setText("Score: " + this.score);
-        this.livesText.setText(this.lives > 0 ? "❤".repeat(this.lives) : "—");
         this.streakText.setText("Streak: " + this.streak);
         this.levelText.setText("Level " + ddLevel);
-        this.progressText.setText(this.solved + " / " + (this.endless ? "∞" : this.target));
+        const shown = this.endless ? this.round + 1 : Math.min(this.round + 1, this.target);
+        this.progressText.setText(
+          this.endless
+            ? "Round " + shown + " · Solved " + this.solved
+            : "Round " + shown + " of " + this.target + " · Solved " + this.solved,
+        );
       };
 
-      // Reached only by finishing all target plots (mistakes never end the
-      // game), so the Result scene is always a win.
+      // Reached after 10 rounds (or Finish in endless mode). Mistakes never
+      // end the game, so every run reaches this summary.
       GameScene.prototype.endGame = function () {
         this.locked = true;
         this.time.delayedCall(600, () => {
           this.scene.start("Result", {
             score: this.score,
             solved: this.solved,
-            target: this.target,
+            rounds: this.round,
+            target: this.endless ? Math.max(this.round, 1) : this.target,
+            firstTry: this.firstTry,
+            hintsUsed: this.hintsUsed,
+            tally: this.tally,
             level: ddLevel,
             auto: this.auto,
             endless: this.endless,
-            accuracy: this.attempts ? this.solved / this.attempts : 1,
+            accuracy: this.round ? this.firstTry / this.round : 1,
           });
         });
       };
@@ -1522,144 +1805,189 @@
         const d = this.data2;
         const cx = W / 2;
         this.add.rectangle(cx, H / 2, W, H, C.bg);
-        // Endless runs have no finite target; grade against the standard goal
-        // of 10 so stars and the adaptive win-signal stay meaningful. A normal
-        // win always has solved >= target, so it still earns 3 stars.
-        const endless = !!d.endless;
-        const goal = endless ? 10 : d.target;
-        const stars = d.solved >= goal ? 3 : d.solved >= goal * 0.6 ? 2 : 1;
+        const rounds = Math.max(d.rounds || 0, 1);
+        const rate = d.solved / rounds;
+        const stars = rate >= 0.9 ? 3 : rate >= 0.6 ? 2 : 1;
         // Adaptive: only record a run when the level was auto-picked.
         if (d.auto && window.NTAdaptive) {
           window.NTAdaptive.recordRun("u8-data-dash", {
-            won: d.solved >= goal,
+            won: rate >= 0.7,
             accuracy: d.accuracy != null ? d.accuracy : 1,
             min: 1,
             max: 2,
           });
         }
-        let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
-        if (d.score > hs) {
+        let hs = 0;
+        try {
+          hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10) || 0;
+        } catch (e) {}
+        const newBest = d.score > hs;
+        if (newBest) {
           hs = d.score;
           try {
             localStorage.setItem(LS_KEY, String(hs));
           } catch (e) {}
         }
+        const txt = (y, s, size, color, bold) =>
+          this.add
+            .text(cx, y, s, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: size + "px",
+              fontStyle: bold ? "bold" : "normal",
+              color: color,
+              align: "center",
+              wordWrap: { width: W - 100 },
+            })
+            .setOrigin(0.5);
 
         this.add
-          .text(cx, 110, "DATA MASTER!", {
+          .text(cx, 64, rate >= 0.8 ? "DATA MASTER!" : "RUN COMPLETE!", {
             fontFamily: "Impact, sans-serif",
-            fontSize: "48px",
+            fontSize: "46px",
             color: "#4fd18b",
             stroke: "#04121c",
             strokeThickness: 5,
           })
           .setOrigin(0.5);
+        txt(122, "★".repeat(stars) + "☆".repeat(3 - stars), 44, "#ffcd4d", false);
+        txt(
+          176,
+          "Score " + d.score + (newBest ? "  ·  NEW BEST!" : "  ·  Best " + hs),
+          28,
+          "#ffffff",
+          true,
+        );
+        txt(
+          216,
+          "Solved " +
+            d.solved +
+            " of " +
+            rounds +
+            " plots · " +
+            d.firstTry +
+            " on the first try · " +
+            d.hintsUsed +
+            (d.hintsUsed === 1 ? " hint" : " hints") +
+            " used · Level " +
+            d.level,
+          18,
+          "#bfe9ff",
+          false,
+        );
+        // Skills practiced, with first-try counts.
+        const names = { mean: "Mean", median: "Median", range: "Range", mad: "MAD" };
+        const tally = d.tally || {};
+        const keys = Object.keys(tally);
+        txt(
+          252,
+          "Skills practiced: " +
+            (keys.length
+              ? keys
+                  .map((k) => names[k] + " " + tally[k].firstTry + "/" + tally[k].seen + " first try")
+                  .join("  ·  ")
+              : "none yet"),
+          17,
+          "#9ec9e2",
+          false,
+        );
+        // What to practice next (weakest skill, or a level suggestion).
+        let next;
+        let weakest = null;
+        keys.forEach((k) => {
+          const r = tally[k].firstTry / tally[k].seen;
+          if (weakest === null || r < weakest.r) weakest = { k, r };
+        });
+        if (weakest && weakest.r < 0.6)
+          next =
+            "Practice next: " +
+            names[weakest.k] +
+            ". " +
+            STAT[weakest.k].hint +
+            (d.level === 2 ? " Level 1's step coach can help." : "");
+        else if (d.level === 1)
+          next = "Practice next: you are ready for Level 2 (median, range, and MAD).";
+        else next = "Practice next: keep going in Level 2 and aim for 10 on the first try.";
+        txt(300, next, 18, "#ffe08a", true);
 
-        const starStr = "★".repeat(stars) + "☆".repeat(3 - stars);
-        this.add
-          .text(cx, 185, starStr, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "48px",
-            color: "#ffcd4d",
-          })
-          .setOrigin(0.5);
-
-        this.add
-          .text(cx, 255, "Score: " + d.score, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "30px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
-          .setOrigin(0.5);
-        this.add
-          .text(
-            cx,
-            295,
-            endless
-              ? "Built " + d.solved + " plots (Level " + d.level + ")"
-              : "Built " + d.solved + " of " + d.target + " plots (Level " + d.level + ")",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "18px",
-              color: "#bfe9ff",
-            },
-          )
-          .setOrigin(0.5);
-        this.add
-          .text(cx, 325, "High Score: " + hs, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
-            color: "#ffcd4d",
-          })
-          .setOrigin(0.5);
-
-        SFX.win();
-        JUICE.audio.fanfare();
-        JUICE.confetti(this, 1);
+        if (!calmMotion()) {
+          SFX.win();
+          JUICE.audio.fanfare();
+          JUICE.confetti(this, 1);
+        } else SFX.win();
 
         // EduPulse reporting (guarded; safe no-op without bridge).
         try {
           window.EduPulse &&
             EduPulse.record({
               activityTitle: document.title,
-              score: d.score,
               stars: stars,
               standard: "6.DS.6",
-              problemsAttempted: d.solved,
+              // Gradebook score = plots solved out of rounds played (the
+              // points total is a game score, not a grade).
+              score: d.solved,
+              maxScore: rounds,
+              percent: Math.round(rate * 100),
+              problemsAttempted: rounds,
+              problemsCorrect: d.solved,
             });
         } catch (e) {}
-        srSay("You won! Final score " + d.score + ", " + stars + " stars.");
+        srSay(
+          "Run complete. Score " +
+            d.score +
+            ". Solved " +
+            d.solved +
+            " of " +
+            rounds +
+            " plots, " +
+            d.firstTry +
+            " on the first try. " +
+            next,
+        );
 
-        const btn = this.add
-          .rectangle(cx, 400, 220, 54, 0x148f86)
-          .setInteractive({ useHandCursor: true });
-        this.add
-          .text(cx, 400, "PLAY AGAIN 🔁", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "20px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
-          .setOrigin(0.5);
+        const mkBtn = (y, label, fill, hover, cb) => {
+          const b = this.add
+            .rectangle(cx, y, 300, 54, fill)
+            .setStrokeStyle(2, 0xffffff, 0.7)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(cx, y, label, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "20px",
+              fontStyle: "bold",
+              color: "#ffffff",
+            })
+            .setOrigin(0.5);
+          b.on("pointerover", () => b.setFillStyle(hover));
+          b.on("pointerout", () => b.setFillStyle(fill));
+          b.on("pointerdown", cb);
+        };
         const again = () => this.scene.start("Level");
-        btn.on("pointerover", () => btn.setFillStyle(0x1aa99e));
-        btn.on("pointerout", () => btn.setFillStyle(0x148f86));
-        btn.on("pointerdown", again);
-        this.input.keyboard.on("keydown-SPACE", again);
-        this.input.keyboard.on("keydown-ENTER", again);
-
-        // ♾️ Keep Playing: restart the Game at the same level in endless mode
-        // (carries the auto flag so adaptive still records the endless run).
-        const keepBtn = this.add
-          .rectangle(cx, 466, 240, 48, 0x2563a8)
-          .setStrokeStyle(2, 0x7dd3fc)
-          .setInteractive({ useHandCursor: true });
-        this.add
-          .text(cx, 466, "♾️ Keep Playing", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "18px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
-          .setOrigin(0.5);
+        mkBtn(390, "PLAY AGAIN · new numbers", 0x148f86, 0x1aa99e, again);
+        // Keep Playing: same level, endless mode (carries the auto flag).
         const keepPlaying = () => {
           ddLevel = d.level;
           ddEndless = true;
           ddAuto = d.auto;
           this.scene.start("Game");
         };
-        keepBtn.on("pointerover", () => keepBtn.setFillStyle(0x2f74c2));
-        keepBtn.on("pointerout", () => keepBtn.setFillStyle(0x2563a8));
-        keepBtn.on("pointerdown", keepPlaying);
+        mkBtn(458, "♾️ Keep playing this level", 0x2563a8, 0x2f74c2, keepPlaying);
+        txt(510, "Enter = play again", 15, "#9ec9e2", false);
+        this.input.keyboard.on("keydown-SPACE", again);
+        this.input.keyboard.on("keydown-ENTER", again);
       };
-
       // ── Launch ──
       const ddGame = new Phaser.Game(config);
       // Native math controls now have a readable, touch-accessible console.
       window.PhaserStudio.mount({
         game: ddGame, id: "u8-data-dash", GameScene, ResultScene, audio: SFX,
-        instructions: ["Build a data plot matching the target statistic. \u2190/\u2192 select a column; \u2191 adds a dot; \u2193 removes a dot; Enter checks the plot.", "Gold given dots stay fixed. Several different plots can meet the same target."],
+        instructions: [
+          "Goal: add dots to the line plot until the statistic matches the target, then press Lock In.",
+          "Tap a number column to add a dot. Tap one of your teal dots to remove it. Keyboard: \u2190 \u2192 choose a column, \u2191 add, \u2193 remove, Enter = Lock In.",
+          "Gold dots are given data. They stay on the plot and count in every statistic.",
+          "Level 1: the mean is the balance point. The coach counts steps below and above the target and tells you the next dot to add.",
+          "Level 2: mean, median, range, or MAD. A miss unlocks Hint 1 (the method), then Hint 2 (a step with your numbers). After 3 tries you see one plot that works.",
+          "There is no timer. First-try builds earn the most points. 10 rounds, then you see your summary.",
+        ],
         setLevel(level) { ddLevel = level; ddAuto = false; ddEndless = false; ddGame.scene.getScenes(true).forEach(scene => ddGame.scene.stop(scene.sys.settings.key)); ddGame.scene.start(ddVocabSeen ? "Game" : "Vocab"); }
       });
       window.ddGame = ddGame; // stable handle for automated QA harnesses
@@ -1679,6 +2007,15 @@
               "press Lock In.",
           );
           cv.setAttribute("aria-roledescription", "math game");
+          // Arrow keys and Space drive the game; stop them from ALSO scrolling
+          // the page (it is taller than a Chromebook screen). Registered after
+          // Phaser's own window listener, so the game still gets every key;
+          // keys typed into buttons, inputs and dialogs are left alone.
+          window.addEventListener("keydown", function (e) {
+            if (e.target !== cv && e.target !== document.body) return;
+            if ([" ", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(e.key) > -1)
+              e.preventDefault();
+          });
           if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
           cv.addEventListener("pointerdown", function () {
             try {

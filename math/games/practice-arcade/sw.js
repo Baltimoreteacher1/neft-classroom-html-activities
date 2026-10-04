@@ -29,7 +29,7 @@ const CORE = [
   SCOPE + "map.html",
   SCOPE + "studio.js",
   SCOPE + "studio.css",
-  "/assets/game-studio.js?v=20261002",
+  "/assets/game-studio.js?v=20261003",
   "/assets/game-studio.css?v=20261002",
   "/data/curriculum-manifest.json",
   "/games/vendor/phaser/phaser-3.80.1.min.js",

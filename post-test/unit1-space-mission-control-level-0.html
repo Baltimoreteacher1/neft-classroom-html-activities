@@ -1350,7 +1350,7 @@
 </head>
   <body>
 <!-- play-game-injected:begin -->
-<div style="display:flex;justify-content:center;padding:12px 16px 0;font-family:inherit;"><a href="/math/unit-1/games/unit1-factor-frenzy.html" aria-label="Play the Unit 1 game: Factor Frenzy" style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;font-weight:700;font-size:1.02rem;line-height:1.2;padding:12px 20px;border-radius:999px;box-shadow:0 6px 18px rgba(37,99,235,.35);border:1px solid rgba(255,255,255,.25);"><span aria-hidden="true" style="font-size:1.3rem;">🎮</span><span>Play the Unit Game: Factor Frenzy</span><span aria-hidden="true" style="opacity:.85;">▶</span></a></div>
+<div class="pt-play-row"><a class="pt-play-link" href="/math/unit-1/games/unit1-factor-frenzy.html"><span aria-hidden="true">🎮</span><span>Extra practice game: <b>Factor Frenzy</b></span><span aria-hidden="true">→</span></a></div>
 <!-- play-game-injected:end -->
 <div class="l0-extra-support" role="note">
   🟠 <b>Level 0 — Most Support.</b> This is the most-supported version.
@@ -1369,8 +1369,6 @@ function speak(t){try{window.speechSynthesis.cancel();var u=new SpeechSynthesisU
 b.addEventListener("click",function(){on=!on;document.body.classList.toggle("l0-reading",on);b.textContent=on?"🔊 Tap text to hear":"🔊 Read aloud";if(!on){try{window.speechSynthesis.cancel();}catch(e){}}});
 document.addEventListener("click",function(e){if(!on)return;if(e.target.closest(".l0-extra-support"))return;var el=e.target.closest("p,li,h1,h2,h3,h4,label,td,.q-text,.question");if(el){var t=el.textContent.trim();if(t&&t.length<400)speak(t);}},true);})();
 </script>
-
-<div class="nt-level-banner"><span class="nt-pill">Level 0</span><span class="nt-sub">Most-supported version — simpler language, smaller numbers, and step-by-step help.</span></div>
 
 <div class="nt-scaffold" role="note">
   <b>🪜 Step-by-step support</b>
@@ -1594,7 +1592,7 @@ document.addEventListener("click",function(e){if(!on)return;if(e.target.closest(
               </div>
               <div class="form-group">
                 <label>Date</label>
-                <input type="date" class="form-input" id="activityDate" />
+                <input aria-label="Date" type="date" class="form-input" id="activityDate" />
               </div>
             </div>
           </div>
@@ -5190,5 +5188,120 @@ document.addEventListener("click",function(e){if(!on)return;if(e.target.closest(
   <!-- nsr-injected:end -->
     <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
+<!-- pt-unify:begin (post-test layout: ONE level control + calm bottom dock; authored by .qa-sweep/posttest-f2/ptfix.py) -->
+<style>
+/* One level control: the shared "Choose your level" bar is the only selector.
+   The in-page Support/Standard/Challenge toggle is locked to this page's level
+   by the script below and hidden here. */
+.mode-toggle,.mode-toggle-bar,.mode-bar,.card:has(> .mode-toggle){display:none!important}
+/* The level bar must sit above the pages' fixed scenic backgrounds (it was
+   painted UNDER the ocean/parchment layers on units 9-10). The current pill
+   keeps white-on-blue: the shared tint rules for data-lvl otherwise win and
+   leave white text on a pale tint on every Level 0/1/2 page. */
+.nlsw-bar,.pt-play-row{position:relative;z-index:6}
+.nlsw-bar .nlsw-pill[aria-current="page"]{color:#fff;border-color:transparent;background:linear-gradient(135deg,#1763c7,#0c3f86)}
+/* Level 0/1 word helpers: compact, centered, not a full-screen wall. */
+.nt-scaffold{max-width:960px;margin-left:auto!important;margin-right:auto!important;box-sizing:border-box}
+.nt-scaffold .nt-vocab{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:4px 22px}
+.nt-scaffold .nt-vocab b{display:inline;margin:0}
+/* Practice-game link: a quiet secondary link, not a second "start" button. */
+.pt-play-row{display:flex;justify-content:center;padding:10px 16px 0}
+.pt-play-link{display:inline-flex;align-items:center;gap:8px;min-height:44px;box-sizing:border-box;padding:8px 16px;border-radius:999px;text-decoration:none;font-family:inherit;font-size:1rem;font-weight:600;line-height:1.25;color:#1e3a8a;background:#fff;border:2px solid #93c5fd;box-shadow:0 2px 8px rgba(15,23,42,.08)}
+.pt-play-link:hover{background:#eff6ff}
+.pt-play-link:focus-visible{outline:3px solid #f59e0b;outline-offset:2px}
+/* Bottom dock. --pt-dock = height of the fixed full-width bars (save bar + XP
+   bar), measured live below. Floating helpers stack ABOVE it, never on it:
+   help buttons bottom-left, Save/Resume + Math Workbench bottom-right. */
+body{padding-bottom:calc(var(--pt-dock,56px) + 76px)!important}
+.xp-bar-wrap{bottom:var(--nt-savebar-h,56px)!important}
+.xp-toggle{min-width:44px;min-height:44px}
+html body #nsr-root{bottom:calc(var(--pt-dock,56px) + 10px)!important}
+html body #mwb-launcher{bottom:calc(var(--pt-dock,56px) + 58px)!important}
+.nt-fab-wrap{left:12px!important;right:auto!important;bottom:calc(var(--pt-dock,56px) + 10px)!important;flex-direction:row!important;align-items:center!important}
+.nt-fab{min-height:44px}
+.nt-panel,.help-panel{left:12px!important;right:auto!important;bottom:calc(var(--pt-dock,56px) + 66px)!important;max-height:calc(100vh - var(--pt-dock,56px) - 90px)!important}
+#helpFab.fab{left:12px;right:auto;bottom:calc(var(--pt-dock,56px) + 10px);min-height:44px}
+/* Glossary tooltips: a hidden tooltip must not widen the page (~95px of
+   sideways scroll at 390px), and a shown one must stay on screen. */
+.neft-term{display:inline-block;min-height:24px}
+.neft-tip{display:none}
+.neft-term:hover .neft-tip,.neft-term:focus .neft-tip{display:block}
+@media (max-width:640px){
+.neft-tip{position:fixed!important;left:12px!important;right:12px!important;top:auto!important;bottom:calc(var(--pt-dock,56px) + 12px)!important;width:auto!important;max-width:none!important}
+/* Phone: icon-only help buttons so they fit beside Save/Resume. */
+.nt-fab{width:48px;height:48px;padding:0!important;justify-content:center;font-size:1.3rem!important}
+.nt-fab>span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+}
+@media print{.pt-play-row{display:none!important}}
+</style>
+<script>
+(function () {
+  "use strict";
+  // Page level from the file name (same contract as shared/level-switch).
+  var m = location.pathname.match(/-level-([0-2])(?:\.html)?$/);
+  var lvl = m ? m[1] : "core";
+  var MODE = lvl === "2" ? "challenge" : lvl === "core" ? "standard" : "support";
+  document.documentElement.setAttribute("data-pt-mode", MODE);
+  function lockMode() {
+    var orig = window.setMode;
+    if (typeof orig !== "function") return;
+    if (!orig.__ptLocked) {
+      var locked = function () { return orig.call(this, MODE); };
+      locked.__ptLocked = true;
+      try { window.setMode = locked; } catch (_e) {}
+    }
+    try { window.setMode(MODE); } catch (_e) {}
+  }
+  function label() {
+    var a = document.getElementById("ntHintFab");
+    if (a && !a.getAttribute("aria-label")) a.setAttribute("aria-label", "Hints");
+    var b = document.getElementById("ntHelpFab");
+    if (b && !b.getAttribute("aria-label")) b.setAttribute("aria-label", "Need help?");
+    document.querySelectorAll(".xp-toggle").forEach(function (t) {
+      if (!t.getAttribute("aria-label")) t.setAttribute("aria-label", "Show or hide the XP bar");
+    });
+    // Answer boxes whose <label> sits beside them without for=: name them by it.
+    document.querySelectorAll("input:not([type=hidden]),textarea,select").forEach(function (el) {
+      if ((el.labels && el.labels.length) || el.getAttribute("aria-label") || el.getAttribute("aria-labelledby")) return;
+      var g = el.closest(".form-group, label");
+      var l = g && (g.tagName === "LABEL" ? g : g.querySelector("label"));
+      var t = l && l.textContent.replace(/\s+/g, " ").trim();
+      if (t) el.setAttribute("aria-label", t.slice(0, 160));
+    });
+  }
+  // Height of the fixed full-width bars pinned to the bottom edge.
+  function measureDock() {
+    var top = window.innerHeight;
+    document.querySelectorAll(".nt-pe-bar, .xp-bar-wrap").forEach(function (el) {
+      var cs = getComputedStyle(el);
+      if (cs.display === "none" || cs.visibility === "hidden") return;
+      var r = el.getBoundingClientRect();
+      if (r.height > 0 && r.top < top) top = r.top;
+    });
+    var dock = Math.max(0, Math.round(window.innerHeight - top));
+    document.documentElement.style.setProperty("--pt-dock", dock + "px");
+  }
+  // Keep the practice-game link directly under the level bar (one header group).
+  function placePlay() {
+    var bar = document.querySelector(".nlsw-bar");
+    var row = document.querySelector(".pt-play-row");
+    if (bar && row && bar.nextElementSibling !== row) bar.parentNode.insertBefore(row, bar.nextSibling);
+  }
+  function run() { lockMode(); label(); placePlay(); measureDock(); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run);
+  else run();
+  window.addEventListener("load", function () {
+    run();
+    // Saved-progress restore runs after load on some pages; re-assert.
+    setTimeout(run, 600);
+    setTimeout(measureDock, 1500);
+  });
+  window.addEventListener("resize", measureDock, { passive: true });
+  document.addEventListener("transitionend", function (e) {
+    if (e.target && e.target.classList && e.target.classList.contains("xp-bar-wrap")) measureDock();
+  });
+})();
+</script>
+<!-- pt-unify:end -->
 </body>
 </html>

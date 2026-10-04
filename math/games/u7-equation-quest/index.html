@@ -76,6 +76,26 @@
           opacity: 0.4 !important;
         }
       }
+      /* Step-2 answer choices mirrored as real buttons in the controls panel
+         (44px+ tap targets on phones; screen-reader friendly). */
+      .game-choice-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 4px 0 14px;
+      }
+      .game-choice-bar button {
+        flex: 1 1 96px;
+        font-size: 20px !important;
+      }
+      .game-choice-bar button[aria-pressed="true"] {
+        outline: 3px solid #ffd17b;
+        outline-offset: 2px;
+      }
+      .game-choice-bar button:disabled {
+        opacity: 0.45;
+        text-decoration: line-through;
+      }
       #eq-sr {
         position: absolute;
         width: 1px;
@@ -129,9 +149,9 @@
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
   <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
     <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-    <script src="/assets/game-studio.js?v=20261002" defer></script>
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
     <link rel="stylesheet" href="/math/games/shared/phaser-studio.css?v=20261002">
-    <script src="/math/games/shared/phaser-studio.js?v=20261002"></script>
+    <script src="/math/games/shared/phaser-studio.js?v=20261003"></script>
     <link rel="stylesheet" href="/math/games/shared/cabinet-tools.css?v=20261002">
     <script src="/math/games/shared/cabinet-tools.js?v=20261002" defer></script>
 </head>
@@ -309,56 +329,86 @@
       }
 
       // ── Problem generator ────────────────────────────────────────────────
-      // Returns { A, B, C, s, minMoves, banner, hint, solveHint } describing
-      //   A·x + B = C   (solution s, always a whole number).
+      // Returns { A, B, C, s, rel, minMoves, banner, solveHint, check } for
+      //   A·x + B (rel) C   with rel "=", ">" or "<" and boundary/solution s
+      // (always a whole number).
       // Level 1 (support): one-step — x + a = b (A=1) or a·x = b (B=0).
       // Level 2 (enrichment): two-step — a·x + b = c, bigger numbers.
+      // About 1 in 3 rounds at each level is an INEQUALITY (6.AT.9): the scale
+      // tips, the same inverse moves isolate x, then the student picks a
+      // number that makes the inequality true (substitution, 6.AT.8).
+      function lhsStr(A, B) {
+        const coef = A === 1 ? "x" : A + "x";
+        return B > 0 ? coef + " + " + B : coef;
+      }
       function makeProblem(level) {
+        let A, B, s;
         if (level === 1) {
+          s = randInt(1, 9);
           if (Math.random() < 0.5) {
-            // x + a = b
-            const a = randInt(2, 9),
-              s = randInt(1, 9);
-            return {
-              A: 1,
-              B: a,
-              C: a + s,
-              s,
-              minMoves: 1,
-              banner: "x + " + a + " = " + (a + s),
-              hint: "Inverse of + " + a + " is − " + a + ". Subtract " + a + " from both sides.",
-              solveHint: "Subtract " + a + " from both sides → x = " + s,
-            };
+            A = 1;
+            B = randInt(2, 9);
+          } else {
+            A = randInt(2, 5);
+            B = 0;
           }
-          // a·x = b
-          const a = randInt(2, 5),
-            s = randInt(1, 9);
-          return {
-            A: a,
-            B: 0,
-            C: a * s,
-            s,
-            minMoves: 1,
-            banner: a + "x = " + a * s,
-            hint: "Inverse of × " + a + " is ÷ " + a + ". Divide both sides by " + a + ".",
-            solveHint: "Divide both sides by " + a + " → x = " + s,
-          };
+        } else {
+          A = randInt(2, 6);
+          s = randInt(1, 9);
+          B = randInt(2, 12);
         }
-        // Level 2: a·x + b = c
-        const a = randInt(2, 6),
-          s = randInt(1, 9),
-          b = randInt(2, 12);
-        const c = a * s + b;
-        return {
-          A: a,
-          B: b,
-          C: c,
+        const C = A * s + B;
+        const rel = Math.random() < 0.35 ? (Math.random() < 0.5 ? ">" : "<") : "=";
+        const steps = [];
+        if (B > 0) steps.push("subtract " + B);
+        if (A > 1) steps.push("divide by " + A);
+        const p = {
+          A,
+          B,
+          C,
           s,
-          minMoves: 2,
-          banner: a + "x + " + b + " = " + c,
-          hint: "Two steps: first clear the number, then divide by the coefficient.",
-          solveHint: "Subtract " + b + ", then divide by " + a + " → x = " + s,
+          rel,
+          minMoves: steps.length,
+          banner: lhsStr(A, B) + " " + rel + " " + C,
+          solveHint: steps.length === 2 ? "Subtract " + B + ", then divide by " + A + "." : "Do one move: " + steps[0] + " on both sides.",
+          // Substitution check (6.AT.8): plug a value back into the original.
+          check(v) {
+            const left = A * v + B;
+            const shown = (A === 1 ? String(v) : A + " × " + v) + (B > 0 ? " + " + B : "");
+            const ok = rel === "=" ? left === C : rel === ">" ? left > C : left < C;
+            return { left, ok, text: shown + " = " + left + ", and " + left + " " + rel + " " + C + " is " + (ok ? "true" : "false") + "." };
+          },
         };
+        if (rel !== "=") {
+          // Choices: one true value, the boundary, one on the wrong side.
+          const good = rel === ">" ? s + randInt(1, 4) : Math.max(0, s - randInt(1, Math.max(1, s)));
+          const wrongSide = rel === ">" ? Math.max(0, s - randInt(1, Math.max(1, s))) : s + randInt(1, 4);
+          const opts = [
+            { value: good, correct: true },
+            { value: s, correct: false, boundary: true },
+          ];
+          if (wrongSide !== s && wrongSide !== good) opts.push({ value: wrongSide, correct: false });
+          for (let i = opts.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [opts[i], opts[j]] = [opts[j], opts[i]];
+          }
+          p.choices = opts.map((o) => {
+            const ck = p.check(o.value);
+            return {
+              ...o,
+              label: String(o.value),
+              why: o.boundary
+                ? o.value + " is the boundary. x " + rel + " " + s + " means x is " + (rel === ">" ? "MORE" : "LESS") + " than " + s + ", so " + s + " itself does not work. Check: " + ck.text
+                : "Check by plugging it in: " + ck.text,
+            };
+          });
+        }
+        return p;
+      }
+      const EQ_STREAK_KEY = "eq_balance_scale_beststreak";
+      function calmMotion() {
+        if (window.GameStudio) return !!window.GameStudio.settings.reducedMotion;
+        return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
       }
 
       const config = {
@@ -400,6 +450,11 @@
           term: "Inverse operation",
           emoji: "🔄",
           def: "The opposite move that undoes another. − undoes +; ÷ undoes ×.",
+        },
+        {
+          term: "Inequality",
+          emoji: "↗️",
+          def: "A math sentence with > (greater than) or < (less than). x > 4 means x can be ANY number bigger than 4.",
         },
         {
           term: "Solution",
@@ -456,7 +511,7 @@
           .text(
             cx,
             228,
-            "Keep the scale even! Do the SAME inverse operation to BOTH\nsides until x is alone — then read its value and Lock In.",
+            "Do the SAME opposite move to BOTH sides until x is alone.\nThen lock in. Tipped scales are inequalities. No timer.",
             {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "16px",
@@ -466,10 +521,10 @@
           )
           .setOrigin(0.5);
         this.add
-          .text(cx, 292, "6.AT.8 · Lessons 7.1–7.7 · Solve equations", {
+          .text(cx, 292, "6.AT.8 · 6.AT.9 · Unit 8 · Equations and inequalities", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "14px",
-            color: "#6fae8c",
+            fontSize: "15px",
+            color: "#9fd8b8",
           })
           .setOrigin(0.5);
 
@@ -495,14 +550,15 @@
             color: "#ffffff",
           })
           .setOrigin(0.5);
-        this.tweens.add({
-          targets: [btn, btnT],
-          scaleX: 1.05,
-          scaleY: 1.05,
-          duration: 800,
-          yoyo: true,
-          repeat: -1,
-        });
+        if (!calmMotion())
+          this.tweens.add({
+            targets: [btn, btnT],
+            scaleX: 1.04,
+            scaleY: 1.04,
+            duration: 900,
+            yoyo: true,
+            repeat: -1,
+          });
         const start = () => {
           SFX.init();
           SFX.tap();
@@ -729,14 +785,14 @@
           cx - 180,
           1,
           "Level 1",
-          "Support\n\nOne-step equations\nx + a = b  or  a·x = b\nSmall numbers\nInverse-operation hint",
+          "Support\n\nOne-step equations\nand inequalities\nx + a = b  or  a·x = b\nStep coach on",
           0x3fbf8f,
         );
         const pick2 = makeCard(
           cx + 180,
           2,
           "Level 2",
-          "Enrichment\n\nTwo-step equations\na·x + b = c\nBigger numbers\nFewer hints",
+          "Enrichment\n\nTwo-step equations\nand inequalities\na·x + b = c\nBigger numbers",
           0xffd24a,
         );
 
@@ -746,9 +802,9 @@
         this.input.keyboard.on("keydown-RIGHT", pick2);
 
         this.add
-          .text(cx, 540, "Press 1 or 2 (or tap a card) to begin.", {
+          .text(cx, 530, "Press 1 or 2 (or tap a card) to begin.", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "14px",
+            fontSize: "16px",
             color: "#6fae8c",
           })
           .setOrigin(0.5);
@@ -766,16 +822,19 @@
           this.scene.start("Game");
         };
         const autoBtn = this.add
-          .text(cx, 574, "✨ Auto — picks your level", {
+          .rectangle(cx, 574, 300, 40, 0x0e3326)
+          .setStrokeStyle(2, 0xffd24a)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx, 574, "✨ Auto: pick my level (A)", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
+            fontSize: "17px",
             fontStyle: "bold",
             color: "#ffd24a",
           })
-          .setOrigin(0.5)
-          .setInteractive({ useHandCursor: true });
-        autoBtn.on("pointerover", () => autoBtn.setColor("#ffffff"));
-        autoBtn.on("pointerout", () => autoBtn.setColor("#ffd24a"));
+          .setOrigin(0.5);
+        autoBtn.on("pointerover", () => autoBtn.setFillStyle(0x14432f));
+        autoBtn.on("pointerout", () => autoBtn.setFillStyle(0x0e3326));
         autoBtn.on("pointerdown", pickAuto);
         this.input.keyboard.on("keydown-A", pickAuto);
 
@@ -783,6 +842,7 @@
       };
 
       // ── GAME ──
+      const TXT = (size, color, extra) => ({ fontFamily: "Segoe UI, sans-serif", fontSize: size + "px", color, ...(extra || {}) });
       function GameScene() {
         Phaser.Scene.call(this, "Game");
       }
@@ -790,92 +850,63 @@
       GameScene.prototype.constructor = GameScene;
 
       GameScene.prototype.init = function () {
-        this.reduceMotion =
-          JUICE.reduceMotion ||
-          !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+        this.reduceMotion = JUICE.reduceMotion || calmMotion();
         this.score = 0;
         this.streak = 0;
+        this.bestStreak = 0;
         this.level = eqLevel;
         this.auto = eqAuto; // carried into Result for adaptive recordRun
         this.endless = eqEndless; // endless runs never auto-end
-        this.attempts = 0; // graded lock-in attempts (for accuracy)
+        this.attempts = 0; // graded submissions (for accuracy)
+        this.correctSubs = 0;
         this.solved = 0;
-        this.target = this.endless ? Infinity : 10; // win: solve this many equations
-        // Equation state A·x + B = C and its solution s.
+        this.firstTry = 0;
+        this.target = this.endless ? Infinity : 10; // win: solve this many
+        this.stats = {}; // kind → { seen, clean }
+        // State A·x + B (rel) C and its solution / boundary s.
         this.A = 1;
         this.B = 0;
         this.C = 0;
         this.s = 0;
+        this.rel = "=";
+        this.phase = "solve"; // 'solve' → (inequality) 'pick' → 'done'
         this.movesLeft = 0;
         this.locked = false;
         this.opType = "sub"; // 'sub' | 'add' | 'div'
         this.opAmt = 1;
         this.dyn = []; // dynamic scale items, rebuilt each redraw
         this.lockTween = null;
+        this.choices = [];
+        this.choiceIdx = 0;
         // Balance geometry (game space; Scale.FIT maps pointers in).
         this.pivotX = W / 2;
-        this.pivotY = 215;
+        this.pivotY = 200;
         this.panDX = 180; // pan offset from pivot
+        this.baseTilt = 0;
       };
 
       GameScene.prototype.create = function () {
         this.add.rectangle(W / 2, H / 2, W, H, 0x0c281d);
-
-        // HUD
-        const hud = {
-          fontFamily: "Segoe UI, sans-serif",
-          fontSize: "18px",
-          fontStyle: "bold",
-        };
-        this.scoreText = this.add.text(16, 12, "Score: 0", {
-          ...hud,
-          color: "#8ff0c4",
-        });
-        this.streakText = this.add
-          .text(W - 16, 12, "Streak: 0", { ...hud, color: "#ffd24a" })
-          .setOrigin(1, 0);
-        this.levelText = this.add
-          .text(W - 16, 36, "Level " + this.level, {
-            ...hud,
-            color: "#bfe0c8",
-          })
-          .setOrigin(1, 0);
-        this.progressText = this.add
-          .text(W / 2, 12, "0 / " + (this.endless ? "∞" : this.target), {
-            ...hud,
-            color: "#bfe0c8",
-          })
-          .setOrigin(0.5, 0);
-
-        // Endless mode: a small "Finish ✓" HUD control that ends the run now
-        // (same Result transition the win uses, with current stats).
+        const hud = { fontFamily: "Segoe UI, sans-serif", fontSize: "18px", fontStyle: "bold" };
+        this.scoreText = this.add.text(16, 12, "Score: 0", { ...hud, color: "#8ff0c4" });
+        this.streakText = this.add.text(W - 16, 12, "Streak: 0", { ...hud, color: "#ffd24a" }).setOrigin(1, 0);
+        this.levelText = this.add.text(W - 16, 36, "Level " + this.level, { ...hud, color: "#bfe0c8" }).setOrigin(1, 0);
+        this.progressText = this.add.text(W / 2, 12, "", { ...hud, color: "#ffffff" }).setOrigin(0.5, 0);
         if (this.endless) {
           this.finishBtn = this.add
-            .text(16, 40, "Finish ✓", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "15px",
-              fontStyle: "bold",
-              color: "#ffd24a",
-            })
+            .text(16, 38, "Finish ✓", TXT(16, "#ffd24a", { fontStyle: "bold" }))
             .setInteractive({ useHandCursor: true });
           this.finishBtn.on("pointerover", () => this.finishBtn.setColor("#ffffff"));
           this.finishBtn.on("pointerout", () => this.finishBtn.setColor("#ffd24a"));
           this.finishBtn.on("pointerdown", () => {
-            if (this.locked) return;
-            this.endGame();
+            if (!this.locked) this.endGame();
           });
         }
 
-        // Problem banner (the ORIGINAL equation to solve)
-        this.bannerLabel = this.add
-          .text(W / 2, 66, "Solve for x", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "14px",
-            color: "#6fae8c",
-          })
-          .setOrigin(0.5);
+        // Problem banner (the ORIGINAL equation or inequality)
+        this.bannerLabel = this.add.text(W / 2, 62, "Solve for x", TXT(16, "#9fd8b8")).setOrigin(0.5);
         this.bannerText = this.add
-          .text(W / 2, 96, "", {
+          .text(W / 2, 94, "", {
             fontFamily: "Impact, sans-serif",
             fontSize: "40px",
             color: "#ffffff",
@@ -883,196 +914,85 @@
             strokeThickness: 4,
           })
           .setOrigin(0.5);
-
-        // Hint / feedback line
+        // Feedback stays until the next action.
         this.feedback = this.add
-          .text(W / 2, 138, "", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
-            fontStyle: "bold",
-            color: "#8ff0c4",
-            align: "center",
-            wordWrap: { width: W - 80 },
-          })
-          .setOrigin(0.5);
+          .text(W / 2, 122, "", TXT(16, "#8ff0c4", { fontStyle: "bold", align: "center", wordWrap: { width: W - 60 } }))
+          .setOrigin(0.5, 0);
 
-        // Balance scale group (everything that should tilt together).
+        // Balance scale group (everything that tilts together).
         this.scaleGroup = this.add.container(this.pivotX, this.pivotY);
-        // Beam
-        this.beam = this.add.rectangle(0, 0, 380, 14, 0x8a5a2b);
-        this.beam.setStrokeStyle(2, 0x5e3c1c);
+        this.beam = this.add.rectangle(0, 0, 380, 14, 0x8a5a2b).setStrokeStyle(2, 0x5e3c1c);
         this.scaleGroup.add(this.beam);
-        // Center cap
-        this.scaleGroup.add(this.add.circle(0, 0, 10, 0xffd24a));
-        // Hangers + platforms (both pans)
         [-this.panDX, this.panDX].forEach((dx) => {
-          const hanger = this.add.rectangle(dx, 22, 4, 44, 0x5e3c1c);
-          this.scaleGroup.add(hanger);
-          const plat = this.add.rectangle(dx, 112, 156, 10, 0x6b4420);
-          plat.setStrokeStyle(2, 0x47300f);
-          this.scaleGroup.add(plat);
+          this.scaleGroup.add(this.add.rectangle(dx, 22, 4, 44, 0x5e3c1c));
+          this.scaleGroup.add(this.add.rectangle(dx, 112, 156, 10, 0x6b4420).setStrokeStyle(2, 0x47300f));
         });
-        // Fulcrum (drawn outside the tilting group so the base stays put)
-        const tri = this.add.triangle(
-          this.pivotX,
-          this.pivotY + 4,
-          0,
-          -8,
-          -30,
-          78,
-          30,
-          78,
-          0x5e3c1c,
-        );
-        tri.setStrokeStyle(2, 0x47300f);
-        this.add.rectangle(this.pivotX, this.pivotY + 86, 120, 10, 0x47300f);
+        // Fulcrum: apex touches the beam's pivot from BELOW (was drawn poking
+        // up through the beam), on a fixed base plate.
+        const g = this.add.graphics();
+        g.fillStyle(0x5e3c1c, 1);
+        g.fillTriangle(this.pivotX, this.pivotY + 6, this.pivotX - 30, this.pivotY + 92, this.pivotX + 30, this.pivotY + 92);
+        g.fillStyle(0x47300f, 1);
+        g.fillRect(this.pivotX - 60, this.pivotY + 92, 120, 10);
+        this.scaleGroup.add(this.add.circle(0, 0, 10, 0xffd24a));
+        this.children.bringToTop(this.scaleGroup);
 
-        // Live symbolic readouts under each pan (the value you can read off).
-        const exprStyle = {
-          fontFamily: "Segoe UI, sans-serif",
-          fontSize: "24px",
-          fontStyle: "bold",
-          color: "#ffffff",
-        };
-        this.leftExpr = this.add
-          .text(this.pivotX - this.panDX, this.pivotY + 112, "", exprStyle)
-          .setOrigin(0.5);
-        this.rightExpr = this.add
-          .text(this.pivotX + this.panDX, this.pivotY + 112, "", exprStyle)
-          .setOrigin(0.5);
-        this.add.text(this.pivotX, this.pivotY + 112, "=", exprStyle).setOrigin(0.5);
-
-        // Moves-left readout
-        this.movesText = this.add
-          .text(W / 2, 358, "", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "15px",
-            fontStyle: "bold",
-            color: "#bfe0c8",
-          })
-          .setOrigin(0.5);
+        // Symbolic readouts BELOW each pan (no longer printed on the platform).
+        const exprStyle = TXT(26, "#ffffff", { fontStyle: "bold" });
+        this.leftExpr = this.add.text(this.pivotX - this.panDX, this.pivotY + 140, "", exprStyle).setOrigin(0.5);
+        this.rightExpr = this.add.text(this.pivotX + this.panDX, this.pivotY + 140, "", exprStyle).setOrigin(0.5);
+        this.relText = this.add.text(this.pivotX, this.pivotY + 140, "=", exprStyle).setOrigin(0.5);
+        this.movesText = this.add.text(W / 2, 370, "", TXT(16, "#bfe0c8", { fontStyle: "bold" })).setOrigin(0.5);
 
         // ── Operation controls ──
-        this.add
-          .text(150, 392, "Do to BOTH sides:", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "14px",
-            color: "#6fae8c",
-          })
-          .setOrigin(0, 0.5);
+        this.ctl = [];
+        this.ctl.push(this.add.text(126, 394, "Do to BOTH sides:", TXT(16, "#9fd8b8")).setOrigin(0, 0.5));
         this.chips = {};
-        const chipDefs = [
+        [
           ["sub", "−", 150],
           ["add", "+", 206],
           ["div", "÷", 262],
-        ];
-        chipDefs.forEach((def) => {
-          const type = def[0],
-            glyph = def[1],
-            x = def[2];
-          const r = this.add
-            .rectangle(x, 424, 48, 44, 0x123a48)
-            .setStrokeStyle(2, 0x2d874b)
-            .setInteractive({ useHandCursor: true });
-          const t = this.add
-            .text(x, 424, glyph, {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "26px",
-              fontStyle: "bold",
-              color: "#ffffff",
-            })
-            .setOrigin(0.5);
+        ].forEach(([type, glyph, x]) => {
+          const r = this.add.rectangle(x, 428, 48, 46, 0x123a48).setStrokeStyle(2, 0x2d874b).setInteractive({ useHandCursor: true });
+          const t = this.add.text(x, 428, glyph, TXT(28, "#ffffff", { fontStyle: "bold" })).setOrigin(0.5);
           r.on("pointerdown", () => this.setOp(type));
           this.chips[type] = { rect: r, txt: t };
+          this.ctl.push(r, t);
         });
-
-        // Amount stepper
-        const minus = this.add
-          .rectangle(360, 424, 40, 44, 0x2d874b)
-          .setInteractive({ useHandCursor: true });
-        this.add
-          .text(360, 424, "◀", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "20px",
-            color: "#ffffff",
-          })
-          .setOrigin(0.5);
+        const minus = this.add.rectangle(360, 428, 44, 46, 0x2d874b).setInteractive({ useHandCursor: true });
+        const minusT = this.add.text(360, 428, "◀", TXT(20, "#ffffff")).setOrigin(0.5);
         minus.on("pointerdown", () => this.bumpAmt(-1));
-        this.amtBox = this.add.rectangle(412, 424, 56, 44, 0x0e3326).setStrokeStyle(2, 0xffd24a);
-        this.amtText = this.add
-          .text(412, 424, "1", {
-            fontFamily: "Impact, sans-serif",
-            fontSize: "26px",
-            color: "#ffd24a",
-          })
-          .setOrigin(0.5);
-        const plus = this.add
-          .rectangle(464, 424, 40, 44, 0x2d874b)
-          .setInteractive({ useHandCursor: true });
-        this.add
-          .text(464, 424, "▶", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "20px",
-            color: "#ffffff",
-          })
-          .setOrigin(0.5);
+        this.amtBox = this.add.rectangle(414, 428, 58, 46, 0x0e3326).setStrokeStyle(2, 0xffd24a);
+        this.amtText = this.add.text(414, 428, "1", { fontFamily: "Impact, sans-serif", fontSize: "26px", color: "#ffd24a" }).setOrigin(0.5);
+        const plus = this.add.rectangle(468, 428, 44, 46, 0x2d874b).setInteractive({ useHandCursor: true });
+        const plusT = this.add.text(468, 428, "▶", TXT(20, "#ffffff")).setOrigin(0.5);
         plus.on("pointerdown", () => this.bumpAmt(1));
-
-        // Apply button
         this.applyBtn = this.add
-          .rectangle(620, 424, 170, 44, 0x2563a8)
+          .rectangle(630, 428, 200, 46, 0x2563a8)
           .setStrokeStyle(2, 0x7dd3fc)
           .setInteractive({ useHandCursor: true });
-        this.applyText = this.add
-          .text(620, 424, "Apply", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
-          .setOrigin(0.5);
+        this.applyText = this.add.text(630, 428, "Apply", TXT(17, "#ffffff", { fontStyle: "bold" })).setOrigin(0.5);
         this.applyBtn.on("pointerover", () => this.applyBtn.setFillStyle(0x2f74c2));
         this.applyBtn.on("pointerout", () => this.applyBtn.setFillStyle(0x2563a8));
         this.applyBtn.on("pointerdown", () => this.applyOp());
+        this.ctl.push(minus, minusT, this.amtBox, this.amtText, plus, plusT, this.applyBtn, this.applyText);
 
         // Lock-in button (armed only when x is alone)
         this.lockBtn = this.add
-          .rectangle(W / 2, 486, 280, 50, 0x335544)
+          .rectangle(W / 2, 488, 300, 50, 0x335544)
           .setStrokeStyle(2, 0x2d874b)
           .setInteractive({ useHandCursor: true });
-        this.lockText = this.add
-          .text(W / 2, 486, "LOCK IN ✓", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "20px",
-            fontStyle: "bold",
-            color: "#cfe9da",
-          })
-          .setOrigin(0.5);
+        this.lockText = this.add.text(W / 2, 488, "LOCK IN ✓", TXT(20, "#cfe9da", { fontStyle: "bold" })).setOrigin(0.5);
         this.lockBtn.on("pointerdown", () => this.lockIn());
+        this.ctl.push(this.lockBtn, this.lockText);
 
-        // Keyboard help
-        this.add
-          .text(
-            W / 2,
-            528,
-            "↑↓ pick operation · ←→ change amount · Space = Apply · Enter = Lock In",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "13px",
-              color: "#6fae8c",
-              align: "center",
-            },
-          )
+        this.keysText = this.add.text(W / 2, 532, "", TXT(15, "#a9d4b4", { align: "center", wordWrap: { width: W - 60 } })).setOrigin(0.5);
+        this.coachText = this.add
+          .text(W / 2, 568, "", TXT(17, "#ffe9a8", { fontStyle: "bold", align: "center", wordWrap: { width: W - 60 } }))
           .setOrigin(0.5);
-        this.add
-          .text(W / 2, 550, "Blue □ = one x · Gold ■ = a 1 weight · Tall gold = a 10", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "12px",
-            color: "#82c9a0",
-          })
-          .setOrigin(0.5);
+        this.numberLine = this.add.graphics().setDepth(6);
+        this.nlLabels = [];
 
-        // Effects
         this.burst = this.add
           .particles(0, 0, "spark", {
             speed: { min: 80, max: 240 },
@@ -1084,25 +1004,33 @@
             tint: [0xffd24a, 0x8ff0c4, 0xffffff],
           })
           .setDepth(20);
-        // Brief calm amber tint (reduced-motion stand-in for the beam tilt).
         this.amberTint = this.add.rectangle(W / 2, H / 2, W, H, 0xf0b44a, 0).setDepth(30);
 
-        // Keyboard
         const order = ["sub", "add", "div"];
         this.input.keyboard.on("keydown-UP", () => {
+          if (this.phase !== "solve") return;
           const i = order.indexOf(this.opType);
           this.setOp(order[(i + order.length - 1) % order.length]);
         });
         this.input.keyboard.on("keydown-DOWN", () => {
+          if (this.phase !== "solve") return;
           const i = order.indexOf(this.opType);
           this.setOp(order[(i + 1) % order.length]);
         });
-        this.input.keyboard.on("keydown-LEFT", () => this.bumpAmt(-1));
-        this.input.keyboard.on("keydown-RIGHT", () => this.bumpAmt(1));
-        this.input.keyboard.on("keydown-SPACE", () => this.applyOp());
+        this.input.keyboard.on("keydown-LEFT", () => (this.phase === "pick" ? this.moveChoice(-1) : this.bumpAmt(-1)));
+        this.input.keyboard.on("keydown-RIGHT", () => (this.phase === "pick" ? this.moveChoice(1) : this.bumpAmt(1)));
+        this.input.keyboard.on("keydown-SPACE", () => {
+          if (this.phase === "solve") this.applyOp();
+        });
         this.input.keyboard.on("keydown-ENTER", () => this.lockIn());
+        ["ONE", "TWO", "THREE"].forEach((k, i) =>
+          this.input.keyboard.on("keydown-" + k, () => {
+            if (this.phase === "pick" && !this.locked) this.submitChoice(i);
+          }),
+        );
+        this.events.once("shutdown", () => this.hideChoices());
 
-        this.cameras.main.fadeIn(400);
+        if (!this.reduceMotion) this.cameras.main.fadeIn(400);
         this.newProblem();
       };
 
@@ -1110,54 +1038,92 @@
       GameScene.prototype.isIsolated = function () {
         return this.A === 1 && this.B === 0;
       };
-
       GameScene.prototype.leftExprStr = function () {
-        const coef = this.A === 1 ? "x" : this.A + "x";
-        return this.B > 0 ? coef + " + " + this.B : coef;
+        return lhsStr(this.A, this.B);
       };
 
       GameScene.prototype.newProblem = function () {
         this.locked = false;
+        this.phase = "solve";
         const p = makeProblem(this.level);
         this.A = p.A;
         this.B = p.B;
         this.C = p.C;
         this.s = p.s;
+        this.rel = p.rel;
         this.problem = p;
+        this.usedHelp = false;
+        this.missteps = 0; // illegal or backwards moves on this problem
+        this.helpTier = 0;
+        this.pickTries = 0;
         this.movesLeft = p.minMoves + 2; // efficiency-bonus meter only; never a loss
         this.opAmt = 1;
+        this.hideChoices();
+        this.numberLine.clear();
+        this.nlLabels.forEach((t) => t.destroy());
+        this.nlLabels = [];
+        this.ctl.forEach((o) => o.setVisible(true));
+        this.movesText.setVisible(true);
+        // A tipped scale shows an inequality: the heavier side hangs lower.
+        this.baseTilt = p.rel === ">" ? -0.07 : p.rel === "<" ? 0.07 : 0;
+        this.bannerLabel.setText(p.rel === "=" ? "Solve for x · keep the scale balanced" : "Inequality · the scale is tipped · solve for x");
         this.bannerText.setText(p.banner);
-        // Level 1 shows the specific inverse-operation hint; Level 2 a shorter,
-        // dimmer strategy nudge (fewer hints).
-        this.feedback
-          .setText(this.level === 1 ? "💡 " + p.hint : p.hint)
-          .setColor(this.level === 1 ? "#8ff0c4" : "#82c9a0");
-        this.setOp("sub");
+        this.feedback.setText("").setColor("#8ff0c4");
+        this.keysText.setText("↑ ↓ pick an operation · ← → change the amount · Space = Apply · Enter = Lock In");
+        this.setOp("sub", true);
         this.drawScale();
         this.updateLock();
         this.updateMoves();
+        this.updateHUD();
+        this.updateCoach();
         srSay(
-          "Level " +
-            this.level +
-            ". Solve " +
-            p.banner +
-            ". Do the same operation to both sides until x is alone, then lock in its value.",
+          "Level " + this.level + ". Solve " + p.banner + ". Do the same operation to both sides until x is alone, then lock in.",
         );
       };
 
+      // Support tier (Level 1): a live coach that names the next action
+      // (the kind of move, never the finished answer).
+      GameScene.prototype.updateCoach = function () {
+        if (this.level !== 1 || this.locked) {
+          this.coachText.setText("");
+          return;
+        }
+        let msg;
+        if (this.phase === "pick") msg = "Next: plug a choice into the inequality. Pick the one that makes it TRUE.";
+        else if (this.isIsolated()) msg = "Next: x is alone. Press Enter to lock in.";
+        else if (this.B > 0) msg = "Next: a number is ADDED to x. Pick the sign that undoes adding, set the amount, then Apply.";
+        else msg = "Next: x is MULTIPLIED. Pick the sign that undoes multiplying, set the amount, then Apply.";
+        this.coachText.setText("👉 " + msg);
+      };
+
+      // Earned help: Tier 1 = method; Tier 2 = the concrete next move.
+      GameScene.prototype.giveHelp = function () {
+        this.usedHelp = true;
+        this.helpTier = Math.min(2, this.helpTier + 1);
+        let tip;
+        if (this.helpTier === 1)
+          tip =
+            this.B > 0
+              ? "💡 Undo the + first: use the opposite of adding on both sides."
+              : "💡 x is multiplied. Use the opposite of multiplying on both sides.";
+        else tip = this.B > 0 ? "🔎 Choose −, set " + this.B + ", then Apply." : "🔎 Choose ÷, set " + this.A + ", then Apply.";
+        return tip;
+      };
+
       // ── Operation UI ──
-      GameScene.prototype.setOp = function (type) {
+      GameScene.prototype.setOp = function (type, silent) {
         this.opType = type;
         if (type === "div" && this.opAmt < 2) this.opAmt = 2;
         Object.keys(this.chips).forEach((k) => {
           const sel = k === type;
           this.chips[k].rect.setFillStyle(sel ? 0x2d874b : 0x123a48);
-          this.chips[k].rect.setStrokeStyle(2, sel ? 0xffd24a : 0x2d874b);
+          this.chips[k].rect.setStrokeStyle(sel ? 3 : 2, sel ? 0xffd24a : 0x2d874b);
         });
         this.refreshAmt();
-        SFX.tap();
+        if (!silent) SFX.tap();
       };
       GameScene.prototype.bumpAmt = function (d) {
+        if (this.phase !== "solve" || this.locked) return;
         const min = this.opType === "div" ? 2 : 1;
         const max = this.opType === "div" ? 12 : 20;
         this.opAmt = Phaser.Math.Clamp(this.opAmt + d, min, max);
@@ -1166,27 +1132,22 @@
       };
       GameScene.prototype.refreshAmt = function () {
         this.amtText.setText(String(this.opAmt));
+        // Words, not a small "÷" glyph (it renders like "+" at small sizes).
         let lab;
-        if (this.opType === "sub") lab = "Apply: − " + this.opAmt + " from both";
-        else if (this.opType === "add") lab = "Apply: + " + this.opAmt + " to both";
-        else lab = "Apply: ÷ both by " + this.opAmt;
+        if (this.opType === "sub") lab = "Subtract " + this.opAmt + " from both";
+        else if (this.opType === "add") lab = "Add " + this.opAmt + " to both";
+        else lab = "Divide both by " + this.opAmt;
         this.applyText.setText(lab);
       };
       GameScene.prototype.updateMoves = function () {
-        // Reframed as a positive "efficiency bonus" meter: solving while it is
-        // still above zero earns extra points, but running it out is NOT a loss
-        // — students may take as many inverse moves as they need (calm mode).
-        const m = Math.max(0, this.movesLeft);
-        this.movesText.setText("Bonus: ★" + m);
-        this.movesText.setColor("#bfe0c8");
+        // Positive "efficiency bonus" meter; running out is NOT a loss.
+        this.movesText.setText("Efficiency bonus: ★" + Math.max(0, this.movesLeft));
       };
       GameScene.prototype.updateLock = function () {
-        const armed = this.isIsolated();
+        const armed = this.isIsolated() && this.phase === "solve";
         this.lockBtn.setFillStyle(armed ? 0x2d874b : 0x335544);
         this.lockBtn.setStrokeStyle(2, armed ? 0xffd24a : 0x2d874b);
-        this.lockText
-          .setText(armed ? "LOCK IN:  x = " + this.C : "LOCK IN ✓")
-          .setColor(armed ? "#ffffff" : "#cfe9da");
+        this.lockText.setText(armed ? "LOCK IN:  x " + this.rel + " " + this.C : "LOCK IN ✓").setColor(armed ? "#ffffff" : "#cfe9da");
         if (this.lockTween) {
           this.lockTween.remove();
           this.lockTween = null;
@@ -1196,18 +1157,31 @@
         if (armed && !this.reduceMotion) {
           this.lockTween = this.tweens.add({
             targets: [this.lockBtn, this.lockText],
-            scaleX: 1.05,
-            scaleY: 1.05,
-            duration: 600,
+            scaleX: 1.04,
+            scaleY: 1.04,
+            duration: 700,
             yoyo: true,
             repeat: -1,
           });
         }
       };
 
+      // Why a move cannot be done — the specific misconception, not a generic "no".
+      GameScene.prototype.illegalWhy = function (t, n) {
+        if (t === "sub") {
+          if (this.B === 0) return "Nothing is added to x here, so there is nothing to subtract. x is multiplied. Try the opposite of multiplying.";
+          return "There are only " + this.B + " unit weights next to x. You cannot take away " + n + ". Take away exactly what is added.";
+        }
+        if (t === "add") return "That would put too many weights on the scale. Use the opposite of what is done to x.";
+        if (this.B > 0 && this.A > 1 && this.B % n !== 0)
+          return "Undo the + " + this.B + " first. Dividing now would split the " + this.B + " unit weights into pieces.";
+        if (this.A % n !== 0) return "There are " + this.A + " x-boxes. You can only split them into " + this.A + " equal groups. Divide by the number of x's.";
+        return "Dividing by " + n + " would not give whole weights on the other side. Check the amount.";
+      };
+
       // ── Apply the chosen operation to BOTH sides ──
       GameScene.prototype.applyOp = function () {
-        if (this.locked) return;
+        if (this.locked || this.phase !== "solve") return;
         const n = this.opAmt,
           t = this.opType;
         let legal = false;
@@ -1224,7 +1198,6 @@
             this.C += n;
           }
         } else {
-          // div: must divide A, B, and C exactly (whole numbers, true balance)
           legal = n >= 2 && this.A % n === 0 && this.B % n === 0 && this.C % n === 0;
           if (legal) {
             this.A /= n;
@@ -1235,72 +1208,258 @@
         if (!legal) {
           this.tiltScale();
           SFX.tilt();
-          this.feedback
-            .setText("⚖️ That would unbalance the scale — try a different move.")
-            .setColor("#ffb38a");
-          srSay("That move would unbalance the scale. Try a different one.");
+          this.missteps++;
+          const why = this.illegalWhy(t, n);
+          const help = this.missteps >= 2 ? " " + this.giveHelp() : "";
+          this.feedback.setText("⚖️ " + why + help).setColor("#ffb38a");
+          srSay(why + help);
           return;
         }
-        // Legal move
         this.movesLeft--;
         SFX.move();
         JUICE.audio.whoosh();
         this.drawScale();
         this.updateLock();
         this.updateMoves();
-        if (this.isIsolated()) {
-          this.feedback.setText("✅ x is alone! Read the value, then Lock In.").setColor("#8ff0c4");
-          srSay("x is alone. It equals " + this.C + ". Press Lock In.");
+        if (t === "add") {
+          // Legal (balance kept) but it moves AWAY from x alone.
+          this.missteps++;
+          const help = this.missteps >= 2 ? " " + this.giveHelp() : "";
+          this.feedback
+            .setText("Still balanced, but adding put MORE weights next to x. Use the opposite of what is done to x." + help)
+            .setColor("#ffb38a");
+        } else if (this.isIsolated()) {
+          this.feedback.setText("✅ x is alone! Read the scale, then Lock In.").setColor("#8ff0c4");
+          srSay("x is alone. x " + (this.rel === "=" ? "equals" : this.rel === ">" ? "is greater than" : "is less than") + " " + this.C + ". Press Lock In.");
         } else {
-          this.feedback.setText("Now: " + this.leftExprStr() + " = " + this.C).setColor("#bfe0c8");
+          this.feedback.setText("Good move. Now: " + this.leftExprStr() + " " + this.rel + " " + this.C).setColor("#bfe0c8");
         }
+        this.updateCoach();
       };
 
-      // ── Lock in the answer ──
+      // ── Lock in ──
       GameScene.prototype.lockIn = function () {
         if (this.locked) return;
-        if (this.isIsolated()) {
-          // Balance is always preserved by legal ops, so an isolated x is the
-          // true solution.
-          this.locked = true;
-          if (this.lockTween) {
-            this.lockTween.remove();
-            this.lockTween = null;
+        if (this.phase === "pick") return this.submitChoice(this.choiceIdx);
+        if (this.phase !== "solve") return;
+        const p = this.problem;
+        this.attempts++;
+        if (!this.isIsolated()) {
+          // Gentle nudge — NOT a loss.
+          SFX.tilt();
+          this.missteps++;
+          const help = this.giveHelp();
+          this.feedback.setText("x is not alone yet. Keep doing the same move to both sides. " + help).setColor("#ffb38a");
+          srSay("x is not alone yet. " + help);
+          return;
+        }
+        this.correctSubs++;
+        if (this.lockTween) {
+          this.lockTween.remove();
+          this.lockTween = null;
+        }
+        if (p.rel !== "=") {
+          this.enterPick();
+          return;
+        }
+        this.finishProblem(true);
+      };
+
+      // ── Inequality step: pick a value that makes it true ──
+      GameScene.prototype.enterPick = function () {
+        const p = this.problem;
+        this.phase = "pick";
+        this.ctl.forEach((o) => o.setVisible(false));
+        this.movesText.setVisible(false);
+        this.bannerLabel.setText("x " + p.rel + " " + p.s + " · now test a number");
+        this.bannerText.setText("Which number makes " + p.banner + " true?");
+        this.feedback.setText("x " + p.rel + " " + p.s + " has MANY solutions. Pick one that works.").setColor("#8ff0c4");
+        this.keysText.setText("← → choose · Enter = pick · or press 1–" + p.choices.length);
+        this.showChoices(p.choices);
+        this.updateCoach();
+        srSay(
+          "x " + p.rel + " " + p.s + ". Which number makes " + p.banner + " true? Choices: " + p.choices.map((c, i) => i + 1 + ", " + c.label).join("; "),
+        );
+      };
+      GameScene.prototype.showChoices = function (options) {
+        this.hideChoices();
+        const bw = 150,
+          gap = 24;
+        let x = W / 2 - (options.length * bw + (options.length - 1) * gap) / 2 + bw / 2;
+        this.choices = options.map((opt, i) => {
+          const rect = this.add.rectangle(x, 430, bw, 56, 0x123a48).setStrokeStyle(3, 0x3fbf8f).setInteractive({ useHandCursor: true });
+          const txt = this.add.text(x, 430, "x = " + opt.label, TXT(24, "#ffffff", { fontStyle: "bold" })).setOrigin(0.5);
+          const num = this.add.text(x - bw / 2 + 8, 406, String(i + 1), TXT(13, "#bfe0c8"));
+          rect.on("pointerdown", () => {
+            if (!this.locked) this.submitChoice(i);
+          });
+          x += bw + gap;
+          return { opt, rect, txt, num, used: false };
+        });
+        const host = document.querySelector(".cabinet-console");
+        if (host) {
+          const bar = document.createElement("div");
+          bar.className = "game-choice-bar";
+          bar.setAttribute("role", "group");
+          bar.setAttribute("aria-label", "Pick a solution");
+          this.choices.forEach((c, i) => {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.textContent = "x = " + c.opt.label;
+            b.addEventListener("click", () => {
+              if (!this.locked) this.submitChoice(i);
+            });
+            c.dom = b;
+            bar.append(b);
+          });
+          host.insertBefore(bar, host.querySelector(".cabinet-controls"));
+          this.domBar = bar;
+        }
+        this.choiceIdx = 0;
+        this.paintChoices();
+      };
+      GameScene.prototype.hideChoices = function () {
+        (this.choices || []).forEach((c) => {
+          c.rect.destroy();
+          c.txt.destroy();
+          c.num.destroy();
+        });
+        this.choices = [];
+        if (this.domBar) this.domBar.remove();
+        this.domBar = null;
+      };
+      GameScene.prototype.paintChoices = function () {
+        this.choices.forEach((c, i) => {
+          const on = i === this.choiceIdx;
+          if (c.dom) {
+            c.dom.setAttribute("aria-pressed", String(on && !c.used));
+            c.dom.disabled = !!c.used || this.locked;
           }
+          if (c.done) return;
+          c.rect.setFillStyle(c.used ? 0x3b2f17 : on ? 0x2d874b : 0x123a48);
+          c.rect.setStrokeStyle(on ? 5 : 3, on ? 0xffd24a : c.used ? 0x8a6a2a : 0x3fbf8f);
+          c.txt.setColor(c.used ? "#c9b48a" : "#ffffff");
+        });
+      };
+      GameScene.prototype.moveChoice = function (d) {
+        if (!this.choices.length || this.locked) return;
+        let i = this.choiceIdx;
+        for (let n = 0; n < this.choices.length; n++) {
+          i = (i + d + this.choices.length) % this.choices.length;
+          if (!this.choices[i].used) break;
+        }
+        this.choiceIdx = i;
+        this.paintChoices();
+        SFX.tap();
+        srSay("x = " + this.choices[i].opt.label);
+      };
+      GameScene.prototype.submitChoice = function (i) {
+        if (this.locked || this.phase !== "pick") return;
+        const c = this.choices[i];
+        if (!c || c.used) return;
+        const p = this.problem;
+        this.attempts++;
+        if (c.opt.correct) {
+          this.correctSubs++;
+          c.done = true;
+          c.rect.setFillStyle(0x36a35b).setStrokeStyle(5, 0xffffff);
+          this.finishProblem(true, c.opt.value);
+          return;
+        }
+        SFX.tilt();
+        this.pickTries++;
+        this.usedHelp = true;
+        this.streak = 0;
+        c.used = true;
+        if (this.pickTries >= 2) {
+          const right = this.choices.find((k) => k.opt.correct);
+          right.done = true;
+          right.rect.setFillStyle(0x36a35b).setStrokeStyle(5, 0xffffff);
+          this.feedback.setText(c.opt.why + " A number that works: " + right.opt.label + ".").setColor("#ffb38a");
+          srSay(c.opt.why + " A number that works: " + right.opt.label + ".");
+          this.finishProblem(false);
+          return;
+        }
+        this.moveChoice(1);
+        this.feedback.setText("Not quite. " + c.opt.why + " Try another.").setColor("#ffb38a");
+        srSay("Not quite. " + c.opt.why + " Try another.");
+      };
+
+      // Number line for x > s or x < s: open circle, arrow toward solutions.
+      GameScene.prototype.drawNumberLine = function () {
+        const p = this.problem;
+        const g = this.numberLine;
+        g.clear();
+        const y = 372,
+          x0 = 180,
+          x1 = 640;
+        const lo = Math.max(0, p.s - 5),
+          hi = lo + 10;
+        const X = (v) => x0 + ((v - lo) / (hi - lo)) * (x1 - x0);
+        g.lineStyle(3, 0xbfe0c8, 1).lineBetween(x0 - 10, y, x1 + 10, y);
+        this.nlLabels.forEach((t) => t.destroy());
+        this.nlLabels = [];
+        for (let v = lo; v <= hi; v++) {
+          g.lineBetween(X(v), y - 7, X(v), y + 7);
+          this.nlLabels.push(this.add.text(X(v), y + 12, String(v), TXT(14, "#bfe0c8")).setOrigin(0.5, 0).setDepth(6));
+        }
+        const end = p.rel === ">" ? x1 + 10 : x0 - 10;
+        g.lineStyle(6, 0xffd24a, 1).lineBetween(X(p.s), y, end, y);
+        const dir = p.rel === ">" ? 1 : -1;
+        g.fillStyle(0xffd24a, 1).fillTriangle(end + dir * 12, y, end, y - 9, end, y + 9);
+        g.fillStyle(0x0c281d, 1).fillCircle(X(p.s), y, 8);
+        g.lineStyle(3, 0xffd24a, 1).strokeCircle(X(p.s), y, 8);
+        this.nlLabels.push(
+          this.add.text(W / 2, y - 26, "x " + p.rel + " " + p.s + "  (open circle: " + p.s + " is not a solution)", TXT(15, "#ffe9a8", { fontStyle: "bold" })).setOrigin(0.5).setDepth(6),
+        );
+      };
+
+      GameScene.prototype.finishProblem = function (correct, picked) {
+        const p = this.problem;
+        this.locked = true;
+        this.phase = "done";
+        this.choices.forEach((c) => {
+          if (c.dom) c.dom.disabled = true;
+        });
+        const kind = p.rel !== "=" ? "ineq" : p.minMoves === 2 ? "two" : "one";
+        const st = (this.stats[kind] = this.stats[kind] || { seen: 0, clean: 0 });
+        st.seen++;
+        if (p.rel !== "=") this.drawNumberLine();
+        const check = p.check(p.rel === "=" ? p.s : picked != null ? picked : p.rel === ">" ? p.s + 1 : Math.max(0, p.s - 1));
+        if (correct) {
           JUICE.audio.correct(this.streak);
-          this.attempts++;
           this.solved++;
-          this.streak++;
-          const bonus = Math.min(this.streak, 5) * 5;
-          const eff = Math.max(0, this.movesLeft) * 5;
-          const gained = 20 + bonus + eff;
+          const clean = !this.usedHelp && this.missteps === 0;
+          let gained;
+          if (clean) {
+            st.clean++;
+            this.firstTry++;
+            this.streak++;
+            this.bestStreak = Math.max(this.bestStreak, this.streak);
+            gained = 20 + Math.min(this.streak, 5) * 5 + Math.max(0, this.movesLeft) * 5;
+          } else {
+            this.streak = 0;
+            gained = 10;
+          }
           this.score += gained;
-          const cx = this.pivotX + this.panDX,
-            cy = this.pivotY;
-          this.burst.setPosition(cx, cy);
-          this.burst.explode(16);
-          JUICE.burst(this, cx, cy, [0x36a35b, 0x8ff0c4, 0xffffff], 16);
-          JUICE.shake(this, 0.005);
+          const cx = this.pivotX + this.panDX;
+          if (!this.reduceMotion) {
+            this.burst.setPosition(cx, this.pivotY);
+            this.burst.explode(16);
+          }
           JUICE.floatText(this, W / 2, 200, "+" + gained, "#8ff0c4", 38);
           JUICE.award(gained, "u7-equation-quest");
           if (this.streak >= 2) JUICE.confetti(this, 1);
-          this.feedback
-            .setText("Correct! x = " + this.s + ". " + this.problem.solveHint)
-            .setColor("#8ff0c4");
-          srSay("Correct. x equals " + this.s + ".");
-          this.afterAttempt();
-        } else {
-          // Gentle nudge — NOT a loss. x isn't isolated yet, so just guide the
-          // student to keep applying inverse moves (calm, no-penalty).
-          this.attempts++;
-          SFX.tilt();
-          this.feedback
-            .setText(
-              "x isn't alone yet — keep doing the same move to both sides until x is by itself.",
-            )
-            .setColor("#ffb38a");
-          srSay("x is not alone yet. Keep using inverse moves on both sides.");
+          const head =
+            p.rel === "="
+              ? (clean ? "Correct! " : "You got it! ") + "x = " + p.s + ". " + p.solveHint + " Check: "
+              : (clean ? "Correct! " : "You got it! ") + "x " + p.rel + " " + p.s + ". Check: ";
+          this.feedback.setText(head + check.text).setColor("#8ff0c4");
+          srSay(head + check.text);
         }
+        this.updateLock();
+        this.coachText.setText("");
+        this.afterAttempt();
       };
 
       GameScene.prototype.afterAttempt = function () {
@@ -1309,6 +1468,7 @@
           this.endGame();
           return;
         }
+        this.keysText.setText("Read the check. Press Enter or Continue when you are ready.");
         this.studioNextRound(() => this.newProblem());
       };
 
@@ -1316,91 +1476,63 @@
       GameScene.prototype.drawScale = function () {
         this.dyn.forEach((d) => d.destroy());
         this.dyn = [];
-        // Left pan: A x-boxes + B unit weights; right pan: C unit weights.
         this.placePan(-this.panDX, this.A, this.B);
         this.placePan(this.panDX, 0, this.C);
         this.leftExpr.setText(this.leftExprStr());
         this.rightExpr.setText(String(this.C));
-        this.scaleGroup.setRotation(0);
+        this.relText.setText(this.rel);
+        this.scaleGroup.setRotation(this.baseTilt);
       };
 
-      // Draws one pan's contents into the (tilting) scale group, in container-
-      // local coordinates relative to the pivot.
+      // One pan's contents, stacked UP from the platform (container-local).
       GameScene.prototype.placePan = function (cx, xCount, unitVal) {
         const add = (obj) => {
           this.scaleGroup.add(obj);
           this.dyn.push(obj);
         };
         const xbox = (x, y) => {
-          const r = this.add.rectangle(x, y, 26, 26, 0x4f9cff);
-          r.setStrokeStyle(2, 0x1f5fae);
-          add(r);
-          add(
-            this.add
-              .text(x, y, "x", {
-                fontFamily: "Impact, sans-serif",
-                fontSize: "18px",
-                color: "#ffffff",
-              })
-              .setOrigin(0.5),
-          );
+          add(this.add.rectangle(x, y, 26, 26, 0x4f9cff).setStrokeStyle(2, 0x1f5fae));
+          add(this.add.text(x, y, "x", { fontFamily: "Impact, sans-serif", fontSize: "18px", color: "#ffffff" }).setOrigin(0.5));
         };
         const ten = (x, y) => {
-          const r = this.add.rectangle(x, y, 16, 26, 0xffd24a);
-          r.setStrokeStyle(2, 0xb8881d);
-          add(r);
-          add(
-            this.add
-              .text(x, y, "10", {
-                fontFamily: "Segoe UI, sans-serif",
-                fontSize: "9px",
-                fontStyle: "bold",
-                color: "#5a3c00",
-              })
-              .setOrigin(0.5),
-          );
+          add(this.add.rectangle(x, y, 18, 26, 0xffd24a).setStrokeStyle(2, 0xb8881d));
+          add(this.add.text(x, y, "10", TXT(10, "#5a3c00", { fontStyle: "bold" })).setOrigin(0.5));
         };
-        const one = (x, y) => {
-          const r = this.add.rectangle(x, y, 13, 13, 0xffe07a);
-          r.setStrokeStyle(1, 0xb8881d);
-          add(r);
-        };
-        // Generic centered-row placement.
-        const row = (count, size, gap, perRow, baseY, rowGap, fn) => {
+        const one = (x, y) => add(this.add.rectangle(x, y, 13, 13, 0xffe07a).setStrokeStyle(1, 0xb8881d));
+        const row = (count, size, gap, perRow, bottomY, fn) => {
+          const rows = Math.ceil(count / perRow);
           for (let i = 0; i < count; i++) {
             const r = Math.floor(i / perRow);
             const inRow = Math.min(perRow, count - r * perRow);
             const totalW = inRow * size + (inRow - 1) * gap;
             const startX = cx - totalW / 2 + size / 2;
-            const col = i % perRow;
-            fn(startX + col * (size + gap), baseY + r * (size + rowGap));
+            fn(startX + (i % perRow) * (size + gap), bottomY - size / 2 - (rows - 1 - r) * (size + 2));
           }
+          return bottomY - rows * (size + 2);
         };
-        // x-boxes (top rows)
-        row(xCount, 26, 6, 4, 24, 2, xbox);
-        // unit weights: tens row, then ones row
-        const tens = Math.floor(unitVal / 10),
-          ones = unitVal % 10;
-        row(tens, 16, 5, 6, 80, 0, ten);
-        row(ones, 13, 4, 9, 100, 0, one);
+        let floor = 106; // platform top
+        const ones = unitVal % 10,
+          tens = Math.floor(unitVal / 10);
+        if (ones) floor = row(ones, 13, 4, 9, floor, one);
+        if (tens) floor = row(tens, 18, 5, 6, floor, ten);
+        if (xCount) row(xCount, 26, 6, 4, floor, xbox);
       };
 
       GameScene.prototype.tiltScale = function () {
         if (this.reduceMotion) {
-          this.scaleGroup.setRotation(0);
+          this.scaleGroup.setRotation(this.baseTilt);
           this.flashAmber(0.18);
           return;
         }
         this.tweens.add({
           targets: this.scaleGroup,
-          rotation: 0.06,
+          rotation: this.baseTilt + 0.06,
           duration: 140,
           yoyo: true,
           ease: "Sine.InOut",
-          onComplete: () => this.scaleGroup.setRotation(0),
+          onComplete: () => this.scaleGroup.setRotation(this.baseTilt),
         });
       };
-
       GameScene.prototype.flashAmber = function (a) {
         if (this.reduceMotion && a == null) return;
         this.amberTint.setAlpha(a == null ? 0.18 : a);
@@ -1411,7 +1543,11 @@
         this.scoreText.setText("Score: " + this.score);
         this.streakText.setText("Streak: " + this.streak);
         this.levelText.setText("Level " + this.level);
-        this.progressText.setText(this.solved + " / " + (this.endless ? "∞" : this.target));
+        this.progressText.setText(
+          this.endless
+            ? "Challenge " + (this.solved + 1) + " · " + this.solved + " solved"
+            : "Challenge " + Math.min(this.solved + 1, this.target) + " of " + this.target,
+        );
       };
 
       GameScene.prototype.endGame = function () {
@@ -1424,7 +1560,12 @@
             level: this.level,
             auto: this.auto,
             endless: this.endless,
-            accuracy: this.attempts ? this.solved / this.attempts : 1,
+            firstTry: this.firstTry,
+            bestStreak: this.bestStreak,
+            stats: this.stats,
+            attempts: this.attempts,
+            correctSubs: this.correctSubs,
+            accuracy: this.attempts ? this.correctSubs / this.attempts : 1,
           });
         });
       };
@@ -1442,12 +1583,9 @@
         const d = this.data2;
         const cx = W / 2;
         this.add.rectangle(cx, H / 2, W, H, 0x0c281d);
-        // Endless runs have no finite target; grade against the standard goal
-        // of 10 so stars and the adaptive win-signal stay meaningful.
         const endless = !!d.endless;
         const goal = endless ? 10 : d.target;
         const stars = d.solved >= goal ? 3 : d.solved >= goal * 0.6 ? 2 : 1;
-        // Adaptive: only record a run when the level was auto-picked.
         if (d.auto && window.NTAdaptive) {
           window.NTAdaptive.recordRun("u7-equation-quest", {
             won: d.solved >= goal,
@@ -1456,120 +1594,115 @@
             max: 2,
           });
         }
-        let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
-        if (d.score > hs) {
-          hs = d.score;
-          try {
-            localStorage.setItem(LS_KEY, String(hs));
-          } catch (e) {}
-        }
+        let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10) || 0;
+        const newBest = d.score > hs;
+        let bestStreak = 0;
+        try {
+          bestStreak = parseInt(localStorage.getItem(EQ_STREAK_KEY) || "0", 10) || 0;
+          if (newBest) localStorage.setItem(LS_KEY, String(d.score));
+          if ((d.bestStreak || 0) > bestStreak) {
+            bestStreak = d.bestStreak;
+            localStorage.setItem(EQ_STREAK_KEY, String(bestStreak));
+          }
+        } catch (e) {}
+        if (newBest) hs = d.score;
 
         this.add
-          .text(cx, 110, "BALANCE MASTER!", {
+          .text(cx, 70, "BALANCE MASTER!", {
             fontFamily: "Impact, sans-serif",
-            fontSize: "48px",
+            fontSize: "46px",
             color: "#8ff0c4",
             stroke: "#061410",
             strokeThickness: 5,
           })
           .setOrigin(0.5);
+        this.add.text(cx, 128, "★".repeat(stars) + "☆".repeat(3 - stars), TXT(44, "#ffd24a")).setOrigin(0.5);
+        this.add.text(cx, 182, "Score: " + d.score + (newBest ? "  · New high score!" : ""), TXT(28, "#ffffff", { fontStyle: "bold" })).setOrigin(0.5);
 
-        const starStr = "★".repeat(stars) + "☆".repeat(3 - stars);
-        this.add
-          .text(cx, 185, starStr, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "48px",
-            color: "#ffd24a",
-          })
+        const stats = d.stats || {};
+        const kinds = Object.keys(stats);
+        const names = { one: "One-step equations", two: "Two-step equations", ineq: "Inequalities" };
+        const tips = {
+          one: "One-step equations: do the opposite operation to both sides.",
+          two: "Two-step equations: undo the + first, then divide.",
+          ineq: "Inequalities: solve like an equation, then test a number. The boundary is not a solution.",
+        };
+        let weak = null;
+        kinds.forEach((k) => {
+          const miss = stats[k].seen - stats[k].clean;
+          if (miss > 0 && (!weak || miss > stats[weak].seen - stats[weak].clean)) weak = k;
+        });
+        const acc = Math.round((d.accuracy != null ? d.accuracy : 1) * 100);
+        const lines = [
+          (endless ? "Solved " + d.solved + " problems" : "Solved " + d.solved + " of " + d.target + " problems") +
+            " (Level " + d.level + ") · " + (d.firstTry || 0) + " with no wrong moves",
+          "Accuracy: " + acc + "% of your Lock Ins were right · Best streak ever: " + bestStreak,
+          "Skills practiced: " + (kinds.length ? kinds.map((k) => names[k]).join(", ") : "solving equations"),
+          weak
+            ? "Practice next → " + tips[weak]
+            : d.level === 1
+              ? "Practice next → try Level 2: two-step equations."
+              : "Practice next → keep your streak going with ♾️ Keep Playing.",
+        ];
+        this.summary = this.add
+          .text(cx, 290, lines.join("\n"), TXT(17, "#d6eedc", { align: "center", lineSpacing: 10, wordWrap: { width: W - 70 } }))
           .setOrigin(0.5);
-
-        this.add
-          .text(cx, 255, "Score: " + d.score, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "30px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
-          .setOrigin(0.5);
-        this.add
-          .text(
-            cx,
-            295,
-            endless
-              ? "Solved " + d.solved + " equations (Level " + d.level + ")"
-              : "Solved " + d.solved + " of " + d.target + " equations (Level " + d.level + ")",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "18px",
-              color: "#bfe0c8",
-            },
-          )
-          .setOrigin(0.5);
-        this.add
-          .text(cx, 325, "High Score: " + hs, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
-            color: "#ffd24a",
-          })
-          .setOrigin(0.5);
+        // The controls panel reads bannerText: mirror the summary there.
+        this.bannerText = this.summary;
+        this.add.text(cx, 372, "High score: " + hs, TXT(16, "#ffd24a")).setOrigin(0.5);
 
         JUICE.audio.fanfare();
         JUICE.confetti(this, 1);
-
-        // EduPulse reporting (guarded; safe no-op without bridge).
+        // EduPulse / Canvas code: problems solved out of the goal.
         try {
           window.EduPulse &&
             EduPulse.record({
               activityTitle: document.title,
-              score: d.score,
+              score: d.solved,
+              maxScore: goal,
+              percent: acc,
               stars: stars,
+              level: d.level,
               standard: "6.AT.8",
-              problemsAttempted: d.solved,
+              problemsCorrect: d.correctSubs,
+              problemsAttempted: d.attempts,
             });
         } catch (e) {}
-        srSay("You won! Final score " + d.score + ", " + stars + " stars.");
+        srSay("Round complete. Score " + d.score + ", " + stars + " stars. " + lines.join(" "));
 
-        const btn = this.add
-          .rectangle(cx, 400, 240, 54, 0x2d874b)
-          .setInteractive({ useHandCursor: true });
-        const btnT = this.add
-          .text(cx, 400, "PLAY AGAIN 🔁", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "20px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
-          .setOrigin(0.5);
-        const again = () => this.scene.start("Level");
+        const btn = this.add.rectangle(cx, 430, 240, 54, 0x2d874b).setInteractive({ useHandCursor: true });
+        this.add.text(cx, 430, "PLAY AGAIN 🔁", TXT(20, "#ffffff", { fontStyle: "bold" })).setOrigin(0.5);
+        const again = () => {
+          eqEndless = false;
+          this.scene.start("Game");
+        };
         btn.on("pointerover", () => btn.setFillStyle(0x36a35b));
         btn.on("pointerout", () => btn.setFillStyle(0x2d874b));
         btn.on("pointerdown", again);
         this.input.keyboard.on("keydown-SPACE", again);
         this.input.keyboard.on("keydown-ENTER", again);
-
-        // ♾️ Keep Playing: restart the Game at the same level in endless mode
-        // (carries the auto flag so adaptive still records the endless run).
         const keepBtn = this.add
-          .rectangle(cx, 466, 240, 48, 0x2563a8)
+          .rectangle(cx - 130, 496, 240, 50, 0x2563a8)
           .setStrokeStyle(2, 0x7dd3fc)
           .setInteractive({ useHandCursor: true });
-        this.add
-          .text(cx, 466, "♾️ Keep Playing", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "18px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
-          .setOrigin(0.5);
-        const keepPlaying = () => {
+        this.add.text(cx - 130, 496, "♾️ Keep Playing", TXT(18, "#ffffff", { fontStyle: "bold" })).setOrigin(0.5);
+        keepBtn.on("pointerover", () => keepBtn.setFillStyle(0x2f74c2));
+        keepBtn.on("pointerout", () => keepBtn.setFillStyle(0x2563a8));
+        keepBtn.on("pointerdown", () => {
           eqLevel = d.level;
           eqEndless = true;
           eqAuto = d.auto;
           this.scene.start("Game");
-        };
-        keepBtn.on("pointerover", () => keepBtn.setFillStyle(0x2f74c2));
-        keepBtn.on("pointerout", () => keepBtn.setFillStyle(0x2563a8));
-        keepBtn.on("pointerdown", keepPlaying);
+        });
+        const lvlBtn = this.add
+          .rectangle(cx + 130, 496, 240, 50, 0x123a48)
+          .setStrokeStyle(2, 0x3fbf8f)
+          .setInteractive({ useHandCursor: true });
+        this.add.text(cx + 130, 496, "Change level", TXT(18, "#ffffff", { fontStyle: "bold" })).setOrigin(0.5);
+        lvlBtn.on("pointerover", () => lvlBtn.setFillStyle(0x1c4c5c));
+        lvlBtn.on("pointerout", () => lvlBtn.setFillStyle(0x123a48));
+        lvlBtn.on("pointerdown", () => this.scene.start("Level"));
+        this.add.text(cx, 556, "Enter = Play again · Every round has new numbers.", TXT(15, "#a9d4b4")).setOrigin(0.5);
       };
 
       // ── Launch ──
@@ -1577,7 +1710,13 @@
       // Native math controls now have a readable, touch-accessible console.
       window.PhaserStudio.mount({
         game: eqGame, id: "u7-equation-quest", GameScene, ResultScene, audio: SFX,
-        instructions: ["Isolate x while keeping both sides balanced. \u2191/\u2193 choose an operation; \u2190/\u2192 change its amount; Space applies it to both sides.", "Enter checks whether x is isolated. Every legal operation keeps the equation balanced."],
+        instructions: [
+          "The scale IS the equation. Blue boxes are x. Gold squares are 1s; tall gold bars are 10s.",
+          "Get x alone. Pick an operation (\u2191 \u2193), set the amount (\u2190 \u2192), then Apply (Space). It happens to BOTH sides, so the scale stays fair.",
+          "Use the OPPOSITE of what is done to x: subtract to undo adding, divide to undo multiplying.",
+          "When x is alone, press Enter to lock in. A tipped scale is an inequality (> or <): after x is alone, pick a number that makes it true.",
+          "Not right? Read the tip. More help appears after a try. Solving with no wrong moves earns the most points.",
+        ],
         setLevel(level) { eqLevel = level; eqAuto = false; eqEndless = false; eqGame.scene.getScenes(true).forEach(scene => eqGame.scene.stop(scene.sys.settings.key)); eqGame.scene.start(eqVocabSeen ? "Game" : "Vocab"); }
       });
 
