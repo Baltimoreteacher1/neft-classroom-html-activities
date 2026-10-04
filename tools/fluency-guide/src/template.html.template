@@ -3,116 +3,161 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="The pre-lesson fluency each Grade 6 Reveal Math lesson assumes, with a two-minute quick check, answer, diagnostic notes, and a reteach script for all 54 lessons in Units 2-9.">
+<meta name="description" content="Grade 6 readiness and fluency resources for 54 lessons: diagnostic checks, reteach support, guided investigations, and printable practice with separate keys.">
 <meta name="color-scheme" content="light dark">
-<title>Reveal Math · Grade 6 · Fluency &amp; Diagnostic Guide</title>
+<title>Fluency &amp; Readiness · EduWonderLab</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2213%22 fill=%22%231a56c4%22/%3E%3Ctext x=%229%22 y=%2244%22 font-family=%22Georgia,serif%22 font-size=%2234%22 fill=%22white%22%3ER6%3C/text%3E%3C/svg%3E">
 <style>/*__STYLES__*/</style>
 <noscript><style>main{display:none}</style></noscript>
+<style id="fluency-teacher">/*__TEACHER_STYLES__*/</style>
 </head>
 <body>
-<noscript><p style="padding:24px">This guide needs JavaScript to display lessons and worksheets. Enable JavaScript and reopen the file.</p></noscript>
-<a class="skip-link" href="#main">Skip to the lessons</a>
+<noscript><p style="padding:24px;font-size:16px;background:#fff3cd;color:#856404;border:1px solid #ffeeba">This interactive guide requires JavaScript to display lessons, worksheets, projector mode, and practice tasks. Please enable JavaScript in your browser settings and reload this file.</p></noscript>
 
-<header class="site-header">
+<a class="skip-link" href="#main">Skip to main content</a>
+<a class="skip-link" href="#toolbar">Skip to search &amp; filters</a>
+
+<div id="a11yStatus" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<header class="site-header" role="banner">
   <div class="wrap header-inner">
-    <a class="brand" href="#view=lessons">
-      <span class="brand-badge">R6</span>
+    <a class="brand" href="#view=lessons" aria-label="Reveal Math Grade 6 Fluency Guide Home">
+      <span class="brand-badge" aria-hidden="true">R6</span>
       <span>
         <span class="brand-series">Reveal Math · McGraw Hill · Grade 6</span>
         <span class="brand-title">Fluency &amp; Diagnostic Guide</span>
       </span>
     </a>
-    <div class="header-actions">
-      <label class="sr-only" for="printMode">Print format</label>
-      <select class="select" id="printMode">
-        <option value="teacher">Print: teacher guide (answers)</option>
-        <option value="student">Print: student checks (no answers)</option>
-      </select>
-      <button class="btn btn-sm" type="button" data-act="print">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-        Print / PDF
+
+    <div class="mode-pill-group" role="group" aria-label="Target audience edition">
+      <button class="mode-pill active" type="button" id="modeTeacherBtn" data-act="set-mode" data-mode="teacher" aria-pressed="true">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        <span>Teacher Guide</span>
       </button>
-      <button class="btn btn-sm" type="button" id="themeBtn" data-act="theme" aria-pressed="false">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      <button class="mode-pill" type="button" id="modeStudentBtn" data-act="set-mode" data-mode="student" aria-pressed="false">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <span>Student Practice</span>
+      </button>
+    </div>
+
+    <div class="header-actions">
+      <a class="btn btn-sm" href="/curriculum/" aria-label="Back to curriculum">Curriculum</a>
+      <button class="btn btn-sm btn-math-tools" type="button" data-act="open-tools" title="Virtual Math Manipulatives &amp; Keypad">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        <span>Math Tools</span>
+      </button>
+      <button class="btn btn-sm teacher-only" type="button" data-act="open-analytics" title="Classroom Readiness &amp; Diagnostics Dashboard">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <span>Insights</span>
+      </button>
+      <button class="btn btn-sm btn-print-center" type="button" data-act="open-print" title="Print worksheets, unit packets, answer keys, or drills">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        <span>Print &amp; Export</span>
+      </button>
+      <button class="btn btn-sm" type="button" id="themeBtn" data-act="theme" aria-pressed="false" aria-label="Toggle dark mode">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
         <span class="label">Dark</span>
       </button>
-      <button class="btn btn-sm" type="button" data-act="help" title="Keyboard shortcuts">?</button>
+      <button class="btn btn-sm" type="button" data-act="help" title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts">?</button>
     </div>
   </div>
 </header>
 
-<nav class="viewbar" aria-label="Guide sections">
-  <div class="wrap viewbar-inner" role="tablist">
-    <button class="viewtab" role="tab" type="button" id="tab-lessons" aria-controls="view-lessons" data-act="view" data-view="lessons" aria-selected="true">Lessons <span class="count"></span></button>
-    <button class="viewtab" role="tab" type="button" id="tab-studio" aria-controls="view-studio" data-act="view" data-view="studio" aria-selected="false">Practice Studio <span class="count">NEW</span></button>
-    <button class="viewtab" role="tab" type="button" id="tab-table" aria-controls="view-table" data-act="view" data-view="table" aria-selected="false">One-page table <span class="count"></span></button>
-    <button class="viewtab" role="tab" type="button" id="tab-spine" aria-controls="view-spine" data-act="view" data-view="spine" aria-selected="false">Fluency spine <span class="count"></span></button>
-    <button class="viewtab" role="tab" type="button" id="tab-planner" aria-controls="view-planner" data-act="view" data-view="planner" aria-selected="false">Week planner</button>
-    <button class="viewtab" role="tab" type="button" id="tab-reference" aria-controls="view-reference" data-act="view" data-view="reference" aria-selected="false">Standards &amp; glossary</button>
+<!-- Classroom Command Bar (Teacher Ergonomics) -->
+<div class="command-bar teacher-only" id="teacherCommandBar">
+  <div class="wrap command-bar-inner">
+    <div class="cmd-left">
+      <span class="cmd-badge">Today's Lesson</span>
+      <select id="cmdLessonSelect" class="cmd-select" aria-label="Select today's lesson">
+        <!-- populated dynamically with all 54 lessons -->
+      </select>
+      <button class="btn btn-sm btn-pin" id="cmdPinBtn" type="button" title="Pin this lesson as your default daily focus">📌 Pin</button>
+    </div>
+    <div class="cmd-actions">
+      <button class="btn btn-sm btn-primary" id="cmdLaunchProjector" type="button" title="Open Projector Mode for this lesson">📽️ Projector</button>
+      <button class="btn btn-sm" id="cmdPrintStudentCheck" type="button" title="Print 1-page Student Quick Check for this lesson">📄 Print Check</button>
+      <button class="btn btn-sm" id="cmdPrintTeacherKey" type="button" title="Print Teacher Diagnostic Key with error analysis">🔑 Teacher Key</button>
+      <button class="btn btn-sm" id="cmdLaunchColdCall" type="button" title="Random student selector for equity and engagement">🎲 Cold Call</button>
+      <button class="btn btn-sm" id="cmdOpenMathTools" type="button" title="Open Virtual Math Manipulatives">🧮 Math Tools</button>
+    </div>
+  </div>
+</div>
+
+<nav class="viewbar" aria-label="Guide sections" role="navigation">
+  <div class="wrap viewbar-inner" role="tablist" aria-orientation="horizontal" id="viewTablist">
+    <button class="viewtab" role="tab" type="button" id="tab-lessons" aria-controls="view-lessons" data-act="view" data-view="lessons" aria-selected="true" tabindex="0">Lessons <span class="count">54</span></button>
+    <button class="viewtab" role="tab" type="button" id="tab-studio" aria-controls="view-studio" data-act="view" data-view="studio" aria-selected="false" tabindex="-1">Practice Studio <span class="count count-featured">PRACTICE</span></button>
+    <button class="viewtab teacher-only" role="tab" type="button" id="tab-table" aria-controls="view-table" data-act="view" data-view="table" aria-selected="false" tabindex="-1">One-page table <span class="count">54</span></button>
+    <button class="viewtab teacher-only" role="tab" type="button" id="tab-spine" aria-controls="view-spine" data-act="view" data-view="spine" aria-selected="false" tabindex="-1">Fluency spine <span class="count">12</span></button>
+    <button class="viewtab teacher-only" role="tab" type="button" id="tab-planner" aria-controls="view-planner" data-act="view" data-view="planner" aria-selected="false" tabindex="-1">Week planner <span class="count">5</span></button>
+    <button class="viewtab teacher-only" role="tab" type="button" id="tab-reference" aria-controls="view-reference" data-act="view" data-view="reference" aria-selected="false" tabindex="-1">Standards &amp; glossary</button>
   </div>
 </nav>
 
-<section class="hero">
-  <div class="wrap">
-    <span class="eyebrow">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-      Units 2–9 · district teaching order
-    </span>
-    <h1>Build the skills. Get ready for the lesson.</h1>
-    <p class="hero-lead">
-      Find the skills a lesson needs, check readiness, and give students something useful to do next.
-      Across <strong>54 lessons</strong>, choose from <strong>216 foundation exercises</strong>, three versions of
-      every quick check, <strong>printable worksheets with worked keys</strong>, and partner activities.
-      Use the teaching notes to plan a short reteach, then return to practice.
-    </p>
-    <div class="hero-actions">
-      <button class="btn btn-primary btn-lg" type="button" data-act="view" data-view="studio">Open Practice Studio</button>
-      <button class="btn btn-lg" type="button" data-act="view" data-view="lessons">Find today's lesson</button>
-      <button class="btn btn-lg" type="button" data-act="view" data-view="spine">See the 12 core skills</button>
-      <button class="btn btn-lg" type="button" data-act="view" data-view="planner">Build this week's sheet</button>
+<section class="hero teacher-only" id="heroSection" aria-labelledby="teacherHeroTitle">
+  <div class="wrap teacher-hero-grid">
+    <div class="teacher-hero-copy">
+      <span class="eyebrow">Grade 6 / Teacher field guide / Units 2–9</span>
+      <h1 id="teacherHeroTitle">Build fluency.<br><em>Make thinking visible.</em></h1>
+      <p class="hero-lead">Start with what students know. Use a quick check to listen for their strategies, choose a focused next step, and return to the idea in tomorrow’s learning.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary btn-lg" type="button" data-act="view" data-view="studio">Open Practice Studio <span aria-hidden="true">↗</span></button>
+        <button class="btn btn-lg" type="button" data-act="find-lesson">Find today’s lesson <span aria-hidden="true">↓</span></button>
+      </div>
+      <p class="teacher-hero-note">54 lessons · 216 prerequisite tasks · Worked teaching notes</p>
     </div>
-
-    <div class="kpi-grid">
-      <div class="kpi"><span class="kpi-value">54</span><span class="kpi-label">Lessons</span><span class="kpi-sub">Units 2 through 9, in teaching order</span></div>
-      <div class="kpi"><span class="kpi-value">216</span><span class="kpi-label">Foundation exercises</span><span class="kpi-sub">One new task for each prerequisite skill</span></div>
-      <div class="kpi"><span class="kpi-value">162</span><span class="kpi-label">Quick checks</span><span class="kpi-sub">Three versions per lesson, all with answers</span></div>
-      <div class="kpi"><span class="kpi-value">12</span><span class="kpi-label">Spine skills</span><span class="kpi-sub">Printable drills linked to the lessons that use them</span></div>
-    </div>
+    <figure class="teacher-model" aria-labelledby="teacherModelTitle">
+      <figcaption><span class="teacher-model-kicker">A model worth talking about</span><strong id="teacherModelTitle">Same relationship. New scale.</strong></figcaption>
+      <svg viewBox="0 0 380 202" role="img" aria-label="A ratio of two teal squares to three outlined squares scales by two to four teal squares and six outlined squares.">
+        <g fill="#075e60"><rect x="26" y="26" width="30" height="30" rx="5"/><rect x="64" y="26" width="30" height="30" rx="5"/></g>
+        <g fill="#fff" stroke="#152c40" stroke-width="2"><rect x="26" y="72" width="30" height="30" rx="5"/><rect x="64" y="72" width="30" height="30" rx="5"/><rect x="102" y="72" width="30" height="30" rx="5"/></g>
+        <path d="M158 64H206m-7-7 7 7-7 7" fill="none" stroke="#152c40" stroke-width="2"/>
+        <text x="181" y="43" text-anchor="middle" fill="#152c40" font-size="17" font-weight="700">× 2</text>
+        <g fill="#075e60"><rect x="226" y="26" width="25" height="25" rx="4"/><rect x="257" y="26" width="25" height="25" rx="4"/><rect x="288" y="26" width="25" height="25" rx="4"/><rect x="319" y="26" width="25" height="25" rx="4"/></g>
+        <g fill="#fff" stroke="#152c40" stroke-width="2"><rect x="226" y="66" width="25" height="25" rx="4"/><rect x="257" y="66" width="25" height="25" rx="4"/><rect x="288" y="66" width="25" height="25" rx="4"/><rect x="226" y="97" width="25" height="25" rx="4"/><rect x="257" y="97" width="25" height="25" rx="4"/><rect x="288" y="97" width="25" height="25" rx="4"/></g>
+        <text x="79" y="155" text-anchor="middle" fill="#152c40" font-size="22" font-weight="700">2 : 3</text><text x="282" y="155" text-anchor="middle" fill="#152c40" font-size="22" font-weight="700">4 : 6</text>
+        <text x="190" y="188" text-anchor="middle" fill="#405568" font-size="13">Both quantities change by the same factor.</text>
+      </svg>
+      <p>Ask: <strong>What changes? What stays the same?</strong></p>
+    </figure>
+  </div>
+  <div class="wrap teacher-routine" aria-label="A short teaching routine">
+    <div><span>01</span><p><strong>Check &amp; listen</strong>One prompt. Every student explains.</p></div>
+    <div><span>02</span><p><strong>Model &amp; connect</strong>Use a representation to test the idea.</p></div>
+    <div><span>03</span><p><strong>Practice &amp; revisit</strong>Choose a next step from the evidence.</p></div>
   </div>
 </section>
 
-<section class="section">
+<section class="section protocol-section teacher-only" id="protocolSection">
   <div class="wrap">
     <div class="card protocol">
       <div class="protocol-head">
         <h2>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          How to use this guide
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          A routine for responsive teaching
         </h2>
-        <span class="tag">Check → Practice → Revisit</span>
+        <span class="tag">Check → Diagnose → Practice → Revisit</span>
       </div>
       <div class="steps">
         <div class="step">
           <div class="step-n">1</div>
-          <h3>The day before · 1 minute</h3>
-          <p>Open tomorrow's lesson and read the four skills it assumes. Note whether they come from elementary grades or from a lesson you already taught this year — that tells you where to pull a review from.</p>
+          <h3>The Day Before · 1 Minute</h3>
+          <p>Open tomorrow's lesson card. Note whether the four prerequisite skills stem from elementary grades (Gr 2–5) or spiral from earlier Grade 6 units. Identify the foundational hurdle before instruction begins.</p>
         </div>
         <div class="step">
           <div class="step-n">2</div>
-          <h3>First two minutes of class</h3>
-          <p>Project the quick check. Students answer on whiteboards. Three versions are provided so you can use a different one with each class, or re-check the same skill two days later.</p>
+          <h3>First 2 Minutes of Class</h3>
+          <p>Press <strong>Project</strong> on the lesson card. Display the quick check on your projector or smartboard. Students write answers on individual whiteboards. Use forms A, B, or C across class periods.</p>
         </div>
         <div class="step">
           <div class="step-n">3</div>
-          <h3>Right after · decide</h3>
-          <p>Open the answer notes. If most of the room missed it, run the short reteach before starting the lesson. If a few missed it, note them for small group. Open Worksheets &amp; practice. Use Build foundations for support, Connect &amp; apply for practice, or Extend &amp; explain for a challenge. Revisit with another check next class.</p>
+          <h3>Right After · Decide</h3>
+          <p>Open the Answer &amp; Teaching Notes. If the room missed it, run the scripted 4–6 min reteach. If a few students struggle, assign Practice Studio (Foundation / Connect / Extend) or run the Partner Lab.</p>
         </div>
       </div>
       <div class="callout">
-        <strong>Why this matters:</strong> when a student is still working out 7 × 8 or which side is the height, there is
-        no attention left for the new idea. The check is not a quiz and it is not timed for speed — it tells you what to
-        shore up before the lesson, while it is still cheap to fix.
+        <strong>Listen for the strategy, not just the answer.</strong> Use a quick check as one piece of evidence.
+        Ask students to explain or model their thinking before choosing support. Accurate, flexible reasoning matters more than speed.
       </div>
 
       <!--__ORIGIN__-->
@@ -120,33 +165,44 @@
   </div>
 </section>
 
-<div class="toolbar" id="toolbar">
+<div class="toolbar teacher-only" id="toolbar" role="search">
   <div class="wrap">
     <div class="toolbar-grid">
       <div class="search">
-        <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <label class="sr-only" for="searchInput">Search lessons, skills, standards, vocabulary, or quick checks</label>
-        <input type="search" id="searchInput" placeholder="Search a lesson number, a skill, a standard, a word…  (press /)" autocomplete="off">
-        <button class="clear" id="searchClear" type="button" data-act="clear" aria-label="Clear search" style="display:none">&times;</button>
+        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <label class="sr-only" for="searchInput">Search lessons, prerequisite skills, standards, vocabulary, or quick checks</label>
+        <input type="search" id="searchInput" placeholder="Search lesson (3-2), skill (unit rate), standard (6.RP), or term…  (press /)" autocomplete="off">
+        <button class="clear" id="searchClear" type="button" data-act="clear" aria-label="Clear search query" style="display:none">&times;</button>
       </div>
       <label class="sr-only" for="spineSelect">Filter by fluency spine skill</label>
       <select class="select" id="spineSelect"></select>
-      <label class="sr-only" for="originSelect">Filter by where the prerequisites come from</label>
+      <label class="sr-only" for="originSelect">Filter by prerequisite grade origin</label>
       <select class="select" id="originSelect">
         <option value="all">All prerequisite origins</option>
-        <option value="elementary">Has elementary (Gr 2–5) prerequisites</option>
-        <option value="spiral">Has in-year Grade 6 prerequisites</option>
+        <option value="elementary">Elementary origins (Gr 2–5)</option>
+        <option value="spiral">In-year Grade 6 spiral</option>
       </select>
-      <button class="btn btn-sm" type="button" id="savedBtn" data-act="saved-only" aria-pressed="false">Saved (0)</button>
-      <button class="btn btn-sm" type="button" id="expandBtn" data-act="toggle-all">Expand all answers</button>
+      <button class="btn btn-sm" type="button" id="savedBtn" data-act="saved-only" aria-pressed="false">★ Saved (0)</button>
+      <button class="btn btn-sm" type="button" id="expandBtn" data-act="toggle-all">Expand all notes</button>
       <button class="btn btn-sm" type="button" data-act="clear">Reset</button>
       <span class="results" id="results" role="status" aria-live="polite"></span>
     </div>
-    <div class="pills" id="unitPills" role="group" aria-label="Filter by unit"></div>
+
+    <!-- CCSS Domain Quick Chips -->
+    <div class="domain-pills" role="group" aria-label="Filter lessons by Grade 6 CCSS Domain">
+      <button class="pill" type="button" data-act="filter-domain" data-domain="all" aria-pressed="true">All Domains</button>
+      <button class="pill" type="button" data-act="filter-domain" data-domain="6.RP" aria-pressed="false">6.RP (Ratios &amp; Rates)</button>
+      <button class="pill" type="button" data-act="filter-domain" data-domain="6.NS" aria-pressed="false">6.NS (Number System)</button>
+      <button class="pill" type="button" data-act="filter-domain" data-domain="6.EE" aria-pressed="false">6.EE (Expressions &amp; Equations)</button>
+      <button class="pill" type="button" data-act="filter-domain" data-domain="6.G" aria-pressed="false">6.G (Geometry)</button>
+      <button class="pill" type="button" data-act="filter-domain" data-domain="6.SP" aria-pressed="false">6.SP (Statistics)</button>
+    </div>
+
+    <div class="pills" id="unitPills" role="group" aria-label="Filter lessons by unit"></div>
   </div>
 </div>
 
-<main id="main">
+<main id="main" tabindex="-1">
   <div class="wrap section">
     <div data-panel="lessons" id="view-lessons" role="tabpanel" aria-labelledby="tab-lessons" tabindex="0"></div>
     <div data-panel="studio" id="view-studio" role="tabpanel" aria-labelledby="tab-studio" tabindex="0" hidden></div>
@@ -157,41 +213,78 @@
   </div>
 </main>
 
-<footer class="site-footer">
+<footer class="site-footer" role="contentinfo">
   <div class="wrap">
-    <p><strong>Reveal Math · Grade 6 · Fluency &amp; Diagnostic Guide.</strong> Units 2–9, 54 lessons, district teaching order.
-    Lesson titles, components, and prerequisite skills follow the course sequence; quick checks, answers, diagnostics,
-    reteach scripts, and standards mapping are teaching material built for this guide.</p>
-    <p style="margin-top:8px">Works offline in any modern browser. Your saved lessons, tallies, and week plan stay in this browser only —
-    nothing is uploaded. Press <span class="kbd">?</span> for keyboard shortcuts.</p>
+    <div class="footer-grid">
+      <div>
+        <p><strong>Reveal Math · Grade 6 · Fluency &amp; Diagnostic Guide.</strong> Complete curriculum coverage for Units 2 through 9 (54 lessons in district sequence). 100% self-contained offline architecture.</p>
+        <p style="margin-top:8px">Saved lessons, class tallies, and week plans stay in this browser. Practice work stays in its browser tab. Press <span class="kbd">?</span> for keyboard shortcuts.</p>
+      </div>
+      <div class="footer-meta">
+        <span>Classroom practice · Teacher planning · Local tools</span>
+      </div>
+    </div>
   </div>
 </footer>
 
 <!-- Projector modal -->
 <div class="backdrop" id="backdrop">
-  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
+  <div class="modal modal-projector" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
     <div class="modal-head">
       <div>
         <span class="modal-badge" id="modalBadge">Lesson</span>
         <h2 id="modalTitle"></h2>
       </div>
       <div class="modal-nav">
-        <div class="form-switch" id="modalForms" role="group" aria-label="Quick check version"></div>
-        <button class="icon-btn" type="button" data-act="modal-prev" aria-label="Previous lesson" title="Previous lesson (←)">‹</button>
-        <button class="icon-btn" type="button" data-act="modal-next" aria-label="Next lesson" title="Next lesson (→)">›</button>
-        <button class="icon-btn" type="button" data-act="close-modal" aria-label="Close" title="Close (Esc)">&times;</button>
+        <div class="modal-control-group" role="group" aria-label="Quick check version">
+          <div class="form-switch" id="modalForms"></div>
+        </div>
+        <div class="modal-control-group" role="group" aria-label="Display options">
+          <div class="font-scaler" role="group" aria-label="Text scaling for projector">
+            <button class="scaler-btn" type="button" data-act="font-size" data-size="standard" title="Standard text size" aria-pressed="true">A</button>
+            <button class="scaler-btn" type="button" data-act="font-size" data-size="large" title="Large text size" aria-pressed="false">A+</button>
+            <button class="scaler-btn" type="button" data-act="font-size" data-size="giant" title="Giant text size" aria-pressed="false">A++</button>
+          </div>
+          <button class="icon-btn" type="button" id="projectorContrastBtn" data-act="projector-contrast" aria-pressed="false" title="High contrast projector mode (black background)" aria-label="Toggle high contrast projector mode">◑</button>
+          <button class="icon-btn" type="button" id="fullscreenBtn" data-act="toggle-fullscreen" aria-label="Toggle fullscreen (F)" title="Fullscreen (F)">⛶</button>
+        </div>
+        <div class="modal-control-group" role="group" aria-label="Interactive tools">
+          <button class="icon-btn" type="button" id="readPromptBtn" data-act="speak-prompt" title="Listen to prompt (Text-to-Speech)" aria-label="Read prompt aloud">🔊</button>
+          <button class="icon-btn" type="button" id="annotateBtn" data-act="toggle-annotation" aria-pressed="false" title="Annotate on screen (Highlighter &amp; Pen)" aria-label="Toggle on-screen annotation">✏️</button>
+          <button class="icon-btn" type="button" id="coldCallBtn" data-act="open-coldcall" title="Random Student / Table Selector" aria-label="Random student selector">🎲</button>
+          <button class="icon-btn" type="button" id="projMathToolsBtn" data-act="toggle-proj-tools" aria-pressed="false" title="In-projector math manipulatives drawer" aria-label="Toggle projector math manipulatives">🧮</button>
+          <button class="icon-btn" type="button" id="soundToggleBtn" data-act="toggle-sound" aria-pressed="true" title="Chime sound enabled" aria-label="Toggle timer chime sound">🔔</button>
+        </div>
+        <div class="modal-control-group" role="group" aria-label="Navigation">
+          <button class="icon-btn" type="button" data-act="modal-prev" aria-label="Previous lesson (Arrow Left)" title="Previous lesson (←)">‹</button>
+          <button class="icon-btn" type="button" data-act="modal-next" aria-label="Next lesson (Arrow Right)" title="Next lesson (→)">›</button>
+          <button class="icon-btn" type="button" data-act="close-modal" aria-label="Close projector (Esc)" title="Close (Esc)">&times;</button>
+        </div>
       </div>
     </div>
     <div class="modal-body">
-      <div class="projector">
-        <div class="label">Quick check — answer on your whiteboard</div>
-        <div class="prompt" id="modalPrompt"></div>
+      <!-- Annotation Toolbar (when active) -->
+      <div class="annotation-bar" id="annotationBar" hidden>
+        <span>Annotation Tools:</span>
+        <button type="button" class="btn btn-sm active" data-act="pen-mode" data-mode="highlighter">🟡 Highlighter</button>
+        <button type="button" class="btn btn-sm" data-act="pen-mode" data-mode="pen">🖊️ Pen</button>
+        <button type="button" class="btn btn-sm" data-act="pen-mode" data-mode="eraser">🧹 Eraser</button>
+        <button type="button" class="btn btn-sm" data-act="clear-annotation">Clear All</button>
+      </div>
+
+      <div class="projector-container">
+        <div class="projector" id="projectorBox">
+          <div class="label" id="projectorFormLabel">Quick check — version A · answer on your whiteboard</div>
+          <div class="prompt" id="modalPrompt"></div>
+        </div>
+        <!-- Canvas overlay for annotation -->
+        <canvas class="annotation-canvas" id="projectorCanvas" hidden></canvas>
       </div>
 
       <div class="timer-box">
         <div style="display:flex;align-items:center;gap:14px">
           <span class="timer-digits" id="timerDigits">02:00</span>
-          <span class="timer-meta"><b>Timer</b>Space = start/pause · R = reset · S = show answer</span>
+          <span class="timer-meta"><b>Classroom Timer</b>Space = start/pause · R = reset · S = show answer · F = fullscreen · 1/2/3 = Forms A/B/C</span>
         </div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-left:auto">
           <button class="btn btn-sm" type="button" data-act="preset" data-seconds="30" aria-pressed="false">30s</button>
@@ -205,32 +298,409 @@
         <div class="timer-track"><div class="timer-fill" id="timerFill"></div></div>
       </div>
 
+      <!-- In-projector live room tally bar -->
+      <div class="projector-tally-bar" id="projectorTallyBar">
+        <span class="projector-tally-title">Quick Room Tally (Whiteboards):</span>
+        <div class="projector-tally-group">
+          <span class="projector-tally-pill secure">
+            <button type="button" data-act="proj-tally" data-key="secure" data-delta="-1" aria-label="Decrease Secure count">−</button>
+            <span id="projTallySecure">0</span> Secure
+            <button type="button" data-act="proj-tally" data-key="secure" data-delta="1" aria-label="Increase Secure count">+</button>
+          </span>
+          <span class="projector-tally-pill dev">
+            <button type="button" data-act="proj-tally" data-key="dev" data-delta="-1" aria-label="Decrease Developing count">−</button>
+            <span id="projTallyDev">0</span> Developing
+            <button type="button" data-act="proj-tally" data-key="dev" data-delta="1" aria-label="Increase Developing count">+</button>
+          </span>
+          <span class="projector-tally-pill not">
+            <button type="button" data-act="proj-tally" data-key="not" data-delta="-1" aria-label="Decrease Not Yet count">−</button>
+            <span id="projTallyNot">0</span> Not Yet
+            <button type="button" data-act="proj-tally" data-key="not" data-delta="1" aria-label="Increase Not Yet count">+</button>
+          </span>
+          <button class="btn btn-sm" type="button" data-act="proj-tally-reset">Reset</button>
+        </div>
+      </div>
+
+      <!-- In-projector inline math tools drawer -->
+      <div class="projector-tools-drawer" id="projectorToolsDrawer">
+        <div class="projector-tools-header">
+          <div class="projector-tools-tabs" role="tablist">
+            <button class="projector-tool-tab active" type="button" data-act="proj-tool-tab" data-ptab="fraction">Fraction Strips</button>
+            <button class="projector-tool-tab" type="button" data-act="proj-tool-tab" data-ptab="ratio">Ratio Table</button>
+            <button class="projector-tool-tab" type="button" data-act="proj-tool-tab" data-ptab="coord">Coordinate Plane</button>
+          </div>
+          <button class="btn btn-sm" type="button" data-act="toggle-proj-tools">Close Tools</button>
+        </div>
+        <div class="projector-tool-panel active" id="projPanelFraction">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap">
+            <label style="font-size:12px;font-weight:700">Denominator: <input type="number" id="projDenomInput" min="1" max="16" value="4" style="width:55px;padding:3px 6px"></label>
+            <label style="font-size:12px;font-weight:700">Numerator: <input type="number" id="projNumInput" min="0" max="16" value="3" style="width:55px;padding:3px 6px"></label>
+            <span style="font-size:12px;color:var(--ink-2)">Click any cell to toggle shading</span>
+          </div>
+          <div id="projFractionStripContainer" class="fraction-strip-display"></div>
+        </div>
+        <div class="projector-tool-panel" id="projPanelRatio">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap">
+            <label style="font-size:12px;font-weight:700">Base Ratio: <input type="number" id="projRatioA" value="2" style="width:55px;padding:3px 6px"> : <input type="number" id="projRatioB" value="5" style="width:55px;padding:3px 6px"></label>
+            <button class="btn btn-sm" type="button" id="projGenRatioBtn">Update Table</button>
+          </div>
+          <div id="projRatioContainer"></div>
+        </div>
+        <div class="projector-tool-panel" id="projPanelCoord">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap">
+            <label style="font-size:12px;font-weight:700">Plot (x, y): <input type="number" id="projCoordX" value="3" min="-8" max="8" style="width:55px;padding:3px 6px"> , <input type="number" id="projCoordY" value="-4" min="-8" max="8" style="width:55px;padding:3px 6px"></label>
+            <button class="btn btn-sm" type="button" id="projPlotBtn">Plot Point</button>
+          </div>
+          <div id="projCoordContainer" style="display:flex;justify-content:center"></div>
+        </div>
+      </div>
+
       <div class="modal-answer" id="modalAnswer"><div id="modalAnswerBody"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Virtual Math Tools Modal -->
+<div class="backdrop" id="toolsBackdrop">
+  <div class="modal modal-math-tools" id="toolsModal" role="dialog" aria-modal="true" aria-labelledby="toolsTitle" tabindex="-1">
+    <div class="modal-head">
+      <div class="modal-title-row">
+        <div>
+          <span class="modal-badge">Interactive Math Manipulatives</span>
+          <h2 id="toolsTitle">Virtual Math Workbench</h2>
+        </div>
+        <button class="icon-btn" type="button" data-act="close-tools" aria-label="Close tools">&times;</button>
+      </div>
+      <div class="tools-tablist" role="tablist" aria-label="Math tools">
+        <button class="tools-tab-btn active" type="button" role="tab" id="tool-tab-ratio" aria-controls="tool-ratio" tabindex="0" data-act="tool-tab" data-tab="ratio" aria-selected="true">Ratio Table &amp; Number Line</button>
+        <button class="tools-tab-btn" type="button" role="tab" id="tool-tab-coord" aria-controls="tool-coord" tabindex="-1" data-act="tool-tab" data-tab="coord" aria-selected="false">Coordinate Plane (4-Quadrant)</button>
+        <button class="tools-tab-btn" type="button" role="tab" id="tool-tab-fraction" aria-controls="tool-fraction" tabindex="-1" data-act="tool-tab" data-tab="fraction" aria-selected="false">Fraction &amp; Percent Strips</button>
+        <button class="tools-tab-btn" type="button" role="tab" id="tool-tab-keypad" aria-controls="tool-keypad" tabindex="-1" data-act="tool-tab" data-tab="keypad" aria-selected="false">Math Keypad</button>
+      </div>
+    </div>
+    <div class="modal-body" id="toolsBody">
+      <!-- Tool 1: Ratio Table -->
+      <div class="tool-panel" role="tabpanel" aria-labelledby="tool-tab-ratio" id="tool-ratio">
+        <h3>Interactive Ratio Table &amp; Double Number Line</h3>
+        <p class="tool-sub">Enter two nonnegative quantities, with a positive second quantity. Compare equivalent pairs, identify the unit rate, and explain why both rows scale together.</p>
+        <div class="ratio-builder">
+          <div class="ratio-inputs">
+            <label>Quantity 1 Label: <input type="text" id="ratioLabel1" value="Miles" maxlength="32"></label>
+            <label>Value 1: <input type="number" id="ratioVal1" value="120" step="any"></label>
+            <label>Quantity 2 Label: <input type="text" id="ratioLabel2" value="Hours" maxlength="32"></label>
+            <label>Value 2: <input type="number" id="ratioVal2" value="2" step="any"></label>
+            <button class="btn btn-primary btn-sm" type="button" data-act="calc-ratio">Generate Table</button>
+          </div>
+          <div id="ratioTableOutput"></div>
+          <div id="doubleNumberLineOutput"></div>
+        </div>
+      </div>
+
+      <!-- Tool 2: Coordinate Plane -->
+      <div class="tool-panel" role="tabpanel" aria-labelledby="tool-tab-coord" id="tool-coord" hidden>
+        <h3>4-Quadrant Coordinate Grid Explorer</h3>
+        <p class="tool-sub">Enter x and y from −10 to 10, including decimals, or click a grid intersection. Coordinates tell horizontal movement first, then vertical movement. Explore reflections across either axis.</p>
+        <div class="coord-builder">
+          <div class="coord-controls">
+            <label>X: <input type="number" id="coordX" value="3" min="-10" max="10" step="any"></label>
+            <label>Y: <input type="number" id="coordY" value="-4" min="-10" max="10" step="any"></label>
+            <button class="btn btn-primary btn-sm" type="button" data-act="plot-point">Plot Point</button>
+            <button class="btn btn-sm" type="button" data-act="reflect-x">Reflect over X-Axis</button>
+            <button class="btn btn-sm" type="button" data-act="reflect-y">Reflect over Y-Axis</button>
+            <button class="btn btn-sm" type="button" data-act="clear-points">Clear Points</button>
+            <span id="coordReadout" class="coord-readout" role="status" aria-live="polite">Point: (3, -4)</span>
+          </div>
+          <div class="coord-plane-wrapper">
+            <svg id="coordSvg" viewBox="-240 -240 480 480" width="460" height="460" aria-label="Interactive 4-Quadrant Coordinate Plane"></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tool 3: Fraction & Percent Strips -->
+      <div class="tool-panel" role="tabpanel" aria-labelledby="tool-tab-fraction" id="tool-fraction" hidden>
+        <h3>Fraction &amp; Percent Bar Models</h3>
+        <p class="tool-sub">Partition every whole into the same number of equal parts. Use a whole-number denominator from 1 to 24 and a nonnegative whole-number numerator representing up to 5 wholes. Approximate decimals are marked with ≈.</p>
+        <div class="fraction-builder">
+          <div class="fraction-inputs">
+            <label>Numerator: <input type="number" id="fracNum" value="3" min="0" max="120" step="1"></label>
+            <label>Denominator: <input type="number" id="fracDen" value="4" min="1" max="24" step="1"></label>
+            <button class="btn btn-primary btn-sm" type="button" data-act="render-strip">Render Strip</button>
+          </div>
+          <div id="fractionStripOutput"></div>
+        </div>
+      </div>
+
+      <!-- Tool 4: Math Keypad -->
+      <div class="tool-panel" role="tabpanel" aria-labelledby="tool-tab-keypad" id="tool-keypad" hidden>
+        <h3>On-Screen Math Keypad</h3>
+        <p class="tool-sub">Use on touchscreens, Chromebooks, or iPads to insert mathematical symbols into any active response box.</p>
+        <div class="onscreen-keypad">
+          <button type="button" class="key-btn" data-key="7">7</button>
+          <button type="button" class="key-btn" data-key="8">8</button>
+          <button type="button" class="key-btn" data-key="9">9</button>
+          <button type="button" class="key-btn key-op" data-key="/">÷ (a/b)</button>
+          <button type="button" class="key-btn key-op" data-key="^2">x²</button>
+
+          <button type="button" class="key-btn" data-key="4">4</button>
+          <button type="button" class="key-btn" data-key="5">5</button>
+          <button type="button" class="key-btn" data-key="6">6</button>
+          <button type="button" class="key-btn key-op" data-key="*">×</button>
+          <button type="button" class="key-btn key-op" data-key="%">%</button>
+
+          <button type="button" class="key-btn" data-key="1">1</button>
+          <button type="button" class="key-btn" data-key="2">2</button>
+          <button type="button" class="key-btn" data-key="3">3</button>
+          <button type="button" class="key-btn key-op" data-key="-">−</button>
+          <button type="button" class="key-btn key-op" data-key="$">$</button>
+
+          <button type="button" class="key-btn" data-key="0">0</button>
+          <button type="button" class="key-btn" data-key=".">.</button>
+          <button type="button" class="key-btn key-op" data-key="pm">±</button>
+          <button type="button" class="key-btn key-op" data-key="+">+</button>
+          <button type="button" class="key-btn key-del" data-key="del">⌫ Del</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Classroom Diagnostics & Insights Modal -->
+<div class="backdrop" id="analyticsBackdrop">
+  <div class="modal modal-analytics" id="analyticsModal" role="dialog" aria-modal="true" aria-labelledby="analyticsTitle" tabindex="-1">
+    <div class="modal-head">
+      <div>
+        <span class="modal-badge">Diagnostic Analytics</span>
+        <h2 id="analyticsTitle">Classroom Fluency &amp; Readiness Dashboard</h2>
+      </div>
+      <button class="icon-btn" type="button" data-act="close-analytics" aria-label="Close analytics">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p class="analytics-sub">Aggregated performance based on the post-quick check room tallies recorded on lesson cards. Stored privately on your machine.</p>
+
+      <div class="analytics-summary-grid">
+        <div class="summary-card">
+          <span class="summary-val" id="summaryTotalChecks">0</span>
+          <span class="summary-lbl">Checks Recorded</span>
+        </div>
+        <div class="summary-card">
+          <span class="summary-val" id="summaryReadinessPct">--%</span>
+          <span class="summary-lbl">Room Readiness Index</span>
+        </div>
+        <div class="summary-card">
+          <span class="summary-val" id="summaryNeedsReteach">0</span>
+          <span class="summary-lbl">Lessons Needing Reteach</span>
+        </div>
+      </div>
+
+      <div class="analytics-sections">
+        <div class="analytics-col">
+          <h3>Unit Readiness Breakdown</h3>
+          <div id="unitReadinessList" class="unit-readiness-list"></div>
+        </div>
+        <div class="analytics-col">
+          <h3>Priority Lessons for Spiral Review</h3>
+          <p style="font-size:12.5px;color:var(--ink-3)">Lessons where students showed highest misconception rates (&gt;25% Developing or Not Yet).</p>
+          <div id="priorityReteachList" class="priority-reteach-list"></div>
+        </div>
+      </div>
+
+      <div class="analytics-backup-box">
+        <h4>Data Portability &amp; Backup</h4>
+        <p>Transfer your recorded tallies, saved lesson bookmarks, and weekly plans to another device.</p>
+        <div class="backup-actions">
+          <button class="btn btn-primary btn-sm" type="button" data-act="export-data-json">Export Classroom Data (JSON)</button>
+          <button class="btn btn-sm" type="button" data-act="export-data-csv">Export Summary (CSV)</button>
+          <label class="btn btn-sm" style="cursor:pointer">
+            Import Data <input type="file" id="importDataInput" accept=".json" style="display:none">
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Random Student / Group Selector (Cold Call) -->
+<div class="backdrop" id="coldCallBackdrop">
+  <div class="modal modal-coldcall" id="coldCallModal" role="dialog" aria-modal="true" aria-labelledby="coldCallTitle" tabindex="-1" style="max-width:480px">
+    <div class="modal-head">
+      <h2 id="coldCallTitle">Classroom Cold Call / Spinner</h2>
+      <button class="icon-btn" type="button" data-act="close-coldcall" aria-label="Close spinner">&times;</button>
+    </div>
+    <div class="modal-body" style="text-align:center">
+      <p class="tool-sub">Select a random table group or student for whiteboard response sharing.</p>
+      <div class="coldcall-display" id="coldCallDisplay">Ready to Pick</div>
+      <div style="margin-top:10px">
+        <label style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--ink-2);cursor:pointer">
+          <input type="checkbox" id="coldCallNoRepeat" checked> Exclude after picked (no repeats in period)
+        </label>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:16px">
+        <button class="btn btn-primary btn-lg" type="button" data-act="spin-coldcall">🎲 Pick Next</button>
+        <button class="btn btn-lg" type="button" data-act="toggle-roster-edit">Edit Roster</button>
+      </div>
+      <div style="display:flex;gap:6px;justify-content:center;margin-top:10px">
+        <button type="button" class="btn btn-sm" data-act="roster-preset" data-preset="tables">Tables 1–6</button>
+        <button type="button" class="btn btn-sm" data-act="roster-preset" data-preset="pairs">Partner Pairs</button>
+        <button type="button" class="btn btn-sm" data-act="roster-preset" data-preset="teams">Teams A–D</button>
+      </div>
+      <div id="rosterEditBox" style="margin-top:16px;text-align:left" hidden>
+        <label for="rosterInput" style="display:block;font-size:12px;font-weight:700;margin-bottom:4px">Enter student names or groups (one per line):</label>
+        <textarea id="rosterInput" rows="5" style="width:100%;font:inherit;padding:8px;border:1px solid var(--line-strong);border-radius:4px"></textarea>
+        <button class="btn btn-sm" type="button" data-act="save-roster" style="margin-top:6px">Save Roster</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Print & Export Center Modal -->
+<div class="backdrop" id="printBackdrop">
+  <div class="modal modal-print-center" id="printModal" role="dialog" aria-modal="true" aria-labelledby="printModalTitle" tabindex="-1">
+    <div class="modal-head">
+      <div>
+        <span class="modal-badge">Publishing &amp; Distribution</span>
+        <h2 id="printModalTitle">Print &amp; Export Center</h2>
+      </div>
+      <button class="icon-btn" type="button" data-act="close-print" aria-label="Close Print Center">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p class="print-center-sub">Generate publication-quality student worksheets, worked teacher keys, multi-lesson unit workbooks, fluency drills, or export a standalone student edition file. Print directly to your browser's PDF engine.</p>
+
+      <div class="print-cards-grid">
+        <div class="print-card">
+          <div class="print-card-icon">📄</div>
+          <div class="print-card-content">
+            <h3>Current Lesson Worksheet</h3>
+            <p>Print the selected lesson's practice tasks. Choose Foundation (4 tasks), Connect &amp; Apply (8 tasks), or Extend &amp; Explain (4 tasks).</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">
+              <div>
+                <label for="printLessonSelect" style="font-size:11px;font-weight:700;display:block;margin-bottom:2px">Lesson:</label>
+                <select class="select select-sm" id="printLessonSelect" style="width:100%"></select>
+              </div>
+              <div>
+                <label for="printTierSelect" style="font-size:11px;font-weight:700;display:block;margin-bottom:2px">Differentiation Tier:</label>
+                <select class="select select-sm" id="printTierSelect" style="width:100%">
+                  <option value="core">Connect &amp; Apply (8 tasks)</option>
+                  <option value="foundation">Build Foundations (4 tasks)</option>
+                  <option value="stretch">Extend &amp; Explain (4 tasks)</option>
+                </select>
+              </div>
+            </div>
+            <div class="print-card-actions">
+              <button class="btn btn-primary btn-sm" type="button" data-act="print-lesson-student">Print Student Worksheet</button>
+              <button class="btn btn-sm" type="button" data-act="print-lesson-key">Print Teacher Key</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="print-card">
+          <div class="print-card-icon">📦</div>
+          <div class="print-card-content">
+            <h3>Full Unit Multi-Lesson Workbook</h3>
+            <p>Print all lessons in a unit as a ready-to-distribute student workbook or comprehensive teacher key packet.</p>
+            <div class="print-card-actions">
+              <label class="sr-only" for="printUnitSelect">Select unit to print</label>
+              <select class="select select-sm" id="printUnitSelect">
+                <option value="2">Unit 2: Statistics and Data Displays (10 lessons)</option>
+                <option value="3">Unit 3: Ratios and Rates (7 lessons)</option>
+                <option value="4">Unit 4: Percent (5 lessons)</option>
+                <option value="5">Unit 5: Area, Volume, and Surface Area (8 lessons)</option>
+                <option value="6">Unit 6: Expressions (8 lessons)</option>
+                <option value="7">Unit 7: Integers, Rational Numbers, and the Coordinate Plane (7 lessons)</option>
+                <option value="8">Unit 8: Equations and Inequalities (5 lessons)</option>
+                <option value="9">Unit 9: Relationships Between Two Variables (4 lessons)</option>
+              </select>
+              <button class="btn btn-primary btn-sm" type="button" data-act="print-unit-pack">Print Unit Student Pack</button>
+              <button class="btn btn-sm" type="button" data-act="print-unit-keys">Print Unit Key Pack</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="print-card">
+          <div class="print-card-icon">⚡</div>
+          <div class="print-card-content">
+            <h3>Fluency Spine Core Drills</h3>
+            <p>Print 6-item warm-up drills for the 12 core mathematical spine skills that support Grade 6 success.</p>
+            <div style="margin-bottom:8px">
+              <label for="printDrillSelect" style="font-size:11px;font-weight:700;display:block;margin-bottom:2px">Select Spine Drill:</label>
+              <select class="select select-sm" id="printDrillSelect" style="width:100%"></select>
+            </div>
+            <div class="print-card-actions">
+              <button class="btn btn-primary btn-sm" type="button" data-act="print-current-drill">Print Selected Drill</button>
+              <button class="btn btn-sm" type="button" data-act="print-drill-key">Print Drill Key</button>
+              <button class="btn btn-sm" type="button" data-act="print-all-drills">Print All 12 Drills</button>
+              <button class="btn btn-sm" type="button" data-act="print-all-drill-keys">Print All 12 Keys</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="print-card">
+          <div class="print-card-icon">👥</div>
+          <div class="print-card-content">
+            <h3>Partner Activity Lab Sheet</h3>
+            <p>Print the 12–15 min partner investigation sheet with Solve, Investigate, Repair, and Transfer prompts.</p>
+            <div style="margin-bottom:8px">
+              <label for="printPartnerLessonSelect" style="font-size:11px;font-weight:700;display:block;margin-bottom:2px">Select Lesson for Lab:</label>
+              <select class="select select-sm" id="printPartnerLessonSelect" style="width:100%"></select>
+            </div>
+            <div class="print-card-actions">
+              <button class="btn btn-primary btn-sm" type="button" data-act="print-partner-student">Print Partner Sheet</button>
+              <button class="btn btn-sm" type="button" data-act="print-partner-key">Print Teacher Facilitation</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="print-card">
+          <div class="print-card-icon">📅</div>
+          <div class="print-card-content">
+            <h3>5-Day Weekly Bellringer Sheet</h3>
+            <p>Generate a 5-day Monday through Friday student bellringer page with student workboxes or teacher keys.</p>
+            <div class="print-card-actions">
+              <button class="btn btn-primary btn-sm" type="button" data-act="print-week-student">Print Student 5-Day Sheet</button>
+              <button class="btn btn-sm" type="button" data-act="print-week-key">Print Teacher Weekly Key</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="print-card">
+          <div class="print-card-icon">💾</div>
+          <div class="print-card-content">
+            <h3>Export Standalone Student Edition (HTML)</h3>
+            <p>Generate a dedicated student HTML file with interactive checking, scratchpad, and worked solutions. Contains zero teacher answers or diagnostic notes. Great for USB, offline Chromebooks, or LMS uploads.</p>
+            <div class="print-card-actions">
+              <button class="btn btn-primary btn-sm" type="button" data-act="export-student-html">Download Student Edition HTML</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- Help modal -->
 <div class="backdrop" id="helpBackdrop">
-  <div class="modal" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpTitle" tabindex="-1" style="max-width:560px">
+  <div class="modal modal-help" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpTitle" tabindex="-1" style="max-width:580px">
     <div class="modal-head">
-      <h2 id="helpTitle">Keyboard shortcuts</h2>
-      <button class="icon-btn" type="button" data-act="close-help" aria-label="Close">&times;</button>
+      <h2 id="helpTitle">Keyboard Shortcuts &amp; Accessibility</h2>
+      <button class="icon-btn" type="button" data-act="close-help" aria-label="Close shortcuts">&times;</button>
     </div>
     <div class="modal-body">
       <div class="help-list">
-        <div><span>Focus the search box</span><span class="kbd">/</span></div>
-        <div><span>Switch light and dark</span><span class="kbd">T</span></div>
-        <div><span>Show this list</span><span class="kbd">?</span></div>
-        <div><span>Close a dialog</span><span class="kbd">Esc</span></div>
-        <div><span>Projector: start or pause the timer</span><span class="kbd">Space</span></div>
-        <div><span>Projector: reset the timer</span><span class="kbd">R</span></div>
-        <div><span>Projector: show or hide the answer</span><span class="kbd">S</span></div>
+        <div><span>Focus the search input</span><span class="kbd">/</span></div>
+        <div><span>Toggle light / dark mode</span><span class="kbd">T</span></div>
+        <div><span>Switch Teacher / Student mode</span><span class="kbd">M</span></div>
+        <div><span>Open Virtual Math Tools</span><span class="kbd">X</span></div>
+        <div><span>Show this shortcuts modal</span><span class="kbd">?</span></div>
+        <div><span>Close any open dialog or modal</span><span class="kbd">Esc</span></div>
+        <div><span>Projector: start or pause timer</span><span class="kbd">Space</span></div>
+        <div><span>Projector: reset timer</span><span class="kbd">R</span></div>
+        <div><span>Projector: reveal / hide answer</span><span class="kbd">S</span></div>
+        <div><span>Projector: toggle fullscreen presentation</span><span class="kbd">F</span></div>
+        <div><span>Projector: toggle live annotation</span><span class="kbd">A</span></div>
         <div><span>Projector: previous / next lesson</span><span class="kbd">← →</span></div>
+        <div><span>Tabs: navigate sections</span><span class="kbd">Arrow Keys</span></div>
       </div>
       <p style="margin-top:16px;font-size:13px;color:var(--ink-3)">
-        Searching accepts a lesson number (<b>3-2</b>), a skill (<b>unit rate</b>), a standard (<b>6.RP</b>), or a
-        vocabulary word (<b>quartile</b>). The address bar keeps your filters, so you can bookmark a view.
+        Search accepts lesson numbers (<b>3-2</b>), prerequisite skills (<b>unit rate</b>), standard codes (<b>6.RP</b>), or vocabulary terms (<b>quartile</b>). All filters sync with your address bar for bookmarking.
       </p>
     </div>
   </div>
@@ -241,7 +711,7 @@
 
 <script>window.FluencyData = /*__DATA__*/;</script>
 <div id="studio-print"></div>
-<script>/*__STUDIO__*/</script>
+<script id="fluency-studio">/*__STUDIO__*/</script>
 <script>/*__APP__*/</script>
 </body>
 </html>

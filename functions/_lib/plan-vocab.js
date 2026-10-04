@@ -1577,7 +1577,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/curriculum/fluency/teacher/",
-    title: "Reveal Math · Grade 6 · Fluency & Diagnostic Guide",
+    title: "Fluency & Readiness",
     category: "Activity",
     unit: null,
   },
@@ -3737,7 +3737,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/curriculum/fluency/",
-    title: "Fluency Practice",
+    title: "Fluency Practice Studio",
     category: "Hub",
     unit: null,
   },

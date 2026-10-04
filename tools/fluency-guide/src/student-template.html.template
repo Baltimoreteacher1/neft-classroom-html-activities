@@ -1,18 +1,82 @@
 <!doctype html>
-<html lang="en" data-student="true">
+<html lang="en" data-student="true" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Grade 6 fluency practice with worked solutions, retries, and printable worksheets.">
-<title>Fluency Practice · EduWonderLab</title>
+<meta name="description" content="Grade 6 fluency practice for 54 lessons: targeted hints, worked examples, sketches, and six guided math investigations.">
+<meta name="color-scheme" content="light dark">
+<title>Fluency Practice Studio · EduWonderLab</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2213%22 fill=%22%231a56c4%22/%3E%3Ctext x=%229%22 y=%2244%22 font-family=%22Georgia,serif%22 font-size=%2234%22 fill=%22white%22%3ER6%3C/text%3E%3C/svg%3E">
 <style>/*__STYLES__*/</style>
+
 </head>
-<body class="student-mode studio-mode">
-<noscript><p>Enable JavaScript to open interactive practice. Your teacher can also provide a printed worksheet.</p></noscript>
-<main id="main"><div class="wrap section"><div id="view-studio"></div></div></main>
+<body class="mode-student studio-mode">
+<a class="skip-link" href="#main">Skip to practice</a>
+<noscript><p style="padding:20px;background:#fff3cd;color:#856404">Enable JavaScript to open interactive practice. Your teacher can also provide a printed worksheet.</p></noscript>
+
+<header class="site-header" role="banner">
+  <div class="wrap header-inner">
+    <div class="brand">
+      <span class="brand-badge" aria-hidden="true">R6</span>
+      <span>
+        <span class="brand-series">EduWonderLab · Grade 6</span>
+        <span class="brand-title">Student Practice Studio</span>
+      </span>
+    </div>
+    <div class="header-actions">
+      <a class="btn btn-sm" href="/curriculum/">Curriculum</a>
+      <button class="btn btn-sm" type="button" id="studentWorkbenchToggleBtn" title="Open six guided math investigations">
+        <span>Investigations</span>
+      </button>
+      <button class="btn btn-sm" type="button" id="themeBtn" aria-pressed="false" aria-label="Toggle dark mode">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <span class="label">Dark</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main" tabindex="-1"><div class="wrap section"><div id="view-studio"></div></div></main>
 <div id="studio-print"></div>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <p><strong>EduWonderLab · Grade 6 · Student Practice Edition.</strong> Try a strategy, check the result, and explain your thinking. Work is kept in this browser tab.</p>
+      </div>
+      <div class="footer-meta">
+        <span>Supplemental practice for Units 2–9</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
 <script>window.FluencyData = /*__DATA__*/;</script>
-<script>/*__STUDIO__*/</script>
-<script>window.FluencyStudio.render(); window.addEventListener('hashchange', () => window.FluencyStudio.render());</script>
+<script id="fluency-studio">/*__STUDIO__*/</script>
+<script>
+  // Theme management for student edition
+  const themeBtn = document.getElementById('themeBtn');
+  function setTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    if (themeBtn) {
+      themeBtn.querySelector('.label').textContent = t === 'dark' ? 'Light' : 'Dark';
+      themeBtn.setAttribute('aria-pressed', String(t === 'dark'));
+    }
+    try { localStorage.setItem('rmg6.theme.v3', JSON.stringify(t)); } catch(_) {}
+  }
+  let savedTheme = 'light';
+  try { savedTheme = JSON.parse(localStorage.getItem('rmg6.theme.v3')) || 'light'; } catch(_) {}
+  setTheme(savedTheme);
+  if (themeBtn) {
+    themeBtn.addEventListener('click', () => {
+      const cur = document.documentElement.getAttribute('data-theme') || 'light';
+      setTheme(cur === 'dark' ? 'light' : 'dark');
+    });
+  }
+
+  FluencyStudio.render();
+  window.addEventListener('hashchange', () => FluencyStudio.render());
+</script>
 </body>
 </html>
