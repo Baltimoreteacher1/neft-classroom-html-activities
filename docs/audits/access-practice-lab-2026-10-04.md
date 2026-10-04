@@ -19,10 +19,11 @@ Scope: the public lab, both grade bands, classroom practice tests, and student/t
 - Each skill room links to its printable student preview and editable Word packet.
 - All 26 student and 26 teacher packet variants use designed HTML and Word layouts with actual illustrations, charts, native data tables, numbered tasks, and response areas. Word packets include running headers and page numbers.
 - Packet generation fails the build if a required file or visual cannot be produced. Teacher scripts, solutions, and model responses stay out of student packets.
+- Content-hashed module URLs keep returning browsers on a consistent release. Home and deep-link shells share the same generated import map; saved work and storage keys are retained.
 
 ## Verification
 
-The focused ACCESS suite passed 70 tests, including seven packet regressions. Repository lint, validation, and build checks passed before release; the guarded shipping process reruns its full gate on the reviewed commit.
+The focused ACCESS suite passed 73 tests, including seven packet regressions and three module-cache regressions. Repository lint, validation, and build checks passed before release; the guarded shipping process reruns its full gate on the reviewed commit.
 
 Regression tests cover blank responses, revision state, stale asynchronous routes, storage failures, evidence accounting, worksheet undo, recording lifecycles/formats, library pagination, planning, content criteria, and packet content/audience separation.
 
