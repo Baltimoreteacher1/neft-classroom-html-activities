@@ -25,30 +25,30 @@ async function openLesson(page: import("@playwright/test").Page, id: string) {
 }
 
 test.describe("small-group student headline", () => {
-  test("support groups are named by purpose, not by group number", async ({ page }) => {
-    await openLesson(page, "5-3-group1");
-    const h1 = await page.locator("h1").first().innerText();
-    expect(h1).toContain("Foundations");
-    expect(h1).not.toMatch(/Group\s*1/i);
-  });
-
-  test("challenge groups are named by purpose, not by group number", async ({ page }) => {
-    await openLesson(page, "5-3-group2");
-    const h1 = await page.locator("h1").first().innerText();
-    expect(h1).toContain("Challenge");
-    expect(h1).not.toMatch(/Group\s*2/i);
-  });
-
-  test("the headline agrees with the badge above it", async ({ page }) => {
-    for (const id of ["5-3-group1", "5-3-group2"]) {
+  // The headline names the MATHEMATICS — small-group review item #28, approved
+  // by Joel 2026-10-04 ("Do all of these"). The purpose word lives in the badge
+  // directly above it.
+  test("the headline names the lesson topic, never a group number", async ({ page }) => {
+    for (const [id, n] of [
+      ["5-3-group1", 1],
+      ["5-3-group2", 2],
+    ] as const) {
       await openLesson(page, id);
-      const badge = (await page.locator(".sg-kicker").first().innerText()).trim();
-      const purpose = badge.split("·").pop()?.trim() ?? "";
-      expect(purpose.length).toBeGreaterThan(0);
-      // Case-insensitive: the badge is uppercased by CSS, the headline is not.
-      expect((await page.locator("h1").first().innerText()).toLowerCase()).toContain(
-        purpose.toLowerCase(),
-      );
+      const h1 = await page.locator("h1").first().innerText();
+      expect(h1).toContain("5.3");
+      expect(h1).toContain("Trapezoids");
+      expect(h1).not.toMatch(new RegExp(`Group\\s*${n}`, "i"));
+    }
+  });
+
+  test("the badge above the headline carries the purpose", async ({ page }) => {
+    for (const [id, purpose] of [
+      ["5-3-group1", "foundations"],
+      ["5-3-group2", "challenge"],
+    ] as const) {
+      await openLesson(page, id);
+      const badge = (await page.locator(".sg-kicker").first().innerText()).toLowerCase();
+      expect(badge).toContain(purpose);
     }
   });
 

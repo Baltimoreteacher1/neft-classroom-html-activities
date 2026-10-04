@@ -269,11 +269,8 @@
         <p id="tagline">Pick your world. Every unit is its own level — collect ⭐ as you go.</p>
       </header>
       <div class="mission-brief" id="missionBrief">
-        <div class="tag" id="missionTag">Mission Brief</div>
-        <p id="missionText">
-          Choose a world, play a lesson arcade, and earn stars on first tries. No timers — every miss
-          teaches you. Sound and language stay on this device.
-        </p>
+        <div class="tag" id="missionTag">Start here</div>
+        <p id="missionText">Find your unit, then tap the lesson your class is on. Want a mix? Tap ▶ Play Unit Review. No timers — every miss gives you a hint.</p>
       </div>
       <label class="map-search-label" for="map-search">Find a lesson or math skill</label><input id="map-search" type="search" placeholder="Try fractions, decimal, or graph…"><p id="map-results" role="status" aria-live="polite"></p><div class="grid" id="grid"></div>
       <div id="status">Loading worlds…</div>
@@ -281,17 +278,20 @@
 
     <script>
       // World identities — kept in sync with the arcade engine's WORLDS table.
+      // World identities — names match the arcade engine's WORLDS table; `unit`
+      // is the curriculum's own unit title (curriculum/units/index.html), shown
+      // so students can match the world to the unit their class is in.
       var WORLDS = {
-        1: { name: "Math Is Mine", top: "#4338ca", bot: "#6d28d9", boss: "🦉" },
-        2: { name: "Statistics & Decimal Operations", top: "#0f766e", bot: "#115e59", boss: "🐢" },
-        3: { name: "Ratio Reef", top: "#0369a1", bot: "#1e40af", boss: "🐬" },
-        4: { name: "Percent Peaks", top: "#7e22ce", bot: "#a21caf", boss: "🦄" },
-        5: { name: "Area, Volume & Surface Area", top: "#b45309", bot: "#9a3412", boss: "🦊" },
-        6: { name: "Fractions, Factors & Expressions", top: "#15803d", bot: "#166534", boss: "🐸" },
-        7: { name: "Rational Numbers & Coordinates", top: "#1e3a8a", bot: "#334155", boss: "🦈" },
-        8: { name: "Equations & Inequalities", top: "#be185d", bot: "#9d174d", boss: "🦩" },
-        9: { name: "Relationships Between Variables", top: "#0e7490", bot: "#1e40af", boss: "🤖" },
-        10: { name: "Math in My World", top: "#a16207", bot: "#854d0e", boss: "🐻" },
+        1: { name: "Number Nebula", unit: "Math Is Discovery", top: "#4338ca", bot: "#6d28d9", boss: "🦉" },
+        2: { name: "Data Dunes", unit: "Statistics", top: "#0f766e", bot: "#115e59", boss: "🐢" },
+        3: { name: "Ratio Reef", unit: "Ratios & Rates", top: "#0369a1", bot: "#1e40af", boss: "🐬" },
+        4: { name: "Percent Peaks", unit: "Percents", top: "#7e22ce", bot: "#a21caf", boss: "🦄" },
+        5: { name: "Ember Expanse", unit: "Area, Surface Area & Volume", top: "#b45309", bot: "#9a3412", boss: "🦊" },
+        6: { name: "Fraction & Formula Forest", unit: "Expressions", top: "#15803d", bot: "#166534", boss: "🐸" },
+        7: { name: "Integer Isles", unit: "Integers & the Coordinate Plane", top: "#1e3a8a", bot: "#334155", boss: "🦈" },
+        8: { name: "Equation Escape", unit: "Equations & Inequalities", top: "#be185d", bot: "#9d174d", boss: "🦩" },
+        9: { name: "Variable Valley", unit: "Two-Variable Relationships", top: "#0e7490", bot: "#1e40af", boss: "🤖" },
+        10: { name: "Math in My World", unit: "Math Is Synthesis", top: "#a16207", bot: "#854d0e", boss: "🐻" },
       };
       var lang = "en";
       try {
@@ -304,10 +304,10 @@
           en: "Pick your world. Every unit is its own level — collect ⭐ as you go.",
           es: "Elige tu mundo. Cada unidad es su propio nivel — colecciona ⭐ mientras juegas.",
         },
-        missionTag: { en: "Mission Brief", es: "Misión" },
+        missionTag: { en: "Start here", es: "Empieza aquí" },
         missionText: {
-          en: "Choose a world, play a lesson arcade, and earn stars on first tries. No timers — every miss teaches you. Sound and language stay on this device.",
-          es: "Elige un mundo, juega el arcade de una lección y gana estrellas al primer intento. Sin cronómetro — cada error te enseña. El sonido y el idioma se guardan en este dispositivo.",
+          en: "Find your unit, then tap the lesson your class is on. Want a mix? Tap ▶ Play Unit Review. No timers — every miss gives you a hint.",
+          es: "Busca tu unidad y toca la lección que estudia tu clase. ¿Quieres una mezcla? Toca ▶ Repaso de Unidad. Sin cronómetro — cada error te da una pista.",
         },
         back: { en: "← Curriculum", es: "← Currículo" },
         review: { en: "▶ Play Unit Review", es: "▶ Repaso de Unidad" },
@@ -364,6 +364,7 @@
           var pct = lessons.length ? Math.round((played / lessons.length) * 100) : 0;
           var card = document.createElement("section");
           card.className = "world";
+          card.dataset.unit = u;
           card.setAttribute("aria-label", "Unit " + u + ": " + w.name);
           card.style.background = "linear-gradient(160deg," + w.top + "," + w.bot + ")";
           var lessonHtml = lessons
@@ -389,6 +390,8 @@
             esc(w.name) +
             '</div><div class="wsub">Unit ' +
             u +
+            " · " +
+            esc(w.unit) +
             "</div></div></div>" +
             '<div class="prog" role="progressbar" aria-label="Lessons played" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '"><i style="width:' +
             pct +
@@ -416,11 +419,15 @@
       document.getElementById("map-search").addEventListener("input", function(event) {
         var query = event.target.value.trim().toLowerCase(); var matches = 0;
         document.querySelectorAll(".world").forEach(function(world) {
-          var worldMatch = !query || world.querySelector(".whead").textContent.toLowerCase().includes(query);
+          var worldMatch = !query || world.querySelector(".whead").textContent.toLowerCase().includes(query) || ("unit " + world.dataset.unit) === query;
           var count = 0; world.querySelectorAll(".lesson").forEach(function(lesson) { var show = worldMatch || lesson.textContent.toLowerCase().includes(query); lesson.hidden = !show; if(show) count++; });
           world.hidden = !worldMatch && !count; matches += count;
         });
-        document.getElementById("map-results").textContent = query ? matches + " lessons match." : "";
+        document.getElementById("map-results").textContent = query
+          ? matches
+            ? matches + (matches === 1 ? " lesson matches." : " lessons match.")
+            : "No lessons match. Try a word like ratio, decimal, area, or graph."
+          : "";
       });
       fetch("/data/curriculum-manifest.json")
         .then(function (r) {

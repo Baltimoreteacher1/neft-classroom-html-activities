@@ -860,7 +860,6 @@
       var title = document.createElement("h2");
       title.style.fontSize = "18px";
       title.style.color = "var(--navy)";
-      title.style.fontFamily = "Outfit, sans-serif";
       title.style.marginBottom = "12px";
       title.innerHTML = "Search Results for " + highlightText('"' + q + '"', q);
       panel.appendChild(title);
@@ -877,7 +876,10 @@
 
           var header = document.createElement("div");
           header.className = "search-result-header";
-          header.innerHTML = highlightText(l.title, q);
+          // displayTitle is the dotted "Lesson 1.3 · Title" without the standard
+          // run onto it; it is also the string curriculum-units-navigation matches
+          // to attach Open lesson / Lesson & support choices to the result.
+          header.innerHTML = highlightText(l.displayTitle || l.title, q);
           item.appendChild(header);
 
           var lessonId = lessonIdFromTitle(l.title);
@@ -885,12 +887,12 @@
           if (std) {
             var stdEl = document.createElement("p");
             stdEl.className = "lesson-standard-line";
+            // Non-navigating, like injectStandardBadge: these are Maryland 2025
+            // MCCRS codes and the old corestandards.org path 404s for every one.
             stdEl.innerHTML =
-              '<a class="lesson-standard-badge badge badge-cluster" href="http://corestandards.org/Math/Content/' +
-              std.replace(".", "/") +
-              '" target="_blank" rel="noopener noreferrer">' +
+              '<span class="lesson-standard-badge badge badge-cluster" title="Maryland College and Career Ready Standard">' +
               escapeHtml(std) +
-              "</a>";
+              "</span>";
             item.appendChild(stdEl);
           }
           var rw = realWorldMap[lessonId] || realWorldMap[lessonId.replace("-flagship", "")];

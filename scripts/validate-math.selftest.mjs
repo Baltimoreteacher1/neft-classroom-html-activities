@@ -190,6 +190,21 @@ const cases = [
   },
   {
     want: "pass",
+    name: "a thousands comma is not a list separator",
+    config: { practice: { rows: [{ answer: "1,344 ÷ 12 = 112" }] } },
+  },
+  {
+    want: "pass",
+    name: "a list of separate equations",
+    config: { practice: { rows: [{ answer: "2 × 12 = 24, 2 × 8 = 16, 2 × 6 = 12" }] } },
+  },
+  {
+    want: "fail",
+    name: "one wrong equation inside a list",
+    config: { practice: { rows: [{ answer: "2 × 12 = 24, 2 × 8 = 18" }] } },
+  },
+  {
+    want: "pass",
     name: "decimal / percent equivalence",
     config: { practice: { rows: [{ answer: "0.5 = 50%" }] } },
   },

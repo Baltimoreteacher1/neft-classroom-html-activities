@@ -111,7 +111,17 @@ try {
   // FIVE base lessons: the generator splits a unit into two bands
   // (lessons 1-3 and 4+), and an empty second band makes it throw. Five gives
   // both bands real sources, matching the real repo's shape.
+  // Both generators require each base lesson's authored Build content; any
+  // valid file serves, since this test is about vocabulary, not Build.
+  const buildSample = JSON.parse(
+    readFileSync(join(ROOT, "data/small-group-build/2-3.json"), "utf8"),
+  );
+  mkdirSync(join(fixture, "data/small-group-build"), { recursive: true });
   for (const n of [1, 2, 3, 4, 5]) {
+    writeFileSync(
+      join(fixture, "data/small-group-build", `1-${n}.json`),
+      JSON.stringify({ ...buildSample, lesson: `1-${n}`, vocab: {} }),
+    );
     const dir = join(lessons, `1-${n}`);
     mkdirSync(dir, { recursive: true });
     writeFileSync(

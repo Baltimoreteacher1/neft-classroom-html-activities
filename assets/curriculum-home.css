@@ -131,3 +131,34 @@ body.curriculum-home { background: #f5f6f3; color: #14365b; }
 @media (max-width: 640px) {
   body.curriculum-home.teacher-mode .hub-page { padding-bottom: 96px; }
 }
+
+/* Year at a glance: the ten units in teaching order, width by length, today
+   marked. Decorative colour only — each segment names its unit in text. */
+.course-timeline { position: relative; margin: 0 0 18px; }
+.course-timeline__track { display: flex; gap: 3px; margin: 0; padding: 0; list-style: none; }
+.course-timeline__track li { flex: 1 1 0; min-width: 34px; }
+.course-timeline__track a {
+  display: flex; align-items: center; justify-content: center; min-height: 44px; border-radius: 6px;
+  background: var(--tl-accent, #5b6470); color: #fff; font-size: 15px; font-weight: 700; text-decoration: none;
+  opacity: .62; transition: opacity 140ms ease;
+}
+.course-timeline__track a:hover, .course-timeline__track a:focus-visible { opacity: 1; }
+.course-timeline__track .is-current a { opacity: 1; box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--tl-accent, #5b6470); }
+.course-timeline__today { position: absolute; top: -12px; width: 2px; height: 12px; margin-left: -1px; background: #193e3b; border-radius: 1px; pointer-events: none; }
+.course-timeline__today::before { content: ""; position: absolute; top: -5px; left: -4px; width: 10px; height: 10px; border-radius: 50%; background: #193e3b; }
+.course-timeline__caption { margin: 10px 0 0; color: var(--course-muted, #506662); font-size: 15px; line-height: 1.5; }
+.curriculum-home .visually-hidden { position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
+@media (max-width: 780px) {
+  .course-timeline__track { gap: 2px; }
+  .course-timeline__track li { min-width: 30px; }
+  .course-timeline__track a { min-height: 40px; border-radius: 5px; font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) { .course-timeline__track a { transition: none; } }
+@media print { .course-timeline__today { display: none; } .course-timeline__track a { color: #000; background: transparent; border: 1px solid #999; opacity: 1; } }
+
+/* Footer link reaches the 44px target; the phone back-to-top button sits above
+   the docked Prepare Supports bar instead of on top of it. */
+.curriculum-home footer.hub a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 2px; }
+@media (max-width: 640px) {
+  body.curriculum-home.teacher-mode .hub-back-to-top { right: auto; left: 12px; bottom: 76px; }
+}

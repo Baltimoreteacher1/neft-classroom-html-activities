@@ -30,9 +30,13 @@ consequence of that single fact.
 
 ### 1. Verify before you render
 
-Already implemented in `small-group-build-visuals.js`. Every model kind (convert,
-split, array, rate, line, point, power) checks its own arithmetic triple before
-drawing, and a no-match returns no figure rather than a guess.
+Originally implemented in `small-group-build-visuals.js`, which checked a step's
+arithmetic before drawing and returned no figure rather than a guess. That
+module was retired 2026-10-04: a verified triple still drew the WRONG model (a
+ratio scale factor as an area rectangle, two joined areas as a number-line
+jump). Build figures are now authored per example and validated against the
+example's own numbers — `data/small-group-build/`, gate
+`tools/validate-small-group-build.mjs`.
 
 **Extended to inference** in `engine/core/small-group-misconceptions.js`: a named
 misconception is reported only when the student's answer matches exactly one

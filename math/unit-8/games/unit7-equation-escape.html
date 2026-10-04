@@ -57,7 +57,6 @@
             <!-- EWL Universal Arcade Enhancements Header -->
       <div class="ewl-arcade-header-bar">
         <div class="ewl-arcade-title-group">
-          <a href="/math/games/" class="ewl-back-hub-btn">⬅️ Arcade Hub</a>
           <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
           <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
         </div>
@@ -260,6 +259,34 @@
       const sfx = new SFX();
 
       // --- QUESTION GENERATION ---
+      // ── Help ladder (calm, earned): Tier 1 = method hint that never states the
+      // answer; Tier 2 = the worked step with the last value left for the
+      // student; after that the full solution. Wrong answers never auto-advance.
+      function methodHint(q) {
+        const t = q.text;
+        if (/^Solve: x \+ /.test(t))
+          return "x has a number ADDED to it. Undo adding by subtracting that number from BOTH sides.";
+        if (/^Solve: x - /.test(t))
+          return "x has a number SUBTRACTED from it. Undo subtracting by adding that number to BOTH sides.";
+        if (/^Solve: \d+x = /.test(t))
+          return "x is MULTIPLIED by a number. Undo multiplying by dividing BOTH sides by that number.";
+        if (/^Solve: x \/ /.test(t))
+          return "x is DIVIDED by a number. Undo dividing by multiplying BOTH sides by that number.";
+        if (/Which value of x solves/.test(t))
+          return "Solve it like an equation to find the boundary number. With >, the boundary itself does NOT work — pick a value bigger than it.";
+        if (/open circle/i.test(t))
+          return "An open circle means the number itself is NOT included. Then look at which way the arrow points.";
+        if (/earns/.test(t))
+          return "Money earned = rate × hours. 'At least' means greater than or equal to (>=).";
+        return "Read the question again and undo one step at a time.";
+      }
+      function workedStep(q) {
+        const parts = q.explain.split(/(?<=\.)\s+(?=[A-Z$])/);
+        if (parts.length > 1) return parts.slice(0, -1).join(" ") + " Now finish the last step.";
+        const cut = q.explain.replace(/\s*[=≈]\s*[^=≈]+$/, "");
+        return cut !== q.explain ? cut + " = ?" : q.explain;
+      }
+
       function genQuestions() {
         const qs = [];
         function shuffle(a) {
@@ -307,8 +334,8 @@
         // Tier 1: One-step add/sub
         const rooms1 = ["Lab", "Lab", "Lab", "Lab", "Lab"];
         for (let i = 0; i < 5; i++) {
-          const x = Phaser.Math.Between(3, 15),
-            b = Phaser.Math.Between(2, 12);
+          const b = Phaser.Math.Between(2, 12),
+            x = b + Phaser.Math.Between(1, 12); // answer x - b is always positive
           const ans = x - b;
           if (Phaser.Math.Between(0, 1)) {
             qs.push(
@@ -365,7 +392,7 @@
                   `x = ${q2 - d > 0 ? q2 - d : q2}`,
                   `x = ${d * q2 + d}`,
                 ],
-                `Multiply both sides by ${d}: x = ${q2} x ${d} = ${d * q2}`,
+                `Multiply both sides by ${d}: x = ${q2} × ${d} = ${d * q2}`,
                 2,
                 rooms2[i],
               ),
@@ -404,7 +431,7 @@
             "Sam earns $7/hour. He needs at least $49. Which inequality for hours (h)?",
             "7h >= 49",
             ["7 + h >= 49", "7h < 49", "h / 7 >= 49"],
-            "$7 per hour x h hours >= $49 needed. So 7h >= 49. h >= 7.",
+            "$7 per hour × h hours ≥ $49 needed. So 7h >= 49, which means h ≥ 7.",
             3,
             "Spaceship",
           ),
@@ -1142,6 +1169,7 @@
             return;
           }
           this.answered = false;
+          this.attempts = 0;
           this.doorOpen = false;
           this.selectedIdx = -1;
           this.questionStartTime = Date.now();
@@ -1498,20 +1526,20 @@
           const chosen = this.answerBtns[idx].optText;
           const correct = chosen === q.correct;
           const t = this.getTheme();
-          const elapsed = (Date.now() - this.questionStartTime) / 1000;
-          const fastAnswer = elapsed < 5;
+          const tries = this.attempts || 0;
+          const fastAnswer = false; // calm: no speed bonus
 
           if (correct) {
-            this.correctAnswers++;
-            // Calculate score
+            // Full points for an unaided first try; fewer after help.
+            if (tries === 0) this.correctAnswers++;
+            const helpFactor = [1, 0.5, 0.25, 0][Math.min(tries, 3)];
             let basePoints = q.tier * 15;
-            let streakBonus = Math.min(this.streak, 5) * 5;
-            let timeBonus = fastAnswer ? 10 : elapsed < 10 ? 5 : 0;
-            let subtotal = basePoints + streakBonus + timeBonus;
+            let streakBonus = tries === 0 ? Math.min(this.streak, 5) * 5 : 0;
+            let subtotal = Math.round((basePoints + streakBonus) * helpFactor);
             if (this.doublePointsActive) subtotal *= 2;
 
             this.score += subtotal;
-            this.streak++;
+            if (tries === 0) this.streak++;
             if (this.streak > this.bestStreak) this.bestStreak = this.streak;
             this.comboMultiplier = Math.min(
               1 + Math.floor(this.streak / 2) * 0.5,
@@ -1520,7 +1548,7 @@
 
             // Update progress dots
             if (this.progDots[this.qIndex]) {
-              this.progDots[this.qIndex].setFillStyle(0x22c55e);
+              this.progDots[this.qIndex].setFillStyle(tries === 0 ? 0x22c55e : 0xf59e0b);
             }
 
             // Door opens!
@@ -1598,7 +1626,9 @@
               "DOOR UNLOCKED! +" +
                 subtotal +
                 " pts" +
-                (this.streak >= 3 ? " STREAK x" + this.streak + "!" : ""),
+                (tries > 0 ? " (with help — try the next one on your own!)" : "") +
+                (tries === 0 && this.streak >= 3 ? " STREAK x" + this.streak + "!" : "") +
+                "  ✔ " + q.explain,
             );
             this.fbObj.setColor("#22c55e");
 
@@ -1634,110 +1664,48 @@
               },
             });
           } else {
-            this.lives--;
-            if (this.lives <= 0) this.lives = 3; // Refill: finish every learning mission.
+            // Not yet: rule this door out, give the next rung of help, and let
+            // the student try again. Nothing advances on its own.
+            this.attempts = tries + 1;
             this.streak = 0;
             this.comboMultiplier = 1;
-
-            // Update progress dots
+            const btn = this.answerBtns[idx];
+            btn.eliminated = true;
+            btn.bg.setFillStyle(0xef4444, 0.45);
+            btn.bg.setStrokeStyle(3, 0xef4444);
+            btn.txt.setAlpha(0.5);
+            btn.bg.disableInteractive();
             if (this.progDots[this.qIndex]) {
-              this.progDots[this.qIndex].setFillStyle(0xef4444);
-            }
-
-            this.answerBtns[idx].bg.setFillStyle(0xef4444);
-            this.answerBtns[idx].bg.setStrokeStyle(3, 0xef4444);
-            // Show correct
-            const ci = this.answerBtns.findIndex(
-              (b) => b.optText === q.correct,
-            );
-            if (ci >= 0) {
-              this.answerBtns[ci].bg.setFillStyle(0x22c55e, 0.5);
-              this.answerBtns[ci].bg.setStrokeStyle(2, 0x22c55e);
+              this.progDots[this.qIndex].setFillStyle(0xf59e0b);
             }
             sfx.trap();
-            sfx.glassBreak();
-
-            this.showFloatingText(
-              130 + idx * 220,
-              H - 170,
-              "WRONG!",
-              "#ef4444",
-              "22px",
-            );
-
-            this.fbObj.setText("TRAP! The answer was: " + q.correct);
-            this.fbObj.setColor("#ef4444");
-            // Step-by-step solver hint reveal (animated when motion allowed; the
-            // text content is q.explain either way — no math values changed).
-            announce("Incorrect. " + q.text + ". " + q.explain);
-            this.revealSolverHint(q.explain);
-
-            // Trap animation — spikes! Reduced motion: show them statically
-            // (no tween) so the danger is still legible without movement.
-            for (let i = 0; i < 8; i++) {
-              const spike = this.add
-                .triangle(
-                  120 + i * 100,
-                  REDUCE_MOTION ? H - 140 : H - 100,
-                  0,
-                  0,
-                  10,
-                  -30,
-                  -10,
-                  -30,
-                  0xef4444,
-                  0.8,
-                )
-                .setDepth(6);
-              this.trapGroup.add(spike);
-              if (!REDUCE_MOTION) {
-                this.tweens.add({
-                  targets: spike,
-                  y: H - 140,
-                  duration: 200,
-                  yoyo: true,
-                  delay: i * 30,
-                  ease: "Power2",
-                });
-              }
-            }
-
-            if (!REDUCE_MOTION) {
-              // Heavy screen shake + red flash
-              this.cameras.main.shake(400, 0.025);
-              this.cameras.main.flash(300, 255, 0, 0, true);
-
-              // Player knockback
-              this.tweens.add({
-                targets: this.player,
-                x: Math.max(60, this.player.x - 40),
-                duration: 200,
-                yoyo: true,
-                ease: "Power2",
-              });
-
-              // Red vignette overlay
-              const vignette = this.add
-                .rectangle(W / 2, H / 2, W, H, 0xff0000, 0.15)
-                .setDepth(15);
-              this.tweens.add({
-                targets: vignette,
-                alpha: 0,
-                duration: 800,
-                onComplete: () => vignette.destroy(),
-              });
+            this.showFloatingText(130 + idx * 220, H - 170, "Not yet", "#f59e0b", "20px");
+            const left = this.answerBtns.filter((b) => !b.eliminated).length;
+            let msg;
+            if (this.attempts === 1) {
+              msg = "Not yet — " + chosen + " does not make it true. Hint: " + methodHint(q);
+            } else if (this.attempts === 2 && left > 1) {
+              msg = "Try this step: " + workedStep(q);
             } else {
-              // Reduced motion: a brief static red tint instead of a flash.
-              const tint = this.add
-                .rectangle(W / 2, H / 2, W, H, 0xff0000, 0.12)
-                .setDepth(15);
-              this.time.delayedCall(450, () => tint.destroy());
+              msg = "Here is the full solution: " + q.explain + " Tap the matching door to go on.";
             }
-
-            this.time.delayedCall(2500, () => {
-              this.qIndex++;
-              this.loadQuestion();
-            });
+            this.fbObj.setText(msg);
+            this.fbObj.setColor("#fbbf24");
+            // The shared Mission Control panel prints the full explanation on
+            // any wrong pick; replace it with this rung of the help ladder.
+            try {
+              const fm = document.querySelector(".fm-feedback");
+              if (fm) fm.textContent = msg;
+            } catch (e) {}
+            if (this.hintObj && this.hintObj.active) this.hintObj.setText("");
+            announce(msg);
+            if (REDUCE_MOTION) {
+              const tint = this.add.rectangle(W / 2, H / 2, W, H, 0xff0000, 0.08).setDepth(15);
+              this.time.delayedCall(350, () => tint.destroy());
+            } else {
+              this.cameras.main.shake(150, 0.004);
+            }
+            this.answered = false;
           }
           this.updateHUD();
         }
@@ -1821,21 +1789,11 @@
           const el = Math.floor((Date.now() - this.startTime) / 1000);
           const m = Math.floor(el / 60),
             s = el % 60;
-          this.hudTimer.setText(`${m}:${s < 10 ? "0" : ""}${s}`);
+          void m;
+          void s;
+          this.hudTimer.setText(""); // calm: no clock on screen
 
-          // Speed indicator
-          if (!this.answered) {
-            const qEl = (Date.now() - this.questionStartTime) / 1000;
-            if (qEl < 5) {
-              this.speedIndicator.setText("FAST").setColor("#22c55e");
-            } else if (qEl < 10) {
-              this.speedIndicator.setText("OK").setColor("#fbbf24");
-            } else {
-              this.speedIndicator.setText("SLOW").setColor("#ef4444");
-            }
-          } else {
-            this.speedIndicator.setText("");
-          }
+          this.speedIndicator.setText(""); // calm: no FAST/SLOW pressure
         }
 
         update() {
@@ -2063,13 +2021,9 @@
 
           const stats = [
             { l: "Score", v: d.score, c: "#fbbf24" },
-            { l: "Correct", v: `${d.correct}/${d.total}`, c: "#22c55e" },
+            { l: "First Try", v: `${d.correct}/${d.total}`, c: "#22c55e" },
             { l: "Best Streak", v: d.bestStreak, c: "#f59e0b" },
-            {
-              l: "Time",
-              v: `${Math.floor(d.time / 60)}:${(d.time % 60 < 10 ? "0" : "") + (d.time % 60)}`,
-              c: "#94a3b8",
-            },
+            { l: "Doors", v: `${d.total}/${d.total}`, c: "#94a3b8" },
           ];
           stats.forEach((s, i) => {
             const x = cx - 240 + i * 165,
@@ -2418,7 +2372,7 @@
       </div>
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
-<script src="/assets/game-studio.js?v=20261002" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261002" defer></script>
+<script src="/assets/game-studio.js?v=20261003" defer></script>
+<script src="/math/games/shared/flagship-studio.js?v=20261003" defer></script>
 </body>
 </html>

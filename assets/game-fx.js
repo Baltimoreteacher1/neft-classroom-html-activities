@@ -873,6 +873,8 @@
       var path = location.pathname || "/";
       // Practice Arcade title scene already has an in-game mission strip.
       if (/practice-arcade\/?(index\.html)?$/i.test(path)) return;
+      // Catalog and dashboard pages are not games — a "mission" dialog there is noise.
+      if (/^\/math\/games\/(dashboard\/?.*|index\.html)?$/i.test(path)) return;
       var key = "gfx-brief:" + path;
       if (sessionStorage.getItem(key) === "1") return;
     } catch (_e) {}

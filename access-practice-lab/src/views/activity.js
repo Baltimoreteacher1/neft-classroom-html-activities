@@ -18,10 +18,12 @@ import {
   isCorrect,
   wordGoal,
 } from "../grade.js";
+import { evidenceLabel, strategyFor, taskCriteria, wordBank } from "../learning.js";
 import { choiceTarget, inputHTML, reduceAnswer, seedAnswer } from "../items.js";
 import { visualsHTML } from "../media.js";
 import { isRecording, takesFor } from "../recorder.js";
 import { answerOf, loadRecord, saveRecord } from "../store.js";
+import { invalidateActivity, startIndependentAttempt, updateActivityAnswer } from "../attempts.js";
 import {
   BASE,
   DOMAIN_META,
@@ -32,6 +34,7 @@ import {
   html,
   raw,
   wordCount,
+  storage,
 } from "../util.js";
 import { activityHref, roomHref } from "./room.js";
 
@@ -40,6 +43,11 @@ const IGN = raw("data-nsr-ignore");
 const checked = new Map();
 const writingChecks = new Map();
 const tries = new Map(); // id → checks this visit (2nd miss reveals the answer)
+const helpUsed = new Set();
+let mode = "supported";
+let validation = "";
+let renderGeneration = 0;
+let loading = false;
 let cur = null; // { band, domain, level, activity, list, index, record, playlist }
 
 async function resolve(ctx) {
@@ -103,7 +111,7 @@ function stimulusHTML(a, ctx) {
     a.prompt
       ? html`<div class="prompt">
           <p class="prompt-text">${a.prompt}</p>
-          ${cur.domain !== "Reading" ? html`<button type="button" class="ghost small" data-say="${a.prompt}" aria-label="Read the question aloud">🔊</button>` : ""}
+          ${cur.domain !== "Reading" ? html`<button type="button" class="ghost small" data-say="${a.prompt}" aria-label="Read the question aloud">🔊 Hear question</button>` : ""}
         </div>`
       : ""
   }`;
@@ -119,7 +127,7 @@ function feedbackHTML(a) {
       ${a.extension ? html`<p class="fb-extra"><strong>Go further:</strong> ${a.extension}</p>` : ""}
       ${cur.domain === "Speaking" ? html`<p class="fb-extra"><strong>Now say it:</strong> record yourself saying the best answer.</p>` : ""}
     </div>`;
-  if (c.reveal === "full")
+  if (c.reveal === "full" && mode === "supported")
     return html`<div class="feedback is-shown" role="status">
       <p class="fb-title">Here is the answer</p>
       <p><strong>${correctAnswerText(a)}</strong></p>
@@ -128,7 +136,7 @@ function feedbackHTML(a) {
     </div>`;
   return html`<div class="feedback is-hint" role="status">
     <p class="fb-title">Not yet — try again</p>
-    ${a.hint ? html`<p>${a.hint}</p>` : ""}
+    ${a.hint && mode === "supported" ? html`<p>${a.hint}</p>` : html`<p>Review the task, then try again. Switch to Learn with help for a clue.</p>`}
     <button type="button" class="btn" data-retry>Try again</button>
   </div>`;
 }
@@ -146,8 +154,8 @@ function interactiveHTML(a) {
 function speakingHTML(a) {
   const notes = cur.record.notes[a.id] || "";
   const hasTake = takesFor(a.id).length > 0 || cur.record.practiced[a.id];
-  return html`${recorderHTML(a.id, { prompt: a.prompt, level: cur.level, recording: isRecording(a.id), models: hasTake ? a.models : null })}
-    ${!hasTake && a.models ? html`<p class="fine">Record once, then you can hear sample answers at every level.</p>` : ""}
+  return html`${recorderHTML(a.id, { prompt: a.prompt, level: cur.level, recording: isRecording(a.id), models: hasTake && mode === "supported" ? a.models : null, activity: a })}
+    ${!hasTake && a.models ? html`<p class="fine">Record or practice aloud with a partner, then hear sample answers in Learn with help mode.</p>` : ""}
     <label class="field">
       <span>${a.responseLabel || "Planning notes (optional)"}</span>
       <textarea
@@ -158,6 +166,7 @@ function speakingHTML(a) {
       >
 ${notes}</textarea>
     </label>
+    <section class="task-criteria"><h2>What to include</h2><ul>${taskCriteria(a).map((c) => html`<li>${c}</li>`)}</ul></section>
     ${speakingChecksHTML(cur.record.selfChecks[a.id] || {})}
     <label class="practiced"
       ><input
@@ -171,16 +180,16 @@ ${notes}</textarea>
     <button type="button" class="btn btn-primary" data-save-speaking>
       Save my speaking practice
     </button>
-    ${cur.record.complete.includes(a.id) ? html`<p class="saved-note">✓ Saved. Try again any time to beat your last recording.</p>` : ""}`;
+    ${cur.record.complete.includes(a.id) ? html`<p class="saved-note">✓ Practice evidence saved. The audio itself is not saved. Try again to add a useful detail.</p>` : ""}`;
 }
 
 function writingHTML(a) {
   const text = cur.record.notes[a.id] || "";
   const goal = wordGoal(cur.level);
-  const bank = [...(a.wordBank || []), ...(a.vocabulary || []).map((v) => v[0])].slice(0, 12);
+  const bank = mode === "supported" ? wordBank(a).slice(0, 12) : [];
   const result = writingChecks.get(a.id);
   const usedWords = new Set(analyzeWriting(text, a, cur.level).usedWords);
-  return html`${
+  return html`${mode === "supported" && (bank.length || (a.frames || []).length) ? raw('<details class="writing-starters"><summary>Writing starters</summary>') : ""}${
       bank.length
         ? html`<ul class="wordbank" aria-label="Word bank">
             ${bank.map((w) => html`<li class="${usedWords.has(String(w).split("/")[0].trim().toLowerCase()) ? "is-used" : ""}">${w}</li>`)}
@@ -188,12 +197,13 @@ function writingHTML(a) {
         : ""
     }
     ${
-      (a.frames || []).length
+      mode === "supported" && (a.frames || []).length
         ? html`<ul class="frames inline">
             ${a.frames.map((f) => html`<li>${f}</li>`)}
           </ul>`
         : ""
     }
+    ${mode === "supported" && (bank.length || (a.frames || []).length) ? raw("</details>") : ""}
     <label class="field">
       <span>${a.responseLabel || "Your writing"}</span>
       <textarea
@@ -205,6 +215,7 @@ function writingHTML(a) {
       >
 ${text}</textarea>
     </label>
+    <p class="fine">Answer the question first. The word target is optional; useful details matter more than length.</p>
     <p class="meter">
       <span class="meter-bar"
         ><span
@@ -214,25 +225,30 @@ ${text}</textarea>
     </p>
     <div class="row-actions">
       <button type="button" class="btn btn-primary" data-check-writing>Check my writing</button>
-      <button type="button" class="ghost" data-say="${text || "Write something first."}">
+      <button type="button" class="ghost" data-read-writing data-say="${text || "Write something first."}">
         🔊 Read my writing to me
       </button>
     </div>
     ${
       result
         ? html`<div class="feedback ${result.met >= 3 ? "is-right" : "is-hint"}" role="status">
-              <p class="fb-title">
-                ${result.met >= 3 ? "Writing observations" : "Ideas for revision"}
-              </p>
+              <p class="fb-title">Review your meaning first</p>
+              <ul>${taskCriteria(a).map((c) => html`<li>${c}</li>`)}</ul>
+              <p><strong>One next step:</strong> ${result.checks.find((c) => !c.ok)?.tip || "Read your answer aloud. Keep only details that help answer the question."}</p>
+              <details><summary>Optional surface checks</summary>
               <ul class="checks">
                 ${result.checks.map((c) => html`<li class="${c.ok ? "ok" : "todo"}">${c.ok ? "✓" : "○"} ${c.ok ? c.label : c.tip}</li>`)}
               </ul>
+              </details>
               ${result.usedWords.length ? html`<p class="fine">Word-bank words you used: ${result.usedWords.join(", ")}</p>` : ""}
               <p class="fine">
                 These checks notice surface features, not meaning or a score. Did you answer every part and include a specific detail? Ask your teacher for feedback.
               </p>
             </div>
-            ${a.models ? modelLadderHTML(a.models, cur.level) : ""}`
+            <label class="field"><span>What did you improve, or what did you check?</span><textarea data-reflection rows="2" data-nsr-ignore>${cur.record.reflections[a.id] || ""}</textarea></label>
+            <button type="button" class="btn btn-primary" data-finish-writing>Save my reviewed writing</button>
+            <details class="draft-history"><summary>Compare my first and current draft</summary><h3>First draft</h3><p>${cur.record.drafts[a.id]?.first || text}</p><h3>Current draft</h3><p>${text}</p></details>
+            ${a.models && mode === "supported" ? modelLadderHTML(a.models, cur.level, a) : ""}`
         : ""
     }`;
 }
@@ -268,7 +284,7 @@ function navHTML() {
   if (cur.playlist) {
     const { ids, index, title } = cur.playlist;
     const at = (i) =>
-      `${BASE}/play?ids=${ids.join(",")}&i=${i}${title ? `&t=${encodeURIComponent(title)}` : ""}`;
+      `${BASE}/play?ids=${ids.join(",")}&i=${i}&grades=${cur.band}&mode=${mode}${title ? `&t=${encodeURIComponent(title)}` : ""}`;
     return html`<nav class="act-nav" aria-label="Playlist">
       ${index > 0 ? html`<a class="btn" href="${at(index - 1)}">← Previous</a>` : html`<span></span>`}
       <span class="act-count">${index + 1} of ${ids.length}</span>
@@ -285,7 +301,14 @@ function navHTML() {
 }
 
 export async function render(ctx) {
-  const found = await resolve(ctx);
+  const generation = ++renderGeneration;
+  loading = true;
+  const snapshot = { band: ctx.band, route: { ...ctx.route }, prefs: { ...ctx.prefs } };
+  const requestedMode = new URLSearchParams(location.search).get("mode");
+  const found = await resolve(snapshot);
+  const shared = await loadShared().catch(() => null);
+  if (generation !== renderGeneration) return { title: "", html: "" };
+  loading = false;
   if (!found?.activity)
     return {
       title: "Not found",
@@ -301,11 +324,13 @@ export async function render(ctx) {
     checked.clear();
     writingChecks.clear();
     tries.clear();
+    helpUsed.clear();
+    validation = "";
   }
   const a = cur.activity;
+  mode = requestedMode === "independent" ? "independent" : "supported";
   const meta = DOMAIN_META[cur.domain] || DOMAIN_META.Listening;
   const tier = TIERS[cur.level];
-  const shared = await loadShared().catch(() => null);
   const done = cur.record.complete.includes(a.id);
   return {
     title: a.title,
@@ -331,27 +356,39 @@ export async function render(ctx) {
               data-say="${a.directions}"
               aria-label="Read the directions aloud"
             >
-              🔊
+              🔊 Hear directions
             </button>
           </div>
         </header>
-        <section class="stimulus">${stimulusHTML(a, ctx)}</section>
-        ${vocabHTML(a, shared)}
+        <div class="activity-workspace">
+        <section class="stimulus" aria-labelledby="sourceHeading"><h2 id="sourceHeading" class="workbook-heading"><span aria-hidden="true">1</span> ${isListening(cur.domain, a) ? "Listen and notice" : cur.domain === "Reading" ? "Read and notice" : "Look and plan"}</h2>${stimulusHTML(a, ctx)}</section>
+        <div class="response-workspace"><h2 class="workbook-heading"><span aria-hidden="true">2</span> ${cur.domain === "Speaking" ? "Speak and review" : a.type === "worksheet" ? "Work on paper" : "Respond and review"}</h2>
+        <fieldset class="practice-mode"><legend>Practice mode</legend>
+          <label><input type="radio" name="practiceMode" value="supported" data-mode ${mode === "supported" ? raw("checked") : ""} data-nsr-ignore /> Learn with help</label>
+          <label><input type="radio" name="practiceMode" value="independent" data-mode ${mode === "independent" ? raw("checked") : ""} data-nsr-ignore /> Try independently</label>
+          <p class="fine">${mode === "independent" ? "Vocabulary, models and hints stay closed until you review. Replay and directions remain available. This is classroom practice, not a test simulation." : "Strategies and examples are available below. Help and retries are saved as supported practice."}</p></fieldset>
+        ${mode === "supported" ? html`<details class="strategy" data-help><summary>First: try a strategy</summary><p>${strategyFor(cur.domain)}</p></details>${vocabHTML(a, shared, { focused: Boolean(checked.get(a.id) || writingChecks.get(a.id)) })}` : ""}
+        ${!["constructed", "worksheet"].includes(a.type) && cur.record.results[a.id] ? html`<div class="fresh-attempt"><button type="button" class="btn" data-fresh-attempt>Start a fresh independent attempt</button><p class="fine">Save a summary of this attempt and clear its selected answers. Earlier help stays in your history; this is another try at the same task.</p></div>` : ""}
+        <p id="answerValidation" role="alert" ${validation ? "" : raw("hidden")}>${validation}</p>
         <section class="answer-zone" aria-label="Your answer">${answerZone(a)}</section>
+        </div></div>
+        <p class="save-explainer">Writing and checklists save on this browser. Audio does not. <a href="${BASE}/passport">Saved work and transfer options</a></p>
       </article>
+      ${cur.record.results[a.id] ? html`<p class="practice-evidence"><strong>Practice evidence:</strong> ${evidenceLabel(cur.record.results[a.id])}. This is not a proficiency score.</p>` : ""}
       ${navHTML()}`,
   };
 }
 
 // ── interactions ──────────────────────────────────────────────────────────────
 function setAnswer(a, next, ctx) {
-  cur.record.answers[a.id] = next;
+  updateActivityAnswer(cur.record, a.id, next);
   save();
   ctx.rerender();
 }
 
 function check(a, ctx) {
   const answer = answerOf(cur.record, a.id) ?? seedAnswer(a);
+  if (!isAnswered(a, answer)) return;
   if (answer !== undefined && answerOf(cur.record, a.id) === undefined)
     cur.record.answers[a.id] = answer;
   const attempt = (cur.record.attempts[a.id] || 0) + 1;
@@ -359,23 +396,28 @@ function check(a, ctx) {
   const ok = isCorrect(a, answer);
   const n = (tries.get(a.id) || 0) + 1;
   tries.set(a.id, n);
-  checked.set(a.id, { ok, attempt: n, reveal: ok ? "mark" : n >= 2 ? "full" : "mark" });
+  checked.set(a.id, { ok, attempt: n, reveal: ok ? "mark" : n >= 2 && mode === "supported" ? "full" : "mark" });
   cur.record.results[a.id] = {
     ok,
+    meaningful: true,
+    evidence: ok ? ((helpUsed.has(a.id) || Boolean(cur.record.supportUsed?.[a.id])) || attempt > 1 ? "supported" : "independent") : "attempted",
+    supportUsed: (helpUsed.has(a.id) || Boolean(cur.record.supportUsed?.[a.id])),
+    mode,
     score: ok ? 1 : 0,
     total: 1,
     band: band(ok ? 1 : 0, 1),
     date: new Date().toISOString(),
     tries: n,
   };
-  if (ok && !cur.record.complete.includes(a.id)) cur.record.complete.push(a.id);
+  cur.record.complete = cur.record.complete.filter((id) => id !== a.id);
+  if (ok) cur.record.complete.push(a.id);
   save();
-  announce(ok ? "Correct!" : n >= 2 ? "Here is the answer." : "Not yet. Try again.");
+  announce(ok ? "Correct!" : n >= 2 && mode === "supported" ? "Here is the answer." : "Not yet. Try again.");
   ctx.rerender();
 }
 
 export function onClick(e, ctx) {
-  if (!cur) return;
+  if (!cur || loading) return;
   const a = cur.activity;
   const t = e.target;
   const choice = !checked.get(a.id) && choiceTarget(e);
@@ -387,24 +429,60 @@ export function onClick(e, ctx) {
     const next = reduceAnswer(a, answerOf(cur.record, a.id), t);
     if (next !== undefined && !t.matches("[data-ans-choice]")) return setAnswer(a, next, ctx);
   }
+  if (t.closest("[data-fresh-attempt]")) {
+    if (["constructed", "worksheet"].includes(a.type)) return;
+    startIndependentAttempt(cur.record, a.id);
+    checked.delete(a.id); tries.delete(a.id); helpUsed.delete(a.id);
+    validation = "";
+    save();
+    const url = new URL(location.href);
+    url.searchParams.set("mode", "independent");
+    url.searchParams.set("grades", cur.band);
+    ctx.navigate(url.pathname + url.search, { replace: true });
+    announce("Fresh attempt started. Your previous attempt summary is in your Passport portfolio.");
+    return;
+  }
   if (t.closest("[data-check]")) return check(a, ctx);
   if (t.closest("[data-retry]")) {
     checked.delete(a.id);
     ctx.rerender();
     return;
   }
+  if (t.closest("[data-finish-writing]")) {
+    const text = cur.record.notes[a.id] || "";
+    const reflection = cur.record.reflections[a.id] || "";
+    if (!wordCount(text) || !wordCount(reflection)) {
+      validation = "Write your answer and tell what you improved or checked first.";
+      ctx.rerender(); return;
+    }
+    const revised = cur.record.drafts[a.id]?.first?.trim() !== text.trim();
+    writingChecks.set(a.id, analyzeWriting(text, a, cur.level));
+    cur.record.results[a.id] = { words: wordCount(text), meaningful: true, evidence: revised ? "revised" : "writing", mode, supportUsed: (helpUsed.has(a.id) || Boolean(cur.record.supportUsed?.[a.id])), date: new Date().toISOString() };
+    if (!cur.record.complete.includes(a.id)) cur.record.complete.push(a.id);
+    validation = ""; save(); announce(storage.isVolatile ? "Reviewed writing kept in this tab. Export a Passport code before leaving." : "Reviewed writing saved. This is practice evidence, not a score."); ctx.rerender(); return;
+  }
   if (t.closest("[data-check-writing]")) {
     const text = cur.record.notes[a.id] || "";
+    if (!wordCount(text)) {
+      validation = "Write a word, phrase, or sentence before checking your writing.";
+      writingChecks.delete(a.id);
+      Promise.resolve(ctx.rerender()).then(() => document.querySelector("[data-note]")?.focus());
+      return;
+    }
+    validation = "";
+    cur.record.drafts[a.id] ||= { first: text };
     const result = analyzeWriting(text, a, cur.level);
     writingChecks.set(a.id, result);
     cur.record.results[a.id] = {
-      score: result.met,
-      total: result.checks.length,
-      band: band(result.met, result.checks.length),
+      meaningful: true,
+      evidence: "attempted",
+      mode,
+      supportUsed: (helpUsed.has(a.id) || Boolean(cur.record.supportUsed?.[a.id])),
       words: result.words,
       date: new Date().toISOString(),
     };
-    if (result.met >= 3 && !cur.record.complete.includes(a.id)) cur.record.complete.push(a.id);
+    // Completion is a deliberate meaning review, never a surface-feature score.
+    cur.record.complete = cur.record.complete.filter((id) => id !== a.id);
     save();
     ctx.rerender();
     return;
@@ -413,16 +491,23 @@ export function onClick(e, ctx) {
     const checks = cur.record.selfChecks[a.id] || {};
     const n = SPEAKING_CHECKS.filter((c) => checks[c.id]).length;
     const practiced = takesFor(a.id).length > 0 || cur.record.practiced[a.id];
+    if (!practiced) { validation = "Record your answer or practice aloud with a partner first."; ctx.rerender(); return; }
+    validation = "";
     cur.record.results[a.id] = {
+      meaningful: true,
+      evidence: takesFor(a.id).length ? "recorded" : "speaking",
+      mode,
+      supportUsed: (helpUsed.has(a.id) || Boolean(cur.record.supportUsed?.[a.id])),
       score: n,
       total: SPEAKING_CHECKS.length,
       band: band(n, SPEAKING_CHECKS.length),
       practiced: Boolean(practiced),
       date: new Date().toISOString(),
     };
+    cur.record.complete = cur.record.complete.filter((id) => id !== a.id);
     if (practiced && n >= 2) {
       if (!cur.record.complete.includes(a.id)) cur.record.complete.push(a.id);
-      announce("Speaking practice saved.");
+      announce(storage.isVolatile ? "Speaking practice kept in this tab. Export a Passport code before leaving." : "Speaking practice saved.");
     } else
       announce(
         practiced
@@ -436,27 +521,36 @@ export function onClick(e, ctx) {
   if (t.closest("[data-mark-done]")) {
     const i = cur.record.complete.indexOf(a.id);
     i >= 0 ? cur.record.complete.splice(i, 1) : cur.record.complete.push(a.id);
+    if (i < 0) cur.record.results[a.id] = { meaningful: true, evidence: "worksheet", date: new Date().toISOString() };
+    else delete cur.record.results[a.id];
     save();
     ctx.rerender();
   }
 }
 
 export function onChange(e, ctx) {
-  if (!cur) return;
+  if (!cur || loading) return;
   const a = cur.activity;
   const t = e.target;
+  if (t.matches("[data-mode]")) {
+    const url = new URL(location.href); url.searchParams.set("mode", t.value); url.searchParams.set("grades", cur.band);
+    ctx.navigate(url.pathname + url.search, { replace: true }); return;
+  }
   if ((t.matches("[data-ans-choice]") || t.matches("[data-ans-cloze]")) && !checked.get(a.id)) {
     const next = reduceAnswer(a, answerOf(cur.record, a.id), t);
     if (next !== undefined) return setAnswer(a, next, ctx);
   }
   if (t.matches("[data-selfcheck]")) {
+    invalidateActivity(cur.record, a.id);
     cur.record.selfChecks[a.id] = {
       ...(cur.record.selfChecks[a.id] || {}),
       [t.dataset.selfcheck]: t.checked,
     };
     save();
+    ctx.rerender();
   }
   if (t.matches("[data-practiced]")) {
+    invalidateActivity(cur.record, a.id);
     cur.record.practiced[a.id] = t.checked;
     save();
     ctx.rerender();
@@ -464,10 +558,31 @@ export function onChange(e, ctx) {
 }
 
 export function onInput(e) {
-  if (!cur || !e.target.matches("[data-note]")) return;
+  if (!cur || loading) return;
+  if (e.target.matches("[data-reflection]")) {
+    if (cur.record.reflections[cur.activity.id] !== e.target.value) {
+      invalidateActivity(cur.record, cur.activity.id);
+      document.querySelector(".done-badge")?.remove();
+      const evidence = document.querySelector(".practice-evidence");
+      if (evidence) evidence.textContent = "Reflection changed — review this version before marking it complete.";
+    }
+    cur.record.reflections[cur.activity.id] = e.target.value; save(); return;
+  }
+  if (!e.target.matches("[data-note]")) return;
   const a = cur.activity;
+  if (cur.domain !== "Speaking" && cur.record.notes[a.id] !== e.target.value) {
+    invalidateActivity(cur.record, a.id);
+    document.querySelector(".done-badge")?.remove();
+    writingChecks.delete(a.id);
+    const evidence = document.querySelector(".practice-evidence");
+    if (evidence) evidence.textContent = "Draft changed — review this version before marking it complete.";
+    const feedback = document.querySelector(".feedback");
+    if (feedback) feedback.hidden = true;
+  }
   cur.record.notes[a.id] = e.target.value;
   save();
+  const readButton = document.querySelector("[data-read-writing]");
+  if (readButton) readButton.dataset.say = e.target.value || "Write something first.";
   const meter = document.querySelector("[data-meter]");
   if (meter) {
     const goal = wordGoal(cur.level);
@@ -480,3 +595,12 @@ export function onInput(e) {
       li.classList.toggle("is-used", usedWords.has(li.textContent.split("/")[0].trim().toLowerCase()));
   }
 }
+
+export function mount(root) {
+  const owner = cur;
+  for (const details of root.querySelectorAll(".helpers, .strategy, .ladder, .transcript, .writing-starters")) {
+    details.addEventListener("toggle", () => { if (details.open && details.isConnected && cur === owner) { helpUsed.add(cur.activity.id); cur.record.supportUsed ||= {}; cur.record.supportUsed[cur.activity.id] = true; save(); } });
+  }
+}
+
+export function unmount() { renderGeneration++; loading = true; }

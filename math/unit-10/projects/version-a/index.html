@@ -794,6 +794,7 @@
     <meta name="nt-project-reveal-unit" content="10" />
     <link rel="stylesheet" href="/shared/projects/projects-meta.css?v=20260727-v2" />
     <!-- projects-meta-injected:end -->
+    <script src="/shared/projects/projects-notify.js?v=20261004" defer></script>
   </head>
   <body class="level-1 pro-projects declutter-projects" id="body">
     <!-- ====== HERO ====== -->
@@ -2761,21 +2762,21 @@
                 : 'You have not pressed "📝 Generate Summary" yet to create your spec sheet.',
             );
           }
-          alert(
+          NTNotify.fix(
             (isSpanish ? "Casi listo. " : "Almost there. ") +
               parts.join(" ") +
               (isSpanish
                 ? " Termina eso y vuelve a presionar este botón."
-                : " Finish that, then press this button again."),
+                : " Finish that, then press this button again.")
           );
           return;
         }
 
         playConfetti();
-        alert(
+        NTNotify.toast(
           isSpanish
             ? "¡Felicitaciones! 🎉 Entrega tu hoja de especificaciones: imprímela, descárgala o muéstrala a tu maestro."
-            : "Congratulations! 🎉 Turn in your spec sheet: print it, download it, or show it to your teacher.",
+            : "Congratulations! 🎉 Turn in your spec sheet: print it, download it, or show it to your teacher.", { tone: "success" }
         );
       }
 
@@ -3977,23 +3978,23 @@
           const msg = isSpanish
             ? "¡Por favor haz clic en Generar Resumen primero!"
             : "Please click Generate Summary first!";
-          alert(msg);
+          NTNotify.fix(msg);
           return;
         }
         navigator.clipboard?.writeText(txt).then(() => {
           const msg = isSpanish ? "¡Copiado al portapapeles!" : "Copied to clipboard!";
-          alert(msg);
+          NTNotify.toast(msg);
         });
       }
 
       function downloadTxt() {
-        const txt = document.getElementById("reportBox").textContent;
+        let txt = document.getElementById("reportBox").textContent;
         if (!txt) {
-          const msg = isSpanish
-            ? "¡Por favor haz clic en Generar Resumen primero!"
-            : "Please click Generate Summary first!";
-          alert(msg);
-          return;
+          /* Build the summary for the student instead of blocking Download with
+             an alert. buildReport() explains itself if a step is still missing. */
+          if (typeof buildReport !== "function" || buildReport() === false) return;
+          txt = document.getElementById("reportBox")?.textContent;
+          if (!txt) return;
         }
         const a = document.createElement("a");
         a.href = "data:text/plain;charset=utf-8," + encodeURIComponent(txt);

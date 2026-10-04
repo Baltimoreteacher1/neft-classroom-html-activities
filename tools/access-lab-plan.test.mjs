@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { estimateMinutes } from "../access-practice-lab/src/learning.js";
 import { activityStatus, buildPracticePlan } from "../access-practice-lab/src/practice-plan.js";
 import { CORE_DOMAINS } from "../access-practice-lab/src/util.js";
-import { buildIndex } from "./lib/access-lab-content.mjs";
+import { activityMinutes, buildIndex } from "./lib/access-lab-content.mjs";
 
 const record = (patch = {}) => ({ complete: [], answers: {}, notes: {}, results: {}, ...patch });
 const rows = CORE_DOMAINS.flatMap((domain) =>
@@ -38,7 +39,7 @@ test("status recognizes meaningful drafts and legacy responses, not empty fields
   );
   assert.equal(
     activityStatus(record({ complete: ["x"], results: { x: { ok: false } } }), "x"),
-    "done",
+    "retry",
   );
 });
 
@@ -102,4 +103,34 @@ test("every shipping band supports all planner choices without crossing bands", 
         assert.ok(plan.every((r) => r.band === band && r.level === level));
       }
   }
+});
+
+test("session duration comes from task metadata, allowing for the upper end of ranges", () => {
+  assert.equal(activityMinutes("6-8 min"), 8);
+  assert.equal(activityMinutes("5 min"), 5);
+  assert.equal(activityMinutes(undefined), null);
+  const index = buildIndex();
+  const rows = Object.values(index.bands["3-5"].domains.Writing.levels).flatMap(
+    (l) => l.activities,
+  );
+  assert.ok(rows.some((r) => r[4] > 0));
+  assert.ok(rows.every((r) => r[4] === null || r[4] > 0));
+  assert.equal(estimateMinutes([{ type: "constructed", minutes: null }]), 6);
+  assert.equal(
+    estimateMinutes(rows.slice(0, 2).map((r) => ({ minutes: r[4] }))),
+    rows[0][4] + rows[1][4],
+  );
+});
+
+test("recommendations explain supported revisits and limit them to one per session", () => {
+  const ids = rows.map((r) => r.id);
+  const plan = buildPracticePlan(rows, {}, () =>
+    record({
+      complete: ids,
+      results: Object.fromEntries(ids.map((id) => [id, { ok: true, evidence: "supported" }])),
+    }),
+  );
+  assert.equal(plan.length, 4);
+  assert.equal(plan.filter((row) => row.status === "revisit").length, 1);
+  assert.match(plan[0].reason, /fresh answer independently/);
 });

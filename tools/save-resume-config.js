@@ -67,6 +67,7 @@ export const SKIP_TOPLEVEL = new Set([
   "personal", // private (event planning, family pages) — not classroom activities
   "futures", // concept/demo/roadmap pages — not student activities
   "access-teacher", // teacher-facing surface
+  "access-guide", // read-only practice guide, with no student work to save
   "work-coach", // stateless AI photo-coaching tool — no progress to save/resume
   "math-sims", // stateless physics sandboxes (slope/probability) — nothing to save
   "infinite-practice", // stateless AI practice generator — nothing to save

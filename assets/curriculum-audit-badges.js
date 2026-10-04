@@ -37,7 +37,7 @@
       ".audit-badge.ok{background:#e3f4ea;color:#1f7a44;border-color:#9ed8b6;}" +
       ".audit-badge.review{background:#fef0d8;color:#9a6b12;border-color:#f2c15b;}" +
       ".audit-badge.missing{background:#fde4e1;color:#a33124;border-color:#f0a89f;}" +
-      ".audit-badge.info{background:#dff2ee;color:#1fa6a2;border-color:#1fa6a2;}" +
+      ".audit-badge.info{background:#dff2ee;color:#0f6b67;border-color:#5fbdb7;}" +
       ".audit-badge.gray{background:#eef2f6;color:#5f6f80;border-color:#d7e2ed;}" +
       ".res[data-audit-pill]{border-style:dashed;}" +
       ".audit-controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 8px;}" +

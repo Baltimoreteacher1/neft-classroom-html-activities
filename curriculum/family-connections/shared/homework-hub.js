@@ -23,10 +23,19 @@ export function addDays(iso, count) {
   d.setUTCDate(d.getUTCDate() + count);
   return d.toISOString().slice(0, 10);
 }
+/* Which week a family is in, judged from the Monday of the CURRENT school
+ * week — and on a Saturday or Sunday that is the week about to start, the same
+ * rule as weekStartFor in pacing-week.js. Judging the weekend as part of the
+ * week that just ended made the two disagree every weekend: the app opened the
+ * coming week (weekStartFor) but labelled the finished one "This week" and the
+ * one it opened "Upcoming". */
 export function weekPhase(start, now = new Date()) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(start || "") || addDays(start, 0) !== start) return "empty";
   const today = schoolDate(now);
-  return today < start ? "upcoming" : today > addDays(start, 6) ? "past" : "current";
+  const weekday = new Date(`${today}T12:00:00Z`).getUTCDay();
+  const current =
+    weekday === 0 ? addDays(today, 1) : weekday === 6 ? addDays(today, 2) : addDays(today, 1 - weekday);
+  return current < start ? "upcoming" : current > addDays(start, 6) ? "past" : "current";
 }
 export function familyLink(sectionId, lang = "en", origin = "https://eduwonderlab.com") {
   const url = new URL("/curriculum/family-connections/", origin);
@@ -186,6 +195,18 @@ export function renderHomeworkHub(
         "quiet last-posted",
       ),
     );
+    /* Between weeks this card used to be a dead end: no homework link at all
+       until a new plan was posted. The last plan stays one tap away. */
+    const catchUp = new URLSearchParams({ section: section.id, week: section.week.startDate });
+    if (es) catchUp.set("lang", "es");
+    week.append(
+      el(
+        "a",
+        t("Catch up on last week’s homework", "Ponte al día con la tarea de la semana pasada"),
+        "button catch-up-link",
+      ),
+    );
+    week.lastChild.setAttribute("href", `?${catchUp}`);
   } else if (phase === "empty") {
     week.append(
       el(
@@ -312,17 +333,8 @@ export function renderHomeworkHub(
         content.append(
           el("p", `${t("Due", "Entrega")}: ${dateLabel(item.entry.dueDate, lang)}`, "due-date"),
         );
-      else
-        content.append(
-          el(
-            "p",
-            t(
-              "Due date: ask Mr. Neft if needed.",
-              "Fecha de entrega: consulta al Sr. Neft si la necesitas.",
-            ),
-            "quiet",
-          ),
-        );
+      // No authored due date: say nothing rather than "ask Mr. Neft" on every
+      // card. The week's own guidance already explains catch-up days.
       content.append(
         el(
           "p",

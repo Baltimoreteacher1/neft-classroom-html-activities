@@ -2,12 +2,15 @@
 // Links contain content IDs only; answers and student names never leave the device.
 import { bandSwitchHTML, crumbsHTML } from "../components.js";
 import { bandRows } from "../content.js";
+import { estimateMinutes } from "../learning.js";
 import { activityStatus } from "../practice-plan.js";
 import { loadRecord } from "../store.js";
 import { BASE, CORE_DOMAINS, TIERS, announce, bandLabel, html, raw, toHtml } from "../util.js";
 import { activityHref } from "./room.js";
 
 const LIMIT = 12;
+export const PAGE_SIZE = 24;
+let page = 1;
 const STATUS = { new: "Not started", draft: "In progress", retry: "Try again", done: "Completed" };
 let rows = [];
 let selected = [];
@@ -27,6 +30,12 @@ export function filterActivities(items, { q = "", domain = "", level = "", statu
   );
 }
 
+export function pageActivities(items, requested = 1) {
+  const pages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+  const current = Math.max(1, Math.min(pages, Math.floor(Number(requested)) || 1));
+  return { items: items.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE), page: current, pages };
+}
+
 export function playlistURL(ids, gradeBand) {
   const q = new URLSearchParams({
     ids: ids.slice(0, LIMIT).join(","),
@@ -39,30 +48,35 @@ export function playlistURL(ids, gradeBand) {
 function syncURL() {
   const q = new URLSearchParams({ grades: band });
   for (const [key, value] of Object.entries(filters)) if (value) q.set(key, value);
+  if (page > 1) q.set("page", page);
   if (selected.length) q.set("pick", selected.join(","));
   history.replaceState({}, "", `${BASE}/library?${q}`);
 }
 
 function resultHTML() {
   const matches = filterActivities(rows, filters);
-  return html`<p class="library-count" role="status">${matches.length} ${matches.length === 1 ? "activity" : "activities"} found</p>
+  const slice = pageActivities(matches, page);
+  page = slice.page;
+  return html`<h2 class="library-count" id="libraryResultTitle" tabindex="-1">Activities</h2><p role="status">${matches.length} ${matches.length === 1 ? "activity" : "activities"} found${matches.length ? ` · showing ${(page - 1) * PAGE_SIZE + 1}–${Math.min(page * PAGE_SIZE, matches.length)}` : ""}</p>
     ${
       matches.length
-        ? html`<ul class="library-results">${matches.map(
+        ? html`<ul class="library-results">${slice.items.map(
             (r) => html`<li class="library-item">
       <div><p class="eyebrow">${r.domain} · ${TIERS[r.level]?.name || r.level}</p>
       <a class="library-title" href="${activityHref(r.domain, r.level, r.id)}?grades=${band}">${r.title}</a>
-      <p class="fine">${r.skill || "Language practice"} · <strong>${STATUS[r.status]}</strong></p></div>
+      <p class="fine">${r.skill || "Language practice"} · about ${estimateMinutes([r])} minutes · <strong>${STATUS[r.status]}</strong></p></div>
       <button type="button" class="btn library-add" data-pick="${r.id}" aria-pressed="${selected.includes(r.id)}" aria-label="${selected.includes(r.id) ? "Remove" : "Add"} ${r.title} ${selected.includes(r.id) ? "from" : "to"} practice set">${selected.includes(r.id) ? "✓ Added" : "+ Add"}</button>
     </li>`,
           )}</ul>`
         : html`<div class="panel"><h2>No matching activities</h2><p>Try a shorter search or choose a different skill, support, or progress filter.</p><button type="button" class="btn" data-clear-filters>Clear filters</button></div>`
-    }`;
+    }
+    ${slice.pages > 1 ? html`<nav class="library-pagination" aria-label="Activity result pages"><button type="button" class="btn" data-page="${page - 1}" ${page === 1 ? raw("disabled") : ""}>Previous</button><span>Page ${page} of ${slice.pages}</span><button type="button" class="btn" data-page="${page + 1}" ${page === slice.pages ? raw("disabled") : ""}>Next</button></nav>` : ""}`;
 }
 
 function setHTML() {
   const picked = selected.map((id) => rows.find((r) => r.id === id)).filter(Boolean);
-  return html`<h2 id="practiceSetTitle">Your practice set <span class="fine">${picked.length}/${LIMIT}</span></h2>
+  if (!picked.length) return html`<div class="library-set-empty"><h2 id="practiceSetTitle">Build a practice set</h2><p class="fine">Use “+ Add” below to combine up to ${LIMIT} activities into a shareable session.</p></div>`;
+  return html`<h2 id="practiceSetTitle">Your practice set <span class="fine">${picked.length}/${LIMIT} · about ${estimateMinutes(picked)} minutes</span></h2>
     <p class="fine">Add activities in the order you want to practice. A shared link includes only the activities, not your answers or progress.</p>
     ${
       picked.length
@@ -76,6 +90,7 @@ function setHTML() {
 export async function render(ctx) {
   band = ctx.band;
   const q = new URLSearchParams(location.search);
+  page = Number(q.get("page")) || 1;
   filters = {
     q: (q.get("q") || "").slice(0, 120),
     domain: q.get("domain") || "",
@@ -115,7 +130,8 @@ export async function render(ctx) {
       <label class="field"><span>Skill</span><select id="libraryDomain" data-library-filter="domain" data-nsr-ignore>${options([["", "All four skills"], ...CORE_DOMAINS.map((d) => [d, d])], filters.domain)}</select></label>
       <label class="field"><span>Support</span><select id="libraryLevel" data-library-filter="level" data-nsr-ignore>${options([["", "All support choices"], ...Object.entries(TIERS).map(([k, t]) => [k, t.name])], filters.level)}</select></label>
       <label class="field"><span>My progress</span><select id="libraryStatus" data-library-filter="status" data-nsr-ignore>${options([["", "Any progress"], ...Object.entries(STATUS)], filters.status)}</select></label>
-    </div><p class="fine">${bandLabel(band)} · Progress is for this browser. Support choices are flexible classroom scaffolds, not WIDA scores.</p>
+    </div><p class="fine">${bandLabel(band)} · Progress is for this browser. Support changes tasks and scaffolds: Starting uses words and short sentences; Growing connects ideas; Expanding adds details and explanations. These are not WIDA scores.</p>
+    <div class="library-quick" aria-label="Quick activity searches"><span>Start with:</span>${["garden", "evidence", "compare", "sequence"].map((topic) => html`<button type="button" class="btn" data-quick-topic="${topic}">${topic}</button>`)}</div>
     <div id="libraryResults">${resultHTML()}</div></section>`,
   };
 }
@@ -126,18 +142,36 @@ function refreshResults() {
 }
 export function onInput(e) {
   if (e.target.id !== "librarySearch") return;
+  page = 1;
   filters.q = e.target.value;
   refreshResults();
 }
 export function onChange(e) {
   const key = e.target.dataset.libraryFilter;
   if (!key) return;
+  page = 1;
   filters[key] = e.target.value;
   refreshResults();
 }
 export function onClick(e, ctx) {
   const t = e.target;
+  const pageButton = t.closest("[data-page]");
+  if (pageButton) {
+    page = Number(pageButton.dataset.page);
+    refreshResults();
+    document.getElementById("libraryResultTitle")?.focus();
+    return true;
+  }
+  const quick = t.closest("[data-quick-topic]");
+  if (quick) {
+    page = 1;
+    filters = { q: quick.dataset.quickTopic };
+    syncURL();
+    ctx.rerender().then(() => document.getElementById("libraryResultTitle")?.focus());
+    return true;
+  }
   if (t.closest("[data-clear-filters]")) {
+    page = 1;
     filters = {};
     syncURL();
     ctx.rerender().then(() => document.getElementById("librarySearch")?.focus());

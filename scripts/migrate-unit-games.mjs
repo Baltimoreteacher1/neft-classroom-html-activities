@@ -4,7 +4,7 @@ import { extname, join } from "node:path";
 const root = process.cwd();
 
 const GAME_MAPPING = {
-  "/games/unit1-factor-frenzy.html": "/math/unit-1/games/unit1-factor-frenzy.html",
+  "/games/unit1-factor-frenzy.html": "/math/games/u1-factor-frenzy/",
   "/games/unit2-fraction-kitchen.html": "/math/unit-2/games/unit2-fraction-kitchen.html",
   "/games/unit3-ratio-rally.html": "/math/unit-3/games/unit3-ratio-rally.html",
   "/games/unit4-discount-dash.html": "/math/unit-4/games/unit4-discount-dash.html",
@@ -12,7 +12,7 @@ const GAME_MAPPING = {
   "/games/unit6-expression-engine.html": "/math/unit-6/games/unit6-expression-engine.html",
   "/games/unit7-equation-escape.html": "/math/unit-8/games/unit7-equation-escape.html",
   "/games/unit8-stats-slam.html": "/math/statistics/games/unit8-stats-slam.html",
-  "/games/unit9-coordinate-quest.html": "/math/unit-7/games/unit9-coordinate-quest.html",
+  "/games/unit9-coordinate-quest.html": "/math/games/u9-coordinate-quest/",
   "/games/unit10-volume-vault.html": "/math/unit-10/games/unit10-volume-vault.html",
 };
 

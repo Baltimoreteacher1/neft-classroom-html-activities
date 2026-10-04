@@ -860,6 +860,7 @@
     <!-- uifr-injected:begin -->
     <!-- BCPS Instructional Framework Rubric · TEACH support. Teacher/observer reference — NOT shown to students. Interactive practice activity (math/pre-unit/projects/version-a): supports Level 4 conditions on T2, T4 (students choose their approach + immediate no-fail feedback with retry). Full evidence: /teacher-tools/teaching-evidence/ · docs/uifr-teach-l4.md. -->
     <!-- uifr-injected:end -->
+    <script src="/shared/projects/projects-notify.js?v=20261004" defer></script>
   </head>
   <body class="level-1 pro-projects declutter-projects" id="body">
     <!-- ====== HERO ====== -->
@@ -2497,7 +2498,7 @@
       // ---- Read Aloud ----
       function readAloud() {
         if (!window.speechSynthesis) {
-          alert("Speech synthesis not supported in this browser.");
+          NTNotify.toast(NTNotify.t("Read aloud is not available in this browser.", "La lectura en voz alta no está disponible en este navegador."), { tone: "error" });
           return;
         }
         if (window.speechSynthesis.speaking) {
@@ -3312,7 +3313,7 @@
       }
       function copyReport() {
         navigator.clipboard?.writeText(reportText());
-        alert(isEs() ? "Informe copiado." : "Report copied.");
+        NTNotify.toast(isEs() ? "Informe copiado." : "Report copied.");
       }
       function downloadTxt() {
         const a = document.createElement("a");
@@ -3322,10 +3323,10 @@
       }
       function finishProject() {
         buildReport();
-        alert(
+        NTNotify.toast(
           isEs()
             ? "¡Excelente trabajo! 🎉 Muestra esta página a tu maestro."
-            : "Great work! 🎉 Show this page to your teacher.",
+            : "Great work! 🎉 Show this page to your teacher.", { tone: "success" }
         );
       }
 
@@ -3417,7 +3418,7 @@
           dlAnchor.click();
           dlAnchor.remove();
         } catch (e) {
-          alert("Export failed: " + e.message);
+          NTNotify.toast("Export failed: " + e.message, { tone: "error" });
         }
       };
 
@@ -3441,12 +3442,12 @@
                   el.dispatchEvent(new Event("change", { bubbles: true }));
                 }
               }
-              alert("Successfully imported student backup!");
+              NTNotify.toast(NTNotify.t("Your backup was restored.", "Tu copia de seguridad se restauró."), { tone: "success" });
             } else {
-              alert("Invalid backup file structure.");
+              NTNotify.toast(NTNotify.t("That file is not a project backup. Choose the .json backup file you saved.", "Ese archivo no es una copia de seguridad del proyecto. Elige el archivo .json que guardaste."), { tone: "error" });
             }
           } catch (err) {
-            alert("Error parsing backup file: " + err.message);
+            NTNotify.toast("Error parsing backup file: " + err.message, { tone: "error" });
           }
         };
         reader.readAsText(file);

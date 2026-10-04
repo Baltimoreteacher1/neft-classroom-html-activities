@@ -74,25 +74,6 @@
         border-radius: 4px;
       }
 
-      /* ── Breadcrumb ── */
-      .breadcrumb {
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 20px 24px 0;
-        font-size: 13px;
-        color: var(--muted);
-        display: flex;
-        gap: 6px;
-        align-items: center;
-        flex-wrap: wrap;
-      }
-      .breadcrumb a {
-        color: var(--teal);
-      }
-      .breadcrumb span {
-        color: var(--muted);
-      }
-
       /* ── Hero ── */
       .hero {
         max-width: 1100px;
@@ -150,6 +131,26 @@
         padding: 6px 14px;
         border-radius: 100px;
       }
+      .hero-actions {
+        margin-top: 18px;
+      }
+      .hero-start {
+        display: inline-flex;
+        align-items: center;
+        min-height: 48px;
+        padding: 12px 26px;
+        border-radius: 12px;
+        background: var(--coral);
+        color: #fff;
+        font-family: "Nunito", system-ui, sans-serif;
+        font-weight: 900;
+        font-size: 18px;
+        box-shadow: 0 4px 16px rgba(180, 63, 28, 0.25);
+      }
+      .hero-start:hover {
+        color: #fff;
+        background: var(--coral-dark);
+      }
       /* hero creature SVG */
       .hero-creature {
         flex-shrink: 0;
@@ -167,7 +168,7 @@
         border-left: 4px solid var(--coral);
         border-radius: var(--radius);
         padding: 16px 20px;
-        font-size: 15px;
+        font-size: 16px;
         color: var(--ink);
         display: flex;
         gap: 12px;
@@ -264,7 +265,7 @@
         line-height: 1.25;
       }
       .unit-desc {
-        font-size: 14px;
+        font-size: 16px;
         color: var(--muted);
         line-height: 1.55;
       }
@@ -303,6 +304,14 @@
       }
       .unit-card.active:hover .unit-cta svg {
         transform: translateX(4px);
+      }
+      .unit-progress {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--navy);
+      }
+      .unit-progress:empty {
+        display: none;
       }
       .coming-badge {
         position: absolute;
@@ -375,11 +384,6 @@
     <!-- mobile-access-injected:end -->
   </head>
   <body>
-    <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a href="/curriculum/">Curriculum Hub</a>
-      <span aria-hidden="true">›</span>
-      <span aria-current="page">The Almost-Right Lab</span>
-    </nav>
 
     <!-- ── Hero ── -->
     <header class="hero">
@@ -410,6 +414,9 @@
           </svg>
           6.AT.C.8 · One-Step Equations
         </span>
+        <p class="hero-actions">
+          <a class="hero-start" href="/curriculum/almost-right-lab/equations/" id="hero-start">Start training →</a>
+        </p>
       </div>
 
       <!-- Hero creature SVG -->
@@ -598,6 +605,7 @@
             <span class="chip">5 Missions</span>
             <span class="chip">+&nbsp;−&nbsp;×&nbsp;÷</span>
           </div>
+          <span class="unit-progress" id="lab-progress"></span>
           <span class="unit-cta" aria-hidden="true">
             Start training
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -612,73 +620,38 @@
           </span>
         </a>
 
-        <!-- Ratios — Coming Soon -->
-        <div
-          class="unit-card coming-soon"
-          aria-label="Ratios and Proportions — coming soon"
-        >
-          <span class="coming-badge" aria-label="Coming soon">Coming Soon</span>
-          <div class="unit-tag">Ratios</div>
-          <div class="unit-title">Ratios &amp; Proportions</div>
+        <!-- More labs: one quiet line instead of four dead cards. -->
+        <div class="unit-card coming-soon" aria-label="More labs coming soon">
+          <div class="unit-tag">Coming later</div>
+          <div class="unit-title">More creature labs</div>
           <p class="unit-desc">
-            Spot cross-multiplication errors, wrong unit comparisons, and percentage mistakes.
-            Coming in a future update.
+            Ratios, fraction operations, area and surface area, and statistics labs are being
+            built. For now, train your creature on one-step equations.
           </p>
-          <div class="unit-meta">
-            <span class="chip">6.AT</span>
-          </div>
-        </div>
-
-        <!-- Fractions — Coming Soon -->
-        <div class="unit-card coming-soon" aria-label="Fractions — coming soon">
-          <span class="coming-badge" aria-label="Coming soon">Coming Soon</span>
-          <div class="unit-tag">Fractions</div>
-          <div class="unit-title">Fraction Operations</div>
-          <p class="unit-desc">
-            Hunt down common fraction division and multiplication mix-ups. The creature needs a lot
-            of help here.
-          </p>
-          <div class="unit-meta">
-            <span class="chip">6.NOS</span>
-          </div>
-        </div>
-
-        <!-- Geometry — Coming Soon -->
-        <div class="unit-card coming-soon" aria-label="Geometry — coming soon">
-          <span class="coming-badge" aria-label="Coming soon">Coming Soon</span>
-          <div class="unit-tag">Geometry</div>
-          <div class="unit-title">Area &amp; Surface Area</div>
-          <p class="unit-desc">
-            Fix the creature's formula mix-ups and unit errors for area, surface area, and volume
-            problems.
-          </p>
-          <div class="unit-meta">
-            <span class="chip">6.GR</span>
-          </div>
-        </div>
-
-        <!-- Statistics — Coming Soon -->
-        <div class="unit-card coming-soon" aria-label="Statistics — coming soon">
-          <span class="coming-badge" aria-label="Coming soon">Coming Soon</span>
-          <div class="unit-tag">Statistics</div>
-          <div class="unit-title">Data &amp; Statistics</div>
-          <p class="unit-desc">
-            Catch mean vs. median confusion, wrong graph reads, and distribution mistakes.
-          </p>
-          <div class="unit-meta">
-            <span class="chip">6.DS</span>
-          </div>
         </div>
       </div>
     </main>
 
     <footer>
-      <span>
-        <a href="/curriculum/">← Curriculum Hub</a>
-      </span>
       <span>The Almost-Right Lab · Neft Teacher · Grade 6 Math</span>
     </footer>
 
+    <script>
+      // Show progress from the missions' own save (arl_progress) on the card.
+      (() => {
+        let p = null;
+        try { p = JSON.parse(localStorage.getItem("arl_progress") || "null"); } catch {}
+        const done = p && Array.isArray(p.completedMissions) ? p.completedMissions.length : 0;
+        const stars = p && p.missionStars ? Object.values(p.missionStars).reduce((a, b) => a + (Number(b) || 0), 0) : 0;
+        const el = document.getElementById("lab-progress");
+        if (el && done) el.textContent = `Your progress: ${Math.min(done, 5)} of 5 missions · ${stars} of 15 stars`;
+        const cta = document.querySelector(".unit-card.active .unit-cta");
+        const label = done >= 5 ? "Replay for more stars" : "Continue training";
+        if (cta && done) cta.firstChild.textContent = `${label} `;
+        const hero = document.getElementById("hero-start");
+        if (hero && done) hero.textContent = `${label} →`;
+      })();
+    </script>
     <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <script src="/assets/formula-popup.js" defer></script>

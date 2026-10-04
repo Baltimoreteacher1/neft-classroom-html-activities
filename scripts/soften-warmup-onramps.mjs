@@ -1199,7 +1199,7 @@ const QUESTIONS = {
       stem: "How is volume different from area?",
       choices: [
         "Volume uses square units; area uses cubic units",
-        "Volume measures 3D space (cubic units); area measures 2D surface (square units)",
+        "Volume uses cubic units; area uses square units",
         "Volume only applies to cubes; area applies to all shapes",
         "There is no difference",
       ],
@@ -1209,7 +1209,7 @@ const QUESTIONS = {
       stemEs: "¿En qué se diferencia el volumen del área?",
       choicesEs: [
         "El volumen usa unidades cuadradas; el área usa unidades cúbicas",
-        "El volumen mide el espacio en 3D (unidades cúbicas); el área mide una superficie en 2D (unidades cuadradas)",
+        "El volumen usa unidades cúbicas; el área usa unidades cuadradas",
         "El volumen solo aplica a los cubos; el área aplica a todas las figuras",
         "No hay diferencia",
       ],

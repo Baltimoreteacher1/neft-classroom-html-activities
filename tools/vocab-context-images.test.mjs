@@ -63,9 +63,12 @@ const REQUIRED = {
     lessons: ["6-3", "6-3-group1", "6-3-group2", "6-5-catchup"],
   },
   "pyramid-base": { term: "base", lessons: ["5-8", "5-8-group1", "5-8-group2"] },
+  // Lesson 4.4 only: "Percent of a Number" is that lesson's topic entry
+  // (role "concept"), and the small-group Key Words drop topic entries since
+  // 2026-10-04 (tools/lib/small-group-build.mjs — studioVocabulary).
   "percent-of-a-number": {
     term: "percent of a number",
-    lessons: ["4-4", "4-4-group1", "4-4-group2", "3-8-catchup"],
+    lessons: ["4-4"],
   },
 };
 
@@ -169,7 +172,10 @@ for (const [id, config] of configs) {
     );
   }
 }
-assert.ok(conceptCards >= 200, `expected the concept cards to be wired, found ${conceptCards}`);
+// 162 since 2026-10-04: the small-group and catch-up copies of each lesson's
+// topic entry left Key Words (tools/lib/small-group-build.mjs). The floor
+// guards against a sweep that silently finds nothing, not an exact count.
+assert.ok(conceptCards >= 150, `expected the concept cards to be wired, found ${conceptCards}`);
 
 // ── 6. The generated cards match their generator. ─────────────────────────
 execFileSync(

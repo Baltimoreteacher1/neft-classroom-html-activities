@@ -701,7 +701,61 @@ async function main() {
   const blocked = (c) =>
     needsOf(c).some((d) => checks.includes(d) && results.get(d) && !results.get(d).ok);
 
+  /* Tracked files whose working-tree content differs from the INDEX.
+   *
+   * `build` regenerates ~100 tracked files (manifests, catalog, search index,
+   * printables, study-pack copies …) and every freshness check in the gate
+   * reads the working tree AFTER it, so a stale committed file was repaired on
+   * disk before anything compared it: fresh vs fresh, green, and the stale copy
+   * shipped. That is how data/curriculum-download-manifest.json sat stale on
+   * main through four green gates (2026-10-02). tools/build-injectors-
+   * idempotent.test.mjs is the right question but SKIPS in the gate, because by
+   * then build has already dirtied the tree it needs clean.
+   *
+   * So the gate asks it here, once, for every generator: a file that matched
+   * the index before `build` and differs after was stale in what is being
+   * committed or pushed. Files already modified before the build are excluded
+   * — they are the author's own edits and say nothing about the generators. */
+  function trackedDrift() {
+    try {
+      return execFileSync("git", ["diff", "--name-only"], { cwd: ROOT, encoding: "utf8" })
+        .split("\n")
+        .filter(Boolean);
+    } catch {
+      return null;
+    }
+  }
+
+  function checkGeneratedFresh(before) {
+    const after = before ? trackedDrift() : null;
+    const name = "build:generated-fresh";
+    checks.push(name);
+    if (!before || !after) {
+      results.set(name, { ok: true, secs: "0.0", didNotRun: true });
+      console.log(`SKIP  ${name.padEnd(32)} 0.0s  (not a git checkout)`);
+      return;
+    }
+    const seen = new Set(before);
+    const stale = after.filter((f) => !seen.has(f));
+    results.set(name, { ok: stale.length === 0, secs: "0.0" });
+    logTo(`\n===== ${stale.length ? "FAIL" : "PASS"} ${name} =====\n${stale.join("\n")}\n`);
+    if (!stale.length) {
+      console.log(`PASS  ${name.padEnd(32)} 0.0s`);
+      return;
+    }
+    console.log(`FAIL  ${name.padEnd(32)} 0.0s`);
+    console.log(
+      `      | build regenerated ${stale.length} tracked file(s) that were stale in what is being committed/pushed:`,
+    );
+    for (const f of stale.slice(0, 12)) console.log(`      |   ${f}`);
+    if (stale.length > 12) console.log(`      |   … and ${stale.length - 12} more`);
+    console.log(
+      "      | The regenerated copies are now on disk. Review and stage them:  git add -u",
+    );
+  }
+
   function runOne(name) {
+    const driftBefore = name === "build" ? trackedDrift() : null;
     return new Promise((resolve) => {
       const t0 = Date.now();
       execFile(
@@ -719,6 +773,7 @@ async function main() {
           // active false claim, which is worse than no gate at all.
           const { ok, skipped, timedOut, status } = classifyResult(err);
           results.set(name, { ok, secs, didNotRun: skipped, timedOut });
+          if (name === "build" && ok) checkGeneratedFresh(driftBefore);
           logTo(`\n===== ${status} npm run ${name} (${secs}s) =====\n${stdout}\n${stderr}\n`);
           const note = timedOut
             ? `  (KILLED after ${(TIMEOUT_MS / 1000).toFixed(0)}s — hung, not slow)`

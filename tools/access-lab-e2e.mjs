@@ -105,10 +105,23 @@ try {
   await page.waitForFunction(() => document.body.dataset.labBand === "3-5");
   ok(/Grades 3–5/.test(await page.textContent(".eyebrow")), "band switch shows grades 3–5");
 
+  const startBounds = await page.locator(".session-heading .btn-primary").boundingBox();
+  ok(
+    startBounds && startBounds.y + startBounds.height <= 900,
+    "start action appears in the initial desktop viewport",
+  );
   // Guided sessions retain preferences and draft work across navigation/reload.
+  await page.locator("#planOptions summary").click();
   await page.selectOption("#planFocus", "Writing");
   await page.selectOption("#planLevel", "B");
   await page.selectOption("#planCount", "2");
+  await page.waitForFunction(
+    () => document.getElementById("planOptions").open && document.activeElement.id === "planCount",
+  );
+  ok(
+    (await page.locator("#planOptions").getAttribute("open")) !== null,
+    "planner remains open after changes",
+  );
   ok(
     (await page.locator(".session-list li").count()) === 2,
     "planner creates requested session length",
@@ -121,12 +134,13 @@ try {
   );
   await page.reload({ waitUntil: "networkidle" });
   ok((await page.inputValue("#planFocus")) === "Writing", "planner preferences survive reload");
+  await page.locator("#planOptions summary").click();
   await page.locator(".session-list a").first().click();
   await page.waitForSelector("[data-note]");
   await page.fill("[data-note]", "A draft I will continue later.");
   await go("/?grades=3-5");
   ok(
-    (await page.textContent(".session-list li:first-child")).includes("Continue work"),
+    (await page.textContent(".session-list li:first-child")).includes("Continue your saved work"),
     "planner surfaces saved unfinished writing",
   );
   await page.getByRole("link", { name: "Continue my practice" }).click();
@@ -139,8 +153,27 @@ try {
   // Search, filters, assignment links, empty state, and URL restoration.
   await go("/library?grades=3-5");
   ok(
-    (await page.locator(".library-item").count()) === 144,
-    "library lists the selected band's complete four-skill collection",
+    (await page.locator(".library-item").count()) === 24,
+    "library renders 24 activities per page",
+  );
+  const pageOneId = await page.locator("[data-pick]").first().getAttribute("data-pick");
+  await page.locator('[data-page="2"]').click();
+  ok(new URL(page.url()).searchParams.get("page") === "2", "pagination persists page in URL");
+  ok(
+    (await page.locator("[data-pick]").first().getAttribute("data-pick")) !== pageOneId,
+    "second page shows different activities",
+  );
+  ok(
+    await page.evaluate(() => document.activeElement.id === "libraryResultTitle"),
+    "pagination focuses result heading",
+  );
+  await page.reload({ waitUntil: "networkidle" });
+  ok(
+    await page
+      .locator(".library-pagination")
+      .textContent()
+      .then((text) => text.includes("Page 2")),
+    "reload restores result page",
   );
   await page.selectOption("#libraryDomain", "Writing");
   await page.selectOption("#libraryLevel", "B");
@@ -260,7 +293,9 @@ try {
     "First I see a park. The children play because it is sunny. Then they eat lunch and go home.",
   );
   await page.click("[data-check-writing]");
-  ok(await page.isVisible(".feedback .checks"), "writing check gives feedback");
+  ok(await page.isVisible(".feedback"), "writing check gives feedback");
+  await page.getByText("Optional surface checks", { exact: true }).click();
+  ok(await page.isVisible(".feedback .checks"), "optional surface checks can be opened");
 
   // Speaking constructed: practiced + checklist → saved
   const speaking = await page.evaluate(async () => {

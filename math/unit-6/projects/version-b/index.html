@@ -361,6 +361,7 @@
     <meta name="nt-project-reveal-unit" content="6" />
     <link rel="stylesheet" href="/shared/projects/projects-meta.css?v=20260727-v2" />
     <!-- projects-meta-injected:end -->
+  <script src="/shared/projects/projects-notify.js?v=20261004" defer></script>
 </head>
   <body class="level-1 pro-projects declutter-projects" id="body">
 
@@ -1637,7 +1638,7 @@
             status.style.color = 'var(--coral)';
             status.innerHTML = '\u26A0\uFE0F <strong>' + head + '</strong><br>\u2022 ' + todo.join('<br>\u2022 ');
           }
-          alert(head + '\n\n\u2022 ' + todo.join('\n\u2022 '));
+          if (!status) NTNotify.fix(head + '\n\n\u2022 ' + todo.join('\n\u2022 '));
           return;
         }
         if (status) {
@@ -1647,9 +1648,9 @@
             : '\u2705 Ready to turn in! Show your report to your teacher, or download the .txt and submit it.';
         }
         playConfetti();
-        alert(isEs
+        NTNotify.toast(isEs
           ? '\u00A1Buen trabajo! \uD83C\uDF89 Muestra esta p\u00e1gina y tu informe a tu profesor.'
-          : 'Great work! \uD83C\uDF89 Show this page and your report to your teacher.');
+          : 'Great work! \uD83C\uDF89 Show this page and your report to your teacher.', { tone: "success" });
       }
 
       // ---- Math Calculations & SVG Rendering ----
@@ -2105,18 +2106,21 @@
         const txt = document.getElementById('reportBox').textContent;
         const isEs = document.body.classList.contains('es');
         if (!txt) {
-          alert(isEs ? 'Por favor, primero haz clic en Generar resumen.' : 'Please click Generate Summary first.');
+          NTNotify.fix(isEs ? 'Por favor, primero haz clic en Generar resumen.' : 'Please click Generate Summary first.');
           return;
         }
-        navigator.clipboard?.writeText(txt).then(() => alert(isEs ? '¡Copiado al portapapeles!' : 'Copied to clipboard!'));
+        navigator.clipboard?.writeText(txt).then(() => NTNotify.toast(isEs ? '¡Copiado al portapapeles!' : 'Copied to clipboard!'));
       }
 
       function downloadTxt() {
-        const txt = document.getElementById('reportBox').textContent;
+        let txt = document.getElementById('reportBox').textContent;
         const isEs = document.body.classList.contains('es');
         if (!txt) {
-          alert(isEs ? 'Por favor, primero haz clic en Generar resumen.' : 'Please click Generate Summary first.');
-          return;
+          /* Build the summary for the student instead of blocking Download with
+             an alert. buildReport() explains itself if a step is still missing. */
+          if (typeof buildReport !== 'function' || buildReport() === false) return;
+          txt = document.getElementById('reportBox')?.textContent;
+          if (!txt) return;
         }
         const a = document.createElement('a');
         a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
@@ -2180,7 +2184,7 @@
           dlAnchor.click();
           dlAnchor.remove();
         } catch(e) {
-          alert("Export failed: " + e.message);
+          NTNotify.toast("Export failed: " + e.message, { tone: "error" });
         }
       };
       
@@ -2204,12 +2208,12 @@
                   el.dispatchEvent(new Event('change', { bubbles: true }));
                 }
               }
-              alert("Successfully imported student backup!");
+              NTNotify.toast(NTNotify.t("Your backup was restored.", "Tu copia de seguridad se restauró."), { tone: "success" });
             } else {
-              alert("Invalid backup file structure.");
+              NTNotify.toast(NTNotify.t("That file is not a project backup. Choose the .json backup file you saved.", "Ese archivo no es una copia de seguridad del proyecto. Elige el archivo .json que guardaste."), { tone: "error" });
             }
           } catch(err) {
-            alert("Error parsing backup file: " + err.message);
+            NTNotify.toast("Error parsing backup file: " + err.message, { tone: "error" });
           }
         };
         reader.readAsText(file);

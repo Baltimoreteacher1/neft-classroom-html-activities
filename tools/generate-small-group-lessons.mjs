@@ -120,6 +120,7 @@ function diagnosedErrors(base) {
 }
 
 import { LESSONS_DIR as LESSONS } from "./lib/curriculum-source.mjs";
+import { applyStudioBuild, loadBuild } from "./lib/small-group-build.mjs";
 
 const FACILITATION_MODULE = join(ROOT, "functions", "teacher-small-group", "_facilitation-data.js");
 /* `--dry-run` is the name every other generator here uses; `--dry` predates it
@@ -358,7 +359,6 @@ function buildGroup1(base, u, m) {
   out.contentObjective = `With my small group, I can ${lc1(skill)} — one step at a time, with support.`;
   out.languageObjective = `I can talk through each step out loud using a sentence frame and the lesson's key words.`;
 
-  const ci = clone(base.launch?.conceptIntro || {});
   // Sentence frames tied to THIS lesson: the old pair hard-coded
   // "multiples/steps" for all 84 topics, which read as nonsense in a median or
   // inequality group. The middle frame pulls the lesson's own first vocabulary
@@ -383,25 +383,8 @@ function buildGroup1(base, u, m) {
   out.launch.narrative =
     `This is your support small group for Lesson ${dm}. We're going to slow this down and build it together, one step at a time. ` +
     `You can ask a question any time — that's what this group is for.`;
-  out.launch.conceptIntro = {
-    heading: `Let's build it together — ${ci.heading || base.title}`,
-    intro:
-      (ci.intro ? ci.intro + " " : "") +
-      "We'll walk through a worked example, try one together, then you'll try a few with hints right there when you need them.",
-    keyIdea: ci.keyIdea || `The one thing to remember: ${skill}.`,
-    iDo: ci.iDo || { title: "Watch me", lines: [] },
-    weDo: {
-      title: ci.weDo?.title || "Let's try together",
-      lines: [...(ci.weDo?.lines || []), `Sentence frame — say it with me: "${frames[0]}"`],
-    },
-    youDo: {
-      title: "Now you try — with support",
-      lines: [
-        "Try the practice problems below. The hint button is right there whenever you get stuck — use it, that's smart.",
-        `Remember the key idea: ${ci.keyIdea || skill}.`,
-      ],
-    },
-  };
+  // launch.build / launch.conceptIntro come from data/small-group-build —
+  // applied by tools/lib/small-group-build.mjs, never composed here.
 
   const p = base.practice || {};
   const practice = takeBalanced(
@@ -501,64 +484,11 @@ function buildGroup2(base, u, m) {
   out.contentObjective = `I can ${lc1(skill)}, ${proveClause(skill)}`;
   out.languageObjective = `I can justify my answer to a skeptic and connect it to a second strategy or representation.`;
 
-  const ci = clone(base.launch?.conceptIntro || {});
   const p = base.practice || {};
-  // Group 1's frames rehearse the STEPS ("My first step is ___"). This group's
-  // languageObjective is to justify to a skeptic and name the method's limits,
-  // so its frame asks for the reason and the boundary instead.
-  const proveFrame = "My method works because ___ . It would stop working if ___ .";
-
   out.launch = out.launch || {};
   out.launch.badge = "Small Group · Challenge";
   out.launch.narrative = `This is your challenge small group for Lesson ${dm}. You can already get the answer — so in here the answer is the starting point. We ask when the method holds, when it breaks, and how you would convince someone who disagrees.`;
-  out.launch.conceptIntro = {
-    heading: `Push further — ${ci.heading || base.title}`,
-    // Extension here is abstraction, justification and transfer — not bigger
-    // numbers. A student who is already fluent gains nothing from arithmetic
-    // that is merely longer, and promising them "trickier numbers" set exactly
-    // the wrong expectation for the Prove-It work this group actually does.
-    intro:
-      "You already can do this. So we go up a level, not up a number: find what is always true, show it a second way, and be ready to defend it with a reason instead of an answer.",
-    keyIdea: ci.keyIdea
-      ? `${String(ci.keyIdea).replace(/[.\s]+$/, "")} — and you can say why it is true, and where it would stop being true.`
-      : "You can say why today's idea is true, and where it would stop being true.",
-    iDo: ci.iDo || { title: "Start from the answer", lines: [] },
-    // Group 2 used to STOP after "Watch me". The reasoning was that the real
-    // challenge — generalizing, justifying, defending — lives in the guided
-    // Prove-It tab, which is true; but it left the Build card with no gradual
-    // release at all, so a challenge student went straight from watching
-    // someone else work to working alone. Group 1 gets watch → try together →
-    // try with support; group 2 got watch → nothing (Joel, 2026-08-23).
-    //
-    // Nothing here is newly authored mathematics. The try-together turn IS the
-    // lesson's own guided example — the same verified lines group 1 gets, and
-    // the same lines the deck projects — and the two turns after it introduce
-    // no numbers at all, because a challenge group's extension is
-    // justification, not bigger arithmetic. Deliberately no reference to "the
-    // picture" or to anything positioned on the card: validate:concept-intro
-    // fails a Build line that names an artifact the card does not render.
-    weDo: {
-      title: "Try it together — then prove it",
-      lines: [
-        ...(ci.weDo?.lines || []),
-        "Now prove it: say why that move had to work at all — not just that it did.",
-        `Sentence frame — convince a skeptic: "${proveFrame}"`,
-      ],
-    },
-    youDo: {
-      title: "Now you try — and defend it",
-      lines: [
-        "Try the problems below on your own. Getting the answer is half the work — be ready to say why your method works, and where it would stop working.",
-        // Quotes nothing. Group 1's hand-off restates the key idea, which is
-        // right when the risk is forgetting the method; this group's stated
-        // language objective is to connect the method to a SECOND strategy or
-        // representation, so its hand-off asks for that instead. Quoting
-        // keyIdea here would also drift: the group-2 keyIdea is built above
-        // with a suffix, so a graft and a full regeneration would disagree.
-        "Then pick one problem and show it a second way. If two different methods agree, that agreement is your proof.",
-      ],
-    },
-  };
+  // launch.build / launch.conceptIntro: see tools/lib/small-group-build.mjs.
 
   // Inherited core items first, then the authored challenge layer. A challenge
   // group has already mastered the core target, so re-serving core items alone
@@ -712,6 +642,14 @@ function readPrior(id) {
  * — and `--prune` writes the bare generation. Both announce what they undo.
  */
 function reconcile(id, out, base) {
+  return applyStudioBuild(mergeWithCommitted(id, out, base), {
+    variant: out.variant,
+    data: loadBuild(base.lessonId),
+    baseTitle: base.title,
+  });
+}
+
+function mergeWithCommitted(id, out, base) {
   const prior = readPrior(id);
   if (prior === undefined) return out;
   if (!REPLACE) {
@@ -815,6 +753,7 @@ for (const baseId of bases) {
   const base = cfg(baseId);
   for (const build of [buildGroup1, buildGroup2]) {
     const { id, out } = build(base, u, m);
+    applyStudioBuild(out, { variant: out.variant, data: loadBuild(baseId), baseTitle: base.title });
     assertValid(id, out);
     const facilitation = extractFacilitation(out);
     const generated = toStudentConfig(out);

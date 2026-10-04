@@ -131,7 +131,7 @@
         border: none;
         border-radius: 12px;
         padding: 13px 22px;
-        color: var(--ink);
+        color: #fff; /* white on teal = 5.9:1 (dark ink was ~2.9:1) */
         background: var(--teal);
         transition:
           transform 0.12s,
@@ -176,8 +176,9 @@
       }
       .vocab {
         display: grid;
-        gap: 12px;
-        margin: 14px 0;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+        gap: 10px;
+        margin: 12px 0;
       }
       .vrow {
         display: flex;
@@ -360,7 +361,6 @@
       .children {
         display: flex;
         justify-content: center;
-        gap: 26px;
         padding-top: 28px;
         position: relative;
       }
@@ -374,17 +374,27 @@
         height: 14px;
         background: var(--line);
       }
-      .children::after {
+      /* Each child draws its own half of the crossbar, so the connector meets
+         both branches even when the two subtrees have different widths (the
+         old fixed 25%..75% bar missed lopsided trees like 108 = 36 x 3). */
+      .children > .node {
+        position: relative;
+        padding: 0 13px;
+      }
+      .children > .node::after {
         content: "";
         position: absolute;
-        top: 14px;
-        left: 25%;
-        right: 25%;
+        top: -14px;
+        left: 0;
+        right: 0;
         height: 2px;
         background: var(--line);
       }
-      .children > .node {
-        position: relative;
+      .children > .node:first-child::after {
+        left: 50%;
+      }
+      .children > .node:last-child::after {
+        right: 50%;
       }
       .children > .node::before {
         content: "";
@@ -523,6 +533,24 @@
       .result-stat b {
         color: var(--txt);
       }
+      #wrap .btn:not(.ghost):not(.auto):not(.seal) {
+        color: #fff;
+      }
+      .vterm {
+        min-width: 120px !important;
+      }
+      .result-next {
+        max-width: 520px;
+        margin: 12px auto 0;
+        text-align: center;
+        color: var(--txt);
+        font-size: 16px;
+        line-height: 1.5;
+      }
+      #r-next {
+        color: #ffd98a;
+        font-weight: 700;
+      }
       .row {
         display: flex;
         gap: 12px;
@@ -556,7 +584,7 @@
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
   <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
     <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-    <script src="/assets/game-studio.js?v=20261002" defer></script>
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
     <link rel="stylesheet" href="/math/games/shared/cabinet-tools.css?v=20261002">
     <script src="/math/games/shared/cabinet-tools.js?v=20261002" defer></script>
 </head>
@@ -567,18 +595,10 @@
 <main id="wrap">
       <div id="arcade-controls-host"></div>
 
-      <div class="arcade-theme-header" style="background: linear-gradient(135deg, rgba(15,43,60,0.9), rgba(6,32,44,0.95)); border: 1px solid #12a596; border-radius: 16px; padding: 14px 18px; margin-bottom: 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
-        <div style="font-size: 2.2rem; background: rgba(255,255,255,0.06); padding: 8px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">🚀</div>
-        <div>
-          <div style="font-size: 1.15rem; font-weight: 900; color: #ffffff; letter-spacing: 0.5px;">🔐 PRIME FACTOR VAULT</div>
-          <div style="font-size: 0.88rem; color: #94a3b8; margin-top: 2px;">Break composite numbers into prime factors, then calibrate the exponent vault.</div>
-        </div>
-      </div>
-
       <!-- VOCAB GATE -->
       <section id="screen-vocab" class="screen on" aria-labelledby="vh">
         <h1 id="vh">⚒️ Factor Frenzy</h1>
-        <p class="sub">Build factor trees · Prime factorization · 6.NOS.4</p>
+        <p class="sub">Build a factor tree until every branch is prime, then unlock the vault by writing the exponents · 6.NOS.4</p>
         <div class="card">
           <h2 style="color: #fff; font-size: 1.2rem">Words to know first</h2>
           <div class="vocab" id="vocab-list"></div>
@@ -653,6 +673,9 @@
           <div class="result-stat"><span>Score</span><b id="r-score">0</b></div>
           <div class="result-stat"><span>Correct steps</span><b id="r-correct">0</b></div>
           <div class="result-stat"><span>Numbers factored</span><b id="r-rounds">0</b></div>
+          <div class="result-stat"><span>Moves right the first time</span><b id="r-acc">0%</b></div>
+          <p class="result-next" id="r-skills"></p>
+          <p class="result-next" id="r-next"></p>
           <div class="result-stat" id="r-high-row" style="display: none">
             <span>★ New high score!</span><b id="r-high">0</b>
           </div>
@@ -719,6 +742,10 @@
         {
           term: "prime factorization",
           defn: "Writing a number using only prime numbers multiplied together, like 12 = 2 × 2 × 3.",
+        },
+        {
+          term: "exponent",
+          defn: "A small raised number that tells how many times a factor is multiplied. 2 × 2 × 2 = 2³, so the exponent is 3.",
         },
       ];
 
@@ -901,6 +928,9 @@
         selected: null,
         selectedFactorA: null,
         userExponents: {},
+        nodeMiss: {}, // wrong moves per tree node (drives Tier 1 -> Tier 2 help)
+        calTries: 0, // wrong vault calibrations this round
+        helped: { split: 0, prime: 0, exponent: 0 }, // which skill needed help
       };
 
       const $ = (id) => document.getElementById(id);
@@ -971,6 +1001,7 @@
         S.mistakes = 0;
         S.correctActions = 0;
         S.totalActions = 0;
+        S.helped = { split: 0, prime: 0, exponent: 0 };
         S.puzzles = buildRounds(level).map(makePuzzle);
         $("hud-total").textContent = ffEndless ? "∞" : ROUNDS;
         $("hud-finish").style.display = ffEndless ? "inline-block" : "none";
@@ -988,6 +1019,8 @@
         S.selected = null;
         S.selectedFactorA = null;
         S.userExponents = {};
+        S.nodeMiss = {};
+        S.calTries = 0;
         $("hud-round").textContent = i + 1;
         $("hud-score").textContent = S.score;
         $("t-n").textContent = S.cur.n;
@@ -1077,6 +1110,29 @@
         let html = `<div class="pal-q">You tapped <b>${node.value}</b>. Is it prime, or split into factors?</div><div class="pal-actions">`;
         html += `<button class="prime-btn" data-act="prime">It’s prime ✓</button>`;
 
+        // A prime has no factor pairs, so on its own the palette would offer
+        // ONLY "It's prime" — the button would give the answer away. Offer
+        // plausible-but-wrong splits too, so deciding "prime" is real thinking.
+        if (!validPairs.length) {
+          if (S.level === 1) {
+            const decoys = [];
+            [2, 3].forEach((a) => {
+              const b = Math.max(2, Math.round(node.value / a));
+              if (a * b !== node.value && !decoys.some((d) => d[0] === a && d[1] === b))
+                decoys.push([a, b]);
+            });
+            if (decoys.length) html += `<span class="pal-or">or split into…</span>`;
+            shuffle(decoys).forEach(([a, b]) => {
+              html += `<button class="pair-chip" data-act="split" data-a="${a}" data-b="${b}" data-valid="false">${a} × ${b}</button>`;
+            });
+          } else {
+            const tryA = [2, 3, 5, 7].filter((d) => d < node.value).slice(0, 3);
+            if (tryA.length) html += `<span class="pal-or">or pick a first factor:</span>`;
+            tryA.forEach((fa) => {
+              html += `<button class="pair-chip" data-act="select-a" data-fa="${fa}">${fa}</button>`;
+            });
+          }
+        }
         if (validPairs.length) {
           if (S.level === 1) {
             // Level 1: Valid pairs + 1 distractor pair
@@ -1135,7 +1191,21 @@
             const act = el.dataset.act;
             if (act === "prime") actPrime(node);
             else if (act === "select-a") {
-              S.selectedFactorA = Number(el.dataset.fa);
+              const fa = Number(el.dataset.fa);
+              if (factorPaused || S.over || S.roundComplete) return;
+              if (node.value % fa !== 0) {
+                S.mistakes++;
+                S.totalActions++;
+                noteMiss(node, "split");
+                SFX.bad();
+                flash(
+                  `${node.value} ÷ ${fa} does not come out even, so ${fa} is not a factor of ${node.value}.` +
+                    (isPrime(node.value) ? " Try other factors — or is it prime?" : " Try a different first factor."),
+                  "bad",
+                );
+                return;
+              }
+              S.selectedFactorA = fa;
               renderPalette();
             } else if (act === "reset-a") {
               S.selectedFactorA = null;
@@ -1156,7 +1226,7 @@
           S.selected = null;
           S.selectedFactorA = null;
           S.correctActions++;
-          S.score += 10;
+          S.score += S.nodeMiss[node.id] ? 5 : 10; // full points only when unaided
           $("hud-score").textContent = S.score;
           SFX.good();
           if (window.ArcadeFX) {
@@ -1175,8 +1245,13 @@
           S.mistakes++;
           SFX.bad();
           if (window.ArcadeFX) window.ArcadeFX.playSFX("error");
+          const n = noteMiss(node, "prime");
+          const p = primeListOf(node.value)[0];
           flash(
-            node.value + " can still be split — it has factors other than 1 and itself.",
+            n === 1
+              ? node.value +
+                  " is not prime — it has factors other than 1 and itself. Try dividing it by a small prime like 2, 3, or 5."
+              : "Try " + node.value + " ÷ " + p + " = " + node.value / p + ". So " + node.value + " can be split into " + p + " × " + node.value / p + ".",
             "bad",
           );
         }
@@ -1191,7 +1266,7 @@
           S.selected = null;
           S.selectedFactorA = null;
           S.correctActions++;
-          S.score += 10;
+          S.score += S.nodeMiss[node.id] ? 5 : 10; // full points only when unaided
           $("hud-score").textContent = S.score;
           SFX.good();
           if (window.ArcadeFX) {
@@ -1209,8 +1284,24 @@
           S.mistakes++;
           SFX.bad();
           if (window.ArcadeFX) window.ArcadeFX.playSFX("error");
-          flash(a + " × " + b + " = " + (a * b) + ", which does NOT equal " + node.value + ".", "bad");
+          const n = noteMiss(node, "split");
+          let msg = a + " × " + b + " = " + a * b + ", which does NOT equal " + node.value + ".";
+          if (isPrime(node.value))
+            msg += n === 1 ? " Can " + node.value + " be split at all?" : " " + node.value + " has only 1 and " + node.value + " as factors — that makes it prime.";
+          else if (n >= 2) {
+            const p = primeListOf(node.value)[0];
+            msg += " Hint: " + node.value + " ÷ " + p + " = " + node.value / p + ".";
+          } else msg += " Multiply your pair to check it before you choose.";
+          flash(msg, "bad");
         }
+      }
+
+      // Count a wrong move on a node; the 1st miss earns a method hint, the 2nd
+      // a concrete step. Each node that needed help is tallied once per skill.
+      function noteMiss(node, skill) {
+        S.nodeMiss[node.id] = (S.nodeMiss[node.id] || 0) + 1;
+        if (S.nodeMiss[node.id] === 1) S.helped[skill]++;
+        return S.nodeMiss[node.id];
       }
 
       function updateReadout() {
@@ -1225,8 +1316,13 @@
         S.completed++;
         S.score += 25; // tree complete bonus
         $("hud-score").textContent = S.score;
-        $("ro-fact").textContent = S.cur.n + " = " + exponentForm(lockedPrimes());
-        flash("Tree complete for " + S.cur.n + "! Calibrate the Exponent Vault to unlock! ⚙️", "good");
+        // Keep the EXPANDED form here: showing 2² × 3³ now would hand over the
+        // exponents the vault is about to ask for.
+        $("ro-fact").textContent = S.cur.n + " = " + lockedPrimes().join(" × ");
+        flash(
+          "Tree complete for " + S.cur.n + "! Now count each prime and set its exponent to unlock the vault. ⚙️",
+          "good",
+        );
 
         setupVaultCalibration();
       }
@@ -1237,7 +1333,9 @@
         lp.forEach(p => actualCounts[p] = (actualCounts[p] || 0) + 1);
         const uniqueBases = Object.keys(actualCounts).map(Number).sort((a, b) => a - b);
 
-        uniqueBases.forEach(b => { S.userExponents[b] = 1; });
+        // Every dial starts blank ("?"): starting at 1 pre-answered every prime
+        // that appears once.
+        uniqueBases.forEach(b => { S.userExponents[b] = 0; });
 
         if ($("vault-icon")) $("vault-icon").textContent = "⚙️";
         if ($("vault-title")) $("vault-title").textContent = "Exponent Calibration Required";
@@ -1257,9 +1355,9 @@
             <div class="ewl-exp-box" style="background:#0c2532; padding:10px 16px; border-radius:12px; border:1px solid #285473; text-align:center;">
               <div style="font-weight:800; font-size:1.2rem; color:#ffd98a;">Base ${b}</div>
               <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:6px;">
-                <button type="button" class="btn" style="padding:4px 10px; font-size:1rem;" onclick="window.ffStepExp(${b}, -1)">-</button>
-                <span id="exp-val-${b}" style="font-weight:900; font-size:1.3rem; color:#5ad1ff; min-width:24px;">1</span>
-                <button type="button" class="btn" style="padding:4px 10px; font-size:1rem;" onclick="window.ffStepExp(${b}, 1)">+</button>
+                <button type="button" class="btn" style="padding:4px 10px; font-size:1rem;" aria-label="Lower the exponent on ${b}" onclick="window.ffStepExp(${b}, -1)">−</button>
+                <span id="exp-val-${b}" style="font-weight:900; font-size:1.3rem; color:#5ad1ff; min-width:24px;" aria-live="polite">?</span>
+                <button type="button" class="btn" style="padding:4px 10px; font-size:1rem;" aria-label="Raise the exponent on ${b}" onclick="window.ffStepExp(${b}, 1)">+</button>
               </div>
             </div>
           `;
@@ -1275,7 +1373,7 @@
 
         window.ffStepExp = function(base, delta) {
           if (factorPaused || S.over) return;
-          const cur = S.userExponents[base] || 1;
+          const cur = S.userExponents[base] || 0;
           const next = Math.max(1, Math.min(6, cur + delta));
           S.userExponents[base] = next;
           const el = $("exp-val-" + base);
@@ -1284,45 +1382,64 @@
 
         const btn = $("btn-calibrate-vault");
         if (btn) {
+          const unlock = (helped) => {
+            if (!helped) {
+              S.correctActions++;
+              S.score += S.calTries ? 25 : 50; // full bonus only when unaided
+            }
+            $("hud-score").textContent = S.score;
+            SFX.win();
+            const form = S.cur.n + " = " + exponentForm(lockedPrimes());
+            flash((helped ? "Here are the exponents: " : "Vault unlocked! ") + form + (helped ? "" : " 🔓✨"), helped ? "" : "good");
+            if (!helped && window.GameFX && GameFX.burst) {
+              try { GameFX.burst(window.innerWidth / 2, window.innerHeight / 3); } catch(e){}
+            }
+            stage.innerHTML = `
+              <div class="vault-graphic-box">
+                <div class="vault-icon">🔓✨</div>
+                <div class="vault-title">Vault Unlocked!</div>
+                <div class="vault-subtitle">${helped ? "Each exponent counts one prime." : "+" + (S.calTries ? 25 : 50) + " bonus!"} ${form}</div>
+              </div>
+            `;
+            const next = document.createElement("button"); next.className = "btn big"; next.textContent = "Continue expedition →";
+            stage.append(next); next.focus();
+            next.onclick = () => {
+              if (factorPaused || S.over) return;
+              next.disabled = true;
+              if (ffEndless) {
+                if (S.round + 1 >= S.puzzles.length) S.puzzles = S.puzzles.concat(buildRounds(S.level).map(makePuzzle));
+                loadRound(S.round + 1);
+              } else if (S.round + 1 >= ROUNDS) endGame();
+              else loadRound(S.round + 1);
+            };
+          };
           btn.onclick = function() {
             if (factorPaused || S.over) return;
+            if (uniqueBases.some((b) => !S.userExponents[b])) {
+              flash("Set an exponent for every prime first (use + and −).", "bad");
+              return;
+            }
             S.totalActions++;
-            let correct = true;
-            uniqueBases.forEach(b => {
-              if (S.userExponents[b] !== actualCounts[b]) correct = false;
-            });
-
-            if (correct) {
-              S.correctActions++;
-              S.score += 50;
-              $("hud-score").textContent = S.score;
-              SFX.win();
-              flash("Vault Calibrated! " + S.cur.n + " = " + exponentForm(lockedPrimes()) + " 🔓✨", "good");
-              if (window.GameFX && GameFX.burst) {
-                try { GameFX.burst(window.innerWidth / 2, window.innerHeight / 3); } catch(e){}
-              }
-              stage.innerHTML = `
-                <div class="vault-graphic-box">
-                  <div class="vault-icon">🔓✨</div>
-                  <div class="vault-title">Vault Unlocked!</div>
-                  <div class="vault-subtitle">+50 Points Bonus! ${S.cur.n} = ${exponentForm(lockedPrimes())}</div>
-                </div>
-              `;
-              const next = document.createElement("button"); next.className = "btn big"; next.textContent = "Continue expedition →";
-              stage.append(next); next.focus();
-              next.onclick = () => {
-                if (factorPaused || S.over) return;
-                next.disabled = true;
-                if (ffEndless) {
-                  if (S.round + 1 >= S.puzzles.length) S.puzzles = S.puzzles.concat(buildRounds(S.level).map(makePuzzle));
-                  loadRound(S.round + 1);
-                } else if (S.round + 1 >= ROUNDS) endGame();
-                else loadRound(S.round + 1);
-              };
+            const wrongBases = uniqueBases.filter((b) => S.userExponents[b] !== actualCounts[b]);
+            if (!wrongBases.length) {
+              unlock(false);
+              return;
+            }
+            S.mistakes++;
+            S.calTries++;
+            SFX.bad();
+            if (S.calTries === 1) S.helped.exponent++;
+            if (S.calTries === 1) {
+              flash("Not yet. An exponent counts how many times a prime is multiplied. Count each prime in your tree's gold leaves.", "bad");
+            } else if (S.calTries === 2) {
+              const b0 = wrongBases[0];
+              flash(
+                "Not yet. Check base " + wrongBases.join(" and base ") + ". Count the " + b0 + "s in " + S.cur.n + " = " + lockedPrimes().join(" × ") + ".",
+                "bad",
+              );
             } else {
-              S.mistakes++;
-              SFX.bad();
-              flash("Exponent calibration incorrect. Count how many times each prime factor appears!", "bad");
+              uniqueBases.forEach((b) => { S.userExponents[b] = actualCounts[b]; const el = $("exp-val-" + b); if (el) el.textContent = actualCounts[b]; });
+              unlock(true);
             }
           };
         }
@@ -1336,6 +1453,24 @@
         $("r-score").textContent = S.score;
         $("r-correct").textContent = S.correctActions;
         $("r-rounds").textContent = S.completed;
+        const pct = S.totalActions ? Math.round((S.correctActions / S.totalActions) * 100) : 100;
+        $("r-acc").textContent = pct + "%";
+        $("r-skills").textContent =
+          "Skills: factor pairs, prime vs. composite, and prime factorization with exponents (6.NOS.4).";
+        const NEXT = {
+          split: "Practice next: factor pairs — multiply your pair to check it equals the number before you split.",
+          prime: "Practice next: prime or composite — try dividing by 2, 3, 5, and 7 before you call a number prime.",
+          exponent: "Practice next: exponents — count how many times each prime appears; that count is the exponent.",
+        };
+        let worst = null;
+        Object.keys(NEXT).forEach((k) => {
+          if (S.helped[k] > 0 && (!worst || S.helped[k] > S.helped[worst])) worst = k;
+        });
+        $("r-next").textContent = worst
+          ? NEXT[worst]
+          : S.level < 3
+            ? "Great work! Next: try Level " + (S.level + 1) + " for bigger numbers."
+            : "Excellent! Next: ♾️ Keep Playing to factor even more numbers.";
         let high = 0;
         try {
           high = Number(localStorage.getItem(LS_KEY) || 0);
@@ -1351,7 +1486,10 @@
           window.EduPulse &&
             EduPulse.record({
               activityTitle: ACTIVITY_TITLE,
-              score: S.score,
+              // Canvas code: numbers factored out of the run + first-try percent
+              // (arcade points over an action count printed e.g. "260/23").
+              score: S.completed,
+              maxScore: ffEndless ? Math.max(S.completed, 1) : ROUNDS,
               stars: stars,
               problemsCorrect: S.correctActions,
               problemsAttempted: S.totalActions,
@@ -1411,7 +1549,7 @@
       });
 
       window.addEventListener("DOMContentLoaded", () => {
-        window.GameStudio && window.GameStudio.register({title: "Factor Frenzy", instructions: ["Select a composite number, then choose factors whose product equals it.", "Mark each prime leaf, then count repeated primes to calibrate the exponent vault.", "Use Tab and Enter to choose branches and factors. Undo restores your last branch before vault calibration."], pause() {factorPaused = true;}, resume() {factorPaused = false;}, setMuted(value) {window.NT_MUTED = value; if (SFX.ctx) {if(value) SFX.ctx.suspend().catch(()=>{}); else SFX.ctx.resume().catch(()=>{});}}});
+        window.GameStudio && window.GameStudio.register({title: "Factor Frenzy", instructions: ["Goal: break each number into primes with a factor tree, then unlock the vault by writing the exponents. 5 numbers per run; no timer.", "Tap a blue number. If it can be split, choose a factor pair whose product equals it (multiply to check). If it is prime, choose \u201cIt\u2019s prime\u201d.", "When every branch ends in a gold prime, count each prime and set its exponent with + and \u2212. Example: 2 \u00d7 2 \u00d7 2 \u00d7 3 = 2\u00b3 \u00d7 3.", "Wrong move? Hint 1 tells you the method; hint 2 gives a concrete step. In the vault, after 3 tries the game shows the exponents so you can keep going.", "Use Tab and Enter to play with the keyboard. Undo restores your last branch before the vault."], pause() {factorPaused = true;}, resume() {factorPaused = false;}, setMuted(value) {window.NT_MUTED = value; if (SFX.ctx) {if(value) SFX.ctx.suspend().catch(()=>{}); else SFX.ctx.resume().catch(()=>{});}}});
         const undo = document.createElement("button"); undo.className = "btn"; undo.type = "button"; undo.textContent = "Undo last branch";
         $("hint").after(undo);
         undo.onclick = () => {
@@ -1444,9 +1582,9 @@
             sourceSelector: "#ff-sr",
             standard: "6.NOS.4",
             staticHints: [
-              "What factors do these numbers share? Start by listing the factors of each.",
-              "GCF is the biggest factor they share; LCM is the smallest multiple they share. Which does the task ask for?",
-              "Set it up: compare your lists (or prime factors) and pick the shared value — you name the final one.",
+              "Is this number prime, or can it be split? Try dividing by 2, 3, or 5.",
+              "Pick a factor pair whose product equals the number. Keep splitting until every branch is prime.",
+              "Count how many times each prime appears — that count is its exponent.",
             ],
           });
       });

@@ -139,7 +139,7 @@ const SUPPORT = {
         "Señala toda la extensión y luego la de la mitad central en un diagrama de caja.",
       ),
     ],
-    "10 − 0 = 10; 8 − 2 = 6",
+    "12 − 2 = 10; 10 − 4 = 6",
     "box",
     "Range uses the extremes; IQR uses Q3 − Q1 and describes the middle half.",
     "El rango usa los extremos; el RIC usa Q3 − Q1 y describe la mitad central.",

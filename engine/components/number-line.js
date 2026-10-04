@@ -127,6 +127,15 @@ export function renderNumberLine(container, config) {
     tickIdx += 1;
   }
 
+  // A point's live value is printed under it only BETWEEN labelled ticks: on a
+  // labelled tick it would repeat the number already printed there ("41" over
+  // "41"), which reads as a second, different value.
+  const readout = (v) => {
+    const k = (v - min) / step;
+    const onLabelledTick = Math.abs(k - Math.round(k)) < 1e-6 && Math.round(k) % labelEvery === 0;
+    return onLabelledTick ? "" : formatNum(v);
+  };
+
   // Target zones (invisible, shown on check)
   const targetMarkers = [];
   targets.forEach((t) => {
@@ -180,7 +189,7 @@ export function renderNumberLine(container, config) {
       g.setAttribute("aria-valuenow", String(v));
       g.setAttribute("aria-valuetext", formatNum(v));
     };
-    valLabel.textContent = formatNum(currentVal);
+    valLabel.textContent = readout(currentVal);
     setAria(currentVal);
 
     const state = { x: startX, dragging: false };
@@ -225,7 +234,7 @@ export function renderNumberLine(container, config) {
       const clamped = Math.max(PAD_LEFT, Math.min(600 - PAD_RIGHT, svgX));
       state.x = snapToTick ? toX(toVal(clamped)) : clamped;
       currentVal = toVal(state.x);
-      valLabel.textContent = formatNum(currentVal);
+      valLabel.textContent = readout(currentVal);
 
       setAria(currentVal);
       if (prefersReducedMotion() || typeof requestAnimationFrame !== "function") {
@@ -284,7 +293,7 @@ export function renderNumberLine(container, config) {
         state.x = toX(currentVal);
         renderX = state.x;
         g.setAttribute("transform", `translate(${state.x}, ${TICK_Y})`);
-        valLabel.textContent = formatNum(currentVal);
+        valLabel.textContent = readout(currentVal);
         setAria(currentVal);
       } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
         e.preventDefault();
@@ -292,7 +301,7 @@ export function renderNumberLine(container, config) {
         state.x = toX(currentVal);
         renderX = state.x;
         g.setAttribute("transform", `translate(${state.x}, ${TICK_Y})`);
-        valLabel.textContent = formatNum(currentVal);
+        valLabel.textContent = readout(currentVal);
         setAria(currentVal);
       }
     });

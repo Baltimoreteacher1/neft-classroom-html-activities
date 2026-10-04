@@ -8,6 +8,7 @@ import vm from "node:vm";
 
 import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
 import { homeworkWorkbenchTool } from "./homework-alignment.mjs";
+import { inlineSharedFromDisk } from "./lib/homework-shared-assets.mjs";
 
 const root = join(lessonsDir, "..");
 
@@ -284,7 +285,16 @@ let issues = [];
 
 for (const id of lessonIds) {
   const path = join(lessonsDir, id, "homework.html");
-  const html = readFileSync(path, "utf8");
+  // Checked as a browser assembles it: the page plus the shared script and
+  // CSS it loads from /assets/homework/. A referenced file that is missing
+  // fails here instead of shipping a page with no behaviour.
+  let html;
+  try {
+    html = inlineSharedFromDisk(root, readFileSync(path, "utf8"));
+  } catch (e) {
+    issues.push({ id, level: "CRITICAL", msg: `Shared homework file missing: ${e.message}` });
+    continue;
+  }
   const config = JSON.parse(readFileSync(join(lessonsDir, id, "config.json"), "utf8"));
   const notesPath = join(root, "data", "family-homework-notes", `${id}.json`);
   if (existsSync(notesPath)) {

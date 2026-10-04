@@ -83,7 +83,7 @@ export async function bandRows(band) {
   const rows = [];
   for (const [domain, d] of Object.entries(domains))
     for (const [level, L] of Object.entries(d.levels))
-      for (const [id, title, type, skill] of L.activities)
-        rows.push({ band, domain, level, id, title, type, skill });
+      for (const [id, title, type, skill, minutes] of L.activities)
+        rows.push({ band, domain, level, id, title, type, skill, minutes });
   return rows;
 }

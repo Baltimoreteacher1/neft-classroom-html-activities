@@ -872,19 +872,18 @@
     copyBtn.textContent = "Copy report";
     copyBtn.addEventListener("click", function () {
       var text = signalReportText(rows, who);
-      try {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(text);
-          copyBtn.textContent = "Copied ✓";
-          setTimeout(function () {
-            copyBtn.textContent = "Copy report";
-          }, 1500);
-        } else {
-          window.prompt("Copy the report:", text);
-        }
-      } catch (_e) {
-        window.prompt("Copy the report:", text);
-      }
+      // Clipboard when available; otherwise an in-page dialog with the text
+      // pre-selected (shared/projects/projects-notify.js) — no native prompt().
+      /** @type {any} */ (window).NTNotify.copyText(text, {
+        title: "Copy the report",
+        message: "Report copied to the clipboard.",
+      }).then(function (copied) {
+        if (!copied) return;
+        copyBtn.textContent = "Copied ✓";
+        setTimeout(function () {
+          copyBtn.textContent = "Copy report";
+        }, 1500);
+      });
     });
     actions.appendChild(copyBtn);
 
@@ -893,14 +892,19 @@
     clearBtn.className = "sa-btn sa-btn-ghost";
     clearBtn.textContent = "Clear";
     clearBtn.addEventListener("click", function () {
-      if (window.confirm("Clear all recorded signals on this device?")) {
+      // Destructive: keep the guard, as an accessible in-page dialog.
+      /** @type {any} */ (window).NTNotify.confirm(
+        "This deletes every recorded signal on this device. You cannot undo it.",
+        { title: "Clear all signals?", confirmLabel: "Yes, clear them", cancelLabel: "Keep them" },
+      ).then(function (ok) {
+        if (!ok) return;
         try {
           localStorage.removeItem(SIGNAL_KEY);
         } catch (_e) {
           /* ignore */
         }
-        overlay.parentNode.removeChild(overlay);
-      }
+        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      });
     });
     actions.appendChild(clearBtn);
 

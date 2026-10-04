@@ -1159,7 +1159,13 @@ export const QUESTION_BANK = {
         values: { a, x },
         correct: x,
         distractor: a,
-        prompt: { en: `Solve for y: y ÷ ${a} = ${x}.`, es: `Resuelve para y: y ÷ ${a} = ${x}.` },
+        // (a·x) ÷ y = a, so y = x — and a is printed in the equation, which is
+        // exactly the number this tag answers with. (The old prompt, y ÷ a = x,
+        // had the answer a·x while the bank stated x.)
+        prompt: {
+          en: `Solve for y: ${a * x} ÷ y = ${a}.`,
+          es: `Resuelve para y: ${a * x} ÷ y = ${a}.`,
+        },
       };
     }),
     T("given-mul", (r) => {
@@ -2632,8 +2638,8 @@ export const QUESTION_BANK = {
       distractor: "square",
       decoys: ["circle", "it cannot be determined"],
       prompt: {
-        en: "The pattern repeats in a unit. Which shape is at that position?",
-        es: "El patrón se repite en una unidad. ¿Qué figura está en esa posición?",
+        en: "A pattern repeats this unit over and over: circle, square, triangle. Which shape is in position 12?",
+        es: "Un patrón repite esta unidad una y otra vez: círculo, cuadrado, triángulo. ¿Qué figura está en la posición 12?",
       },
     })),
     T("pu-cst-20", () => ({
@@ -2643,8 +2649,8 @@ export const QUESTION_BANK = {
       distractor: "circle",
       decoys: ["triangle", "the pattern starts over"],
       prompt: {
-        en: "The pattern repeats in a unit. Which shape is at that position?",
-        es: "El patrón se repite en una unidad. ¿Qué figura está en esa posición?",
+        en: "A pattern repeats this unit over and over: circle, square, triangle. Which shape is in position 20?",
+        es: "Un patrón repite esta unidad una y otra vez: círculo, cuadrado, triángulo. ¿Qué figura está en la posición 20?",
       },
     })),
     T("pu-cst-25", () => ({
@@ -2654,8 +2660,8 @@ export const QUESTION_BANK = {
       distractor: "triangle",
       decoys: ["square", "there is no shape 25"],
       prompt: {
-        en: "The pattern repeats in a unit. Which shape is at that position?",
-        es: "El patrón se repite en una unidad. ¿Qué figura está en esa posición?",
+        en: "A pattern repeats this unit over and over: circle, square, triangle. Which shape is in position 25?",
+        es: "Un patrón repite esta unidad una y otra vez: círculo, cuadrado, triángulo. ¿Qué figura está en la posición 25?",
       },
     })),
     T("pu-rbgy-14", () => ({
@@ -2665,8 +2671,8 @@ export const QUESTION_BANK = {
       distractor: "red",
       decoys: ["green", "yellow"],
       prompt: {
-        en: "The pattern repeats in a unit. Which shape is at that position?",
-        es: "El patrón se repite en una unidad. ¿Qué figura está en esa posición?",
+        en: "A bead pattern repeats this unit over and over: red, blue, green, yellow. What color is bead number 14?",
+        es: "Un patrón de cuentas repite esta unidad una y otra vez: rojo, azul, verde, amarillo. ¿De qué color es la cuenta número 14?",
       },
     })),
   ],

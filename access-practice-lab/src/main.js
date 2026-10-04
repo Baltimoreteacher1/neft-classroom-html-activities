@@ -11,6 +11,7 @@ import { availableBands, loadIndex } from "./content.js";
 import * as rec from "./recorder.js";
 import { stop as stopSpeech, speak } from "./speech.js";
 import { getPrefs, setPrefs } from "./store.js";
+import { mountShell } from "./shell.js";
 import { registerSaveResume } from "./sync.js";
 import { $, BASE, announce, bandOfId, copyText, toHtml } from "./util.js";
 import * as activityView from "./views/activity.js";
@@ -24,7 +25,7 @@ import * as testView from "./views/test.js";
 import * as testsView from "./views/tests.js";
 import * as toolsView from "./views/tools.js";
 
-export const BUILD = "2026.10.02";
+export const BUILD = "2026.10.04";
 const VIEWS = {
   home: homeView,
   library: libraryView,
@@ -127,6 +128,7 @@ export function navigate(path, { replace = false } = {}) {
 
 function focusKey(el) {
   if (!el || el === document.body) return null;
+  if (el.matches?.("[data-mode]")) return `[data-mode][value="${CSS.escape(el.value)}"]`;
   for (const attr of [
     "data-ans-sort",
     "data-ans-move",
@@ -137,6 +139,7 @@ function focusKey(el) {
     "data-rec-stop",
     "data-rate",
     "data-set-band",
+    "data-lang",
     "data-selfcheck",
     "data-tab-key",
     "data-check",
@@ -194,9 +197,19 @@ async function render({ keepFocus = false, scroll = false } = {}) {
   }
   if (token !== app.rendering) return;
   root.innerHTML = toHtml(out.html);
+  // Shared links carry their grade context into a fresh browser.
+  for (const link of root.querySelectorAll("a[href]")) {
+    const url = new URL(link.href, location.href);
+    if (url.origin !== location.origin || !url.pathname.startsWith(`${BASE}/`) || /\.[a-z0-9]+$/i.test(url.pathname) || url.pathname.startsWith(`${BASE}/printables/`)) continue;
+    if (!url.searchParams.has("grades")) url.searchParams.set("grades", app.band);
+    const mode = new URLSearchParams(location.search).get("mode");
+    if (mode && !url.searchParams.has("mode")) url.searchParams.set("mode", mode);
+    link.href = url.pathname + url.search + url.hash;
+  }
   document.title = out.title ? `${out.title} · ACCESS Practice Lab` : "ACCESS Practice Lab";
   document.body.dataset.labView = route.view;
   document.body.dataset.labBand = app.band;
+  mountShell(ctx);
   view.mount?.(root, ctx);
   if (fk) {
     const target = root.querySelector(fk)
@@ -246,7 +259,7 @@ async function common(e) {
   if (band) {
     ctx.setBand(band.dataset.setBand);
     const url = new URL(location.href);
-    url.searchParams.delete("grades");
+    url.searchParams.set("grades", app.band);
     navigate(url.pathname + url.search, { replace: true });
     return true;
   }
@@ -271,9 +284,11 @@ async function common(e) {
       if (recording && app.location === startedAt) render({ keepFocus: true });
     } catch {
       if (app.location !== startedAt) return true;
-      announce(
-        "The microphone is blocked. Allow the microphone in your browser, or practice aloud with a partner.",
-      );
+      const message = "The microphone is unavailable. Check browser permission and your microphone, or practice aloud with a partner. You can continue without recording.";
+      const status = document.querySelector(`[data-rec-error="${CSS.escape(key)}"]`);
+      if (status) { status.textContent = message; status.hidden = false; }
+      announce(message);
+      document.querySelector(`[data-rec-start="${CSS.escape(key)}"]`)?.focus({ preventScroll: true });
     }
     return true;
   }
@@ -301,6 +316,10 @@ function interceptLink(e) {
   const a = e.target.closest("a[href]");
   if (!a || a.target || a.hasAttribute("download")) return false;
   const url = new URL(a.href, location.href);
+  if (url.hash && url.pathname === location.pathname && url.search === location.search) {
+    const target = document.getElementById(decodeURIComponent(url.hash.slice(1)));
+    if (target) { e.preventDefault(); target.focus(); target.scrollIntoView({ block: "start" }); return true; }
+  }
   if (
     url.origin !== location.origin ||
     !url.pathname.startsWith(`${BASE}/`) ||

@@ -188,12 +188,12 @@
       "cloze": "The range uses the ___ values; the interquartile range uses the ___.",
       "examples": [
         {
-          "text": "Range 26 with IQR 12.5",
+          "text": "All scores spread over 26 points, and the middle half over 12.5",
           "isExample": true,
-          "why": "The IQR is always the smaller of the two — it sits inside the range."
+          "why": "The IQR is part of the range, so it is never bigger."
         },
         {
-          "text": "Range 12.5 with IQR 26",
+          "text": "A range of 12.5 and an IQR of 26",
           "isExample": false,
           "why": "The middle half cannot be wider than all of the data."
         }
@@ -209,14 +209,14 @@
       "cloze": "Subtract the least value from the ___ value to find the range.",
       "examples": [
         {
-          "text": "30 − 12 = 18",
+          "text": "Scores from 12 to 30: 30 − 12 = 18",
           "isExample": true,
-          "why": "Greatest minus least."
+          "why": "The range is the greatest value minus the least value."
         },
         {
-          "text": "30 + 12 = 42",
+          "text": "Scores from 12 to 30: 30 + 12 = 42",
           "isExample": false,
-          "why": "A range is a difference, never a sum."
+          "why": "The range is a difference. Subtract, do not add."
         }
       ]
     },
@@ -229,12 +229,12 @@
       "image": "/assets/vocab-images/quartile.svg",
       "examples": [
         {
-          "text": "Q1 = 9 for the lower half 4, 8, 10, 14",
+          "text": "Q1 = 9, the middle of the lower half 4, 8, 10, 14",
           "isExample": true,
-          "why": "It is the median OF that half."
+          "why": "Q1 is the median of the lower half. 9 is halfway between 8 and 10."
         },
         {
-          "text": "The smallest value, 4",
+          "text": "The least value, 4",
           "isExample": false,
           "why": "That is the minimum, not a quartile."
         }
@@ -250,14 +250,14 @@
       "image": "/assets/vocab-images/interquartile-range.svg",
       "examples": [
         {
-          "text": "88 − 75.5 = 12.5",
+          "text": "Q3 − Q1 = 88 − 75.5 = 12.5",
           "isExample": true,
-          "why": "Q3 minus Q1 — the middle half's width."
+          "why": "The IQR is Q3 minus Q1, the spread of the middle half."
         },
         {
-          "text": "94 − 68 = 26",
+          "text": "Greatest − least = 94 − 68 = 26",
           "isExample": false,
-          "why": "That is the range, using the extremes."
+          "why": "That uses the two end values. That is the range."
         }
       ],
       "cloze": "The spread of the middle half of the data, Q3 − Q1, is the ___ ___."
@@ -365,14 +365,14 @@
       "cloze": "The way data values are spread out across a range is the ___.",
       "examples": [
         {
-          "text": "“Most scores cluster near 85, with one down at 68”",
+          "text": "Most scores are near 85, and one score is 68",
           "isExample": true,
-          "why": "It says where the data sits and how it spreads."
+          "why": "It tells where most of the data is and how spread out it is."
         },
         {
-          "text": "“The highest score was 94”",
+          "text": "The highest score was 94",
           "isExample": false,
-          "why": "One value describes a point, not the shape of the set."
+          "why": "It tells about one value, not the whole data set."
         }
       ]
     }
@@ -421,60 +421,225 @@
       "caption": "Range = 94 − 68 = 26 (the whole span, whisker tip to whisker tip). IQR = 88 − 75.5 = 12.5 (just the width of the box — the middle half)."
     },
     "conceptIntro": {
-      "heading": "Let's build it together — How spread out is the data?",
-      "intro": "A measure of center like the median tells you where the data sits. It does not tell you how far apart the values are. Two classes can share the same median and still look nothing alike. Range and interquartile range are the two numbers that describe that spread. We'll walk through a worked example, try one together, then you'll try a few with hints right there when you need them.",
-      "keyIdea": "Range = greatest − least, and it covers every value. Interquartile range = Q3 − Q1, and it covers only the middle half, so one faraway value cannot stretch it.",
+      "heading": "Describe Data by Range and Interquartile Range",
+      "intro": "The range and the interquartile range (IQR) are two numbers that tell how spread out data is.",
+      "introEs": "El rango y el rango intercuartílico (RIC) son dos números que dicen qué tan dispersos están los datos.",
+      "keyIdea": "The range is greatest − least and covers all the data. The IQR is Q3 − Q1 and covers only the middle half.",
+      "keyIdeaEs": "El rango es mayor − menor y cubre todos los datos. El RIC es Q3 − Q1 y cubre solo la mitad central.",
       "iDo": {
-        "title": "Watch me measure the spread of the test scores",
+        "title": "Example 1 · Find the range",
+        "titleEs": "Ejemplo 1 · Halla el rango",
         "lines": [
-          "Here are 20 history test scores in order: 68, 70, 73, 74, 75, 76, 77, 80, 82, 83, 84, 85, 86, 86, 88, 88, 90, 90, 93, 94. Ordering them first is what makes every step after this possible.",
-          "Range: I subtract the least value from the greatest. 94 − 68 = 26. The scores span 26 points from end to end.",
-          "Now the quartiles. The median splits the 20 scores into two halves of 10. The median is halfway between the 10th and 11th values: (83 + 84) ÷ 2 = 83.5.",
-          "Q1 is the median of the lower 10 values: halfway between 75 and 76, so Q1 = 75.5. Q3 is the median of the upper 10: halfway between 88 and 88, so Q3 = 88.",
-          "Interquartile range: IQR = Q3 − Q1 = 88 − 75.5 = 12.5. The middle half of the students' scores differed by only 12.5 points, even though the full range was 26."
+          "Here are 20 history test scores in order: 68, 70, 73, 74, 75, 76, 77, 80, 82, 83, 84, 85, 86, 86, 88, 88, 90, 90, 93, 94. Find the range.",
+          "Find the least and greatest scores: 68 and 94",
+          "Subtract the least from the greatest: 94 − 68 = 26",
+          "The range is 26 points.",
+          "Use the same 20 test scores. Find the interquartile range (IQR).",
+          "Find the median of the 20 scores: (83 + 84) ÷ 2 = 83.5",
+          "Find Q1, the middle of the lower 10: (75 + 76) ÷ 2 = 75.5",
+          "Find Q3, the middle of the upper 10: (88 + 88) ÷ 2 = 88",
+          "Subtract Q1 from Q3: 88 − 75.5 = 12.5",
+          "The IQR is 12.5 points. The middle half of the scores is within 12.5 points, but all the scores spread over 26."
         ],
         "linesEs": [
-          "Aquí están 20 calificaciones del examen de historia en orden: 68, 70, 73, 74, 75, 76, 77, 80, 82, 83, 84, 85, 86, 86, 88, 88, 90, 90, 93, 94. Ordenarlas primero es lo que hace posible cada paso siguiente.",
-          "Rango: resto el valor menor del mayor. 94 − 68 = 26. Las calificaciones abarcan 26 puntos de extremo a extremo.",
-          "Ahora los cuartiles. La mediana divide las 20 calificaciones en dos mitades de 10. La mediana está a la mitad entre el 10.º y el 11.º valor: (83 + 84) ÷ 2 = 83.5.",
-          "Q1 es la mediana de los 10 valores inferiores: a la mitad entre 75 y 76, así que Q1 = 75.5. Q3 es la mediana de los 10 superiores: a la mitad entre 88 y 88, así que Q3 = 88.",
-          "Rango intercuartílico: Q3 − Q1 = 88 − 75.5 = 12.5. La mitad central de las calificaciones de los estudiantes se diferenció en solo 12.5 puntos, aunque el rango completo fue de 26."
-        ],
-        "titleEs": "Mírame medir la dispersión de las calificaciones del examen"
+          "Aquí hay 20 calificaciones de un examen de historia en orden: 68, 70, 73, 74, 75, 76, 77, 80, 82, 83, 84, 85, 86, 86, 88, 88, 90, 90, 93, 94. Halla el rango.",
+          "Halla la calificación menor y la mayor: 68 y 94",
+          "Resta la menor de la mayor: 94 − 68 = 26",
+          "El rango es 26 puntos.",
+          "Usa las mismas 20 calificaciones. Halla el rango intercuartílico (RIC).",
+          "Halla la mediana de las 20 calificaciones: (83 + 84) ÷ 2 = 83.5",
+          "Halla Q1, el medio de las 10 menores: (75 + 76) ÷ 2 = 75.5",
+          "Halla Q3, el medio de las 10 mayores: (88 + 88) ÷ 2 = 88",
+          "Resta Q1 de Q3: 88 − 75.5 = 12.5",
+          "El RIC es 12.5 puntos. La mitad central de las calificaciones está dentro de 12.5 puntos, pero todas las calificaciones se reparten en 26."
+        ]
       },
       "weDo": {
         "title": "Let's do one together",
+        "titleEs": "Hagamos uno juntos",
         "lines": [
-          "Class A's box plot reads: least 62, Q1 74, median 81, Q3 87, greatest 90. Find the range first.",
-          "Range = 90 − 62 = 28 points from the lowest score to the highest.",
-          "Now the IQR: subtract Q1 from Q3. IQR = 87 − 74 = 13 points across the middle half.",
-          "Say what each one means: the whole class's scores span 28 points, but the middle half of the class is packed into 13 points.",
-          "Sentence frame — say it with me: \"My first step is ___ , because the problem asks for ___ .\""
+          "Class A's box plot shows: least 62, Q1 74, median 81, Q3 87, greatest 90. Find the range and the IQR.",
+          "Find the range: greatest − least. (90 − 62 = 28)",
+          "Find the IQR: Q3 − Q1. (87 − 74 = 13)",
+          "What does each number tell you? (All the scores spread over 28 points. The middle half spreads over only 13 points.)"
         ],
         "linesEs": [
-          "El diagrama de caja de la clase A indica: mínimo 62, Q1 74, mediana 81, Q3 87, máximo 90. Halla primero el rango.",
-          "Rango = 90 − 62 = 28 puntos desde la calificación más baja hasta la más alta.",
-          "Ahora el rango intercuartílico: resta Q1 de Q3. Q3 − Q1 = 87 − 74 = 13 puntos en la mitad central.",
-          "Di lo que significa cada uno: las calificaciones de toda la clase abarcan 28 puntos, pero la mitad central de la clase se concentra en 13 puntos.",
-          "Marco de oración — dilo conmigo: «Mi primer paso es ___ , porque el problema pide ___ .»"
-        ],
-        "titleEs": "Hagamos uno juntos"
+          "El diagrama de caja de la clase A muestra: menor 62, Q1 74, mediana 81, Q3 87, mayor 90. Halla el rango y el RIC.",
+          "Halla el rango: mayor − menor. (90 − 62 = 28)",
+          "Halla el RIC: Q3 − Q1. (87 − 74 = 13)",
+          "¿Qué te dice cada número? (Todas las calificaciones se reparten en 28 puntos. La mitad central se reparte en solo 13 puntos.)"
+        ]
       },
       "youDo": {
-        "title": "Now you try — with support",
+        "title": "Your turn",
+        "titleEs": "Tu turno",
         "lines": [
-          "Try the practice problems below. The hint button is right there whenever you get stuck — use it, that's smart.",
-          "Remember the key idea: Range = greatest − least, and it covers every value. Interquartile range = Q3 − Q1, and it covers only the middle half, so one faraway value cannot stretch it.."
+          "A box plot shows: least 40, Q1 45, median 50, Q3 56, greatest 70. What is the IQR?"
         ],
         "linesEs": [
-          "Intenta los problemas de práctica de abajo. El botón de pistas está ahí cuando te atores — úsalo, eso es ser listo.",
-          "Recuerda la idea clave: Rango = mayor − menor, y abarca todos los valores. El rango intercuartílico = Q3 − Q1, y abarca solo la mitad central, así que un valor lejano no puede estirarlo."
+          "Un diagrama de caja muestra: menor 40, Q1 45, mediana 50, Q3 56, mayor 70. ¿Cuánto es el RIC?"
+        ]
+      }
+    },
+    "build": {
+      "todayIdea": "The range and the interquartile range (IQR) are two numbers that tell how spread out data is.",
+      "todayIdeaEs": "El rango y el rango intercuartílico (RIC) son dos números que dicen qué tan dispersos están los datos.",
+      "examples": [
+        {
+          "title": "Example 1 · Find the range",
+          "titleEs": "Ejemplo 1 · Halla el rango",
+          "problem": "Here are 20 history test scores in order: 68, 70, 73, 74, 75, 76, 77, 80, 82, 83, 84, 85, 86, 86, 88, 88, 90, 90, 93, 94. Find the range.",
+          "problemEs": "Aquí hay 20 calificaciones de un examen de historia en orden: 68, 70, 73, 74, 75, 76, 77, 80, 82, 83, 84, 85, 86, 86, 88, 88, 90, 90, 93, 94. Halla el rango.",
+          "figure": {
+            "kind": "dotPlot",
+            "values": [
+              68,
+              70,
+              73,
+              74,
+              75,
+              76,
+              77,
+              80,
+              82,
+              83,
+              84,
+              85,
+              86,
+              86,
+              88,
+              88,
+              90,
+              90,
+              93,
+              94
+            ],
+            "min": 65,
+            "max": 95,
+            "label": "Test scores",
+            "caption": "The scores go from 68 to 94.",
+            "captionEs": "Las calificaciones van de 68 a 94."
+          },
+          "steps": [
+            {
+              "do": "Find the least and greatest scores.",
+              "doEs": "Halla la calificación menor y la mayor.",
+              "math": "68 and 94",
+              "mathEs": "68 y 94",
+              "why": "The scores are in order, so they are the first and last values.",
+              "whyEs": "Las calificaciones están en orden, así que son el primer valor y el último."
+            },
+            {
+              "do": "Subtract the least from the greatest.",
+              "doEs": "Resta la menor de la mayor.",
+              "math": "94 − 68 = 26",
+              "why": "The range is the distance from one end of the data to the other.",
+              "whyEs": "El rango es la distancia de un extremo de los datos al otro."
+            }
+          ],
+          "answer": "The range is 26 points.",
+          "answerEs": "El rango es 26 puntos."
+        },
+        {
+          "title": "Example 2 · Find the IQR",
+          "titleEs": "Ejemplo 2 · Halla el RIC",
+          "problem": "Use the same 20 test scores. Find the interquartile range (IQR).",
+          "problemEs": "Usa las mismas 20 calificaciones. Halla el rango intercuartílico (RIC).",
+          "figure": {
+            "kind": "boxPlot",
+            "min": 68,
+            "q1": 75.5,
+            "median": 83.5,
+            "q3": 88,
+            "max": 94,
+            "axisMin": 65,
+            "axisMax": 95,
+            "step": 5,
+            "caption": "The IQR is the width of the box.",
+            "captionEs": "El RIC es el ancho de la caja."
+          },
+          "steps": [
+            {
+              "do": "Find the median of the 20 scores.",
+              "doEs": "Halla la mediana de las 20 calificaciones.",
+              "math": "(83 + 84) ÷ 2 = 83.5",
+              "why": "The median splits the scores into two halves of 10.",
+              "whyEs": "La mediana divide las calificaciones en dos mitades de 10."
+            },
+            {
+              "do": "Find Q1, the middle of the lower 10.",
+              "doEs": "Halla Q1, el medio de las 10 menores.",
+              "math": "(75 + 76) ÷ 2 = 75.5"
+            },
+            {
+              "do": "Find Q3, the middle of the upper 10.",
+              "doEs": "Halla Q3, el medio de las 10 mayores.",
+              "math": "(88 + 88) ÷ 2 = 88"
+            },
+            {
+              "do": "Subtract Q1 from Q3.",
+              "doEs": "Resta Q1 de Q3.",
+              "math": "88 − 75.5 = 12.5",
+              "why": "The IQR is the spread of the middle half of the data.",
+              "whyEs": "El RIC es la dispersión de la mitad central de los datos."
+            }
+          ],
+          "answer": "The IQR is 12.5 points. The middle half of the scores is within 12.5 points, but all the scores spread over 26.",
+          "answerEs": "El RIC es 12.5 puntos. La mitad central de las calificaciones está dentro de 12.5 puntos, pero todas las calificaciones se reparten en 26."
+        }
+      ],
+      "together": {
+        "title": "Let's do one together",
+        "titleEs": "Hagamos uno juntos",
+        "problem": "Class A's box plot shows: least 62, Q1 74, median 81, Q3 87, greatest 90. Find the range and the IQR.",
+        "problemEs": "El diagrama de caja de la clase A muestra: menor 62, Q1 74, mediana 81, Q3 87, mayor 90. Halla el rango y el RIC.",
+        "figure": {
+          "kind": "boxPlot",
+          "min": 62,
+          "q1": 74,
+          "median": 81,
+          "q3": 87,
+          "max": 90,
+          "axisMin": 60,
+          "axisMax": 92,
+          "step": 2,
+          "caption": "Class A test scores",
+          "captionEs": "Calificaciones de la clase A"
+        },
+        "steps": [
+          {
+            "ask": "Find the range: greatest − least.",
+            "askEs": "Halla el rango: mayor − menor.",
+            "answer": "90 − 62 = 28"
+          },
+          {
+            "ask": "Find the IQR: Q3 − Q1.",
+            "askEs": "Halla el RIC: Q3 − Q1.",
+            "answer": "87 − 74 = 13"
+          },
+          {
+            "ask": "What does each number tell you?",
+            "askEs": "¿Qué te dice cada número?",
+            "answer": "All the scores spread over 28 points. The middle half spreads over only 13 points.",
+            "answerEs": "Todas las calificaciones se reparten en 28 puntos. La mitad central se reparte en solo 13 puntos."
+          }
         ],
-        "titleEs": "Ahora inténtalo tú — con apoyo"
+        "answer": "The range is 28 points. The IQR is 13 points.",
+        "answerEs": "El rango es 28 puntos. El RIC es 13 puntos."
       },
-      "headingEs": "Construyámoslo juntos — ¿Qué tan dispersos están los datos?",
-      "introEs": "Una medida de centro como la mediana te dice dónde se sitúan los datos. No te dice qué tan separados están los valores. Dos clases pueden tener la misma mediana y verse completamente distintas. El rango y el rango intercuartílico son los dos números que describen esa dispersión. Veremos un ejemplo resuelto, haremos uno juntos y luego harás algunos con pistas disponibles cuando las necesites.",
-      "keyIdeaEs": "Rango = mayor − menor, y abarca todos los valores. El rango intercuartílico = Q3 − Q1, y abarca solo la mitad central, así que un valor lejano no puede estirarlo."
+      "tryIt": {
+        "problem": "A box plot shows: least 40, Q1 45, median 50, Q3 56, greatest 70. What is the IQR?",
+        "problemEs": "Un diagrama de caja muestra: menor 40, Q1 45, mediana 50, Q3 56, mayor 70. ¿Cuánto es el RIC?",
+        "answer": "11",
+        "accept": [
+          "11",
+          "eleven"
+        ],
+        "hint": "Subtract Q1 from Q3: 56 − 45.",
+        "hintEs": "Resta Q1 de Q3: 56 − 45."
+      },
+      "bigIdea": "The range is greatest − least and covers all the data. The IQR is Q3 − Q1 and covers only the middle half.",
+      "bigIdeaEs": "El rango es mayor − menor y cubre todos los datos. El RIC es Q3 − Q1 y cubre solo la mitad central."
     }
   },
   "explore": {
@@ -2078,5 +2243,6 @@
       ],
       "explanationEs": "Busca equilibrio, una cola, grupos o espacios: cluster with a gap. Nombra la forma de la distribución: cluster with a gap."
     }
-  ]
+  ],
+  "topic": "Describe Data by Range and Interquartile Range"
 }

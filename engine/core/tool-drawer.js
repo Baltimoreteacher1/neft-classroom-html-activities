@@ -36,7 +36,7 @@ import { buildToolCard, collectTools } from "./tools-mode.js";
 const STYLE_ID = "nt-tool-drawer-style";
 const CSS = `
 .nt-toolpoint { margin: 18px 0 4px; padding: 12px 14px; border: 1px dashed #cdd9e5; border-radius: 14px; background: rgba(255,255,255,.72); display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
-.nt-toolpoint-label { font: 700 11px/1.3 var(--font-ui, system-ui, sans-serif); letter-spacing: .1em; text-transform: uppercase; color: var(--sg-deep, #0b2540); }
+.nt-toolpoint-label { font: 700 14px/1.3 var(--sg-display, var(--font-ui, system-ui, sans-serif)); color: var(--sg-deep, #0b2540); }
 .nt-toolpoint-hint { font: 400 13px/1.4 var(--font-body, system-ui, sans-serif); color: #5f6f80; flex: 1 1 180px; min-width: 0; }
 .nt-toolchip { display: inline-flex; align-items: center; gap: 7px; font: 700 14px/1 var(--font-ui, system-ui, sans-serif); padding: 10px 16px; border-radius: 999px; cursor: pointer; border: 1px solid var(--sg, #12355b); background: #fff; color: var(--sg-deep, #0b2540); }
 .nt-toolchip:hover { background: var(--sg-soft, #eef2fa); }
@@ -218,7 +218,7 @@ function buildPoint(allTools, hint, drawer) {
   // side, in the same row.
   const seen = new Set();
   const tools = allTools.filter((t) => {
-    const name = toolMeta(t.v).name;
+    const name = `${toolMeta(t.v).name}|${t.v?.title || ""}`;
     if (seen.has(name)) return false;
     seen.add(name);
     return true;
@@ -249,7 +249,10 @@ function buildPoint(allTools, hint, drawer) {
     const chip = document.createElement("button");
     chip.type = "button";
     chip.className = "nt-toolchip";
-    chip.textContent = `Open the ${meta.name}`;
+    // The tool's own title says WHICH model it is ("T-Room Areas Add Up");
+    // the tool name alone ("Data Explorer — Bar Chart") read as off-topic.
+    const title = typeof tool.v?.title === "string" ? tool.v.title.trim() : "";
+    chip.textContent = title ? `Open the ${meta.name}: ${title}` : `Open the ${meta.name}`;
     chip.addEventListener("click", () => drawer.open([tool], chip, meta.name));
     row.appendChild(chip);
   }

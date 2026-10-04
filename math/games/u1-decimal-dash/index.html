@@ -87,6 +87,12 @@
         white-space: nowrap;
         border: 0;
       }
+      /* Keep the whole board (including LOCK IN / NEXT) above the fold on a
+         1366x768 Chromebook: never let the 820x600 board grow taller than the
+         space left under the player toolbar. */
+      .cabinet-viewport {
+        width: min(100%, 960px, calc((100dvh - 84px) * 820 / 600)) !important;
+      }
     </style>
     <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
     <script>
@@ -94,9 +100,7 @@
       // from a mirror (document.write blocks parsing so the mirror is ready
       // before the game script runs).
       if (typeof Phaser === "undefined") {
-        document.write(
-          '<script src="/games/vendor/phaser/phaser-3.80.1.min.js"><\/script>',
-        );
+        document.write('<script src="/games/vendor/phaser/phaser-3.80.1.min.js"><\/script>');
       }
       // If both sources are unreachable, show a clear message instead of a blank page.
       window.addEventListener("load", function () {
@@ -126,17 +130,16 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
     <!-- nsr-injected:end -->
-    <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
-  <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-    <script src="/assets/game-studio.js?v=20261002" defer></script>
-    <link rel="stylesheet" href="/math/games/shared/phaser-studio.css?v=20261002">
-    <script src="/math/games/shared/phaser-studio.js?v=20261002"></script>
-    <link rel="stylesheet" href="/math/games/shared/cabinet-tools.css?v=20261002">
+    <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />
+    <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/assets/game-studio.css?v=20261002" />
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
+    <link rel="stylesheet" href="/math/games/shared/phaser-studio.css?v=20261002" />
+    <script src="/math/games/shared/phaser-studio.js?v=20261003"></script>
+    <link rel="stylesheet" href="/math/games/shared/cabinet-tools.css?v=20261002" />
     <script src="/math/games/shared/cabinet-tools.js?v=20261002" defer></script>
-</head>
+  </head>
   <body>
-
     <!-- Decorative animated spark-field (behind the Phaser canvas). -->
     <div id="dd-bg" data-parallax aria-hidden="true">
       <div id="dd-bg-layer" data-parallax-layer></div>
@@ -559,7 +562,7 @@
           .text(
             cx,
             228,
-            "Drag the marker onto the number line to PLACE a decimal.\nHigher up: place several and order them least to greatest, then Lock In!",
+            "Drag the marker onto the number line to PLACE a decimal.\nThink: which whole number is it near? How many tenths past it? Then Lock In!",
             {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "16px",
@@ -838,7 +841,7 @@
           cx - 180,
           0x7fd6a0,
           "Level 1",
-          "Support\n\nTenths only\nSmall number lines\nOne marker at a time\nEvery mark labeled",
+          "Support\n\nTenths only\nSmall number lines\nOne marker at a time\nA step coach shows how to count",
           1,
         );
         const pick2 = makeCard(
@@ -912,9 +915,19 @@
         this.sel = 0; // index of the currently selected marker
         this.beads = [];
         this.ghosts = [];
-        this.tries = 0; // wrong attempts on the CURRENT problem (retry then teach)
+        this.tries = 0; // wrong attempts on the CURRENT problem (hint, step, then teach)
         this._srVal = null; // debounce: last marker value announced to SR
+        this.firstTry = 0; // problems placed right on the first Lock In (unaided)
+        this.helpedBy = { tenths: 0, hundredths: 0, order: 0 }; // problems that needed help, by skill
+        this.labelsAll = false; // Tier-2 help: label every tick on this problem
+        this.awaitNext = false; // true while the round's explanation is up (button reads NEXT)
       };
+
+      // Skill tag for a problem (drives the end-of-game "practice next" advice).
+      function ddSkillOf(p) {
+        if (p.count > 1) return "order";
+        return p.range.decimals === 2 ? "hundredths" : "tenths";
+      }
 
       GameScene.prototype.create = function () {
         this.add.rectangle(W / 2, H / 2, W, H, 0x102338);
@@ -934,16 +947,16 @@
         // and cover roughly the top 45 game-px when the canvas fills the
         // viewport height on desktop).
         this.streakText = this.add
-          .text(W - 16, 58, "Streak: 0", { ...hudStyle, color: "#d4952a" })
+          .text(W - 16, 12, "Streak: 0", { ...hudStyle, color: "#d4952a" })
           .setOrigin(1, 0);
         this.levelText = this.add
-          .text(W - 16, 82, this.mode === 1 ? "Level 1 · Support" : "Level 2 · Enrichment", {
+          .text(W - 16, 36, this.mode === 1 ? "Level 1 · Support" : "Level 2 · Enrichment", {
             ...hudStyle,
             color: this.mode === 1 ? "#7fd6a0" : "#f0b44a",
           })
           .setOrigin(1, 0);
         this.progressText = this.add
-          .text(W / 2, 12, "0 / " + (this.endless ? "∞" : this.target), {
+          .text(W / 2, 12, "Solved 0 / " + (this.endless ? "∞" : this.target), {
             ...hudStyle,
             color: "#bfe0ff",
           })
@@ -1001,21 +1014,26 @@
           .setOrigin(0.5)
           .setAlpha(0);
 
-        // Live readout — the heart of the mechanic: the value where the selected
-        // marker currently sits, updating as it moves.
+        // Coach line (replaces the old live value readout, which showed the
+        // marker's exact value and turned the task into "slide until it
+        // matches"). Level 1 gets an explicit step coach that names the next
+        // action; Level 2 gets a short "think first" prompt. The marker's value
+        // is never shown — the student reasons it out from the labeled ticks.
         this.readoutBig = this.add
           .text(W / 2, 214, "", {
-            fontFamily: "Impact, sans-serif",
-            fontSize: "52px",
-            color: "#d4952a",
-            stroke: "#0a1626",
-            strokeThickness: 5,
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#ffe2a8",
+            align: "center",
+            lineSpacing: 4,
+            wordWrap: { width: W - 120 },
           })
           .setOrigin(0.5);
         this.readoutSub = this.add
-          .text(W / 2, 258, "", {
+          .text(W / 2, 262, "", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "18px",
+            fontSize: "16px",
             fontStyle: "bold",
             color: "#9fd6ff",
           })
@@ -1048,7 +1066,7 @@
         this.lockBtn = this.add
           .rectangle(W / 2, 482, 240, 54, 0x1a6fb5)
           .setInteractive({ useHandCursor: true });
-        this.add
+        this.lockLabel = this.add
           .text(W / 2, 482, "LOCK IN ✓", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "22px",
@@ -1058,7 +1076,9 @@
           .setOrigin(0.5);
         this.lockBtn.on("pointerover", () => this.lockBtn.setFillStyle(0x2080cc));
         this.lockBtn.on("pointerout", () => this.lockBtn.setFillStyle(0x1a6fb5));
-        this.lockBtn.on("pointerdown", () => this.lockIn());
+        // After a round resolves the same button becomes NEXT, so a mouse or
+        // touch player never has to scroll down to the console to continue.
+        this.lockBtn.on("pointerdown", () => (this.awaitNext ? ddNext() : this.lockIn()));
 
         // Hint — fuller in support mode, brief in enrichment.
         this.hintText = this.add
@@ -1066,7 +1086,7 @@
             W / 2,
             532,
             this.mode === 1
-              ? "Drag the marker, or press ← → (A·D) to step one mark at a time. The number under the marker shows where you are. Press Enter when it matches."
+              ? "Drag the marker, or press ← → (A·D) to move one mark at a time. Press LOCK IN (or Enter) when you think it is right."
               : "Drag a marker or press ← → (A·D). Use 1·2·3 to switch markers. Enter = lock in.",
             {
               fontFamily: "Segoe UI, sans-serif",
@@ -1123,8 +1143,8 @@
         this.input.keyboard.on("keydown-ONE", () => this.selectBead(0));
         this.input.keyboard.on("keydown-TWO", () => this.selectBead(1));
         this.input.keyboard.on("keydown-THREE", () => this.selectBead(2));
-        this.input.keyboard.on("keydown-ENTER", () => this.lockIn());
-        this.input.keyboard.on("keydown-SPACE", () => this.lockIn());
+        this.input.keyboard.on("keydown-ENTER", () => (this.awaitNext ? ddNext() : this.lockIn()));
+        this.input.keyboard.on("keydown-SPACE", () => (this.awaitNext ? ddNext() : this.lockIn()));
 
         this.cameras.main.fadeIn(400);
         this.newProblem();
@@ -1172,20 +1192,63 @@
       GameScene.prototype.updateReadout = function () {
         const b = this.beads[this.sel];
         if (!b) return;
-        this.readoutBig.setText(rstr(this.problem.range, b.idx));
+        this.readoutBig.setText(this.coachLine());
         if (this.beads.length === 1) {
-          this.readoutSub.setText("Goal: place " + b.valStr);
+          this.readoutSub.setText("");
         } else {
           this.readoutSub.setText(
             "Marker " +
               (this.sel + 1) +
               " of " +
               this.beads.length +
-              " holds " +
+              " (" +
               b.valStr +
-              " · tap a marker to switch",
+              ") is selected · tap a marker or press 1–3 to switch",
           );
         }
+      };
+
+      // Level 1: an explicit step coach that names the NEXT action (count from
+      // the whole number) without ever saying where the marker is now. Level 2:
+      // one "think first" prompt. Both stay put while the marker moves, so the
+      // coach can never be used as a hot/cold detector.
+      GameScene.prototype.coachLine = function () {
+        const p = this.problem;
+        if (!p) return "";
+        if (this.mode === 1 && p.count === 1) {
+          const t = p.beads[0];
+          const tenths = t.targetIdx;
+          return (
+            "Step 1: Each small mark is " +
+            p.stepStr +
+            ".   Step 2: " +
+            t.valStr +
+            " is " +
+            p.loStr +
+            " plus " +
+            tenths +
+            (tenths === 1 ? " tenth" : " tenths") +
+            " — start at " +
+            p.loStr +
+            " and count " +
+            tenths +
+            (tenths === 1 ? " mark" : " marks") +
+            " to the right.   Step 3: LOCK IN."
+          );
+        }
+        if (p.count === 1)
+          return (
+            "Where does " +
+            p.beads[0].valStr +
+            " go? Each small mark is " +
+            p.stepStr +
+            " — count from the nearest labeled number."
+          );
+        return (
+          "Each small mark is " +
+          p.stepStr +
+          ". Put every marker on its own value — the smallest ends up farthest left."
+        );
       };
 
       GameScene.prototype.setBeadIndex = function (b, idx) {
@@ -1203,10 +1266,19 @@
           // Announce the marker's value to screen readers (debounced by value
           // so dragging/nudging doesn't spam the live region).
           if (this.problem) {
-            const val = rstr(this.problem.range, b.idx);
+            // Announce position as a mark count (what a sighted player sees),
+            // never the decimal value itself.
+            const val = b.idx;
             if (val !== this._srVal) {
               this._srVal = val;
-              srSay("Marker at " + val + ".");
+              srSay(
+                "Marker is " +
+                  val +
+                  (val === 1 ? " mark" : " marks") +
+                  " right of " +
+                  this.problem.loStr +
+                  ".",
+              );
             }
           }
         }
@@ -1259,17 +1331,13 @@
         this.sel = 0;
         this.tries = 0;
         this._srVal = null;
+        this.labelsAll = false;
+        this.awaitNext = false;
+        this.lockLabel.setText("LOCK IN ✓");
         this.problem = genProblem(this.level, this.mode);
         this.bannerLabel.setText(this.problem.label);
         this.bannerText.setText(this.problem.prompt);
-        // Tick labels: support mode labels every tick; enrichment shows only
-        // the endpoints + midpoint.
-        const range = this.problem.range;
-        for (let i = 0; i <= TICKS; i++) {
-          const major = i === 0 || i === 5 || i === TICKS;
-          const show = this.mode === 1 || major;
-          this.tickLabels[i].setText(show ? rstr(range, i) : "");
-        }
+        this.drawTickLabels();
         this.feedback.setAlpha(0);
         this.buildBeads();
         this.updateSelectionVisual();
@@ -1289,8 +1357,21 @@
         );
       };
 
+      // Tick labels: only the endpoints + midpoint are labeled, so the student
+      // has to COUNT marks (labeling every mark made the task "find the matching
+      // label"). Tier-2 help (after a second miss) labels every mark.
+      GameScene.prototype.drawTickLabels = function () {
+        const range = this.problem.range;
+        for (let i = 0; i <= TICKS; i++) {
+          const major = i === 0 || i === 5 || i === TICKS;
+          const show = major || this.labelsAll;
+          this.tickLabels[i].setText(show ? rstr(range, i) : "");
+          this.tickLabels[i].setColor(major ? "#bfe0ff" : this.labelsAll ? "#ffe2a8" : "#7fa8c3");
+        }
+      };
+
       GameScene.prototype.lockIn = function () {
-        if (this.locked || !this.problem) return;
+        if (this.locked || this.awaitNext || !this.problem) return;
         this.locked = true;
         this.dragging = false;
         const allCorrect = this.beads.every((b) => b.idx === b.targetIdx);
@@ -1298,8 +1379,15 @@
           SFX.good();
           this.solved++;
           this.streak++;
-          const bonus = Math.min(this.streak, 5) * 5;
-          const gained = 20 + bonus;
+          // Full points for an unaided first try; fewer once help was used.
+          let gained;
+          if (this.tries === 0) {
+            this.firstTry++;
+            gained = 20 + Math.min(this.streak, 5) * 5;
+          } else {
+            this.helpedBy[ddSkillOf(this.problem)]++;
+            gained = this.tries === 1 ? 12 : 6;
+          }
           this.score += gained;
           this.beads.forEach((b) => {
             b.body.setFillStyle(0x2d9e5a);
@@ -1310,89 +1398,111 @@
           JUICE.audio.correct(this.streak);
           JUICE.floatText(this, W / 2, 200, "+" + gained, "#7fd6a0", 30);
           JUICE.award(gained, "u1-decimal-dash");
+          const praise = this.tries === 0 ? "Correct on your first try! " : "You fixed it! ";
           this.flash(W / 2, 188, "Correct! ✓", "#7fd6a0");
-          this.feedback.setText("Correct! " + this.problem.why).setAlpha(1);
+          this.feedback.setText(praise + this.problem.why).setAlpha(1);
           srSay("Correct. " + this.problem.why);
           this.afterAttempt(true);
-        } else {
-          SFX.bad();
-          JUICE.audio.wrong();
-          this.streak = 0;
-          this.flashAmber();
-          JUICE.shake(this, 0.006);
-          const wrong = this.beads.filter((b) => b.idx !== b.targetIdx);
-          wrong.forEach((b) => {
-            b.misplaced = true;
-            b.body.setFillStyle(0xc23b3b);
-          });
-          this.tries++;
-          this.updateHUD();
-          if (this.tries < 2) {
-            // First miss: diagnostic hint + retry the SAME problem. The hint
-            // says what is off and which way to think — never the answer.
-            const hint = this.retryHint(wrong);
-            this.feedback.setText("Not yet — " + hint).setAlpha(1);
-            srSay("Not yet. " + hint);
-            this.time.delayedCall(this.reduceMotion ? 60 : 350, () => {
-              this.locked = false;
-            });
-            return;
-          }
-          // Second miss: teach. Explain the answer, drop a green ghost on each
-          // correct tick, glide the markers home, then move on.
-          this.feedback.setText("Not quite — " + this.problem.why).setAlpha(1);
-          srSay("Not quite. " + this.problem.why);
-          this.beads.forEach((b) => {
-            const gx = tickX(b.targetIdx);
-            const ghost = this.add.circle(gx, LINE_Y, 10, 0x7fd6a0, 0.6).setDepth(5);
-            this.ghosts.push(ghost);
-            this.tweens.add({
-              targets: b.c,
-              x: gx,
-              duration: this.reduceMotion ? 0 : 600,
-              ease: "Quad.easeOut",
-              onUpdate: () => {
-                b.idx = nearestIndex(b.c.x);
-              },
-            });
-          });
-          this.time.delayedCall(this.reduceMotion ? 60 : 700, () => {
-            this.beads.forEach((b) => (b.idx = b.targetIdx));
-            this.afterAttempt(false);
-          });
+          return;
         }
+        SFX.bad();
+        JUICE.audio.wrong();
+        this.streak = 0;
+        this.flashAmber();
+        JUICE.shake(this, 0.006);
+        const wrong = this.beads.filter((b) => b.idx !== b.targetIdx);
+        wrong.forEach((b) => {
+          b.misplaced = true;
+          b.body.setFillStyle(0xc23b3b);
+        });
+        this.tries++;
+        this.updateHUD();
+        if (this.tries < 3) {
+          // Miss 1 = Tier 1 (method hint, no answer). Miss 2 = Tier 2 (a
+          // concrete step: where the marker is vs. the goal, and every mark gets
+          // a label). The SAME problem stays up both times.
+          const hint = this.tries === 1 ? this.methodHint(wrong) : this.stepHint(wrong);
+          if (this.tries === 2) {
+            this.labelsAll = true;
+            this.drawTickLabels();
+          }
+          this.feedback.setText("Not yet — " + hint).setAlpha(1);
+          srSay("Not yet. " + hint);
+          this.time.delayedCall(this.reduceMotion ? 60 : 350, () => {
+            this.locked = false;
+          });
+          return;
+        }
+        // Third miss: teach. Explain the answer, drop a green ghost on each
+        // correct tick, glide the markers home, then move on (no-fail).
+        this.helpedBy[ddSkillOf(this.problem)]++;
+        this.feedback.setText("Here is where they go — " + this.problem.why).setAlpha(1);
+        srSay("Here is where they go. " + this.problem.why);
+        this.beads.forEach((b) => {
+          const gx = tickX(b.targetIdx);
+          const ghost = this.add.circle(gx, LINE_Y, 10, 0x7fd6a0, 0.6).setDepth(5);
+          this.ghosts.push(ghost);
+          this.tweens.add({
+            targets: b.c,
+            x: gx,
+            duration: this.reduceMotion ? 0 : 600,
+            ease: "Quad.easeOut",
+            onUpdate: () => {
+              b.idx = nearestIndex(b.c.x);
+            },
+          });
+        });
+        this.time.delayedCall(this.reduceMotion ? 60 : 700, () => {
+          this.beads.forEach((b) => (b.idx = b.targetIdx));
+          this.afterAttempt(false);
+        });
       };
 
-      // Diagnostic hint for a first miss (retry the same problem). Scaffolds
-      // WITHOUT revealing the answer: single marker → where it sits now plus
-      // which direction to slide; multiple markers → how many (shown red) are
-      // off and what each mark is worth.
-      GameScene.prototype.retryHint = function (wrong) {
+      // Tier 1 (first miss): the METHOD, never the answer or a direction.
+      GameScene.prototype.methodHint = function (wrong) {
         const p = this.problem;
+        const unit = p.range.decimals === 1 ? "tenth" : "hundredth";
         if (this.beads.length === 1) {
-          const b = wrong[0];
-          const at = rstr(p.range, b.idx);
-          const dir =
-            b.idx < b.targetIdx
-              ? "less than " + b.valStr + " — slide RIGHT"
-              : "more than " + b.valStr + " — slide LEFT";
           return (
-            "your marker sits at " +
-            at +
-            ". That is " +
-            dir +
-            ". Each mark is " +
+            "each small mark is " +
             p.stepStr +
-            ". Try again!"
+            " (one " +
+            unit +
+            "). Start at " +
+            p.loStr +
+            " and count marks — how many " +
+            unit +
+            "s past " +
+            p.loStr +
+            " is " +
+            wrong[0].valStr +
+            "? Try again!"
           );
         }
         const n = wrong.length;
         return (
           (n === 1 ? "1 marker (shown red) is" : n + " markers (shown red) are") +
-          " not on their value yet. Each mark is " +
+          " not on their value yet. Each small mark is " +
           p.stepStr +
-          " — check each red marker and try again!"
+          " — count from the labeled numbers and try again!"
         );
+      };
+
+      // Tier 2 (second miss): a concrete step — where each red marker sits
+      // compared with its value — and every mark is now labeled.
+      GameScene.prototype.stepHint = function (wrong) {
+        const p = this.problem;
+        const parts = wrong.map((b) => {
+          const at = rstr(p.range, b.idx);
+          return (
+            "the " +
+            b.valStr +
+            " marker is at " +
+            at +
+            (b.idx < b.targetIdx ? " — too small, go right" : " — too big, go left")
+          );
+        });
+        return parts.join("; ") + ". Every mark has a label now. Try once more!";
       };
 
       GameScene.prototype.afterAttempt = function (correct) {
@@ -1417,6 +1527,8 @@
         }
         // Leave the teach explanation on screen long enough to actually read
         // (it names the answer and the tick size) before the next problem.
+        this.awaitNext = true;
+        this.lockLabel.setText("NEXT ▶");
         this.studioNextRound(() => {
           this.feedback.setAlpha(0);
           this.newProblem();
@@ -1459,7 +1571,9 @@
         this.streakText.setText("Streak: " + this.streak);
         // levelText shows the CHOSEN level (Support / Enrichment); it is set
         // once in create() and stays fixed for the game.
-        this.progressText.setText(this.solved + " / " + (this.endless ? "∞" : this.target));
+        this.progressText.setText(
+          "Solved " + this.solved + " / " + (this.endless ? "∞" : this.target),
+        );
       };
 
       GameScene.prototype.endGame = function () {
@@ -1472,7 +1586,12 @@
             level: this.mode,
             auto: this.auto,
             endless: this.endless,
-            accuracy: this.attempts ? this.solved / this.attempts : 1,
+            attempted: this.attempts,
+            firstTry: this.firstTry,
+            helpedBy: this.helpedBy,
+            // First-try (unaided) accuracy: what the adaptive picker and the
+            // stars should reward — not "eventually got it".
+            accuracy: this.attempts ? this.firstTry / this.attempts : 1,
           });
         });
       };
@@ -1497,8 +1616,11 @@
         // of 10 so stars and the adaptive win-signal stay meaningful.
         const endless = !!d.endless;
         const goal = endless ? 10 : d.target;
-        // Stars from progress.
-        const stars = d.solved >= goal ? 3 : d.solved >= goal * 0.6 ? 2 : 1;
+        // Stars from FIRST-TRY accuracy (help is good; unaided is the goal).
+        const attempted = d.attempted > 0 ? d.attempted : Math.max(1, d.solved);
+        const firstTry = typeof d.firstTry === "number" ? d.firstTry : d.solved;
+        const acc = firstTry / attempted;
+        const stars = acc >= 0.85 ? 3 : acc >= 0.6 ? 2 : 1;
         // Adaptive: only record a run when the level was auto-picked.
         if (d.auto && window.NTAdaptive) {
           window.NTAdaptive.recordRun("u1-decimal-dash", {
@@ -1518,63 +1640,81 @@
           } catch (e) {}
         }
 
+        const body = (y, text, color, size, bold) =>
+          this.add
+            .text(cx, y, text, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: (size || 18) + "px",
+              fontStyle: bold ? "bold" : "normal",
+              color: color || "#bfe0ff",
+              align: "center",
+              wordWrap: { width: W - 140 },
+              lineSpacing: 4,
+            })
+            .setOrigin(0.5);
+
         this.add
-          .text(cx, 110, "NUMBER-LINE MASTER!", {
+          .text(cx, 66, "NUMBER-LINE MASTER!", {
             fontFamily: "Impact, sans-serif",
-            fontSize: "46px",
+            fontSize: "44px",
             color: "#5ad1ff",
             stroke: "#0a1626",
             strokeThickness: 5,
           })
           .setOrigin(0.5);
-
-        const starStr = "★".repeat(stars) + "☆".repeat(3 - stars);
-        this.add
-          .text(cx, 185, starStr, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "48px",
-            color: "#d4952a",
-          })
-          .setOrigin(0.5);
-
-        this.add
-          .text(cx, 255, "Score: " + d.score, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "30px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
-          .setOrigin(0.5);
-        this.add
-          .text(
-            cx,
-            295,
-            endless
-              ? "Placed " + d.solved + " markers (Level " + d.level + ")"
-              : "Placed " + d.solved + " of " + d.target + " problems",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "18px",
-              color: "#bfe0ff",
-            },
-          )
-          .setOrigin(0.5);
-        this.add
-          .text(cx, 325, "High Score: " + hs, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
-            color: "#d4952a",
-          })
-          .setOrigin(0.5);
-        if (isNewHigh && d.score > 0)
-          this.add
-            .text(cx, 352, "★ NEW HIGH SCORE! ★", {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "16px",
-              fontStyle: "bold",
-              color: "#d4952a",
-            })
-            .setOrigin(0.5);
+        body(122, "★".repeat(stars) + "☆".repeat(3 - stars), "#d4952a", 44);
+        body(
+          176,
+          "Score: " + d.score + (isNewHigh && d.score > 0 ? "   ★ New high score!" : "   (best " + hs + ")"),
+          "#ffffff",
+          26,
+          true,
+        );
+        body(
+          216,
+          (endless
+            ? "Placed " + d.solved + " (Level " + d.level + ")"
+            : "Placed " + d.solved + " of " + d.target) +
+            "  ·  Right on the first try: " +
+            firstTry +
+            " of " +
+            attempted,
+          "#bfe0ff",
+          18,
+        );
+        body(
+          252,
+          "Skills: " +
+            (d.level === 1
+              ? "placing tenths on a number line (6.NOS.3)"
+              : "tenths, hundredths, and ordering decimals (6.NOS.3)"),
+          "#9fc6e0",
+          16,
+        );
+        // What to practice next: the skill that needed the most help.
+        const helped = d.helpedBy || {};
+        const NEXT = {
+          tenths: "Practice next: tenths — find the whole number, then count tenths (marks) to the right.",
+          hundredths:
+            "Practice next: hundredths — each small mark is 0.01, and 10 of them make 0.1.",
+          order:
+            "Practice next: ordering — compare whole numbers first, then tenths, then hundredths.",
+        };
+        let worst = null;
+        Object.keys(NEXT).forEach((k) => {
+          if ((helped[k] || 0) > 0 && (!worst || helped[k] > helped[worst])) worst = k;
+        });
+        body(
+          300,
+          worst
+            ? NEXT[worst]
+            : d.level === 1
+              ? "Great work! Next: try Level 2 for hundredths and ordering."
+              : "Excellent! Next: ♾️ Keep Playing to build a long streak.",
+          "#ffe2a8",
+          17,
+          true,
+        );
 
         SFX.win();
         JUICE.audio.fanfare();
@@ -1583,16 +1723,31 @@
         // EduPulse reporting (guarded; safe no-op without bridge).
         try {
           window.EduPulse &&
+            // Canvas code / gradebook: problems solved out of the goal and the
+            // first-try percent (arcade points over a problem count printed
+            // "154/10 (null%)" on the completion card).
             EduPulse.record({
               activityTitle: ACTIVITY_TITLE,
-              score: d.score,
+              score: d.solved,
+              maxScore: goal,
+              percent: Math.round(acc * 100),
               stars: stars,
               standard: STANDARD,
-              problemsCorrect: d.solved,
-              problemsAttempted: endless ? d.solved : d.target,
+              problemsCorrect: firstTry,
+              problemsAttempted: attempted,
             });
         } catch (e) {}
-        srSay("You won! Final score " + d.score + ", " + stars + " stars.");
+        srSay(
+          "Finished! Score " +
+            d.score +
+            ", " +
+            stars +
+            " stars. Right on the first try: " +
+            firstTry +
+            " of " +
+            attempted +
+            ".",
+        );
 
         const btn = this.add
           .rectangle(cx, 410, 220, 54, 0x1a6fb5)
@@ -1642,11 +1797,41 @@
 
       // ── Launch ──
       const ddGame = new Phaser.Game(config);
+      // In-canvas NEXT (and Enter/Space while the explanation is up) hand off to
+      // the shared studio's Continue so its pacing stays the single path.
+      let ddAdvancing = false; // re-entrancy guard: send() re-emits Enter when nothing is pending
+      function ddNext() {
+        if (ddAdvancing || typeof ddStudio === "undefined" || !ddStudio) return;
+        ddAdvancing = true;
+        try {
+          ddStudio.send("Enter");
+        } finally {
+          ddAdvancing = false;
+        }
+      }
       // Native math controls now have a readable, touch-accessible console.
-      window.PhaserStudio.mount({
-        game: ddGame, id: "u1-decimal-dash", GameScene, ResultScene, audio: SFX,
-        instructions: ["Place each decimal on its exact number-line tick. Select markers with 1\u20133; move with \u2190 and \u2192; Enter checks your placements.", "After feedback, choose Continue when you have read the explanation."],
-        setLevel(level) { ddMode = level; ddAuto = false; ddEndless = false; ddGame.scene.getScenes(true).forEach(scene => ddGame.scene.stop(scene.sys.settings.key)); ddGame.scene.start(ddVocabSeen ? "Game" : "Vocab"); }
+      const ddStudio = window.PhaserStudio.mount({
+        game: ddGame,
+        id: "u1-decimal-dash",
+        GameScene,
+        ResultScene,
+        audio: SFX,
+        instructions: [
+          "Goal: put each decimal marker on its exact spot on the number line. Solve 10 to finish.",
+          "Only some marks have labels. Each small mark is 0.1 (tenths) or 0.01 (hundredths) — start at a labeled number and count marks.",
+          "Move a marker: drag it, tap the line, or press \u2190 \u2192 (A/D). With 2\u20133 markers, press 1, 2, or 3 to pick one. The smallest value ends up farthest left.",
+          "Press LOCK IN (or Enter) to check. Not yet? Hint 1 tells you the method. Hint 2 shows where your marker is and labels every mark. After 3 tries the game shows the answer — no one fails.",
+          "Points: most for right on the first try, fewer after a hint. Press NEXT when you have read the explanation.",
+        ],
+        setLevel(level) {
+          ddMode = level;
+          ddAuto = false;
+          ddEndless = false;
+          ddGame.scene
+            .getScenes(true)
+            .forEach((scene) => ddGame.scene.stop(scene.sys.settings.key));
+          ddGame.scene.start(ddVocabSeen ? "Game" : "Vocab");
+        },
       });
 
       // Canvas accessibility (additive; no gameplay change).
@@ -1713,26 +1898,27 @@
     <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
     <!-- nsr-injected:end -->
 
-      <!-- EWL Diagnostic Misconception Coach -->
-      <div class="ewl-coach-card" id="ewl-coach-card" style="display: flex;">
-        <div class="ewl-coach-icon">💡</div>
-        <div class="ewl-coach-content">
-          <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
-          <p id="ewl-coach-text" data-en="When adding or subtracting decimals, line up the decimal points in columns!" data-es="Al sumar o restar decimales, ¡alinea los puntos decimales en columnas!">When adding or subtracting decimals, line up the decimal points in columns!</p>
-        </div>
+    <!-- EWL Diagnostic Misconception Coach -->
+    <div class="ewl-coach-card" id="ewl-coach-card" style="display: flex">
+      <div class="ewl-coach-icon">💡</div>
+      <div class="ewl-coach-content">
+        <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
+        <p
+          id="ewl-coach-text"
+          data-en="When adding or subtracting decimals, line up the decimal points in columns!"
+          data-es="Al sumar o restar decimales, ¡alinea los puntos decimales en columnas!"
+        >
+          When adding or subtracting decimals, line up the decimal points in columns!
+        </p>
       </div>
+    </div>
 
+    <!-- Shared Arcade FX Engine & Particles -->
 
-  <!-- Shared Arcade FX Engine & Particles -->
-
-
-
-
-
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <script src="/assets/formula-popup.js" defer></script>
-  <!-- nt-chrome-injected:begin (shared page chrome — tools/inject-nt-chrome.js) -->
-  <script src="/assets/nt-chrome.js" defer></script>
-  <!-- nt-chrome-injected:end -->
-</body>
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <script src="/assets/formula-popup.js" defer></script>
+    <!-- nt-chrome-injected:begin (shared page chrome — tools/inject-nt-chrome.js) -->
+    <script src="/assets/nt-chrome.js" defer></script>
+    <!-- nt-chrome-injected:end -->
+  </body>
 </html>

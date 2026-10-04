@@ -153,11 +153,10 @@
       '<p style="margin:10px 0 0;color:#64748b;font-size:13px;">' +
       "Score recorded: <strong>" +
       payload.s +
-      "/" +
-      payload.m +
-      "</strong> (" +
-      payload.pc +
-      "%)." +
+      (typeof payload.m === "number" ? "/" + payload.m : "") +
+      "</strong>" +
+      (typeof payload.pc === "number" ? " (" + payload.pc + "%)" : "") +
+      "." +
       "</p>" +
       '<div style="text-align:right;margin-top:18px;">' +
       '<button id="nt-cc-close" type="button"' +
@@ -278,6 +277,11 @@
         percent: payload.percent,
         stars: payload.stars,
       };
+      // Callers that report score/maxScore without a percent would otherwise
+      // encode pc:null and show students "(null%)" — derive it instead.
+      if (typeof norm.percent !== "number" && Number(norm.maxScore) > 0) {
+        norm.percent = Math.round((Number(norm.score) / Number(norm.maxScore)) * 100);
+      }
       // Always tell a parent frame the score (SCORM auto-grading / embeds).
       reportToParent(norm);
       // Inside a SCORM package the grade is automatic — skip the manual UI.

@@ -17,6 +17,7 @@
  *     the coaching line. Nothing is scored against the individual.
  * ========================================================================== */
 
+import { choiceLabelEs, STUDENT_COACH } from "./coach.js";
 import { BOSS_TAGS, buildQuestion, hashSeed, makeRng } from "./questions.js";
 
 /* --- tuning -------------------------------------------------------------- */
@@ -32,17 +33,21 @@ const MISS_COST = 3; // the boss lands its attack (class total only)
 const POLL_MS = 5000; // shared health bar refresh
 const MAX_ATTACKS = 3;
 const FEED_MAX = 8;
+const ROUND_LEN = 10; // challenges per round, then a summary
+// Personal points for one challenge: full for an unaided first try, fewer
+// once a hint was earned, none when the answer had to be shown.
+const POINTS_BY_TRIES = [10, 6, 3];
 
 const KEY_LANG = "nt_boss.lang";
 const KEY_DEVICE = "nt_boss.device";
 const keyLocal = (wk) => `nt_boss.local.${wk}`;
 const keyAttempt = (wk) => `nt_boss.attempt.${wk}`;
+const KEY_BEST = "nt_boss.best";
 
 /* --- interface copy ------------------------------------------------------ */
 const UI = {
   en: {
     skipLink: "Skip to the questions",
-    back: "Back to curriculum",
     projector: "Projector mode",
     eyebrow: "This week's raid",
     title: "Class Boss",
@@ -54,9 +59,8 @@ const UI = {
     feedTitle: "Live from the class",
     feedEmpty: "Nothing yet. The first hit shows up here.",
     yourTurn: "Your turn",
-    next: "Next question",
     noFail:
-      "Nothing is being scored against you. A wrong answer just shows you the fix and gives you another go — as many as you want.",
+      "Nothing is scored against you. A wrong answer earns a hint and another try. Full points go to first-try hits.",
     privacy:
       "This page never shows anyone's name. It reads only how often the class as a whole picked each kind of mistake, and only once enough people have played that no single person can be picked out.",
     hpLabel: "Class health bar",
@@ -75,12 +79,8 @@ const UI = {
     questionTag: (n, name, label) => `Attack ${n} — ${name}: ${label}`,
     hitTitle: "Direct hit!",
     hitBody: (dmg) => `You knocked ${dmg} health off the boss. The whole class shares that hit.`,
-    landTitle: (name) => `The boss used ${name}.`,
     youPicked: (v) => `You picked ${v}.`,
     thatIs: (label) => `That answer matches one exact slip: "${label}".`,
-    theAnswer: (v) => `The answer was ${v}.`,
-    coachLead: "Here is the move that beats this attack:",
-    tryAgain: "Nothing lost. Take the next one whenever you are ready.",
     feedYouHit: (name) => `You landed a hit on ${name}.`,
     feedYouLand: (name) => `${name} got you that round — coaching collected.`,
     feedTheyHit: (name) => `Someone in the class landed a hit on ${name}.`,
@@ -91,10 +91,43 @@ const UI = {
     langBtn: "Español",
     langBtnAria: "Cambiar a español",
     bossOf: (week) => `Week ${week} boss`,
+    prepTitle: "Choose your practice focus",
+    prepLabel: "Attack to practice",
+    prepAll: "All three attacks",
+    prepHelp:
+      "Pick one mistake to work on, or rotate through all three. Every correct answer still helps the class.",
+    progress: (n, total, pts) => `Challenge ${n} of ${total} · ${pts} points · No time limit.`,
+    blockedTitle: "Not yet — the boss blocked that one.",
+    notFit: "That answer does not fit the problem yet.",
+    hint1: "Hint 1 — the method:",
+    hint2: "Hint 2 — a step to do:",
+    trapLeft: (label) =>
+      `Careful: one answer that is left is the trap. It is what you get when you make this slip: "${label}".`,
+    pickAgain: "Pick another answer. You have as many tries as you need.",
+    hitPoints: (pts) => `+${pts} points for a first-try hit.`,
+    moveWas: "That is the move:",
+    fixedTitle: "Fixed it!",
+    fixedBody: (pts, dmg) =>
+      `You used the hint and found it. +${pts} points, and ${dmg} damage to the boss.`,
+    revealTitle: "Here is the answer and how to get it.",
+    revealBody: (v) => `The answer is ${v}.`,
+    revealCalm: "No points this time, and nothing lost. Read the step, then try the next one.",
+    nextQ: "Next challenge",
+    seeResults: "See my round results",
+    roundTitle: "Round complete!",
+    roundScore: (pts, max) => `Score: ${pts} of ${max} points`,
+    roundFirst: (n, total) => `First-try hits: ${n} of ${total}`,
+    roundHelped: (n) => `Solved after a hint: ${n}`,
+    roundShown: (n) => `Answer shown: ${n}`,
+    roundBest: (pts) => `Your best round: ${pts} points`,
+    roundNewBest: "New best round!",
+    roundNext: (label) => `Practice next: ${label}. Choose it in "Attack to practice" to focus on it.`,
+    roundStrong: "Every attack went down on the first try. Try the next round with all three attacks.",
+    playAgain: "Play another round",
+    roundDone: (pts) => `Round complete: ${pts} points.`,
   },
   es: {
     skipLink: "Ir a las preguntas",
-    back: "Volver al currículo",
     projector: "Modo proyector",
     eyebrow: "El desafío de esta semana",
     title: "Jefe de la Clase",
@@ -106,9 +139,8 @@ const UI = {
     feedTitle: "En vivo desde la clase",
     feedEmpty: "Todavía nada. El primer golpe aparecerá aquí.",
     yourTurn: "Tu turno",
-    next: "Siguiente pregunta",
     noFail:
-      "Nada de esto cuenta en tu contra. Una respuesta incorrecta solo te muestra cómo arreglarlo y te da otra oportunidad, todas las que quieras.",
+      "Nada cuenta en tu contra. Una respuesta incorrecta te da una pista y otro intento. Los puntos completos son para los aciertos al primer intento.",
     privacy:
       "Esta página nunca muestra el nombre de nadie. Solo lee con qué frecuencia la clase entera eligió cada tipo de error, y únicamente cuando ya jugaron suficientes personas como para que nadie pueda ser identificado.",
     hpLabel: "Barra de vida de la clase",
@@ -127,12 +159,8 @@ const UI = {
     questionTag: (n, name, label) => `Ataque ${n} — ${name}: ${label}`,
     hitTitle: "¡Golpe directo!",
     hitBody: (dmg) => `Le quitaste ${dmg} de vida al jefe. Toda la clase comparte ese golpe.`,
-    landTitle: (name) => `El jefe usó ${name}.`,
     youPicked: (v) => `Elegiste ${v}.`,
     thatIs: (label) => `Esa respuesta corresponde a un error muy concreto: "${label}".`,
-    theAnswer: (v) => `La respuesta era ${v}.`,
-    coachLead: "Esta es la jugada que vence a este ataque:",
-    tryAgain: "No perdiste nada. Sigue con la próxima cuando quieras.",
     feedYouHit: (name) => `Le diste un golpe a ${name}.`,
     feedYouLand: (name) => `${name} te ganó esta ronda; te llevas el consejo.`,
     feedTheyHit: (name) => `Alguien de la clase le dio un golpe a ${name}.`,
@@ -143,62 +171,41 @@ const UI = {
     langBtn: "English",
     langBtnAria: "Switch to English",
     bossOf: (week) => `Jefe de la semana ${week}`,
+    prepTitle: "Elige tu enfoque de práctica",
+    prepLabel: "Ataque para practicar",
+    prepAll: "Los tres ataques",
+    prepHelp:
+      "Elige un error para practicar o rota por los tres. Cada respuesta correcta igual ayuda a la clase.",
+    progress: (n, total, pts) => `Desafío ${n} de ${total} · ${pts} puntos · Sin límite de tiempo.`,
+    blockedTitle: "Todavía no: el jefe bloqueó esa.",
+    notFit: "Esa respuesta todavía no encaja con el problema.",
+    hint1: "Pista 1 — el método:",
+    hint2: "Pista 2 — un paso para hacer:",
+    trapLeft: (label) =>
+      `Cuidado: una de las respuestas que quedan es la trampa. Es lo que sale si cometes este error: "${label}".`,
+    pickAgain: "Elige otra respuesta. Tienes todos los intentos que necesites.",
+    hitPoints: (pts) => `+${pts} puntos por acertar al primer intento.`,
+    moveWas: "Esa es la jugada:",
+    fixedTitle: "¡Lo arreglaste!",
+    fixedBody: (pts, dmg) =>
+      `Usaste la pista y lo encontraste. +${pts} puntos y ${dmg} de daño al jefe.`,
+    revealTitle: "Esta es la respuesta y cómo llegar a ella.",
+    revealBody: (v) => `La respuesta es ${v}.`,
+    revealCalm: "Esta vez no hay puntos, y no perdiste nada. Lee el paso y sigue con el próximo.",
+    nextQ: "Siguiente desafío",
+    seeResults: "Ver mis resultados de la ronda",
+    roundTitle: "¡Ronda completa!",
+    roundScore: (pts, max) => `Puntaje: ${pts} de ${max} puntos`,
+    roundFirst: (n, total) => `Aciertos al primer intento: ${n} de ${total}`,
+    roundHelped: (n) => `Resueltos después de una pista: ${n}`,
+    roundShown: (n) => `Respuesta mostrada: ${n}`,
+    roundBest: (pts) => `Tu mejor ronda: ${pts} puntos`,
+    roundNewBest: "¡Nueva mejor ronda!",
+    roundNext: (label) => `Practica después: ${label}. Elígelo en "Ataque para practicar" para enfocarte.`,
+    roundStrong: "Todos los ataques cayeron al primer intento. Prueba la próxima ronda con los tres ataques.",
+    playAgain: "Jugar otra ronda",
+    roundDone: (pts) => `Ronda completa: ${pts} puntos.`,
   },
-};
-
-/* Spanish for the repo's English `watchFor` coaching lines. The English side is
- * read straight from data/misconception-labels.json so it never drifts. */
-const WATCH_ES = {
-  "division-quotient-missing-zero":
-    "Estimen primero: 4,896 \u00f7 12 es como 400, no 40. Luego revisen que el cociente tenga un d\u00edgito encima de cada d\u00edgito que bajaron.",
-  "ratio-scaled-additively":
-    "Pregunte cuánto vale UNA tanda y luego cuántas tandas — una razón crece por copias, no por pasos.",
-  "ratio-as-difference":
-    "Pídales decir la comparación en voz alta — “por cada ___ hay ___” — antes de escribir nada.",
-  "stat-mean-vs-median":
-    "Pídales decir qué palabra usó la pregunta y luego qué dice esa palabra que HAY QUE HACER con los números.",
-  "stat-histogram-bin-misread":
-    "Pídales señalar los dos extremos del intervalo y decir qué valores caben dentro.",
-  "coord-xy-swapped": "Pídeles que tracen el movimiento horizontal con el dedo antes del vertical.",
-  "decimal-place-value":
-    "Primero estima al número entero más cercano y luego cuenta en voz alta los lugares decimales.",
-  "exponent-as-multiplication":
-    "Desarróllalo una vez: escribe todos los factores antes de calcular.",
-  "fraction-added-denominators":
-    "Vuelve al modelo de barras: tercios más quintos no pueden convertirse en octavos.",
-  "fraction-no-reciprocal": "Compruébalo con un caso de números enteros en el que ya confías.",
-  "fraction-straight-across-division":
-    "Vuelve a pensar la división como “¿cuántos de estos caben en aquello?”",
-  "geom-triangle-area-no-half":
-    "Dibuja el rectángulo alrededor del triángulo: el triángulo es la mitad.",
-  "geom-surface-area-as-volume":
-    "Pregunta cuál debe ser la unidad: las cuadradas cubren, las cúbicas llenan.",
-  "geom-volume-added-dimensions":
-    "Arma primero una capa de cubos unitarios y luego cuenta las capas.",
-  "algebra-distributive-partial":
-    "Dibuja el modelo de área: el factor de afuera toca AMBOS términos.",
-  "measure-area-perimeter-swap":
-    "Pregúntate cuál debe ser la unidad: ¿unidades o unidades cuadradas?",
-  "op-added-instead-of-multiplied":
-    "Pregúntate qué le hace la operación a la cantidad antes de calcular.",
-  "op-divided-instead-of-multiplied":
-    "Estima primero: ¿la respuesta debe ser mayor o menor que el número inicial?",
-  "op-multiplied-instead-of-added":
-    "Vuelve a contar el problema como una historia y luego nombra la operación.",
-  "op-multiplied-instead-of-divided":
-    "Estima primero: ¿la respuesta debe ser mayor o menor que el número inicial?",
-  "op-reversed-division":
-    "Pregúntate “¿qué se está repartiendo y entre cuántos?” antes de escribirlo.",
-  "op-reversed-subtraction": "Ubica los dos números en una recta numérica antes de restar.",
-  "order-of-operations-left-to-right":
-    "Encierra en un círculo la operación que va primero y luego calcula.",
-  "percent-scale-off-by-100": "Compara con el 50 % y con el 10 % antes de confiar en el número.",
-  "percent-used-as-whole-number": "Di el porcentaje en voz alta como “por cada cien”.",
-  "rate-not-per-one": "Pregúntate “¿por UNA qué?” y termina la oración.",
-  "ratio-inverted": "Etiqueta las dos cantidades con sus unidades antes de escribir la razón.",
-  "sign-dropped": "Coloca la respuesta en una recta numérica: ¿de qué lado del cero está?",
-  "stat-summed-instead-of-averaged":
-    "Pregúntate si la respuesta podría ser un valor real dentro de ese conjunto.",
 };
 
 /* --- boss vocabulary (parallel EN/ES, indexed by the same seeded draw) ----- */
@@ -278,9 +285,17 @@ const state = {
   seenByTag: null,
   projector: false,
   focusTag: "",
-  sessionSolved: 0,
-  sessionAttempts: 0,
+  // The challenge on screen: wrong values already tried, and how it ended
+  // ("solved" | "revealed" | null while the student is still working).
+  wrongPicks: [],
+  outcome: null,
+  lastPick: null,
+  round: null,
 };
+
+function freshRound() {
+  return { done: 0, points: 0, first: 0, helped: 0, shown: 0, misses: {}, finished: false };
+}
 
 const $ = (id) => document.getElementById(id);
 const el = {};
@@ -332,9 +347,16 @@ function labelFor(tag) {
   return state.lang === "es" ? info.labelEs || info.label : info.label;
 }
 
-function coachFor(tag) {
-  if (state.lang === "es") return WATCH_ES[tag] || state.labels[tag]?.watchFor || "";
+/** The student-facing hint for a tag: tier 1 = the method, tier 2 = a step. */
+function coachTier(tag, tier) {
+  const entry = STUDENT_COACH[tag];
+  if (entry) return entry[tier === 2 ? "t2" : "t1"][state.lang === "es" ? 1 : 0];
   return state.labels[tag]?.watchFor || "";
+}
+
+/** A choice as the student reads it: math minus signs, Spanish word labels. */
+function choiceText(value) {
+  return pretty(state.lang === "es" ? choiceLabelEs(value) : value);
 }
 
 /* --- boss generation ----------------------------------------------------- */
@@ -788,17 +810,30 @@ function questionSeed(attempt) {
   return `${state.weekKey}|${hashSeed(deviceId()) % 100000}|${attempt}`;
 }
 
-function nextQuestion() {
+function nextQuestion(opts = {}) {
+  if (!state.round || state.round.finished) state.round = freshRound();
   const tags = state.focusTag ? [state.focusTag] : state.tags;
   const tag = tags[state.attempt % tags.length];
   const templateIndex = Math.floor(state.attempt / tags.length);
   state.current = buildQuestion(tag, templateIndex, questionSeed(state.attempt));
-  state.answered = false;
-  state.lastAnswer = null;
+  state.wrongPicks = [];
+  state.outcome = null;
+  state.lastPick = null;
+  el.roundSummary.hidden = true;
+  el.questionArea.hidden = false;
   renderQuestion();
+  renderSession();
   // Move focus to the question itself, so a screen reader reads the problem
-  // before the student tabs into the four answer buttons.
-  el.questionBlock?.focus();
+  // before the student tabs into the four answer buttons. On first load the
+  // page must not jump past its own title and how-to.
+  el.questionBlock?.focus({ preventScroll: opts.initial === true });
+}
+
+function renderSession() {
+  const r = state.round;
+  if (!r || !el.session) return;
+  const n = Math.min(ROUND_LEN, r.done + (state.outcome ? 0 : 1));
+  el.session.textContent = t().progress(n, ROUND_LEN, r.points);
 }
 
 function renderQuestion() {
@@ -811,10 +846,6 @@ function renderQuestion() {
     attack.name[state.lang],
     labelFor(q.tag),
   );
-  el.feedback.className = "feedback";
-  el.feedback.replaceChildren();
-  el.nextBtn.hidden = true;
-
   el.choices.replaceChildren();
   q.choices.forEach((choice, i) => {
     const btn = document.createElement("button");
@@ -825,87 +856,198 @@ function renderQuestion() {
     key.setAttribute("aria-hidden", "true");
     key.textContent = String(i + 1);
     const val = document.createElement("span");
-    val.textContent = pretty(choice);
+    val.textContent = choiceText(choice);
     btn.dataset.value = String(choice);
     btn.append(key, val);
     btn.addEventListener("click", () => answer(choice));
     el.choices.append(btn);
   });
-
-  // Re-rendering an already-answered question (a language switch) must put the
-  // marked-up buttons and the coaching back exactly as the student left them.
-  if (state.answered && state.lastAnswer) {
-    applyAnsweredUi(state.lastAnswer.choice, state.lastAnswer.correct);
-  }
+  // Re-rendering mid-challenge (a language switch) must put the marked-up
+  // buttons and the coaching back exactly as the student left them.
+  applyChoiceState();
+  showFeedback();
 }
 
-function applyAnsweredUi(chosen, correct) {
+function applyChoiceState() {
   const q = state.current;
+  const tried = state.wrongPicks.map(String);
   for (const node of el.choices.querySelectorAll(".choice")) {
-    node.disabled = true;
-    if (node.dataset.value === String(q.correct)) node.classList.add("is-correct");
-    if (!correct && node.dataset.value === String(chosen)) node.classList.add("is-chosen-wrong");
+    const value = node.dataset.value;
+    const wasWrong = tried.includes(value);
+    node.disabled = wasWrong || state.outcome !== null;
+    node.classList.toggle("is-chosen-wrong", wasWrong);
+    // The right answer is marked only once the challenge is over — never as a
+    // side effect of a wrong try.
+    node.classList.toggle("is-correct", state.outcome !== null && value === String(q.correct));
+    node.setAttribute("aria-label", `${choiceText(value)}${wasWrong ? " ✗" : ""}`);
   }
-  showFeedback(correct, chosen);
-  el.nextBtn.hidden = false;
+  el.nextBtn.hidden = state.outcome === null;
+  const last = state.round && state.round.done >= ROUND_LEN;
+  el.nextLabel.textContent = last ? t().seeResults : t().nextQ;
 }
 
-function showFeedback(correct, chosen) {
-  const q = state.current;
-  const attack = attackFor(q.tag);
-  el.feedback.className = `feedback ${correct ? "good" : "coach"}`;
-  const head = document.createElement("h3");
-  const body = document.createElement("p");
+function para(text, cls) {
+  const p = document.createElement("p");
+  if (cls) p.className = cls;
+  p.textContent = text;
+  return p;
+}
 
-  if (correct) {
-    head.textContent = t().hitTitle;
-    body.textContent = t().hitBody(DAMAGE);
-    el.feedback.append(head, body);
+function showFeedback() {
+  const q = state.current;
+  el.feedback.replaceChildren();
+  el.feedback.className = "feedback";
+  if (!q || (state.outcome === null && !state.wrongPicks.length)) return;
+  const tries = state.wrongPicks.length;
+  const head = document.createElement("h3");
+
+  if (state.outcome === "solved") {
+    el.feedback.className = "feedback good";
+    const pts = POINTS_BY_TRIES[Math.min(tries, POINTS_BY_TRIES.length - 1)];
+    if (tries === 0) {
+      head.textContent = t().hitTitle;
+      el.feedback.append(head, para(`${t().hitBody(DAMAGE)} ${t().hitPoints(pts)}`));
+    } else {
+      head.textContent = t().fixedTitle;
+      el.feedback.append(head, para(t().fixedBody(pts, DAMAGE)));
+    }
+    el.feedback.append(para(`${t().moveWas} ${coachTier(q.tag, 1)}`, "coach-line"));
     return;
   }
 
-  head.textContent = t().landTitle(attack.name[state.lang]);
-  const picked = document.createElement("p");
-  picked.textContent =
-    String(chosen) === String(q.distractor)
-      ? `${t().youPicked(pretty(chosen))} ${t().thatIs(labelFor(q.tag))}`
-      : `${t().youPicked(pretty(chosen))} ${t().theAnswer(pretty(q.correct))}`;
-  const lead = document.createElement("p");
-  lead.textContent = t().coachLead;
-  const coach = document.createElement("p");
-  coach.className = "coach-line";
-  coach.textContent = coachFor(q.tag);
-  const calm = document.createElement("p");
-  calm.textContent = `${t().theAnswer(pretty(q.correct))} ${t().tryAgain}`;
-  el.feedback.append(head, picked, lead, coach, calm);
+  if (state.outcome === "revealed") {
+    el.feedback.className = "feedback coach";
+    head.textContent = t().revealTitle;
+    el.feedback.append(
+      head,
+      para(t().revealBody(choiceText(q.correct)), "coach-line"),
+      para(coachTier(q.tag, 2)),
+      para(t().revealCalm),
+    );
+    return;
+  }
+
+  // Still working: earned help, in tiers. Never the answer itself.
+  el.feedback.className = "feedback coach";
+  head.textContent = t().blockedTitle;
+  const last = state.lastPick;
+  const why =
+    String(last) === String(q.distractor)
+      ? `${t().youPicked(choiceText(last))} ${t().thatIs(labelFor(q.tag))}`
+      : `${t().youPicked(choiceText(last))} ${t().notFit}`;
+  el.feedback.append(head, para(why));
+  if (tries === 1) {
+    el.feedback.append(para(t().hint1), para(coachTier(q.tag, 1), "coach-line"));
+  } else {
+    el.feedback.append(para(t().hint2), para(coachTier(q.tag, 2), "coach-line"));
+    const trapStillOpen = !state.wrongPicks.map(String).includes(String(q.distractor));
+    if (trapStillOpen) el.feedback.append(para(t().trapLeft(labelFor(q.tag))));
+  }
+  el.feedback.append(para(t().pickAgain));
 }
 
 function answer(choice) {
-  if (state.answered || window.GameStudio?.paused || document.querySelector(".studio-dialog[open]")) return;
+  if (state.outcome || window.GameStudio?.paused || document.querySelector(".studio-dialog[open]"))
+    return;
   const q = state.current;
+  if (state.wrongPicks.map(String).includes(String(choice))) return;
   const correct = String(choice) === String(q.correct);
-  state.answered = true;
-  state.lastAnswer = { choice, correct };
-  state.sessionAttempts++;
-  if (correct) state.sessionSolved++;
-  const session = $("raidSession");
-  if (session) session.textContent = state.lang === "es"
-    ? `Tu expedición: ${state.sessionSolved} de ${state.sessionAttempts} desafíos resueltos. Sin límite de tiempo.`
-    : `Your expedition: ${state.sessionSolved} of ${state.sessionAttempts} challenges solved. No time limit.`;
-  window.GameStudio?.emit("feedback", { correct });
-  if (state.sessionAttempts % 5 === 0) window.GameStudio?.emit("complete", {
-    correct: state.sessionSolved, total: state.sessionAttempts,
-    message: state.lang === "es" ? "Cinco desafíos más completados. Sigue practicando o toma un descanso." : "Five more challenges completed. Keep practicing or take a break.",
-  });
+  state.lastPick = choice;
 
-  applyAnsweredUi(choice, correct);
+  if (correct) {
+    const tries = state.wrongPicks.length;
+    state.outcome = "solved";
+    state.round.points += POINTS_BY_TRIES[Math.min(tries, POINTS_BY_TRIES.length - 1)];
+    if (tries === 0) state.round.first += 1;
+    else state.round.helped += 1;
+  } else {
+    state.wrongPicks.push(choice);
+    state.round.misses[q.tag] = (state.round.misses[q.tag] || 0) + 1;
+    // Only the right answer left: show it and how to get there. No-fail.
+    if (state.wrongPicks.length >= q.choices.length - 1) {
+      state.outcome = "revealed";
+      state.round.shown += 1;
+    }
+  }
+  if (state.outcome) finishChallenge();
+
+  window.GameStudio?.emit("feedback", { correct });
+  applyChoiceState();
+  showFeedback();
+  renderSession();
   flashBoss(correct ? "is-hit" : "is-attacking");
   pushFeed(correct ? "you-hit" : "you-land", q.tag);
+  // Every try reaches the class bar: a first-try hit is worth the full hit,
+  // a fix after a miss nets less (the miss costs the class a little).
+  recordHit(q.tag, correct);
 
+  if (state.outcome) el.nextBtn.focus();
+  else el.choices.querySelector(".choice:not(:disabled)")?.focus();
+}
+
+function finishChallenge() {
+  state.round.done += 1;
   state.attempt += 1;
   safeStorage(() => localStorage.setItem(keyAttempt(state.weekKey), String(state.attempt)), null);
-  recordHit(q.tag, correct);
-  el.nextBtn.focus();
+}
+
+function readBest() {
+  return clampInt(safeStorage(() => localStorage.getItem(KEY_BEST), 0) || 0, 0, 1000);
+}
+
+function showRoundSummary() {
+  const r = state.round;
+  r.finished = true;
+  const best = readBest();
+  r.newBest = r.points > best;
+  r.best = Math.max(best, r.points);
+  if (r.newBest) safeStorage(() => localStorage.setItem(KEY_BEST, String(r.points)), null);
+  renderRoundSummary();
+  el.questionArea.hidden = true;
+  el.roundSummary.hidden = false;
+  el.roundSummary.querySelector("h3")?.focus();
+  window.GameStudio?.emit("complete", {
+    score: r.points,
+    correct: r.first + r.helped,
+    total: ROUND_LEN,
+    message: t().roundDone(r.points),
+  });
+}
+
+/** Paint the round summary from state (also used on a language switch). */
+function renderRoundSummary() {
+  const r = state.round;
+  const box = el.roundSummary;
+  box.replaceChildren();
+  const h = document.createElement("h3");
+  h.tabIndex = -1;
+  h.textContent = t().roundTitle;
+  const list = document.createElement("ul");
+  list.className = "round-stats";
+  for (const line of [
+    t().roundScore(r.points, ROUND_LEN * POINTS_BY_TRIES[0]),
+    t().roundFirst(r.first, ROUND_LEN),
+    t().roundHelped(r.helped),
+    t().roundShown(r.shown),
+    r.newBest ? t().roundNewBest : t().roundBest(r.best),
+  ]) {
+    const li = document.createElement("li");
+    li.textContent = line;
+    list.append(li);
+  }
+  const worst = Object.entries(r.misses).sort((a, b) => b[1] - a[1])[0];
+  const next = para(worst ? t().roundNext(labelFor(worst[0])) : t().roundStrong, "round-next");
+  const again = document.createElement("button");
+  again.type = "button";
+  again.className = "next-btn";
+  again.textContent = t().playAgain;
+  again.addEventListener("click", () => nextQuestion());
+  box.append(h, list, next, again);
+}
+
+function onNext() {
+  if (state.round && state.round.done >= ROUND_LEN && !state.round.finished) showRoundSummary();
+  else nextQuestion();
 }
 
 /* --- polling ------------------------------------------------------------- */
@@ -939,6 +1081,24 @@ async function refresh() {
 }
 
 /* --- language + projector ------------------------------------------------ */
+function renderFocusOptions() {
+  const select = el.raidFocus;
+  if (!select) return;
+  const keep = state.focusTag;
+  select.replaceChildren();
+  const all = document.createElement("option");
+  all.value = "";
+  all.textContent = t().prepAll;
+  select.append(all);
+  for (const tag of state.tags) {
+    const option = document.createElement("option");
+    option.value = tag;
+    option.textContent = labelFor(tag);
+    select.append(option);
+  }
+  select.value = keep;
+}
+
 function setLang(lang) {
   state.lang = lang;
   safeStorage(() => localStorage.setItem(KEY_LANG, lang), null);
@@ -946,7 +1106,10 @@ function setLang(lang) {
   renderBoss();
   renderProgress();
   renderFeed();
+  renderFocusOptions();
   renderQuestion();
+  renderSession();
+  if (state.round?.finished && !el.roundSummary.hidden) renderRoundSummary();
 }
 
 function setProjector(on) {
@@ -983,9 +1146,14 @@ async function init() {
     "choices",
     "feedback",
     "nextBtn",
+    "nextLabel",
+    "questionArea",
+    "roundSummary",
+    "raidFocus",
   ]) {
     el[id] = $(id);
   }
+  el.session = $("raidSession");
 
   state.lang = readLang();
   const { year, week } = isoWeek(new Date());
@@ -1008,16 +1176,25 @@ async function init() {
   state.seenByTag = JSON.parse(JSON.stringify(state.progress.byTag || {}));
   renderProgress();
   renderFeed();
-  nextQuestion();
-  const focus = $("raidFocus");
-  state.tags.forEach(tag => {
-    const option = document.createElement("option"); option.value = tag;
-    option.textContent = labelFor(tag); focus?.append(option);
+  renderFocusOptions();
+  nextQuestion({ initial: true });
+  el.raidFocus.addEventListener("change", () => {
+    state.focusTag = el.raidFocus.value;
+    // A focus change keeps the round's score; it only changes what the next
+    // challenge is about.
+    nextQuestion();
   });
-  focus?.addEventListener("change", () => { state.focusTag = focus.value; nextQuestion(); });
-  window.GameStudio?.register({ title: "Class Boss", instructions: ["Choose one of the class's three attacks to practice, or keep all three.", "Read the problem. Select an answer or use number keys 1–4.", "Read the coaching before choosing Next question. A mistake costs no health or lives."] });
+  window.GameStudio?.register({
+    title: "Class Boss",
+    instructions: [
+      "Each round is 10 challenges. Pick one of the boss's three attacks to practice, or keep all three.",
+      "Read the problem. Choose an answer, or press number keys 1–4.",
+      "A wrong answer earns a hint and another try. First-try hits score 10 points; hits after a hint score less.",
+      "There is no clock. After 10 challenges you see your round results and what to practice next.",
+    ],
+  });
 
-  el.nextBtn.addEventListener("click", () => nextQuestion());
+  el.nextBtn.addEventListener("click", onNext);
   el.langBtn.addEventListener("click", () => setLang(state.lang === "en" ? "es" : "en"));
   el.projectorBtn.addEventListener("click", () => setProjector(!state.projector));
 

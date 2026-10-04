@@ -21,17 +21,27 @@ continuation **Practice Set** (`practice.html` + key — catch-ups since
 
 `engine/core/small-group-renderer.js` (`bootSmallGroup(config)`) renders a
 color-coded studio — support = blue, challenge = amber, catch-up = teal — as a
-hero, a readiness pulse, and **three tabs**, each a chip strip of sub-steps
-with one moment on screen at a time (position saved per student):
+hero headed by the lesson topic, a readiness pulse, and **three tabs** of at
+most three steps each, with the step list always visible (position saved per
+student; saves from the older, longer step lists map onto the merged steps):
 
-1. **Focus & Learn** — 🔑 Key Words (cloze, EN/ES/VI/AR lanes) → 🧱 Build the
-   Idea (I-do → We-do stage cards, Explore Lab) → 📝 Worked Model.
-2. **Practice Studio** — 🤝 Guided (adaptive coach) → ✏️ On My Own (notebook-
-   first cards; two misses open the guidance) → 🗣️ Talk It Out (Group 1 and
-   catch-up: consensus lab).
-3. **Check & Growth** — ✅ Check (exit ticket; Math Check lab on Group 2) →
-   💭 Reflect → 📈 Grow (mastery ladder, success-criteria self-check) →
-   🚀 Mission (Apply, Go Deeper).
+1. **Focus & Learn** — 🔑 Key Words → 🧱 Build the Idea → 🔍 Hands-On Model
+   (Explore lab + model lab).
+2. **Practice Studio** — 🤝 Guided (with the practice lab and strategy coach)
+   → ✏️ On My Own → 🗣️ Talk It Out (Group 1 and catch-up).
+3. **Check & Growth** — ✅ Check (Reflect opens under it) → 📈 Grow (mastery
+   ladder, More Practice, evidence) → 🚀 Mission (Mission, Apply, Go Deeper).
+
+**Build the Idea** (`engine/core/small-group-build-section.js`) renders
+`launch.build` all at once: Today's idea → worked examples (Problem → numbered
+steps → Answer, each with an authored figure) → one together example whose
+answers sit behind Check → Your turn (an answer box graded by value) → The
+big idea. Catch-ups render one example and one quick check per lesson in the
+band. Content lives in `data/small-group-build/<lesson>.json`
+(`docs/specs/small-group-build-v2.md`, gate `npm run validate:small-group-build`);
+`tools/lib/small-group-build.mjs` writes `topic`, `launch.build`, the
+`launch.conceptIntro` projection older readers use, and the Key Words cleanup
+into every studio config after the generators' additive merge.
 
 Around the tabs: progress meter + streak, station timer, Math Move of the Day,
 tool drawer, Focus Mode, save/resume, print-expands-everything, Student

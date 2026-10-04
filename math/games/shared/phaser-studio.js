@@ -6,10 +6,10 @@
     'u1-decimal-dash': [['ArrowLeft','← Move'],['ArrowRight','Move →'],['1','Marker 1'],['2','Marker 2'],['3','Marker 3'],['Enter','Lock in']],
     'u2-fraction-frenzy': [['ArrowLeft','Fewer parts'],['ArrowRight','More parts'],['ArrowDown','Shade less'],['ArrowUp','Shade more'],['Enter','Lock in']],
     'u3-ratio-rush': [['ArrowUp','Top line'],['ArrowDown','Bottom line'],['ArrowLeft','← Move'],['ArrowRight','Move →'],['Enter','Lock in']],
-    'u4-percent-power': [['ArrowLeft','−5%'],['ArrowRight','+5%'],['Enter','Lock in']],
+    'u4-percent-power': [['ArrowLeft','−5% / previous'],['ArrowRight','+5% / next'],['Enter','Lock in']],
     'u5-area-attack': [['ArrowLeft','←'],['ArrowRight','→'],['ArrowUp','↑'],['ArrowDown','↓'],['F','Set corner'],['U','Undo'],['C','Clear'],['Enter','Lock in']],
     'u6-expression-express': [['ArrowLeft','Previous slot'],['ArrowRight','Next slot'],['ArrowUp','Previous tile'],['ArrowDown','Next tile'],['Backspace','Remove tile'],['Enter','Lock in']],
-    'u7-equation-quest': [['ArrowUp','Previous operation'],['ArrowDown','Next operation'],['ArrowLeft','Amount −1'],['ArrowRight','Amount +1'],['Space','Apply to both sides'],['Enter','Check solution']],
+    'u7-equation-quest': [['ArrowUp','Previous operation'],['ArrowDown','Next operation'],['ArrowLeft','Amount −1 / previous'],['ArrowRight','Amount +1 / next'],['Space','Apply to both sides'],['Enter','Check solution']],
     'u8-data-dash': [['ArrowLeft','← Column'],['ArrowRight','Column →'],['ArrowUp','Add dot'],['ArrowDown','Remove dot'],['Enter','Lock in']],
     'u9-coordinate-quest': [['ArrowLeft','←'],['ArrowRight','→'],['ArrowUp','↑'],['ArrowDown','↓'],['1','Answer 1'],['2','Answer 2'],['3','Answer 3'],['4','Answer 4'],['Enter','Lock in']],
     'u10-volume-blast': [['ArrowLeft','Previous dimension'],['ArrowRight','Next dimension'],['ArrowDown','−1 unit'],['ArrowUp','+1 unit'],['Enter','Lock in']]
@@ -97,7 +97,12 @@
       this.time.delayedCall(600, () => {
         if (!pending) return;
         pending.ready = true;
-        if (nextButton) nextButton.disabled = false;
+        if (nextButton) {
+          nextButton.disabled = false;
+          // On a 768px Chromebook the console sits below the canvas; keep the way forward visible.
+          const r = nextButton.getBoundingClientRect();
+          if (r.bottom > innerHeight || r.top < 0) nextButton.scrollIntoView({block: 'nearest'});
+        }
       });
     };
     const originalInit = proto.init;

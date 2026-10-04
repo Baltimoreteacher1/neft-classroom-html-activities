@@ -817,6 +817,7 @@
     <meta name="nt-project-reveal-unit" content="7" />
     <link rel="stylesheet" href="/shared/projects/projects-meta.css?v=20260727-v2" />
     <!-- projects-meta-injected:end -->
+  <script src="/shared/projects/projects-notify.js?v=20261004" defer></script>
 </head>
   <body class="level-1 pro-projects declutter-projects" id="body">
     <!-- ====== HERO ====== -->
@@ -2526,7 +2527,7 @@
           const msg = isEs
             ? "¡Por favor, ingresa una ecuación primero!"
             : "Please enter an equation first!";
-          alert(msg);
+          NTNotify.fix(msg);
           return;
         }
 
@@ -2593,7 +2594,7 @@
           const msg = isEs
             ? "Por favor, ingresa un número para la solución."
             : "Please enter a number for the solution.";
-          alert(msg);
+          NTNotify.fix(msg);
           return;
         }
 
@@ -2751,7 +2752,7 @@
           const msg = isEs
             ? "¡Por favor, escribe tu desigualdad primero!"
             : "Please write your inequality first!";
-          alert(msg);
+          NTNotify.fix(msg);
           return;
         }
 
@@ -2821,7 +2822,7 @@
           const msg = isEs
             ? "Por favor, ingresa un valor para probar."
             : "Please enter a value to test.";
-          alert(msg);
+          NTNotify.fix(msg);
           return;
         }
 
@@ -2911,7 +2912,7 @@
           const msg = isEs
             ? "¡Por favor, ingresa una ecuación primero!"
             : "Please enter an equation first!";
-          alert(msg);
+          NTNotify.fix(msg);
           return;
         }
 
@@ -2985,7 +2986,7 @@
           const msg = isEs
             ? "Por favor, ingresa un número para la solución."
             : "Please enter a number for the solution.";
-          alert(msg);
+          NTNotify.fix(msg);
           return;
         }
 
@@ -3072,7 +3073,7 @@
           const msg = isEs
             ? "Por favor, ingresa la meta y la cantidad recaudada del compañero/a."
             : "Please enter partner's goal and raised amounts.";
-          alert(msg);
+          NTNotify.fix(msg);
           return;
         }
 
@@ -3259,7 +3260,7 @@
         const txt = document.getElementById("reportBox").textContent;
         navigator.clipboard?.writeText(txt).then(() => {
           const msg = isEs ? "¡Copiado al portapapeles!" : "Copied to clipboard!";
-          alert(msg);
+          NTNotify.toast(msg);
         });
       }
 
@@ -3455,12 +3456,12 @@
 
         const box = document.getElementById("finishStatus");
         if (!box) {
-          alert(
+          NTNotify.toast(
             todo.length
               ? (isEs ? "Casi listo: " : "Almost there: ") + todo.join(" ")
               : isEs
                 ? "Felicitaciones! Muestra esta pagina a tu profesor."
-                : "Congratulations! Show this page to your teacher.",
+                : "Congratulations! Show this page to your teacher."
           );
           return;
         }

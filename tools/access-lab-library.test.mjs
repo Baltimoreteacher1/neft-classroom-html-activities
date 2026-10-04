@@ -3,7 +3,7 @@ import test from "node:test";
 
 // Browser-only shared components do not run speech in this model test.
 globalThis.window = {};
-const { filterActivities, playlistURL } = await import(
+const { filterActivities, playlistURL, pageActivities, PAGE_SIZE } = await import(
   "../access-practice-lab/src/views/library.js"
 );
 const rows = [
@@ -64,4 +64,22 @@ test("playlist preserves order and band without including answers or student dat
       .split(",").length,
     12,
   );
+});
+
+test("pagination has no gaps, bounds invalid pages and handles empty filters", () => {
+  const items = Array.from({ length: 53 }, (_, i) => ({ id: `item${i}` }));
+  const pages = [1, 2, 3].map((p) => pageActivities(items, p));
+  assert.equal(PAGE_SIZE, 24);
+  assert.deepEqual(
+    pages.map((p) => p.items.length),
+    [24, 24, 5],
+  );
+  assert.deepEqual(
+    pages.flatMap((p) => p.items),
+    items,
+  );
+  assert.equal(pageActivities(items, 999).page, 3);
+  assert.equal(pageActivities(items, -8).page, 1);
+  assert.equal(pageActivities(items, "bad").page, 1);
+  assert.deepEqual(pageActivities([], 8), { items: [], page: 1, pages: 1 });
 });

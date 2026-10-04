@@ -291,7 +291,10 @@
 .curriculum-units-page .units-lesson-utilities > .scorm-lesson-btn[style*="display: none"] { display: none; }
 
 /* The standard reads as a label, not a lone grey box. */
-.curriculum-units-page .lesson-info > .lesson-standard-badge { align-self: flex-start; }
+.curriculum-units-page .lesson-info > .lesson-standard-badge { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; }
+.curriculum-units-page .lesson-info > .lesson-standard-badge::before,
+.curriculum-units-page .search-result-item .lesson-standard-badge::before { content: "Standard"; color: #506662; font-weight: 500; }
+.curriculum-units-page .search-result-item .lesson-standard-badge { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
 .curriculum-units-page .lesson-real-world-label { font-size: 13px; }
 
 /* Page foot: the quick lesson jump and the planning link read as one bar. */
@@ -300,8 +303,9 @@
   border-top: 1px solid var(--course-border); background: transparent;
 }
 .curriculum-product.curriculum-units-page .bottom-lesson-label { margin: 0; color: var(--course-ink); font-size: 16px; font-weight: 700; }
+.curriculum-product.curriculum-units-page .bottom-lesson-jump { min-width: 0; }
 .curriculum-product.curriculum-units-page .bottom-lesson-select {
-  flex: 1 1 320px; max-width: 520px; min-height: 48px; padding: 10px 36px 10px 12px; border: 1px solid #7495ae; border-radius: 8px;
+  flex: 1 1 320px; width: 100%; min-width: 0; max-width: 520px; min-height: 48px; text-overflow: ellipsis; padding: 10px 36px 10px 12px; border: 1px solid #7495ae; border-radius: 8px;
   background: #fff; color: var(--course-ink); font: inherit; font-size: 16px;
 }
 .curriculum-product.curriculum-units-page .units-page-foot {
@@ -330,3 +334,7 @@
   .curriculum-units-page .lesson-outline-item .btn-hw-quick-qr { padding: 6px 8px !important; white-space: nowrap; }
   .curriculum-units-page .lesson-outline-item .progress-check { width: 28px; height: 28px; }
 }
+
+/* When the unit is taught, under its title. */
+.curriculum-units-page .unit-card-dates { margin: 8px 0 0; color: var(--course-muted, #506662); font-size: 15px; line-height: 1.4; }
+.curriculum-units-page .unit-card-now { display: inline-block; margin-right: 2px; padding: 1px 9px; border-radius: 999px; background: #b5562b; color: #fff; font-size: 13px; font-weight: 700; vertical-align: 1px; }

@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 /** All lesson practice workbooks, including Apply Day and small-group paths. */
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { withCurriculumShell } from "../tools/lib/curriculum-shell.mjs";
 import {
   lessonPath,
   listLessonDirs,
+  loadCurriculumManifest,
   loadLessonConfig,
   REPO_ROOT,
 } from "../tools/lib/curriculum-source.mjs";
@@ -48,18 +49,29 @@ const kind = (id) =>
             : id.endsWith("-practice")
               ? "Practice"
               : "Core lesson";
-const unitNames = {
-  1: "Math Is…",
-  2: "Statistics",
-  3: "Ratios & Rates",
-  4: "Percents",
-  5: "Area, Surface Area & Volume",
-  6: "Expressions",
-  7: "Integers & the Coordinate Plane",
-  8: "Equations & Inequalities",
-  9: "Two-Variable Relationships",
-  10: "Math Is…",
-};
+/* Unit names come from the authored units page, paired with the manifest's
+ * unit order — the same source tools/sync-curriculum-shell.mjs uses for the
+ * dashboard's course cards. This used to be a hand-kept table here, and it
+ * had drifted: Units 1 and 10 read "Math Is…" on this page while every other
+ * surface said "Math Is Discovery" and "Math Is Synthesis". */
+const decode = (x) =>
+  x
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, "&");
+const authoredNames = [
+  ...readFileSync(join(root, "curriculum", "units", "index.html"), "utf8").matchAll(
+    /<span class="unit-name">([^<]+)<\/span>/g,
+  ),
+].map((match) => decode(match[1].trim()));
+const courseUnits = loadCurriculumManifest().units;
+if (authoredNames.length !== courseUnits.length)
+  throw new Error(
+    `units page names ${authoredNames.length} units, manifest has ${courseUnits.length}`,
+  );
+const unitNames = Object.fromEntries(courseUnits.map((unit, i) => [unit, authoredNames[i]]));
 const cards = [...units]
   .sort((a, b) => a[0] - b[0])
   .map(

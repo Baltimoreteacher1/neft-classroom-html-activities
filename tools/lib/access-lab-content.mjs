@@ -86,6 +86,15 @@ export function orderedActivities(level) {
   return out;
 }
 
+/** Use the upper end of a task's stated range so students can allow enough time. */
+export function activityMinutes(time) {
+  const values =
+    String(time || "")
+      .match(/\d+(?:\.\d+)?/g)
+      ?.map(Number) || [];
+  return values.length ? Math.ceil(Math.max(...values)) : null;
+}
+
 /** The generated index, computed from disk. */
 export function buildIndex(root = CONTENT_DIR) {
   const index = { schema: 3, bands: {}, tests: [] };
@@ -101,9 +110,15 @@ export function buildIndex(root = CONTENT_DIR) {
             lk,
             {
               tier: L.tier || null,
-              // [id, title, type, skill] — enough for home, passport and teacher views
+              // [id, title, type, skill, minutes] — enough for home, passport and teacher views
               // to render without fetching the full domain file.
-              activities: orderedActivities(L).map((a) => [a.id, a.title, a.type, a.skill || ""]),
+              activities: orderedActivities(L).map((a) => [
+                a.id,
+                a.title,
+                a.type,
+                a.skill || "",
+                activityMinutes(a.time),
+              ]),
             },
           ]),
         ),

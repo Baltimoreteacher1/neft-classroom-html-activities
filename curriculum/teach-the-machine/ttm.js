@@ -29,13 +29,13 @@ import {
 } from "./personas.js";
 
 const LANG_KEY = "nt_ttm.lang";
+const TAUGHT_KEY = "nt_ttm.taught";
 const PULSE_URL = "/api/class-pulse?days=7";
 const GRAPH_URL = "/data/curriculum-nervous-system.json";
 const API_URL = "/api/teach-machine";
 
 const I18N = {
   en: {
-    back: "Back to curriculum",
     title: "Teach the Machine",
     lede: "Your learner is a Grade 6 student who is stuck on one idea. You are the teacher. You are judged on how well you explain — never on getting an answer right.",
     whyPulse: "This is the mistake our class has been making most this week",
@@ -74,9 +74,15 @@ const I18N = {
     offlineNote:
       "Your learner is running in offline mode right now — it still asks real questions.",
     emptyEntry: "Write a sentence or two first, then teach it.",
+    whyPicked: "You chose this learner",
+    whyMetaPicked: "Practice any mix-up you like. Today's class focus is still marked ★ in the list.",
+    chooseLearner: "Choose a learner",
+    todayMark: "★ ",
+    nextLearner: "Teach another learner",
+    taught: (n, total) => `Learners you have taught: ${n} of ${total}`,
+    winDone: (name) => `You taught ${name}. Full credit — your explanation did it.`,
   },
   es: {
-    back: "Volver al currículo",
     title: "Enseña a la Máquina",
     lede: "Tu aprendiz es un estudiante de 6.º grado atorado en una idea. Tú eres el maestro. Te evalúan por lo bien que explicas — nunca por acertar una respuesta.",
     whyPulse: "Este es el error que nuestra clase ha cometido más esta semana",
@@ -115,6 +121,14 @@ const I18N = {
     offlineNote:
       "Tu aprendiz está funcionando sin conexión en este momento — igual hace preguntas de verdad.",
     emptyEntry: "Escribe una o dos oraciones primero, y luego enséñale.",
+    whyPicked: "Elegiste este aprendiz",
+    whyMetaPicked:
+      "Practica la confusión que quieras. El enfoque de la clase de hoy sigue marcado con ★ en la lista.",
+    chooseLearner: "Elige un aprendiz",
+    todayMark: "★ ",
+    nextLearner: "Enseñar a otro aprendiz",
+    taught: (n, total) => `Aprendices que has enseñado: ${n} de ${total}`,
+    winDone: (name) => `Le enseñaste a ${name}. Crédito completo: tu explicación lo logró.`,
   },
 };
 
@@ -131,6 +145,7 @@ const state = {
   busy: false,
   offline: false,
   won: false,
+  todayTag: "",
 };
 
 const el = (id) => document.getElementById(id);
@@ -151,6 +166,26 @@ function writeLang(lang) {
   } catch {
     /* private mode — the toggle still works for this session */
   }
+}
+
+function readTaught() {
+  try {
+    const list = JSON.parse(localStorage.getItem(TAUGHT_KEY) || "[]");
+    return Array.isArray(list) ? list.filter((tag) => isKnownTag(tag)) : [];
+  } catch {
+    return [];
+  }
+}
+
+function markTaught(tag) {
+  const list = readTaught();
+  if (!list.includes(tag)) list.push(tag);
+  try {
+    localStorage.setItem(TAUGHT_KEY, JSON.stringify(list));
+  } catch {
+    /* private mode — the count just will not persist */
+  }
+  return list;
 }
 
 const t = () => I18N[state.lang];
@@ -211,8 +246,6 @@ function setText(id, value) {
 function renderChrome() {
   const s = t();
   document.documentElement.lang = state.lang;
-  const back = document.querySelector('[data-i18n="back"]');
-  if (back) back.textContent = s.back;
   setText("lang-en", "EN");
   setText("lang-es", "ES");
   el("lang-en").setAttribute("aria-pressed", String(state.lang === "en"));
@@ -238,17 +271,26 @@ function renderChrome() {
   setText("print-summary", s.print);
   setText("model-answer-label", s.modelAnswer);
   setText("footer-note", s.footer);
+  setText("learner-select-label", s.chooseLearner);
+  setText("next-learner", s.nextLearner);
+  const taught = readTaught().length;
+  setText("taught-line", taught ? s.taught(taught, TAGS.length) : "");
   setText("source-note", state.offline ? s.offlineNote : "");
 }
 
 function renderWhy() {
   const s = t();
   const p = state.persona;
-  setText("why-kicker", state.fromPulse ? s.whyPulse : s.whyDefault);
+  const picked = state.tag !== state.todayTag;
+  setText("why-kicker", picked ? s.whyPicked : state.fromPulse ? s.whyPulse : s.whyDefault);
   const label = state.lang === "es" ? `«${p.wrongIdeaEs}»` : `“${p.wrongIdea}”`;
   setText("why-text", label);
-  const meta = state.fromPulse ? s.whyMetaPulse(state.pulseShare || 0) : s.whyMetaDefault;
-  const stds = (state.standards.length ? state.standards : p.standards).join(", ");
+  const meta = picked
+    ? s.whyMetaPicked
+    : state.fromPulse
+      ? s.whyMetaPulse(state.pulseShare || 0)
+      : s.whyMetaDefault;
+  const stds = (!picked && state.standards.length ? state.standards : p.standards).join(", ");
   setText("why-meta", `${meta} ${stds ? s.standardLine(stds) : ""}`.trim());
 }
 
@@ -422,13 +464,38 @@ function renderWin() {
     month: "long",
     day: "numeric",
   });
-  const stds = (state.standards.length ? state.standards : p.standards).join(", ");
+  const stds = (state.tag === state.todayTag && state.standards.length
+    ? state.standards
+    : p.standards
+  ).join(", ");
   setText("sc-foot", s.scFoot(date, stds));
   setText("model-answer-text", state.lang === "es" ? p.workedEs : p.worked);
 }
 
+/** One option per learner; today's class focus is marked and listed first. */
+function renderPicker() {
+  const select = el("learner-select");
+  if (!select) return;
+  const s = t();
+  const taught = new Set(readTaught());
+  const order = [state.todayTag, ...TAGS.filter((tag) => tag !== state.todayTag)];
+  select.textContent = "";
+  for (const tag of order) {
+    const p = PERSONAS[tag];
+    if (!p) continue;
+    const option = document.createElement("option");
+    option.value = tag;
+    const idea = state.lang === "es" ? p.wrongIdeaEs : p.wrongIdea;
+    const mark = tag === state.todayTag ? s.todayMark : taught.has(tag) ? "✓ " : "";
+    option.textContent = `${mark}${p.persona.name} — ${idea}`;
+    select.append(option);
+  }
+  select.value = state.tag;
+}
+
 function renderAll(pending) {
   renderChrome();
+  renderPicker();
   renderWhy();
   renderLearnerHead();
   renderLog(pending);
@@ -561,7 +628,15 @@ async function submitExplanation(text) {
   state.won = state.won || state.understanding.convinced;
   renderAll(false);
 
+  window.GameStudio?.emit("feedback", { correct: state.understanding.convinced });
   if (justWon) {
+    markTaught(state.tag);
+    renderChrome();
+    renderPicker();
+    window.GameStudio?.emit("complete", {
+      score: readTaught().length,
+      message: t().winDone(state.persona.persona.name),
+    });
     reportMastery();
     const heading = el("win-heading");
     if (heading) {
@@ -613,7 +688,33 @@ function resetConversation() {
   renderAll(false);
 }
 
+function setLearner(tag) {
+  if (!isKnownTag(tag) || !PERSONAS[tag]) return;
+  state.tag = tag;
+  state.persona = PERSONAS[tag];
+  checkState.lang = null; // the rubric changes: rebuild the checklist
+  logState.lang = null; // and the conversation
+  resetConversation();
+}
+
+function nextUntaught() {
+  const taught = new Set(readTaught());
+  const start = TAGS.indexOf(state.tag);
+  for (let i = 1; i <= TAGS.length; i += 1) {
+    const tag = TAGS[(start + i) % TAGS.length];
+    if (!taught.has(tag)) return tag;
+  }
+  return TAGS[(start + 1) % TAGS.length];
+}
+
 function wire() {
+  el("learner-select").addEventListener("change", (event) => {
+    setLearner(event.target.value);
+  });
+  el("next-learner").addEventListener("click", () => {
+    setLearner(nextUntaught());
+    el("entry").focus();
+  });
   el("lang-en").addEventListener("click", () => switchLang("en"));
   el("lang-es").addEventListener("click", () => switchLang("es"));
 
@@ -664,9 +765,19 @@ function switchLang(lang) {
 async function init() {
   const tag = await pickTag();
   state.tag = isKnownTag(tag) ? tag : TAGS[0];
+  state.todayTag = state.tag;
   state.persona = PERSONAS[state.tag];
   resetConversation();
   wire();
+  window.GameStudio?.register({
+    title: "Teach the Machine",
+    instructions: [
+      "Your learner believes one wrong idea. Read what it says.",
+      "Type an explanation and press Teach it. Say WHY, not just the steps. Sentence starters and the word bank can help.",
+      "The checklist shows the ideas your learner still needs. Your learner changes its mind only when every idea is covered.",
+      "Take all the time you need. When it gets it, teach another learner from the list.",
+    ],
+  });
 }
 
 init();

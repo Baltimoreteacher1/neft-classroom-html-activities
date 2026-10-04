@@ -26,13 +26,21 @@ function styles() {
 }
 
 /** A current-step label with the full, keyboard-accessible outline on demand. */
-export function mountStepGuide(strip, labels) {
+export function mountStepGuide(strip, labels, { collapsed = true } = {}) {
   styles();
   const guide = document.createElement("div");
   guide.className = "reading-guide";
   const current = document.createElement("p");
   current.className = "reading-current";
   current.setAttribute("aria-live", "polite");
+  if (!collapsed) {
+    // Few steps: keep every step in view so a student can see the whole path.
+    strip.before(guide);
+    guide.append(current, strip);
+    return (index) => {
+      current.textContent = `Step ${index + 1} of ${labels.length} · ${labels[index]}`;
+    };
+  }
   const outline = document.createElement("details");
   outline.className = "reading-outline";
   const summary = document.createElement("summary");

@@ -811,6 +811,7 @@
     <meta name="nt-project-reveal-unit" content="10" />
     <link rel="stylesheet" href="/shared/projects/projects-meta.css?v=20260727-v2" />
     <!-- projects-meta-injected:end -->
+  <script src="/shared/projects/projects-notify.js?v=20261004" defer></script>
 </head>
   <body class="level-1 pro-projects declutter-projects" id="body">
     <!-- ====== HERO ====== -->
@@ -3594,12 +3595,17 @@
         if (!txt) return;
         const isEs = document.getElementById("body").classList.contains("es");
         navigator.clipboard?.writeText(txt).then(() => {
-          alert(isEs ? "¡Copiado al portapapeles!" : "Copied to clipboard!");
+          NTNotify.toast(isEs ? "¡Copiado al portapapeles!" : "Copied to clipboard!");
         });
       }
 
       function downloadTxt() {
-        const txt = document.getElementById("reportBox").textContent;
+        let txt = document.getElementById("reportBox").textContent;
+        /* Build the summary first instead of a Download button that silently
+           does nothing until "Generate Summary" has been pressed. */
+        if (!txt && typeof buildReport === "function" && buildReport() !== false) {
+          txt = document.getElementById("reportBox")?.textContent;
+        }
         if (!txt) return;
         const a = document.createElement("a");
         a.href = "data:text/plain;charset=utf-8," + encodeURIComponent(txt);
@@ -3636,21 +3642,21 @@
                 : 'You have not pressed "📝 Generate Summary" yet to create your report.',
             );
           }
-          alert(
+          NTNotify.fix(
             (isEs ? "Casi listo. " : "Almost there. ") +
               parts.join(" ") +
               (isEs
                 ? " Termina eso y vuelve a presionar este botón."
-                : " Finish that, then press this button again."),
+                : " Finish that, then press this button again.")
           );
           return;
         }
 
         playConfetti();
-        alert(
+        NTNotify.toast(
           isEs
             ? "¡Increíble trabajo! 🎉 Entrega tu informe: imprímelo, descárgalo o muéstralo a tu maestro."
-            : "Amazing work! 🎉 Turn in your report: print it, download it, or show it to your teacher.",
+            : "Amazing work! 🎉 Turn in your report: print it, download it, or show it to your teacher.", { tone: "success" }
         );
       }
 

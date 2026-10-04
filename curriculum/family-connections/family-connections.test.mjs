@@ -58,7 +58,12 @@ test("Cloudflare's extensionless editor URL stays in teacher mode", () => {
 });
 test("freshness uses school date, handles missing/stale/future weeks and Sunday boundary", () => {
   assert.equal(schoolDate(new Date("2026-09-28T01:00:00Z")), "2026-09-27");
-  assert.equal(weekPhase("2026-09-21", new Date("2026-09-28T01:00:00Z")), "current");
+  // School time, not UTC: 03:00Z Saturday is still Friday 11 pm in Baltimore.
+  assert.equal(weekPhase("2026-09-21", new Date("2026-09-26T03:00:00Z")), "current");
+  // A weekend belongs to the week about to start (pacing-week.js weekStartFor).
+  assert.equal(weekPhase("2026-09-21", new Date("2026-09-26T16:00:00Z")), "past");
+  assert.equal(weekPhase("2026-09-28", new Date("2026-09-26T16:00:00Z")), "current");
+  assert.equal(weekPhase("2026-09-28", new Date("2026-09-28T01:00:00Z")), "current");
   assert.equal(weekPhase("2026-09-21", new Date("2026-09-28T12:00:00Z")), "past");
   assert.equal(weekPhase("2026-09-28", new Date("2026-09-24T12:00:00Z")), "upcoming");
   assert.equal(weekPhase("2026-99-99"), "empty");
@@ -105,6 +110,12 @@ test("actual family view renders selected homework, due date and Spanish action,
     assert.equal(root.querySelector(".homework-card"), null);
     assert.match(root.querySelector("#family-week h2").textContent, /Waiting for this week/);
     assert.match(root.textContent, /Last posted: Sep 21, 2026 – Sep 25, 2026/);
+    // Between weeks the last plan stays one tap away (audit 2026-10-04: the
+    // waiting card had no homework link at all).
+    assert.equal(
+      root.querySelector(".catch-up-link").getAttribute("href"),
+      "?section=all-families&week=2026-09-21",
+    );
     assert.match(root.querySelector(".week-dates").textContent, /Sep 28, 2026 – Oct 2, 2026/);
   } finally {
     globalThis.document = previous;

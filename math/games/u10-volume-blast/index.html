@@ -96,6 +96,22 @@
         white-space: nowrap;
         border: 0;
       }
+      /* The studio's toast repeats feedback the canvas already shows and sat
+         on top of the Lock In button at 1366x768. Keep it for screen readers
+         (it is the live region) but take it off screen visually. */
+      body:has(.cabinet-viewport) .studio-notice {
+        position: fixed !important;
+        bottom: auto !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        clip-path: inset(50%) !important;
+        transform: none !important;
+        border: 0 !important;
+      }
     </style>
     <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
     <script>
@@ -138,9 +154,9 @@
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
   <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
     <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-    <script src="/assets/game-studio.js?v=20261002" defer></script>
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
     <link rel="stylesheet" href="/math/games/shared/phaser-studio.css?v=20261002">
-    <script src="/math/games/shared/phaser-studio.js?v=20261002"></script>
+    <script src="/math/games/shared/phaser-studio.js?v=20261003"></script>
     <link rel="stylesheet" href="/math/games/shared/cabinet-tools.css?v=20261002">
     <script src="/math/games/shared/cabinet-tools.js?v=20261002" defer></script>
 </head>
@@ -243,11 +259,13 @@
       const TARGET_SOLVED = 10; // win condition
 
       // Isometric unit-cube geometry (screen space; Scale.FIT maps to any size).
-      const HW = 16, // half-width of a cube's top rhombus
-        TH = 8, // quarter-height of the top rhombus
-        CH = 18; // vertical rise of a cube
+      // (Sized so a 6 × 6 × 6 prism clears the readout above and the
+      // steppers below — the old 16/8/18 cubes ran behind the steppers.)
+      const HW = 14, // half-width of a cube's top rhombus
+        TH = 7, // quarter-height of the top rhombus
+        CH = 16; // vertical rise of a cube
       const PRISM_CX = 410,
-        PRISM_CY = 338;
+        PRISM_CY = 336;
 
       const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
       function shuffle(a) {
@@ -274,7 +292,12 @@
         return (dl * dw * dh) / 4;
       }
       const reduceMQ = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
-      const reducedMotion = () => !!(reduceMQ && reduceMQ.matches);
+      // Calm motion = the OS setting OR the studio "Calm motion" toggle.
+      const reducedMotion = () =>
+        !!(
+          (reduceMQ && reduceMQ.matches) ||
+          (window.GameStudio && window.GameStudio.settings.reducedMotion)
+        );
 
       // ── Shared "game feel" layer (guarded; safe no-ops if game-juice.js
       //    failed to load, so the game keeps working). ──
@@ -507,10 +530,11 @@
             V +
             " cubic units. Its base is " +
             l +
-            " long and " +
+            " by " +
             w +
-            " wide. Build it to find the height.",
-          hint: "Height = " + V + " ÷ (" + l + " × " + w + ").",
+            ". Build it: find the height.",
+          hint: "Height = volume ÷ base area.",
+          lead: "Set the base first. Then find the height: base area × height = " + V + ".",
           why: V + " ÷ (" + l + " × " + w + ") = " + V + " ÷ " + l * w + " = " + h + ".",
         };
       }
@@ -609,7 +633,7 @@
           )
           .setOrigin(0.5);
         this.add
-          .text(cx, 350, "Grade 6 · Lessons 10.1–10.5 · Standard 6.GR.2", {
+          .text(cx, 350, "Grade 6 · Unit 5 · Volume · 6.GR.2 · No timer: take your time", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "14px",
             fontStyle: "bold",
@@ -709,7 +733,7 @@
           204,
           "LEVEL 1",
           "Build it",
-          "I tell you the size. Build a prism that is L long, W wide, and H tall, then read the volume.",
+          "Build the prism I describe, then find its volume. A step coach tells you each move.",
           0x4fd18b,
           "#4fd18b",
           () => pick(1),
@@ -729,7 +753,7 @@
           456,
           "LEVEL 3",
           "Half-Unit Builder",
-          "One edge is a mixed number like 2½ — its stepper moves by halves. Multiply the fractions: 2½ × 3 × 4 = 30.",
+          "One edge is a mixed number like 2½ (its stepper moves by halves). Build it, then find the volume.",
           0xffcd4d,
           "#ffcd4d",
           () => pick(3),
@@ -966,12 +990,45 @@
       GameScene.prototype = Object.create(Phaser.Scene.prototype);
       GameScene.prototype.constructor = GameScene;
 
+      const DIM_NAME = { l: "Length", w: "Width", h: "Height" };
+      const STEPPER_Y = 472;
+      // Points shrink as help is used: unaided first try earns the most.
+      const HELP_POINTS = [20, 12, 6, 0];
+
+      // Wrong-answer choices for "how many cubic units?" Each one is a real
+      // mistake students make, so a wrong pick gets a specific explanation.
+      // All values are DOUBLED ints (half-units), like every volume here.
+      function volumeChoices(t) {
+        const l = t.l,
+          w = t.w,
+          h = t.h,
+          c = t.dV;
+        const layer = (l * w) / 2;
+        const cands = [];
+        if (t.halfDim) {
+          cands.push([2 * Math.floor(l / 2) * Math.floor(w / 2) * Math.floor(h / 2), "drophalf"]);
+          cands.push([2 * Math.ceil(l / 2) * Math.ceil(w / 2) * Math.ceil(h / 2), "roundhalf"]);
+        }
+        cands.push([layer, "layer"], [l + w + h, "add"], [l * w + l * h + w * h, "surface"]);
+        cands.push([c + layer, "extra"], [c - layer, "extra"], [c + 2, "count"], [c - 2, "count"]);
+        const out = [{ v: c, why: "correct" }];
+        cands.forEach(([v, why]) => {
+          if (out.length < 4 && v > 0 && !out.some((o) => o.v === v)) out.push({ v, why });
+        });
+        return shuffle(out);
+      }
+      window.VolumeBlast.volumeChoices = volumeChoices;
+
       GameScene.prototype.init = function () {
         this.reduceMotion = reducedMotion();
         this.score = 0;
         this.streak = 0;
         this.solved = 0;
-        this.attempts = 0; // graded lock-in resolutions (for adaptive accuracy)
+        this.round = 0; // rounds finished (solved or shown); 10 make a run
+        this.firstTry = 0;
+        this.hintsUsed = 0;
+        this.tally = {}; // problem mode -> { seen, firstTry }
+        this.attempts = 0;
         this.auto = vbAuto; // carried into Result for adaptive recordRun
         this.endless = vbEndless; // endless runs never auto-end
         this.target = this.endless ? Infinity : TARGET_SOLVED;
@@ -979,7 +1036,12 @@
         this.built = { l: 2, w: 2, h: 2 }; // doubled ints (half-units)
         this.active = "l";
         this.locked = false;
+        this.phase = "build"; // "build" (steppers) or "answer" (volume choices)
+        this.misses = 0;
+        this.answerMisses = 0;
+        this.nextMode = false;
         this.stepRefs = {};
+        this.stepperObjs = [];
       };
 
       GameScene.prototype.create = function () {
@@ -997,10 +1059,11 @@
           ...hud,
           color: "#8fe0bc",
         });
-        // Calm, no-fail HUD: the heart line is static (mistakes never drain it).
-        this.livesText = this.add.text(16, 36, "❤ No-fail practice", {
+        // Calm, no-fail HUD: mistakes never drain anything.
+        this.livesText = this.add.text(16, 36, "No-fail practice", {
           ...hud,
-          color: "#ff8f8f",
+          fontSize: "16px",
+          color: "#a8d8c4",
         });
         this.streakText = this.add
           .text(W - 16, 12, "Streak: 0", { ...hud, color: "#ffcd4d" })
@@ -1009,36 +1072,33 @@
           .text(W - 16, 36, "Level " + vbLevel, { ...hud, color: "#a8d8c4" })
           .setOrigin(1, 0);
         this.progressText = this.add
-          .text(W / 2, 12, "0 / " + (this.endless ? "∞" : this.target), {
+          .text(W / 2, 12, "", {
             ...hud,
             color: "#a8d8c4",
           })
           .setOrigin(0.5, 0);
 
-        // Endless mode: a small "Finish ✓" HUD control that ends the run now
-        // (same Result transition the win uses, with current stats).
+        // Endless mode: a "Finish ✓" HUD control that ends the run now.
         if (this.endless) {
           this.finishBtn = this.add
-            .text(16, 60, "Finish ✓", {
+            .text(W - 16, 60, "Finish ✓", {
               fontFamily: "Segoe UI, sans-serif",
-              fontSize: "15px",
+              fontSize: "16px",
               fontStyle: "bold",
               color: "#ffcd4d",
             })
+            .setOrigin(1, 0)
             .setInteractive({ useHandCursor: true });
           this.finishBtn.on("pointerover", () => this.finishBtn.setColor("#ffffff"));
           this.finishBtn.on("pointerout", () => this.finishBtn.setColor("#ffcd4d"));
-          this.finishBtn.on("pointerdown", () => {
-            if (this.locked) return;
-            this.endGame();
-          });
+          this.finishBtn.on("pointerdown", () => this.endGame());
         }
 
         // ── Problem banner ──
         this.bannerLabel = this.add
           .text(W / 2, 64, "", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "14px",
+            fontSize: "15px",
             fontStyle: "900",
             color: "#4fd18b",
           })
@@ -1046,39 +1106,42 @@
         this.bannerText = this.add
           .text(W / 2, 90, "", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "21px",
+            fontSize: "22px",
             fontStyle: "bold",
             color: "#eafff4",
             align: "center",
             wordWrap: { width: W - 80 },
           })
           .setOrigin(0.5);
-        this.problemHint = this.add
-          .text(W / 2, 124, "", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "14px",
-            color: "#a8d8c4",
-            align: "center",
-            wordWrap: { width: W - 120 },
-          })
-          .setOrigin(0.5);
-        this.feedback = this.add
-          .text(W / 2, 156, "", {
+        // Step coach / hint line (mirrored to the console prompt).
+        this.hintText = this.add
+          .text(W / 2, 128, "", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "16px",
             fontStyle: "bold",
-            color: "#ffcd4d",
+            color: "#a8d8c4",
             align: "center",
             wordWrap: { width: W - 80 },
+          })
+          .setOrigin(0.5);
+        this.problemHint = this.hintText;
+        this.feedback = this.add
+          .text(W / 2, 162, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "17px",
+            fontStyle: "bold",
+            color: "#ffcd4d",
+            align: "center",
+            wordWrap: { width: W - 60 },
           })
           .setOrigin(0.5)
           .setAlpha(0);
 
         // ── Live readout (the heart of the mechanic) ──
         this.readout = this.add
-          .text(W / 2, 196, "", {
+          .text(W / 2, 202, "", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "40px",
+            fontSize: "38px",
             fontStyle: "900",
             color: "#eafff4",
             stroke: "#0a241b",
@@ -1086,9 +1149,9 @@
           })
           .setOrigin(0.5);
         this.goalText = this.add
-          .text(W / 2, 230, "", {
+          .text(W / 2, 236, "", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
+            fontSize: "17px",
             fontStyle: "bold",
             color: "#ffcd4d",
           })
@@ -1102,13 +1165,13 @@
         this.makeStepper(410, "w", "Width");
         this.makeStepper(620, "h", "Height");
 
-        // ── Lock In button ──
+        // ── Lock In button (becomes NEXT ROUND while feedback is on screen) ──
         this.lockBtn = this.add
-          .rectangle(W / 2, 540, 260, 52, 0x1f7a52)
+          .rectangle(W / 2, 550, 260, 50, 0x1f7a52)
           .setStrokeStyle(3, 0xffffff, 0.85)
           .setInteractive({ useHandCursor: true });
-        this.add
-          .text(W / 2, 540, "LOCK IN  ✓", {
+        this.lockLabel = this.add
+          .text(W / 2, 550, "LOCK IN  ✓", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "22px",
             fontStyle: "bold",
@@ -1116,22 +1179,19 @@
           })
           .setOrigin(0.5);
         this.lockBtn.on("pointerover", () => this.lockBtn.setFillStyle(0x2a9d6a));
-        this.lockBtn.on("pointerout", () => this.lockBtn.setFillStyle(0x1f7a52));
-        this.lockBtn.on("pointerdown", () => this.lockIn());
+        this.lockBtn.on("pointerout", () =>
+          this.lockBtn.setFillStyle(this.nextMode ? 0x2563a8 : 0x1f7a52),
+        );
+        this.lockBtn.on("pointerdown", () => (this.nextMode ? this.pressNext() : this.lockIn()));
 
         // ── Controls hint ──
-        this.add
-          .text(
-            W / 2,
-            578,
-            "Tap − / +  ·  or ← → pick a side, ↑ ↓ (A·D) change it  ·  Enter = Lock In",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "13px",
-              color: "#9fd6bd",
-              align: "center",
-            },
-          )
+        this.controlsHint = this.add
+          .text(W / 2, 588, "Tap − / +  ·  or ← → pick a side, ↑ ↓ change it  ·  Enter = Lock In", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            color: "#9fd6bd",
+            align: "center",
+          })
           .setOrigin(0.5);
 
         // ── Effects ──
@@ -1147,23 +1207,29 @@
           })
           .setDepth(20);
 
-        // ── Keyboard ──
-        this.input.keyboard.on("keydown-LEFT", () => this.selectDim(-1));
-        this.input.keyboard.on("keydown-RIGHT", () => this.selectDim(1));
+        // ── Keyboard ── (answer phase: ← → choose, 1–4 pick, Enter confirms)
+        const left = () => (this.phase === "answer" ? this.moveChoice(-1) : this.selectDim(-1));
+        const right = () => (this.phase === "answer" ? this.moveChoice(1) : this.selectDim(1));
+        this.input.keyboard.on("keydown-LEFT", left);
+        this.input.keyboard.on("keydown-RIGHT", right);
         this.input.keyboard.on("keydown-UP", () => this.changeDim(this.active, 1));
         this.input.keyboard.on("keydown-DOWN", () => this.changeDim(this.active, -1));
         this.input.keyboard.on("keydown-D", () => this.changeDim(this.active, 1));
         this.input.keyboard.on("keydown-A", () => this.changeDim(this.active, -1));
         this.input.keyboard.on("keydown-ENTER", () => this.lockIn());
         this.input.keyboard.on("keydown-SPACE", () => this.lockIn());
+        ["ONE", "TWO", "THREE", "FOUR"].forEach((k, i) =>
+          this.input.keyboard.on("keydown-" + k, () => this.pickChoice(i)),
+        );
 
-        this.cameras.main.fadeIn(400);
+        this.cameras.main.fadeIn(this.reduceMotion ? 0 : 400);
         this.newProblem();
       };
 
       // Build one stepper (name + minus + value + plus).
       GameScene.prototype.makeStepper = function (cx, dim, label) {
-        const cy = 408;
+        const cy = STEPPER_Y;
+        const objs = this.stepperObjs;
         const box = this.add
           .rectangle(cx, cy, 196, 96, C.panel)
           .setStrokeStyle(3, C.panelEdge)
@@ -1172,20 +1238,23 @@
           this.active = dim;
           this.updateSteppers();
         });
-        this.add
-          .text(cx, cy - 30, label, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "15px",
-            fontStyle: "900",
-            color: "#a8d8c4",
-          })
-          .setOrigin(0.5);
+        objs.push(box);
+        objs.push(
+          this.add
+            .text(cx, cy - 31, label, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              fontStyle: "900",
+              color: "#a8d8c4",
+            })
+            .setOrigin(0.5),
+        );
         const mkBtn = (bx, sym, delta) => {
           const b = this.add
-            .rectangle(bx, cy + 12, 44, 44, C.btn)
+            .rectangle(bx, cy + 12, 48, 48, C.btn)
             .setStrokeStyle(2, C.panelEdge)
             .setInteractive({ useHandCursor: true });
-          this.add
+          const t = this.add
             .text(bx, cy + 10, sym, {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "30px",
@@ -1199,7 +1268,7 @@
             this.active = dim;
             this.changeDim(dim, delta);
           });
-          return b;
+          objs.push(b, t);
         };
         mkBtn(cx - 66, "−", -1);
         mkBtn(cx + 66, "+", 1);
@@ -1213,18 +1282,28 @@
           .setOrigin(0.5);
         // "moves by ½" tag — visible only on the half dimension (Level 3).
         const halfTag = this.add
-          .text(cx, cy + 40, "moves by ½", {
+          .text(cx, cy + 41, "moves by ½", {
             fontFamily: "Segoe UI, sans-serif",
-            fontSize: "12px",
+            fontSize: "14px",
             fontStyle: "bold",
             color: "#ffcd4d",
           })
           .setOrigin(0.5)
           .setVisible(false);
+        objs.push(val);
         this.stepRefs[dim] = { box, val, halfTag };
       };
 
+      GameScene.prototype.showSteppers = function (on) {
+        this.stepperObjs.forEach((o) => o.setVisible(on));
+        ["l", "w", "h"].forEach((d) => {
+          const r = this.stepRefs[d];
+          if (r) r.halfTag.setVisible(on && !!(this.problem && this.problem.halfDim === d));
+        });
+      };
+
       GameScene.prototype.selectDim = function (dir) {
+        if (this.locked || this.phase !== "build") return;
         const order = ["l", "w", "h"];
         let i = order.indexOf(this.active) + dir;
         i = (i + order.length) % order.length;
@@ -1232,18 +1311,13 @@
         SFX.click();
         JUICE.audio.tap();
         this.updateSteppers();
-        srSay(
-          (this.active === "l" ? "Length" : this.active === "w" ? "Width" : "Height") +
-            " selected, now " +
-            fmtHalf(this.built[this.active]) +
-            ".",
-        );
+        srSay(DIM_NAME[this.active] + " selected, now " + fmtHalf(this.built[this.active]) + ".");
       };
 
       // Step one half-unit (doubled 1) on the designated half dimension
       // (Level 3), one whole unit (doubled 2) otherwise. `dir` is −1 or +1.
       GameScene.prototype.changeDim = function (dim, dir) {
-        if (this.locked) return;
+        if (this.locked || this.phase !== "build") return;
         const step = this.problem && this.problem.halfDim === dim ? 1 : 2;
         const next = Phaser.Math.Clamp(this.built[dim] + dir * step, DIM_MIN, DIM_MAX);
         if (next === this.built[dim]) return;
@@ -1253,14 +1327,8 @@
         this.redrawPrism();
         this.updateReadout();
         this.updateSteppers();
-        srSay(
-          (dim === "l" ? "Length" : dim === "w" ? "Width" : "Height") +
-            " " +
-            fmtHalf(next) +
-            ". Volume " +
-            fmtHalf(volumeDoubled(this.built.l, this.built.w, this.built.h)) +
-            " cubic units.",
-        );
+        this.updateCoach();
+        srSay(DIM_NAME[dim] + " " + fmtHalf(next) + ". " + this.readout.text + ". " + this.hintText.text);
       };
 
       GameScene.prototype.updateSteppers = function () {
@@ -1269,18 +1337,87 @@
           if (!r) return;
           r.val.setText(fmtHalf(this.built[dim]));
           r.box.setStrokeStyle(3, dim === this.active ? C.goldN : C.panelEdge);
-          r.halfTag.setVisible(!!(this.problem && this.problem.halfDim === dim));
+          r.halfTag.setVisible(
+            this.phase === "build" && !!(this.problem && this.problem.halfDim === dim),
+          );
         });
       };
 
-      GameScene.prototype.updateReadout = function () {
+      // The live readout always shows L × W × H. The product is shown only
+      // when computing it is NOT the task: "Match the volume" (finding
+      // factors is the task). When the student must find the volume (Levels
+      // 1 and 3) or the missing height, it reads "= ?" until they solve it.
+      GameScene.prototype.updateReadout = function (reveal) {
         const b = this.built;
         const dV = volumeDoubled(b.l, b.w, b.h);
+        const showV = reveal || (this.problem && this.problem.mode === "volume");
         this.readout.setText(
-          fmtHalf(b.l) + " × " + fmtHalf(b.w) + " × " + fmtHalf(b.h) + " = " + fmtHalf(dV) + " u³",
+          fmtHalf(b.l) +
+            " × " +
+            fmtHalf(b.w) +
+            " × " +
+            fmtHalf(b.h) +
+            " = " +
+            (showV ? fmtHalf(dV) : "?") +
+            " u³",
         );
-        const ok = this.problem && isCorrect(this.problem, b);
-        this.readout.setColor(ok ? "#4fd18b" : "#eafff4");
+        this.readout.setColor(reveal ? "#4fd18b" : "#eafff4");
+      };
+
+      // Level 1 live step coach: names the next stepper move, then (in the
+      // answer phase) walks the layer method.
+      GameScene.prototype.updateCoach = function () {
+        const t = this.problem;
+        if (vbLevel !== 1 || !t || this.nextMode) return;
+        if (this.phase === "answer") {
+          const layer = (t.l * t.w) / 2;
+          this.hintText
+            .setText(
+              "Count by layers: one layer = " +
+                fmtHalf(t.l) +
+                " × " +
+                fmtHalf(t.w) +
+                " = " +
+                fmtHalf(layer) +
+                " cubes. There are " +
+                fmtHalf(t.h) +
+                " layers. Multiply " +
+                fmtHalf(layer) +
+                " × " +
+                fmtHalf(t.h) +
+                ".",
+            )
+            .setColor("#ffe08a");
+          return;
+        }
+        const order = ["l", "w", "h"];
+        const swapped = this.built.l === t.w && this.built.w === t.l;
+        for (let i = 0; i < 3; i++) {
+          const d = order[i];
+          if (d !== "h" && swapped) continue;
+          if (this.built[d] !== t[d]) {
+            const more = this.built[d] < t[d];
+            this.hintText
+              .setText(
+                "Step " +
+                  (i + 1) +
+                  ": " +
+                  DIM_NAME[d] +
+                  " should be " +
+                  fmtHalf(t[d]) +
+                  ". Tap " +
+                  (more ? "+" : "−") +
+                  " on " +
+                  DIM_NAME[d] +
+                  "  (now " +
+                  fmtHalf(this.built[d]) +
+                  ")",
+              )
+              .setColor("#ffe08a");
+            return;
+          }
+        }
+        this.hintText.setText("Step 4: the prism is built ✓  Press LOCK IN.").setColor("#4fd18b");
       };
 
       // Draw the prism as stacked iso boxes (painter's order). Dims are
@@ -1335,98 +1472,386 @@
 
       GameScene.prototype.newProblem = function () {
         this.locked = false;
-        this.missedOnce = false; // one free retry before the answer is shown
+        this.phase = "build";
+        this.misses = 0;
+        this.answerMisses = 0;
+        this.hideChoices();
+        this.setNextMode(false);
+        this.showSteppers(true);
         this.problem = genProblem(vbLevel);
-        this.built = {
-          l: this.problem.start.l,
-          w: this.problem.start.w,
-          h: this.problem.start.h,
-        };
+        const t = this.problem;
+        this.built = { l: t.start.l, w: t.start.w, h: t.start.h };
         this.active = "l";
-        this.bannerLabel.setText(this.problem.label.toUpperCase());
-        this.bannerText.setText(this.problem.prompt);
-        // Level 1 always shows the hint; Level 2 shows a lighter hint.
-        this.problemHint.setText(this.problem.hint);
-        this.goalText.setText(goalLine(this.problem));
-        this.feedback.setAlpha(0);
-        this.lockBtn.setFillStyle(0x1f7a52);
+        this.bannerLabel.setText(t.label.toUpperCase());
+        this.bannerText.setText(t.prompt);
+        // Level 1 = live step coach. Levels 2-3 = a short method reminder
+        // (never the answer); more help unlocks after a miss.
+        this.hintText.setText(t.lead || t.hint).setColor("#a8d8c4");
+        this.goalText.setText(goalLine(t));
+        this.feedback.setText("").setAlpha(0);
+        this.controlsHint.setText(
+          "Tap − / +  ·  or ← → pick a side, ↑ ↓ change it  ·  Enter = Lock In",
+        );
         this.redrawPrism();
         this.updateReadout();
         this.updateSteppers();
-        srSay(
-          this.problem.prompt +
-            " " +
-            this.problem.hint +
-            " Use the steppers to build, then lock in.",
-        );
+        this.updateCoach();
+        this.updateHUD();
+        srSay(t.prompt + " " + this.hintText.text + " Use the steppers to build, then lock in.");
+      };
+
+      // NEXT ROUND mode: Lock In becomes Next so the way forward is on screen
+      // (the console's Continue sits below the fold on a Chromebook). It
+      // presses the console's Continue so the studio's pacing still holds.
+      GameScene.prototype.setNextMode = function (on) {
+        this.nextMode = on;
+        this.lockBtn.setVisible(true).setFillStyle(on ? 0x2563a8 : 0x1f7a52);
+        this.lockLabel.setVisible(true).setText(on ? "NEXT ROUND ▶" : "LOCK IN  ✓");
+      };
+      GameScene.prototype.pressNext = function () {
+        const b = document.querySelector(".cabinet-next");
+        if (b && !b.hidden && !b.disabled) b.click();
+        else if (!b && this.pendingNext) this.pendingNext();
       };
 
       GameScene.prototype.lockIn = function () {
+        if (this.nextMode) return this.pressNext();
+        if (this.phase === "answer") return this.pickChoice(this.choiceSel);
         if (this.locked || !this.problem) return;
-        this.locked = true;
-        const correct = isCorrect(this.problem, this.built);
+        const t = this.problem;
+        const b = this.built;
+        // A prism with length and width swapped is the same prism turned
+        // around, so it counts (the height must still match).
+        const turned =
+          t.mode === "dims" && b.h === t.h && b.l === t.w && b.w === t.l && t.l !== t.w;
+        const correct = isCorrect(t, b) || turned;
         if (window.NeftScore) NeftScore.attempt(correct);
         if (correct) {
+          if (turned) this.built = { l: t.l, w: t.w, h: t.h };
           SFX.good();
           JUICE.audio.correct(this.streak);
-          this.solved++;
-          this.attempts++;
-          this.streak++;
-          const gain = 20 + Math.min(this.streak, 5) * 5;
-          this.score += gain;
-          JUICE.award(8 + Math.min(this.streak, 5), "u10-volume-blast");
-          this.burstFx.setPosition(PRISM_CX, PRISM_CY);
-          this.burstFx.explode(16);
-          JUICE.burst(this, PRISM_CX, PRISM_CY, [0x4fd18b, 0xffcd4d, 0xffffff], 16);
-          JUICE.floatText(this, PRISM_CX, PRISM_CY - 60, "+" + gain, "#4fd18b", 34);
-          if (this.streak >= 2) JUICE.confetti(this, 1);
-          this.feedback
-            .setColor("#4fd18b")
-            .setText("✓ Correct!  " + this.problem.why)
-            .setAlpha(1);
-          srSay("Correct. " + this.problem.why);
-          this.afterAttempt(true);
-        } else if (!this.missedOnce) {
-          // First miss on this problem: a calm retry — no life lost and the
-          // correct build is NOT revealed, so the student can recount and retry.
-          this.missedOnce = true;
-          this.locked = false;
-          this.streak = 0;
-          SFX.bad();
-          JUICE.audio.wrong();
-          JUICE.shake(this, 0.006);
+          if (t.mode === "dims") {
+            // Built right — now the real question: how many cubic units?
+            this.locked = true;
+            this.feedback
+              .setColor("#4fd18b")
+              .setText(
+                (turned ? "Built! (Same prism, turned around.) " : "Built! ") +
+                  "Now find the volume.",
+              )
+              .setAlpha(1);
+            this.redrawPrism();
+            this.updateSteppers();
+            this.beginAnswerPhase();
+            return;
+          }
+          this.updateReadout(true);
+          this.finishRound(true, "✓ Correct!  " + t.why);
+          return;
+        }
+        SFX.bad();
+        JUICE.audio.wrong();
+        if (!this.reduceMotion) JUICE.shake(this, 0.006);
+        this.streak = 0;
+        this.misses++;
+        this.hintsUsed++;
+        if (this.misses < 3) {
+          const tip = this.misses === 1 ? this.tier1() : this.tier2();
+          const label = this.misses === 1 ? "Hint 1 of 2: " : "Hint 2 of 2: ";
           this.feedback
             .setColor("#ffcd4d")
-            .setText(
-              "Not quite yet — check L × W × H, then try again. " + (this.problem.hint || ""),
-            )
+            .setText(label + tip)
             .setAlpha(1);
           this.updateHUD();
-          srSay("Not quite. Try again. " + (this.problem.hint || ""));
-        } else {
-          SFX.bad();
-          JUICE.audio.wrong();
-          this.streak = 0;
-          this.attempts++;
+          srSay("Not quite. " + label + tip + " Change the prism, then lock in again.");
+          return;
+        }
+        // Third miss: redraw the prism as a CORRECT build and explain it.
+        const goal = correctBuild(t);
+        this.built = { l: goal.l, w: goal.w, h: goal.h };
+        this.redrawPrism();
+        this.updateSteppers();
+        if (t.mode === "dims") {
+          this.locked = true;
           this.feedback
             .setColor("#ffcd4d")
-            .setText("✗ Not quite — " + this.problem.why)
+            .setText("Here is the prism, built for you. Now find its volume.")
             .setAlpha(1);
-          srSay("Not quite. " + this.problem.why);
-          // Teach: redraw the prism as the CORRECT build, then continue.
-          const goal = correctBuild(this.problem);
-          this.built = { l: goal.l, w: goal.w, h: goal.h };
-          this.redrawPrism();
-          this.updateReadout();
-          this.updateSteppers();
-          this.afterAttempt(false);
+          this.beginAnswerPhase();
+          return;
         }
+        this.updateReadout(true);
+        this.finishRound(false, "Here is one prism that works:  " + t.why);
       };
 
-      GameScene.prototype.afterAttempt = function (correct) {
-        // No-fail practice: mistakes teach; they never end the game.
+      // Hint 1: name the mix-up and the method — never the answer.
+      GameScene.prototype.tier1 = function () {
+        const t = this.problem,
+          b = this.built;
+        const dV = volumeDoubled(b.l, b.w, b.h);
+        if (t.mode === "dims") {
+          const off = ["l", "w", "h"].filter((d) => b[d] !== t[d]).map((d) => DIM_NAME[d]);
+          return (
+            "Check the " +
+            off.join(" and ").toLowerCase() +
+            ". Read the size again: " +
+            fmtHalf(t.l) +
+            " long, " +
+            fmtHalf(t.w) +
+            " wide, " +
+            fmtHalf(t.h) +
+            " tall."
+          );
+        }
+        if (t.mode === "volume")
+          return (
+            "Your prism holds " +
+            fmtHalf(dV) +
+            " cubes, not " +
+            fmtHalf(t.dV) +
+            ". Pick three numbers that MULTIPLY to " +
+            fmtHalf(t.dV) +
+            "."
+          );
+        const baseOk = (b.l === t.l && b.w === t.w) || (b.l === t.w && b.w === t.l);
+        if (!baseOk)
+          return (
+            "Set the base first: " +
+            fmtHalf(t.l) +
+            " long and " +
+            fmtHalf(t.w) +
+            " wide. Then find the height: base area × height = volume."
+          );
+        return "The base is right. Height = volume ÷ base area. Find the base area first.";
+      };
+
+      // Hint 2: a concrete step with the problem's own numbers.
+      GameScene.prototype.tier2 = function () {
+        const t = this.problem;
+        if (t.mode === "dims")
+          return (
+            "Use the steppers one at a time: Length " +
+            fmtHalf(t.l) +
+            ", then Width " +
+            fmtHalf(t.w) +
+            ", then Height " +
+            fmtHalf(t.h) +
+            "."
+          );
+        if (t.mode === "volume") {
+          const a = t.exa.a / 2;
+          return (
+            "Try length = " +
+            a +
+            ". Then width × height must be " +
+            fmtHalf(t.dV) +
+            " ÷ " +
+            a +
+            " = " +
+            t.dV / 2 / a +
+            ". Which two numbers from 1–6 multiply to that?"
+          );
+        }
+        const base = (t.l * t.w) / 4;
+        return (
+          "Base area = " +
+          fmtHalf(t.l) +
+          " × " +
+          fmtHalf(t.w) +
+          " = " +
+          base +
+          ". Height = " +
+          fmtHalf(t.dV) +
+          " ÷ " +
+          base +
+          ". Count by " +
+          base +
+          "s until you reach " +
+          fmtHalf(t.dV) +
+          "."
+        );
+      };
+
+      // ── Answer phase (Levels 1 and 3): how many cubic units? ──
+      GameScene.prototype.beginAnswerPhase = function () {
+        const t = this.problem;
+        this.phase = "answer";
+        this.showSteppers(false);
+        this.updateReadout(false);
+        this.bannerText.setText("How many cubic units fill this prism?");
+        this.choices = volumeChoices(t);
+        this.choiceSel = 0;
+        this.choiceObjs = [];
+        this.choiceRects = [];
+        const n = this.choices.length,
+          bw = 150,
+          gap = 18;
+        const x0 = W / 2 - (n * bw + (n - 1) * gap) / 2 + bw / 2;
+        this.choices.forEach((c, i) => {
+          const bx = x0 + i * (bw + gap);
+          const btn = this.add
+            .rectangle(bx, STEPPER_Y, bw, 64, C.panel)
+            .setStrokeStyle(3, C.panelEdge)
+            .setInteractive({ useHandCursor: true });
+          const txt = this.add
+            .text(bx, STEPPER_Y, fmtHalf(c.v) + " u³", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "26px",
+              fontStyle: "900",
+              color: "#eafff4",
+            })
+            .setOrigin(0.5);
+          const key = this.add
+            .text(bx - bw / 2 + 12, STEPPER_Y - 22, String(i + 1), {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "14px",
+              fontStyle: "bold",
+              color: "#a8d8c4",
+            })
+            .setOrigin(0.5);
+          btn.on("pointerover", () => {
+            this.choiceSel = i;
+            this.paintChoices();
+          });
+          btn.on("pointerdown", () => this.pickChoice(i));
+          this.choiceObjs.push(btn, txt, key);
+          this.choiceRects.push(btn);
+        });
+        this.paintChoices();
+        this.controlsHint.setText("Tap a volume  ·  or 1–4  ·  or ← → then Enter");
+        if (vbLevel === 1) this.updateCoach();
+        else
+          this.hintText
+            .setText("Multiply length × width × height. Count the cubes in one layer, then the layers.")
+            .setColor("#a8d8c4");
+        this.locked = false;
+        srSay(
+          "How many cubic units fill this prism? Choices: " +
+            this.choices.map((c) => fmtHalf(c.v)).join(", ") +
+            ". " +
+            this.hintText.text,
+        );
+      };
+
+      GameScene.prototype.paintChoices = function () {
+        (this.choiceRects || []).forEach((r, i) =>
+          r.setStrokeStyle(3, i === this.choiceSel ? C.goldN : C.panelEdge),
+        );
+      };
+      GameScene.prototype.moveChoice = function (dir) {
+        if (!this.choices || this.locked) return;
+        this.choiceSel = (this.choiceSel + dir + this.choices.length) % this.choices.length;
+        this.paintChoices();
+        SFX.click();
+        srSay(fmtHalf(this.choices[this.choiceSel].v) + " cubic units.");
+      };
+      GameScene.prototype.hideChoices = function () {
+        (this.choiceObjs || []).forEach((o) => o.destroy());
+        this.choiceObjs = [];
+        this.choiceRects = [];
+        this.choices = null;
+      };
+
+      const CHOICE_WHY = {
+        add: "You ADDED the edges. Volume MULTIPLIES them: length × width × height.",
+        layer: "That is only ONE layer (length × width). Stack every layer: multiply by the height.",
+        surface: "That is the surface area (the outside faces). Volume counts the cubes INSIDE.",
+        extra: "Off by one layer. Count the layers again.",
+        count: "Close, but not exact. Multiply carefully: one layer, then times the number of layers.",
+        drophalf: "You dropped the ½. The half layer counts too: multiply with the ½.",
+        roundhalf: "You rounded the ½ up to a whole. A ½ edge adds only HALF a layer.",
+      };
+
+      GameScene.prototype.pickChoice = function (i) {
+        if (this.phase !== "answer" || !this.choices || this.locked || this.nextMode) return;
+        if (i < 0 || i >= this.choices.length) return;
+        const t = this.problem;
+        const c = this.choices[i];
+        if (c.v === t.dV) {
+          SFX.good();
+          JUICE.audio.correct(this.streak);
+          this.choiceRects[i].setFillStyle(0x1f7a52);
+          this.updateReadout(true);
+          this.finishRound(true, "✓ Correct!  " + t.why);
+          return;
+        }
+        SFX.bad();
+        JUICE.audio.wrong();
+        this.streak = 0;
+        this.answerMisses++;
+        this.hintsUsed++;
+        this.choiceRects[i].setFillStyle(0x4a2a2a);
+        if (this.answerMisses < 3) {
+          const layer = (t.l * t.w) / 2;
+          const tip =
+            this.answerMisses === 1
+              ? CHOICE_WHY[c.why] || CHOICE_WHY.count
+              : "One layer = " +
+                fmtHalf(t.l) +
+                " × " +
+                fmtHalf(t.w) +
+                " = " +
+                fmtHalf(layer) +
+                " cubes. There are " +
+                fmtHalf(t.h) +
+                " layers. Multiply " +
+                fmtHalf(layer) +
+                " × " +
+                fmtHalf(t.h) +
+                ".";
+          const label = this.answerMisses === 1 ? "Hint 1 of 2: " : "Hint 2 of 2: ";
+          this.feedback
+            .setColor("#ffcd4d")
+            .setText(label + tip)
+            .setAlpha(1);
+          srSay("Not quite. " + label + tip + " Pick again.");
+          return;
+        }
+        const ci = this.choices.findIndex((x) => x.v === t.dV);
+        if (ci >= 0) this.choiceRects[ci].setFillStyle(0x1f7a52);
+        this.updateReadout(true);
+        this.finishRound(false, "The volume is " + fmtHalf(t.dV) + " cubic units.  " + t.why);
+      };
+
+      // One round is over: score it, explain, then offer NEXT ROUND.
+      GameScene.prototype.finishRound = function (solved, msg) {
+        this.locked = true;
+        const helps = Math.min(this.misses + this.answerMisses, 3);
+        const first = solved && helps === 0;
+        const row = this.tally[this.problem.mode] || (this.tally[this.problem.mode] = { seen: 0, firstTry: 0 });
+        row.seen++;
+        if (solved) {
+          this.solved++;
+          let gain = HELP_POINTS[helps];
+          if (first) {
+            this.streak++;
+            this.firstTry++;
+            row.firstTry++;
+            gain += Math.min(this.streak, 5) * 5;
+          }
+          this.score += gain;
+          JUICE.award(8 + Math.min(this.streak, 5), "u10-volume-blast");
+          if (!this.reduceMotion) {
+            this.burstFx.setPosition(PRISM_CX, PRISM_CY);
+            this.burstFx.explode(16);
+            JUICE.burst(this, PRISM_CX, PRISM_CY, [0x4fd18b, 0xffcd4d, 0xffffff], 16);
+            if (this.streak >= 2) JUICE.confetti(this, 1);
+          }
+          JUICE.floatText(this, PRISM_CX, PRISM_CY - 60, "+" + gain, "#4fd18b", 34);
+          if (!first) msg = msg.replace("✓ Correct!", "✓ Correct with help!");
+        }
+        this.feedback
+          .setColor(solved ? "#4fd18b" : "#ffcd4d")
+          .setText(msg)
+          .setAlpha(1);
+        srSay(msg);
+        this.round++;
+        this.attempts = this.round;
         this.updateHUD();
-        if (this.solved >= this.target) return this.endGame();
+        if (this.round >= this.target) return this.endGame();
+        this.setNextMode(true);
+        this.hintText.setText("Read the feedback, then press NEXT ROUND (or Enter).").setColor("#a8d8c4");
+        this.pendingNext = () => this.newProblem();
         this.studioNextRound(() => {
           this.newProblem();
         });
@@ -1436,7 +1861,12 @@
         this.scoreText.setText("Score: " + this.score);
         this.streakText.setText("Streak: " + this.streak);
         this.levelText.setText("Level " + vbLevel);
-        this.progressText.setText(this.solved + " / " + (this.endless ? "∞" : this.target));
+        const shown = this.endless ? this.round + 1 : Math.min(this.round + 1, this.target);
+        this.progressText.setText(
+          this.endless
+            ? "Round " + shown + " · Solved " + this.solved
+            : "Round " + shown + " of " + this.target + " · Solved " + this.solved,
+        );
       };
 
       GameScene.prototype.endGame = function () {
@@ -1446,11 +1876,15 @@
           this.scene.start("Result", {
             score: this.score,
             solved: this.solved,
-            target: this.target,
+            rounds: this.round,
+            target: this.endless ? Math.max(this.round, 1) : this.target,
+            firstTry: this.firstTry,
+            hintsUsed: this.hintsUsed,
+            tally: this.tally,
             level: vbLevel,
             auto: this.auto,
             endless: this.endless,
-            accuracy: this.attempts ? this.solved / this.attempts : 1,
+            accuracy: this.round ? this.firstTry / this.round : 1,
           });
         });
       };
@@ -1470,138 +1904,155 @@
         const d = this.d;
         const cx = W / 2;
         this.cameras.main.setBackgroundColor(C.bg);
-
-        // Endless runs have no finite target; grade against the standard goal
-        // of 10 so stars and the adaptive win-signal stay meaningful.
-        const endless = !!d.endless;
-        const goal = endless ? TARGET_SOLVED : d.target;
-        const stars = d.solved >= goal ? 3 : d.solved >= goal * 0.6 ? 2 : 1;
+        const rounds = Math.max(d.rounds || 0, 1);
+        // Solved-with-help still counts, but first-try builds count double:
+        // a round fully rescued by hints is half credit toward stars.
+        const rate = ((d.solved || 0) + (d.firstTry || 0)) / (2 * rounds);
+        const stars = rate >= 0.9 ? 3 : rate >= 0.6 ? 2 : 1;
         // Adaptive: only record a run when the level was auto-picked.
         if (d.auto && window.NTAdaptive) {
           window.NTAdaptive.recordRun("u10-volume-blast", {
-            won: d.solved >= goal,
+            won: rate >= 0.7,
             accuracy: d.accuracy != null ? d.accuracy : 1,
             min: 1,
             max: 3,
           });
         }
-        let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
-        if (d.score > hs) {
+        let hs = 0;
+        try {
+          hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10) || 0;
+        } catch (e) {}
+        const newBest = d.score > hs;
+        if (newBest) {
           hs = d.score;
           try {
             localStorage.setItem(LS_KEY, String(hs));
           } catch (e) {}
         }
+        const txt = (y, s, size, color, bold) =>
+          this.add
+            .text(cx, y, s, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: size + "px",
+              fontStyle: bold ? "bold" : "normal",
+              color: color,
+              align: "center",
+              wordWrap: { width: W - 100 },
+            })
+            .setOrigin(0.5);
 
-        this.add
-          .text(cx, 120, "VOLUME MASTERED!", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "46px",
-            fontStyle: "900",
-            color: "#4fd18b",
-          })
-          .setOrigin(0.5);
-
+        txt(64, rate >= 0.8 ? "VOLUME MASTERED!" : "RUN COMPLETE!", 44, "#4fd18b", true);
         for (let i = 0; i < 3; i++) {
           this.add
-            .text(cx - 80 + i * 80, 200, i < stars ? "★" : "☆", {
+            .text(cx - 70 + i * 70, 124, i < stars ? "★" : "☆", {
               fontFamily: "Segoe UI, sans-serif",
-              fontSize: "60px",
-              color: i < stars ? "#ffcd4d" : "#2a5a44",
+              fontSize: "48px",
+              color: i < stars ? "#ffcd4d" : "#5f8f78",
             })
             .setOrigin(0.5);
         }
-
-        this.add
-          .text(cx, 280, "Score: " + d.score, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "30px",
-            fontStyle: "bold",
-            color: "#eafff4",
-          })
-          .setOrigin(0.5);
-        this.add
-          .text(
-            cx,
-            318,
-            endless
-              ? "Built " + d.solved + " prisms"
-              : "Built " + d.solved + " of " + d.target + " prisms",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "18px",
-              color: "#a8d8c4",
-            },
-          )
-          .setOrigin(0.5);
-        this.add
-          .text(cx, 348, "High Score: " + hs, {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "16px",
-            fontStyle: "bold",
-            color: "#ffcd4d",
-          })
-          .setOrigin(0.5);
+        txt(176, "Score " + d.score + (newBest ? "  ·  NEW BEST!" : "  ·  Best " + hs), 28, "#eafff4", true);
+        txt(
+          216,
+          "Solved " +
+            d.solved +
+            " of " +
+            rounds +
+            " · " +
+            d.firstTry +
+            " on the first try · " +
+            d.hintsUsed +
+            (d.hintsUsed === 1 ? " hint" : " hints") +
+            " used · Level " +
+            d.level,
+          18,
+          "#a8d8c4",
+          false,
+        );
+        const names = { dims: "Build + find volume", volume: "Match a volume", third: "Missing height" };
+        const tips = {
+          dims: "count one layer (length × width), then multiply by the number of layers.",
+          volume: "find three numbers that multiply to the volume.",
+          third: "height = volume ÷ base area.",
+        };
+        const tally = d.tally || {};
+        const keys = Object.keys(tally);
+        txt(
+          252,
+          "Skills practiced: " +
+            (keys.length
+              ? keys.map((k) => names[k] + " " + tally[k].firstTry + "/" + tally[k].seen + " first try").join("  ·  ")
+              : "none yet"),
+          17,
+          "#a8d8c4",
+          false,
+        );
+        let weakest = null;
+        keys.forEach((k) => {
+          const r = tally[k].firstTry / tally[k].seen;
+          if (weakest === null || r < weakest.r) weakest = { k, r };
+        });
+        let next;
+        if (weakest && weakest.r < 0.6) next = "Practice next: " + names[weakest.k] + ": " + tips[weakest.k];
+        else if (d.level < 3) next = "Practice next: you are ready for Level " + (d.level + 1) + ".";
+        else next = "Practice next: keep going in Level 3 and aim for 10 on the first try.";
+        txt(300, next, 18, "#ffe08a", true);
 
         SFX.win();
-        JUICE.audio.fanfare();
-        JUICE.confetti(this, 1);
+        if (!reducedMotion()) {
+          JUICE.audio.fanfare();
+          JUICE.confetti(this, 1);
+        }
         JUICE.award(40, "u10-volume-blast");
 
         // Score reporting goes through NeftScore (attempt() at each judge
-        // above), which loads the bridge itself and beacons on pagehide. The
-        // old direct EduPulse.record here fired only if a student reached this
-        // screen with the bridge already loaded, and it passed no
-        // problemsCorrect at all -- so even a delivered row reported an
-        // accuracy that was never measured. That is why this game never
-        // produced a game_scores row.
+        // above), which loads the bridge itself and beacons on pagehide.
         try {
           window.NeftScore && NeftScore.finish();
         } catch (e) {}
-        srSay("Volume mastered! Final score " + d.score + ", " + stars + " stars.");
+        srSay(
+          "Run complete. Score " +
+            d.score +
+            ". Solved " +
+            d.solved +
+            " of " +
+            rounds +
+            ", " +
+            d.firstTry +
+            " on the first try. " +
+            next,
+        );
 
-        const again = this.add
-          .rectangle(cx, 430, 270, 54, 0x1f7a52)
-          .setStrokeStyle(3, 0xffffff, 0.85)
-          .setInteractive({ useHandCursor: true });
-        this.add
-          .text(cx, 430, "↻  PLAY AGAIN", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "20px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
-          .setOrigin(0.5);
+        const mkBtn = (y, label, fill, hover, cb) => {
+          const b = this.add
+            .rectangle(cx, y, 300, 54, fill)
+            .setStrokeStyle(2, 0xffffff, 0.7)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(cx, y, label, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "20px",
+              fontStyle: "bold",
+              color: "#ffffff",
+            })
+            .setOrigin(0.5);
+          b.on("pointerover", () => b.setFillStyle(hover));
+          b.on("pointerout", () => b.setFillStyle(fill));
+          b.on("pointerdown", cb);
+        };
         const replay = () => this.scene.start("LevelSelect");
-        again.on("pointerover", () => again.setFillStyle(0x2a9d6a));
-        again.on("pointerout", () => again.setFillStyle(0x1f7a52));
-        again.on("pointerdown", replay);
-        this.input.keyboard.on("keydown-SPACE", replay);
-        this.input.keyboard.on("keydown-ENTER", replay);
-
-        // ♾️ Keep Playing: restart the Game at the SAME level in endless mode
-        // (carries the auto flag so adaptive still records the endless run).
-        const keepBtn = this.add
-          .rectangle(cx, 496, 240, 48, 0x2563a8)
-          .setStrokeStyle(2, 0x7dd3fc)
-          .setInteractive({ useHandCursor: true });
-        this.add
-          .text(cx, 496, "♾️ Keep Playing", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "18px",
-            fontStyle: "bold",
-            color: "#ffffff",
-          })
-          .setOrigin(0.5);
+        mkBtn(390, "PLAY AGAIN · new prisms", 0x1f7a52, 0x2a9d6a, replay);
+        // Keep Playing: restart the Game at the SAME level in endless mode.
         const keepPlaying = () => {
           vbLevel = d.level;
           vbEndless = true;
           vbAuto = d.auto;
           this.scene.start("Game");
         };
-        keepBtn.on("pointerover", () => keepBtn.setFillStyle(0x2f74c2));
-        keepBtn.on("pointerout", () => keepBtn.setFillStyle(0x2563a8));
-        keepBtn.on("pointerdown", keepPlaying);
+        mkBtn(458, "♾️ Keep playing this level", 0x2563a8, 0x2f74c2, keepPlaying);
+        txt(510, "Enter = play again", 15, "#a8d8c4", false);
+        this.input.keyboard.on("keydown-SPACE", replay);
+        this.input.keyboard.on("keydown-ENTER", replay);
       };
 
       // ── Shared helpers ──────────────────────────────────────────────────
@@ -1700,10 +2151,18 @@
         scene: [BootScene, TitleScene, LevelSelectScene, VocabScene, GameScene, ResultScene],
       };
       const vbGame = new Phaser.Game(config);
+      window.vbGame = vbGame; // stable handle for automated QA harnesses
       // Native math controls now have a readable, touch-accessible console.
       window.PhaserStudio.mount({
         game: vbGame, id: "u10-volume-blast", GameScene, ResultScene, audio: SFX,
-        instructions: ["Build the prism using its length, width and height. \u2190/\u2192 select a dimension; \u2191/\u2193 change its value; Enter checks the prism.", "Volume = length \u00d7 width \u00d7 height, measured in cubic units."],
+        instructions: [
+          "Goal: build the prism with unit cubes, then press Lock In. 10 rounds, no timer.",
+          "Tap \u2212 or + on Length, Width and Height. Keyboard: \u2190 \u2192 pick a side, \u2191 \u2193 change it, Enter = Lock In.",
+          "Levels 1 and 3: after you build the prism, choose how many cubic units fill it (tap a choice, or keys 1\u20134).",
+          "Volume = length \u00d7 width \u00d7 height. Count one layer (length \u00d7 width), then multiply by the number of layers.",
+          "Level 2: match a volume any way you like, or find a missing height (height = volume \u00f7 base area).",
+          "A miss unlocks Hint 1 (what to check), then Hint 2 (a step with the numbers). First-try answers earn the most points.",
+        ],
         setLevel(level) { vbLevel = level; vbAuto = false; vbEndless = false; vbGame.scene.getScenes(true).forEach(scene => vbGame.scene.stop(scene.sys.settings.key)); vbGame.scene.start(vbVocabSeen ? "Game" : "Vocab"); }
       });
 
@@ -1724,6 +2183,15 @@
               "stepper moves in half units.",
           );
           cv.setAttribute("aria-roledescription", "math game");
+          // Arrow keys and Space drive the game; stop them from ALSO scrolling
+          // the page (it is taller than a Chromebook screen). Registered after
+          // Phaser's own window listener, so the game still gets every key;
+          // keys typed into buttons, inputs and dialogs are left alone.
+          window.addEventListener("keydown", function (e) {
+            if (e.target !== cv && e.target !== document.body) return;
+            if ([" ", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(e.key) > -1)
+              e.preventDefault();
+          });
           if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
           cv.addEventListener("pointerdown", function () {
             try {

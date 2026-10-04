@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/math-mobile.css" />
-    <title>Ratio Rally — Racing Game | Unit 3</title>
+    <title>Ratio Rally — Road Trip Checkpoints | Unit 3</title>
     <style>
       * {
         margin: 0;
@@ -24,28 +24,6 @@
       canvas {
         display: block;
         margin: 0 auto;
-      }
-      /* Back-to-hub link, kept above the full-bleed canvas. */
-      .nt-back-hub {
-        position: fixed;
-        top: 8px;
-        left: 8px;
-        z-index: 50;
-        padding: 6px 12px;
-        border-radius: 8px;
-        font:
-          600 13px/1 "Segoe UI",
-          system-ui,
-          sans-serif;
-        color: #e6f1ff;
-        background: rgba(10, 22, 40, 0.7);
-        border: 1px solid rgba(120, 160, 220, 0.5);
-        text-decoration: none;
-      }
-      .nt-back-hub:hover,
-      .nt-back-hub:focus {
-        background: rgba(20, 40, 70, 0.9);
-        outline: 2px solid #00ccff;
       }
     </style>
     <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
@@ -88,7 +66,6 @@
             <!-- EWL Universal Arcade Enhancements Header -->
       <div class="ewl-arcade-header-bar">
         <div class="ewl-arcade-title-group">
-          <a href="/math/games/" class="ewl-back-hub-btn">⬅️ Arcade Hub</a>
           <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
           <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
         </div>
@@ -101,11 +78,8 @@
       </div>
   
     <!-- nt-game-topbar-injected:begin (tools/inject-game-topbar.js) -->
-    <header class="nt-game-topbar" role="banner"><span class="ngt-title">Ratio Rally — Racing Game</span></header>
+    <header class="nt-game-topbar" role="banner"><span class="ngt-title">Ratio Rally — Road Trip Checkpoints</span></header>
     <!-- nt-game-topbar-injected:end -->
-    <a class="nt-back-hub" href="../index.html" aria-label="Back to Unit 3 hub"
-      >← Back to Unit&nbsp;3</a
-    >
     <!-- Visually-hidden live region: mirrors each checkpoint question for
          assistive tech and the shared hint ladder. Additive only. -->
     <div
@@ -122,7 +96,7 @@
       "
     ></div>
     <script>
-      // ── RATIO RALLY — Top-Down Racing Game (Enhanced) ──
+      // ── RATIO RALLY — Road Trip Checkpoints (calm, turn-based) ──
       // Phaser 3 — Grade 6 Math — Equivalent Ratios, Proportions, Unit Rates
 
       const LS_KEY = "ratio_rally_hiscore";
@@ -193,7 +167,7 @@
           this.noise(0.2, 0.15);
           this.play("square", 80, 0.15, 0.1);
         },
-        countdown() {
+        tap() {
           this.play("square", 440, 0.15, 0.15);
         },
         go() {
@@ -295,123 +269,155 @@
       }
 
       // ── Question Generator ──
-      function generateQuestions(difficulty) {
-        const choice = values => values[randInt(0, values.length - 1)];
-        const qs = [];
-        for (let i = 0; i < 18; i++) {
-          const type = difficulty === "easy" ? randInt(0, 2) : difficulty === "hard" ? randInt(3, 5) : randInt(0, 5);
-          let q, answer, choices, prompt;
-
-          if (type === 0) {
-            const a = randInt(2, 10);
-            let b = randInt(2, 10);
-            // Keep a !== b so the reversed-order distractor (b:a) stays a
-            // genuine wrong answer instead of duplicating a 1:1 ratio.
-            while (b === a) b = randInt(2, 10);
-            prompt = `A bag has ${a} red and ${b} blue marbles. Ratio of red to blue?`;
-            answer = `${a}:${b}`;
-            choices = [answer, `${b}:${a}`, `${a + 1}:${b}`, `${a}:${b + 2}`];
-          } else if (type === 1) {
-            const a = randInt(2, 6);
-            let b = randInt(2, 6);
-            // a !== b avoids collapsing every choice to a 1:1 ratio, which
-            // would create multiple correct answers.
-            while (b === a) b = randInt(2, 6);
-            const mult = randInt(2, 5);
-            prompt = `Which ratio equals ${a}:${b}?`;
-            answer = `${a * mult}:${b * mult}`;
-            choices = [
-              answer,
-              `${a * mult + 1}:${b * mult}`,
-              `${a * mult}:${b * mult + 2}`,
-              `${a + b}:${b * 2}`,
-            ];
-            // Drop any distractor that is actually equivalent to the answer.
-            choices = [
-              answer,
-              ...choices.slice(1).filter((c) => !ratioEquiv(c, answer)),
-            ];
-          } else if (type === 2) {
-            const a = randInt(2, 6),
-              b = randInt(2, 8);
-            const mult = randInt(2, 5);
-            prompt = `Ratio table: ${a}→${b}, ${a * mult}→?`;
-            answer = String(b * mult);
-            choices = [
-              answer,
-              String(b * mult + a),
-              String(b * mult - 1),
-              String(a * mult),
-            ];
-          } else if (type === 3) {
-            const items = randInt(3, 12);
-            const cost = items * randInt(2, 5);
-            const rate = cost / items;
-            prompt = `${items} items cost $${cost}. Price per item?`;
-            answer = `$${rate}`;
-            choices = [
-              answer,
-              `$${rate + 1}`,
-              `$${Math.max(1, rate - 1)}`,
-              `$${items}`,
-            ];
-          } else if (type === 4) {
-            const a = randInt(2, 8);
-            let b = randInt(2, 8);
-            while (b === a) b = randInt(2, 8);
-            const mult = randInt(2, 5);
-            prompt = `${a}/${b} = ${a * mult}/?`;
-            answer = String(b * mult);
-            choices = [
-              answer,
-              String(b * mult + 2),
-              String(a * mult),
-              String(b * mult - 1),
-            ];
-          } else {
-            const pct = choice([10, 20, 25, 50, 75]);
-            const total = choice([40, 60, 80, 100, 120, 200]);
-            const part = (pct / 100) * total;
-            prompt = `What is ${pct}% of ${total}?`;
-            answer = String(part);
-            choices = [
-              answer,
-              String(part + 5),
-              String(Math.max(1, part - 5)),
-              String((total * pct) / 10),
-            ];
-          }
-
-          choices = [...new Set(choices)];
-          // Format-aware filler so a backfilled distractor matches the answer's
-          // shape ($ rate / a:b ratio / plain number) and never gives the format
-          // away. Guard against duplicating the answer or an existing choice.
-          let fillGuard = 0;
-          while (choices.length < 4 && fillGuard < 200) {
-            fillGuard++;
-            let fill;
-            if (answer[0] === "$") fill = `$${randInt(1, 30)}`;
-            else if (answer.includes(":"))
-              fill = `${randInt(1, 20)}:${randInt(1, 20)}`;
-            else fill = String(randInt(1, 50));
-            // Reject fillers equal to the answer, already present, OR (for
-            // ratio answers) mathematically equivalent to it.
-            if (
-              fill !== answer &&
-              !choices.includes(fill) &&
-              !ratioEquiv(fill, answer)
-            )
-              choices.push(fill);
-          }
-          choices = choices.slice(0, 4);
-          if (!choices.includes(answer)) {
-            choices[3] = answer;
-          }
-          choices = shuffle(choices);
-
-          qs.push({ prompt, answer, choices, type });
+      // Every question carries its own coaching: a misconception-specific
+      // "why" for each distractor, a Tier 1 method hint that never states the
+      // answer, a Tier 2 concrete step, and a worked explanation shown after
+      // the answer is found. Skill tags feed the end-of-trip summary.
+      const SKILLS = [
+        "Writing a ratio in order",
+        "Equivalent ratios",
+        "Ratio tables",
+        "Unit rate (price for 1)",
+        "Equivalent fractions",
+        "Percent of a number",
+      ];
+      function makeQuestion(type) {
+        const choice = (values) => values[randInt(0, values.length - 1)];
+        let prompt, answer, wrong, hint1, hint2, explain;
+        if (type === 0) {
+          const a = randInt(2, 10);
+          let b = randInt(2, 10);
+          while (b === a) b = randInt(2, 10);
+          prompt = `A bag has ${a} red and ${b} blue marbles. What is the ratio of red to blue?`;
+          answer = `${a}:${b}`;
+          wrong = {
+            [`${b}:${a}`]: "That ratio is blue to red. The order of the words sets the order of the numbers.",
+            [`${a + 1}:${b}`]: "Check the count of red marbles again. Use the numbers from the story exactly.",
+            [`${a}:${b + 2}`]: "Check the count of blue marbles again. Use the numbers from the story exactly.",
+          };
+          hint1 = "Read the question: which color is named FIRST? That amount goes first in the ratio.";
+          hint2 = `Red comes first, so start with the red count (${a}). Then write a colon and the blue count.`;
+          explain = `Red to blue means red first: ${a} red : ${b} blue = ${answer}.`;
+        } else if (type === 1) {
+          const a = randInt(2, 6);
+          let b = randInt(2, 6);
+          while (b === a) b = randInt(2, 6);
+          const m = randInt(2, 5);
+          prompt = `Which ratio is equivalent to ${a}:${b}?`;
+          answer = `${a * m}:${b * m}`;
+          wrong = {
+            [`${a * m + 1}:${b * m}`]: "The first part was not multiplied by the same number as the second part.",
+            [`${a * m}:${b * m + 2}`]: "The second part was not multiplied by the same number as the first part.",
+            [`${a + b}:${b * 2}`]: "Adding does not keep a ratio equal. Multiply BOTH parts by the same number.",
+          };
+          hint1 = "Equivalent ratios multiply BOTH parts by the same number. For each choice, divide each part by the original part.";
+          hint2 = `Try ×${m}: ${a} × ${m} = ${a * m}. Which choice has ${a * m} first AND the second part ${b} × ${m}?`;
+          explain = `${a} × ${m} = ${a * m} and ${b} × ${m} = ${b * m}, so ${a}:${b} = ${answer}.`;
+        } else if (type === 2) {
+          const a = randInt(2, 6),
+            b = randInt(2, 8),
+            m = randInt(2, 5);
+          prompt = `Ratio table: ${a} → ${b}. If the first column is ${a * m}, what is the second column?`;
+          answer = String(b * m);
+          wrong = {
+            [String(b * m + a)]: "It looks like you added. In a ratio table you MULTIPLY both columns by the same factor.",
+            [String(b * m - 1)]: "Close! Re-check your multiplication.",
+            [String(a * m)]: "That is the first-column value. Find what the SECOND column becomes.",
+          };
+          hint1 = `Find the scale factor: what times ${a} gives ${a * m}? Use that same factor on the other column.`;
+          hint2 = `${a} × ${m} = ${a * m}, so the factor is ${m}. Now multiply ${b} × ${m}.`;
+          explain = `Scale factor ${m}: ${b} × ${m} = ${answer}.`;
+        } else if (type === 3) {
+          const items = randInt(3, 12);
+          const rate = randInt(2, 5);
+          const cost = items * rate;
+          prompt = `${items} items cost $${cost}. What is the price for 1 item?`;
+          answer = `$${rate}`;
+          wrong = {
+            [`$${rate + 1}`]: "Check your division: total cost ÷ number of items.",
+            [`$${rate - 1}`]: "Check your division: total cost ÷ number of items.",
+            [`$${items}`]: "That is the number of items, not the price. Divide the cost by the number of items.",
+            [`$${cost - items}`]: "Subtracting does not find a unit rate. Divide the cost by the number of items.",
+          };
+          hint1 = "A unit rate is the amount for ONE. Divide the total cost by the number of items.";
+          hint2 = `Divide: $${cost} ÷ ${items} = ?  Check: the answer × ${items} should equal ${cost}.`;
+          explain = `$${cost} ÷ ${items} = $${rate} for each item. Check: ${items} × $${rate} = $${cost}.`;
+        } else if (type === 4) {
+          const a = randInt(2, 8);
+          let b = randInt(2, 8);
+          while (b === a) b = randInt(2, 8);
+          const m = randInt(2, 5);
+          prompt = `Fill in the missing number: ${a}/${b} = ${a * m}/?`;
+          answer = String(b * m);
+          wrong = {
+            [String(b * m + 2)]: "Re-check: the denominator must be multiplied by the same number as the numerator.",
+            [String(a * m)]: "That is the new numerator. Multiply the DENOMINATOR by the same factor.",
+            [String(b * m - 1)]: "Close! Re-check your multiplication.",
+            [String(b + a * m - a)]: "It looks like you added. Equivalent fractions multiply top and bottom by the same number.",
+          };
+          hint1 = `What number times ${a} gives ${a * m}? Multiply the bottom by that same number.`;
+          hint2 = `${a} × ${m} = ${a * m}, so multiply the denominator: ${b} × ${m}.`;
+          explain = `${a} × ${m} = ${a * m}, and ${b} × ${m} = ${answer}, so ${a}/${b} = ${a * m}/${answer}.`;
+        } else {
+          const pct = choice([10, 20, 25, 50, 75]);
+          const total = choice([40, 60, 80, 100, 120, 200]);
+          const part = (pct * total) / 100;
+          prompt = `What is ${pct}% of ${total}?`;
+          answer = String(part);
+          wrong = {
+            [String((total * pct) / 10)]: "Percent means per 100. Divide by 100, not by 10.",
+            [String(part + 5)]: "Close. Find 10% first (divide by 10), then build up to the percent you need.",
+            [String(part - 5)]: "Close. Find 10% first (divide by 10), then build up to the percent you need.",
+            [String(total - part)]: `That is the part that is NOT ${pct}%. Find ${pct}% itself.`,
+          };
+          hint1 = "Percent means 'out of 100'. Find 10% or 1% of the number first, then scale up.";
+          hint2 = `${pct}% = ${pct}/100. Compute ${total} × ${pct} ÷ 100.`;
+          explain = `${pct}% of ${total} = ${total} × ${pct} ÷ 100 = ${answer}.`;
         }
-        return qs;
+        // Build 4 distinct choices; no distractor may equal (or be equivalent
+        // to) the answer, and none may be zero/negative.
+        const ok = (c) =>
+          c !== answer &&
+          !ratioEquiv(c, answer) &&
+          !/^\$?-|^\$?0$|^0:|:0$/.test(c);
+        let pool = Object.keys(wrong).filter(ok);
+        pool = [...new Set(pool)];
+        let guard = 0;
+        while (pool.length < 3 && guard < 200) {
+          guard++;
+          let fill;
+          if (answer[0] === "$") fill = `$${randInt(1, 30)}`;
+          else if (answer.includes(":"))
+            fill = `${randInt(1, 20)}:${randInt(1, 20)}`;
+          else fill = String(randInt(1, 60));
+          if (ok(fill) && !pool.includes(fill)) {
+            pool.push(fill);
+            wrong[fill] = "Not quite. " + hint1;
+          }
+        }
+        const choices = shuffle([answer, ...shuffle(pool).slice(0, 3)]);
+        return { prompt, answer, choices, type, wrong, hint1, hint2, explain };
+      }
+      function generateQuestions(difficulty, count = 10) {
+        const qs = [];
+        const seen = new Set();
+        // Cycle through the track's skills so every skill appears.
+        const types =
+          difficulty === "easy"
+            ? [0, 1, 2]
+            : difficulty === "hard"
+              ? [3, 4, 5, 1, 2]
+              : [0, 1, 2, 3, 4, 5];
+        let guard = 0;
+        while (qs.length < count && guard < 500) {
+          guard++;
+          const type = types[qs.length % types.length];
+          const q = makeQuestion(type);
+          if (seen.has(q.prompt)) continue;
+          seen.add(q.prompt);
+          qs.push(q);
+        }
+        return shuffle(qs);
       }
 
       const W = 800,
@@ -427,7 +433,6 @@
         parent: document.body,
         backgroundColor: "#1a3a1a",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        physics: { default: "arcade", arcade: { debug: false } },
         scene: [BootScene, TitleScene, DiffScene, GameScene, ResultScene],
       };
 
@@ -672,24 +677,24 @@
           .setAlpha(0.7);
         this.tweens.add({
           targets: pc,
-          y: { from: 420, to: 370 },
-          angle: { from: -3, to: 3 },
-          duration: 400,
+          y: { from: 410, to: 395 },
+          angle: { from: -2, to: 2 },
+          duration: 1600,
           yoyo: true,
           repeat: -1,
         });
         this.tweens.add({
           targets: ai1,
-          y: { from: 460, to: 410 },
-          duration: 600,
+          y: { from: 450, to: 430 },
+          duration: 2000,
           yoyo: true,
           repeat: -1,
         });
         this.tweens.add({
           targets: ai2,
           y: { from: 400, to: 360 },
-          x: { from: cx, to: cx + 20 },
-          duration: 800,
+          x: { from: cx, to: cx + 10 },
+          duration: 2400,
           yoyo: true,
           repeat: -1,
         });
@@ -748,7 +753,7 @@
         });
 
         this.add
-          .text(cx, 180, "TOP-DOWN RACING", {
+          .text(cx, 180, "ROAD TRIP CHECKPOINTS", {
             fontSize: "18px",
             color: "#88ccaa",
             letterSpacing: 6,
@@ -762,7 +767,7 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 248, "Race to the finish by solving ratio problems!", {
+          .text(cx, 248, "Solve a ratio problem at each checkpoint to drive on. No timer — take your time.", {
             fontSize: "14px",
             color: "#558877",
           })
@@ -792,7 +797,7 @@
           .rectangle(cx, 530, 260, 56, 0x00ccff)
           .setInteractive({ useHandCursor: true });
         const btnT = this.add
-          .text(cx, 530, "START RACE", {
+          .text(cx, 530, "START TRIP", {
             fontSize: "22px",
             fontStyle: "bold",
             color: "#002244",
@@ -817,16 +822,18 @@
 
         btn.on("pointerdown", () => {
           SFX.init();
-          SFX.countdown();
+          SFX.tap();
           this.cameras.main.fadeOut(400);
           this.time.delayedCall(400, () => this.scene.start("DiffSelect"));
         });
-        this.input.keyboard.on("keydown-SPACE", () => {
+        const goTracks = () => {
           SFX.init();
-          SFX.countdown();
+          SFX.tap();
           this.cameras.main.fadeOut(400);
           this.time.delayedCall(400, () => this.scene.start("DiffSelect"));
-        });
+        };
+        this.input.keyboard.once("keydown-SPACE", goTracks);
+        this.input.keyboard.once("keydown-ENTER", goTracks);
         this.cameras.main.fadeIn(500);
       };
 
@@ -853,7 +860,7 @@
         });
 
         this.add
-          .text(cx, 60, "CHOOSE YOUR TRACK", {
+          .text(cx, 60, "CHOOSE YOUR ROAD", {
             fontSize: "32px",
             fontStyle: "bold",
             color: "#00ccff",
@@ -863,8 +870,8 @@
         const diffs = [
           {
             key: "easy",
-            label: "DESERT DASH",
-            sub: "Basic ratios, slow speed",
+            label: "DESERT ROAD",
+            sub: "Ratios, equivalent ratios, ratio tables",
             emoji: "🏜️",
             color: 0xd4a050,
             y: 190,
@@ -872,15 +879,15 @@
           {
             key: "medium",
             label: "CITY CIRCUIT",
-            sub: "Proportions & tables, medium speed",
+            sub: "All six skills, mixed",
             emoji: "🏙️",
             color: 0x4488cc,
             y: 320,
           },
           {
             key: "hard",
-            label: "SPACE SPRINT",
-            sub: "Unit rates & complex ratios, fast!",
+            label: "SPACE HIGHWAY",
+            sub: "Unit rates, fractions & percents",
             emoji: "🚀",
             color: 0xaa44ff,
             y: 450,
@@ -921,13 +928,24 @@
             btn.setFillStyle(d.color, 0.85);
             btn.setScale(1);
           });
-          btn.on("pointerdown", () => {
-            SFX.countdown();
+          const go = () => {
+            SFX.tap();
             this.cameras.main.fadeOut(300);
             this.time.delayedCall(300, () =>
               this.scene.start("Game", { difficulty: d.key }),
             );
-          });
+          };
+          btn.on("pointerdown", go);
+          this.input.keyboard.once(
+            "keydown-" + ["ONE", "TWO", "THREE"][idx],
+            go,
+          );
+          this.add
+            .text(cx + 170, d.y - 30, `Key ${idx + 1}`, {
+              fontSize: "13px",
+              color: "#ffffffcc",
+            })
+            .setOrigin(1, 0.5);
 
           // Entrance animation
           btn.setAlpha(0).setScale(0.8);
@@ -944,7 +962,14 @@
         this.cameras.main.fadeIn(400);
       };
 
-      // ── GAME SCENE ──
+      // ── GAME SCENE (calm, turn-based) ──
+      // The car only moves when a checkpoint question is solved. No steering,
+      // no obstacles, no countdown, no speed — unlimited think time. A wrong
+      // try removes that choice and earns coaching: try 1 → why it is wrong +
+      // a Tier 1 method hint; try 2 → a Tier 2 concrete step; try 3 → the
+      // worked answer, then the student taps it to drive on (no-fail).
+      const TRIP_LEN = 10;
+      const POINTS = [100, 60, 30, 10]; // by number of wrong tries first
       function GameScene() {
         Phaser.Scene.call(this, "Game");
       }
@@ -952,55 +977,37 @@
       GameScene.prototype.constructor = GameScene;
 
       GameScene.prototype.init = function (data) {
-        this.difficulty = data.difficulty || "easy";
-        this.questions = generateQuestions(this.difficulty);
+        this.difficulty = (data && data.difficulty) || "easy";
+        this.questions = generateQuestions(this.difficulty, TRIP_LEN);
         this.currentQ = 0;
         this.score = 0;
         this.combo = 0;
         this.maxCombo = 0;
-        this.lives = 3;
-        this.totalCorrect = 0;
-        this.totalWrong = 0;
-        this.speed =
-          data.speed ||
-          (this.difficulty === "easy"
-            ? 2
-            : this.difficulty === "medium"
-              ? 3
-              : 4);
-        this.baseSpeed = this.speed;
-        this.boostTimer = 0;
-        this.distance = 0;
-        this.nextCheckpoint = 800;
-        this.checkpointInterval = 800;
-        this.raceFinished = false;
-        this.checkpointsHit = 0;
+        this.totalCorrect = 0; // first-try, unaided
+        this.totalWrong = 0; // wrong tries (all)
+        this.helped = 0; // questions solved after coaching
+        this.skillMiss = {};
+        this.skillSeen = {};
         this.totalCheckpoints = this.questions.length;
-        this.obstacleTimer = 0;
-        this.paused = false;
-        this.lapCount = data.lapCount || 1;
+        this.checkpointsHit = 0;
+        this.paused = true; // a question is always on screen between drives
+        this.raceFinished = false;
+        this.tries = 0;
+        this.locked = false;
+        this.answerBtns = [];
         this.envColors =
           this.difficulty === "easy"
             ? { grass: 0xd4a050, road: 0x666655 }
             : this.difficulty === "medium"
               ? { grass: 0x334455, road: 0x555555 }
               : { grass: 0x1a0a33, road: 0x333344 };
-        // Power-ups state
-        this.powerups = { fiftyFifty: 1, doublePoints: 1, extraTime: 0 };
-        this.doublePointsActive = false;
         this.questionStartTime = 0;
-        this.crowdLevel = 0;
-        this.lastCrowdTime = 0;
-        // ── Bespoke visual-polish state (additive only) ──
-        this.prevSpeed = this.speed;
-        this.prevPlayerX = W / 2;
-        this.brakeGlowLevel = 0;
-        this.lastSkidTime = 0;
       };
 
-      // Respect the OS "reduce motion" setting for all NEW decorative motion.
+      // Respect the OS "reduce motion" setting and the studio Calm motion toggle.
       function gfxReducedMotion() {
         try {
+          if (window.__flagshipReduced) return true;
           return (
             window.matchMedia &&
             window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -1011,283 +1018,90 @@
       }
 
       GameScene.prototype.create = function () {
-        const scene = this;
-
-        // Environment background
-        this.add.rectangle(W / 2, H / 2, W, H, this.envColors.grass);
-
-        // ── Bespoke: parallax depth layers (purely decorative, behind road) ──
         this.reducedMotion = gfxReducedMotion();
+        this.add.rectangle(W / 2, H / 2, W, H, this.envColors.grass);
         this.buildParallaxBackground();
-
-        // ── Bespoke: road perspective taper overlay (converging guide lines) ──
         this.buildRoadPerspective();
 
-        // Ambient background particles
-        const ambientTint =
-          this.difficulty === "easy"
-            ? [0xffddaa, 0xffcc88] // desert dust
-            : this.difficulty === "medium"
-              ? [0xaaaacc, 0x8888aa] // city smog
-              : [0x8844ff, 0x6622cc, 0xffffff]; // space stars
-
-        this.ambientBg = this.add.particles(0, 0, "dust", {
-          x: { min: 0, max: W },
-          y: { min: 0, max: H },
-          speed: { min: 3, max: 15 },
-          scale: { start: 0.4, end: 0 },
-          alpha: { start: 0.25, end: 0 },
-          lifespan: { min: 3000, max: 7000 },
-          frequency: 150,
-          tint: ambientTint,
-        });
-
         // Road
-        this.roadGroup = this.add.group();
         this.add.rectangle(W / 2, H / 2, ROAD_W + 20, H, 0x888888);
         this.add.rectangle(W / 2, H / 2, ROAD_W, H, this.envColors.road);
         this.laneLines = [];
         for (let y = -40; y < H + 40; y += 60) {
-          const line = this.add.rectangle(W / 2, y, 4, 25, 0xffff00, 0.7);
-          this.laneLines.push(line);
+          this.laneLines.push(this.add.rectangle(W / 2, y, 4, 25, 0xffff00, 0.7));
         }
-
-        // Trees / scenery
+        // Scenery
         this.scenery = [];
-        for (let i = 0; i < 20; i++) {
-          const side = Math.random() < 0.5 ? -1 : 1;
-          const x = W / 2 + side * (ROAD_W / 2 + randInt(30, 120));
-          const y = randInt(-50, H + 50);
+        for (let i = 0; i < 16; i++) {
+          const side = i % 2 === 0 ? -1 : 1;
           const t = this.add
-            .image(x, y, "tree")
+            .image(W / 2 + side * (ROAD_W / 2 + randInt(30, 120)), randInt(-50, H + 50), "tree")
             .setScale(randInt(8, 15) / 10)
             .setAlpha(0.7);
           this.scenery.push(t);
         }
 
-        // ── Bespoke: skid-mark layer (sits on the road, beneath cars) ──
-        this.skidMarks = [];
+        // Player car (parked until a checkpoint is solved)
+        this.carShadow = this.add.image(W / 2, H - 98, "carShadow").setDepth(2).setAlpha(0.55);
+        this.player = this.add.image(W / 2, H - 120, "car_player").setScale(1.3).setDepth(3);
 
-        // ── Bespoke: brake glow + car shadow (render beneath the player car) ──
-        this.brakeGlow = this.add
-          .image(W / 2, H - 120 + 26, "brakeGlow")
-          .setDepth(2)
-          .setAlpha(0)
-          .setScale(1.1);
-        this.carShadow = this.add
-          .image(W / 2, H - 120 + 22, "carShadow")
-          .setDepth(2)
-          .setAlpha(0.55);
-
-        // Player car
-        this.player = this.physics.add
-          .image(W / 2, H - 120, "car_player")
-          .setScale(1.3);
-        this.player.setDepth(3);
-        this.player.setCollideWorldBounds(true);
-        this.player.body.setSize(24, 40);
-
-        // AI cars
-        this.aiCars = [];
-        const aiTextures = ["car_ai1", "car_ai2"];
-        for (let i = 0; i < 2; i++) {
-          const aiCar = this.physics.add
-            .image(W / 2 + (-1 + i * 2) * 60, H - 200 - i * 100, aiTextures[i])
-            .setScale(1.2);
-          aiCar.body.allowGravity = false;
-          aiCar.aiSpeed = this.baseSpeed * (0.7 + i * 0.2);
-          aiCar.aiLane = i;
-          aiCar.aiTimer = 0;
-          this.aiCars.push(aiCar);
-        }
-
-        // Obstacles group
-        this.obstacles = this.physics.add.group();
-        this.boosts = this.physics.add.group();
-
-        // Collisions
-        this.physics.add.overlap(this.player, this.obstacles, (p, o) => {
-          SFX.crash();
-          this.speed = Math.max(1, this.speed - 1);
-          this.cameras.main.shake(200, 0.02);
-          o.destroy();
-          const slowTxt = this.add
-            .text(p.x, p.y - 30, "SLOW!", {
-              fontSize: "18px",
-              color: "#ff4444",
-              fontStyle: "bold",
-              stroke: "#000",
-              strokeThickness: 2,
-            })
-            .setOrigin(0.5);
-          this.tweens.add({
-            targets: slowTxt,
-            y: slowTxt.y - 40,
-            alpha: 0,
-            duration: 600,
-            onComplete: () => slowTxt.destroy(),
-          });
-          this.time.delayedCall(2000, () => {
-            this.speed = Math.max(this.speed, this.baseSpeed);
-          });
-        });
-
-        this.physics.add.overlap(this.player, this.boosts, (p, b) => {
-          SFX.boost();
-          b.destroy();
-          this.boostTimer = 3;
-          this.speed = this.baseSpeed + 3;
-          const txt = this.add
-            .text(p.x, p.y - 30, "BOOST!", {
-              fontSize: "18px",
-              color: "#00ff88",
-              fontStyle: "bold",
-              stroke: "#000",
-              strokeThickness: 2,
-            })
-            .setOrigin(0.5);
-          this.tweens.add({
-            targets: txt,
-            y: txt.y - 60,
-            alpha: 0,
-            scaleX: 1.5,
-            scaleY: 1.5,
-            duration: 600,
-            onComplete: () => txt.destroy(),
-          });
-        });
-
-        // HUD
-        this.add.rectangle(W / 2, 20, W, 40, 0x000000, 0.7).setOrigin(0.5, 0);
-        this.scoreText = this.add.text(16, 26, "Score: 0", {
-          fontSize: "16px",
-          color: "#00ccff",
-          fontStyle: "bold",
-        });
-        this.livesText = this.add
-          .text(W - 16, 26, "", { fontSize: "16px", color: "#ff4444" })
-          .setOrigin(1, 0);
-        this.speedText = this.add
-          .text(W / 2, 26, "", { fontSize: "14px", color: "#88ff88" })
-          .setOrigin(0.5, 0);
-
-        // Streak counter (visual, grows/pulses)
-        this.streakContainer = this.add.container(W / 2, 52);
-        this.streakBg = this.add
-          .rectangle(0, 0, 120, 22, 0xff8800, 0)
-          .setOrigin(0.5);
-        this.streakLabel = this.add
-          .text(0, 0, "", {
-            fontSize: "15px",
-            color: "#ffdd00",
-            fontStyle: "bold",
-            stroke: "#000",
-            strokeThickness: 2,
-          })
-          .setOrigin(0.5);
-        this.streakContainer.add([this.streakBg, this.streakLabel]);
-        this.streakContainer.setDepth(5);
-
-        // Question counter / progress bar
-        this.add.rectangle(W / 2, 8, W - 100, 8, 0x333333);
-        this.progressBar = this.add
-          .rectangle(50, 8, 0, 6, 0x00ccff)
-          .setOrigin(0, 0.5);
+        // HUD: trip map (one flag per checkpoint) + score
+        this.add.rectangle(W / 2, 0, W, 64, 0x000000, 0.75).setOrigin(0.5, 0).setDepth(20);
+        this.scoreText = this.add
+          .text(16, 34, "Score: 0", { fontSize: "18px", color: "#7fe0ff", fontStyle: "bold" })
+          .setDepth(21);
         this.progressLabel = this.add
-          .text(W / 2, 8, "", {
-            fontSize: "9px",
-            color: "#ffffff",
-            fontStyle: "bold",
-          })
-          .setOrigin(0.5);
-        this.add.text(28, 8, "🏁", { fontSize: "12px" }).setOrigin(0.5);
-        this.add.text(W - 28, 8, "🏁", { fontSize: "12px" }).setOrigin(0.5);
+          .text(W - 16, 34, "", { fontSize: "18px", color: "#ffffff", fontStyle: "bold" })
+          .setOrigin(1, 0)
+          .setDepth(21);
+        this.flags = [];
+        const x0 = 150,
+          x1 = W - 150;
+        this.add.rectangle(W / 2, 16, x1 - x0, 4, 0x445566).setDepth(21);
+        for (let i = 0; i < this.totalCheckpoints; i++) {
+          const fx = x0 + ((x1 - x0) * i) / Math.max(1, this.totalCheckpoints - 1);
+          this.flags.push(this.add.circle(fx, 16, 7, 0x445566).setStrokeStyle(2, 0xaaccee).setDepth(22));
+        }
+        this.mapCar = this.add.image(x0, 16, "car_player").setScale(0.45).setAngle(90).setDepth(23);
+        this.streakLabel = this.add
+          .text(W / 2, 34, "", { fontSize: "16px", color: "#ffdd00", fontStyle: "bold" })
+          .setOrigin(0.5, 0)
+          .setDepth(21);
 
-        // Checkpoint indicator
-        this.cpText = this.add
-          .text(W / 2, H / 2, "", {
-            fontSize: "40px",
-            fontStyle: "bold",
-            color: "#ffaa00",
-            stroke: "#000",
-            strokeThickness: 4,
-          })
-          .setOrigin(0.5)
-          .setAlpha(0)
-          .setDepth(10);
-
-        // Exhaust Particles
-        this.exhaustParticles = this.add.particles(0, 0, "particle", {
-          speed: { min: 10, max: 40 },
-          scale: { start: 0.5, end: 0 },
-          lifespan: 300,
-          emitting: false,
-          quantity: 2,
-          tint: [0x888888, 0x666666],
-          angle: { min: 80, max: 100 },
-        });
-
-        // Confetti emitter (for correct answers)
         this.confettiEmitter = this.add.particles(0, 0, "confetti", {
-          speed: { min: 80, max: 250 },
+          speed: { min: 80, max: 220 },
           scale: { start: 1.2, end: 0 },
           lifespan: 800,
           emitting: false,
-          quantity: 20,
-          tint: [0xff4488, 0x44ff88, 0x4488ff, 0xffdd00, 0xff8800, 0xaa44ff],
+          quantity: this.reducedMotion ? 0 : 18,
+          tint: [0xff4488, 0x44ff88, 0x4488ff, 0xffdd00, 0xff8800],
           angle: { min: 0, max: 360 },
-          rotate: { min: 0, max: 360 },
           gravityY: 200,
-        });
+        }).setDepth(30);
 
-        // Sparkle emitter (for streaks)
-        this.sparkleEmitter = this.add.particles(0, 0, "spark", {
-          speed: { min: 50, max: 150 },
-          scale: { start: 1.5, end: 0 },
-          lifespan: 500,
-          emitting: false,
-          quantity: 15,
-          tint: [0xffdd00, 0xffffff, 0xff8800],
-          angle: { min: 0, max: 360 },
-        });
-
-        // Input
-        this.cursors = this.input.keyboard.createCursorKeys();
-
-        // Touch zones
-        this.input.on("pointermove", (pointer) => {
-          if (pointer.isDown && !this.paused) {
-            this.player.x = Phaser.Math.Clamp(
-              pointer.x,
-              ROAD_LEFT + 20,
-              ROAD_LEFT + ROAD_W - 20,
-            );
-          }
-        });
-
-        // Countdown
-        this.paused = true;
-        this.doCountdown();
+        // Keyboard: 1-4 / A-D pick a choice. Bound once per scene.
+        const keyPick = (i) => {
+          const b = this.answerBtns[i];
+          if (b && b.rect && b.rect.input && b.rect.input.enabled) b.rect.emit("pointerdown");
+        };
+        ["ONE", "TWO", "THREE", "FOUR"].forEach((k, i) =>
+          this.input.keyboard.on("keydown-" + k, () => keyPick(i)),
+        );
+        ["A", "B", "C", "D"].forEach((k, i) =>
+          this.input.keyboard.on("keydown-" + k, () => keyPick(i)),
+        );
 
         this.updateHUD();
-        this.cameras.main.fadeIn(400);
+        this.cameras.main.fadeIn(300);
+        this.showCheckpointQuestion();
       };
 
-      // ── Bespoke: distant parallax layers that scroll slower than the road ──
-      // Layer 0 = farthest (horizon band + dots), Layer 1 = mid skyline silhouette.
+      // ── Decorative parallax layers (static under reduced motion) ──
       GameScene.prototype.buildParallaxBackground = function () {
         this.parallaxLayers = [];
-
-        // Far horizon glow band near the top (gives a sense of distance/sky).
         const horizonColor =
-          this.difficulty === "easy"
-            ? 0xe8b878
-            : this.difficulty === "medium"
-              ? 0x4a5a72
-              : 0x2a1a55;
+          this.difficulty === "easy" ? 0xe8b878 : this.difficulty === "medium" ? 0x4a5a72 : 0x2a1a55;
         this.add.rectangle(W / 2, 70, W, 140, horizonColor, 0.35).setDepth(0);
-
-        // Farthest layer: scattered star / city-light dots (slowest scroll).
         const farTint =
           this.difficulty === "hard"
             ? [0xffffff, 0xaaccff, 0xffeeaa]
@@ -1296,813 +1110,279 @@
               : [0xfff4d8, 0xffe0a0];
         const farDots = [];
         for (let i = 0; i < 28; i++) {
-          const d = this.add
-            .image(randInt(0, W), randInt(0, 150), "farDot")
-            .setTint(farTint[i % farTint.length])
-            .setScale(randInt(5, 11) / 10)
-            .setAlpha(randInt(35, 80) / 100)
-            .setDepth(0);
-          farDots.push(d);
+          farDots.push(
+            this.add
+              .image(randInt(0, W), randInt(0, 150), "farDot")
+              .setTint(farTint[i % farTint.length])
+              .setScale(randInt(5, 11) / 10)
+              .setAlpha(randInt(35, 80) / 100)
+              .setDepth(0),
+          );
         }
         this.parallaxLayers.push({ items: farDots, factor: 0.12, wrap: 150 });
-
-        // Mid layer: silhouette mountains (easy/hard) or building blocks (city).
         const midItems = [];
         const midColor =
-          this.difficulty === "easy"
-            ? 0xb07840
-            : this.difficulty === "medium"
-              ? 0x2c3850
-              : 0x1a0e3a;
+          this.difficulty === "easy" ? 0xb07840 : this.difficulty === "medium" ? 0x2c3850 : 0x1a0e3a;
         for (let i = 0; i < 9; i++) {
-          const bx = i * (W / 8) + randInt(-20, 20);
           const isCity = this.difficulty === "medium";
           const bw = isCity ? randInt(40, 70) : randInt(90, 150);
           const bh = isCity ? randInt(60, 150) : randInt(50, 100);
-          const by = 150 - bh / 2;
-          const shape = this.add
-            .rectangle(bx, by, bw, bh, midColor, 0.5)
-            .setDepth(0);
-          midItems.push(shape);
+          midItems.push(
+            this.add.rectangle(i * (W / 8) + randInt(-20, 20), 150 - bh / 2, bw, bh, midColor, 0.5).setDepth(0),
+          );
         }
         this.parallaxLayers.push({ items: midItems, factor: 0.28, wrap: W });
       };
 
-      // ── Bespoke: faint converging guide lines for a stronger 3D road taper ──
       GameScene.prototype.buildRoadPerspective = function () {
         const g = this.add.graphics().setDepth(1);
-        const horizonX = W / 2;
-        const horizonY = 90; // vanishing point
-        // Lane edges + center converge toward the vanishing point.
-        const xs = [
-          ROAD_LEFT,
-          ROAD_LEFT + LANE_W,
-          ROAD_LEFT + LANE_W * 2,
-          ROAD_LEFT + LANE_W * 3,
-          ROAD_LEFT + ROAD_W,
-        ];
-        g.lineStyle(2, 0xffffff, 0.08);
-        xs.forEach((x) => {
-          g.lineBetween(x, H, horizonX + (x - horizonX) * 0.18, horizonY);
+        const hx = W / 2,
+          hy = 90;
+        [0, 1, 2, 3, 4].forEach((k) => {
+          const x = ROAD_LEFT + LANE_W * k;
+          g.lineStyle(2, 0xffffff, 0.08);
+          g.lineBetween(x, H, hx + (x - hx) * 0.18, hy);
         });
-        // Subtle far-end haze that brightens the horizon for depth.
         g.fillStyle(0xffffff, 0.05);
-        g.fillTriangle(ROAD_LEFT, H, ROAD_LEFT + ROAD_W, H, horizonX, horizonY);
-        this.roadPerspective = g;
-      };
-
-      // ── Bespoke: brief tyre skid streaks on hard, fast lane changes ──
-      GameScene.prototype.spawnSkid = function (x) {
-        if (this.reducedMotion) return;
-        if (this.skidMarks.length > 16) return; // particle/object cap
-        const offsets = [-9, 9];
-        offsets.forEach((off) => {
-          const mark = this.add
-            .image(x + off, this.player.y + 6, "skid")
-            .setDepth(1)
-            .setAlpha(0.55);
-          this.skidMarks.push(mark);
-          this.tweens.add({
-            targets: mark,
-            alpha: 0,
-            duration: 700,
-            onComplete: () => {
-              const idx = this.skidMarks.indexOf(mark);
-              if (idx >= 0) this.skidMarks.splice(idx, 1);
-              mark.destroy();
-            },
-          });
-        });
-      };
-
-      GameScene.prototype.doCountdown = function () {
-        const nums = ["3", "2", "1", "GO!"];
-        const colors = ["#ff4444", "#ffaa00", "#22cc66", "#00ccff"];
-        nums.forEach((n, i) => {
-          this.time.delayedCall(i * 800, () => {
-            if (i < 3) SFX.countdown();
-            else SFX.go();
-            const txt = this.add
-              .text(W / 2, H / 2, n, {
-                fontSize: "80px",
-                fontStyle: "bold",
-                color: colors[i],
-                stroke: "#000",
-                strokeThickness: 6,
-              })
-              .setOrigin(0.5)
-              .setDepth(20);
-            this.tweens.add({
-              targets: txt,
-              scale: { from: 2, to: 0.5 },
-              alpha: { from: 1, to: 0 },
-              duration: 700,
-              onComplete: () => txt.destroy(),
-            });
-          });
-        });
-        this.time.delayedCall(3200, () => {
-          this.paused = false;
-        });
+        g.fillTriangle(ROAD_LEFT, H, ROAD_LEFT + ROAD_W, H, hx, hy);
       };
 
       GameScene.prototype.updateHUD = function () {
         this.scoreText.setText(`Score: ${this.score}`);
-        this.livesText.setText(
-          "♥".repeat(this.lives) + "♡".repeat(Math.max(0, 3 - this.lives)),
+        const n = Math.min(this.currentQ + 1, this.totalCheckpoints);
+        this.progressLabel.setText(
+          this.raceFinished ? "Trip complete!" : `Checkpoint ${n} of ${this.totalCheckpoints}`,
         );
-        this.speedText.setText(`Speed: ${Math.round(this.speed * 20)} mph`);
-
-        // Streak display
-        if (this.combo >= 2) {
-          this.streakBg.setAlpha(0.6);
-          this.streakLabel.setText(`STREAK x${this.combo}`);
-          // Scale streak counter based on combo
-          const s = Math.min(1.5, 1 + this.combo * 0.05);
-          this.streakContainer.setScale(s);
-        } else {
-          this.streakBg.setAlpha(0);
-          this.streakLabel.setText("");
-          this.streakContainer.setScale(1);
-        }
-
-        // Progress
-        const totalDist = this.checkpointInterval * this.totalCheckpoints;
-        const pct = Math.min(1, this.distance / totalDist);
-        this.progressBar.setDisplaySize((W - 100) * pct, 6);
-        this.progressLabel.setText(`${this.currentQ}/${this.totalCheckpoints}`);
+        this.streakLabel.setText(this.combo >= 2 ? `Streak x${this.combo}` : "");
+        this.flags.forEach((f, i) => {
+          f.setFillStyle(i < this.checkpointsHit ? 0x22cc66 : i === this.currentQ ? 0xffaa00 : 0x445566);
+        });
+        const x0 = 150,
+          x1 = W - 150;
+        const pos = Math.min(this.checkpointsHit, this.totalCheckpoints - 1);
+        this.mapCar.x = x0 + ((x1 - x0) * pos) / Math.max(1, this.totalCheckpoints - 1);
       };
 
-      GameScene.prototype.update = function (time, delta) {
-        if (this.paused || this.raceFinished) return;
-
-        const dt = delta / 1000;
-
-        // Road scroll
-        this.laneLines.forEach((l) => {
-          l.y += this.speed * 60 * dt;
-          if (l.y > H + 40) l.y = -40;
-        });
-        this.scenery.forEach((s) => {
-          s.y += this.speed * 40 * dt;
-          if (s.y > H + 60) {
-            s.y = -60;
-            s.x =
-              W / 2 +
-              (Math.random() < 0.5 ? -1 : 1) * (ROAD_W / 2 + randInt(30, 120));
-          }
-        });
-
-        // ── Bespoke: parallax layers drift slower than the road (depth) ──
-        // Gated by reduced-motion: stays static if the user opts out of motion.
-        if (this.parallaxLayers && !this.reducedMotion) {
-          this.parallaxLayers.forEach((layer) => {
-            const dy = this.speed * 60 * dt * layer.factor;
-            layer.items.forEach((it) => {
-              it.y += dy;
-              if (it.y > layer.wrap + 20) it.y = -20;
+      // Drive one segment of road. Pure reward animation AFTER a solved
+      // checkpoint; nothing to steer or dodge.
+      GameScene.prototype.driveSegment = function (done) {
+        if (this.reducedMotion) {
+          this.time.delayedCall(250, done);
+          return;
+        }
+        const dist = { v: 0 };
+        let last = 0;
+        SFX.engine();
+        this.tweens.add({
+          targets: dist,
+          v: 420,
+          duration: 1100,
+          ease: "Sine.easeInOut",
+          onUpdate: () => {
+            const d = dist.v - last;
+            last = dist.v;
+            this.laneLines.forEach((l) => {
+              l.y += d;
+              if (l.y > H + 40) l.y -= H + 80;
             });
-          });
-        }
-
-        // Player movement
-        const moveSpeed = 250;
-        if (this.cursors.left.isDown) {
-          this.player.x -= moveSpeed * dt;
-          this.player.angle = Phaser.Math.Linear(this.player.angle, -8, 0.1);
-        } else if (this.cursors.right.isDown) {
-          this.player.x += moveSpeed * dt;
-          this.player.angle = Phaser.Math.Linear(this.player.angle, 8, 0.1);
-        } else {
-          this.player.angle = Phaser.Math.Linear(this.player.angle, 0, 0.15);
-        }
-        if (this.cursors.up.isDown)
-          this.speed = Math.min(this.baseSpeed + 2, this.speed + 2 * dt);
-        if (this.cursors.down.isDown)
-          this.speed = Math.max(1, this.speed - 3 * dt);
-
-        this.player.x = Phaser.Math.Clamp(
-          this.player.x,
-          ROAD_LEFT + 20,
-          ROAD_LEFT + ROAD_W - 20,
-        );
-
-        // Exhaust
-        this.exhaustParticles.emitParticleAt(this.player.x, this.player.y + 25);
-
-        // ── Bespoke: car shadow follows the player and tilts with it ──
-        if (this.carShadow) {
-          this.carShadow.x = this.player.x;
-          this.carShadow.y = this.player.y + 22;
-          this.carShadow.angle = this.player.angle;
-        }
-
-        // ── Bespoke: brake-light glow intensifies when decelerating ──
-        // Detect deceleration (braking input or any speed loss this frame).
-        const decelerating =
-          this.cursors.down.isDown || this.speed < this.prevSpeed - 0.001;
-        const targetGlow = decelerating ? 1 : 0;
-        // Smoothly approach the target so the glow fades in/out, not pops.
-        this.brakeGlowLevel +=
-          (targetGlow - this.brakeGlowLevel) *
-          Math.min(1, dt * (decelerating ? 12 : 6));
-        if (this.brakeGlow) {
-          this.brakeGlow.x = this.player.x;
-          this.brakeGlow.y = this.player.y + 26;
-          this.brakeGlow.angle = this.player.angle;
-          // Reduced-motion: still show a steady brake tint, just no pulsing.
-          const pulse = this.reducedMotion
-            ? 1
-            : 0.85 + Math.sin(time * 0.02) * 0.15;
-          this.brakeGlow.setAlpha(this.brakeGlowLevel * 0.85 * pulse);
-        }
-
-        // ── Bespoke: skid marks on hard, fast swerves ──
-        const dx = this.player.x - this.prevPlayerX;
-        const swerveFast =
-          Math.abs(dx) > 2.4 && this.speed >= this.baseSpeed + 0.5;
-        if (swerveFast && time - this.lastSkidTime > 110) {
-          this.lastSkidTime = time;
-          this.spawnSkid(this.player.x);
-        }
-        // Skid marks scroll with the road so they appear to stay on the ground.
-        if (this.skidMarks && this.skidMarks.length) {
-          const sdy = this.speed * 60 * dt;
-          for (let i = this.skidMarks.length - 1; i >= 0; i--) {
-            const m = this.skidMarks[i];
-            m.y += sdy;
-            if (m.y > H + 30) {
-              m.destroy();
-              this.skidMarks.splice(i, 1);
-            }
-          }
-        }
-
-        // Track previous-frame state for next-frame deltas (visual only).
-        this.prevPlayerX = this.player.x;
-        this.prevSpeed = this.speed;
-
-        // Boost timer
-        if (this.boostTimer > 0) {
-          this.boostTimer -= dt;
-          if (this.boostTimer <= 0) {
-            this.speed = this.baseSpeed;
-          }
-        }
-
-        // Distance
-        this.distance += this.speed * 60 * dt;
-
-        // AI cars
-        this.aiCars.forEach((ai) => {
-          ai.y += (this.speed - ai.aiSpeed) * 40 * dt;
-          if (ai.y > H + 100) ai.y = -100;
-          if (ai.y < -200) ai.y = H + 50;
-          ai.aiTimer -= dt;
-          if (ai.aiTimer <= 0) {
-            ai.aiTimer = randInt(1, 3);
-            const targetX =
-              ROAD_LEFT + LANE_W + ai.aiLane * LANE_W * 2 + randInt(-20, 20);
-            this.tweens.add({
-              targets: ai,
-              x: targetX,
-              duration: 800,
-              ease: "Sine.easeInOut",
+            this.scenery.forEach((s) => {
+              s.y += d * 0.7;
+              if (s.y > H + 60) s.y -= H + 120;
             });
-          }
+            this.parallaxLayers.forEach((layer) =>
+              layer.items.forEach((it) => {
+                it.y += d * layer.factor * 0.3;
+                if (it.y > layer.wrap + 20) it.y = -20;
+              }),
+            );
+          },
+          onComplete: done,
         });
+      };
 
-        // Spawn obstacles
-        this.obstacleTimer -= dt;
-        if (this.obstacleTimer <= 0) {
-          this.obstacleTimer = randInt(2, 4);
-          const ox = ROAD_LEFT + randInt(20, ROAD_W - 20);
-          if (Math.random() < 0.3) {
-            const boost = this.boosts
-              .create(ox, -30, "speedboost")
-              .setScale(0.8);
-            boost.body.allowGravity = false;
-            boost.setVelocityY(this.speed * 50);
-          } else {
-            const obs = this.obstacles.create(ox, -30, "cone").setScale(0.9);
-            obs.body.allowGravity = false;
-            obs.setVelocityY(this.speed * 40);
-          }
-        }
+      GameScene.prototype.clearPanel = function () {
+        (this.panelElems || []).forEach((e) => e && e.destroy && e.destroy());
+        this.panelElems = [];
+      };
 
-        // Clean off-screen
-        this.obstacles.getChildren().forEach((o) => {
-          if (o.y > H + 50) o.destroy();
-        });
-        this.boosts.getChildren().forEach((b) => {
-          if (b.y > H + 50) b.destroy();
-        });
-
-        // Ambient crowd sound builds with streak
-        if (this.combo >= 3 && time - this.lastCrowdTime > 4000) {
-          this.lastCrowdTime = time;
-          SFX.crowd(this.combo);
-        }
-
-        // Streak pulse animation
-        if (this.combo >= 3 && this.streakContainer) {
-          const pulse = 1 + Math.sin(time * 0.005) * 0.05;
-          this.streakContainer.setScale(
-            Math.min(1.5, 1 + this.combo * 0.05) * pulse,
-          );
-        }
-
-        // Checkpoint check
-        if (
-          this.distance >= this.nextCheckpoint &&
-          this.currentQ < this.questions.length
-        ) {
-          this.nextCheckpoint += this.checkpointInterval;
-          this.checkpointsHit++;
-          this.paused = true;
-
-          SFX.checkpoint();
-          // Flash checkpoint
-          const banner = this.add
-            .image(W / 2, H / 2, "checkpoint")
-            .setScale(1, 6)
-            .setAlpha(0.7)
-            .setDepth(5);
-          this.tweens.add({
-            targets: banner,
-            alpha: 0,
-            duration: 800,
-            onComplete: () => banner.destroy(),
-          });
-
-          // Phase transition animation
-          this.cpText
-            .setText(`CHECKPOINT ${this.checkpointsHit}`)
-            .setAlpha(1)
-            .setY(H / 2);
-          this.tweens.add({
-            targets: this.cpText,
-            alpha: 0,
-            y: H / 2 - 40,
-            scaleX: { from: 1.3, to: 1 },
-            scaleY: { from: 1.3, to: 1 },
-            duration: 800,
-          });
-
-          this.time.delayedCall(600, () => {
-            this.showCheckpointQuestion();
-          });
-        }
-
-        // Race finish
-        const totalDist = this.checkpointInterval * this.totalCheckpoints;
-        if (
-          this.distance >= totalDist &&
-          this.currentQ >= this.questions.length &&
-          !this.raceFinished
-        ) {
-          this.raceFinished = true;
-          SFX.win();
-          // Finish line confetti
-          for (let i = 0; i < 5; i++) {
-            this.time.delayedCall(i * 200, () => {
-              this.confettiEmitter.emitParticleAt(
-                randInt(100, W - 100),
-                randInt(100, 300),
-              );
-            });
-          }
-          this.time.delayedCall(1500, () => {
-            this.scene.start("Results", {
-              score: this.score,
-              maxCombo: this.maxCombo,
-              lives: this.lives,
-              totalCorrect: this.totalCorrect,
-              totalWrong: this.totalWrong,
-              difficulty: this.difficulty,
-              checkpointsHit: this.checkpointsHit,
-            });
-          });
-        }
-
-        // Engine sound (throttled)
-        if (Math.random() < 0.02) SFX.engine();
-
-        this.updateHUD();
+      GameScene.prototype.say = function (text) {
+        const rrSr = document.getElementById("rr-sr");
+        if (rrSr) rrSr.textContent = text;
       };
 
       GameScene.prototype.showCheckpointQuestion = function () {
         const q = this.questions[this.currentQ];
-        if (!q) {
-          this.paused = false;
-          return;
-        }
-
+        if (!q) return this.finishTrip();
+        this.clearPanel();
+        this.paused = true;
+        this.tries = 0;
         this.questionStartTime = Date.now();
+        this.skillSeen[q.type] = true;
+        // Mirror into the live region (screen readers + shared hint ladder).
+        this.say(`Checkpoint question ${this.currentQ + 1} of ${this.totalCheckpoints}: ${q.prompt}`);
 
-        // Mirror the question into the hidden live region (assistive tech +
-        // shared hint ladder). Additive: never touches gameplay/scoring.
-        const rrSr = document.getElementById("rr-sr");
-        if (rrSr) rrSr.textContent = `Checkpoint question: ${q.prompt}`;
+        const E = this.panelElems;
+        const cy = 300;
+        E.push(this.add.rectangle(W / 2, cy, 640, 400, 0x0d1b33, 0.94).setStrokeStyle(3, 0x00ccff).setDepth(16));
+        E.push(
+          this.add
+            .text(W / 2, cy - 172, `CHECKPOINT ${this.currentQ + 1} OF ${this.totalCheckpoints}  ·  ${SKILLS[q.type]}`, {
+              fontSize: "16px",
+              color: "#7fe0ff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(17),
+        );
+        E.push(
+          this.add
+            .text(W / 2, cy - 112, q.prompt, {
+              fontSize: "24px",
+              color: "#ffffff",
+              fontStyle: "bold",
+              wordWrap: { width: 580 },
+              align: "center",
+            })
+            .setOrigin(0.5)
+            .setDepth(17),
+        );
+        E.push(
+          this.add
+            .text(W / 2, cy - 58, "Take your time. Solve it to drive to the next checkpoint.", {
+              fontSize: "15px",
+              color: "#a8e6c8",
+            })
+            .setOrigin(0.5)
+            .setDepth(17),
+        );
 
-        // Overlay
-        const overlay = this.add
-          .rectangle(W / 2, H / 2, W, H, 0x000000, 0.75)
-          .setDepth(15);
-        const panel = this.add
-          .rectangle(W / 2, H / 2, 550, 360, 0x1a2a4a, 0.95)
-          .setStrokeStyle(3, 0x00ccff)
-          .setDepth(16);
-
-        // Panel entrance animation
-        panel.setScale(0.8);
-        this.tweens.add({
-          targets: panel,
-          scaleX: 1,
-          scaleY: 1,
-          duration: 250,
-          ease: "Back.easeOut",
+        this.answerBtns = [];
+        q.choices.forEach((c, i) => {
+          const x = W / 2 - 225 + i * 150;
+          const y = cy + 6;
+          // 105×55 is the size the shared mission panel looks for to mirror
+          // these choices as real DOM buttons — keep it.
+          const rect = this.add
+            .rectangle(x, y, 105, 55, 0x224466)
+            .setStrokeStyle(2, 0x6fa8dc)
+            .setInteractive({ useHandCursor: true })
+            .setDepth(17);
+          const key = this.add
+            .text(x - 46, y - 24, String(i + 1), { fontSize: "13px", color: "#9fc3e6" })
+            .setDepth(18);
+          const val = this.add
+            .text(x, y + 2, c, { fontSize: "21px", color: "#fff", fontStyle: "bold" })
+            .setOrigin(0.5)
+            .setDepth(18);
+          E.push(rect, key, val);
+          const entry = { rect, val, eliminated: false };
+          this.answerBtns.push(entry);
+          rect.on("pointerover", () => {
+            if (!entry.eliminated) rect.setFillStyle(0x336688);
+          });
+          rect.on("pointerout", () => {
+            if (!entry.eliminated) rect.setFillStyle(0x224466);
+          });
+          rect.on("pointerdown", () => this.pickChoice(i));
         });
 
-        const pText = this.add
-          .text(W / 2, H / 2 - 140, "CHECKPOINT CHALLENGE", {
-            fontSize: "20px",
-            color: "#00ccff",
+        this.fbText = this.add
+          .text(W / 2, cy + 64, "", {
+            fontSize: "17px",
+            color: "#ffd27a",
             fontStyle: "bold",
-          })
-          .setOrigin(0.5)
-          .setDepth(17);
-        const qText = this.add
-          .text(W / 2, H / 2 - 85, q.prompt, {
-            fontSize: "20px",
-            color: "#ffffff",
-            fontStyle: "bold",
-            wordWrap: { width: 480 },
+            wordWrap: { width: 590 },
             align: "center",
           })
-          .setOrigin(0.5)
+          .setOrigin(0.5, 0)
           .setDepth(17);
-
-        // Calm reminder — no time pressure
-        const speedInd = this.add
-          .text(W / 2, H / 2 - 50, "Take your time — think it through.", {
-            fontSize: "11px",
-            color: "#88ccaa",
-          })
-          .setOrigin(0.5)
-          .setDepth(17);
-
-        const elems = [overlay, panel, pText, qText, speedInd];
-        const btns = [];
-        const allBtnElems = [];
-
-        // Determine active choices (for 50/50)
-        let activeIndices = [0, 1, 2, 3];
-
-        q.choices.forEach((c, i) => {
-          const x = W / 2 - 180 + i * 120;
-          const y = H / 2 + 20;
-          const btn = this.add
-            .rectangle(x, y, 105, 55, 0x224466)
-            .setInteractive({ useHandCursor: true })
-            .setDepth(17);
-          const txt = this.add
-            .text(x, y - 8, String.fromCharCode(65 + i), {
-              fontSize: "12px",
-              color: "#88aacc",
-            })
-            .setOrigin(0.5)
-            .setDepth(17);
-          const val = this.add
-            .text(x, y + 10, c, {
-              fontSize: "16px",
-              color: "#fff",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5)
-            .setDepth(17);
-          elems.push(btn, txt, val);
-          btns.push(btn);
-          allBtnElems.push({ btn, txt, val });
-
-          // Hover effects
-          btn.on("pointerover", () => {
-            btn.setFillStyle(0x336688);
-            this.tweens.add({
-              targets: [btn, txt, val],
-              scaleX: 1.08,
-              scaleY: 1.08,
-              duration: 80,
-            });
-          });
-          btn.on("pointerout", () => {
-            btn.setFillStyle(0x224466);
-            btn.setScale(1);
-            txt.setScale(1);
-            val.setScale(1);
-          });
-          btn.on("pointerdown", () => {
-            btns.forEach((b) => b.disableInteractive());
-
-            const isCorrect = c === q.answer;
-            document.dispatchEvent(new CustomEvent("flagship:answer", {detail:{correct:isCorrect,message:isCorrect ? "Ratio checkpoint cleared." : "Compare the quantities using the same scale factor."}}));
-
-            if (isCorrect) {
-              SFX.correct();
-              this.combo++;
-              if (this.combo > this.maxCombo) this.maxCombo = this.combo;
-              this.totalCorrect++;
-
-              let pts = 150 + this.combo * 25;
-              if (this.doublePointsActive) {
-                pts *= 2;
-                this.doublePointsActive = false;
-              }
-              this.score += pts;
-              this.speed = Math.min(this.baseSpeed + 2, this.speed + 1);
-
-              btn.setFillStyle(0x22cc66);
-
-              // Screen shake scales with streak
-              const shakeIntensity = Math.min(
-                0.025,
-                0.005 + this.combo * 0.003,
-              );
-              this.cameras.main.shake(150, shakeIntensity);
-
-              // Confetti burst
-              this.confettiEmitter.emitParticleAt(W / 2, H / 2);
-
-              // Floating score text
-              const scoreLabel = `+${pts}`;
-              const floatTxt = this.add
-                .text(W / 2, H / 2 - 20, scoreLabel, {
-                  fontSize: "28px",
-                  color: "#ffdd00",
-                  fontStyle: "bold",
-                  stroke: "#000",
-                  strokeThickness: 3,
-                })
-                .setOrigin(0.5)
-                .setDepth(18);
-              this.tweens.add({
-                targets: floatTxt,
-                y: floatTxt.y - 60,
-                alpha: 0,
-                scaleX: 1.3,
-                scaleY: 1.3,
-                duration: 900,
-                onComplete: () => floatTxt.destroy(),
-              });
-
-              // Streak milestone effects
-              if (this.combo === 3) {
-                SFX.streak3();
-                this.showStreakMilestone("STREAK x3!", 0xff8800);
-              } else if (this.combo === 5) {
-                SFX.streak5();
-                this.showStreakMilestone("STREAK x5!!", 0xff4400);
-                this.sparkleEmitter.emitParticleAt(W / 2, H / 2);
-              } else if (this.combo === 7) {
-                SFX.streak7();
-                this.showStreakMilestone("STREAK x7!!!", 0xff0000);
-                this.sparkleEmitter.emitParticleAt(W / 2, H / 2 - 40);
-                this.sparkleEmitter.emitParticleAt(W / 2, H / 2 + 40);
-              } else if (this.combo >= 10) {
-                SFX.streak7();
-                this.showStreakMilestone(
-                  `UNSTOPPABLE x${this.combo}!`,
-                  0xaa00ff,
-                );
-                this.sparkleEmitter.emitParticleAt(W / 2, H / 2);
-              }
-
-              const fb = this.add
-                .text(W / 2, H / 2 + 110, `Correct! +${pts} — Speed Boost!`, {
-                  fontSize: "20px",
-                  color: "#22cc66",
-                  fontStyle: "bold",
-                  stroke: "#000",
-                  strokeThickness: 2,
-                })
-                .setOrigin(0.5)
-                .setDepth(17);
-              elems.push(fb, floatTxt);
-            } else {
-              SFX.wrong();
-              this.combo = 0;
-              this.streakLabel.setText("");
-              this.streakBg.setAlpha(0);
-              this.totalWrong++;
-              this.lives--;
-              this.speed = Math.max(1, this.speed - 0.5);
-
-              btn.setFillStyle(0xff3333);
-              const ci = q.choices.indexOf(q.answer);
-              if (ci >= 0) btns[ci].setFillStyle(0x22cc66);
-
-              // Red flash overlay
-              const redFlash = this.add
-                .rectangle(W / 2, H / 2, W, H, 0xff0000, 0.3)
-                .setDepth(14);
-              this.tweens.add({
-                targets: redFlash,
-                alpha: 0,
-                duration: 400,
-                onComplete: () => redFlash.destroy(),
-              });
-
-              // Gentle camera nudge for wrong
-              this.cameras.main.shake(200, 0.01);
-
-              const fb = this.add
-                .text(W / 2, H / 2 + 110, `Wrong! Answer: ${q.answer}`, {
-                  fontSize: "20px",
-                  color: "#ff4444",
-                  fontStyle: "bold",
-                  stroke: "#000",
-                  strokeThickness: 2,
-                })
-                .setOrigin(0.5)
-                .setDepth(17);
-              elems.push(fb, redFlash);
-
-              if (this.lives <= 0) {
-                // No-fail: refill hearts and keep racing to the finish.
-                this.lives = 3;
-                const refill = this.add
-                  .text(W / 2, H / 2 + 145, "♥ Refilled — keep going!", {
-                    fontSize: "18px",
-                    color: "#22cc66",
-                    fontStyle: "bold",
-                    stroke: "#000",
-                    strokeThickness: 2,
-                  })
-                  .setOrigin(0.5)
-                  .setDepth(17);
-                elems.push(refill);
-              }
-            }
-
-            this.currentQ++;
-            this.updateHUD();
-
-            this.time.delayedCall(1200, () => {
-              elems.forEach((e) => {
-                if (e && e.destroy) e.destroy();
-              });
-              this.paused = false;
-            });
-          });
-        });
-
-        // Power-up buttons
-        const puY = H / 2 + 85;
-        const puElems = [];
-
-        // 50/50
-        if (this.powerups.fiftyFifty > 0) {
-          const pu5050 = this.add
-            .rectangle(W / 2 - 120, puY, 100, 32, 0x664488)
-            .setInteractive({ useHandCursor: true })
-            .setDepth(17);
-          const pu5050T = this.add
-            .text(W / 2 - 120, puY, "50/50", {
-              fontSize: "13px",
-              color: "#ddaaff",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5)
-            .setDepth(17);
-          elems.push(pu5050, pu5050T);
-
-          pu5050.on("pointerover", () => {
-            pu5050.setFillStyle(0x8866aa);
-            this.tweens.add({
-              targets: pu5050,
-              scaleX: 1.05,
-              scaleY: 1.05,
-              duration: 80,
-            });
-          });
-          pu5050.on("pointerout", () => {
-            pu5050.setFillStyle(0x664488);
-            pu5050.setScale(1);
-          });
-          pu5050.on("pointerdown", () => {
-            if (this.powerups.fiftyFifty <= 0) return;
-            this.powerups.fiftyFifty--;
-            SFX.powerUp();
-            pu5050.disableInteractive();
-            pu5050.setAlpha(0.3);
-            // Remove 2 wrong answers
-            let removed = 0;
-            q.choices.forEach((c, i) => {
-              if (c !== q.answer && removed < 2) {
-                allBtnElems[i].btn.setAlpha(0.2);
-                allBtnElems[i].btn.disableInteractive();
-                allBtnElems[i].val.setAlpha(0.2);
-                allBtnElems[i].txt.setAlpha(0.2);
-                removed++;
-              }
-            });
-          });
-        }
-
-        // Double Points
-        if (this.powerups.doublePoints > 0) {
-          const puDbl = this.add
-            .rectangle(W / 2, puY, 100, 32, 0x448866)
-            .setInteractive({ useHandCursor: true })
-            .setDepth(17);
-          const puDblT = this.add
-            .text(W / 2, puY, "2x PTS", {
-              fontSize: "13px",
-              color: "#aaffcc",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5)
-            .setDepth(17);
-          elems.push(puDbl, puDblT);
-
-          puDbl.on("pointerover", () => {
-            puDbl.setFillStyle(0x66aa88);
-            this.tweens.add({
-              targets: puDbl,
-              scaleX: 1.05,
-              scaleY: 1.05,
-              duration: 80,
-            });
-          });
-          puDbl.on("pointerout", () => {
-            puDbl.setFillStyle(0x448866);
-            puDbl.setScale(1);
-          });
-          puDbl.on("pointerdown", () => {
-            if (this.powerups.doublePoints <= 0) return;
-            this.powerups.doublePoints--;
-            SFX.powerUp();
-            this.doublePointsActive = true;
-            puDbl.disableInteractive();
-            puDbl.setAlpha(0.3);
-            // Visual indicator
-            const dblTxt = this.add
-              .text(W / 2, H / 2 - 30, "DOUBLE POINTS ACTIVE!", {
-                fontSize: "16px",
-                color: "#aaffcc",
-                fontStyle: "bold",
-                stroke: "#000",
-                strokeThickness: 2,
-              })
-              .setOrigin(0.5)
-              .setDepth(18);
-            this.tweens.add({
-              targets: dblTxt,
-              y: dblTxt.y - 30,
-              alpha: 0,
-              duration: 1000,
-              onComplete: () => dblTxt.destroy(),
-            });
-            elems.push(dblTxt);
-          });
-        }
-
-        // Keyboard 1-4
-        const keyHandler = (idx) => {
-          if (idx < q.choices.length) {
-            btns[idx].emit("pointerdown");
-            this.input.keyboard.off("keydown-ONE");
-            this.input.keyboard.off("keydown-TWO");
-            this.input.keyboard.off("keydown-THREE");
-            this.input.keyboard.off("keydown-FOUR");
-          }
-        };
-        this.input.keyboard.once("keydown-ONE", () => keyHandler(0));
-        this.input.keyboard.once("keydown-TWO", () => keyHandler(1));
-        this.input.keyboard.once("keydown-THREE", () => keyHandler(2));
-        this.input.keyboard.once("keydown-FOUR", () => keyHandler(3));
+        E.push(this.fbText);
+        this.updateHUD();
       };
 
-      GameScene.prototype.showStreakMilestone = function (text, color) {
-        const milestone = this.add
-          .text(W / 2, H / 2 - 60, text, {
-            fontSize: "32px",
-            fontStyle: "bold",
-            color: "#" + color.toString(16).padStart(6, "0"),
-            stroke: "#000",
-            strokeThickness: 4,
-          })
-          .setOrigin(0.5)
-          .setDepth(19);
-        this.tweens.add({
-          targets: milestone,
-          y: milestone.y - 50,
-          scaleX: { from: 0.5, to: 1.5 },
-          scaleY: { from: 0.5, to: 1.5 },
-          alpha: { from: 1, to: 0 },
-          duration: 1200,
-          ease: "Cubic.easeOut",
-          onComplete: () => milestone.destroy(),
+      GameScene.prototype.pickChoice = function (i) {
+        const q = this.questions[this.currentQ];
+        const entry = this.answerBtns[i];
+        if (!q || !entry || entry.eliminated || this.locked) return;
+        const c = q.choices[i];
+        const isCorrect = c === q.answer;
+        if (isCorrect) {
+          this.locked = true;
+          const pts = POINTS[Math.min(this.tries, POINTS.length - 1)];
+          this.score += pts;
+          if (this.tries === 0) {
+            this.totalCorrect++;
+            this.combo++;
+            this.maxCombo = Math.max(this.maxCombo, this.combo);
+          } else {
+            this.helped++;
+          }
+          this.checkpointsHit++;
+          SFX.correct();
+          entry.rect.setFillStyle(0x1f9d55);
+          this.answerBtns.forEach((b) => b.rect.disableInteractive());
+          const msg =
+            (this.tries === 0 ? `Correct! +${pts}. ` : `You got it! +${pts}. `) + q.explain;
+          this.fbText.setColor("#7dffb0").setText(msg);
+          document.dispatchEvent(new CustomEvent("flagship:answer", { detail: { correct: true, message: msg } }));
+          this.say(msg);
+          this.confettiEmitter.emitParticleAt(entry.rect.x, entry.rect.y);
+          if (this.combo === 3) SFX.streak3();
+          else if (this.combo === 5) SFX.streak5();
+          this.updateHUD();
+          // Let the explanation be read, then drive one road segment.
+          this.time.delayedCall(1600, () => {
+            this.clearPanel();
+            SFX.checkpoint();
+            this.driveSegment(() => {
+              this.locked = false;
+              this.currentQ++;
+              if (this.currentQ >= this.questions.length) this.finishTrip();
+              else this.showCheckpointQuestion();
+            });
+          });
+          return;
+        }
+        // Wrong try: eliminate the choice and coach. No penalty but fewer points.
+        this.tries++;
+        this.totalWrong++;
+        this.combo = 0;
+        this.skillMiss[q.type] = (this.skillMiss[q.type] || 0) + 1;
+        entry.eliminated = true;
+        entry.rect.setFillStyle(0x5a2330).disableInteractive();
+        entry.val.setAlpha(0.45);
+        SFX.wrong();
+        const why = q.wrong[c] || "Not quite.";
+        let msg;
+        if (this.tries === 1) msg = `${why}  Hint: ${q.hint1}`;
+        else if (this.tries === 2) msg = `${why}  Step: ${q.hint2}`;
+        else msg = `${why}  Here is how: ${q.explain} Tap ${q.answer} to drive on.`;
+        this.fbText.setColor("#ffd27a").setText(msg);
+        document.dispatchEvent(new CustomEvent("flagship:answer", { detail: { correct: false, message: msg } }));
+        this.say(msg);
+        this.updateHUD();
+      };
+
+      GameScene.prototype.finishTrip = function () {
+        if (this.raceFinished) return;
+        this.raceFinished = true;
+        this.paused = false;
+        this.clearPanel();
+        this.updateHUD();
+        SFX.win();
+        this.time.delayedCall(this.reducedMotion ? 200 : 900, () => {
+          this.scene.start("Results", {
+            score: this.score,
+            maxCombo: this.maxCombo,
+            totalCorrect: this.totalCorrect,
+            helped: this.helped,
+            totalWrong: this.totalWrong,
+            questions: this.totalCheckpoints,
+            difficulty: this.difficulty,
+            checkpointsHit: this.checkpointsHit,
+            skillMiss: this.skillMiss,
+            skillSeen: Object.keys(this.skillSeen).map(Number),
+          });
         });
       };
 
@@ -2118,10 +1398,11 @@
       ResultScene.prototype.create = function () {
         const cx = W / 2,
           d = this.d;
+        const reduced = gfxReducedMotion();
         this.add.rectangle(cx, H / 2, W, H, 0x0a1628);
-
-        const pct =
-          (d.totalCorrect / Math.max(1, d.totalCorrect + d.totalWrong)) * 100;
+        const total = Math.max(1, d.questions || d.totalCorrect + d.helped);
+        // Accuracy = checkpoints solved on the first try, without help.
+        const pct = (d.totalCorrect / total) * 100;
         const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
 
         try {
@@ -2129,44 +1410,43 @@
             EduPulse.record({
               activityTitle: document.title,
               score: d.totalCorrect,
-              maxScore: d.totalCorrect + d.totalWrong,
+              maxScore: total,
               stars: stars,
               problemsCorrect: d.totalCorrect,
-              problemsAttempted: d.totalCorrect + d.totalWrong,
+              problemsAttempted: total,
               percent: Math.round(pct),
             });
         } catch (e) {}
 
-        // Check high score
-        const prevHigh = parseInt(localStorage.getItem(LS_KEY) || "0");
+        let prevHigh = 0;
+        try {
+          prevHigh = parseInt(localStorage.getItem(LS_KEY) || "0", 10) || 0;
+        } catch (e) {}
         const isNewHighScore = d.score > prevHigh;
         if (isNewHighScore) {
-          localStorage.setItem(LS_KEY, String(d.score));
+          try {
+            localStorage.setItem(LS_KEY, String(d.score));
+          } catch (e) {}
         }
-
         if (stars === 3) SFX.winElaborate();
         else SFX.win();
 
-        // Victory confetti
-        for (let i = 0; i < 8; i++) {
-          this.time.delayedCall(i * 250, () => {
-            const p = this.add.particles(0, 0, "confetti", {
-              speed: { min: 60, max: 250 },
-              scale: { start: 1.5, end: 0 },
-              lifespan: 900,
-              quantity: 15,
-              tint: [0x00ccff, 0xff8800, 0x22cc66, 0xff4488, 0xffdd00],
-              angle: { min: 0, max: 360 },
-              rotate: { min: 0, max: 360 },
-              gravityY: 150,
-            });
-            p.emitParticleAt(randInt(100, W - 100), randInt(50, 200));
-            this.time.delayedCall(1000, () => p.destroy());
+        if (!reduced) {
+          const p = this.add.particles(0, 0, "confetti", {
+            speed: { min: 60, max: 220 },
+            scale: { start: 1.4, end: 0 },
+            lifespan: 900,
+            quantity: 30,
+            emitting: false,
+            tint: [0x00ccff, 0xff8800, 0x22cc66, 0xff4488, 0xffdd00],
+            angle: { min: 0, max: 360 },
+            gravityY: 150,
           });
+          p.emitParticleAt(cx, 120);
         }
 
         this.add
-          .text(cx, 30, "RACE COMPLETE!", {
+          .text(cx, 34, "TRIP COMPLETE!", {
             fontSize: "40px",
             fontStyle: "bold",
             color: "#22cc66",
@@ -2175,185 +1455,80 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 68, "You crossed the finish line!", {
-            fontSize: "16px",
-            color: "#88aacc",
-          })
+          .text(cx, 72, `You reached all ${d.checkpointsHit} checkpoints.`, { fontSize: "18px", color: "#b8d4ee" })
           .setOrigin(0.5);
-
-        // Star rating with animated fill
-        const starY = 100;
         for (let i = 0; i < 3; i++) {
-          const sx = cx - 50 + i * 50;
-          // Empty star first
-          this.add.image(sx, starY, "emptystar").setScale(1.5).setDepth(1);
-          if (i < stars) {
-            this.time.delayedCall(500 + i * 400, () => {
-              const filledStar = this.add
-                .image(sx, starY, "bigstar")
-                .setScale(0)
-                .setDepth(2);
-              this.tweens.add({
-                targets: filledStar,
-                scaleX: 1.5,
-                scaleY: 1.5,
-                duration: 400,
-                ease: "Back.easeOut",
-              });
-              // Star sparkle
-              const sparkle = this.add.particles(0, 0, "spark", {
-                speed: { min: 30, max: 80 },
-                scale: { start: 1, end: 0 },
-                lifespan: 400,
-                quantity: 8,
-                tint: [0xffdd00, 0xffaa00],
-              });
-              sparkle.emitParticleAt(sx, starY);
-              this.time.delayedCall(500, () => sparkle.destroy());
-              SFX.checkpoint();
-            });
-          }
+          this.add.image(cx - 50 + i * 50, 108, i < stars ? "bigstar" : "emptystar").setScale(1.2);
         }
-
-        // New High Score banner
         if (isNewHighScore && d.score > 0) {
           SFX.newRecord();
-          const nhs = this.add
-            .text(cx, 135, "NEW HIGH SCORE!", {
-              fontSize: "24px",
-              fontStyle: "bold",
-              color: "#ffdd00",
-              stroke: "#664400",
-              strokeThickness: 3,
-            })
-            .setOrigin(0.5);
-          this.tweens.add({
-            targets: nhs,
-            scaleX: { from: 1, to: 1.15 },
-            scaleY: { from: 1, to: 1.15 },
-            duration: 500,
-            yoyo: true,
-            repeat: -1,
-          });
-        }
-
-        // Podium-style display
-        const carY = isNewHighScore ? 165 : 150;
-        const car = this.add.image(cx, carY, "car_player").setScale(2);
-        this.tweens.add({
-          targets: car,
-          angle: { from: -5, to: 5 },
-          duration: 1000,
-          yoyo: true,
-          repeat: -1,
-        });
-
-        const statsStartY = carY + 40;
-        const stats = [
-          { label: "Final Score", val: String(d.score), color: "#00ccff" },
-          {
-            label: "Checkpoints",
-            val: `${d.checkpointsHit}`,
-            color: "#ff8800",
-          },
-          { label: "Correct", val: String(d.totalCorrect), color: "#22cc66" },
-          { label: "Wrong", val: String(d.totalWrong), color: "#ff4444" },
-          { label: "Max Streak", val: `x${d.maxCombo}`, color: "#ffdd00" },
-          { label: "Track", val: d.difficulty.toUpperCase(), color: "#aaccff" },
-        ];
-        if (prevHigh > 0 && !isNewHighScore) {
-          stats.push({
-            label: "Personal Best",
-            val: String(prevHigh),
-            color: "#ffdd00",
-          });
-        }
-        stats.forEach((s, i) => {
-          const y = statsStartY + i * 42;
-          this.add.rectangle(cx, y, 380, 34, 0x1a2a4a, 0.8);
           this.add
-            .text(cx - 160, y, s.label, { fontSize: "15px", color: "#6688aa" })
-            .setOrigin(0, 0.5);
-          const v = this.add
-            .text(cx + 160, y, s.val, {
-              fontSize: "18px",
-              fontStyle: "bold",
-              color: s.color,
-            })
-            .setOrigin(1, 0.5)
-            .setAlpha(0);
-          this.tweens.add({
-            targets: v,
-            alpha: 1,
-            x: { from: cx + 200, to: cx + 160 },
-            duration: 350,
-            delay: i * 120,
-          });
+            .text(cx, 140, "NEW PERSONAL BEST!", { fontSize: "20px", fontStyle: "bold", color: "#ffdd00" })
+            .setOrigin(0.5);
+        }
+
+        const stats = [
+          ["Score", String(d.score), "#7fe0ff"],
+          ["First-try correct", `${d.totalCorrect} of ${total} (${Math.round(pct)}%)`, "#22cc66"],
+          ["Solved with coaching", String(d.helped), "#ffb347"],
+          ["Best streak", `x${d.maxCombo}`, "#ffdd00"],
+          ["Personal best", String(Math.max(prevHigh, d.score)), "#ffdd00"],
+        ];
+        stats.forEach((s, i) => {
+          const y = 172 + i * 36;
+          this.add.rectangle(cx, y, 460, 30, 0x1a2a4a, 0.9);
+          this.add.text(cx - 215, y, s[0], { fontSize: "16px", color: "#b8d4ee" }).setOrigin(0, 0.5);
+          this.add.text(cx + 215, y, s[1], { fontSize: "17px", fontStyle: "bold", color: s[2] }).setOrigin(1, 0.5);
         });
 
-        const gradeY = statsStartY + stats.length * 42 + 18;
-        const cheer =
-          pct >= 90
-            ? "Superstar racing!"
-            : pct >= 70
-              ? "Great driving — strong math!"
-              : pct >= 50
-                ? "Good effort — keep practicing!"
-                : "Every lap makes you stronger!";
+        // Skills practiced + what to practice next
+        const seen = (d.skillSeen || []).map((t) => SKILLS[t]).filter(Boolean);
         this.add
-          .text(cx, gradeY, cheer, {
-            fontSize: "26px",
-            fontStyle: "bold",
-            color: "#22cc66",
-            stroke: "#000",
-            strokeThickness: 3,
-          })
-          .setOrigin(0.5);
-        this.add
-          .text(cx, gradeY + 34, `${Math.round(pct)}% Accuracy`, {
+          .text(cx, 360, "Skills practiced: " + seen.join(" · "), {
             fontSize: "15px",
-            color: "#88aacc",
+            color: "#d6e6f5",
+            wordWrap: { width: 680 },
+            align: "center",
           })
-          .setOrigin(0.5);
-
-        const btnY = Math.min(575, gradeY + 70);
-        const retry = this.add
-          .rectangle(cx - 100, btnY, 170, 44, 0x00ccff)
-          .setInteractive({ useHandCursor: true });
+          .setOrigin(0.5, 0);
+        const miss = d.skillMiss || {};
+        const worst = Object.keys(miss).sort((a, b) => miss[b] - miss[a])[0];
+        const next =
+          worst != null
+            ? `Practice next: ${SKILLS[worst]} (${miss[worst]} wrong ${miss[worst] === 1 ? "try" : "tries"}). Replay this track for new numbers.`
+            : d.difficulty === "hard"
+              ? "Practice next: you are ready for the Unit 3 project. Great work!"
+              : "Practice next: try a harder track for new kinds of ratio problems.";
         this.add
-          .text(cx - 100, btnY, "RACE AGAIN", {
+          .text(cx, 410, next, {
             fontSize: "17px",
             fontStyle: "bold",
-            color: "#002244",
+            color: "#ffd27a",
+            wordWrap: { width: 680 },
+            align: "center",
           })
-          .setOrigin(0.5);
-        retry.on("pointerover", () => retry.setFillStyle(0x44ddff));
-        retry.on("pointerout", () => retry.setFillStyle(0x00ccff));
-        retry.on("pointerdown", () => {
-          this.cameras.main.fadeOut(300);
-          this.time.delayedCall(300, () =>
-            this.scene.start("Game", { difficulty: d.difficulty }),
-          );
-        });
+          .setOrigin(0.5, 0);
+        const summary = `Trip complete. Score ${d.score}. First-try correct ${d.totalCorrect} of ${total}. ${next}`;
+        const rrSr = document.getElementById("rr-sr");
+        if (rrSr) rrSr.textContent = summary;
 
-        const menu = this.add
-          .rectangle(cx + 100, btnY, 170, 44, 0x1a2a4a)
-          .setInteractive({ useHandCursor: true });
+        const btnY = 520;
+        const mk = (x, label, fill, color, fn) => {
+          const r = this.add.rectangle(x, btnY, 230, 52, fill).setInteractive({ useHandCursor: true });
+          this.add.text(x, btnY, label, { fontSize: "18px", fontStyle: "bold", color }).setOrigin(0.5);
+          r.on("pointerdown", fn);
+          return r;
+        };
+        const again = () => this.scene.start("Game", { difficulty: d.difficulty });
+        const menu = () => this.scene.start("DiffSelect");
+        mk(cx - 125, "DRIVE AGAIN (Enter)", 0x00ccff, "#002244", again);
+        mk(cx + 125, "CHOOSE TRACK (T)", 0x2a3a5a, "#d6e6f5", menu);
         this.add
-          .text(cx + 100, btnY, "MAIN MENU", {
-            fontSize: "17px",
-            fontStyle: "bold",
-            color: "#88aacc",
-          })
+          .text(cx, 566, "New numbers every trip.", { fontSize: "14px", color: "#9fb6cc" })
           .setOrigin(0.5);
-        menu.on("pointerover", () => menu.setFillStyle(0x2a3a5a));
-        menu.on("pointerout", () => menu.setFillStyle(0x1a2a4a));
-        menu.on("pointerdown", () => {
-          this.cameras.main.fadeOut(300);
-          this.time.delayedCall(300, () => this.scene.start("Title"));
-        });
-
-        this.cameras.main.fadeIn(600);
+        this.input.keyboard.once("keydown-ENTER", again);
+        this.input.keyboard.once("keydown-T", menu);
+        this.cameras.main.fadeIn(300);
       };
 
       var rrGame = window.__flagshipGame = new Phaser.Game(config);
@@ -2364,7 +1539,7 @@
           c.setAttribute("role", "application");
           c.setAttribute(
             "aria-label",
-            "Ratio Rally: a ratios, rates, and unit-rate racing game. Use the on-screen controls or keyboard to play.",
+            "Ratio Rally: a calm road-trip game about ratios, rates, and unit rates. Press 1 to 4 to choose an answer, or use the answer buttons above the game.",
           );
           c.setAttribute("tabindex", "0");
           c.addEventListener("pointerdown", function () {
@@ -2413,7 +1588,7 @@
       </div>
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
-<script src="/assets/game-studio.js?v=20261002" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261002" defer></script>
+<script src="/assets/game-studio.js?v=20261003" defer></script>
+<script src="/math/games/shared/flagship-studio.js?v=20261003" defer></script>
 </body>
 </html>

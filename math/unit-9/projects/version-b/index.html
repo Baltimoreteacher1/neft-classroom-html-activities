@@ -834,6 +834,7 @@
     <meta name="nt-project-reveal-unit" content="7" />
     <link rel="stylesheet" href="/shared/projects/projects-meta.css?v=20260727-v2" />
     <!-- projects-meta-injected:end -->
+  <script src="/shared/projects/projects-notify.js?v=20261004" defer></script>
 </head>
   <body class="level-1 pro-projects declutter-projects" id="body">
     <!-- ====== HERO ====== -->
@@ -3554,7 +3555,7 @@
         const txt = document.getElementById("reportBox").textContent;
         navigator.clipboard
           ?.writeText(txt)
-          .then(() => alert(isEs ? "¡Copiado al portapapeles!" : "Copied to clipboard!"));
+          .then(() => NTNotify.toast(isEs ? "¡Copiado al portapapeles!" : "Copied to clipboard!"));
       }
 
       function downloadTxt() {

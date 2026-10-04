@@ -244,7 +244,7 @@ function addVocabularyTriggers(app, words, dialog) {
 // Measured before changing it: across 7 lessons, 176 hint paragraphs contained a
 // vocabulary term and only 43 carried a trigger — 133 missed, 76%. "It is
 // defined two lines above" did not hold. Scoping the budget to the hint keeps
-// the same 2-per-term rule (a hint is one or two sentences, so it rarely reaches
+// the same per-term rule (a hint is one or two sentences, so it rarely reaches
 // it) while making the definition reachable exactly where a stuck student is
 // looking.
 let hintScopeSeq = 0;
@@ -302,7 +302,9 @@ function annotateWithin(root, { pattern, byTerm, counts, dialog }) {
       const countKey = `${sectionId}:${word?.term}`;
       const count = counts.get(countKey) || 0;
       const termStart = match.index + match[1].length;
-      if (!word || count >= 2) continue;
+      // First use per section only: a term underlined every time it appears
+      // turned a one-sentence big idea into a row of ~20 buttons.
+      if (!word || count >= 1) continue;
       // Acronym entries (LCM, GCF, MAD…) only match their exact uppercase form.
       if (!surfaceMatchesEntry(termText, word)) continue;
       fragment.append(text.slice(cursor, termStart));
@@ -331,7 +333,7 @@ export function installSmallGroupAnnotation(app, config) {
   const dialog = createVocabularyDialog();
   // Lesson vocabulary plus the shared math glossary, so a math word opens its
   // definition+image popup wherever it appears (not just the first 8 authored
-  // terms). The 2-per-section cap in addVocabularyTriggers keeps it readable.
+  // terms). The once-per-section cap in addVocabularyTriggers keeps it readable.
   const annotate = addVocabularyTriggers(app, augmentVocabWithGlossary(config.vocabulary), dialog);
   if (annotate) watchForLateContent(app, annotate);
 }

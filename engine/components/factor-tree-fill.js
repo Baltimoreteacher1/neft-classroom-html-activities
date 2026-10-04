@@ -327,9 +327,11 @@ export function renderFactorTreeFill(host, cfg) {
     form.classList.add("shake");
   }
 
-  function focusNextSplit() {
+  // On mount the focus must not scroll: the tool is usually below the fold,
+  // and a family homework page opened ~3,400px down, past its title.
+  function focusNextSplit({ preventScroll = false } = {}) {
     const nextInput = rootUl.querySelector(".ftb-split .ftb-fac");
-    if (nextInput) setTimeout(() => nextInput.focus(), 0);
+    if (nextInput) setTimeout(() => nextInput.focus({ preventScroll }), 0);
   }
 
   let firstMount = true;
@@ -509,7 +511,7 @@ export function renderFactorTreeFill(host, cfg) {
 
   host.appendChild(wrap);
   rerender();
-  focusNextSplit();
+  focusNextSplit({ preventScroll: true });
 
   return {
     destroy() {

@@ -36,6 +36,7 @@ import {
   translateLanguageObjective,
 } from "./homework-spanish.mjs";
 import { getUnitTheme } from "./homework-themes.mjs";
+import { choiceFeedbackSpanish } from "./lib/homework-problems.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const _root = join(__dirname, "..");
@@ -147,7 +148,9 @@ function learningTonight(config) {
 function completeSentence(value) {
   const text = String(value || "").trim();
   if (!text) return "";
-  return /[.!?]$/.test(text) ? text : `${text}.`;
+  // A sentence may end inside a closing quote or bracket ('…by 3."'); adding a
+  // period after it printed '3.".' on 35 pages.
+  return /[.!?…]["'”’)\]]*$/.test(text) ? text : `${text}.`;
 }
 
 function splitExplanation(value) {
@@ -317,12 +320,13 @@ function togetherStepHints(config, isLast) {
 
 function tryTogetherActivity(config) {
   const exact = exactFamilySupport(config || {});
+  const story = FAMILY_SCENARIOS[config?.lessonId];
   if (exact)
     return {
       titleEn: exact.titleEn,
       titleEs: exact.titleEs,
-      scenarioEn: "Use the small example below, then try the practice questions.",
-      scenarioEs: "Usa el ejemplo de abajo; luego intenta las preguntas de práctica.",
+      scenarioEn: story?.en || "",
+      scenarioEs: story?.es || "",
       steps: exact.steps.map((step) => ({ ...step, hint: exact.capEn, hintEs: exact.capEs })),
     };
   const custom = config.familyNotes?.tryTogether;
@@ -419,6 +423,10 @@ function ladderCard(prob) {
       choices: prob.choices.map((c) => String(c)),
       choicesEs,
       correctIndex: prob.correctIndex,
+      feedback: Array.isArray(prob.choiceFeedback) ? prob.choiceFeedback.map(String) : [],
+      feedbackEs: Array.isArray(prob.choiceFeedbackEs) ? prob.choiceFeedbackEs.map(String) : [],
+      explanation: String(prob.explanation || ""),
+      explanationEs: String(prob.explanationEs || ""),
     };
   }
   if (prob.type === "open-response") {
@@ -447,32 +455,95 @@ function ladderCard(prob) {
   return null;
 }
 
+/* The ladder must not repeat the Check tab. It used to read the same practice
+   tiers the Quick Check and More Practice sets read, so 774 of 813 ladder items
+   on the 166 pages were a Check problem printed a second time (audit
+   2026-10-04) — the family met each one twice and the second time it had
+   already been answered. Anything the page already shows is excluded, by
+   object and by question text, and the ladder then falls back to the lesson's
+   other authored checks (connect.check, the exit ticket). A tier that runs out
+   stays short: fewer rungs beat a repeated one. */
+/* Authored family-only ladder items and Try Together story lines, keyed by
+   homework lesson id. Written 2026-10-04 for the lessons whose own authored
+   practice is used up by the Check tab, and the 37 lessons whose Try Together
+   opened with the placeholder "Use the small example below…". */
+const FAMILY_DATA_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "data");
+const readFamilyData = (name) => {
+  const path = join(FAMILY_DATA_DIR, name);
+  return existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : {};
+};
+const FAMILY_LADDER = readFamilyData("family-homework-ladder.json");
+const FAMILY_SCENARIOS = readFamilyData("family-homework-scenarios.json");
+
+const ladderKey = (q) =>
+  String(q || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "")
+    .slice(0, 60);
+
+function ladderCandidate(prob) {
+  if (!prob || typeof prob !== "object") return prob;
+  // connect.check marks its answer with `answer`, not `correctIndex`.
+  if (
+    !prob.type &&
+    Array.isArray(prob.choices) &&
+    Number.isInteger(prob.answer ?? prob.correctIndex)
+  ) {
+    return { ...prob, type: "multiple-choice", correctIndex: prob.correctIndex ?? prob.answer };
+  }
+  return prob;
+}
+
 export function buildTogetherLadder(config = {}) {
   const p = config.practice || {};
-  // Difficulty ladder: 1★ approaching (scaffolded), 2★ on-level / optional,
-  // 3★ extending (stretch). Take a few from each so the set spans easy → hard.
+  const { warmup, challenge } = selectTieredQuickCheckProblems(p, config);
+  const core = [...warmup, ...challenge];
+  const shown = [...core, ...selectMorePracticeProblems(p, config, core)];
+  const shownKeys = new Set(
+    shown.map((x) => ladderKey(x?.stem || x?.question || x?.prompt)).filter(Boolean),
+  );
+  const extra = [
+    ...(Array.isArray(config.connect?.check) ? config.connect.check : []),
+    ...(config.reflect?.exitTicket ? [config.reflect.exitTicket] : []),
+  ];
+  const family = FAMILY_LADDER[config.lessonId] || {};
+  // Difficulty ladder: 1★ approaching (scaffolded), 2★ on-level / optional /
+  // the lesson's own checks, 3★ extending (stretch).
   const tiers = [
-    { keys: ["approaching"], stars: "★", labelEn: "Start easy", labelEs: "Empieza fácil", take: 2 },
     {
-      keys: ["onLevel", "optional"],
+      pools: [p.approaching, family.approaching],
+      stars: "★",
+      labelEn: "Start easy",
+      labelEs: "Empieza fácil",
+      take: 2,
+    },
+    {
+      pools: [p.onLevel, p.optional, extra, family.onLevel],
       stars: "★★",
       labelEn: "Keep going",
       labelEs: "Sigan",
       take: 2,
     },
-    { keys: ["extending"], stars: "★★★", labelEn: "Challenge", labelEs: "Reto", take: 1 },
+    {
+      pools: [p.extending, family.extending],
+      stars: "★★★",
+      labelEn: "Challenge",
+      labelEs: "Reto",
+      take: 1,
+    },
   ];
 
   const ladder = [];
   for (const tier of tiers) {
     let taken = 0;
-    for (const key of tier.keys) {
-      const arr = Array.isArray(p[key]) ? p[key] : [];
-      for (const prob of arr) {
+    for (const arr of tier.pools) {
+      for (const raw of Array.isArray(arr) ? arr : []) {
         if (taken >= tier.take) break;
-        const card = ladderCard(prob);
+        if (shown.includes(raw)) continue;
+        const card = ladderCard(ladderCandidate(raw));
         if (!card) continue;
-        if (ladder.some((x) => x.q === card.q)) continue;
+        const key = ladderKey(card.q);
+        if (shownKeys.has(key) || ladder.some((x) => ladderKey(x.q) === key)) continue;
         ladder.push({ ...card, stars: tier.stars, tierEn: tier.labelEn, tierEs: tier.labelEs });
         taken += 1;
       }
@@ -2268,9 +2339,39 @@ export function selectQuickCheckProblems(practice = {}, config = {}) {
   return selectAlignedQuickCheckProblems(practice, config);
 }
 
+/* The hero kicker names the Reveal unit the lesson belongs to. It used to print
+   UNIT_THEMES[n].nameEn, a theme list keyed by the PRE-2026-08-10 unit
+   numbers, so lesson 6-3 (Numerical and Algebraic Expressions, a music-studio
+   lesson) announced "Unit 6 · Culinary & Recipe Lab" over a sound-studio
+   example. The unit title comes from the TOC the rest of the site uses. */
+const REVEAL_TOC = JSON.parse(
+  readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), "..", "data", "reveal-toc-2025.json"),
+    "utf8",
+  ),
+);
+const UNIT_TITLES_ES = {
+  1: "Las matemáticas son...",
+  2: "Entender el mundo que nos rodea con la estadística",
+  3: "Razones y tasas",
+  4: "Entender y usar porcentajes",
+  5: "Resolver problemas de área, área total y volumen",
+  6: "Expresiones numéricas y algebraicas",
+  7: "Enteros, números racionales y el plano de coordenadas",
+  8: "Ecuaciones y desigualdades",
+  9: "Relaciones entre dos variables",
+  10: "Las matemáticas son...",
+};
+function revealUnitTitle(unit) {
+  const n = Number(unit);
+  const hit = (REVEAL_TOC.units || []).find((u) => Number(u.unit ?? u.number) === n);
+  return { en: hit?.title || "", es: UNIT_TITLES_ES[n] || hit?.title || "" };
+}
+
 export function renderWelcomeBanner(config, lessonId) {
   const unit = config.unit || 1;
   const theme = getUnitTheme(unit);
+  const unitTitle = revealUnitTitle(unit);
   const themeEmoji = config.themeEmoji || theme.emoji || "🏠";
   const title = config.title || "Tonight's Lesson";
   const standard = config.standard || "";
@@ -2280,9 +2381,9 @@ export function renderWelcomeBanner(config, lessonId) {
       <div class="hw-hero-glow" aria-hidden="true"></div>
       <div class="hw-hero-body">
         <p class="hw-hero-kicker">
-          <span class="hw-hero-kicker-icon" aria-hidden="true">${theme.emoji}</span>
-          <span class="lang-en">Unit ${unit} · ${esc(theme.nameEn)}</span>
-          <span class="lang-es" lang="es">Unidad ${unit} · ${esc(theme.nameEs)}</span>
+          <span class="hw-hero-kicker-icon" aria-hidden="true">📘</span>
+          <span class="lang-en">Unit ${unit}${unitTitle.en ? ` · ${esc(unitTitle.en)}` : ""}</span>
+          <span class="lang-es" lang="es">Unidad ${unit}${unitTitle.es ? ` · ${esc(unitTitle.es)}` : ""}</span>
         </p>
 
         <div class="hw-hero-head">
@@ -2294,7 +2395,7 @@ export function renderWelcomeBanner(config, lessonId) {
 
         <p class="hw-hero-lesson">
           <span class="hw-hero-lesson-title"><span class="lang-en">${esc(title)}</span><span class="lang-es" lang="es">${esc(familyTitlesEs[lessonId] || title)}</span></span>
-          <span class="hw-hero-lesson-meta">${esc(homeworkPageLabel(lessonId))}${standard ? ` · ${esc(standard)}` : ""}</span>
+          <span class="hw-hero-lesson-meta">${esc(homeworkPageLabel(lessonId))}</span>
         </p>
 
         ${
@@ -2327,6 +2428,7 @@ export function renderWelcomeBanner(config, lessonId) {
           <a class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_email_link" href="#" target="_blank" rel="noopener">✉️ <span class="lang-en">Email</span><span class="lang-es" lang="es">Correo</span></a>
           <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="printProblemsOnly()">🖨️ <span class="lang-en">Print Problems</span><span class="lang-es" lang="es">Imprimir preguntas</span></button>
           <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="printRefrigeratorSheet()">📄 <span class="lang-en">1-Page Sheet</span><span class="lang-es" lang="es">Hoja de 1 pág.</span></button>
+          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="printAnswerSheet()">🔑 <span class="lang-en">Print answer sheet</span><span class="lang-es" lang="es">Imprimir respuestas</span></button>
           <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_offline_btn" onclick="preparePaperPractice()">📄 <span class="lang-en">Prepare paper practice</span><span class="lang-es" lang="es">Preparar práctica en papel</span></button>
         </div>
 
@@ -2413,7 +2515,30 @@ export function renderLearningTonight(config) {
           ${wordsEs ? renderVocabularyChips(vocab, "es") : ""}
         </div>
       </div>
+      ${renderParentQuickCard(config)}
     </section>`;
+}
+
+/* The grown-up's version, first thing on the page: one question that helps
+   and one thing not to say. The full coaching lived only in "If your student
+   gets stuck", a collapsed panel near the bottom of the Learn stop. */
+function renderParentQuickCard(config) {
+  const tips = stuckTips(config) || {};
+  const ask = tips.say?.[0];
+  const avoid = tips.dontSay?.[0];
+  if (!ask && !avoid) return "";
+  const row = (icon, labelEn, labelEs, tip) =>
+    tip
+      ? `<li><span aria-hidden="true">${icon}</span> <strong><span class="lang-en">${labelEn}</span><span class="lang-es" lang="es">${labelEs}</span></strong> <span class="lang-en">${esc(tip.en)}</span><span class="lang-es" lang="es">${esc(tip.es || tip.en)}</span></li>`
+      : "";
+  return `
+      <div class="parent-quick-card">
+        <p class="parent-quick-title"><span class="lang-en">For the grown-up helping tonight</span><span class="lang-es" lang="es">Para el adulto que ayuda hoy</span></p>
+        <ul>
+          ${row("💬", "If they get stuck, ask:", "Si se atora, pregunten:", ask)}
+          ${row("🚫", "Try not to say:", "Eviten decir:", avoid)}
+        </ul>
+      </div>`;
 }
 
 export function renderConceptExplainer(config) {
@@ -2606,17 +2731,28 @@ function renderTogetherLadder(config) {
   const items = ladder
     .map((item, i) => {
       const hasChoices = Array.isArray(item.choices) && item.choices.length > 0;
+      /* Tappable choices that answer back. The ladder used to print A–D as a
+         plain list beside a blank text box nothing checked, so a family could
+         only compare by opening the answer. Radios named ladder_<i> are saved
+         and restored by saveState/loadState like every other choice. */
       const choicesHtml = hasChoices
-        ? `<ol class="ladder-choices">${item.choices
+        ? `<div class="ladder-choices" role="radiogroup" aria-label="Answer choices">${item.choices
             .map((c, idx) => {
               const cEs = item.choicesEs?.[idx];
-              return `<li class="ladder-choice">${
+              // The right choice explains itself; a wrong one names its mistake.
+              const isRight = idx === item.correctIndex;
+              const fb = (isRight ? item.explanation : "") || item.feedback?.[idx] || "";
+              const fbEs =
+                (isRight ? item.explanationEs : "") ||
+                item.feedbackEs?.[idx] ||
+                choiceFeedbackSpanish(fb);
+              return `<label class="ladder-choice"><input type="radio" name="ladder_${i}" value="${idx}" data-correct="${idx === item.correctIndex}" data-fb="${esc(fb)}" data-fb-es="${esc(fbEs)}" onchange="checkLadderChoice(this)" /><span class="ladder-choice-letter" aria-hidden="true">${letters[idx] || ""}</span><span class="ladder-choice-text">${
                 cEs
                   ? `<span class="lang-en">${esc(c)}</span><span class="lang-es" lang="es">${esc(cEs)}</span>`
                   : esc(c)
-              }</li>`;
+              }</span></label>`;
             })
-            .join("")}</ol>`
+            .join("")}</div><p class="ladder-feedback" role="status" aria-live="polite"></p>`
         : "";
       // For multiple-choice, reveal the correct option with its letter (e.g. "A. …")
       // so it lines up with the rendered choices; open-response just shows the sample.
@@ -2648,8 +2784,11 @@ function renderTogetherLadder(config) {
             <span class="ladder-tier"><span class="lang-en">${esc(item.tierEn)}</span><span class="lang-es" lang="es">${esc(item.tierEs)}</span></span>
           </div>
           ${questionHtml}
-          ${choicesHtml}
-          <input type="text" id="ladder_${i}" name="ladder_${i}" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem ${i + 1}" />
+          ${
+            hasChoices
+              ? choicesHtml
+              : `<textarea id="ladder_${i}" name="ladder_${i}" class="ladder-input custom-textarea" rows="2" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem ${i + 1}"></textarea>`
+          }
           ${answer}
         </li>`;
     })
@@ -2745,6 +2884,7 @@ export function renderCelebration(config = null, _lessonId = "") {
   return `
     <section class="guided-section card section-celebrate" aria-label="Celebration">
       <h2 class="section-title">🎉 <span class="lang-en">Finished for today</span><span class="lang-es" lang="es">Terminaste por hoy</span></h2>
+      <div class="done-summary" id="hw_done_summary" role="status" aria-live="polite"></div>
       <p class="celebrate-text lang-en">Name one strategy that helped, or one question to ask next time. You can stop here; no adult signature is needed.</p>
       <p class="celebrate-text lang-es" lang="es">Di una estrategia que te ayudó o una pregunta para la próxima vez. Puedes terminar aquí; no necesitas la firma de un adulto.</p>
       <p class="celebrate-sub bilingual-block">
@@ -2762,8 +2902,13 @@ export function renderCelebration(config = null, _lessonId = "") {
       <div class="homework-extra-actions">
         <button type="button" class="btn btn-secondary" onclick="switchHomeworkTab('check'); document.querySelector('.more-practice')?.setAttribute('open', '')"><span class="lang-en">➕ ${hasMorePractice ? "Try more practice problems" : "Review practice problems"}</span><span class="lang-es" lang="es">➕ ${hasMorePractice ? "Hacer más ejercicios" : "Repasar los ejercicios"}</span></button>
         <button type="button" class="btn btn-secondary" onclick="switchHomeworkTab('photobooth')"><span class="lang-en">📸 Open the math work photobooth</span><span class="lang-es" lang="es">📸 Abrir la cabina de fotos</span></button>
-        <a class="btn btn-secondary" href="#parent_reflection_input"><span class="lang-en">✍️ Write a reflection below</span><span class="lang-es" lang="es">✍️ Escribir una reflexión abajo</span></a>
+        <a class="btn btn-secondary" href="#parent_reflection_input" onclick="document.getElementById('homework_extras_more').open = true"><span class="lang-en">✍️ Write a reflection below</span><span class="lang-es" lang="es">✍️ Escribir una reflexión abajo</span></a>
       </div>
+      <!-- The three choices above stay visible (2026-10-02, "visible practice
+           options"); the long form, badges and extra activity they lead to
+           fold here, so the Done stop opens on how much is finished. -->
+      <details class="homework-extras-more" id="homework_extras_more">
+      <summary><span class="lang-en">Reflection, voice memo, badges and a 5-minute table activity</span><span class="lang-es" lang="es">Reflexión, nota de voz, insignias y una actividad de 5 minutos</span></summary>
       <div class="parent-signoff-container card-ish">
         <h3 class="signoff-title">✍️ <span class="lang-en">Optional reflection on this device</span><span class="lang-es" lang="es">Reflexión opcional en este dispositivo</span></h3>
         
@@ -2934,7 +3079,7 @@ export function renderCelebration(config = null, _lessonId = "") {
           <span class="achieve-icon" aria-hidden="true">⭐</span>
           <span class="achieve-name"><span class="lang-en">3-Star Hero</span><span class="lang-es" lang="es">Héroe 3 Estrellas</span></span>
         </div>
-        <div class="achievement-badge badge-arcade is-unlocked" id="badge_achieve_arcade">
+        <div class="achievement-badge badge-arcade" id="badge_achieve_arcade">
           <span class="achieve-icon" aria-hidden="true">🎮</span>
           <span class="achieve-name"><span class="lang-en">Game Master</span><span class="lang-es" lang="es">Maestro del Juego</span></span>
         </div>
@@ -2950,6 +3095,7 @@ export function renderCelebration(config = null, _lessonId = "") {
 
       ${ktHtml}
 
+      </details>
       </section>
 
       <!-- Print-Only Certificate Layout -->
@@ -6861,8 +7007,8 @@ export function renderFamilyGameBreak(key, extras = {}, topic = key) {
       <div class="fam-game-head">
         <span class="fam-game-badge">🎮 FAMILY ARCADE / SALA DE JUEGOS EN FAMILIA</span>
         <p class="fam-game-lead">
-          <span class="lang-en">Four quick games about tonight's math. Pick one, play as a team — no timer, replay as often as you like.</span>
-          <span class="lang-es" lang="es">Cuatro juegos rápidos sobre las matemáticas de hoy. Escojan uno y jueguen en equipo: sin cronómetro, repitan cuanto quieran.</span>
+          <span class="lang-en">Quick games about tonight's math. One game is plenty: pick one, play as a team, no timer.</span>
+          <span class="lang-es" lang="es">Juegos rápidos sobre las matemáticas de hoy. Con un juego basta: escojan uno y jueguen en equipo, sin cronómetro.</span>
         </p>
         <div class="fam-arcade-picker" role="group" aria-label="Choose a game">${picker}</div>
       </div>
@@ -6993,10 +7139,10 @@ ${
 
 export const MATH_TALK_QUESTIONS = [
   {
-    qEn: "Can you show me how you see that in the picture above?",
-    qEs: "¿Puedes mostrarme cómo ves eso en el dibujo de arriba?",
-    followEn: "Follow-up: Point to where the numbers match the visual model.",
-    followEs: "Seguimiento: Señala dónde los números coinciden con el modelo visual.",
+    qEn: "Can you show me how you see that in your work or a quick sketch?",
+    qEs: "¿Puedes mostrarme cómo ves eso en tu trabajo o en un dibujo rápido?",
+    followEn: "Follow-up: Point to where each number from the problem shows up.",
+    followEs: "Seguimiento: Señala dónde aparece cada número del problema.",
   },
   {
     qEn: "What would happen if we doubled the numbers in this problem?",
@@ -7137,14 +7283,14 @@ export function getTopicPowerUp(topic, config) {
       qEs: "¿Cuál enunciado muestra el significado real de 4³?",
       choices: [
         {
-          en: "4 × 4 × 4 = 64 (multiply 3 copies of 4)",
-          es: "4 × 4 × 4 = 64 (multiplica 3 copias de 4)",
+          en: "4 × 4 × 4 = 64",
+          es: "4 × 4 × 4 = 64",
         },
         {
-          en: "4 × 3 = 12 (multiply base by exponent)",
-          es: "4 × 3 = 12 (multiplica base por exponente)",
+          en: "4 × 3 = 12",
+          es: "4 × 3 = 12",
         },
-        { en: "4 + 4 + 4 = 12 (add 4 three times)", es: "4 + 4 + 4 = 12 (suma 4 tres veces)" },
+        { en: "4 + 4 + 4 = 12", es: "4 + 4 + 4 = 12" },
       ],
       correctIndex: 0,
       hintEn: "The exponent tells how many copies of the base multiply together!",
@@ -7763,12 +7909,12 @@ export function renderTogetherTab(config, lessonId = "", workbenchHtml = "") {
       </div>
       <div class="math-talk-body" id="math_talk_body">
         <p class="math-talk-q">
-          <span class="lang-en" id="math_talk_en">"Can you show me how you see that in the picture above?"</span>
-          <span class="lang-es" lang="es" id="math_talk_es">"¿Puedes mostrarme cómo ves eso en el dibujo de arriba?"</span>
+          <span class="lang-en" id="math_talk_en">"Can you show me how you see that in your work or a quick sketch?"</span>
+          <span class="lang-es" lang="es" id="math_talk_es">"¿Puedes mostrarme cómo ves eso en tu trabajo o en un dibujo rápido?"</span>
         </p>
         <p class="math-talk-follow">
-          <span class="lang-en" id="math_talk_follow_en">Follow-up: Point to where the numbers match the visual model.</span>
-          <span class="lang-es" lang="es" id="math_talk_follow_es">Seguimiento: Señala dónde los números coinciden con el modelo visual.</span>
+          <span class="lang-en" id="math_talk_follow_en">Follow-up: Point to where each number from the problem shows up.</span>
+          <span class="lang-es" lang="es" id="math_talk_follow_es">Seguimiento: Señala dónde aparece cada número del problema.</span>
         </p>
       </div>
     </div>`;
@@ -9195,6 +9341,12 @@ function setHomeworkRoute(mode, options) {
     visibleIndex++;
     var step = btn.querySelector('.tab-step');
     if (step) step.textContent = String(visibleIndex);
+    // The tab's minutes are the ROUTE's minutes; the static label said 8 for
+    // Check while the 20-minute route budgets 7 and the Check intro said 7.
+    var mins = route.minutes[btn.dataset.tab];
+    var minEl = btn.querySelector('.tab-min');
+    if (mins && minEl) minEl.textContent = mins + ' min';
+    if (mins) btn.dataset.min = String(mins);
     var label = btn.querySelector('.tab-en');
     var labelEs = btn.querySelector('.tab-es');
     btn.dataset.ariaEn = (label ? label.textContent : btn.dataset.tab) + ' — stop ' + visibleIndex + ' of ' + route.tabs.length;
@@ -9235,7 +9387,7 @@ function setHomeworkRoute(mode, options) {
   });
   var progress = document.getElementById('progress_text');
   if (progress) {
-    var completed = Array.from(document.querySelectorAll('.problem-section.correct'))
+    var completed = Array.from(document.querySelectorAll('.problem-section.correct, .problem-section.reviewed'))
       .filter(function (problem) { return !problem.hidden && !problem.closest('[hidden]') && !problem.closest('.more-practice'); })
       .length;
     progress.textContent = completed + ' / ' + route.problemLimit;
@@ -9393,13 +9545,15 @@ function restoreFamilyMission() {
 /* Progress lives ON the tab bar now, not on a second rail underneath it: each
    tab gets a tick once it has been opened, and the hairline under the bar fills
    to the furthest stop reached. One control, one answer to "where are we". */
-function updateJourneyMap(tabId) {
+/* A stop is ticked when the family moves ON from it. Ticking on arrival put a
+   ✓ on Learn the moment any page opened, before anything had been read. */
+function updateJourneyMap(tabId, leftTabId) {
   const tabs = Array.from(document.querySelectorAll('.homework-tab-btn')).filter(function (btn) { return !btn.hidden; });
   if (!tabs.length) return;
   let visited = {};
   try { visited = JSON.parse(localStorage.getItem(journeyStorageKey()) || '{}') || {}; } catch (e) {}
-  if (tabId && !visited[tabId]) {
-    visited[tabId] = true;
+  if (leftTabId && !visited[leftTabId]) {
+    visited[leftTabId] = true;
     try { localStorage.setItem(journeyStorageKey(), JSON.stringify(visited)); } catch (e) {}
   }
   let furthest = -1;
@@ -9463,7 +9617,14 @@ function syncHomeworkChromeHeights() {
   document.body.style.paddingBottom = (Math.max(statusH, floatTop) + 24) + 'px';
 }
 
+/* Set once the page has restored its stop. Before that, switching tabs is the
+   page booting, not the family moving: focusing and scrolling the tab button
+   then opened every homework page ~970px down, past its title and the
+   20/30-minute choice. */
+var hwTabsBooted = false;
+
 function switchHomeworkTab(tabId) {
+  const leaving = document.body.dataset.activeTab;
   const allTabs = document.querySelectorAll('.homework-tab-btn');
   const tabs = Array.from(allTabs).filter(function (btn) { return !btn.hidden; });
   const extras = document.querySelectorAll('.homework-tab-extra');
@@ -9526,7 +9687,7 @@ function switchHomeworkTab(tabId) {
     }
   }
 
-  if (typeof updateJourneyMap === 'function') updateJourneyMap(tabId);
+  if (typeof updateJourneyMap === 'function') updateJourneyMap(tabId, leaving !== tabId ? leaving : '');
   if (typeof playTabSwitchSound === 'function') playTabSwitchSound();
   if (tabId === 'done' && typeof updateCelebrationTab === 'function') {
     updateCelebrationTab();
@@ -9537,9 +9698,9 @@ function switchHomeworkTab(tabId) {
     stopPhotoboothStream();
   }
   const activeBtn = document.getElementById('hw_tab_' + tabId);
-  if (activeBtn) {
+  if (activeBtn && hwTabsBooted) {
     activeBtn.scrollIntoView({ inline: 'nearest', block: 'nearest', behavior: 'smooth' });
-    activeBtn.focus();
+    activeBtn.focus({ preventScroll: true });
   }
   try { localStorage.setItem(lastTabStorageKey(), tabId); } catch(e) {}
   if (typeof initHomeworkVocabPopups === 'function') {
@@ -9774,6 +9935,15 @@ function printProblemsOnly() {
     document.body.classList.remove('print-problems-only');
   }, 1000);
 }
+
+function printAnswerSheet() {
+  document.body.classList.add('print-answer-sheet');
+  window.print();
+  setTimeout(function() {
+    document.body.classList.remove('print-answer-sheet');
+  }, 1000);
+}
+window.printAnswerSheet = printAnswerSheet;
 
 function printRefrigeratorSheet() {
   document.body.classList.add('print-refrigerator-sheet');
@@ -10085,7 +10255,9 @@ function restoreParentSignoff() {
       if (reflInput) reflInput.value = data.reflection || '';
       if (checkbox) checkbox.checked = true;
       toggleSignoffSubmitBtn();
-      
+      var extrasMore = document.getElementById('homework_extras_more');
+      if (extrasMore) extrasMore.open = true;
+
       updateSignoffUI(data);
     }
   } catch(e) {}
@@ -10126,6 +10298,7 @@ function initHomeworkPage() {
     if (lastBtn && !lastBtn.hidden) switchHomeworkTab(last);
     else switchHomeworkTab('learn');
   } catch(e) {}
+  setTimeout(function () { hwTabsBooted = true; }, 0);
   restoreParentSignoff();
   initHomeworkShareLinks();
   var start = document.getElementById('hw_start_button');
@@ -11093,6 +11266,8 @@ function attachPhotoboothToSignoff() {
   }
   var previewImg = pbEl('work_photo_preview');
   var previewWrap = pbEl('work_photo_preview_wrap');
+  var extrasMore = document.getElementById('homework_extras_more');
+  if (extrasMore) extrasMore.open = true;
   if (previewImg) previewImg.src = currentWorkPhotoData;
   if (previewWrap) previewWrap.hidden = false;
 
@@ -11125,6 +11300,20 @@ document.addEventListener('visibilitychange', function() {
 `;
 
 export const GUIDED_NOTES_CSS = `
+.parent-quick-card { margin-top: 14px; padding: 12px 14px; border-radius: var(--radius-sm); background: #f4f8fc; border: 1.5px solid #c9d8ea; }
+.parent-quick-title { margin: 0 0 6px; font-weight: 800; font-size: 13px; letter-spacing: .02em; text-transform: uppercase; color: var(--navy); }
+.parent-quick-card ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 14.5px; line-height: 1.45; }
+.done-summary:empty { display: none; }
+.done-summary { margin: 0 0 14px; padding: 12px 14px; border-radius: var(--radius-sm); font-weight: 600; line-height: 1.45; }
+.done-summary.is-complete { background: #e8f6ef; border: 1.5px solid #1f8a5b; color: #14532d; }
+.done-summary.is-partial { background: #fff7e6; border: 1.5px solid #f2c15b; color: #5b3a00; }
+.done-summary .btn { margin-top: 8px; }
+.homework-extras-more { margin-top: 12px; }
+.homework-extras-more > summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; padding: 6px 12px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-weight: 700; color: var(--navy); }
+.homework-extras-more[open] > summary { border-style: solid; margin-bottom: 10px; }
+/* The Listen button shared a flex row with the sentence and was squeezed to
+   one letter per line ("L/i/s/t/e/n") on a 375px phone. */
+.key-idea-banner .btn-read-aloud { flex: 0 0 auto; white-space: nowrap; }
 /* Tap-to-define vocab glossary — parity with the lesson engine's .obj-term popups.
    Math words in the notes/practice prose become dotted-underline buttons that open
    a simple EN/ES definition + illustration, exactly like the lessons. */
@@ -11810,9 +11999,19 @@ body.help-modal-open { overflow: hidden; }
 .ladder-stars { color: #f5a623; font-size: 13px; letter-spacing: 1px; }
 .ladder-tier { font-family: var(--font-display); font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.02em; color: var(--navy); }
 .ladder-q { margin: 0 0 8px; font-size: 14.5px; line-height: 1.4; }
-.ladder-choices { list-style: upper-alpha; margin: 0 0 8px; padding: 0 0 0 22px; display: flex; flex-direction: column; gap: 3px; }
-.ladder-choice { font-size: 14px; line-height: 1.4; }
-.ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
+.ladder-choices { margin: 0 0 6px; display: flex; flex-direction: column; gap: 6px; }
+.ladder-choice { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 10px; border: 1.5px solid var(--line); border-radius: var(--radius-sm); background: var(--white); font-size: 14.5px; line-height: 1.35; cursor: pointer; }
+.ladder-choice input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.ladder-choice:focus-within { outline: 3px solid var(--navy); outline-offset: 2px; }
+.ladder-choice-letter { flex: 0 0 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; background: var(--hint-bg); color: var(--navy); }
+.ladder-choice.is-correct { border-color: #1f8a5b; background: #e8f6ef; }
+.ladder-choice.is-correct .ladder-choice-letter { background: #1f8a5b; color: #fff; }
+.ladder-choice.is-incorrect { border-color: #c2410c; background: #fff1ea; }
+.ladder-feedback { margin: 0; font-size: 13.5px; line-height: 1.4; }
+.ladder-feedback:empty { display: none; }
+.ladder-feedback.is-correct { color: #146c46; }
+.ladder-feedback.is-incorrect { color: #9a3412; }
+.ladder-input { width: 100%; box-sizing: border-box; font-family: inherit; resize: vertical; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
 .ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
 /* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
    at the kitchen table is this page's audience, so every ladder item carries

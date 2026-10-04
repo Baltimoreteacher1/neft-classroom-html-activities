@@ -60,7 +60,9 @@ export function stageProblems(id, name, stage) {
   }
   es.forEach((line, i) => {
     if (!String(line ?? "").trim()) out.push(`${id}.${name}: linesEs[${i}] is blank`);
-    if (line === stage.lines[i] && /[a-z]/i.test(String(line))) {
+    // A WORD left in English, not a variable: "n = 35" reads the same in
+    // Spanish, "Divide both sides" does not.
+    if (line === stage.lines[i] && /[a-z]{2,}/i.test(String(line))) {
       out.push(`${id}.${name}: linesEs[${i}] is identical to the English`);
     }
   });
@@ -109,6 +111,12 @@ const selftests = [
     "an untranslated line left in English is caught",
     () =>
       stageProblems("x", "iDo", { lines: ["hello", "b"], linesEs: ["hello", "b-es"] }).length === 1,
+  ],
+  [
+    "a line that is only math with a variable may match the English",
+    () =>
+      stageProblems("x", "iDo", { lines: ["n = 35", "a ≥ 18"], linesEs: ["n = 35", "a ≥ 18"] })
+        .length === 0,
   ],
   [
     "a complete array passes",

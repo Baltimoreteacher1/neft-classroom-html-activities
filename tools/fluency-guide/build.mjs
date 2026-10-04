@@ -163,6 +163,12 @@ Object.entries(stats).forEach(([k, v]) => console.log(`    ${k.padEnd(14)} ${v}`
 if (process.argv.includes("--check")) process.exit(0);
 
 /* ---------------------------------------------------------------- inline */
+// Both editions use the same practice engine; the data allowlist below
+// controls which lesson fields are available in public practice.
+const studio = read("src/studio.js");
+const styles = ["styles.css", "studio.css", "labs.css"]
+  .map((file) => read(`src/${file}`))
+  .join("\n");
 const html = read("src/template.html.template")
   .replace(
     "<!--__ORIGIN__-->",
@@ -174,9 +180,10 @@ const html = read("src/template.html.template")
         .join(" · ") +
       "</p><small>Source ranges are counted under their first listed grade.</small></div>",
   )
-  .replace("/*__STYLES__*/", () => read("src/styles.css") + "\n" + read("src/studio.css"))
+  .replace("/*__STYLES__*/", () => styles)
+  .replace("/*__TEACHER_STYLES__*/", () => read("src/teacher.css"))
   .replace("/*__DATA__*/", () => JSON.stringify(core).replace(/<\/script/gi, "<\\/script"))
-  .replace("/*__STUDIO__*/", () => read("src/studio.js"))
+  .replace("/*__STUDIO__*/", () => studio)
   .replace("/*__APP__*/", () => read("src/app.js"));
 
 mkdirSync(join(target, "teacher"), { recursive: true });
@@ -210,8 +217,8 @@ const studentData = {
   })),
 };
 const studentHTML = read("src/student-template.html.template")
-  .replace("/*__STYLES__*/", () => read("src/styles.css") + "\n" + read("src/studio.css"))
+  .replace("/*__STYLES__*/", () => styles)
   .replace("/*__DATA__*/", () => JSON.stringify(studentData).replace(/<\/script/gi, "<\\/script"))
-  .replace("/*__STUDIO__*/", () => read("src/studio.js"));
+  .replace("/*__STUDIO__*/", () => studio);
 writeFileSync(join(target, "index.html"), studentHTML);
 console.log("✓ student.html written — standalone student practice");

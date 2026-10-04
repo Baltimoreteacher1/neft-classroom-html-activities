@@ -1300,7 +1300,7 @@
       }
     </style>
       <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-    <script src="/assets/game-studio.js?v=20261002" defer></script>
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
 </head>
   <body>
     <a class="sr" href="#main">Skip to the game</a>
@@ -1597,13 +1597,13 @@
 
         /* Contract text per job, read from the same hoisted data the stations use. */
         function contractText(shopId, lv) {
-          if (shopId === "tower") return W1_JOBS[lv].story;
+          if (shopId === "tower") return w1Job(lv).story;
           if (shopId === "slide") {
-            var j2 = W2_JOBS[lv];
+            var j2 = w2Job(lv);
             return "A batch to portion out: " + j2.a + " ÷ " + j2.b + ".";
           }
           if (shopId === "tape") return w3Data(lv).prompt;
-          var j4 = W4_JOBS[lv];
+          var j4 = w4Job(lv);
           return (
             "A trail-mix order: " +
             (j4.mixed ? j4.mixed.w + " " + j4.mixed.n + "/" + j4.mixed.d : j4.A.n + "/" + j4.A.d) +
@@ -1759,6 +1759,7 @@
           var row = el("contractRow");
           row.innerHTML = "";
           var offers = rollContracts();
+          // One ticket pays a bonus. It is NOT a speed order: nothing is timed.
           var rushIdx = Math.floor(Math.random() * offers.length);
           offers.forEach(function (c, i) {
             var d = DIFF[c.shop.id][c.lv];
@@ -1780,10 +1781,10 @@
                 " of 3. Pays up to " +
                 payGold +
                 " dollars." +
-                (rush ? " Rush order: pays extra." : ""),
+                (rush ? " Bonus order: pays extra." : ""),
             );
             b.innerHTML =
-              (rush ? '<span class="t-rush">⭐ RUSH · +50% PAY</span>' : "") +
+              (rush ? '<span class="t-rush">⭐ BONUS ORDER · +50% PAY</span>' : "") +
               '<span class="t-top"><span class="t-ava" aria-hidden="true">' +
               client.em +
               "</span>" +
@@ -1911,7 +1912,7 @@
             "🌶️".repeat(d) +
             " · up to $" +
             top +
-            (rush ? " · ⭐ RUSH +50%" : "");
+            (rush ? " · ⭐ BONUS +50%" : "");
           el("playH").textContent = s.name;
           var p = el("playPips");
           p.innerHTML = "";
@@ -2212,6 +2213,7 @@
           var key = k(run.shop.id, run.lv);
           if ((state.stars[key] || 0) < st) state.stars[key] = st;
           run.completed = true;
+          delete VARIANT[run.shop.id + ":" + run.lv];
           var pay = payFor(run.shop.id, run.lv, st);
           if (run.rush) pay = Math.round(pay * 1.5);
           state.ingots += pay;
@@ -2244,7 +2246,7 @@
               : st === 2
                 ? " — with a fix along the way."
                 : " — a rough one, but served.") +
-            (run.rush ? " ⭐ Rush bonus included!" : "") +
+            (run.rush ? " ⭐ Bonus-order pay included!" : "") +
             "</span>";
           el("bLock").disabled = true;
           el("bHint").disabled = true;
@@ -2555,15 +2557,75 @@
         /* ── Workshop 1 · Lesson 2.6 ─────────────────────────────────────── */
         var W1_JOBS = [
           { a: 168, b: 12, story: "168 pretzels, packed 12 to a tray. How many trays?" },
-          { a: 340, b: 5, story: "340 ounces of lemonade poured into 5 equal jugs." },
+          {
+            a: 340,
+            b: 5,
+            story: "340 ounces of lemonade poured into 5 equal jugs. How many ounces in each jug?",
+          },
           {
             a: 1344,
             b: 12,
-            story: "1,344 napkins shared into 12 dispensers — the lesson\u2019s own numbers.",
+            story:
+              "1,344 napkins shared equally into 12 dispensers — the lesson\u2019s own numbers. How many napkins in each?",
           },
-          { a: 936, b: 4, story: "936 tortilla chips split into 4 equal baskets." },
-          { a: 2565, b: 15, story: "2,565 gummy bears packed 15 to a bag." },
+          {
+            a: 936,
+            b: 4,
+            story: "936 tortilla chips split into 4 equal baskets. How many chips in each basket?",
+          },
+          { a: 2565, b: 15, story: "2,565 gummy bears packed 15 to a bag. How many bags?" },
         ];
+        /* Fresh numbers on a repeat order. The FIRST time a student takes an
+           order it is the authored problem above (the lesson's own numbers);
+           once it has been served, the same order comes back with new numbers
+           of the same size, so a replay is never a memorised answer. The
+           variant is held until that order is served, so the ticket on the
+           board and the problem in the kitchen always agree. */
+        var VARIANT = {};
+        function rnd(lo, hi) {
+          return lo + Math.floor(Math.random() * (hi - lo + 1));
+        }
+        function fmtN(n) {
+          return n >= 1000 ? n.toLocaleString("en-US") : String(n);
+        }
+        var W1_STORIES = [
+          function (a, b) {
+            return fmtN(a) + " pretzels, packed " + b + " to a tray. How many trays?";
+          },
+          function (a, b) {
+            return fmtN(a) + " ounces of lemonade poured into " + b + " equal jugs. How many ounces in each jug?";
+          },
+          function (a, b) {
+            return fmtN(a) + " napkins shared equally into " + b + " dispensers. How many napkins in each?";
+          },
+          function (a, b) {
+            return fmtN(a) + " tortilla chips split into " + b + " equal baskets. How many chips in each basket?";
+          },
+          function (a, b) {
+            return fmtN(a) + " gummy bears packed " + b + " to a bag. How many bags?";
+          },
+        ];
+        function w1Job(lv) {
+          var base = W1_JOBS[lv];
+          if (!starsOf("tower", lv)) return base;
+          var key = "tower:" + lv;
+          if (!VARIANT[key]) {
+            var bLen = String(base.b).length,
+              qLen = String(base.a / base.b).length,
+              aLen = String(base.a).length,
+              a,
+              b,
+              q;
+            for (var guard = 0; guard < 200; guard++) {
+              b = bLen === 1 ? rnd(3, 9) : rnd(11, 19);
+              q = rnd(Math.pow(10, qLen - 1), Math.pow(10, qLen) - 1);
+              a = b * q;
+              if (a !== base.a && String(a).length === aLen) break;
+            }
+            VARIANT[key] = { a: a, b: b, story: W1_STORIES[lv](a, b) };
+          }
+          return VARIANT[key];
+        }
         var W1 = {
           id: "tower",
           lesson: "2.6",
@@ -2573,7 +2635,7 @@
           closing:
             "Four moves, in the same order, every single time — and the page they lived on was yours.",
           build: function (lv, a) {
-            var j = W1_JOBS[lv];
+            var j = w1Job(lv);
             var q = Math.floor(j.a / j.b);
             return notebookFirst(
               a,
@@ -2647,6 +2709,30 @@
           { a: 12.5, b: 0.25 },
           { a: 40.32, b: 1.44 },
         ];
+        /* Same idea as w1Job: a served decimal order returns with new numbers.
+           The divisor keeps the same number of decimal places, and the dividend
+           is divisor × a whole quotient, so after the minimal slide BOTH are
+           whole — which the tower needs. */
+        function w2Job(lv) {
+          var base = W2_JOBS[lv];
+          if (!starsOf("slide", lv)) return base;
+          var key = "slide:" + lv;
+          if (!VARIANT[key]) {
+            var scale = /\.\d\d$/.test(String(base.b)) ? 100 : 10,
+              bInt,
+              q,
+              a;
+            for (var guard = 0; guard < 200; guard++) {
+              bInt = scale === 10 ? rnd(2, 99) : rnd(11, 199);
+              if (bInt % 10 === 0) continue;
+              q = rnd(3, 60);
+              a = (bInt * q) / scale;
+              if (a !== base.a) break;
+            }
+            VARIANT[key] = { a: a, b: bInt / scale };
+          }
+          return VARIANT[key];
+        }
         var W2 = {
           id: "slide",
           lesson: "2.7",
@@ -2655,7 +2741,7 @@
           blurb: "Decimal division, solved in your notebook — the slide bench opens if you slip.",
           closing: "Slide BOTH points the same number of places and the answer does not change.",
           build: function (lv, a) {
-            var j = W2_JOBS[lv];
+            var j = w2Job(lv);
             var q = Math.round(j.a * 100) / Math.round(j.b * 100);
             return notebookFirst(
               a,
@@ -2685,7 +2771,7 @@
             /* Every dividend in W2_JOBS lands WHOLE after the minimal slide — the
          tower renders whole numbers. (9.36 ÷ 0.4 used to sit in the list; its
          slide gives 93.6 ÷ 4, which the tower cannot draw.) */
-            var j = W2_JOBS[lv];
+            var j = w2Job(lv);
             // Exact ratio comparison via scaled integers — the values have at most
             // two decimal places, and float products of decimals are not reliable.
             var A100 = Math.round(j.a * 100),
@@ -2827,8 +2913,53 @@
           { kind: "frac", n: 3, d: 5, whole: 5 },
           { kind: "frac", n: 2, d: 3, whole: 4 },
         ];
+        /* Same idea as w1Job: a served dough order returns with new numbers.
+           Each slot keeps its shape — levels 0-2 are WHOLE ÷ UNIT FRACTION
+           (the answer is whole × d sticks), levels 3-4 are PROPER FRACTION ÷
+           WHOLE. Level 3 lands in lowest terms straight away (like 3/5 ÷ 5);
+           level 4 needs a simplify step (like 2/3 ÷ 4 = 2/12 = 1/6). The ticket,
+           the notebook entry, the prep bench and the tape all read this one
+           job, so they always agree. */
+        var W3_RANGE = [
+          { wLo: 2, wHi: 5, dLo: 2, dHi: 5 },
+          { wLo: 3, wHi: 6, dLo: 2, dHi: 4 },
+          { wLo: 3, wHi: 6, dLo: 5, dHi: 8 },
+        ];
+        function isW3Authored(kind, whole, d, n) {
+          return W3_JOBS.some(function (o) {
+            return o.kind === kind && o.whole === whole && o.d === d && (kind === "whole" || o.n === n);
+          });
+        }
+        function w3Job(lv) {
+          var base = W3_JOBS[lv];
+          if (!starsOf("tape", lv)) return base;
+          var key = "tape:" + lv;
+          if (!VARIANT[key]) {
+            var j = null;
+            for (var guard = 0; guard < 500 && !j; guard++) {
+              if (base.kind === "whole") {
+                var r = W3_RANGE[lv],
+                  w = rnd(r.wLo, r.wHi),
+                  dd = rnd(r.dLo, r.dHi);
+                if (w * dd > 48 || isW3Authored("whole", w, dd)) continue;
+                j = { kind: "whole", whole: w, d: dd };
+              } else {
+                var fd = rnd(3, 8),
+                  fn = rnd(2, fd - 1),
+                  fw = rnd(2, 6);
+                if (gcd(fn, fd) !== 1) continue;
+                // level 3: already in lowest terms; level 4: needs simplifying
+                if ((gcd(fn, fw) === 1) !== (lv === 3)) continue;
+                if (isW3Authored("frac", fw, fd, fn)) continue;
+                j = { kind: "frac", n: fn, d: fd, whole: fw };
+              }
+            }
+            VARIANT[key] = j || base;
+          }
+          return VARIANT[key];
+        }
         function w3Data(lv) {
-          var j = W3_JOBS[lv];
+          var j = w3Job(lv);
           if (j.kind === "whole") {
             return {
               j: j,
@@ -2933,32 +3064,13 @@
             );
           },
           remediate: function (lv, a) {
-            var set = W3_JOBS;
-            var j = set[lv];
-            var expr, ansN, ansD, prompt;
-            if (j.kind === "whole") {
-              expr = j.whole + " ÷ 1/" + j.d;
-              ansN = j.whole * j.d;
-              ansD = 1;
-              prompt =
-                "A " +
-                j.whole +
-                "-foot rope of pretzel dough, cut into 1/" +
-                j.d +
-                "-foot sticks. How many sticks?";
-            } else {
-              var f = fr(j.n, j.d * j.whole);
-              expr = j.n + "/" + j.d + " ÷ " + j.whole;
-              ansN = f.n;
-              ansD = f.d;
-              prompt =
-                j.n +
-                "/" +
-                j.d +
-                " of a pound of fudge shared equally between " +
-                j.whole +
-                " boxes. How much each?";
-            }
+            // The bench reads the SAME job as the ticket and the notebook entry.
+            var dt = w3Data(lv);
+            var j = dt.j,
+              expr = dt.expr,
+              ansN = dt.ansN,
+              ansD = dt.ansD,
+              prompt = dt.prompt;
             var overOne = false,
               flipped = false,
               answered = false;
@@ -3217,6 +3329,80 @@
           { A: { n: 10, d: 3 }, B: { n: 2, d: 3 }, mixed: { w: 3, n: 1, d: 3 } },
           { A: { n: 9, d: 4 }, B: { n: 3, d: 8 }, mixed: { w: 2, n: 1, d: 4 } },
         ];
+        /* Same idea as w1Job: a served Keep-Change-Flip order returns with new
+           numbers in the same shape as its slot, and — like every authored
+           order here — a WHOLE-number answer, so the single answer box, the
+           simplify step and the result card stay exactly as designed.
+             0-1  proper a/b ÷ unit 1/m, with b | m      (3/4 ÷ 1/8 = 6)
+             2    mixed ÷ unit 1/m, m a multiple of d    (3 1/2 ÷ 1/4 = 14)
+             3    mixed ÷ p/d, same denominator, p | top (3 1/3 ÷ 2/3 = 5)
+             4    mixed ÷ p/(k·d), k = 2 or 3, p | k·top  (2 1/4 ÷ 3/8 = 6)
+           Every fraction on the ticket is in lowest terms; mixed parts are
+           proper. The ticket, the notebook entry and the bench all read this. */
+        function w4Mixed(wLo, wHi, dList) {
+          for (;;) {
+            var d = dList[rnd(0, dList.length - 1)],
+              n = rnd(1, d - 1),
+              w = rnd(wLo, wHi);
+            if (gcd(n, d) === 1) return { A: { n: w * d + n, d: d }, mixed: { w: w, n: n, d: d } };
+          }
+        }
+        function w4Make(lv) {
+          var A, B, mixed = null, m, p;
+          if (lv <= 1) {
+            var b = rnd(3, 8),
+              a = rnd(2, b - 1),
+              k = rnd(2, 4);
+            if (gcd(a, b) !== 1 || b * k > 16) return null;
+            A = { n: a, d: b };
+            B = { n: 1, d: b * k };
+          } else if (lv === 2) {
+            var x = w4Mixed(1, 4, [2, 3, 4]);
+            m = x.A.d * rnd(2, 3);
+            if (m > 12) return null;
+            A = x.A;
+            mixed = x.mixed;
+            B = { n: 1, d: m };
+          } else if (lv === 3) {
+            var y = w4Mixed(1, 4, [3, 4, 5, 6, 7, 8]);
+            p = rnd(2, y.A.d - 1);
+            if (gcd(p, y.A.d) !== 1 || y.A.n % p) return null;
+            A = y.A;
+            mixed = y.mixed;
+            B = { n: p, d: y.A.d };
+          } else {
+            var z = w4Mixed(1, 4, [2, 3, 4, 5]);
+            var kk = rnd(2, 3),
+              q = kk * z.A.d;
+            p = rnd(2, q - 1);
+            if (q > 16 || gcd(p, q) !== 1 || (kk * z.A.n) % p || (kk * z.A.n) / p < 2) return null;
+            A = z.A;
+            mixed = z.mixed;
+            B = { n: p, d: q };
+          }
+          return { A: A, B: B, mixed: mixed };
+        }
+        function w4Job(lv) {
+          var base = W4_JOBS[lv];
+          if (!starsOf("kcf", lv)) return base;
+          var key = "kcf:" + lv;
+          if (!VARIANT[key]) {
+            var j = null;
+            for (var guard = 0; guard < 500 && !j; guard++) {
+              j = w4Make(lv);
+              // never one of the authored orders — a replay is always new
+              if (
+                j &&
+                W4_JOBS.some(function (o) {
+                  return j.A.n === o.A.n && j.A.d === o.A.d && j.B.n === o.B.n && j.B.d === o.B.d;
+                })
+              )
+                j = null;
+            }
+            VARIANT[key] = j || base;
+          }
+          return VARIANT[key];
+        }
         var W4 = {
           id: "kcf",
           lesson: "6.2",
@@ -3226,7 +3412,7 @@
             "Fractions and mixed numbers, solved in your notebook — the bench opens if you slip.",
           closing: "a/b ÷ c/d = a/b × d/c — and the page it was worked on was yours.",
           build: function (lv, a) {
-            var j = W4_JOBS[lv];
+            var j = w4Job(lv);
             var ans = fr(j.A.n * j.B.d, j.A.d * j.B.n);
             var label =
               (j.mixed ? j.mixed.w + " " + j.mixed.n + "/" + j.mixed.d : j.A.n + "/" + j.A.d) +
@@ -3273,7 +3459,7 @@
             );
           },
           remediate: function (lv, a) {
-            var j = W4_JOBS[lv];
+            var j = w4Job(lv);
             var raw = { n: j.A.n * j.B.d, d: j.A.d * j.B.n };
             var ans = fr(raw.n, raw.d);
             var stage = j.mixed ? "convert" : "flip";
@@ -3334,7 +3520,8 @@
               OP.textContent = isFlipped ? "×" : "÷";
               OP.className = "op kOp" + (isFlipped ? " armed" : "");
               if (stage === "done") {
-                R.innerHTML = F(ans);
+                R.innerHTML =
+                  ans.d === 1 ? '<span style="font-size:32px;font-weight:900">' + ans.n + "</span>" : F(ans);
                 R.classList.add("filled");
               }
               trail.innerHTML = trailBits.join(" &nbsp;·&nbsp; ");

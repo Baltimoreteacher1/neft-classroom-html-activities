@@ -78,33 +78,114 @@
       }
       /* A native phone entry point shares the canvas game's tier and start
          functions. Desktop play and all round/scoring contracts stay intact. */
-      #pa-phone-launch { display: none; }
-      #pa-phone-launch[hidden] { display: none !important; }
+      #pa-phone-launch {
+        display: none;
+      }
+      #pa-phone-launch[hidden] {
+        display: none !important;
+      }
       @media (max-width: 600px) {
-        body { background-image: none; }
-        body.pa-title-screen #pa-stage { display: none; }
-        #pa-phone-launch { display: block; margin: 16px; padding: 24px; border: 1px solid #45616c; border-radius: 8px; background: #112e3c; color: #fff; }
-        #pa-phone-launch .pa-phone-label { color: #9ed7cb; font-size: 16px; font-weight: 600; margin-bottom: 12px; }
-        #pa-phone-launch h1 { font-size: 28px; line-height: 1.2; letter-spacing: -.025em; margin-bottom: 16px; }
-        #pa-phone-launch p { font-size: 17px; line-height: 1.55; margin-bottom: 20px; }
-        #pa-phone-launch label { display: block; font-size: 16px; margin-bottom: 8px; }
-        #pa-phone-launch select { width: 100%; min-height: 48px; padding: 10px; border: 1px solid #78999d; border-radius: 6px; background: #fff; color: #173653; font: inherit; }
-        #pa-phone-launch button { width: 100%; min-height: 52px; margin-block: 16px 8px; padding: 12px; border: 0; border-radius: 6px; background: #99e4d1; color: #10372f; font: inherit; font-size: 18px; font-weight: 700; cursor: pointer; }
-        #pa-phone-launch a { display: inline-flex; align-items: center; min-height: 44px; color: #bde8ff; font-size: 16px; text-underline-offset: 4px; }
-        #pa-phone-launch :is(button,select,a):focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
-        body:has(#pa-phone-launch) .ewl-arcade-header-bar { margin: 0; padding: 12px 16px; border-radius: 0; border-inline: 0; box-shadow: none; }
-        body:has(#pa-phone-launch) .ewl-arcade-title-group { gap: 8px; }
-        body:has(#pa-phone-launch) .ewl-arcade-controls { grid-template-columns: repeat(4,minmax(0,1fr)); }
-        body:has(#pa-phone-launch) .ewl-btn-toggle { padding-inline: 4px; font-size: 13px; }
-        body:has(#pa-phone-launch) .ewl-mastery-coach { position: relative; bottom: auto; margin-top: 16px; }
+        body {
+          background-image: none;
+        }
+        body.pa-title-screen #pa-stage {
+          display: none;
+        }
+        #pa-phone-launch {
+          display: block;
+          margin: 16px;
+          padding: 24px;
+          border: 1px solid #45616c;
+          border-radius: 8px;
+          background: #112e3c;
+          color: #fff;
+        }
+        #pa-phone-launch .pa-phone-label {
+          color: #9ed7cb;
+          font-size: 16px;
+          font-weight: 600;
+          margin-bottom: 12px;
+        }
+        #pa-phone-launch h1 {
+          font-size: 28px;
+          line-height: 1.2;
+          letter-spacing: -0.025em;
+          margin-bottom: 16px;
+        }
+        #pa-phone-launch p {
+          font-size: 17px;
+          line-height: 1.55;
+          margin-bottom: 20px;
+        }
+        #pa-phone-launch label {
+          display: block;
+          font-size: 16px;
+          margin-bottom: 8px;
+        }
+        #pa-phone-launch select {
+          width: 100%;
+          min-height: 48px;
+          padding: 10px;
+          border: 1px solid #78999d;
+          border-radius: 6px;
+          background: #fff;
+          color: #173653;
+          font: inherit;
+        }
+        #pa-phone-launch button {
+          width: 100%;
+          min-height: 52px;
+          margin-block: 16px 8px;
+          padding: 12px;
+          border: 0;
+          border-radius: 6px;
+          background: #99e4d1;
+          color: #10372f;
+          font: inherit;
+          font-size: 18px;
+          font-weight: 700;
+          cursor: pointer;
+        }
+        #pa-phone-launch a {
+          display: inline-flex;
+          align-items: center;
+          min-height: 44px;
+          color: #bde8ff;
+          font-size: 16px;
+          text-underline-offset: 4px;
+        }
+        #pa-phone-launch :is(button, select, a):focus-visible {
+          outline: 3px solid #fff;
+          outline-offset: 4px;
+        }
+        body:has(#pa-phone-launch) .ewl-arcade-header-bar {
+          margin: 0;
+          padding: 12px 16px;
+          border-radius: 0;
+          border-inline: 0;
+          box-shadow: none;
+        }
+        body:has(#pa-phone-launch) .ewl-arcade-title-group {
+          gap: 8px;
+        }
+        body:has(#pa-phone-launch) .ewl-arcade-controls {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+        body:has(#pa-phone-launch) .ewl-btn-toggle {
+          padding-inline: 4px;
+          font-size: 13px;
+        }
+        body:has(#pa-phone-launch) .ewl-mastery-coach {
+          position: relative;
+          bottom: auto;
+          margin-top: 16px;
+        }
       }
     </style>
     <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
     <script>
       if (typeof Phaser === "undefined") {
-        document.write(
-          '<script src="/games/vendor/phaser/phaser-3.80.1.min.js"><\/script>',
-        );
+        document.write('<script src="/games/vendor/phaser/phaser-3.80.1.min.js"><\/script>');
       }
     </script>
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
@@ -133,27 +214,49 @@
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />
     <script src="/math/games/shared/arcade-fx-engine.js"></script>
-  <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-<link rel="stylesheet" href="/math/games/practice-arcade/studio.css">
-</head>
+    <link rel="stylesheet" href="/assets/game-studio.css?v=20261002" />
+    <link rel="stylesheet" href="/math/games/practice-arcade/studio.css" />
+  </head>
   <body>
-    <header class="ewl-arcade-header-bar" aria-label="Current adventure"><span id="ewl-world-badge" style="font-size:18px;font-weight:800;color:#b9f3df">Practice Arcade</span></header>
-
+    <header class="ewl-arcade-header-bar pa-head" aria-label="Current adventure">
+      <span id="ewl-world-badge" style="font-size: 18px; font-weight: 800; color: #b9f3df"
+        >Practice Arcade</span
+      >
+    <section class="practice-console" aria-label="Practice session">
+        <div>
+          <strong id="practice-session-title">Your next math adventure</strong>
+          <p id="practice-session-note">
+            No timer. Hints and retries help you learn. Progress stays on this browser.
+          </p>
+        </div>
+        <div class="practice-console-actions">
+          <button id="practice-resume" type="button" hidden>Resume saved adventure</button
+          ><button id="practice-retry" type="button" hidden>Practice questions to revisit</button
+          ><a href="/math/games/practice-arcade/map.html">World map</a>
+        </div>
+      </section>
+    </header>
     <section id="pa-phone-launch" aria-labelledby="pa-phone-title" hidden>
       <p class="pa-phone-label">Practice Arcade</p>
       <h1 id="pa-phone-title">Math practice</h1>
-      <p id="pa-phone-directions">Work at your own pace. Choose, sort, or match your answers. Use hints when you need help.</p>
+      <p id="pa-phone-directions">
+        Work at your own pace. Choose, sort, or match your answers. Use hints when you need help.
+      </p>
       <label for="pa-phone-tier">Practice level</label>
       <select id="pa-phone-tier"></select>
       <button id="pa-phone-start" type="button">Start practice</button>
       <a href="/math/games/practice-arcade/map.html">Choose another unit →</a>
     </section>
-    <section class="practice-console" aria-label="Practice session">
-      <div><strong id="practice-session-title">Your next math adventure</strong><p id="practice-session-note">No timer. Hints and retries help you learn. Progress stays on this browser.</p></div>
-      <div class="practice-console-actions"><button id="practice-resume" type="button" hidden>Resume saved adventure</button><button id="practice-retry" type="button" hidden>Practice questions to revisit</button><a href="/math/games/practice-arcade/map.html">World map</a></div>
-    </section>
-    <details id="practice-text-controls" class="practice-text-controls" hidden><summary>Text and touch controls</summary><div id="practice-native-round"></div><p id="practice-native-feedback" role="status" aria-live="polite"></p></details>
-    <main id="pa-stage" aria-label="Practice Arcade game" style="width:100%; min-height:300px; position:relative;"></main>
+    <main
+      id="pa-stage"
+      aria-label="Practice Arcade game"
+      style="width: 100%; min-height: 300px; position: relative"
+    ></main>
+    <details id="practice-text-controls" class="practice-text-controls" hidden>
+      <summary>Text and touch controls</summary>
+      <div id="practice-native-round"></div>
+      <p id="practice-native-feedback" role="status" aria-live="polite"></p>
+    </details>
     <div id="loader">
       <div class="spinner"></div>
       <div id="loader-text">Loading Practice Arcade…</div>
@@ -203,6 +306,9 @@
         const W = 960,
           H = 720;
         const MAX_ROUNDS = 10;
+        // Everything a round draws stays above this line; the strip below it
+        // belongs to the feedback / earned-help card.
+        const FEED_TOP = H - 104;
         // Bright, high-contrast, kid-friendly palette. Vivid indigo/violet field
         // with saturated tiles + cyan accent so white text stays legible. A fixed
         // scheme (not the per-lesson dark theme) guarantees consistent contrast;
@@ -349,6 +455,19 @@
             boss: "🐻",
           },
         };
+        // Curriculum unit titles (curriculum/units/index.html), keyed by unit.
+        const UNIT_TITLES = {
+          1: "Math Is Discovery",
+          2: "Statistics",
+          3: "Ratios & Rates",
+          4: "Percents",
+          5: "Area, Surface Area & Volume",
+          6: "Expressions",
+          7: "Integers & the Coordinate Plane",
+          8: "Equations & Inequalities",
+          9: "Two-Variable Relationships",
+          10: "Math Is Synthesis",
+        };
         let worldUnit = 0; // 0 = default (mixed / unknown) → keep base indigo
         let worldName = "Practice Arcade";
         let worldGlyphs = "÷×+−";
@@ -372,7 +491,8 @@
           worldBoss = w.boss;
           const wb = document.getElementById("ewl-world-badge");
           if (wb) {
-            wb.innerHTML = `${w.boss} Unit ${worldUnit}: ${w.name}`;
+            // Curriculum unit title first (what the class calls it), world second.
+            wb.textContent = `${w.boss} Unit ${worldUnit} · ${UNIT_TITLES[worldUnit] || ""} — ${w.name}`;
             wb.style.color = "#" + w.accent.toString(16).padStart(6, "0");
           }
         }
@@ -455,40 +575,105 @@
         };
 
         let resumeRun = null;
-                let completedRounds = [];
+        let helpWatchBound = false;
+        let completedRounds = [];
         const checkpointKey = () => "pa-adventure-v1-" + activeLesson;
-        const contentSignature = () => JSON.stringify(allRounds.map(r => [r.kind, r.prompt, [...(r.choices || [])].sort(), r.choices?.[r.correctIndex], r.target, r.answer]).sort((a,b) => JSON.stringify(a).localeCompare(JSON.stringify(b))));
+        const contentSignature = () =>
+          JSON.stringify(
+            allRounds
+              .map((r) => [
+                r.kind,
+                r.prompt,
+                [...(r.choices || [])].sort(),
+                r.choices?.[r.correctIndex],
+                r.target,
+                r.answer,
+              ])
+              .sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b))),
+          );
         function storedRun() {
           try {
             const run = JSON.parse(localStorage.getItem(checkpointKey()) || "null");
-            if (!run || run.signature !== contentSignature() || run.tier !== tier || !Array.isArray(run.rounds) || !run.rounds.length || run.rounds.length > 12 || !Number.isInteger(run.idx) || run.idx < 0 || run.idx >= run.rounds.length) return null;
+            if (
+              !run ||
+              run.signature !== contentSignature() ||
+              run.tier !== tier ||
+              !Array.isArray(run.rounds) ||
+              !run.rounds.length ||
+              run.rounds.length > 12 ||
+              !Number.isInteger(run.idx) ||
+              run.idx < 0 ||
+              run.idx >= run.rounds.length
+            )
+              return null;
             return run;
-          } catch (_) { return null; }
+          } catch (_) {
+            return null;
+          }
         }
-        function studioEvent(type, detail) { if (window.GameStudio) window.GameStudio.emit(type, detail); }
+        function studioEvent(type, detail) {
+          if (window.GameStudio) window.GameStudio.emit(type, detail);
+        }
         function updateSession(scene) {
           const title = document.getElementById("practice-session-title");
           const note = document.getElementById("practice-session-note");
           title.textContent = lessonTitle;
-          if (scene) note.textContent = "Challenge " + (scene.idx + 1) + " of " + rounds.length + " · Score " + scene.score + " · First-try solves " + scene.correctCount + ". Retry freely; no timer.";
-          else note.textContent = "Choose your practice level. Use number keys for choices, arrows for markers, and Enter to check. Progress saves after every challenge.";
+          if (scene)
+            note.textContent =
+              "Challenge " +
+              (scene.idx + 1) +
+              " of " +
+              rounds.length +
+              " · Score " +
+              scene.score +
+              " · First-try solves " +
+              scene.correctCount +
+              ". Retry freely; no timer.";
+          else
+            note.textContent =
+              "Choose your practice level. Use number keys for choices, arrows for markers, and Enter to check. Progress saves after every challenge.";
           document.getElementById("practice-resume").hidden = !!scene || !storedRun();
           document.getElementById("practice-retry").hidden = true;
         }
         window.PracticeStudio = {
-          setMuted(m) { SFX.on = !m; JUICE.audio.setMuted?.(m); if (window.ArcadeFX?.isMuted && window.ArcadeFX.isMuted() !== !!m) window.ArcadeFX.toggleMute(); },
+          setMuted(m) {
+            SFX.on = !m;
+            JUICE.audio.setMuted?.(m);
+            if (window.ArcadeFX?.isMuted && window.ArcadeFX.isMuted() !== !!m)
+              window.ArcadeFX.toggleMute();
+          },
           setMotion(m) {
             JUICE.reduceMotion = !!m;
             if (!this.motionWrapped) {
-              ["burst", "confetti", "shake", "floatText", "tilePop"].forEach(name => { const original = JUICE[name]; if (original) JUICE[name] = (...args) => { if (!JUICE.reduceMotion) return original.apply(JUICE,args); }; });
+              ["burst", "confetti", "shake", "floatText", "tilePop"].forEach((name) => {
+                const original = JUICE[name];
+                if (original)
+                  JUICE[name] = (...args) => {
+                    if (!JUICE.reduceMotion) return original.apply(JUICE, args);
+                  };
+              });
               const popIn = JUICE.popIn;
-              JUICE.popIn = (scene,target,...args) => { if (JUICE.reduceMotion) { target.setAlpha(1).setScale(1); return; } return popIn?.call(JUICE,scene,target,...args); };
+              JUICE.popIn = (scene, target, ...args) => {
+                if (JUICE.reduceMotion) {
+                  target.setAlpha(1).setScale(1);
+                  return;
+                }
+                return popIn?.call(JUICE, scene, target, ...args);
+              };
               this.motionWrapped = true;
             }
-            const play = window.paGame?.scene.getScene("Play"); if (play) play.reduce = !!m;
+            const play = window.paGame?.scene.getScene("Play");
+            if (play) play.reduce = !!m;
           },
-          pause() { this.pausedScenes = window.paGame?.scene.getScenes(true).map(s => s.scene.key) || []; this.pausedScenes.forEach(key => window.paGame.scene.pause(key)); JUICE.audio.musicStop(); },
-          resume() { (this.pausedScenes || []).forEach(key => window.paGame.scene.resume(key)); this.pausedScenes = []; },
+          pause() {
+            this.pausedScenes = window.paGame?.scene.getScenes(true).map((s) => s.scene.key) || [];
+            this.pausedScenes.forEach((key) => window.paGame.scene.pause(key));
+            JUICE.audio.musicStop();
+          },
+          resume() {
+            (this.pausedScenes || []).forEach((key) => window.paGame.scene.resume(key));
+            this.pausedScenes = [];
+          },
         };
 
         function srSay(msg) {
@@ -627,6 +812,11 @@
           },
         };
 
+        // Stable identity of a round across page loads (choice order shuffles).
+        function roundKey(r) {
+          return (r.kind || "") + "|" + String(r.prompt || "").slice(0, 160);
+        }
+
         // Derive the played `rounds` from `allRounds` for the chosen tier. Called
         // at load and again whenever the student picks a level on the Title screen.
         // Never yields an empty list — an over-narrow filter falls back to all.
@@ -644,6 +834,13 @@
           }
           if (!pool.length) pool = allRounds.slice();
           if (isReviewMode) pool = shuffle(pool);
+          // Replay with NEW challenges: when the lesson has more items than one
+          // run plays, the ones the last finished run used go to the back.
+          try {
+            const played = new Set(JSON.parse(localStorage.getItem("pa-played-" + activeLesson) || "[]"));
+            if (played.size && pool.length > (isReviewMode ? 12 : MAX_ROUNDS))
+              pool = pool.filter((r) => !played.has(roundKey(r))).concat(pool.filter((r) => played.has(roundKey(r))));
+          } catch (_) {}
           rounds = pool.slice(0, isReviewMode ? 12 : MAX_ROUNDS);
           // Guarantee the interactive kinds (plot / multi-step chain) actually
           // play, and place them AFTER a short warm-up round rather than always
@@ -658,13 +855,18 @@
             // Keep the non-interactive rounds as filler (leaving room for the
             // interactive ones), then splice the interactive rounds in starting
             // after the first warm-up round, two slots apart.
+            // At most half the run is interactive, spread evenly after a
+            // warm-up round (a unit with many plot items used to end in six
+            // plot rounds back to back).
+            const pick = (isReviewMode ? shuffle(interactive) : interactive).slice(0, Math.ceil(cap / 2));
             const filler = rounds
               .filter((r) => !isInteractive(r))
-              .slice(0, Math.max(1, cap - interactive.length));
+              .slice(0, Math.max(1, cap - pick.length));
             const merged = filler.slice();
-            const startAt = Math.min(1, merged.length);
-            interactive.forEach((r, i) => {
-              merged.splice(Math.min(merged.length, startAt + i * 2), 0, r);
+            const total = filler.length + pick.length;
+            pick.forEach((r, i) => {
+              const at = 1 + Math.floor(((i + 0.5) * (total - 1)) / pick.length);
+              merged.splice(Math.min(merged.length, at), 0, r);
             });
             rounds = merged.slice(0, cap);
           }
@@ -758,16 +960,41 @@
                     (it.answer || "");
                 if (seen.has(sig)) return;
                 seen.add(sig);
-                let r = buildRound(it);
-                if (!r) return;
-                // Attach difficulty tier + any authored Spanish translations, then
-                // opportunistically upgrade a plain choose item into a mechanic.
-                r.tier = tierOf(it);
-                r.standard = data.standard || "";
-                r.promptEs = it.stem_es || it.instructions_es || it.label_es || it.title_es || "";
-                r.whyEs = it.explanation_es || it.correctWork_es || "";
-                r = synthesizeMechanic(r, allRounds.length);
-                allRounds.push(r);
+                const built = buildRound(it);
+                if (!built) return;
+                // A number-line item with several targets plays as one round per
+                // target; every other item builds exactly one round.
+                (Array.isArray(built) ? built : [built]).forEach((round) => {
+                  let r = round;
+                  // Attach difficulty tier, the authored help ladder, and Spanish.
+                  // Configs author Spanish as camelCase `stemEs`/`explanationEs`/
+                  // `hintsEs`; the snake_case names are the older spelling and are
+                  // still read so nothing that used them regresses.
+                  r.tier = tierOf(it);
+                  r.standard = data.standard || "";
+                  if (!r.promptEs)
+                    r.promptEs =
+                      it.stemEs ||
+                      it.instructionsEs ||
+                      it.labelEs ||
+                      it.titleEs ||
+                      it.stem_es ||
+                      it.instructions_es ||
+                      it.label_es ||
+                      it.title_es ||
+                      "";
+                  r.whyEs =
+                    it.explanationEs ||
+                    it.correctWorkEs ||
+                    it.explanation_es ||
+                    it.correctWork_es ||
+                    "";
+                  if (!r.why) r.why = it.explanation || it.correctWork || "";
+                  r.hints = textList(it.hints, it.hint);
+                  r.hintsEs = textList(it.hintsEs, it.hintEs);
+                  r = synthesizeMechanic(r, allRounds.length);
+                  allRounds.push(r);
+                });
               });
             } catch (e) {
               /* skip unreachable lesson */
@@ -834,8 +1061,16 @@
           document.getElementById("loader").style.display = "none";
           const bgHex = "#" + PALETTE.bgBot.toString(16).padStart(6, "0");
           const stage = document.getElementById("pa-stage");
+          // Fit the board to the SCREEN, not just the width: on the title the
+          // board fills the space under the page chrome so START is visible
+          // without scrolling; while playing it may use the full viewport height
+          // (the page scrolls the board to the top when play starts).
           function fitStage() {
-            stage.style.height = Math.max(300, Math.min(960, innerWidth - 24) * H / W) + "px";
+            const widthFit = (Math.min(960, innerWidth - 24) * H) / W;
+            const playing = document.body.classList.contains("pa-playing");
+            const top = stage.getBoundingClientRect().top + scrollY;
+            const avail = playing ? innerHeight - 12 : innerHeight - top - 12;
+            stage.style.height = Math.max(300, Math.min(widthFit, avail)) + "px";
             if (window.paGame) {
               // refresh uses cached parent dimensions. Re-measure after the
               // native phone launch screen reveals the game container.
@@ -843,6 +1078,7 @@
               window.paGame.scale.refresh();
             }
           }
+          window.paFitStage = fitStage;
           fitStage();
           window.addEventListener("resize", fitStage);
           const layoutObserver = new ResizeObserver(fitStage);
@@ -943,10 +1179,19 @@
             // misconceptionTags[i] names the wrong idea choice i represents).
             // Tracked through the shuffle by original index.
             const srcTags = Array.isArray(it.misconceptionTags) ? it.misconceptionTags : null;
+            // Per-choice arrays (Spanish choices, misconception feedback) ride
+            // through the same shuffle by original index so they stay aligned.
+            const follow = (arr) =>
+              Array.isArray(arr) && arr.length === it.choices.length
+                ? shuffled.map((t) => (arr[t.idx] == null ? "" : String(arr[t.idx])))
+                : null;
             return {
               kind: "choose",
               prompt: it.stem,
               choices: shuffled.map((t) => t.text),
+              choicesEs: follow(it.choicesEs),
+              choiceFeedback: follow(it.choiceFeedback),
+              choiceFeedbackEs: follow(it.choiceFeedbackEs),
               correctIndex: newIndex < 0 ? 0 : newIndex,
               misconceptionTags: srcTags ? shuffled.map((t) => srcTags[t.idx] || null) : null,
               why: it.explanation || "",
@@ -1022,21 +1267,47 @@
           }
           // ── Native math-as-mechanic types (also produced by synthesis below) ──
           if (it.type === "number-line") {
-            const target = Number(it.target);
             const min = Number(it.min),
               max = Number(it.max);
-            if (![target, min, max].every(Number.isFinite) || min >= max) return null;
-            return {
-              kind: "numline",
-              prompt: it.stem || "Drag the marker to the right value.",
-              min,
-              max,
-              target,
-              step: Number(it.step) || (max - min) / 10,
-              tol: Number(it.tolerance) || 0,
-              unit: it.unit || "",
-              why: it.explanation || "",
+            if (![min, max].every(Number.isFinite) || min >= max) return null;
+            const one = (target, prompt, promptEs) => {
+              if (!Number.isFinite(target) || target < min || target > max) return null;
+              // The marker snaps to multiples of `step`; when the target sits
+              // between grid points (1/3 ≈ 0.333 on a 0.01 grid) the nearest
+              // grid point is always within half a step, so that tolerance
+              // keeps every authored target reachable.
+              const step = Number(it.step) > 0 ? Number(it.step) : (max - min) / 10;
+              return {
+                kind: "numline",
+                prompt,
+                promptEs: promptEs || "",
+                min,
+                max,
+                target,
+                step,
+                tol: Number(it.tolerance) > 0 ? Number(it.tolerance) : step / 2 + 1e-9,
+                unit: it.unit || "",
+                why: it.explanation || "",
+              };
             };
+            const base =
+              it.stem || it.label || it.instructions || "Drag the marker to the right value.";
+            const baseEs = it.stemEs || it.labelEs || it.instructionsEs || "";
+            // Authored multi-target items ({targets:[{value,label}]}) play one
+            // placement per target so each mark gets its own check.
+            if (Array.isArray(it.targets) && it.targets.length) {
+              const list = it.targets
+                .map((tg) =>
+                  one(
+                    Number(tg && tg.value),
+                    tg && tg.label ? base + "\nPlace: " + tg.label : base,
+                    tg && tg.label && baseEs ? baseEs + "\nUbica: " + tg.label : baseEs,
+                  ),
+                )
+                .filter(Boolean);
+              return list.length ? list : null;
+            }
+            return one(Number(it.target), base, baseEs);
           }
           if (it.type === "build-expression") {
             const answer = normTokens(it.answer);
@@ -1180,6 +1451,44 @@
           return 1;
         }
 
+        // Plain list of authored strings (hints) from an array or a lone string.
+        function textList(list, single) {
+          const out = Array.isArray(list) ? list : single ? [single] : [];
+          return out.map((s) => (s == null ? "" : String(s).trim())).filter(Boolean);
+        }
+
+        // Grid step that lands exactly on a value's own decimal precision.
+        function precisionStep(v) {
+          const decs = (String(Math.round(Math.abs(v) * 1000) / 1000).split(".")[1] || "").length;
+          return decs ? Math.pow(10, -Math.min(3, decs)) : 1;
+        }
+
+        // A "nice" axis spacing (1, 2, 2.5, 5 × 10^k) near the raw spacing.
+        // Whole-number axes skip 2.5 so every label is a whole number.
+        function niceStep(raw, wholeOnly) {
+          if (!(raw > 0)) return 1;
+          const p = Math.pow(10, Math.floor(Math.log10(raw)));
+          const f = raw / p;
+          const k = f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 && !wholeOnly ? 2.5 : f <= 5 ? 5 : 10;
+          return wholeOnly ? Math.max(1, k * p) : k * p;
+        }
+
+        // Read a choice as ONE plain quantity, or null. Strict on purpose: a
+        // fraction ("3/4"), a ratio ("2:3"), a pair ("(3, 6)"), a sentence, or a
+        // number followed by an explanation ("15 blocks — Ben…") is NOT one
+        // number, and squeezing it into one is how a number-line round used to
+        // grade "3/4" as 34. Returns {value, unit} where unit is the trailing
+        // word(s) so two choices in different units ("240 cubic inches" vs
+        // "240 square inches") are never treated as the same kind of answer.
+        function parseNumeric(text) {
+          const s = String(text == null ? "" : text).trim();
+          const m = s.match(/^(\$)?([−-]?)(\d{1,3}(?:,\d{3})+|\d+)(\.\d+)?\s*(%|[a-zA-Z]+(?: [a-zA-Z]+)?)?$/);
+          if (!m) return null;
+          const value = Number((m[2] ? "-" : "") + m[3].replace(/,/g, "") + (m[4] || ""));
+          if (!Number.isFinite(value)) return null;
+          return { value, unit: (m[1] || "") + "|" + (m[5] || "").toLowerCase() };
+        }
+
         // Opportunistically turn a numeric or product multiple-choice item into a
         // richer mechanic so the new game types appear across existing lessons —
         // but ONLY when the transform is unambiguous, so no wrong answers are ever
@@ -1192,81 +1501,63 @@
           if (correct == null) return round;
           const stem = String(round.prompt || "");
           const computes = /\b(what is|how many|value of|equals?|find|equal to|=)\b/i.test(stem);
-          // (A) product → BUILD THE ANSWER (factor/expression assembly)
-          const prod = normTokens(correct);
-          const isProduct = /[×*·]/.test(String(correct)) && prod.length >= 2;
-          if (isProduct && salt % 2 === 0) {
-            // Distractor tokens: unique factors from the wrong choices.
+          const carry = {
+            prompt: stem,
+            promptEs: round.promptEs || "",
+            why: round.why,
+            whyEs: round.whyEs || "",
+            hints: round.hints || [],
+            hintsEs: round.hintsEs || [],
+            tier: round.tier,
+            standard: round.standard,
+          };
+          // (A) product → BUILD THE ANSWER. Only when the answer is nothing but a
+          // product of whole numbers ("2 × 3 × 11"); a sentence that merely
+          // contains × ("Round 19 to 20 — then 20 × 4…") is not buildable.
+          const PRODUCT = /^\s*\d+(?:\s*[×*·]\s*\d+)+\s*$/;
+          if (PRODUCT.test(String(correct)) && salt % 2 === 0) {
+            const prod = normTokens(correct);
             const extra = [];
             choices.forEach((c, i) => {
-              if (i === round.correctIndex) return;
+              if (i === round.correctIndex || !PRODUCT.test(String(c))) return;
               normTokens(c).forEach((tk) => {
-                if (!prod.includes(tk) && !extra.includes(tk) && /^\d+$/.test(tk)) extra.push(tk);
+                if (!prod.includes(tk) && !extra.includes(tk)) extra.push(tk);
               });
             });
-            const tokens = shuffle(prod.concat(extra.slice(0, 3)));
-            return {
-              kind: "build",
-              prompt: stem,
-              // Carry the authored Spanish through synthesis: the prompt is the
-              // ORIGINAL stem (the math question), so its translation still
-              // applies — dropping promptEs/whyEs here is what regressed bilingual
-              // coverage on auto-generated rounds. The mechanic label ("ARMA LA
-              // RESPUESTA") is already localized via the mode badge / STR table.
-              promptEs: round.promptEs || "",
-              tokens,
-              answer: prod,
-              why: round.why,
-              whyEs: round.whyEs || "",
-              tier: round.tier,
-            };
+            return { ...carry, kind: "build", tokens: shuffle(prod.concat(extra.slice(0, 3))), answer: prod };
           }
-          // (B) numeric answer + computational stem → PLACE IT ON THE LINE
-          const nums = choices.map((c) => Number(String(c).replace(/[^0-9.\-]/g, "")));
-          const targetN = Number(String(correct).replace(/[^0-9.\-]/g, ""));
-          const allNumeric = nums.every(Number.isFinite) && Number.isFinite(targetN);
-          if (allNumeric && computes && salt % 3 === 0) {
-            const lo = Math.min(...nums, targetN);
-            const hi = Math.max(...nums, targetN);
-            const pad = Math.max(1, Math.round((hi - lo) * 0.25)) || 2;
-            const isInt = nums.every((n) => Number.isInteger(n)) && Number.isInteger(targetN);
-            const min = isInt ? Math.floor(lo - pad) : lo - pad;
-            const max = isInt ? Math.ceil(hi + pad) : hi + pad;
-            if (max > min) {
-              // Precision-aware snap + tolerance. Integers snap to 1 with exact
-              // (0) tolerance. Decimals snap to the target's own precision grid
-              // (0.1 for 1dp, 0.01 for 2dp …) so the answer is exactly reachable,
-              // and accept within half a grid cell — tight enough that an adjacent
-              // snap can't pass, loose enough that the snapped marker always can.
-              // Robust for negatives/zero (decimal count comes from the |value|
-              // string after rounding away float noise).
-              const decs = isInt
-                ? 0
-                : Math.min(
-                    3,
-                    (String(Math.round(Math.abs(targetN) * 1000) / 1000).split(".")[1] || "")
-                      .length,
-                  );
-              const nlStep = isInt ? 1 : Math.pow(10, -Math.max(1, decs));
-              const nlTol = isInt ? 0 : nlStep / 2;
-              return {
-                kind: "numline",
-                prompt: stem,
-                // Carry the authored Spanish (see the build case above).
-                promptEs: round.promptEs || "",
-                min,
-                max,
-                target: targetN,
-                step: nlStep,
-                tol: nlTol,
-                unit: "",
-                why: round.why,
-                whyEs: round.whyEs || "",
-                tier: round.tier,
-              };
-            }
-          }
-          return round;
+          // (B) one plain number + computational stem → PLACE IT ON THE LINE.
+          if (!computes || salt % 3 !== 0) return round;
+          const parsed = choices.map(parseNumeric);
+          if (parsed.some((p) => !p) || new Set(parsed.map((p) => p.unit)).size !== 1) return round;
+          const target = parsed[round.correctIndex].value;
+          const values = parsed.map((p) => p.value);
+          const lo = Math.min(...values);
+          const hi = Math.max(...values);
+          if (hi - lo <= 0) return round;
+          // Readable axis: ~6 labeled ticks at a nice spacing, padded one tick
+          // beyond the choices, never dipping below 0 for all-positive answers.
+          const tick = niceStep((hi - lo) / 6, values.every(Number.isInteger));
+          let min = Math.floor(lo / tick) * tick - tick;
+          const max = Math.ceil(hi / tick) * tick + tick;
+          if (lo >= 0 && min < 0) min = 0;
+          const step = Math.min(precisionStep(target), tick);
+          // The marker must be placeable: skip when the answer needs a finer grid
+          // than a student can reasonably reach (hundreds of tiny steps).
+          if ((max - min) / step > 240) return round;
+          const unitWord = parsed[0].unit.split("|")[1];
+          return {
+            ...carry,
+            kind: "numline",
+            min,
+            max,
+            target,
+            step,
+            tick,
+            tol: step / 2,
+            unit: unitWord === "%" ? "%" : "",
+            prefix: parsed[0].unit.startsWith("$") ? "$" : "",
+          };
         }
 
         function fallbackRounds() {
@@ -1298,12 +1589,16 @@
             const phoneLaunch = document.getElementById("pa-phone-launch");
             phoneLaunch.hidden = false;
             document.getElementById("pa-phone-title").textContent = lessonTitle;
-            document.getElementById("pa-phone-directions").textContent = lang === "es"
-              ? "Trabaja a tu ritmo. Elige, clasifica o une tus respuestas. Usa las pistas cuando necesites ayuda."
-              : "Work at your own pace. Choose, sort, or match your answers. Use hints when you need help.";
-            document.getElementById("pa-phone-start").textContent = lang === "es" ? "Empezar práctica" : "Start practice";
-            phoneLaunch.querySelector("label").textContent = lang === "es" ? "Nivel de práctica" : "Practice level";
-            phoneLaunch.querySelector("a").textContent = lang === "es" ? "Elegir otra unidad →" : "Choose another unit →";
+            document.getElementById("pa-phone-directions").textContent =
+              lang === "es"
+                ? "Trabaja a tu ritmo. Elige, clasifica o une tus respuestas. Usa las pistas cuando necesites ayuda."
+                : "Work at your own pace. Choose, sort, or match your answers. Use hints when you need help.";
+            document.getElementById("pa-phone-start").textContent =
+              lang === "es" ? "Empezar práctica" : "Start practice";
+            phoneLaunch.querySelector("label").textContent =
+              lang === "es" ? "Nivel de práctica" : "Practice level";
+            phoneLaunch.querySelector("a").textContent =
+              lang === "es" ? "Elegir otra unidad →" : "Choose another unit →";
             this.events.once("shutdown", () => {
               document.body.classList.remove("pa-title-screen");
               phoneLaunch.hidden = true;
@@ -1313,9 +1608,11 @@
             document.getElementById("practice-text-controls").hidden = true;
             updateSession();
             document.getElementById("practice-resume").onclick = () => {
-              resumeRun = storedRun(); if (!resumeRun) return;
+              resumeRun = storedRun();
+              if (!resumeRun) return;
               rounds = resumeRun.rounds;
-              this.scene.start("Play"); this.game.canvas.focus({preventScroll:true});
+              this.scene.start("Play");
+              this.game.canvas.focus({ preventScroll: true });
             };
             drawStars(this);
             const accentHex = "#" + PALETTE.accent.toString(16).padStart(6, "0");
@@ -1442,7 +1739,9 @@
             phoneTier.value = tier;
             phoneTier.onchange = () => {
               tier = phoneTier.value;
-              try { localStorage.setItem("pa-tier", tier); } catch (e) {}
+              try {
+                localStorage.setItem("pa-tier", tier);
+              } catch (e) {}
               paintPills();
             };
             const pills = [];
@@ -1572,13 +1871,22 @@
             super("Play");
           }
           create() {
+            // Playing: let the board use the full screen height and bring it
+            // into view, so the challenge and its feedback strip are on screen.
+            if (!document.body.classList.contains("pa-playing")) {
+              document.body.classList.add("pa-playing");
+              if (window.paFitStage) window.paFitStage();
+              const st = document.getElementById("pa-stage");
+              if (st && innerWidth > 600) st.scrollIntoView({ block: "start" });
+            }
             this.reduce = !!(
               window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
             );
             this.idx = 0;
             this.score = 0;
             this.streak = 0;
-            this.correctCount = 0; // first-try solves (drives stars)
+            this.correctCount = 0; // unaided first-try solves (drives stars)
+            this.helpedCount = 0; // solved after a miss or a hint
             this.itemLog = []; // item-level telemetry for the gradebook
             this.tries = 0; // attempts on the current round
             // ── Power-up meter ── first-try solves charge it; at full it grants a
@@ -1589,7 +1897,11 @@
             this.doubled = false;
             const recovering = resumeRun;
             if (recovering) {
-              ["idx", "score", "streak", "correctCount", "power", "doubled", "itemLog"].forEach(key => { if (recovering[key] !== undefined) this[key] = recovering[key]; });
+              ["idx", "score", "streak", "correctCount", "helpedCount", "power", "doubled", "itemLog"].forEach(
+                (key) => {
+                  if (recovering[key] !== undefined) this[key] = recovering[key];
+                },
+              );
               rounds = recovering.rounds;
               resumeRun = null;
             }
@@ -1604,9 +1916,9 @@
             // stars read as one clean console bar over the busy backdrop.
             const hudBar = this.add.graphics();
             hudBar.fillStyle(0x0a0f2b, 0.42);
-            hudBar.fillRoundedRect(96, 8, W - 116, 56, 12);
+            hudBar.fillRoundedRect(96, 8, W - 116, 46, 12);
             hudBar.lineStyle(1.5, PALETTE.panelLine, 0.4);
-            hudBar.strokeRoundedRect(96, 8, W - 116, 56, 12);
+            hudBar.strokeRoundedRect(96, 8, W - 116, 46, 12);
 
             // HUD
             const hud = {
@@ -1614,32 +1926,28 @@
               fontSize: "18px",
               fontStyle: "bold",
             };
-            // Left HUD starts at x≈110 to clear the Student Passport pill (a
-            // fixed DOM element the lesson-passport layer parks in the corner).
-            this.titleText = this.add.text(110, 14, lessonTitle.toUpperCase(), {
-              ...hud,
-              fontSize: "16px",
-              color: this.th.accent,
-            });
-            this.scoreText = this.add.text(110, 40, "Score: 0", {
-              ...hud,
-              color: "#ffffff",
-            });
+            // One row, three zones that never overlap: score + power meter on
+            // the left (x≈110 clears the Student Passport pill), the visible goal
+            // ("Challenge 3 of 10") in the middle, first-try stars on the right.
+            // The lesson title lives in the page header, not here.
+            this.scoreText = this.add
+              .text(112, 31, "Score: 0", { ...hud, color: "#ffffff" })
+              .setOrigin(0, 0.5);
             this.progressText = this.add
-              .text(W / 2, 16, "", { ...hud, color: "#e0e7ff" })
-              .setOrigin(0.5, 0);
+              .text(W / 2, 31, "", { ...hud, fontSize: "20px", color: "#ffffff" })
+              .setOrigin(0.5, 0.5);
             this.streakText = this.add
-              .text(W / 2, 44, "", { ...hud, color: "#facc15" })
-              .setOrigin(0.5, 0);
+              .text(W - 150, 31, "", { ...hud, fontSize: "16px", color: "#facc15" })
+              .setOrigin(1, 0.5);
             // No-fail arcade: instead of hearts, show first-try solves as a
             // positive streak-of-mastery counter.
             this.livesText = this.add
-              .text(W - 20, 16, "", {
+              .text(W - 24, 31, "", {
                 ...hud,
                 fontSize: "20px",
                 color: "#fde047",
               })
-              .setOrigin(1, 0);
+              .setOrigin(1, 0.5);
 
             // Prompt panel
             this.promptPanel = this.add.graphics();
@@ -1654,36 +1962,55 @@
               })
               .setOrigin(0.5);
 
-            // Feedback line
+            // Feedback + earned-help card, bottom-anchored in a strip the round
+            // renderers keep clear (FEED_TOP), so it never covers the board.
+            this.feedbackBg = this.add.graphics().setDepth(70);
             this.feedback = this.add
-              .text(W / 2, H - 38, "", {
+              .text(W / 2, H - 14, "", {
                 fontFamily: "Nunito, Segoe UI, sans-serif",
-                fontSize: "18px",
+                fontSize: "17px",
                 fontStyle: "bold",
                 color: "#facc15",
                 align: "center",
+                lineSpacing: 2,
                 wordWrap: { width: W - 120 },
               })
-              .setOrigin(0.5)
+              .setOrigin(0.5, 1)
+              .setDepth(71)
               .setAlpha(0);
+            // Live step coach (Level 1 · Support): names the next action.
+            this.coachText = this.add
+              .text(W / 2, 0, "", {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "16px",
+                fontStyle: "bold",
+                color: "#0b1020",
+                backgroundColor: "#fde68a",
+                padding: { x: 12, y: 4 },
+                align: "center",
+                wordWrap: { width: W - 220 },
+              })
+              .setOrigin(0.5, 0)
+              .setDepth(30)
+              .setVisible(false);
 
             // Journey track: a goal flag the mascot walks toward, one step per round.
-            this.journeyY = 74;
+            this.journeyY = 72;
             this.add
               .line(0, 0, 120, this.journeyY, W - 70, this.journeyY, this.th.accentN, 0.4)
               .setOrigin(0, 0)
               .setLineWidth(2);
-            this.add.text(W - 60, this.journeyY - 12, "🏁", {
-              fontSize: "22px",
+            this.add.text(W - 60, this.journeyY - 11, "🏁", {
+              fontSize: "18px",
             });
             this.mascotObj = this.add
-              .text(120, this.journeyY, mascot, { fontSize: "40px" })
+              .text(120, this.journeyY, mascot, { fontSize: "28px" })
               .setOrigin(0.5);
 
             // ── Power meter (top-left, under the score) ──────────────────────
-            const pmX = 110,
-              pmY = 66,
-              pmW = 168,
+            const pmX = 250,
+              pmY = 31,
+              pmW = 120,
               pmH = 14;
             this.powerBase = this.add
               .rectangle(pmX, pmY, pmW, pmH, 0x1e1b4b, 0.9)
@@ -1697,18 +2024,23 @@
               .setOrigin(0, 0.5)
               .setAlpha(0.5);
 
-            // ── Gem tray (bottom-left) ── one gem drops in per first-try solve,
-            // so progress you earn stacks up somewhere you can see it grow.
-            this.trayX = 40;
-            this.trayY = H - 74;
-            this.add
-              .text(this.trayX, this.trayY - 26, "Gems", {
-                fontFamily: "Nunito, Segoe UI, sans-serif",
-                fontSize: "13px",
-                fontStyle: "bold",
-                color: "#c7d2fe",
-              })
-              .setOrigin(0, 0.5);
+            // First-try gems fly up to the star counter (see dropGem) rather
+            // than piling up in a tray that competed with the feedback strip.
+
+            // Opening a rung of the hint ladder marks this round as "helped": a
+            // first try after a hint still scores, but below an unaided one.
+            if (!helpWatchBound) {
+              helpWatchBound = true;
+              document.addEventListener(
+                "click",
+                (e) => {
+                  if (!e.target.closest || !e.target.closest(".nt-hl-more")) return;
+                  const play = window.paGame && window.paGame.scene.getScene("Play");
+                  if (play && play.scene.isActive()) play.helpUsed = true;
+                },
+                true,
+              );
+            }
 
             // Layer that holds per-round interactive objects (cleared each round)
             this.layer = this.add.container(0, 0);
@@ -1794,14 +2126,28 @@
 
             // Persistent, tier-aware "Guided Steps" helper — a calm workspace that
             // scaffolds HOW to attack the current round (process, never the answer).
-            this.stepsBtn = makeButton(this, 92, H - 30, 150, 40, "🪜 " + t("steps"), () =>
-              this.openSteps(),
-            );
+            // Guided Steps sits on the prompt panel's top edge beside 🔊 (it
+            // used to share the bottom strip with the feedback card).
+            this.stepsBtn = this.add
+              .text(W - 196, 92, "🪜 " + t("steps"), {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "16px",
+                fontStyle: "bold",
+                color: "#06283f",
+                backgroundColor: "#e0f2fe",
+                padding: { x: 10, y: 6 },
+              })
+              .setOrigin(0.5)
+              .setDepth(20)
+              .setInteractive({ useHandCursor: true });
+            this.stepsBtn.on("pointerdown", () => this.openSteps());
 
             this.updateHUD();
             this.startRound();
-            if (recovering) { this.tries = recovering.tries || 0; this.saveRun(); }
-            this.maybeShowPowerCoach();
+            if (recovering) {
+              this.tries = recovering.tries || 0;
+              this.saveRun();
+            }
           }
 
           // Highlight the bin the carried tile is currently nearest to, so the
@@ -1968,20 +2314,21 @@
 
           // Drop a collectible gem into the tray for a first-try solve.
           dropGem() {
-            const i = this.gems.length;
-            const gx = this.trayX + 10 + (i % 12) * 22;
-            const gy = this.trayY + Math.floor(i / 12) * 22;
-            const gem = this.add.text(gx, gy - 120, "💎", { fontSize: "18px" }).setOrigin(0.5);
-            this.gems.push(gem);
+            // A gem pops out of the solved challenge and flies to the star
+            // counter, so the reward lands where the score is kept.
+            const gem = this.add.text(W / 2, 300, "💎", { fontSize: "26px" }).setOrigin(0.5).setDepth(65);
             if (JUICE.reduceMotion) {
-              gem.y = gy;
+              this.time.delayedCall(400, () => gem.destroy());
               return;
             }
             this.tweens.add({
               targets: gem,
-              y: gy,
-              ease: "Bounce.Out",
-              duration: 620 + i * 20,
+              x: W - 70,
+              y: 31,
+              scale: 0.6,
+              ease: "Quad.In",
+              duration: 700,
+              onComplete: () => gem.destroy(),
             });
           }
 
@@ -2046,10 +2393,13 @@
             // Clear stale per-round key handlers so they can't fire on the
             // destroyed tiles of a previous round.
             this.input.keyboard.removeAllListeners();
-            this.feedback.setAlpha(0);
+            this.showFeedback("");
             this.locked = false;
             this.tries = 0;
+            this.helpUsed = false; // set when the student opens a hint-ladder rung
             this.revealCorrect = null;
+            this.eliminateOne = null;
+            this.coachNext = null;
             // Drop any half-carried sort tile from a previous round (defensive).
             this.carrying = null;
             this.carryMoved = false;
@@ -2089,14 +2439,26 @@
                   window.NeftHintLadder.setProblem({
                     itemText: hintItemText,
                     standard: currentStandard,
-                    staticHints: PA_HINT_STATICS,
+                    // The lesson's own authored hint ladder when it has one.
+                    staticHints:
+                      lang === "es" && r.hintsEs && r.hintsEs.length
+                        ? r.hintsEs.slice(0, 3)
+                        : r.hints && r.hints.length
+                          ? r.hints.slice(0, 3)
+                          : PA_HINT_STATICS,
                   });
                 }
               } catch (e) {}
             };
-            if (typeof queueMicrotask === "function") queueMicrotask(publishHint);
-            else Promise.resolve().then(publishHint);
-            this.progressText.setText("Round " + (this.idx + 1) + " / " + rounds.length);
+            // A macrotask runs after every microtask, including the injected
+            // watch()'s MutationObserver ingest of #pa-sr, so this write wins.
+            setTimeout(publishHint, 0);
+            this.progressText.setText(
+              (lang === "es" ? "Reto " : "Challenge ") +
+                (this.idx + 1) +
+                (lang === "es" ? " de " : " of ") +
+                rounds.length,
+            );
             // Prompt panel sized to text (localized when a translation exists).
             this.promptText.setText(loc(r, "prompt"));
             const ph = Math.max(70, this.promptText.height + 30);
@@ -2106,6 +2468,11 @@
             this.promptPanel.fillRoundedRect(80, 92, W - 160, ph, 14);
             this.promptPanel.strokeRoundedRect(80, 92, W - 160, ph, 14);
             this.promptText.setY(92 + ph / 2);
+            // Support level shows a live coach line under the prompt; renderers
+            // push their first row down by coachShift to make room for it.
+            this.coachY = 92 + ph + 10;
+            this.coachShift = tier === "l1" ? 34 : 0;
+            this.coachSay("");
 
             // Mode badge — a "level type" tab on the prompt panel's top edge so
             // students instantly know what kind of challenge this is, in plain
@@ -2158,7 +2525,7 @@
                 ease: "Back.Out",
               });
             }
-            srSay("Round " + (this.idx + 1) + ". " + r.prompt);
+            srSay((lang === "es" ? "Reto " : "Challenge ") + (this.idx + 1) + ". " + loc(r, "prompt"));
 
             // Milestone cheer: a quick banner at the halfway mark and on the
             // final round to give the run a sense of shape (calm, no timer).
@@ -2180,46 +2547,120 @@
             else if (kind === "chain") this.renderChain(r);
             else this.renderChoose(r);
             if (r.kind !== "chain") this.renderAccessibleControls(r);
+            this.coachNext = () => this.coachSay(this.coachLine(r));
+            this.coachNext();
+            if (this.idx === 0 && !this.powerTipShown) {
+              this.powerTipShown = true;
+              this.maybeShowPowerCoach();
+            }
           }
 
           renderAccessibleControls(r) {
             const panel = document.getElementById("practice-text-controls");
             panel.hidden = false;
             if (innerWidth <= 900) panel.open = true;
-            const area = document.getElementById("practice-native-round"); area.replaceChildren();
-            const prompt = document.createElement("p"); prompt.className = "practice-native-prompt"; prompt.textContent = loc(r, "prompt") || r.prompt; area.appendChild(prompt);
-            const controls = document.createElement("div"); controls.className = "practice-native-actions"; area.appendChild(controls);
-            const key = name => { if (!this.locked && !window.GameStudio?.paused && this.settled()) this.input.keyboard.emit("keydown-" + name, {target:document.body}); };
-            const button = (label, action) => { const b = document.createElement("button"); b.type = "button"; b.textContent = label; b.onclick = () => { if(!window.GameStudio?.paused) action(b); }; controls.appendChild(b); return b; };
+            const area = document.getElementById("practice-native-round");
+            area.replaceChildren();
+            const prompt = document.createElement("p");
+            prompt.className = "practice-native-prompt";
+            prompt.textContent = loc(r, "prompt") || r.prompt;
+            area.appendChild(prompt);
+            const controls = document.createElement("div");
+            controls.className = "practice-native-actions";
+            area.appendChild(controls);
+            const key = (name) => {
+              if (!this.locked && !window.GameStudio?.paused && this.settled())
+                this.input.keyboard.emit("keydown-" + name, { target: document.body });
+            };
+            const button = (label, action) => {
+              const b = document.createElement("button");
+              b.type = "button";
+              b.textContent = label;
+              b.onclick = () => {
+                if (!window.GameStudio?.paused) action(b);
+              };
+              controls.appendChild(b);
+              return b;
+            };
             if (r.kind === "sort") {
-              this.sortTiles.forEach(tile => {
-                const label = document.createElement("label"); label.textContent = tile.data.text + " ";
-                const select = document.createElement("select"); select.add(new Option("Choose a group", ""));
-                r.categories.forEach((category,i) => select.add(new Option(category.label,String(i))));
-                select.onchange = () => { if(this.locked || !this.settled() || window.GameStudio?.paused || select.value === "") return; const freed = this.unassignTile(tile); if(freed >= 0) this.layoutBin(freed); this.assignTile(tile,Number(select.value)); };
-                label.appendChild(select); controls.appendChild(label);
-              }); button("Check groups", () => key("ENTER"));
+              this.sortTiles.forEach((tile) => {
+                const label = document.createElement("label");
+                label.textContent = tile.data.text + " ";
+                const select = document.createElement("select");
+                select.add(new Option("Choose a group", ""));
+                r.categories.forEach((category, i) =>
+                  select.add(new Option(category.label, String(i))),
+                );
+                select.onchange = () => {
+                  if (
+                    this.locked ||
+                    !this.settled() ||
+                    window.GameStudio?.paused ||
+                    select.value === ""
+                  )
+                    return;
+                  const freed = this.unassignTile(tile);
+                  if (freed >= 0) this.layoutBin(freed);
+                  this.assignTile(tile, Number(select.value));
+                };
+                label.appendChild(select);
+                controls.appendChild(label);
+              });
+              button("Check groups", () => key("ENTER"));
             } else if (r.kind === "match") {
-              this.matchLeft.concat(this.matchRight).forEach(tile => button(tile.label.text, b => { this.matchTap(tile); controls.querySelectorAll("button").forEach((control,i) => { const item = this.matchLeft.concat(this.matchRight)[i]; control.disabled = !!item.done; control.setAttribute("aria-pressed",String(this.matchSel === item)); }); }));
+              this.matchLeft.concat(this.matchRight).forEach((tile) =>
+                button(tile.label.text, (b) => {
+                  this.matchTap(tile);
+                  controls.querySelectorAll("button").forEach((control, i) => {
+                    const item = this.matchLeft.concat(this.matchRight)[i];
+                    control.disabled = !!item.done;
+                    control.setAttribute("aria-pressed", String(this.matchSel === item));
+                  });
+                }),
+              );
             } else if (r.kind === "build") {
-              this.buildTiles.forEach(tile => { const b = button(tile.label.text, b => { tile.bg.emit("pointerdown"); b.setAttribute("aria-pressed",String(tile.picked)); }); b.setAttribute("aria-pressed","false"); });
+              this.buildTiles.forEach((tile) => {
+                const b = button(tile.label.text, (b) => {
+                  tile.bg.emit("pointerdown");
+                  b.setAttribute("aria-pressed", String(tile.picked));
+                });
+                b.setAttribute("aria-pressed", "false");
+              });
               button("Check pieces", () => key("ENTER"));
             } else if (r.kind === "numline" || r.kind === "balance" || r.kind === "plot") {
-              button("← Left / decrease", () => key("LEFT")); button("Right / increase →", () => key("RIGHT"));
-              if(r.kind === "plot") { button("↑ Up", () => key("UP")); button("↓ Down", () => key("DOWN")); }
+              button("← Left / decrease", () => key("LEFT"));
+              button("Right / increase →", () => key("RIGHT"));
+              if (r.kind === "plot") {
+                button("↑ Up", () => key("UP"));
+                button("↓ Down", () => key("DOWN"));
+              }
               button("Check marker", () => key("ENTER"));
-              const value = document.createElement("p"); value.id = "practice-marker-value"; area.appendChild(value); this.updateAccessibleMarker();
+              const value = document.createElement("p");
+              value.id = "practice-marker-value";
+              area.appendChild(value);
+              this.updateAccessibleMarker();
             } else {
-              const options = r.kind === "fixit" ? r.steps.map(step => (step.label || "") + " " + step.work) : r.kind === "chain" ? r.steps[this.chainIdx || 0].choices : r.choices;
-              (options || []).forEach((choice,i) => button((i+1) + ". " + choice, () => key(keyName(i+1))));
+              const options =
+                r.kind === "fixit"
+                  ? r.steps.map((step) => (step.label || "") + " " + step.work)
+                  : r.kind === "chain"
+                    ? r.steps[this.chainIdx || 0].choices
+                    : r.choices;
+              (options || []).forEach((choice, i) =>
+                button(i + 1 + ". " + choice, () => key(keyName(i + 1))),
+              );
             }
-            document.getElementById("practice-native-feedback").textContent = "Read the prompt, then use these controls or the game board.";
+            document.getElementById("practice-native-feedback").textContent =
+              "Read the prompt, then use these controls or the game board.";
           }
           updateAccessibleMarker() {
             const value = document.getElementById("practice-marker-value");
             if (!value) return;
             const r = rounds[this.idx];
-            value.textContent = r.kind === "plot" ? "Marker: (" + this.fmt(this.plotX) + ", " + this.fmt(this.plotY) + ")" : "Current value: " + this.fmt(r.kind === "balance" ? this.balVal : this.nlVal);
+            value.textContent =
+              r.kind === "plot"
+                ? "Marker: (" + this.fmt(this.plotX) + ", " + this.fmt(this.plotY) + ")"
+                : "Current value: " + this.fmt(r.kind === "balance" ? this.balVal : this.nlVal);
           }
 
           // True once the brief input-settle window after a round render has
@@ -2232,28 +2673,90 @@
             );
           }
 
+          // The help a student has EARNED on this round after `tries` misses.
+          // Tier 1 (first miss) names a method and never states the answer;
+          // Tier 2 (second miss) gives a concrete step; from the third miss the
+          // worked explanation appears and the answer is shown so the round can
+          // always be finished (no-fail). Authored lesson hints come first; the
+          // generic lines only cover items that were authored without any.
+          helpText(r, tries) {
+            const es = lang === "es";
+            const authored = es && r.hintsEs && r.hintsEs.length ? r.hintsEs : r.hints || [];
+            const generic = {
+              choose: es
+                ? ["Vuelve a leer la pregunta. ¿Qué te pide encontrar?", "Resuelve el problema en tu cuaderno y luego busca tu resultado."]
+                : ["Read the question again. What is it asking you to find?", "Work it out on paper first, then look for your result in the choices."],
+              fixit: es
+                ? ["Resuelve cada paso tú mismo y compáralo.", "Revisa los números de cada paso, uno por uno, desde el primero."]
+                : ["Do each step yourself and compare.", "Check the numbers in each step, one at a time, starting with step 1."],
+              sort: es
+                ? ["Lee cada tarjeta y pregunta: ¿qué regla la pone en este grupo?", "Mira las tarjetas rojas una por una."]
+                : ["Read each tile and ask: what rule puts it in this group?", "Look at the red tiles one at a time."],
+              match: es
+                ? ["Resuelve la tarjeta de la izquierda y busca ese valor a la derecha.", "Empieza con la pareja que estés más seguro."]
+                : ["Work out the left card, then look for that value on the right.", "Start with the pair you are most sure about."],
+              numline: es
+                ? ["Halla primero el valor. Luego busca entre qué marcas está.", "Cuenta las marcas pequeñas desde la marca con número más cercana."]
+                : ["Find the value first. Then find which two labels it sits between.", "Count the small ticks from the nearest labeled tick."],
+              plot: es
+                ? ["x dice cuánto ir a la derecha o izquierda; y dice cuánto subir o bajar.", "Mueve primero en x, luego en y."]
+                : ["x tells you left or right; y tells you up or down.", "Move along x first, then along y."],
+              build: es
+                ? ["Multiplica las piezas que elegiste. ¿Dan el número correcto?", "Usa solo números primos y cuéntalos."]
+                : ["Multiply the pieces you picked. Do they make the right number?", "Use only prime numbers, and check each one divides the number."],
+              balance: es
+                ? ["Los dos lados deben valer lo mismo.", "Cambia x de uno en uno y mira hacia dónde se inclina."]
+                : ["Both sides must have the same value.", "Change x one step at a time and watch which way it tips."],
+            };
+            const gen = generic[r.kind] || generic.choose;
+            const pool = authored.length ? authored : gen;
+            if (tries <= 1) return { tier: 1, text: pool[0] };
+            if (tries === 2) return { tier: 2, text: pool[Math.min(1, pool.length - 1)] };
+            const why = loc(r, "why");
+            return {
+              tier: 3,
+              text: (authored[2] || pool[pool.length - 1]) + (why ? "\n" + (es ? "Así se hace: " : "Here is how: ") + why : ""),
+            };
+          }
+
+          // Bottom coach card: the one place feedback and earned help appear, in
+          // a reserved strip below the board so it never covers the challenge.
+          showFeedback(text, color) {
+            const msg = String(text || "");
+            this.feedback.setColor(color || "#fde68a").setText(msg).setAlpha(msg ? 1 : 0);
+            this.feedbackBg.clear();
+            if (!msg) return;
+            const b = this.feedback.getBounds();
+            this.feedbackBg.fillStyle(0x0b1020, 0.82);
+            this.feedbackBg.fillRoundedRect(b.x - 14, b.y - 8, b.width + 28, b.height + 16, 12);
+            this.feedbackBg.lineStyle(2, Phaser.Display.Color.HexStringToColor(color || "#fde68a").color, 0.7);
+            this.feedbackBg.strokeRoundedRect(b.x - 14, b.y - 8, b.width + 28, b.height + 16, 12);
+          }
+
           // Resolve a round. Correct → reward + advance. Wrong → NO penalty and
-          // NO advance: the student gets a hint and tries again until they solve
-          // it (calm, no-fail practice). First-try solves drive the star score.
-          resolve(correct, why) {
+          // NO advance: the student earns the next rung of help and tries again
+          // until they solve it (calm, no-fail practice). `note` is the round's
+          // own response to THIS attempt — on a miss it must say what went wrong
+          // without naming the answer (a misconception note, a direction).
+          resolve(correct, note) {
             if (this.locked) return;
-            const w = why || rounds[this.idx].why || "";
-            studioEvent("feedback", { correct, message: correct ? "Challenge solved!" : "Try again. Hints can help." });
-            document.getElementById("practice-native-feedback").textContent = (correct ? "Solved! " : "Try again. ") + w;
-            const cx = W / 2,
-              cy = 300;
+            const r = rounds[this.idx];
+            const es = lang === "es";
             if (correct) {
               this.locked = true;
+              const w = loc(r, "why") || note || "";
               const firstTry = this.tries === 0;
-              this.streak = firstTry ? this.streak + 1 : 0;
-              if (firstTry) {
+              // Full credit only for an unaided first try; a first try after
+              // opening the hint ladder still scores, at a lower value.
+              const unaided = firstTry && !this.helpUsed;
+              this.streak = unaided ? this.streak + 1 : 0;
+              if (unaided) {
                 this.correctCount++;
                 this.chargePower();
                 this.dropGem();
-              }
-              // Spend a charged DOUBLE-POINTS state on this solve.
-              const doubling = this.doubled;
-              let gained = (firstTry ? 100 : 40) + Math.min(this.streak, 5) * 20;
+              } else this.helpedCount = (this.helpedCount || 0) + 1;
+              const doubling = this.doubled && unaided;
+              let gained = (unaided ? 100 : firstTry ? 70 : 40) + Math.min(this.streak, 5) * 20;
               if (doubling) {
                 gained *= 2;
                 this.doubled = false;
@@ -2261,78 +2764,64 @@
                 if (this.powerLabel) this.powerLabel.setAlpha(0.5).setScale(1);
               }
               this.score += gained;
-              // Juice escalates with the streak: more particles, bigger shake,
-              // a second burst + confetti once it's rolling.
+              const cx = W / 2,
+                cy = 300;
               JUICE.audio.correct(this.streak);
               if (window.ArcadeFX) {
-                if (this.streak >= 2) window.ArcadeFX.playSFX("combo", this.streak);
-                else window.ArcadeFX.playSFX("correct", this.streak);
+                window.ArcadeFX.playSFX(this.streak >= 2 ? "combo" : "correct", this.streak);
                 window.ArcadeFX.updateStreakBadge(this.streak);
-                window.ArcadeFX.showFloatScore(window.innerWidth / 2, window.innerHeight * 0.35, (doubling ? "⚡ +" : "+") + gained, doubling ? "#facc15" : "#34d399");
               }
-              const n = 18 + Math.min(this.streak, 6) * 4;
-              JUICE.burst(this, cx, cy, [0x34d399, PALETTE.accent, 0xffffff], n);
+              JUICE.burst(this, cx, cy, [0x34d399, PALETTE.accent, 0xffffff], 18 + Math.min(this.streak, 6) * 4);
               if (this.streak >= 5) JUICE.burst(this, cx, cy + 60, [0xfacc15, 0xffffff], 16);
-              JUICE.shake(this, 0.005 + Math.min(this.streak, 5) * 0.001);
-              JUICE.floatText(
-                this,
-                cx,
-                cy - 30,
-                (doubling ? "⚡ +" : "+") + gained,
-                doubling ? "#facc15" : "#34d399",
-                doubling ? 48 : 40,
-              );
-              if (doubling) JUICE.confetti(this, 1);
+              JUICE.floatText(this, cx, cy - 30, (doubling ? "⚡ +" : "+") + gained, doubling ? "#facc15" : "#34d399", doubling ? 48 : 40);
+              if (doubling || this.streak >= 2) JUICE.confetti(this, 1);
               this.mascotReact(true);
-              this.mascotSay(
-                firstTry ? (this.streak >= 3 ? "🔥 On fire!" : "Nice!") : "Got it! 🎉",
-              );
-              const xp = 10 + Math.min(this.streak, 5) * 2;
-              JUICE.award(xp, "practice-arcade");
-              if (this.streak >= 2) JUICE.confetti(this, 1);
+              this.mascotSay(unaided ? (this.streak >= 3 ? "🔥 On fire!" : "Nice!") : "Got it! 🎉");
+              JUICE.award(10 + Math.min(this.streak, 5) * 2, "practice-arcade");
               this.flashEdge(PALETTE.good);
-              this.feedback
-                .setColor("#86efac")
-                .setText((firstTry ? t("correct") : t("yes")) + w)
-                .setAlpha(1);
-              srSay("Correct. " + w);
+              const head = unaided ? t("correct") : t("yes");
+              this.showFeedback(head + w, "#86efac");
+              studioEvent("feedback", { correct: true });
+              document.getElementById("practice-native-feedback").textContent = head + w;
+              srSay((es ? "Correcto. " : "Correct. ") + w);
+              this.coachSay("");
               // Item-level telemetry: one record per solved round (attempts capture
               // struggle). Feeds the end-of-run EduPulse payload + a local log.
-              this.logItem(rounds[this.idx], this.tries);
-              paSignal(rounds[this.idx], true, null);
+              this.logItem(r, this.tries);
+              paSignal(r, true, null);
               this.updateHUD();
               this.advanceJourney();
-              this.time.delayedCall(1100, () => {
+              // Longer pause when there is an explanation to read.
+              this.time.delayedCall(w.length > 60 ? 2400 : 1300, () => {
                 this.idx++;
                 this.startRound();
               });
-            } else {
-              // Wrong: dual feedback — visual juice + teaching text on first miss
-              // when an authored explanation exists (teaches, not just "wrong").
-              this.tries++;
-              this.streak = 0;
-              if (window.ArcadeFX) {
-                window.ArcadeFX.playSFX("error");
-                window.ArcadeFX.screenShake();
-                window.ArcadeFX.updateStreakBadge(0);
-              }
-              paSignal(rounds[this.idx], false, this.lastWrongTag || null);
-              JUICE.audio.wrong();
-              JUICE.shake(this, 0.006);
-              this.mascotReact(false);
-              this.mascotSay(this.tries >= 2 ? "Use the hint 👀" : "Try again 👀");
-              this.flashEdge(PALETTE.bad);
-              const msg = w ? t("hint") + w : t("tryAgain");
-              this.feedback.setColor("#fde68a").setText(msg).setAlpha(1);
-              srSay("Not quite. " + (w || "Try again."));
-              try {
-                if (window.GameFX && typeof window.GameFX.coach === "function") {
-                  window.GameFX.coach("tip", msg);
-                }
-              } catch (eCoach) {}
-              this.updateHUD();
-              this.saveRun();
+              return;
             }
+            this.tries++;
+            this.streak = 0;
+            if (window.ArcadeFX) {
+              window.ArcadeFX.playSFX("error");
+              window.ArcadeFX.updateStreakBadge(0);
+            }
+            paSignal(r, false, this.lastWrongTag || null);
+            JUICE.audio.wrong();
+            this.mascotReact(false);
+            this.mascotSay(es ? "Sigue intentando 👀" : "Keep going 👀");
+            const help = this.helpText(r, this.tries);
+            // Tier 2 for multiple choice also crosses out one wrong choice the
+            // student has not tried; from Tier 3 the answer is marked so the
+            // round can always be finished.
+            if (help.tier === 2 && this.eliminateOne) this.eliminateOne();
+            if (help.tier >= 3 && this.revealCorrect) this.revealCorrect();
+            const lead = note ? note + "\n" : es ? "Todavía no. " : "Not yet. ";
+            const msg = lead + "💡 " + help.text;
+            this.showFeedback(msg, "#fde68a");
+            studioEvent("feedback", { correct: false });
+            document.getElementById("practice-native-feedback").textContent = msg.replace(/\n/g, " ");
+            srSay((es ? "Todavía no. " : "Not quite. ") + msg.replace(/\n/g, " "));
+            this.updateHUD();
+            this.saveRun();
           }
 
           // Record one solved item for the teacher gradebook / analytics. Buffered
@@ -2350,6 +2839,7 @@
               tag: tries > 0 ? this.lastWrongTag || null : null,
               tries,
               firstTry: tries === 0,
+              helped: tries > 0 || !!this.helpUsed,
               ts: Date.now(),
             };
             this.lastWrongTag = null;
@@ -2363,12 +2853,34 @@
           }
 
           saveRun() {
-            try { localStorage.setItem(checkpointKey(), JSON.stringify({signature:contentSignature(), tier, rounds, idx:this.idx, tries:this.tries, score:this.score, streak:this.streak, correctCount:this.correctCount, power:this.power, doubled:this.doubled, itemLog:this.itemLog})); }
-            catch (_) { document.getElementById("practice-session-note").textContent += " Saving is unavailable in this browser; keep this tab open."; }
+            try {
+              localStorage.setItem(
+                checkpointKey(),
+                JSON.stringify({
+                  signature: contentSignature(),
+                  tier,
+                  rounds,
+                  idx: this.idx,
+                  tries: this.tries,
+                  score: this.score,
+                  streak: this.streak,
+                  correctCount: this.correctCount,
+                  helpedCount: this.helpedCount || 0,
+                  power: this.power,
+                  doubled: this.doubled,
+                  itemLog: this.itemLog,
+                }),
+              );
+            } catch (_) {
+              document.getElementById("practice-session-note").textContent +=
+                " Saving is unavailable in this browser; keep this tab open.";
+            }
           }
           finish() {
             completedRounds = rounds.slice();
-            try { localStorage.removeItem(checkpointKey()); } catch (_) {}
+            try {
+              localStorage.removeItem(checkpointKey());
+            } catch (_) {}
             JUICE.audio.musicStop();
             this.scene.start("Result", {
               score: this.score,
@@ -2379,7 +2891,7 @@
           }
 
           updateHUD() {
-            this.scoreText.setText("Score: " + this.score);
+            this.scoreText.setText(t("score") + ": " + this.score);
             this.streakText.setText(this.streak > 1 ? "🔥 Streak " + this.streak : "");
             this.livesText.setText("⭐ " + this.correctCount + " / " + rounds.length);
             // Paint the power meter fill (gold when charging, cyan+pulse when armed).
@@ -2414,49 +2926,74 @@
 
           // ── Renderer: CHOOSE (multiple-choice / generic select) ────────────
           renderChoose(r) {
-            const startY = 92 + Math.max(70, this.promptText.height + 30) + 50;
+            const startY = 92 + Math.max(70, this.promptText.height + 30) + 50 + this.coachShift;
             const tileW = Math.min(560, W - 200);
-            const gap = 66;
+            // Keep the choices above the feedback strip even for 5–6 options.
+            const gap = Math.min(66, (FEED_TOP - startY) / Math.max(1, r.choices.length));
+            const texts = lang === "es" && r.choicesEs ? r.choicesEs.map((c, i) => c || r.choices[i]) : r.choices;
             const tiles = [];
-            r.choices.forEach((c, i) => {
+            texts.forEach((c, i) => {
               const y = startY + i * gap;
-              const t = this.makeTile(W / 2, y, tileW, 52, i + 1 + ".  " + c);
+              const t = this.makeTile(W / 2, y, tileW, Math.min(52, gap - 10), i + 1 + ".  " + c);
               this.layer.add(t.parts);
               tiles.push(t);
-              t.bg.on("pointerover", () => !this.locked && t.bg.setFillStyle(PALETTE.tileHi));
-              t.bg.on("pointerout", () => !this.locked && t.bg.setFillStyle(PALETTE.tile));
+              t.bg.on("pointerover", () => !this.locked && !t.out && !t.keep && t.bg.setFillStyle(PALETTE.tileHi));
+              t.bg.on("pointerout", () => !this.locked && !t.out && !t.keep && t.bg.setFillStyle(PALETTE.tile));
               t.bg.on("pointerdown", () => this.pickChoice(r, i, t));
               this.input.keyboard.on("keydown-" + keyName(i + 1), () => this.pickChoice(r, i, t));
             });
-            // On a miss, flash the correct choice green so the answer is visible.
+            this.chooseTiles = tiles;
+            // A tried or crossed-out choice stays visibly out of play, so the
+            // student never re-picks it and can see the field narrowing.
+            const crossOut = (t) => {
+              t.out = true;
+              t.bg.setFillStyle(0x334155);
+              t.parts.setAlpha(0.45);
+              t.label.setText("✗ " + t.label.text);
+              t.bg.disableInteractive();
+            };
+            this.crossOut = crossOut;
+            // Tier 2: cross out one wrong choice the student has not tried yet.
+            this.eliminateOne = () => {
+              const pick = tiles.find((t, i) => i !== r.correctIndex && !t.out);
+              if (pick) crossOut(pick);
+            };
+            // Tier 3: mark the answer so the round can always be finished.
             this.revealCorrect = () => {
               const ct = tiles[r.correctIndex];
-              if (ct) ct.bg.setFillStyle(PALETTE.good);
+              if (ct) {
+                ct.keep = true;
+                ct.bg.setFillStyle(PALETTE.good);
+                ct.bg.setStrokeStyle(4, PALETTE.gold, 1);
+              }
             };
             // Screen-reader: read out the options after the prompt.
             srSay(
-              rounds[this.idx].prompt +
+              loc(r, "prompt") +
                 ". Options: " +
-                r.choices.map((c, i) => i + 1 + ", " + c).join("; ") +
+                texts.map((c, i) => i + 1 + ", " + c).join("; ") +
                 ". Press a number to choose.",
             );
           }
           pickChoice(r, i, t) {
-            if (this.locked || !this.settled()) return;
+            if (this.locked || !this.settled() || t.out) return;
             SFX.pick();
             const ok = i === r.correctIndex;
             t.bg.setFillStyle(ok ? PALETTE.good : PALETTE.bad);
-            // Wrong pick: flash red, then reset so the student can try again.
+            // Wrong pick: flash red, then cross it out so it is not tried twice.
             // Remember WHICH distractor was chosen — its authored misconception
             // tag flows into the item log, EduPulse, and the signal store.
             if (!ok) {
               this.lastWrongTag =
                 (Array.isArray(r.misconceptionTags) && r.misconceptionTags[i]) || null;
               this.time.delayedCall(620, () => {
-                if (!this.locked) t.bg.setFillStyle(PALETTE.tile);
+                if (!this.locked && !t.out) this.crossOut(t);
               });
             }
-            this.resolve(ok, r.why);
+            // A miss answers with the authored note for THAT wrong choice — it
+            // names the misconception without naming the answer.
+            const fb = lang === "es" && r.choiceFeedbackEs && r.choiceFeedbackEs[i] ? r.choiceFeedbackEs[i] : r.choiceFeedback && r.choiceFeedback[i];
+            this.resolve(ok, ok ? "" : fb || "");
           }
 
           // ── Renderer: SORT (drag-sort into category bins) ──────────────────
@@ -2465,8 +3002,8 @@
             // Big, easy drop targets — the bottom boxes fill most of the width so
             // tiles are simple to aim into and have room to land INSIDE the box.
             const binW = Math.min(300, (W - 120) / cats.length - 16);
-            const binH = 208;
-            const binY = H - 150;
+            const binH = 184;
+            const binY = FEED_TOP - 8 - binH / 2;
             const totalW = cats.length * binW + (cats.length - 1) * 22;
             let bx = (W - totalW) / 2 + binW / 2;
             this.bins = [];
@@ -2522,10 +3059,13 @@
               .text(
                 W / 2,
                 binY - binH / 2 - 56,
-                "Tap a number, then tap a box to place it — or drag it. " +
-                  "(Keys 1–" +
-                  cats.length +
-                  " work too.) Then press CHECK.",
+                lang === "es"
+                  ? "Toca una tarjeta y luego una caja — o arrástrala. (Teclas 1–" +
+                      cats.length +
+                      ".) Luego pulsa REVISAR."
+                  : "Tap a tile, then tap a box — or drag it. (Keys 1–" +
+                      cats.length +
+                      " work too.) Then press CHECK.",
                 {
                   fontFamily: "Nunito, Segoe UI, sans-serif",
                   fontSize: "13px",
@@ -2543,7 +3083,7 @@
             // ("½ × 10 × 3 = 15 sq ft") widen and wrap on a taller tile so nothing
             // overflows. Uniform per set (items in one sort are similar length).
             const items = shuffle(r.items);
-            const rowY = 92 + Math.max(70, this.promptText.height + 30) + 34;
+            const rowY = 92 + Math.max(70, this.promptText.height + 30) + 34 + this.coachShift;
             const maxLen = Math.max(...items.map((it) => String(it.text).length));
             const tileW = Math.round(Math.min(240, Math.max(66, maxLen * 10 + 24)));
             // Height follows the wrapped text so long expressions don't overflow
@@ -2601,7 +3141,7 @@
             // Keyboard users confirm with Enter (the CHECK button is pointer-only).
             this.input.keyboard.on("keydown-ENTER", () => this.checkSort(r));
 
-            const cb = makeButton(this, W / 2, binY - binH / 2 - 28, 160, 42, "CHECK ✓", () =>
+            const cb = makeButton(this, W / 2, binY - binH / 2 - 28, 160, 42, t("check"), () =>
               this.checkSort(r),
             );
             this.layer.add(cb.bg);
@@ -2615,6 +3155,7 @@
             this.sortTiles.forEach((t, i) =>
               t.bg.setStrokeStyle(i === this.sortHi && !t.assigned ? 4 : 0, 0xfacc15),
             );
+            if (this.coachNext) this.coachNext();
           }
           // Tap-select a tile: make it the active (highlighted) one so a bin tap
           // or number key places it. Mirrors the keyboard highlight state.
@@ -2627,6 +3168,7 @@
             );
             if (typeof srSay === "function")
               srSay(t.data.text + " selected. Tap a box to place it.");
+            if (this.coachNext) this.coachNext();
           }
           // Place the currently highlighted tile into bin index bi. Shared by the
           // bin tap zones and the 1–N number keys.
@@ -2766,11 +3308,10 @@
             if (this.locked) return;
             const unplaced = this.sortTiles.filter((t) => !t.assigned);
             if (unplaced.length) {
-              this.feedback
-                .setColor("#fde68a")
-                .setText("Place every tile in a bin first.")
-                .setAlpha(1);
-              srSay("Place every tile in a bin first.");
+              const msg =
+                lang === "es" ? "Primero pon cada tarjeta en una caja." : "Place every tile in a box first.";
+              this.showFeedback(msg, "#fde68a");
+              srSay(msg);
               return;
             }
             const allRight = this.sortTiles.every((t) => t.assigned === t.data.category);
@@ -2784,7 +3325,12 @@
             // Wrong: keep the correctly-placed tiles, send the misplaced (red)
             // ones home for another try. unassignTile frees each slot and re-fits
             // its bin so the tiles that stayed grow back into the freed space.
-            this.resolve(false, "Move the red tiles to the right bin, then check.");
+            this.resolve(
+              false,
+              lang === "es"
+                ? "Las tarjetas rojas van en otra caja. Muévelas y revisa otra vez."
+                : "The red tiles belong in a different box. Move them, then check again.",
+            );
             this.time.delayedCall(720, () => {
               if (this.locked) return;
               const touched = new Set();
@@ -2806,8 +3352,8 @@
           // ── Renderer: MATCH (connect terms to partners) ────────────────────
           renderMatch(r) {
             const pairs = r.pairs;
-            const topY = 92 + Math.max(70, this.promptText.height + 30) + 40;
-            const gap = Math.min(74, (H - topY - 80) / pairs.length);
+            const topY = 92 + Math.max(70, this.promptText.height + 30) + 40 + this.coachShift;
+            const gap = Math.min(74, (FEED_TOP - topY) / pairs.length);
             const leftX = W / 2 - 200;
             const rightX = W / 2 + 200;
             const terms = pairs.map((p, i) => ({ ...p, i }));
@@ -2892,6 +3438,7 @@
               JUICE.audio.pop();
               this.updateHUD();
               if (this.matchRemaining <= 0) this.resolve(true, "All pairs matched!");
+              else if (this.coachNext) this.coachNext();
             } else {
               a.bg.setFillStyle(PALETTE.bad);
               b.bg.setFillStyle(PALETTE.bad);
@@ -2902,16 +3449,20 @@
                 if (!aa.done) aa.bg.setFillStyle(PALETTE.tile);
                 if (!bb.done) bb.bg.setFillStyle(PALETTE.tile);
               });
-              this.resolve(false, "That pair did not match.");
+              this.resolve(
+                false,
+                lang === "es" ? "Esas dos tarjetas no van juntas." : "Those two cards do not go together.",
+              );
+              if (this.coachNext) this.coachNext();
             }
           }
 
           // ── Renderer: FIXIT (spot the step with the mistake) ───────────────
           renderFixit(r) {
-            const hintY = 92 + Math.max(70, this.promptText.height + 30) + 24;
+            const hintY = 92 + Math.max(70, this.promptText.height + 30) + 24 + this.coachShift;
             // Tell the student what to DO — the prompt only names the scenario.
             const cue = this.add
-              .text(W / 2, hintY, "One step below has a mistake. Tap the step that is wrong.", {
+              .text(W / 2, hintY, lang === "es" ? "Un paso tiene un error. Toca el paso que está mal." : "One step below has a mistake. Tap the step that is wrong.", {
                 fontFamily: "Nunito, Segoe UI, sans-serif",
                 fontSize: "15px",
                 color: "#e0e7ff",
@@ -2921,22 +3472,28 @@
               .setOrigin(0.5);
             this.layer.add(cue);
             const topY = hintY + 34;
-            const gap = Math.min(72, (H - topY - 70) / r.steps.length);
+            const gap = Math.min(72, (FEED_TOP - topY) / r.steps.length);
             const tiles = [];
             r.steps.forEach((s, i) => {
-              const y = topY + i * gap;
-              const label = (s.label ? s.label + ":  " : "") + s.work;
-              const t = this.makeTile(W / 2, y, W - 220, 50, i + 1 + ".  " + label, "16px");
+              const y = topY + gap / 2 - 4 + i * gap;
+              const sl = (lang === "es" && s.labelEs) || s.label;
+              const sw = (lang === "es" && s.workEs) || s.work;
+              const label = (sl ? sl + ":  " : "") + sw;
+              const t = this.makeTile(W / 2, y, W - 220, Math.min(54, gap - 8), i + 1 + ".  " + label, "16px");
               this.layer.add(t.parts);
               tiles.push(t);
-              t.bg.on("pointerover", () => !this.locked && t.bg.setFillStyle(PALETTE.tileHi));
-              t.bg.on("pointerout", () => !this.locked && t.bg.setFillStyle(PALETTE.tile));
+              t.bg.on("pointerover", () => !this.locked && !t.keep && t.bg.setFillStyle(PALETTE.tileHi));
+              t.bg.on("pointerout", () => !this.locked && !t.keep && t.bg.setFillStyle(PALETTE.tile));
               t.bg.on("pointerdown", () => this.pickFix(r, i, t));
               this.input.keyboard.on("keydown-" + keyName(i + 1), () => this.pickFix(r, i, t));
             });
             this.revealCorrect = () => {
               const ct = tiles[r.errorStep];
-              if (ct) ct.bg.setFillStyle(PALETTE.good);
+              if (ct) {
+                ct.keep = true;
+                ct.bg.setFillStyle(PALETTE.good);
+                ct.bg.setStrokeStyle(4, PALETTE.gold, 1);
+              }
             };
             srSay(
               rounds[this.idx].prompt +
@@ -2955,9 +3512,22 @@
             // Wrong step: flash red, then reset so the student can try again.
             if (!ok)
               this.time.delayedCall(620, () => {
-                if (!this.locked) t.bg.setFillStyle(PALETTE.tile);
+                if (!this.locked && !t.keep) t.bg.setFillStyle(PALETTE.tile);
               });
-            this.resolve(ok, r.why);
+            // A miss points the search (earlier / later), never at the step.
+            const es = lang === "es";
+            this.resolve(
+              ok,
+              ok
+                ? ""
+                : i < r.errorStep
+                  ? es
+                    ? "El paso " + (i + 1) + " está bien. El error viene después."
+                    : "Step " + (i + 1) + " is correct. The mistake comes later."
+                  : es
+                    ? "El paso " + (i + 1) + " no es el error. Busca en un paso anterior."
+                    : "Step " + (i + 1) + " is not the mistake. Look at an earlier step.",
+            );
           }
 
           // Format a number without floating-point noise.
@@ -2980,26 +3550,41 @@
             g.lineStyle(6, PALETTE.panelLine, 0.95);
             g.lineBetween(x0, ly, x1, ly);
             this.layer.add(g);
-            const nTicks = Math.min(10, Math.max(2, Math.round(range / r.step)));
-            for (let i = 0; i <= nTicks; i++) {
-              const tx = x0 + ((x1 - x0) * i) / nTicks;
-              const val = r.min + (range * i) / nTicks;
-              g.lineStyle(2, PALETTE.panelLine, 0.7);
-              g.lineBetween(tx, ly - 10, tx, ly + 10);
-              const lbl = this.add
-                .text(tx, ly + 28, this.fmt(Math.round(val * 100) / 100) + (r.unit || ""), {
-                  fontFamily: "Nunito, Segoe UI, sans-serif",
-                  fontSize: "13px",
-                  color: "#e0e7ff",
-                })
-                .setOrigin(0.5);
-              this.layer.add(lbl);
+            // Labeled ticks sit on a "nice" spacing (whole multiples of 1, 2, 2.5
+            // or 5 × 10^k) so a student can count along the line; unlabeled minor
+            // ticks show the snap grid when it is coarse enough to read.
+            const allWhole = [r.min, r.max, r.step].every((v) => Number.isInteger(Math.round(v * 1e6) / 1e6));
+            const major = r.tick || niceStep(range / 8, allWhole);
+            const label = (v) => (r.prefix || "") + this.fmt(v) + (r.unit || "");
+            if (range / r.step <= 60 && Math.abs(r.step - major) > 1e-9) {
+              g.lineStyle(2, PALETTE.panelLine, 0.45);
+              for (let v = Math.ceil(r.min / r.step - 1e-9) * r.step; v <= r.max + 1e-9; v += r.step)
+                g.lineBetween(valToX(v), ly - 6, valToX(v), ly + 6);
             }
-            this.nlVal = snap(r.min + range / 2);
+            for (let k = Math.ceil(r.min / major - 1e-9); k * major <= r.max + 1e-9; k++) {
+              const val = Math.round(k * major * 1e6) / 1e6;
+              const tx = valToX(val);
+              g.lineStyle(3, PALETTE.panelLine, 0.9);
+              g.lineBetween(tx, ly - 12, tx, ly + 12);
+              this.layer.add(
+                this.add
+                  .text(tx, ly + 30, label(val), {
+                    fontFamily: "Nunito, Segoe UI, sans-serif",
+                    fontSize: "16px",
+                    fontStyle: "bold",
+                    color: "#e0e7ff",
+                  })
+                  .setOrigin(0.5),
+              );
+            }
+            // Start at the left end (the right end when the answer IS the left
+            // end) — never in the middle, where it could sit on the answer.
+            this.nlBig = major;
+            this.nlVal = Math.abs(r.target - r.min) <= (r.tol || 0) ? r.max : r.min;
             const marker = this.add.container(valToX(this.nlVal), ly);
             const dot = this.add.circle(0, 0, 15, PALETTE.gold).setStrokeStyle(3, 0xffffff);
             const bubble = this.add
-              .text(0, -40, this.fmt(this.nlVal) + (r.unit || ""), {
+              .text(0, -40, label(this.nlVal), {
                 fontFamily: "Nunito, Segoe UI, sans-serif",
                 fontSize: "20px",
                 fontStyle: "bold",
@@ -3015,7 +3600,7 @@
             this.layer.add(marker);
             const refresh = () => {
               marker.x = valToX(this.nlVal);
-              bubble.setText(this.fmt(this.nlVal) + (r.unit || ""));
+              bubble.setText(label(this.nlVal));
             };
             // Reliable marker drag: hold the dot, then a SCENE-level pointermove
             // (registered once in create) tracks it — same fix as the sort tiles,
@@ -3028,21 +3613,37 @@
                 refresh();
               };
             });
-            const nudge = (d) => {
-              this.nlVal = Math.min(r.max, Math.max(r.min, this.nlVal + d * r.step));
+            // ← → move one grid step; ↑ ↓ jump one labeled tick, so even a
+            // long line is a handful of key presses.
+            const nudge = (d, big) => {
+              const by = big ? this.nlBig : r.step;
+              this.nlVal = snap(Math.min(r.max, Math.max(r.min, this.nlVal + d * by)));
               refresh();
-              srSay("Marker at " + this.fmt(this.nlVal));
+              srSay("Marker at " + label(this.nlVal));
               this.updateAccessibleMarker();
+              this.coachNext?.();
             };
+            this.nlNudge = nudge;
             this.input.keyboard.on("keydown-LEFT", () => nudge(-1));
             this.input.keyboard.on("keydown-RIGHT", () => nudge(1));
+            this.input.keyboard.on("keydown-DOWN", () => nudge(-1, true));
+            this.input.keyboard.on("keydown-UP", () => nudge(1, true));
             const check = () => {
               if (this.locked || !this.settled()) return;
               const ok = Math.abs(this.nlVal - r.target) <= (r.tol || 0);
               dot.setFillStyle(ok ? PALETTE.good : PALETTE.bad);
+              // A miss says which WAY to move — never where the answer is.
               this.resolve(
                 ok,
-                r.why || "The target is " + this.fmt(r.target) + (r.unit || "") + ".",
+                ok
+                  ? r.why
+                  : this.nlVal > r.target
+                    ? lang === "es"
+                      ? "Tu punto está demasiado a la derecha: el valor es menor."
+                      : "Your dot is too far right — the value is smaller."
+                    : lang === "es"
+                      ? "Tu punto está demasiado a la izquierda: el valor es mayor."
+                      : "Your dot is too far left — the value is bigger.",
               );
               if (!ok)
                 this.time.delayedCall(560, () => !this.locked && dot.setFillStyle(PALETTE.gold));
@@ -3052,7 +3653,7 @@
             this.layer.add(cb.bg);
             this.layer.add(cb.t);
             const cue = this.add
-              .text(W / 2, ly - 46, "Drag the dot — or use ← → — then press CHECK.", {
+              .text(W / 2, ly - 70, lang === "es" ? "Arrastra el punto — o usa ← → (↑ ↓ para saltos grandes) — y pulsa REVISAR." : "Drag the dot — or use ← → (↑ ↓ for big jumps) — then press CHECK.", {
                 fontFamily: "Nunito, Segoe UI, sans-serif",
                 fontSize: "14px",
                 color: "#e0e7ff",
@@ -3122,7 +3723,14 @@
                 .sort();
               const b = r.answer.slice().sort();
               const ok = a.length === b.length && a.every((v, i) => v === b[i]);
-              this.resolve(ok, r.why || "The answer is " + r.answer.join(" × ") + ".");
+              this.resolve(
+                ok,
+                ok
+                  ? r.why || (lang === "es" ? "La respuesta es " : "The answer is ") + r.answer.join(" × ") + "."
+                  : lang === "es"
+                    ? "Esas piezas todavía no forman la respuesta."
+                    : "Those pieces do not make the answer yet.",
+              );
               if (!ok)
                 this.time.delayedCall(560, () => {
                   if (this.locked) return;
@@ -3211,7 +3819,19 @@
             const check = () => {
               if (this.locked || !this.settled()) return;
               const ok = Math.abs(this.balVal - r.target) < 1e-9;
-              this.resolve(ok, r.why || "x = " + this.fmt(r.target) + " balances it.");
+              // A miss says which way the scale tips — not the balancing value.
+              this.resolve(
+                ok,
+                ok
+                  ? r.why || "x = " + this.fmt(r.target) + "."
+                  : this.balVal > r.target
+                    ? lang === "es"
+                      ? "La balanza no está nivelada: x es demasiado grande."
+                      : "The scale is not level — x is too big."
+                    : lang === "es"
+                      ? "La balanza no está nivelada: x es demasiado pequeño."
+                      : "The scale is not level — x is too small.",
+              );
             };
             this.input.keyboard.on("keydown-ENTER", check);
             const cb = makeButton(this, cx, cy + 190, 170, 46, t("check"), check);
@@ -3339,9 +3959,25 @@
                 Math.abs(this.plotX - r.tx) <= (r.tol || 0) &&
                 Math.abs(this.plotY - r.ty) <= (r.tol || 0);
               dot.setFillStyle(ok ? PALETTE.good : PALETTE.bad);
+              // A miss names the coordinate to fix, not the point.
+              const xOff = Math.abs(this.plotX - r.tx) > (r.tol || 0);
+              const yOff = Math.abs(this.plotY - r.ty) > (r.tol || 0);
+              const es = lang === "es";
               this.resolve(
                 ok,
-                r.why || "The point is (" + this.fmt(r.tx) + ", " + this.fmt(r.ty) + ").",
+                ok
+                  ? r.why || "(" + this.fmt(r.tx) + ", " + this.fmt(r.ty) + ")"
+                  : xOff && yOff
+                    ? es
+                      ? "Revisa las dos coordenadas: x (izquierda/derecha) y y (arriba/abajo)."
+                      : "Check both numbers: x (left/right) and y (up/down)."
+                    : xOff
+                      ? es
+                        ? "Tu y está bien. Revisa x (izquierda/derecha)."
+                        : "Your y is right. Check x (left/right)."
+                      : es
+                        ? "Tu x está bien. Revisa y (arriba/abajo)."
+                        : "Your x is right. Check y (up/down).",
               );
               if (!ok)
                 this.time.delayedCall(560, () => !this.locked && dot.setFillStyle(PALETTE.gold));
@@ -3390,7 +4026,7 @@
                 if (i < total - 1) {
                   this.chainStepLocked = true;
                   this.mascotSay("Nice! ✔");
-                  this.feedback.setColor("#86efac").setText(t("yes")).setAlpha(1);
+                  this.showFeedback(t("yes") + (s.why ? s.why : ""), "#86efac");
                   srSay("Correct. Next step.");
                   this.time.delayedCall(420, () => {
                     if (!this.locked) showStep(i + 1);
@@ -3400,24 +4036,28 @@
                 }
               } else {
                 // Any wrong sub-answer disqualifies the whole-chain first-try bonus.
+                // Help escalates per STEP: method hint, concrete hint, then the
+                // step's own explanation with its answer marked (no-fail).
                 this.tries++;
+                this.chainTries = (this.chainTries || 0) + 1;
                 tile.bg.setFillStyle(PALETTE.bad);
                 JUICE.audio.wrong();
-                JUICE.shake(this, 0.005);
                 this.mascotReact(false);
-                const msg = s.why ? t("hint") + s.why : t("tryAgain");
-                this.feedback.setColor("#fde68a").setText(msg).setAlpha(1);
-                srSay("Not quite. " + (s.why || "Try again."));
-                document.getElementById("practice-native-feedback").textContent = "Try again. " + (s.why || "Read the current step.");
+                const help = this.helpText({ ...r, why: s.why || "" }, this.chainTries);
+                if (help.tier >= 3 && this.chainTiles && this.chainTiles[s.correctIndex]) {
+                  const ct = this.chainTiles[s.correctIndex];
+                  ct.keep = true;
+                  ct.bg.setFillStyle(PALETTE.good);
+                  ct.bg.setStrokeStyle(4, PALETTE.gold, 1);
+                }
+                const msg = (lang === "es" ? "Todavía no. " : "Not yet. ") + "💡 " + help.text;
+                this.showFeedback(msg, "#fde68a");
+                srSay(msg.replace(/\n/g, " "));
+                document.getElementById("practice-native-feedback").textContent = msg.replace(/\n/g, " ");
                 this.saveRun();
-                studioEvent("feedback", {correct:false,message:"Try the step again."});
-                try {
-                  if (window.GameFX && typeof window.GameFX.coach === "function") {
-                    window.GameFX.coach("tip", msg);
-                  }
-                } catch (eCoach) {}
+                studioEvent("feedback", { correct: false });
                 this.time.delayedCall(560, () => {
-                  if (!this.locked) tile.bg.setFillStyle(PALETTE.tile);
+                  if (!this.locked && !tile.keep) tile.bg.setFillStyle(PALETTE.tile);
                 });
               }
             };
@@ -3428,9 +4068,18 @@
               const s = r.steps[i];
               this.chainStepLocked = false;
               this.chainIdx = i;
-              this.renderAccessibleControls({...r, kind:"choose", prompt:s.prompt, choices:s.choices});
+              this.chainTries = 0;
+              this.chainTiles = [];
+              // Lay the step out below the prompt panel (and coach line).
+              const top = 92 + Math.max(70, this.promptText.height + 30) + 22 + this.coachShift;
+              this.renderAccessibleControls({
+                ...r,
+                kind: "choose",
+                prompt: s.prompt,
+                choices: s.choices,
+              });
               const prog = this.add
-                .text(W / 2, 214, t("stepOf") + " " + (i + 1) + " / " + total, {
+                .text(W / 2, top, t("stepOf") + " " + (i + 1) + " / " + total, {
                   fontFamily: "Nunito, Segoe UI, sans-serif",
                   fontSize: "15px",
                   fontStyle: "bold",
@@ -3439,7 +4088,7 @@
                 .setOrigin(0.5);
               stepLayer.add(prog);
               const q = this.add
-                .text(W / 2, 252, s.prompt, {
+                .text(W / 2, top + 38, s.prompt, {
                   fontFamily: "Nunito, Segoe UI, sans-serif",
                   fontSize: "19px",
                   fontStyle: "bold",
@@ -3449,17 +4098,19 @@
                 })
                 .setOrigin(0.5);
               stepLayer.add(q);
-              const startY = 252 + Math.max(30, q.height) + 40;
+              const startY = top + 38 + Math.max(30, q.height) / 2 + 40;
               const tileW = Math.min(560, W - 220);
+              const gap = Math.min(62, (FEED_TOP - startY + 25) / s.choices.length);
               s.choices.forEach((c, ci) => {
-                const y = startY + ci * 62;
-                const tile = this.makeTile(W / 2, y, tileW, 50, ci + 1 + ".  " + c);
+                const y = startY + ci * gap;
+                const tile = this.makeTile(W / 2, y, tileW, Math.min(50, gap - 8), ci + 1 + ".  " + c);
                 stepLayer.add(tile.parts);
+                this.chainTiles.push(tile);
                 tile.bg.on(
                   "pointerover",
-                  () => !this.locked && tile.bg.setFillStyle(PALETTE.tileHi),
+                  () => !this.locked && !tile.keep && tile.bg.setFillStyle(PALETTE.tileHi),
                 );
-                tile.bg.on("pointerout", () => !this.locked && tile.bg.setFillStyle(PALETTE.tile));
+                tile.bg.on("pointerout", () => !this.locked && !tile.keep && tile.bg.setFillStyle(PALETTE.tile));
                 tile.bg.on("pointerdown", () => pickChain(i, ci, tile));
                 this.input.keyboard.on("keydown-" + keyName(ci + 1), () => pickChain(i, ci, tile));
               });
@@ -3481,6 +4132,9 @@
           // undiscovered) double-points power meter. Gated by a localStorage flag
           // so it appears once ever; honors reduced motion; dismiss on tap or after
           // ~5s. Announced via srSay for screen-reader parity.
+          // One-time tip about the power meter. It used to be a floating box
+          // over the first question; now it is a calm line in the feedback strip
+          // that the first answer replaces.
           maybeShowPowerCoach() {
             let seen = false;
             try {
@@ -3490,64 +4144,59 @@
             try {
               localStorage.setItem("pa-coach-power", "1");
             } catch (e) {}
-            const reduce = JUICE.reduceMotion || this.reduce;
-            const boxW = 300,
-              boxH = 80,
-              bx = 118,
-              by = 150;
-            const cont = this.add.container(bx, by).setDepth(80);
-            const gfx = this.add.graphics();
-            gfx.fillStyle(0x0b1020, 0.97);
-            gfx.fillRoundedRect(0, 0, boxW, boxH, 12);
-            gfx.lineStyle(2, PALETTE.gold, 0.95);
-            gfx.strokeRoundedRect(0, 0, boxW, boxH, 12);
-            gfx.fillStyle(0x0b1020, 0.97);
-            gfx.fillTriangle(24, 0, 44, 0, 34, -11); // pointer up toward the meter
-            const body = this.add.text(14, 12, t("coachPower"), {
-              fontFamily: "Nunito, Segoe UI, sans-serif",
-              fontSize: "13px",
-              fontStyle: "bold",
-              color: "#fde68a",
-              wordWrap: { width: boxW - 28 },
-            });
-            const dismiss = this.add
-              .text(boxW - 12, boxH - 13, t("coachDismiss"), {
-                fontFamily: "Nunito, Segoe UI, sans-serif",
-                fontSize: "11px",
-                color: "#93c5fd",
-              })
-              .setOrigin(1, 0.5);
-            const hit = this.add
-              .rectangle(boxW / 2, boxH / 2, boxW, boxH, 0xffffff, 0.001)
-              .setInteractive({ useHandCursor: true });
-            cont.add([gfx, body, dismiss, hit]);
-            srSay(t("coachPower"));
-            const close = () => {
-              if (!cont || !cont.scene) return;
-              if (reduce) {
-                cont.destroy();
-                return;
+            this.showFeedback(t("coachPower"), "#fde68a");
+          }
+
+          // Show (or clear) the live step coach. Only the Support level sees it.
+          coachSay(text) {
+            if (!this.coachText) return;
+            const on = tier === "l1" && !!text;
+            this.coachText.setVisible(on);
+            if (!on) return;
+            this.coachText.setText("👉 " + text).setY(this.coachY || 170);
+          }
+
+          // The NEXT action for the current round, from the live board state.
+          coachLine(r) {
+            const es = lang === "es";
+            const q = (s) => "“" + String(s).replace(/^\d+\.\s+/, "") + "”";
+            switch (r.kind) {
+              case "sort": {
+                const left = (this.sortTiles || []).filter((x) => !x.assigned);
+                if (!left.length)
+                  return es ? "Todas las tarjetas están en cajas. Pulsa REVISAR ✓." : "Every tile is in a box. Press CHECK ✓.";
+                const cur = this.sortTiles[this.sortHi] && !this.sortTiles[this.sortHi].assigned ? this.sortTiles[this.sortHi] : left[0];
+                return es
+                  ? "Lee " + q(cur.data.text) + ". Toca la caja donde va (o pulsa su número)."
+                  : "Read " + q(cur.data.text) + ". Tap the box where it belongs (or press its number).";
               }
-              this.tweens.add({
-                targets: cont,
-                alpha: 0,
-                y: by - 10,
-                duration: 260,
-                onComplete: () => cont.destroy(),
-              });
-            };
-            hit.on("pointerdown", close);
-            if (!reduce) {
-              cont.setAlpha(0).setScale(0.92);
-              this.tweens.add({
-                targets: cont,
-                alpha: 1,
-                scale: 1,
-                duration: 300,
-                ease: "Back.Out",
-              });
+              case "match":
+                if (this.matchSel && this.matchSel.side === "L")
+                  return es
+                    ? "Ahora toca la tarjeta de la derecha que va con " + q(this.matchSel.label.text) + "."
+                    : "Now tap the card on the right that goes with " + q(this.matchSel.label.text) + ".";
+                return es ? "Toca una tarjeta de la izquierda (o pulsa su número)." : "Tap a card on the left (or press its number).";
+              case "fixit":
+                return es
+                  ? "Revisa el paso 1. ¿Es correcto? Sigue hasta el PRIMER paso con un error y tócalo."
+                  : "Check step 1. Is it right? Keep going to the FIRST step with a mistake, then tap it.";
+              case "numline":
+                return es
+                  ? "Halla el valor. Mueve el punto con ← → (↑ ↓ salta más). Luego pulsa REVISAR."
+                  : "Work out the value. Move the dot with ← → (↑ ↓ jump further). Then press CHECK.";
+              case "plot":
+                return es ? "Mueve el punto: primero x (← →), luego y (↑ ↓). Luego pulsa REVISAR." : "Move the dot: x first (← →), then y (↑ ↓). Then press CHECK.";
+              case "build":
+                return es ? "Toca las piezas que multiplicadas dan la respuesta. Luego pulsa REVISAR." : "Tap the pieces that multiply to make the answer. Then press CHECK.";
+              case "balance":
+                return es ? "Cambia x con ← → hasta que los dos lados sean iguales. Luego pulsa REVISAR." : "Change x with ← → until both sides are equal. Then press CHECK.";
+              case "chain":
+                return es ? "Responde este paso. Cada respuesta abre el siguiente paso." : "Answer this step. Each answer opens the next step.";
+              default:
+                return es
+                  ? "Lee la pregunta. Resuélvela en tu cuaderno. Luego toca tu respuesta (o pulsa su número)."
+                  : "Read the question. Solve it on paper. Then tap your answer (or press its number).";
             }
-            this.time.delayedCall(5200, close);
           }
 
           // ── Shared tile factory: returns {parts(container), bg, label} ─────
@@ -3679,66 +4328,99 @@
           create() {
             drawStars(this);
             const d = this.d;
+            const es = lang === "es";
             const ratio = d.total ? d.correct / d.total : 0;
             const stars = ratio >= 0.85 ? 3 : ratio >= 0.5 ? 2 : 1;
+            const items = d.items || [];
+            const helpedAt = (i) => {
+              const it = items[i];
+              return it ? (it.helped != null ? !!it.helped : it.tries > 0) : false;
+            };
+            const toRevisit = completedRounds.filter((r, i) => helpedAt(i));
+            const helped = Math.max(0, d.total - d.correct);
+            const pct = d.total ? Math.round((d.correct / d.total) * 100) : 0;
+            // Which KINDS of challenge needed help — the "practice next" list.
+            const KIND_NAME = {
+              choose: es ? "Elegir la respuesta" : "Choose the answer",
+              sort: es ? "Clasificar en grupos" : "Sort into groups",
+              match: es ? "Unir parejas" : "Match the pairs",
+              fixit: es ? "Encontrar el error" : "Find the mistake",
+              numline: es ? "Ubicar en la recta" : "Place it on the line",
+              build: es ? "Armar la respuesta" : "Build the answer",
+              balance: es ? "Equilibrar la balanza" : "Balance the scale",
+              plot: es ? "Ubicar el punto" : "Plot the point",
+              chain: es ? "Paso a paso" : "Step by step",
+            };
+            const needCounts = {};
+            items.forEach((it, i) => {
+              if (helpedAt(i)) needCounts[it.kind] = (needCounts[it.kind] || 0) + 1;
+            });
+            const needList = Object.keys(needCounts)
+              .sort((a, b) => needCounts[b] - needCounts[a])
+              .map((k) => (KIND_NAME[k] || k) + " (" + needCounts[k] + ")");
             document.getElementById("practice-text-controls").hidden = true;
-            studioEvent("complete", {score:d.score, correct:d.correct, total:d.total, message:"Adventure complete. " + d.correct + " first-try solves."});
+            studioEvent("complete", {
+              score: d.score,
+              correct: d.correct,
+              total: d.total,
+              message: (es ? "¡Aventura completa! " : "Adventure complete. ") + d.correct + (es ? " resueltos al primer intento." : " first-try solves."),
+            });
             try {
               const key = "pa-summary-" + activeLesson;
               const previous = JSON.parse(localStorage.getItem(key) || "null");
-              if (!previous || stars > previous.stars || d.score > previous.score) localStorage.setItem(key, JSON.stringify({score:d.score, stars, firstTry:d.correct, total:d.total, playedAt:Date.now()}));
+              if (!previous || stars > previous.stars || d.score > previous.score)
+                localStorage.setItem(
+                  key,
+                  JSON.stringify({ score: d.score, stars, firstTry: d.correct, total: d.total, playedAt: Date.now() }),
+                );
             } catch (_) {}
-            document.getElementById("practice-session-title").textContent = "Adventure complete · " + stars + " stars";
-            document.getElementById("practice-session-note").textContent = "All " + d.total + " challenges solved. " + d.correct + " solved on your first try. Score " + d.score + ". Choose a replay or your next world.";
+            document.getElementById("practice-session-title").textContent =
+              (es ? "Aventura completa · " : "Adventure complete · ") + stars + (es ? " estrellas" : " stars");
+            document.getElementById("practice-session-note").textContent = es
+              ? "Resolviste los " + d.total + " retos. " + d.correct + " al primer intento sin ayuda. Puntos: " + d.score + "."
+              : "All " + d.total + " challenges solved. " + d.correct + " on your own on the first try. Score " + d.score + ".";
             const retry = document.getElementById("practice-retry");
-            const toRevisit = completedRounds.filter((r, i) => d.items?.[i]?.tries > 0);
             retry.hidden = !toRevisit.length;
-            retry.textContent = "Practice " + toRevisit.length + " questions to revisit";
-            retry.onclick = () => { rounds = toRevisit.slice(); this.scene.start("Play"); this.game.canvas.focus({preventScroll:true}); };
+            retry.textContent = es
+              ? "Practicar " + toRevisit.length + " preguntas para repasar"
+              : "Practice the " + toRevisit.length + " questions to revisit";
+            retry.onclick = () => {
+              rounds = toRevisit.slice();
+              this.scene.start("Play");
+              this.game.canvas.focus({ preventScroll: true });
+            };
             document.getElementById("practice-resume").hidden = true;
 
-            // Celebrating boss + a medal that spins in — a real "you cleared the
-            // level" payoff moment.
+            // Remember what this run played so PLAY AGAIN leads with challenges
+            // the student has not seen yet (see buildPlayList).
+            try {
+              localStorage.setItem("pa-played-" + activeLesson, JSON.stringify(completedRounds.map(roundKey)));
+            } catch (_) {}
+
             const medal = stars >= 3 ? "🥇" : stars === 2 ? "🥈" : "🥉";
-            const boss = this.add.text(W / 2, 92, mascot, { fontSize: "68px" }).setOrigin(0.5);
-            const mdl = this.add.text(W / 2 + 46, 112, medal, { fontSize: "40px" }).setOrigin(0.5);
+            const boss = this.add.text(W / 2, 74, mascot, { fontSize: "60px" }).setOrigin(0.5);
+            const mdl = this.add.text(W / 2 + 44, 92, medal, { fontSize: "36px" }).setOrigin(0.5);
             if (!JUICE.reduceMotion) {
               mdl.setScale(0).setAngle(-40);
-              this.tweens.add({
-                targets: mdl,
-                scale: 1,
-                angle: 0,
-                ease: "Back.Out",
-                duration: 500,
-                delay: 200,
-              });
-              this.tweens.add({
-                targets: boss,
-                y: 84,
-                duration: 900,
-                yoyo: true,
-                repeat: -1,
-                ease: "Sine.InOut",
-              });
+              this.tweens.add({ targets: mdl, scale: 1, angle: 0, ease: "Back.Out", duration: 500, delay: 200 });
+              this.tweens.add({ targets: boss, y: 68, duration: 900, yoyo: true, repeat: -1, ease: "Sine.InOut" });
             }
-
             this.add
-              .text(W / 2, 168, t("levelCleared"), {
+              .text(W / 2, 146, t("levelCleared"), {
                 fontFamily: "Nunito, Segoe UI, sans-serif",
-                fontSize: "46px",
+                fontSize: "42px",
                 fontStyle: "bold",
                 color: "#34d399",
                 stroke: "#0b1020",
                 strokeThickness: 5,
               })
               .setOrigin(0.5);
-            // Stars pop in one at a time with a "collect" blip for a payoff beat.
             for (let i = 0; i < 3; i++) {
               const earned = i < stars;
               const star = this.add
-                .text(W / 2 - 60 + i * 60, 230, earned ? "★" : "☆", {
-                  fontSize: "56px",
-                  color: earned ? "#facc15" : "#475569",
+                .text(W / 2 - 56 + i * 56, 200, earned ? "★" : "☆", {
+                  fontSize: "48px",
+                  color: earned ? "#facc15" : "#94a3b8",
                 })
                 .setOrigin(0.5);
               if (earned && !JUICE.reduceMotion) {
@@ -3753,103 +4435,89 @@
                 });
               }
             }
-            this.add
-              .text(
-                W / 2,
-                310,
-                t("score") +
-                  " " +
-                  d.score +
-                  "\n" +
-                  d.correct +
-                  " " +
-                  t("of") +
-                  " " +
-                  d.total +
-                  " " +
-                  t("correctWord"),
-                {
-                  fontFamily: "Nunito, Segoe UI, sans-serif",
-                  fontSize: "24px",
-                  color: "#e2e8f0",
-                  align: "center",
-                },
-              )
-              .setOrigin(0.5);
-            // Celebration + meta-progression payout.
-            JUICE.audio.fanfare();
-            JUICE.confetti(this, 1);
-            const bonusXp = d.correct * 10 + 50 + stars * 15;
-            JUICE.award(bonusXp, "practice-arcade-complete");
-            this.add
-              .text(W / 2, 360, "+" + bonusXp + " XP", {
-                fontFamily: "Nunito, Segoe UI, sans-serif",
-                fontSize: "22px",
-                fontStyle: "bold",
-                color: "#fde047",
-              })
-              .setOrigin(0.5);
 
-            // Rank title — a friendly label that rewards higher accuracy and
-            // gives the score a name to aim to beat on replay.
-            const flawless = d.total > 0 && d.correct === d.total;
-            const rank = flawless
-              ? "🏆 FLAWLESS — Math Champion!"
-              : stars === 3
-                ? "🌟 Math Star"
-                : stars === 2
-                  ? "💪 Getting Strong"
-                  : "🌱 Keep Growing";
-            this.add
-              .text(W / 2, 392, rank, {
-                fontFamily: "Nunito, Segoe UI, sans-serif",
-                fontSize: "20px",
-                fontStyle: "bold",
-                color: flawless ? "#facc15" : "#a5f3fc",
-              })
-              .setOrigin(0.5);
-
-            // Personal best (per lesson, localStorage). Celebrate a new record.
+            // Personal best (per lesson, localStorage).
             let best = 0;
             const bestKey = "pa-best-" + activeLesson;
             try {
               best = parseInt(localStorage.getItem(bestKey) || "0", 10) || 0;
             } catch (e) {}
             const isNewBest = d.score > best;
-            if (isNewBest) {
+            if (isNewBest)
               try {
                 localStorage.setItem(bestKey, String(d.score));
               } catch (e) {}
-              const nb = this.add
-                .text(W / 2, 430, "🎉 NEW BEST SCORE!", {
-                  fontFamily: "Nunito, Segoe UI, sans-serif",
-                  fontSize: "22px",
-                  fontStyle: "bold",
-                  color: "#34d399",
-                })
-                .setOrigin(0.5);
-              if (!JUICE.reduceMotion) {
-                nb.setScale(0);
-                this.tweens.add({
-                  targets: nb,
-                  scale: 1,
-                  ease: "Back.Out",
-                  duration: 360,
-                  delay: 500,
-                  onStart: () => JUICE.confetti(this, 1),
-                });
-              }
-            } else if (best > 0) {
-              this.add
-                .text(W / 2, 430, "Best: " + best + " — beat it next time!", {
-                  fontFamily: "Nunito, Segoe UI, sans-serif",
-                  fontSize: "17px",
-                  color: "#cbd5e1",
-                })
-                .setOrigin(0.5);
-            }
-            if (flawless && !JUICE.reduceMotion) JUICE.confetti(this, 1);
+            const flawless = d.total > 0 && d.correct === d.total;
+            const rank = flawless
+              ? es ? "🏆 ¡PERFECTO!" : "🏆 FLAWLESS — Math Champion!"
+              : stars === 3
+                ? es ? "🌟 Estrella de matemáticas" : "🌟 Math Star"
+                : stars === 2
+                  ? es ? "💪 Cada vez más fuerte" : "💪 Getting Strong"
+                  : es ? "🌱 Sigue creciendo" : "🌱 Keep Growing";
+            const bonusXp = d.correct * 10 + 50 + stars * 15;
+            JUICE.audio.fanfare();
+            JUICE.confetti(this, 1);
+            JUICE.award(bonusXp, "practice-arcade-complete");
+            this.add
+              .text(
+                W / 2,
+                250,
+                t("score") + " " + d.score + "   ·   +" + bonusXp + " XP   ·   " + rank,
+                { fontFamily: "Nunito, Segoe UI, sans-serif", fontSize: "20px", fontStyle: "bold", color: "#fde68a" },
+              )
+              .setOrigin(0.5);
+            this.add
+              .text(
+                W / 2,
+                280,
+                isNewBest
+                  ? es ? "🎉 ¡NUEVO RÉCORD!" : "🎉 NEW BEST SCORE!"
+                  : (es ? "Récord: " : "Best: ") + best + (es ? " — ¡supéralo la próxima vez!" : " — beat it next time!"),
+                { fontFamily: "Nunito, Segoe UI, sans-serif", fontSize: "17px", fontStyle: "bold", color: isNewBest ? "#34d399" : "#cbd5e1" },
+              )
+              .setOrigin(0.5);
 
+            // ── What you practiced: a real summary card, not just a number ──
+            const cardTop = 304;
+            const cardH = 168;
+            const card = this.add.graphics();
+            card.fillStyle(0x0b1020, 0.62);
+            card.fillRoundedRect(150, cardTop, W - 300, cardH, 16);
+            card.lineStyle(2, PALETTE.panelLine, 0.6);
+            card.strokeRoundedRect(150, cardTop, W - 300, cardH, 16);
+            const line = (y, text, color) =>
+              this.add
+                .text(178, y, text, {
+                  fontFamily: "Nunito, Segoe UI, sans-serif",
+                  fontSize: "18px",
+                  fontStyle: "bold",
+                  color: color || "#f1f5f9",
+                  wordWrap: { width: W - 356 },
+                })
+                .setOrigin(0, 0);
+            line(
+              cardTop + 16,
+              (es ? "✅ Sin ayuda, al primer intento: " : "✅ On your own, first try: ") + d.correct + (es ? " de " : " of ") + d.total + " (" + pct + "%)",
+              "#86efac",
+            );
+            line(
+              cardTop + 48,
+              (es ? "🤝 Con una pista o un segundo intento: " : "🤝 With a hint or another try: ") + helped,
+              "#fde68a",
+            );
+            const next = needList.length
+              ? (es ? "🔁 Practica después: " : "🔁 Practice next: ") + needList.slice(0, 3).join(", ")
+              : !isReviewMode && worldUnit > 0
+                ? es
+                  ? "🚀 Siguiente: prueba el Repaso de la Unidad " + worldUnit + "."
+                  : "🚀 Next: try the Unit " + worldUnit + " Review — mixed challenges from every lesson."
+                : es
+                  ? "🚀 Siguiente: juega otra vez con retos nuevos, o elige otro mundo."
+                  : "🚀 Next: play again for new challenges, or pick another world.";
+            line(cardTop + 82, next, "#bae6fd");
+
+            if (flawless && !JUICE.reduceMotion) JUICE.confetti(this, 1);
             try {
               window.EduPulse &&
                 EduPulse.record({
@@ -3859,30 +4527,43 @@
                   lesson: activeLesson,
                   tier,
                   problemsAttempted: d.total,
-                  items: d.items || [],
+                  items,
                 });
             } catch (e) {}
             srSay(
-              "Review complete. " + d.correct + " of " + d.total + " correct. " + stars + " stars.",
+              (es ? "Repaso completo. " : "Review complete. ") +
+                d.correct + (es ? " de " : " of ") + d.total +
+                (es ? " sin ayuda al primer intento. " : " on your own, first try. ") +
+                stars + (es ? " estrellas. " : " stars. ") + next,
             );
 
             // Next-step CTAs. From a single lesson, offer the whole-unit review
-            // as a "next level" so the arcade feels like a progression, not a
-            // dead end. Otherwise just Play Again.
+            // as a "next level" so the arcade feels like a progression.
             const canUnit = !isReviewMode && worldUnit > 0;
+            const again = () => window.location.reload();
             if (canUnit) {
-              makeButton(this, W / 2 - 150, 512, 264, 56, t("playAgain"), () =>
-                window.location.reload(),
-              );
-              makeButton(this, W / 2 + 150, 512, 264, 56, t("unitReviewBtn"), () => {
+              makeButton(this, W / 2 - 150, 530, 264, 56, t("playAgain"), again);
+              makeButton(this, W / 2 + 150, 530, 264, 56, t("unitReviewBtn"), () => {
                 window.location.href = "/math/games/practice-arcade/?unit=" + worldUnit;
               });
             } else {
-              makeButton(this, W / 2, 512, 240, 56, t("playAgain"), () => window.location.reload());
+              makeButton(this, W / 2, 530, 264, 56, t("playAgain"), again);
             }
-            makeLink(this, W / 2 - 110, 578, "🗺️ " + (lang === "es" ? "Mapa" : "World map"), () => {
+            makeLink(this, W / 2, 592, "🗺️ " + (es ? "Mapa del Arcade" : "World map"), () => {
               window.location.href = "/math/games/practice-arcade/map.html";
             });
+            // Keyboard: Enter = play again, M = world map, U = unit review.
+            this.input.keyboard.on("keydown-ENTER", (ev) => {
+              if (ev.target && ev.target.closest && ev.target.closest("button,select,input,a,summary")) return;
+              again();
+            });
+            this.input.keyboard.on("keydown-M", () => {
+              window.location.href = "/math/games/practice-arcade/map.html";
+            });
+            if (canUnit)
+              this.input.keyboard.on("keydown-U", () => {
+                window.location.href = "/math/games/practice-arcade/?unit=" + worldUnit;
+              });
           }
         }
 
@@ -4100,15 +4781,15 @@
     <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
     <!-- nsr-injected:end -->
     <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-    
+
     <!-- mwb-injected:end -->
 
     <script src="/assets/math-workbench-launcher.js" defer></script>
-  <script src="/assets/formula-popup.js" defer></script>
-  <!-- nt-chrome-injected:begin (shared page chrome — tools/inject-nt-chrome.js) -->
-  <script src="/assets/nt-chrome.js" defer></script>
-  <!-- nt-chrome-injected:end -->
-<script src="/assets/game-studio.js?v=20261002" defer></script>
-<script src="/math/games/practice-arcade/studio.js" defer></script>
-</body>
+    <script src="/assets/formula-popup.js" defer></script>
+    <!-- nt-chrome-injected:begin (shared page chrome — tools/inject-nt-chrome.js) -->
+    <script src="/assets/nt-chrome.js" defer></script>
+    <!-- nt-chrome-injected:end -->
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
+    <script src="/math/games/practice-arcade/studio.js" defer></script>
+  </body>
 </html>

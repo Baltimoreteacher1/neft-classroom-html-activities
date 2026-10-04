@@ -223,8 +223,31 @@ test("the practice workbooks on disk are all in the manifest", () => {
  * recorded file sizes (84 notes + 84 handouts + 204 worksheets), because the
  * manifest stores `bytes` per file. That was a true staleness report, not a
  * flake. */
+/* Compare against the INDEX, not the working tree. `npm run build` runs the
+ * generator and is the first member of every gate (qa-run schedules it as a
+ * barrier ahead of `test`), so by the time this test ran, the working-tree file
+ * had already been regenerated and the comparison was fresh-vs-fresh. That let
+ * a manifest go stale on main from 2026-10-02 (ee3eb4ff42 rewrote every
+ * homework.html, 85 recorded sizes drifted) through four green gates. The index
+ * is what a commit records and what a push sends: in pre-commit it holds the
+ * staged file, in the ship worktree it equals HEAD. Outside a git checkout the
+ * working tree is the only copy there is. */
+function committedManifest() {
+  const path = "data/curriculum-download-manifest.json";
+  try {
+    return execFileSync("git", ["show", `:${path}`], {
+      cwd: ROOT,
+      encoding: "utf8",
+      maxBuffer: 64 * 1024 * 1024,
+      stdio: ["ignore", "pipe", "ignore"],
+    });
+  } catch {
+    return readFileSync(resolve(ROOT, path), "utf8");
+  }
+}
+
 test("the committed manifest is what the generator would write", () => {
-  const committed = readFileSync(resolve(ROOT, "data/curriculum-download-manifest.json"), "utf8");
+  const committed = committedManifest();
   const fresh = execFileSync(
     process.execPath,
     ["scripts/generate-download-manifest.mjs", "--stdout"],
@@ -233,7 +256,7 @@ test("the committed manifest is what the generator would write", () => {
   assert.equal(
     fresh,
     committed,
-    "data/curriculum-download-manifest.json is stale — run `npm run generate-download-manifest`",
+    "data/curriculum-download-manifest.json is stale in the index — run `npm run generate-download-manifest` and stage the result",
   );
 });
 

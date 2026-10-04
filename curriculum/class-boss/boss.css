@@ -100,23 +100,6 @@ a {
   margin-bottom: 18px;
 }
 
-.back-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 8px 16px;
-  border-radius: 999px;
-  background: var(--card);
-  border: 2px solid var(--line);
-  color: var(--navy);
-  font-weight: 700;
-  text-decoration: none;
-}
-.back-link:hover {
-  border-color: var(--teal);
-}
-
 .topbar-tools {
   display: flex;
   gap: 10px;
@@ -555,26 +538,53 @@ body.projector {
 }
 body.projector .battle,
 body.projector .privacy,
-body.projector .page-sub,
-body.projector .back-link {
+body.projector .page-sub {
   display: none;
 }
 body.projector .layout {
   grid-template-columns: 1fr;
 }
-@media (min-width: 1100px) {
-  body.projector .layout {
+/* Projector: the boss section fills the screen as its own two-column grid —
+   boss + class health on the left, attacks + live feed on the right — so a
+   1366x768 projector shows the whole raid without scrolling. */
+@media (min-width: 900px) {
+  body.projector .layout > section:first-child {
+    display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    gap: 22px;
+    align-items: start;
+  }
+  body.projector .layout > section:first-child > .boss-stage {
+    grid-row: 1 / span 2;
+  }
+  body.projector .layout > section:first-child > .card + .card {
+    margin-top: 0;
+  }
+  body.projector header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 22px;
+  }
+  body.projector .eyebrow {
+    flex-basis: 100%;
+  }
+  body.projector .boss-art {
+    width: min(100%, 300px);
+  }
+  body.projector .layout {
+    margin-top: 14px;
   }
 }
 body.projector .page-title {
-  font-size: clamp(2.6rem, 6vw, 4.6rem);
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
 }
 body.projector .boss-name {
-  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-size: clamp(2rem, 3.4vw, 3rem);
 }
 body.projector .boss-art {
-  width: min(100%, 560px);
+  width: min(100%, 420px);
 }
 body.projector .hp-track {
   height: 58px;
@@ -715,6 +725,162 @@ body.projector .card-title {
   }
 }
 
-.raid-prep select { width:100%; min-height:48px; font:inherit; padding:10px; border:1px solid var(--line,#61728e); border-radius:10px; background:#fff; color:#14223a; margin:8px 0; }
-.raid-prep p { font-size:16px; line-height:1.5; }
-#raidSession { font-weight:700; color:#175da0; }
+/* --- round header + focus picker ---------------------------------------- */
+.battle-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+}
+.round-progress {
+  margin: 0 0 10px;
+  font-weight: 700;
+  color: var(--teal);
+  font-size: 1rem;
+}
+.raid-prep {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  margin-bottom: 16px;
+  font-size: 1rem;
+  color: var(--muted);
+}
+.raid-prep label {
+  font-weight: 700;
+}
+.raid-prep select {
+  flex: 1 1 220px;
+  min-height: 44px;
+  font: inherit;
+  padding: 8px 10px;
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+}
+
+/* --- round summary ------------------------------------------------------ */
+.round-summary h3 {
+  font-size: 1.5rem;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+.round-stats {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+.round-stats li {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  font-weight: 700;
+}
+.round-stats li:first-child {
+  background: var(--green-light);
+  border-color: var(--green);
+  font-size: 1.15rem;
+}
+.round-next {
+  margin: 14px 0 0;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* --- studio "Calm motion" switch: same effect as prefers-reduced-motion -- */
+.studio-reduced-motion .boss-art *,
+.studio-reduced-motion .boss-stage .boss-art,
+.studio-reduced-motion .feed li {
+  animation: none !important;
+}
+.studio-reduced-motion .hp-fill {
+  transition: none !important;
+}
+
+/* --- compact header: language/projector buttons share the title row on wide
+   screens, so the first challenge sits above the fold at 1366x768. --------- */
+.boss-name,
+.attack-name,
+.attack-label,
+.attack-meta,
+.hp-caption {
+  margin: 0;
+}
+.hp-caption {
+  margin-top: 8px;
+}
+@media (min-width: 760px) {
+  .wrap {
+    position: relative;
+  }
+  .topbar {
+    position: absolute;
+    top: 18px;
+    right: clamp(14px, 3vw, 28px);
+    margin: 0;
+  }
+  header {
+    padding-right: 340px;
+  }
+  .page-sub {
+    font-size: 1rem;
+  }
+}
+
+/* Projector: everything the class needs on one screen. */
+body.projector .boss-art {
+  width: min(100%, 280px);
+}
+body.projector .stage {
+  padding-top: 18px;
+}
+body.projector .boss-tagline {
+  margin: 0 0 6px;
+}
+body.projector .hp-track {
+  height: 44px;
+}
+body.projector .attack {
+  padding: 10px 12px;
+  align-items: center;
+}
+body.projector .attacks {
+  gap: 10px;
+}
+body.projector .card-title {
+  font-size: 1.6rem;
+}
+body.projector .attack-name {
+  font-size: clamp(1.25rem, 2vw, 1.7rem);
+}
+body.projector .attack-label,
+body.projector .feed li {
+  font-size: 1.15rem;
+}
+body.projector .data-note {
+  font-size: 1rem;
+}
+body.projector .hp-head {
+  font-size: clamp(1.3rem, 2vw, 1.7rem);
+}
+body.projector .boss-art {
+  width: min(100%, 230px);
+}
+body.projector .boss-name {
+  font-size: clamp(1.8rem, 2.8vw, 2.5rem);
+}
+body.projector .page-title {
+  font-size: clamp(2rem, 3vw, 2.6rem);
+}
+body.projector .data-note {
+  margin-top: 4px;
+}
+body.projector .hp {
+  margin-top: 8px;
+}

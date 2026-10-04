@@ -3,7 +3,6 @@
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 
 import { createLessonCourseNav } from "./curriculum-nav.js";
-import { carriedDivisionFigures } from "./division-walk-figure.js";
 import { createRhythmCoach } from "./facilitation-rhythm.js";
 import { createGoDeeper } from "./go-deeper.js";
 import { observeContentImageZoom } from "./image-zoom.js";
@@ -24,7 +23,7 @@ import { mountStepGuide, simplifyStudioHeader } from "./reading-flow.js";
 import { ensureCanvasBridge } from "./scorm-bridge.js";
 import { createAutoPilot } from "./small-group-adaptive.js";
 import { installSmallGroupAnnotation } from "./small-group-annotation.js";
-import { createBuildVisualizer } from "./small-group-build-visuals.js";
+import { buildSection } from "./small-group-build-section.js";
 import {
   createMissionSection,
   createReflectionSection,
@@ -109,247 +108,10 @@ function injectSubstepStyles() {
   .sg-substep-next{display:flex;justify-content:flex-end;margin:18px 0 4px}
   .sg-substep-nextbtn{min-height:44px;padding:10px 22px;font-weight:800;border-radius:12px;color:#fff;background:var(--sg);border:1.5px solid var(--sg);cursor:pointer}
   .sg-substep-nextbtn:hover{background:var(--sg-deep,var(--sg));border-color:var(--sg-deep,var(--sg))}
+  @media (max-width:1099px){.sg-substeps{position:static}}
   @media print{.sg-substeps,.sg-substep-next{display:none!important}.sg-substep[hidden]{display:block!important}}
   `;
   document.head.appendChild(s);
-}
-
-// One Build stage rendered as an interactive player instead of a static list.
-// "ido" and "wedo" reveal one step at a time; "wedo" also converts a trailing
-// authored parenthetical ("(You might say 3 × 4.)") into a think-first reveal
-// chip; "youdo" becomes a tap-to-check launch list.
-function stageCard(stage, fallbackTitle, kind, onStageDone, visualMode = null) {
-  const lines = stage?.lines || [];
-  if (!lines.length) return null;
-  // The worked example's Spanish, as a parallel array — the same shape as
-  // stemEs / hintsEs / choicesEs, filled from data/es-translations by
-  // tools/apply-es-concept-intro.mjs. ALL-OR-NOTHING on purpose: a partly
-  // translated walkthrough would put a Spanish step between two English ones,
-  // which reads as a broken page rather than as support. The lane switch and
-  // the stacking are bi()'s, so a student in English mode sees no change.
-  const esLines =
-    Array.isArray(stage?.linesEs) && stage.linesEs.length === lines.length ? stage.linesEs : null;
-  const lineHtml = (index, text) => bi(text, esLines ? esLines[index] : "");
-  // One visualizer per stage so factor-tree steps accumulate into a single
-  // growing tree (each step redraws the whole tree, newest branch highlighted).
-  const visualFor = visualMode ? createBuildVisualizer() : null;
-  // When the stage narrates the standard long-division algorithm, each line
-  // also gets a snapshot of the VERTICAL tableau as it stands after that move —
-  // quotient above the bar, product and difference in their columns. Reading
-  // "63 × 3 = 189" without seeing where the 189 lands under the bracket is the
-  // whole difficulty of the algorithm, and the vertical layout is how these
-  // students were taught it (Joel, 2026-08-23). The full lesson's Learn It
-  // panel has drawn this since it shipped; the small groups — the students who
-  // need the model MOST — were the only surface that never got it.
-  //
-  // divisionStepFigures draws nothing unless every snapshot's numbers are the
-  // ones the authored line itself states, so a lesson it cannot verify keeps
-  // exactly the rendering it has today.
-  // One shared rule, in division-walk-figure.js: the tableau stays on screen
-  // once the walk starts, and carries one step past the last move so the line
-  // that STATES THE ANSWER still has a picture. See carriedDivisionFigures.
-  const divFigs = carriedDivisionFigures(lines);
-  const divisionFigureAt = (index) => {
-    const svg = divFigs[index];
-    if (!svg) return null;
-    const figure = el("figure", "sg-step-visual sg-divfig");
-    figure.innerHTML = svg;
-    figure.appendChild(el("figcaption", "sg-divfig-cap", "The division so far"));
-    return figure;
-  };
-  // Level 2 gets the same verified models, but only AFTER committing to its own
-  // thinking — a picture handed over up front is a giveaway, a picture used to
-  // check your own reasoning is not. Support tiers see it open.
-  const presentVisual = (visual) => {
-    if (!visual || visualMode !== "gated") return visual;
-    const shell = el("div", "sg-visual-gate");
-    const toggle = el("button", "sg-reveal", "🧩 Check my model");
-    toggle.type = "button";
-    visual.hidden = true;
-    toggle.onclick = () => {
-      visual.hidden = false;
-      toggle.remove();
-    };
-    shell.append(toggle, visual);
-    return shell;
-  };
-  const card = el("div", "card sg-stage");
-  card.appendChild(el("p", "block-lab", esc(stage.title || fallbackTitle)));
-  const list = el("div", "sg-stage-steps");
-  const row = el("div", "row");
-  card.append(list, row);
-  let complete = false;
-  const finish = () => {
-    if (complete) return;
-    complete = true;
-    card.classList.add("done");
-    onStageDone();
-  };
-
-  if (kind === "youdo") {
-    let checked = 0;
-    lines.forEach((line, index) => {
-      const item = el(
-        "button",
-        "sg-checkstep",
-        // The loop's own index, never lines.indexOf(line): two identical
-        // check-off lines would both resolve to the first one's translation.
-        `<span class="tick">•</span><span>${lineHtml(index, line)}</span>`,
-      );
-      item.type = "button";
-      item.setAttribute("aria-pressed", "false");
-      item.onclick = () => {
-        if (item.classList.contains("on")) return;
-        item.classList.add("on");
-        item.setAttribute("aria-pressed", "true");
-        item.querySelector(".tick").textContent = "✓";
-        if (++checked >= lines.length) finish();
-      };
-      const visual = presentVisual(
-        divisionFigureAt(list.children.length) || (visualFor ? visualFor(line) : null),
-      );
-      if (visual) {
-        const wrap = el("div", "sg-checkstep-wrap");
-        wrap.append(item, visual);
-        list.appendChild(wrap);
-      } else {
-        list.appendChild(item);
-      }
-    });
-    return card;
-  }
-
-  const renderLine = (line, number) => {
-    const esLine = esLines ? esLines[number - 1] : "";
-    const step = el("div", "sg-buildstep");
-    step.appendChild(el("span", "sn", String(number)));
-    const body = el("div", "sg-buildstep-body");
-    const reveal = kind === "wedo" ? String(line).match(/^(.*?)\s*\(([^()]{2,})\)\s*$/) : null;
-    if (reveal) {
-      // A "think first, then reveal" line splits into prompt + answer. The
-      // Spanish sibling is split on the SAME parenthetical so the two lanes
-      // hide and reveal together; a Spanish line without one keeps its prompt
-      // whole rather than guessing where the answer starts.
-      const esReveal = esLine ? String(esLine).match(/^(.*?)\s*\(([^()]{2,})\)\s*$/) : null;
-      body.appendChild(el("span", null, bi(reveal[1], esReveal ? esReveal[1] : "")));
-      const chip = el("button", "sg-reveal", "💭 Think first, then reveal");
-      chip.type = "button";
-      const answer = el("span", "sg-reveal-answer", bi(reveal[2], esReveal ? esReveal[2] : ""));
-      answer.hidden = true;
-      chip.onclick = () => {
-        answer.hidden = false;
-        chip.remove();
-      };
-      body.append(chip, answer);
-    } else {
-      body.appendChild(el("span", null, bi(line, esLine)));
-    }
-    // The vertical tableau is the canonical model for a long-division step, so
-    // it wins over the generic relation visual for that line.
-    const tableau = divisionFigureAt(number - 1);
-    if (tableau) {
-      const shown = presentVisual(tableau);
-      if (shown) body.appendChild(shown);
-    } else if (visualFor) {
-      // For "think first, then reveal" wedo lines, the parenthetical answer
-      // holds the math — model the full authored line so the picture matches.
-      const visual = presentVisual(visualFor(reveal ? `${reveal[1]} ${reveal[2]}` : line));
-      if (visual) body.appendChild(visual);
-    }
-    step.appendChild(body);
-    return step;
-  };
-
-  let index = 0;
-  const advanceCopy = kind === "ido" ? "Next step →" : "Got it — next →";
-  const doneCopy = kind === "ido" ? "✓ I followed every step" : "✓ I worked it through";
-  const next = el("button", "btn", "Show step 1 →");
-  next.type = "button";
-  next.onclick = () => {
-    const step = renderLine(lines[index], index + 1);
-    [...list.children].forEach((previous) => previous.classList.remove("now"));
-    step.classList.add("now");
-    list.appendChild(step);
-    index++;
-    if (index >= lines.length) {
-      next.disabled = true;
-      next.textContent = doneCopy;
-      finish();
-    } else {
-      next.textContent = advanceCopy;
-    }
-  };
-  row.appendChild(next);
-  return card;
-}
-
-function conceptSection(config, onDone, voice, variant) {
-  const concept = config.launch?.conceptIntro || {};
-  const section = el("section", "sg-sec");
-  section.id = "sg-build";
-  // Scene mark only — do not put sg-scene-enter on locked stages (animation
-  // fill would fight `.locked { opacity }`). Section-level enter is safe.
-  markScene(section, "build");
-  section.appendChild(sectionHeading(2, "See it · try it · own it", "Build the idea"));
-  // Problem-first: the worked-example stages come first so the problem itself is
-  // the very first thing students see — the intro framing and the anchor idea
-  // (which states the concept outright) are both deferred until after the work.
-
-  // Stages unlock in order so the studio walks itself: worked example first,
-  // then the guided try, then the launch checklist.
-  const stages = [
-    [concept.iDo, "👀 See it worked out", "ido"],
-    [concept.weDo, "🤝 Try it with the guide", "wedo"],
-    [concept.youDo, "🧠 Take the lead", "youdo"],
-  ];
-  // Support studios (group1) AND catch-up studios get a canonical visual model
-  // beside each worked step, open by default — catch-up students missed the
-  // original lesson and need the concrete model most. Level 2 gets the same
-  // verified models but gated behind "Check my model", so the picture confirms
-  // their reasoning instead of replacing it.
-  const visualMode =
-    variant === "group1" || variant === "catchup" ? "open" : variant === "group2" ? "gated" : null;
-  const cards = [];
-  stages.forEach(([stage, fallback, kind]) => {
-    const card = stageCard(
-      stage,
-      fallback,
-      kind,
-      () => {
-        const position = cards.indexOf(card);
-        cards[position + 1]?.classList.remove("locked");
-      },
-      visualMode,
-    );
-    if (!card) return;
-    if (cards.length) card.classList.add("locked");
-    cards.push(card);
-    section.appendChild(card);
-  });
-
-  // After the work: brief framing, then name the idea.
-  if (concept.intro)
-    section.appendChild(el("p", "sg-build-intro", bi(concept.intro, concept.introEs)));
-  if (concept.keyIdea)
-    section.appendChild(
-      el("div", "keyidea", `<span class="lab">💡 The big idea</span>${esc(concept.keyIdea)}`),
-    );
-
-  const row = el("div", "row");
-  const ready = el("button", "btn", voice.buildCta);
-  ready.type = "button";
-  ready.onclick = () => {
-    ready.disabled = true;
-    ready.textContent = voice.buildDone;
-    onDone();
-    (document.getElementById("sg-explore") || document.getElementById("sg-vocab"))?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  };
-  row.appendChild(ready);
-  section.appendChild(row);
-  return section;
 }
 
 function teacherPanel(config, accent, talk) {
@@ -449,6 +211,12 @@ function teacherPanel(config, accent, talk) {
 function studentTitle(config, badge) {
   const raw = String(config.title || "").trim();
   if (!raw) return "Small-Group Math Studio";
+  // Name the mathematics. The purpose ("Foundations", "Challenge") is already
+  // in the badge directly above, so the headline carries the lesson topic.
+  if (config.topic) {
+    const number = raw.match(/^\d+\.\d+/)?.[0];
+    return number ? `${number} · ${config.topic}` : String(config.topic);
+  }
   // Take the purpose word straight from the badge so the two can never drift.
   const purpose = String(badge || "")
     .split("·")
@@ -1051,7 +819,7 @@ function renderStudio(config) {
       store.get("pulseBefore"),
     ),
   );
-  const build = conceptSection(config, phaseDone("sg-tab-learn", "buildDone"), voice, variant);
+  const build = buildSection(config, phaseDone("sg-tab-learn", "buildDone"), { store });
   // Group 2 checks its challenge with the specific mathematical process for
   // this lesson. Group 1 keeps its supportive partner talk in Practice.
   const mathCheck =
@@ -1235,6 +1003,7 @@ function renderStudio(config) {
     const updateGuide = mountStepGuide(
       strip,
       live.map((step) => step.label),
+      { collapsed: false },
     );
     /** @type {HTMLElement[]} */
     const hosts = [];
@@ -1279,25 +1048,23 @@ function renderStudio(config) {
       panel.appendChild(host);
       hosts.push(host);
     });
-    // Older saves used numeric positions before these sections were split.
-    const oldLabels = {
-      "sg-tab-learn": [
-        vocab && "Key Words",
-        (build || explore) && (build ? "Build the Idea" : "Explore"),
-        model && "Worked Model",
-      ].filter(Boolean),
-      "sg-tab-practice": ["Guided", practice && "On My Own", talk && "Talk It Out"].filter(Boolean),
-      "sg-tab-more": [
-        (mathCheck || check) && (mathCheck ? "Math Check" : "Check"),
-        (reflection.section || evidence.section || packet.section) &&
-          (reflection.section ? "Reflect" : "My Evidence"),
-        (completion || masteryLadder || morePractice) &&
-          (completion || masteryLadder ? "Grow" : "More Practice"),
-        (mission || apply || goDeeper) && (mission ? "Mission" : apply ? "Apply" : "Go Deeper"),
-      ].filter(Boolean),
+    // Saves name the step a student was on. Steps merged on 2026-10-04 map
+    // onto the step that now holds their content.
+    const MERGED = {
+      "Get Ready": "Key Words",
+      Explore: "Hands-On Model",
+      "Worked Model": "Hands-On Model",
+      "Explore Together": "Guided",
+      "Choose a Strategy": "Guided",
+      "Math Check": "Check",
+      Reflect: "Check",
+      "My Evidence": "Grow",
+      "More Practice": "Grow",
+      Apply: "Mission",
+      "Go Deeper": "Mission",
     };
     const saved = store.get(storeKey);
-    const label = typeof saved === "number" ? oldLabels[id]?.[saved] : saved;
+    const label = typeof saved === "string" ? MERGED[saved] || saved : null;
     const restored = live.findIndex((step) => step.label === label);
     show(restored >= 0 ? restored : 0, false);
     return panel;
@@ -1317,13 +1084,13 @@ function renderStudio(config) {
       panel: makeStepPanel(
         "sg-tab-learn",
         [
-          { icon: "🌱", label: "Get Ready", children: [pulseCard] },
           { icon: "🔑", label: "Key Words", children: [vocab] },
           { icon: "🧱", label: "Build the Idea", children: [build] },
-          { icon: "🔍", label: "Explore", children: [explore] },
-          { icon: "📝", label: "Worked Model", children: [model] },
+          { icon: "🔍", label: "Hands-On Model", children: [explore, model] },
         ],
-        [],
+        // The readiness pulse is a five-second rating, not a moment of the
+        // session, so it is posted above the strip rather than made a step.
+        [pulseCard],
       ),
     },
     {
@@ -1334,17 +1101,9 @@ function renderStudio(config) {
         {
           icon: "🤝",
           label: "Guided",
-          children: [guided],
-        },
-        ...practiceLabs.map((lab) => ({
-          icon: "🔍",
-          label: lab.querySelector("h2, h3")?.textContent || "Explore Together",
-          children: [lab],
-        })),
-        {
-          icon: "🧭",
-          label: "Choose a Strategy",
-          children: [createAdaptiveCoach(variant, state, store)],
+          // The practice lab and the strategy coach serve the guided set, so
+          // they sit inside it instead of being steps of their own.
+          children: [guided, ...practiceLabs, createAdaptiveCoach(variant, state, store)],
         },
         { icon: "✏️", label: "On My Own", children: [practice] },
         { icon: "🗣️", label: "Talk It Out", children: [talk] },
@@ -1355,19 +1114,19 @@ function renderStudio(config) {
       label: "Check & Growth",
       sub: "Show it & celebrate",
       panel: makeStepPanel("sg-tab-more", [
-        { icon: "✅", label: "Math Check", children: [mathCheck] },
-        { icon: "✏️", label: "Check", children: [check] },
         {
-          icon: "💭",
-          label: "Reflect",
-          children: [reflection.section],
+          icon: "✅",
+          label: "Check",
+          // Reflect appears only once the check is answered, so it lives under
+          // the check — as its own step it was an empty screen until then.
+          children: [mathCheck, check, reflection.section],
         },
-        { icon: "📋", label: "My Evidence", children: [evidence.section, packet.section] },
-        { icon: "📈", label: "Grow", children: [completion, masteryLadder] },
-        { icon: "✏️", label: "More Practice", children: [morePractice] },
-        { icon: "🚀", label: "Mission", children: [mission] },
-        { icon: "🔍", label: "Apply", children: [apply] },
-        { icon: "💡", label: "Go Deeper", children: [goDeeper] },
+        {
+          icon: "📈",
+          label: "Grow",
+          children: [completion, masteryLadder, morePractice, evidence.section, packet.section],
+        },
+        { icon: "🚀", label: "Mission", children: [mission, apply, goDeeper] },
       ]),
     },
   ];

@@ -146,7 +146,6 @@
             <!-- EWL Universal Arcade Enhancements Header -->
       <div class="ewl-arcade-header-bar">
         <div class="ewl-arcade-title-group">
-          <a href="/math/games/" class="ewl-back-hub-btn">⬅️ Arcade Hub</a>
           <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
           <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
         </div>
@@ -924,6 +923,7 @@
             return this.completeLevel();
           }
           this.locked = false;
+          this.tries = 0;
           const q = this.queue[this.qIndex];
           this.current = q;
 
@@ -1010,26 +1010,47 @@
           });
         }
 
+        // Help ladder (calm, earned): Tier 1 = method hint with no answer;
+        // Tier 2 = the worked step with the last value left blank; then the
+        // full explanation. A wrong pick never shows the answer or moves on.
+        methodHint(q) {
+          switch (q.kind) {
+            case "id":
+              return "The independent variable is the one you choose or change. The dependent variable changes BECAUSE of it. Which one depends on the other?";
+            case "rule":
+              return "Test each equation with a row of the table: put in x and see if you get that row's y. Check more than one row.";
+            case "reverse":
+              return "Work backwards: undo the adding first (subtract), then undo the multiplying (divide).";
+            default:
+              return "Use the rule: put the x value into the equation in place of x. Multiply first, then add.";
+          }
+        }
+        workedStep(q) {
+          if (q.kind === "rule") return q.explain.split(":")[0] + ".";
+          const cut = q.explain.replace(/\s*=\s*[^=]+$/, "");
+          return cut !== q.explain ? cut + " = ?" : q.explain;
+        }
+
         pick(i) {
           if (this.locked) return;
           const btns = this.answerBtns;
-          if (!btns || !btns[i]) return;
-          this.locked = true;
+          if (!btns || !btns[i] || btns[i].eliminated) return;
           const cont = btns[i];
           const correct = cont.choice.correct;
           const q = this.current;
-
-          // highlight
-          btns.forEach((b) => {
-            if (b.choice.correct) b.rect.setFillStyle(0x1c5a3a).setStrokeStyle(3, C.good);
-          });
-          if (!correct) cont.rect.setFillStyle(0x5a1c1c).setStrokeStyle(3, C.bad);
+          const tries = this.tries || 0;
 
           if (correct) {
-            this.streak++;
-            const base = 100;
-            const bonus = Math.min(this.streak, 5) * 20;
-            const gain = base + bonus;
+            this.locked = true;
+            cont.rect.setFillStyle(0x1c5a3a).setStrokeStyle(3, C.good);
+            if (tries === 0) this.streak++;
+            // Full points unaided; fewer after help.
+            const gain =
+              tries === 0
+                ? 100 + Math.min(this.streak, 5) * 20
+                : tries === 1
+                  ? 50
+                  : 25;
             this.score += gain;
             this.fbText
               .setColor("#4fd18b")
@@ -1038,23 +1059,38 @@
             // plot if this question places a point
             if (q.plotX != null) this.plotPoint(q.plotX, q.plotY);
             this.setSR(`Correct. ${q.explain}`);
-          } else {
-            this.streak = 0;
-            this.lives--;
-            const right = q.choices.find((c) => c.correct);
-            this.fbText
-              .setColor("#ff8f8f")
-              .setText(`✗ Answer: ${right.label}.  ${q.explain}`);
-            if (!reducedMotion()) this.cameras.main.shake(180, 0.006);
-            this.setSR(`Not quite. ${q.explain}`);
+            this.refreshHUD();
+            this.time.delayedCall(950, () => {
+              this.qIndex++;
+              this.nextQuestion();
+            });
+            return;
           }
-          this.refreshHUD();
 
-          this.time.delayedCall(correct ? 950 : 1700, () => {
-            if (this.lives <= 0) this.lives = START_LIVES; // Keep learning after a miss; every mission can be finished.
-            this.qIndex++;
-            this.nextQuestion();
-          });
+          // Not yet: rule this choice out and climb one rung of help.
+          this.streak = 0;
+          this.tries = tries + 1;
+          cont.eliminated = true;
+          cont.rect.setFillStyle(0x5a1c1c, 0.6).setStrokeStyle(3, C.bad);
+          cont.rect.disableInteractive();
+          cont.setAlpha(0.55);
+          const left = btns.filter((b) => !b.eliminated).length;
+          let msg;
+          if (this.tries === 1 && left > 1) {
+            msg = `Not yet — ${cont.choice.label} is not it. Hint: ${this.methodHint(q)}`;
+          } else if (this.tries === 2 && left > 1) {
+            msg = `Try this step: ${this.workedStep(q)}`;
+          } else {
+            msg = `Here is how: ${q.explain} Tap the matching answer to go on.`;
+          }
+          this.fbText.setColor("#ffcf66").setText(msg);
+          this.setSR(msg);
+          try {
+            const fm = document.querySelector(".fm-feedback");
+            if (fm) fm.textContent = msg;
+          } catch (e) {}
+          if (!reducedMotion()) this.cameras.main.shake(120, 0.003);
+          this.refreshHUD();
         }
 
         plotPoint(x, y) {
@@ -1376,7 +1412,7 @@
       </div>
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
-<script src="/assets/game-studio.js?v=20261002" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261002" defer></script>
+<script src="/assets/game-studio.js?v=20261003" defer></script>
+<script src="/math/games/shared/flagship-studio.js?v=20261003" defer></script>
 </body>
 </html>
