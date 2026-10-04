@@ -140,7 +140,7 @@ try {
   await page.fill("[data-note]", "A draft I will continue later.");
   await go("/?grades=3-5");
   ok(
-    (await page.textContent(".session-list li:first-child")).includes("Continue work"),
+    (await page.textContent(".session-list li:first-child")).includes("Continue your saved work"),
     "planner surfaces saved unfinished writing",
   );
   await page.getByRole("link", { name: "Continue my practice" }).click();

@@ -40,12 +40,23 @@ export const getStudentName = () => storage.get(`${PREFIX}:studentName`) || "";
 export const setStudentName = (name) =>
   storage.set(`${PREFIX}:studentName`, String(name || "").slice(0, 60));
 
+export function needsReview(result) {
+  return Boolean(result && (
+    result.ok === false || result.meaningful === false || result.words === 0 ||
+    result.practiced === false || ["draft", "attempted"].includes(result.evidence)
+  ));
+}
+
+export function isActivityComplete(record, id) {
+  return Boolean(record.complete?.includes(id) && !needsReview(record.results?.[id]));
+}
+
 // ── per-level progress records ────────────────────────────────────────────────
 export function loadRecord(band, domain, level) {
   const r = safeJson(storage.get(progressKey(band, domain, level)), {}) || {};
   return {
     ...r,
-    complete: Array.isArray(r.complete) ? r.complete : [],
+    complete: Array.isArray(r.complete) ? r.complete.filter((id) => !needsReview(r.results?.[id])) : [],
     answers: r.answers || {},
     notes: r.notes || {},
     results: r.results || {},
@@ -133,20 +144,76 @@ export function exportCode() {
   const json = JSON.stringify({ v: 1, data });
   return `ACCESS1.${btoa(unescape(encodeURIComponent(json)))}`;
 }
-export function importCode(code) {
-  const body = String(code || "")
-    .trim()
-    .replace(/^ACCESS1\./, "");
-  const parsed = safeJson(decodeURIComponent(escape(atob(body))), null);
-  if (!parsed || parsed.v !== 1 || typeof parsed.data !== "object")
-    throw new Error("That code is not a progress code.");
-  let n = 0;
-  for (const [key, value] of Object.entries(parsed.data)) {
-    if (!key.startsWith(`${PREFIX}:`) || typeof value !== "string") continue;
-    storage.set(key, value);
-    n++;
+const RECORD_MAPS = ["answers", ...LEGACY_MAPS, "notes", "results", "selfChecks", "practiced",
+  "attempts", "drafts", "reflections", "evidence", "supportUsed", "attemptHistory"];
+const isObject = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
+const isProgressKey = (key) => /^(?:g3-5:)?(?:Listening|Reading|Speaking|Writing|Model-Test):[ABC]$/.test(key.slice(PREFIX.length + 1));
+
+/** Keep each existing activity intact. Import only activities absent on this device.
+ * No timestamp comparison: older lab versions did not timestamp every edit.
+ */
+function mergeRecord(local, incoming) {
+  const localIds = new Set([
+    ...(local.complete || []),
+    ...RECORD_MAPS.flatMap((map) => Object.keys(local[map] || {})),
+  ]);
+  const merged = { ...incoming, ...local };
+  for (const map of RECORD_MAPS) {
+    merged[map] = Object.fromEntries([
+      ...Object.entries(incoming[map] || {}).filter(([id]) => !localIds.has(id)),
+      ...Object.entries(local[map] || {}),
+    ]);
   }
-  return n;
+  merged.complete = [...new Set([
+    ...(local.complete || []),
+    ...(incoming.complete || []).filter((id) => !localIds.has(id)),
+  ])];
+  return merged;
+}
+
+/** Shared by Passport and site Save/Resume. Validate before changing any storage. */
+export function importProgressData(data) {
+  if (!isObject(data)) throw new Error("That backup does not contain valid progress.");
+  const writes = [];
+  for (const [key, value] of Object.entries(data)) {
+    if (!key.startsWith(`${PREFIX}:`) || typeof value !== "string") continue;
+    const suffix = key.slice(PREFIX.length + 1);
+    const progress = isProgressKey(key);
+    if (!progress && !/^(?:prefs|studentName|pathway|test:[a-zA-Z0-9_-]+)$/.test(suffix)) continue;
+    const current = storage.get(key);
+    if (progress || suffix === "prefs" || suffix.startsWith("test:")) {
+      const incoming = safeJson(value, null);
+      if (!isObject(incoming)) throw new Error("That backup has an invalid progress record. Nothing was loaded.");
+      if (progress && ((incoming.complete !== undefined && (!Array.isArray(incoming.complete) || incoming.complete.some((id) => typeof id !== "string"))) ||
+        RECORD_MAPS.some((map) => incoming[map] !== undefined && !isObject(incoming[map])))) {
+        throw new Error("That backup has an invalid activity record. Nothing was loaded.");
+      }
+      if (current !== null) {
+        const local = safeJson(current, null);
+        // Unreadable local data must also be preserved, not silently replaced.
+        if (!progress || !isObject(local)) continue;
+        const merged = JSON.stringify(mergeRecord(local, incoming));
+        if (merged !== current) writes.push([key, merged]);
+        continue;
+      }
+    } else if (current !== null) continue;
+    writes.push([key, value]);
+  }
+  for (const [key, value] of writes) storage.set(key, value);
+  return writes.length;
+}
+
+export function importCode(code) {
+  let parsed;
+  try {
+    const text = String(code || "").trim();
+    if (!text.startsWith("ACCESS1.")) throw new Error();
+    parsed = JSON.parse(decodeURIComponent(escape(atob(text.slice(8)))));
+  } catch {
+    throw new Error("That code is not a progress code. Paste the full ACCESS1 code.");
+  }
+  if (!parsed || parsed.v !== 1) throw new Error("That code is not a progress code.");
+  return importProgressData(parsed.data);
 }
 export function clearAll() {
   for (const key of storage.keys()) if (key.startsWith(`${PREFIX}:`)) storage.remove(key);

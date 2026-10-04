@@ -3,8 +3,8 @@
 // Save/Resume code carries their lab progress to another device. The engine's
 // generic field/tab capture never touches lab controls (they are marked
 // data-nsr-ignore and the lab renders no tab-shaped elements).
-import { PREFIX } from "./store.js";
-import { storage } from "./util.js";
+import { PREFIX, importProgressData } from "./store.js";
+import { storage, announce } from "./util.js";
 
 export function registerSaveResume(onRestore) {
   const attach = () => {
@@ -18,9 +18,13 @@ export function registerSaveResume(onRestore) {
     });
     engine.registerStateRestorer?.((custom) => {
       if (!custom || custom.accessLab !== 1 || typeof custom.data !== "object") return;
-      for (const [key, value] of Object.entries(custom.data))
-        if (key.startsWith(`${PREFIX}:`) && typeof value === "string") storage.set(key, value);
-      onRestore?.();
+      try {
+        importProgressData(custom.data);
+        onRestore?.();
+        announce("Backup loaded. Work already on this device was kept; missing activities were added.");
+      } catch (err) {
+        announce(err.message || "That backup could not be loaded.");
+      }
     });
     return true;
   };

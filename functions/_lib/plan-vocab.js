@@ -4031,6 +4031,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/access-guide/",
+    title: "ACCESS Practice Lab · Quick Guide",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/access-teacher/",
     title: "ACCESS Practice Lab — Teacher Hub",
     category: "Tool",

@@ -23,6 +23,7 @@ import { choiceTarget, inputHTML, reduceAnswer, seedAnswer } from "../items.js";
 import { visualsHTML } from "../media.js";
 import { isRecording, takesFor } from "../recorder.js";
 import { answerOf, loadRecord, saveRecord } from "../store.js";
+import { invalidateActivity, startIndependentAttempt, updateActivityAnswer } from "../attempts.js";
 import {
   BASE,
   DOMAIN_META,
@@ -367,6 +368,7 @@ export async function render(ctx) {
           <label><input type="radio" name="practiceMode" value="independent" data-mode ${mode === "independent" ? raw("checked") : ""} data-nsr-ignore /> Try independently</label>
           <p class="fine">${mode === "independent" ? "Vocabulary, models and hints stay closed until you review. Replay and directions remain available. This is classroom practice, not a test simulation." : "Strategies and examples are available below. Help and retries are saved as supported practice."}</p></fieldset>
         ${mode === "supported" ? html`<details class="strategy" data-help><summary>First: try a strategy</summary><p>${strategyFor(cur.domain)}</p></details>${vocabHTML(a, shared, { focused: Boolean(checked.get(a.id) || writingChecks.get(a.id)) })}` : ""}
+        ${!["constructed", "worksheet"].includes(a.type) && cur.record.results[a.id] ? html`<div class="fresh-attempt"><button type="button" class="btn" data-fresh-attempt>Start a fresh independent attempt</button><p class="fine">Save a summary of this attempt and clear its selected answers. Earlier help stays in your history; this is another try at the same task.</p></div>` : ""}
         <p id="answerValidation" role="alert" ${validation ? "" : raw("hidden")}>${validation}</p>
         <section class="answer-zone" aria-label="Your answer">${answerZone(a)}</section>
         </div></div>
@@ -379,7 +381,7 @@ export async function render(ctx) {
 
 // ── interactions ──────────────────────────────────────────────────────────────
 function setAnswer(a, next, ctx) {
-  cur.record.answers[a.id] = next;
+  updateActivityAnswer(cur.record, a.id, next);
   save();
   ctx.rerender();
 }
@@ -407,7 +409,8 @@ function check(a, ctx) {
     date: new Date().toISOString(),
     tries: n,
   };
-  if (ok && !cur.record.complete.includes(a.id)) cur.record.complete.push(a.id);
+  cur.record.complete = cur.record.complete.filter((id) => id !== a.id);
+  if (ok) cur.record.complete.push(a.id);
   save();
   announce(ok ? "Correct!" : n >= 2 && mode === "supported" ? "Here is the answer." : "Not yet. Try again.");
   ctx.rerender();
@@ -425,6 +428,19 @@ export function onClick(e, ctx) {
   if (["sort", "order", "hotText"].includes(a.type) && !checked.get(a.id)) {
     const next = reduceAnswer(a, answerOf(cur.record, a.id), t);
     if (next !== undefined && !t.matches("[data-ans-choice]")) return setAnswer(a, next, ctx);
+  }
+  if (t.closest("[data-fresh-attempt]")) {
+    if (["constructed", "worksheet"].includes(a.type)) return;
+    startIndependentAttempt(cur.record, a.id);
+    checked.delete(a.id); tries.delete(a.id); helpUsed.delete(a.id);
+    validation = "";
+    save();
+    const url = new URL(location.href);
+    url.searchParams.set("mode", "independent");
+    url.searchParams.set("grades", cur.band);
+    ctx.navigate(url.pathname + url.search, { replace: true });
+    announce("Fresh attempt started. Your previous attempt summary is in your Passport portfolio.");
+    return;
   }
   if (t.closest("[data-check]")) return check(a, ctx);
   if (t.closest("[data-retry]")) {
@@ -466,6 +482,7 @@ export function onClick(e, ctx) {
       date: new Date().toISOString(),
     };
     // Completion is a deliberate meaning review, never a surface-feature score.
+    cur.record.complete = cur.record.complete.filter((id) => id !== a.id);
     save();
     ctx.rerender();
     return;
@@ -487,6 +504,7 @@ export function onClick(e, ctx) {
       practiced: Boolean(practiced),
       date: new Date().toISOString(),
     };
+    cur.record.complete = cur.record.complete.filter((id) => id !== a.id);
     if (practiced && n >= 2) {
       if (!cur.record.complete.includes(a.id)) cur.record.complete.push(a.id);
       announce(storage.isVolatile ? "Speaking practice kept in this tab. Export a Passport code before leaving." : "Speaking practice saved.");
@@ -523,13 +541,16 @@ export function onChange(e, ctx) {
     if (next !== undefined) return setAnswer(a, next, ctx);
   }
   if (t.matches("[data-selfcheck]")) {
+    invalidateActivity(cur.record, a.id);
     cur.record.selfChecks[a.id] = {
       ...(cur.record.selfChecks[a.id] || {}),
       [t.dataset.selfcheck]: t.checked,
     };
     save();
+    ctx.rerender();
   }
   if (t.matches("[data-practiced]")) {
+    invalidateActivity(cur.record, a.id);
     cur.record.practiced[a.id] = t.checked;
     save();
     ctx.rerender();
@@ -538,12 +559,20 @@ export function onChange(e, ctx) {
 
 export function onInput(e) {
   if (!cur || loading) return;
-  if (e.target.matches("[data-reflection]")) { cur.record.reflections[cur.activity.id] = e.target.value; save(); return; }
+  if (e.target.matches("[data-reflection]")) {
+    if (cur.record.reflections[cur.activity.id] !== e.target.value) {
+      invalidateActivity(cur.record, cur.activity.id);
+      document.querySelector(".done-badge")?.remove();
+      const evidence = document.querySelector(".practice-evidence");
+      if (evidence) evidence.textContent = "Reflection changed — review this version before marking it complete.";
+    }
+    cur.record.reflections[cur.activity.id] = e.target.value; save(); return;
+  }
   if (!e.target.matches("[data-note]")) return;
   const a = cur.activity;
   if (cur.domain !== "Speaking" && cur.record.notes[a.id] !== e.target.value) {
-    cur.record.complete = cur.record.complete.filter((id) => id !== a.id);
-    if (cur.record.results[a.id]) cur.record.results[a.id] = { ...cur.record.results[a.id], evidence: "draft", meaningful: false };
+    invalidateActivity(cur.record, a.id);
+    document.querySelector(".done-badge")?.remove();
     writingChecks.delete(a.id);
     const evidence = document.querySelector(".practice-evidence");
     if (evidence) evidence.textContent = "Draft changed — review this version before marking it complete.";

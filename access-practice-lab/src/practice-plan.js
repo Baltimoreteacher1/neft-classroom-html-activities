@@ -1,5 +1,6 @@
 // Transparent local practice suggestions, not a proficiency assessment.
 import { answerOf, loadRecord } from "./store.js";
+import { isActivityComplete } from "./attempts.js";
 import { CORE_DOMAINS } from "./util.js";
 
 const hasValue = (value) => {
@@ -9,8 +10,10 @@ const hasValue = (value) => {
 };
 
 export function activityStatus(record, id) {
-  if (record.complete?.includes(id)) return "done";
   const result = record.results?.[id];
+  if (result?.evidence === "draft") return "draft";
+  if (result?.ok === false) return "retry";
+  if (isActivityComplete(record, id)) return "done";
   if (result && result.meaningful !== false && result.words !== 0 && result.practiced !== false) return "retry";
   if (
     hasValue(answerOf({ answers: {}, ...record }, id)) ||
@@ -23,12 +26,13 @@ export function activityStatus(record, id) {
 }
 
 export const STATUS_REASON = {
-  draft: "Continue work you already started.",
+  draft: "Continue your saved work and review this version.",
   retry: "Revisit this activity and try the feedback.",
   new: "Build your language with a new activity.",
   done: "Practice a finished activity again.",
+  revisit: "You used help or a retry before. Try a fresh answer independently.",
 };
-const priority = { draft: 0, retry: 1, new: 2, done: 3 };
+const priority = { draft: 0, retry: 1, revisit: 2, new: 3, done: 4 };
 
 /** Rows must come from one grade band's index. Never uses responses in URLs. */
 export function buildPracticePlan(
@@ -46,13 +50,22 @@ export function buildPracticePlan(
         (focus === "balanced" || row.domain === focus) &&
         row.level === (level === "preferred" ? options.tiers?.[row.domain] || "A" : level),
     )
-    .map((row, order) => ({ ...row, status: activityStatus(recordFor(row), row.id), order }));
+    .map((row, order) => {
+      const record = recordFor(row);
+      const status = activityStatus(record, row.id);
+      // Independent correctness is available only for selected-response tasks.
+      const revisit = status === "done" && !["constructed", "worksheet"].includes(row.type) &&
+        (record.results?.[row.id]?.evidence === "supported" || record.results?.[row.id]?.supportUsed === true);
+      return { ...row, status: revisit ? "revisit" : status, order };
+    });
   const selected = [];
   const used = new Set();
   const domainCounts = Object.fromEntries(CORE_DOMAINS.map((domain) => [domain, 0]));
+  let revisits = 0;
   while (selected.length < count) {
     const next = candidates
       .filter((r) => !used.has(r.id))
+      .map((r) => r.status === "revisit" && revisits > 0 ? { ...r, status: "done" } : r)
       .sort(
         (a, b) =>
           priority[a.status] - priority[b.status] ||
@@ -63,6 +76,7 @@ export function buildPracticePlan(
     selected.push({ ...next, reason: STATUS_REASON[next.status] });
     used.add(next.id);
     domainCounts[next.domain]++;
+    if (next.status === "revisit") revisits++;
   }
   return selected;
 }

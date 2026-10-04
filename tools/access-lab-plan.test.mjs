@@ -39,7 +39,7 @@ test("status recognizes meaningful drafts and legacy responses, not empty fields
   );
   assert.equal(
     activityStatus(record({ complete: ["x"], results: { x: { ok: false } } }), "x"),
-    "done",
+    "retry",
   );
 });
 
@@ -120,4 +120,17 @@ test("session duration comes from task metadata, allowing for the upper end of r
     estimateMinutes(rows.slice(0, 2).map((r) => ({ minutes: r[4] }))),
     rows[0][4] + rows[1][4],
   );
+});
+
+test("recommendations explain supported revisits and limit them to one per session", () => {
+  const ids = rows.map((r) => r.id);
+  const plan = buildPracticePlan(rows, {}, () =>
+    record({
+      complete: ids,
+      results: Object.fromEntries(ids.map((id) => [id, { ok: true, evidence: "supported" }])),
+    }),
+  );
+  assert.equal(plan.length, 4);
+  assert.equal(plan.filter((row) => row.status === "revisit").length, 1);
+  assert.match(plan[0].reason, /fresh answer independently/);
 });
