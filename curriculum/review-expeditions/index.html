@@ -12,10 +12,10 @@
     <style>
 /* Grade 6 Review Expeditions — tokens, base, buttons, inputs, modals, toasts */
 :root {
-  --navy: #17324D; --navy-deep: #0F2238; --navy-2: #274A6A; --teal: #1FA6A2; --teal-deep: #15807D; --teal-soft: #DFF2EE;
-  --amber: #F2C15B; --amber-deep: #F2A33A; --blue: #3B6FB6; --ink: #24323F; --ink-soft: #5B6B7A; --ink-faint: #8A98A6;
+  --navy: #17324D; --navy-deep: #0F2238; --navy-2: #274A6A; --teal: #1FA6A2; --teal-deep: #0F6E6A; --teal-soft: #DFF2EE; --teal-btn: #137A76; --teal-btn-hover: #0F6763; --teal-ink: #0F6E6A;
+  --amber: #F2C15B; --amber-deep: #F2A33A; --blue: #3B6FB6; --ink: #24323F; --ink-soft: #5B6B7A; --ink-faint: #64717D;
   --paper: #FFFFFF; --paper-2: #F4F7F9; --paper-3: #E9EFF3; --line: #D5DEE6; --line-strong: #B9C6D1;
-  --ok: #1E8E5A; --ok-soft: #E3F5EA; --bad: #C8553D; --bad-soft: #FBE9E4; --warn-soft: #FFF4D6;
+  --ok: #1A7A50; --ok-soft: #E3F5EA; --bad: #B04A33; --bad-soft: #FBE9E4; --warn-soft: #FFF4D6;
   --radius: 14px; --radius-sm: 9px; --shadow: 0 10px 30px rgba(15, 34, 56, .18), 0 2px 6px rgba(15, 34, 56, .08); --shadow-sm: 0 2px 8px rgba(15, 34, 56, .10);
   --font: "Plus Jakarta Sans", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
   --fs: 16px; --focus: 0 0 0 3px #fff, 0 0 0 6px var(--teal);
@@ -34,12 +34,12 @@ h1 { font-size: 2.4rem; font-weight: 800; } h2 { font-size: 1.6rem; font-weight:
 p { margin: 0 0 .75em; }
 b, strong { font-weight: 700; }
 .muted { color: var(--ink-soft); }
-.eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: .72rem; font-weight: 700; color: var(--teal-deep); margin-bottom: .5em; }
+.eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: .72rem; font-weight: 700; color: var(--teal-ink); margin-bottom: .5em; }
 .skip { position: absolute; left: -999px; top: 8px; background: var(--amber); color: var(--navy); padding: 8px 12px; border-radius: 8px; z-index: 100; }
 .skip:focus { left: 8px; }
 .noscript { color: #fff; padding: 2rem; text-align: center; }
 :focus-visible { outline: none; box-shadow: var(--focus); }
-mark.num { background: var(--amber); color: var(--navy); padding: 0 .3em; border-radius: 5px; font-weight: 700; white-space: nowrap; }
+mark.num { background: var(--amber); color: var(--navy); padding: 0 .3em; border-radius: 5px; font-weight: 700; white-space: normal; overflow-wrap: anywhere; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 .unit { color: var(--ink-soft); }
 .frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.1; margin: 0 .2em; font-weight: 700; }
 .frac .num-top { border-bottom: 2px solid currentColor; padding: 0 .3em; }
@@ -50,12 +50,12 @@ mark.num { background: var(--amber); color: var(--navy); padding: 0 .3em; border
 .btn .ic { width: 1.15em; height: 1.15em; }
 .btn:active { transform: translateY(1px) scale(.99); }
 .btn[disabled] { opacity: .55; cursor: not-allowed; transform: none; }
-.btn-primary { background: var(--teal); color: #fff; box-shadow: 0 4px 14px rgba(31, 166, 162, .35); }
-.btn-primary:hover:not([disabled]) { background: var(--teal-deep); box-shadow: 0 6px 18px rgba(31, 166, 162, .4); }
+.btn-primary { background: var(--teal-btn); color: #fff; box-shadow: 0 4px 14px rgba(31, 166, 162, .35); }
+.btn-primary:hover:not([disabled]) { background: var(--teal-btn-hover); box-shadow: 0 6px 18px rgba(31, 166, 162, .4); }
 .btn-ghost { background: var(--paper); color: var(--navy); border-color: var(--line-strong); }
 .btn-ghost:hover:not([disabled]) { background: var(--paper-2); border-color: var(--navy-2); }
 .btn-danger { background: var(--bad); color: #fff; }
-.btn-danger:hover { background: #A8432E; }
+.btn-danger:hover { background: #923C29; }
 .btn-lg { font-size: 1.08rem; padding: .85em 1.6em; min-height: 52px; }
 .btn-sm { font-size: .85rem; padding: .5em .9em; min-height: 38px; }
 .btn-icon { padding: .6em; width: 44px; }
@@ -133,7 +133,7 @@ input[disabled], select[disabled], textarea[disabled] { opacity: .85; }
 .beacon { position: absolute; left: 60%; top: 12%; width: 10px; height: 10px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 30px 12px rgba(242, 193, 91, .35); animation: pulse 3s ease-in-out infinite; }
 @keyframes pulse { 50% { box-shadow: 0 0 46px 20px rgba(242, 193, 91, .45) } }
 .title-card, .intro-card, .results-card, .complete-card { position: relative; background: var(--paper); border-radius: 22px; box-shadow: var(--shadow); padding: clamp(24px, 4vw, 48px); max-width: 720px; width: 100%; }
-.title-card h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); color: var(--navy); } .title-card h1 span { color: var(--teal); }
+.title-card h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); color: var(--navy); } .title-card h1 span { color: var(--teal-ink); }
 .lede { font-size: 1.1rem; color: var(--ink-soft); max-width: 56ch; }
 .title-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; align-items: center; }
 .title-meta { margin-top: 14px; color: var(--ink-faint); font-size: .9rem; }
@@ -141,7 +141,7 @@ input[disabled], select[disabled], textarea[disabled] { opacity: .85; }
 .intro-card p { font-size: 1.05rem; }
 .brief-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 18px 0 6px; }
 .brief-grid > div { background: var(--teal-soft); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; font-weight: 600; color: var(--navy); }
-.brief-k { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--teal-deep); font-weight: 700; }
+.brief-k { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--teal-ink); font-weight: 700; }
 
 /* Map */
 .map-screen { color: #fff; }
@@ -200,7 +200,7 @@ input[disabled], select[disabled], textarea[disabled] { opacity: .85; }
 .mission { display: flex; justify-content: center; }
 .q-card { background: var(--paper); border-radius: 20px; box-shadow: var(--shadow); width: min(920px, 100%); padding: clamp(18px, 3vw, 32px); border-top: 6px solid var(--accent); }
 .q-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
-.q-skill { display: inline-flex; align-items: center; gap: .4em; font-size: .8rem; font-weight: 700; color: var(--teal-deep); background: var(--teal-soft); padding: 5px 12px; border-radius: 999px; } .q-skill .ic { width: 14px; height: 14px; }
+.q-skill { display: inline-flex; align-items: center; gap: .4em; font-size: .8rem; font-weight: 700; color: var(--teal-ink); background: var(--teal-soft); padding: 5px 12px; border-radius: 999px; } .q-skill .ic { width: 14px; height: 14px; }
 .q-num { font-size: .82rem; font-weight: 600; color: var(--ink-faint); }
 .q-title { font-size: 1.35rem; color: var(--navy); margin-bottom: .3em; }
 .q-prompt { font-size: 1.06rem; } .q-prompt p { margin-bottom: .6em; }
@@ -277,6 +277,70 @@ a.btn { text-decoration: none; }
 @media (max-width: 760px) { .hud-atlas span { display: none; } }
 /* Print the results screen cleanly */
 @media print { body { background: #fff; } .hud, .title-actions, .recommend, #toast-root, #modal-root { display: none !important; } .results-card { box-shadow: none; } .screen { padding: 0; } }
+
+/* Level picker */
+.lvl-h { margin-top: 18px; color: var(--navy); }
+.lvl-pick { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; margin: 8px 0 4px; }
+.lvl-card { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border: 2px solid var(--line); border-radius: 12px; background: var(--paper); cursor: pointer; transition: border-color .12s, background .12s; }
+.lvl-card:hover { border-color: var(--teal); }
+.lvl-card.is-on { border-color: var(--navy); background: var(--teal-soft); }
+.lvl-card input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.lvl-card:focus-within { box-shadow: var(--focus); }
+.lvl-k { font-weight: 800; color: var(--navy); }
+.lvl-d { font-size: .86rem; color: var(--ink-soft); line-height: 1.4; }
+.lvl-note { font-size: .85rem; margin: 2px 0 12px; }
+
+/* Key Words screen */
+.keywords { max-width: 1040px; margin: 0 auto; }
+.kw-head { background: var(--paper); border-radius: 20px; padding: clamp(18px, 3vw, 28px); box-shadow: var(--shadow); border-top: 6px solid var(--accent); }
+.kw-head h2 { color: var(--navy); }
+.kw-tools { display: flex; gap: 8px; flex-wrap: wrap; }
+.kw-grid { display: grid; grid-template-columns: repeat(var(--kw-cols, 3), minmax(0, 1fr)); gap: 12px; margin: 14px 0; }
+@media (max-width: 860px) { .kw-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .kw-grid { grid-template-columns: 1fr; } }
+.kw-card { background: var(--paper); border-radius: 16px; padding: 16px 18px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 10px; animation: screenIn .3s ease both; animation-delay: calc(var(--d) * 60ms); }
+.kw-term { font-size: 1.35rem; color: var(--navy); margin: 0; }
+.kw-es { margin: 0; font-weight: 700; color: var(--teal-deep); }
+.kw-flag { display: inline-block; font-size: .68rem; font-weight: 800; letter-spacing: .08em; background: var(--teal-soft); color: var(--teal-deep); padding: 1px 6px; border-radius: 6px; vertical-align: middle; }
+.kw-def { margin: 0; font-size: 1.02rem; }
+.kw-esdef { margin: 0; color: var(--ink-soft); font-style: italic; }
+.kw-ex { margin: 0; color: var(--ink-soft); font-size: .92rem; }
+.kw-viz { background: var(--paper-2); border-radius: 10px; padding: 8px; overflow-x: auto; }
+.kw-viz svg { display: block; margin: 0 auto; }
+.keywords .title-actions { background: var(--paper); border-radius: 16px; padding: 14px 18px; box-shadow: var(--shadow-sm); margin-top: 0; }
+.zone-kw { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 12px; padding: 10px 12px; background: var(--paper-2); border-radius: 10px; font-size: .9rem; color: var(--ink-soft); }
+.zone-kw span { display: inline-flex; align-items: center; gap: .4em; } .zone-kw .ic { width: 16px; height: 16px; }
+
+/* Inline first hint */
+.q-inline { margin: 4px 0 10px; border-left: 4px solid var(--amber-deep); background: var(--warn-soft); border-radius: 0 12px 12px 0; padding: 10px 14px; }
+.q-inline.is-new { animation: screenIn .3s ease; }
+.qi-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+.qi-k { display: inline-flex; align-items: center; gap: .35em; font-weight: 800; font-size: .85rem; color: #8A6A1E; text-transform: uppercase; letter-spacing: .08em; } .qi-k .ic { width: 16px; height: 16px; }
+.qi-lang { font: inherit; font-size: .8rem; font-weight: 700; border: 1px solid var(--amber-deep); background: var(--paper); color: var(--navy); border-radius: 999px; padding: 3px 10px; cursor: pointer; min-height: 30px; }
+.qi-lang[aria-pressed="true"] { background: var(--amber); }
+
+/* Worked example */
+.help-ex { margin-bottom: 10px; }
+.worked { border: 2px dashed var(--teal); border-radius: 12px; padding: 12px 14px; background: var(--paper); }
+.worked-k { display: inline-flex; align-items: center; gap: .4em; font-weight: 800; color: var(--teal-deep); font-size: .85rem; } .worked-k .ic { width: 16px; height: 16px; }
+.worked-q { margin: 8px 0; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.worked-s { background: var(--teal-soft); border-radius: 8px; padding: 8px 10px; }
+.worked-foot { margin: 8px 0 0; font-weight: 700; color: var(--navy); }
+.worked svg { max-width: 100%; height: auto; }
+.vocab-es { font-weight: 600; color: var(--teal-deep); margin-left: .4em; }
+.vocab-esdef { color: var(--ink-soft); font-style: italic; }
+
+/* Phone HUD: two rows so the zone name, progress dots and stats never overlap */
+@media (max-width: 560px) {
+  .hud-inner { flex-wrap: wrap; row-gap: 4px; padding-block: 6px; }
+  .hud-mid { order: 3; flex-basis: 100%; justify-content: space-between; }
+  .hud-right { margin-left: auto; }
+  .hud-zone { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .hud-stat { padding: 5px 8px; }
+}
+.qi-tools { display: inline-flex; gap: 6px; align-items: center; }
+.qi-say { display: inline-flex; align-items: center; justify-content: center; padding: 3px 8px; }
+.qi-say .ic { width: 16px; height: 16px; }
 
 </style>
     <style>
@@ -471,7 +535,7 @@ a.btn { text-decoration: none; }
   color: #fff;
 }
 .at-nav a.is-active {
-  background: var(--teal);
+  background: var(--teal-btn);
   color: #fff;
 }
 .atlas {
@@ -593,7 +657,7 @@ a.btn { text-decoration: none; }
 }
 .ex-unit {
   font-weight: 800;
-  color: var(--accent);
+  color: color-mix(in srgb, var(--accent), #000 42%);
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -620,7 +684,7 @@ a.btn { text-decoration: none; }
   margin: 0;
 }
 .ex-title span {
-  color: var(--accent);
+  color: color-mix(in srgb, var(--accent), #000 42%);
 }
 .ex-sub {
   color: var(--ink-soft);
@@ -943,7 +1007,7 @@ body.in-trek .at-top {
   font-size: 0.72rem;
   font-weight: 800;
   color: #fff;
-  background: var(--accent);
+  background: color-mix(in srgb, var(--accent), #000 45%);
   padding: 2px 7px;
   border-radius: 999px;
 }
@@ -1279,6 +1343,59 @@ body.in-trek .at-top {
   .at-nav a { font-size: .82rem; padding: 6px 9px; }
   .atlas { padding: 14px 12px 40px; }
 }
+
+/* Teacher tools feature card */
+.tt-feature { background: var(--teal-soft); }
+/* Class Snapshot */
+.snap-fld { display: flex; flex-direction: column; width: 100%; margin: 10px 0; }
+.snap-fld textarea { font: inherit; font-size: .9rem; width: 100%; min-height: 140px; padding: 10px 12px; border: 2px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); color: var(--ink); resize: vertical; }
+.snap-fld textarea:focus { border-color: var(--teal); outline: none; box-shadow: 0 0 0 4px rgba(31, 166, 162, .2); }
+.snap-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.snap-out { margin-top: 18px; display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr); }
+.snap-out > * { min-width: 0; }
+.snap-empty { background: var(--paper-2); border-radius: 12px; padding: 14px 16px; color: var(--ink-soft); }
+.snap-sum { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.snap-legend { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: .85rem; color: var(--ink-soft); margin: 0; }
+.snap-unit { border-top: 4px solid var(--accent); padding-top: 10px; }
+.snap-unit-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.snap-unit-head h3 { margin: 0; color: var(--navy); }
+.snap-scroll { overflow-x: auto; margin: 8px 0 12px; border: 1px solid var(--line); border-radius: 10px; }
+.snap-table { border-collapse: collapse; font-size: .85rem; min-width: 100%; font-variant-numeric: tabular-nums; }
+.snap-table th, .snap-table td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: center; white-space: nowrap; }
+.snap-table thead th { background: var(--paper-2); color: var(--navy); font-weight: 700; vertical-align: bottom; }
+.snap-table tbody th { text-align: left; font-weight: 700; position: sticky; left: 0; background: var(--paper); }
+.snap-table tbody th small { display: block; font-weight: 500; color: var(--ink-faint); font-size: .72rem; }
+.snap-skill { white-space: normal !important; min-width: 92px; max-width: 120px; font-size: .74rem; line-height: 1.25; }
+.snap-skill span { display: block; color: var(--ink-faint); font-weight: 800; }
+.snap-cell.band-strong { background: var(--ok-soft); color: var(--ok); font-weight: 700; }
+.snap-cell.band-almostthere { background: var(--warn-soft); color: #8A6A1E; font-weight: 700; }
+.snap-cell.band-practiceagain { background: var(--bad-soft); color: var(--bad); font-weight: 700; }
+.snap-groups { background: var(--paper-2); border-radius: 12px; padding: 12px 14px; display: grid; gap: 8px; }
+.snap-groups h4 { margin: 0; display: inline-flex; align-items: center; gap: .4em; color: var(--navy); } .snap-groups h4 .ic { width: 16px; height: 16px; }
+.snap-group div { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+.snap-chip { display: inline-block; font-size: .78rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--paper); border: 1px solid var(--line); }
+.snap-chip.band-strong { background: var(--ok-soft); color: var(--ok); border-color: transparent; }
+.snap-chip.band-almostthere { background: var(--warn-soft); color: #8A6A1E; border-color: transparent; }
+.snap-chip.band-practiceagain { background: var(--bad-soft); color: var(--bad); border-color: transparent; }
+
+/* contrast: faint lesson labels inside not-yet-seen skill cells */
+.sk-cell .sk-lesson { color: var(--ink-soft); }
+
+/* Printer: hints and key words page */
+.pr-hint { margin: 6px 0; padding: 6px 10px; border-left: 3px solid #999; background: #f6f6f6; font-size: .9em; }
+.pr-hint-es { margin-top: 4px; color: #333; font-style: italic; }
+.pr-kw-page { break-after: page; margin-bottom: 24px; }
+.pr-kw-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.pr-kw { border: 1.5px solid #333; border-radius: 8px; padding: 8px 10px; break-inside: avoid; }
+.pr-kw-t { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; font-size: 1.15em; }
+.pr-kw-t span { font-style: italic; color: #333; font-size: .9em; }
+.pr-kw p { margin: 4px 0; }
+.pr-kw-es { font-style: italic; color: #444; }
+.pr-kw-v svg { max-width: 100%; max-height: 120px; height: auto; display: block; margin: 4px auto 0; }
+@media (max-width: 640px) { .pr-kw-grid { grid-template-columns: 1fr; } }
+
+.tk-lvl-h { margin: 12px 0 4px; color: var(--navy); }
+.tk-card .lvl-pick { grid-template-columns: 1fr; }
 
 </style>
     <link
@@ -2764,18 +2881,35 @@ body.in-trek .at-top {
       term: 'statistical question',
       def: 'A question you answer by collecting data that varies. It has many different answers, not just one.',
       ex: '"How many crabs are in each tide pool?" is statistical. "How many crabs are in this pool?" is not.',
+      es: 'pregunta estadística',
+      esDef: 'Una pregunta que respondes reuniendo datos que varían. Tiene muchas respuestas diferentes, no solo una.',
+      lessons: ['2-1'],
     },
-    { term: 'data distribution', def: 'How the data values are spread across the number line: where they pile up, where they thin out.', ex: 'A dot plot shows the distribution of a data set.' },
+    {
+      term: 'data distribution',
+      def: 'How the data values are spread across the number line: where they pile up, where they thin out.',
+      ex: 'A dot plot shows the distribution of a data set.',
+      es: 'distribución de los datos',
+      esDef: 'Cómo se reparten los datos en la recta numérica: dónde se juntan muchos valores y dónde hay pocos.',
+      lessons: ['2-1', '2-6'],
+      visual: () => V.dotPlot({ values: [2, 3, 3, 4, 4, 4, 5, 5, 8], min: 1, max: 9, label: 'Where the data piles up', width: 340 }),
+    },
     {
       term: 'dot plot',
       def: 'A number line with one dot above each data value. Stacked dots show repeated values.',
       ex: 'Data 3, 4, 4, 5, 5, 5, 6, 6, 7',
+      es: 'diagrama de puntos',
+      esDef: 'Una recta numérica con un punto encima de cada dato. Los puntos apilados muestran valores que se repiten.',
+      lessons: ['2-1'],
       visual: () => V.dotPlot({ values: sampleDots, min: 2, max: 8, label: 'Crabs per pool', width: 360 }),
     },
     {
       term: 'histogram',
       def: 'A bar graph that shows how many data values fall in each interval. Bars touch because the intervals cover every number with no gaps.',
       ex: 'Intervals 0–9, 10–19, 20–29 with counts 2, 5, 3',
+      es: 'histograma',
+      esDef: 'Una gráfica de barras que muestra cuántos datos caen en cada intervalo. Las barras se tocan porque los intervalos cubren todos los números sin dejar huecos.',
+      lessons: ['2-2'],
       visual: () =>
         V.histogram({
           bins: [
@@ -2790,11 +2924,34 @@ body.in-trek .at-top {
           yLabel: 'Frequency',
         }),
     },
-    { term: 'interval', def: 'A range of values that forms one bar of a histogram. Intervals are equal in width and never overlap.', ex: '10–19 holds every value from 10 up to and including 19.' },
+    {
+      term: 'interval',
+      def: 'A range of values that forms one bar of a histogram. Intervals are equal in width and never overlap.',
+      ex: '10–19 holds every value from 10 up to and including 19.',
+      es: 'intervalo',
+      esDef: 'Un grupo de valores que forma una barra del histograma. Todos los intervalos tienen el mismo ancho y no se enciman.',
+      lessons: ['2-2'],
+      visual: () =>
+        V.numberLine({
+          min: 0,
+          max: 30,
+          step: 1,
+          labelEvery: 10,
+          width: 360,
+          segments: [{ from: 10, to: 19 }],
+          points: [
+            { v: 10, label: '10', above: true },
+            { v: 19, label: '19', above: true },
+          ],
+        }),
+    },
     {
       term: 'frequency table',
       def: 'A table that lists each interval (or value) and how many data values fall in it.',
-      ex: '',
+      ex: 'Data 4, 12, 15, 18, 22 → 0–9: 1, 10–19: 3, 20–29: 1',
+      es: 'tabla de frecuencias',
+      esDef: 'Una tabla que muestra cada intervalo (o valor) y cuántos datos caen en él.',
+      lessons: ['2-2'],
       visual: () =>
         V.table(
           [
@@ -2806,21 +2963,40 @@ body.in-trek .at-top {
           { header: true, cls: 'mini' },
         ),
     },
-    { term: 'symmetric', def: 'A distribution whose left side and right side look about the same, like a mirror.', ex: 'A dot plot shaped like a hill with the peak in the middle.' },
+    {
+      term: 'symmetric',
+      def: 'A distribution whose left side and right side look about the same, like a mirror.',
+      ex: 'A dot plot shaped like a hill with the peak in the middle.',
+      es: 'simétrica',
+      esDef: 'Una distribución cuyo lado izquierdo y lado derecho se ven casi iguales, como en un espejo.',
+      lessons: ['2-1', '2-2'],
+      visual: () => V.dotPlot({ values: [2, 3, 3, 4, 4, 4, 5, 5, 6], min: 1, max: 7, label: 'Symmetric', width: 300 }),
+    },
     {
       term: 'skewed',
       def: 'A distribution with a long tail on one side. Skewed right: tail stretches to larger values. Skewed left: tail stretches to smaller values.',
       ex: 'Most values are small, with a few very large ones: skewed right.',
+      es: 'sesgada',
+      esDef: 'Una distribución con una cola larga en un lado. Sesgada a la derecha: la cola va hacia los valores grandes. Sesgada a la izquierda: la cola va hacia los valores pequeños.',
+      lessons: ['2-1', '2-2', '2-10'],
+      visual: () => V.dotPlot({ values: [1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 6, 8], min: 0, max: 9, label: 'Skewed right: the tail points right', width: 320 }),
     },
     {
       term: 'cluster, gap, peak',
       def: 'A cluster is a group of values close together. A gap is a stretch with no values. A peak is the value (or interval) with the most data.',
       ex: 'In 3, 4, 4, 5, 5, 5, 6, 6, 7 the peak is at 5.',
+      es: 'grupo, hueco, pico',
+      esDef: 'Un grupo (cúmulo) es un conjunto de valores cercanos. Un hueco es un tramo sin valores. El pico es el valor (o intervalo) con más datos.',
+      lessons: ['2-1'],
+      visual: () => V.dotPlot({ values: [2, 3, 3, 3, 4, 4, 8, 9], min: 1, max: 10, label: 'Cluster 2–4, gap 5–7, peak at 3', width: 340 }),
     },
     {
       term: 'median',
       def: 'The middle value of an ordered data set. With an even number of values, it is halfway between the two middle values.',
       ex: '4, 7, 9, 12, 15 → median 9.  4, 7, 9, 12 → median (7 + 9) ÷ 2 = 8',
+      es: 'mediana',
+      esDef: 'El valor del medio cuando los datos están en orden. Si hay un número par de datos, es el punto medio entre los dos valores del centro.',
+      lessons: ['2-3', '2-6'],
       visual: () =>
         V.numberLine({
           min: 0,
@@ -2832,23 +3008,91 @@ body.in-trek .at-top {
         }),
     },
     {
+      term: 'ordered data set',
+      def: 'The data values written from least to greatest. Always order the data before you look for the middle.',
+      ex: '9, 4, 15, 6, 11 → ordered: 4, 6, 9, 11, 15',
+      es: 'datos ordenados',
+      esDef: 'Los datos escritos de menor a mayor. Siempre ordena los datos antes de buscar el valor del medio.',
+      lessons: ['2-3'],
+    },
+    {
       term: 'quartiles',
       def: 'Q1 is the median of the lower half of the data. Q3 is the median of the upper half. When the data count is odd, the median is left out of both halves.',
       ex: '2, 4, 6, 8, 10, 12, 14 → lower half 2, 4, 6 → Q1 = 4; upper half 10, 12, 14 → Q3 = 12',
+      es: 'cuartiles',
+      esDef: 'Q1 es la mediana de la mitad inferior de los datos. Q3 es la mediana de la mitad superior. Si hay un número impar de datos, la mediana no entra en ninguna mitad.',
+      lessons: ['2-4', '2-5'],
+      visual: () =>
+        V.numberLine({
+          min: 0,
+          max: 16,
+          step: 1,
+          labelEvery: 2,
+          width: 380,
+          points: [2, 6, 10, 14]
+            .map((v) => ({ v, color: '#3B6FB6' }))
+            .concat([
+              { v: 4, label: 'Q1', color: '#0F7C6B', above: true },
+              { v: 8, label: 'median', color: '#C8553D', above: true },
+              { v: 12, label: 'Q3', color: '#0F7C6B', above: true },
+            ]),
+        }),
     },
-    { term: 'five-number summary', def: 'Minimum, Q1, median, Q3, maximum. These five numbers build a box plot.', ex: 'Min 2, Q1 4, median 8, Q3 12, max 14' },
+    {
+      term: 'five-number summary',
+      def: 'Minimum, Q1, median, Q3, maximum. These five numbers build a box plot.',
+      ex: 'Min 2, Q1 4, median 8, Q3 12, max 14',
+      es: 'resumen de cinco números',
+      esDef: 'Mínimo, Q1, mediana, Q3 y máximo. Con estos cinco números se dibuja un diagrama de caja.',
+      lessons: ['2-4'],
+    },
     {
       term: 'box plot',
       def: 'A display of the five-number summary. The box runs from Q1 to Q3 with a line at the median; whiskers reach the minimum and maximum. Each section holds about one quarter of the data.',
-      ex: '',
+      ex: 'Min 2, Q1 4, median 8, Q3 12, max 14',
+      es: 'diagrama de caja',
+      esDef:
+        'Una gráfica del resumen de cinco números. La caja va de Q1 a Q3 con una línea en la mediana; los bigotes llegan al mínimo y al máximo. Cada parte tiene más o menos un cuarto de los datos.',
+      lessons: ['2-4', '2-6'],
       visual: () => V.boxPlot({ plots: [{ min: 2, q1: 4, med: 8, q3: 12, max: 14, showValues: true }], lineMin: 0, lineMax: 16, step: 1, labelEvery: 2, width: 380 }),
     },
-    { term: 'range', def: 'Maximum minus minimum. The full spread of the data.', ex: '14 − 2 = 12' },
-    { term: 'interquartile range (IQR)', def: 'Q3 minus Q1. The spread of the middle half of the data. The length of the box in a box plot.', ex: '12 − 4 = 8' },
+    {
+      term: 'range',
+      def: 'Maximum minus minimum. The full spread of the data.',
+      ex: '14 − 2 = 12',
+      es: 'rango',
+      esDef: 'El valor máximo menos el valor mínimo. Muestra cuánto se extienden todos los datos.',
+      lessons: ['2-5'],
+      visual: () =>
+        V.numberLine({
+          min: 0,
+          max: 16,
+          step: 1,
+          labelEvery: 2,
+          width: 360,
+          segments: [{ from: 2, to: 14 }],
+          points: [
+            { v: 2, label: 'min 2', above: true },
+            { v: 14, label: 'max 14', above: true },
+          ],
+        }),
+    },
+    {
+      term: 'interquartile range (IQR)',
+      def: 'Q3 minus Q1. The spread of the middle half of the data. The length of the box in a box plot.',
+      ex: '12 − 4 = 8',
+      es: 'rango intercuartil (RIC)',
+      esDef: 'Q3 menos Q1. Muestra cuánto se extiende la mitad central de los datos. Es el largo de la caja en un diagrama de caja.',
+      lessons: ['2-5', '2-6'],
+      visual: () => V.boxPlot({ plots: [{ min: 2, q1: 4, med: 8, q3: 12, max: 14, showValues: true }], lineMin: 0, lineMax: 16, step: 1, labelEvery: 2, width: 380 }),
+    },
     {
       term: 'outlier',
       def: 'A data value that sits far away from the rest of the data.',
       ex: '5, 6, 6, 7, 8, 30 → 30 is an outlier',
+      es: 'valor atípico',
+      esDef: 'Un dato que está muy lejos del resto de los datos.',
+      lessons: ['2-6', '2-10'],
       visual: () =>
         V.numberLine({
           min: 0,
@@ -2859,18 +3103,121 @@ body.in-trek .at-top {
           points: [5, 6, 7, 8].map((v) => ({ v, color: '#3B6FB6' })).concat([{ v: 30, label: 'outlier', color: '#C8553D', above: true }]),
         }),
     },
-    { term: 'mean', def: 'The sum of the values divided by how many values there are. The fair-share amount, or the balance point of the data.', ex: '(4 + 7 + 9 + 12) ÷ 4 = 32 ÷ 4 = 8' },
     {
-      term: 'mean absolute deviation (MAD)',
-      def: 'The average distance of the values from the mean. Find each distance (always positive), add them, then divide by the number of values.',
-      ex: 'Mean 8: distances 4, 1, 1, 4 → sum 10 → MAD 10 ÷ 4 = 2.5',
+      term: 'dividend',
+      def: 'The number being divided. In 4.8 ÷ 0.6, the dividend is 4.8.',
+      ex: '4.8 ÷ 0.6: dividend 4.8',
+      es: 'dividendo',
+      esDef: 'El número que se divide. En 4.8 ÷ 0.6, el dividendo es 4.8.',
+      lessons: ['2-7'],
+    },
+    {
+      term: 'divisor',
+      def: 'The number you divide by. To divide by a decimal, multiply the divisor and the dividend by the same power of 10 so the divisor becomes a whole number.',
+      ex: '4.8 ÷ 0.6 → 48 ÷ 6',
+      es: 'divisor',
+      esDef: 'El número entre el que divides. Para dividir entre un decimal, multiplica el divisor y el dividendo por la misma potencia de 10 para que el divisor sea un número entero.',
+      lessons: ['2-7'],
+      visual: () =>
+        V.table(
+          [
+            ['', 'Dividend', 'Divisor'],
+            ['Before', '4.8', '0.6'],
+            ['× 10', '48', '6'],
+          ],
+          { header: true, cls: 'mini' },
+        ),
+    },
+    {
+      term: 'quotient',
+      def: 'The answer to a division problem. Line up the decimal point in the quotient with the decimal point in the dividend.',
+      ex: '48 ÷ 6 = 8, so 4.8 ÷ 0.6 = 8',
+      es: 'cociente',
+      esDef: 'El resultado de una división. El punto decimal del cociente va justo encima del punto decimal del dividendo.',
+      lessons: ['2-7'],
+    },
+    {
+      term: 'annex a zero',
+      def: 'Write a zero at the end of a decimal so you can keep dividing. It does not change the value: 2.5 = 2.50.',
+      ex: '2.5 ÷ 2 → 2.50 ÷ 2 = 1.25',
+      es: 'agregar un cero',
+      esDef: 'Escribir un cero al final de un decimal para seguir dividiendo. No cambia el valor: 2.5 = 2.50.',
+      lessons: ['2-7'],
+    },
+    {
+      term: 'mean',
+      def: 'The sum of the values divided by how many values there are. The fair-share amount, or the balance point of the data.',
+      ex: '(4 + 7 + 9 + 12) ÷ 4 = 32 ÷ 4 = 8',
+      es: 'media (promedio)',
+      esDef: 'La suma de los datos dividida entre cuántos datos hay. Es la parte justa que le toca a cada uno, o el punto de equilibrio de los datos.',
+      lessons: ['2-8', '2-9'],
+      visual: () =>
+        V.numberLine({
+          min: 0,
+          max: 14,
+          step: 1,
+          labelEvery: 2,
+          width: 360,
+          points: [4, 7, 9, 12].map((v) => ({ v, color: '#3B6FB6' })).concat([{ v: 8, label: 'mean 8', color: '#C8553D', above: true }]),
+        }),
     },
     {
       term: 'measure of center',
       def: 'One number that describes a typical value: the mean or the median. Use the median when the data is skewed or has an outlier.',
       ex: 'Pair mean with MAD. Pair median with IQR.',
+      es: 'medida de tendencia central',
+      esDef: 'Un número que describe un valor típico: la media o la mediana. Usa la mediana cuando los datos están sesgados o tienen un valor atípico.',
+      lessons: ['2-3', '2-8', '2-10'],
     },
-    { term: 'measure of variation', def: 'One number that describes how spread out the data is: range, IQR, or MAD.', ex: 'A small MAD means the values stay close to the mean.' },
+    {
+      term: 'absolute deviation',
+      def: 'How far one data value is from the mean. It is a distance, so it is never negative.',
+      ex: 'Mean 8: the value 5 is 3 away, and the value 11 is also 3 away.',
+      es: 'desviación absoluta',
+      esDef: 'Qué tan lejos está un dato de la media. Es una distancia, así que nunca es negativa.',
+      lessons: ['2-9'],
+      visual: () =>
+        V.numberLine({
+          min: 0,
+          max: 14,
+          step: 1,
+          labelEvery: 2,
+          width: 360,
+          segments: [
+            { from: 5, to: 8 },
+            { from: 8, to: 11, color: '#F2A33A' },
+          ],
+          points: [
+            { v: 5, label: '3 away', color: '#3B6FB6' },
+            { v: 11, label: '3 away', color: '#3B6FB6' },
+            { v: 8, label: 'mean', color: '#C8553D', above: true },
+          ],
+        }),
+    },
+    {
+      term: 'mean absolute deviation (MAD)',
+      def: 'The average distance of the values from the mean. Find each distance (always positive), add them, then divide by the number of values.',
+      ex: 'Mean 8: distances 4, 1, 1, 4 → sum 10 → MAD 10 ÷ 4 = 2.5',
+      es: 'desviación media absoluta (DMA)',
+      esDef: 'La distancia promedio de los datos a la media. Halla cada distancia (siempre positiva), súmalas y divide entre el número de datos.',
+      lessons: ['2-9', '2-10'],
+      visual: () =>
+        V.table(
+          [
+            ['Value', '4', '7', '9', '12'],
+            ['Distance from mean 8', '4', '1', '1', '4'],
+          ],
+          { header: true, cls: 'mini' },
+        ),
+    },
+    {
+      term: 'measure of variation',
+      def: 'One number that describes how spread out the data is: range, IQR, or MAD.',
+      ex: 'A small MAD means the values stay close to the mean.',
+      es: 'medida de variación',
+      esDef: 'Un número que describe qué tan dispersos están los datos: el rango, el rango intercuartil o la desviación media absoluta.',
+      lessons: ['2-5', '2-9', '2-10'],
+    },
   ];
 })(typeof window !== 'undefined' ? window : globalThis);
 
@@ -3108,14 +3455,36 @@ body.in-trek .at-top {
       term: 'ratio',
       def: 'A comparison of two quantities. Written 3 to 5, 3 : 5, or 3/5.',
       ex: '3 red beads for every 5 blue beads → 3 : 5',
+      es: 'razón',
+      esDef: 'Una comparación de dos cantidades. Se escribe 3 a 5, 3 : 5 o 3/5.',
+      lessons: ['3-1'],
       visual: () => V.icons(3, 'circle', '#C8553D') + ' ' + V.icons(5, 'circle', '#3B6FB6'),
     },
-    { term: 'part-to-part ratio', def: 'Compares one part to another part.', ex: 'red to blue = 3 : 5' },
-    { term: 'part-to-whole ratio', def: 'Compares one part to the total.', ex: 'red to all beads = 3 : 8 (because 3 + 5 = 8)' },
+    {
+      term: 'part-to-part ratio',
+      def: 'Compares one part to another part.',
+      ex: 'red to blue = 3 : 5',
+      es: 'razón de parte a parte',
+      esDef: 'Compara una parte con otra parte. Ejemplo: rojas a azules = 3 : 5.',
+      lessons: ['3-1'],
+      visual: () => V.icons(3, 'circle', '#C8553D') + ' : ' + V.icons(5, 'circle', '#3B6FB6'),
+    },
+    {
+      term: 'part-to-whole ratio',
+      def: 'Compares one part to the total.',
+      ex: 'red to all beads = 3 : 8 (because 3 + 5 = 8)',
+      es: 'razón de parte a total',
+      esDef: 'Compara una parte con el total (el entero). Ejemplo: rojas a todas las cuentas = 3 : 8, porque 3 + 5 = 8.',
+      lessons: ['3-1'],
+      visual: () => V.icons(3, 'circle', '#C8553D') + ' : ' + V.icons(3, 'circle', '#C8553D') + V.icons(5, 'circle', '#3B6FB6'),
+    },
     {
       term: 'equivalent ratios',
       def: 'Ratios that show the same relationship. Made by multiplying or dividing both parts by the same number.',
       ex: '3 : 5 = 6 : 10 = 9 : 15',
+      es: 'razones equivalentes',
+      esDef: 'Razones que muestran la misma relación. Se forman al multiplicar o dividir las dos partes por el mismo número.',
+      lessons: ['3-1', '3-3'],
       visual: () =>
         V.table(
           [
@@ -3126,14 +3495,46 @@ body.in-trek .at-top {
           { header: true, cls: 'mini' },
         ),
     },
-    { term: 'simplest form', def: 'A ratio whose two numbers have no common factor except 1.', ex: '12 : 18 → divide both by 6 → 2 : 3' },
-    { term: 'rate', def: 'A ratio that compares quantities with different units.', ex: '120 miles in 3 hours' },
-    { term: 'unit rate', def: 'A rate where the second quantity is 1. Find it by dividing.', ex: '120 miles ÷ 3 hours = 40 miles per hour' },
-    { term: 'unit price', def: 'The cost of one unit of something. Lower unit price = better buy.', ex: '$9.00 for 4 pounds → $2.25 per pound' },
+    {
+      term: 'simplest form',
+      def: 'A ratio whose two numbers have no common factor except 1.',
+      ex: '12 : 18 → divide both by 6 → 2 : 3',
+      es: 'forma más simple',
+      esDef: 'Una razón cuyos dos números no tienen otro factor común que el 1. Ejemplo: 12 : 18 → divide los dos entre 6 → 2 : 3.',
+      lessons: ['3-1'],
+    },
+    {
+      term: 'rate',
+      def: 'A ratio that compares quantities with different units.',
+      ex: '120 miles in 3 hours',
+      es: 'tasa',
+      esDef: 'Una razón que compara cantidades con unidades diferentes. Ejemplo: 120 millas en 3 horas.',
+      lessons: ['3-2', '3-5'],
+    },
+    {
+      term: 'unit rate',
+      def: 'A rate where the second quantity is 1. Find it by dividing.',
+      ex: '120 miles ÷ 3 hours = 40 miles per hour',
+      es: 'tasa unitaria',
+      esDef: 'Una tasa en la que la segunda cantidad es 1. Se encuentra dividiendo. Ejemplo: 120 millas ÷ 3 horas = 40 millas por hora.',
+      lessons: ['3-2', '3-5'],
+      visual: () => V.dnl({ label: 'Hours', values: [0, 1, 2, 3] }, { label: 'Miles', values: [0, 40, 80, 120] }, { aria: '40 miles for every 1 hour' }),
+    },
+    {
+      term: 'unit price',
+      def: 'The cost of one unit of something. Lower unit price = better buy.',
+      ex: '$9.00 for 4 pounds → $2.25 per pound',
+      es: 'precio unitario',
+      esDef: 'El costo de una unidad de algo. El precio unitario más bajo es la mejor compra. Ejemplo: $9.00 por 4 libras → $2.25 por libra.',
+      lessons: ['3-2'],
+    },
     {
       term: 'ratio table',
       def: 'A table whose columns are all equivalent ratios.',
       ex: '',
+      es: 'tabla de razones',
+      esDef: 'Una tabla en la que todas las columnas son razones equivalentes.',
+      lessons: ['3-3', '3-5'],
       visual: () =>
         V.table(
           [
@@ -3147,23 +3548,40 @@ body.in-trek .at-top {
       term: 'double number line',
       def: 'Two number lines that line up equivalent amounts of two quantities.',
       ex: '',
+      es: 'recta numérica doble',
+      esDef: 'Dos rectas numéricas que alinean cantidades equivalentes de dos magnitudes.',
+      lessons: ['3-2'],
       visual: () => V.dnl({ label: 'Hours', values: [0, 1, 2, 3] }, { label: 'Miles', values: [0, 4, 8, 12] }),
     },
     {
       term: 'tape diagram',
       def: 'Boxes that show a ratio. Every box has the same value.',
       ex: 'Ratio 2 : 3 with total 20 → each box is 4',
+      es: 'diagrama de cinta',
+      esDef: 'Cajas que muestran una razón. Todas las cajas tienen el mismo valor. Ejemplo: razón 2 : 3 con total 20 → cada caja vale 4.',
+      lessons: ['3-1', '3-5'],
       visual: () =>
         V.tape([
           { label: 'A', boxes: 2, value: 4 },
           { label: 'B', boxes: 3, value: 4 },
         ]),
     },
-    { term: 'ordered pair', def: 'A point on a graph written (x, y): across first, then up.', ex: '(2, 8) → 2 pages, 8 stickers' },
+    {
+      term: 'ordered pair',
+      def: 'A point on a graph written (x, y): across first, then up.',
+      ex: '(2, 8) → 2 pages, 8 stickers',
+      es: 'par ordenado',
+      esDef: 'Un punto en una gráfica que se escribe (x, y): primero hacia la derecha y luego hacia arriba. Ejemplo: (2, 8) → 2 páginas, 8 calcomanías.',
+      lessons: ['3-4'],
+      visual: () => V.graph({ xMax: 5, yMax: 10, yStep: 2, size: 170, xLabel: 'Pages', yLabel: 'Stickers', series: [{ points: [[2, 8]], label: '(2, 8)' }] }),
+    },
     {
       term: 'coordinate plane',
       def: 'A grid for plotting ordered pairs. Equivalent ratios make a straight line from (0, 0).',
       ex: '',
+      es: 'plano de coordenadas',
+      esDef: 'Una cuadrícula para ubicar pares ordenados. Las razones equivalentes forman una línea recta que sale de (0, 0).',
+      lessons: ['3-4'],
       visual: () =>
         V.graph({
           xMax: 5,
@@ -3183,9 +3601,64 @@ body.in-trek .at-top {
           ],
         }),
     },
-    { term: 'conversion factor', def: 'The ratio between two units. Multiply to get a smaller unit, divide to get a bigger unit.', ex: '1 yard = 3 feet → 12 feet ÷ 3 = 4 yards' },
-    { term: 'customary system', def: 'Units used in the United States: inches, feet, yards, miles, ounces, pounds, cups, quarts, gallons.', ex: '' },
-    { term: 'metric system', def: 'Units based on 10: centimeters, meters, kilometers, grams, kilograms, milliliters, liters.', ex: '' },
+    {
+      term: 'origin',
+      def: 'The point (0, 0), where the x-axis and the y-axis meet. The line through equivalent ratios starts here.',
+      ex: '0 hours → 0 miles is the point (0, 0)',
+      es: 'origen',
+      esDef: 'El punto (0, 0), donde se cruzan el eje x y el eje y. La línea de las razones equivalentes empieza aquí.',
+      lessons: ['3-4'],
+      visual: () => V.graph({ xMax: 5, yMax: 10, yStep: 2, size: 170, series: [{ points: [[0, 0]], label: '(0, 0)' }] }),
+    },
+    {
+      term: 'common term',
+      def: 'To compare two ratios, scale them so one quantity is the same in both. Then compare the other quantity.',
+      ex: '3 : 5 vs 4 : 7 → 12 : 20 vs 12 : 21',
+      es: 'término común',
+      esDef: 'Para comparar dos razones, cámbialas a razones equivalentes en las que una cantidad sea igual. Luego compara la otra cantidad.',
+      lessons: ['3-5'],
+      visual: () =>
+        V.table(
+          [
+            ['', 'A', 'B'],
+            ['Cups of juice', '12', '12'],
+            ['Cups of water', '20', '21'],
+          ],
+          { header: true, cls: 'mini' },
+        ),
+    },
+    {
+      term: 'conversion factor',
+      def: 'The ratio between two units. Multiply to get a smaller unit, divide to get a bigger unit.',
+      ex: '1 yard = 3 feet → 12 feet ÷ 3 = 4 yards',
+      es: 'factor de conversión',
+      esDef: 'La razón entre dos unidades. Multiplica para pasar a una unidad más pequeña; divide para pasar a una unidad más grande. Ejemplo: 1 yarda = 3 pies → 12 pies ÷ 3 = 4 yardas.',
+      lessons: ['3-6', '3-7'],
+      visual: () =>
+        V.table(
+          [
+            ['Yards', '1', '2', '4'],
+            ['Feet', '3', '6', '12'],
+          ],
+          { header: false, rowHeader: true, cls: 'mini' },
+        ),
+    },
+    {
+      term: 'customary system',
+      def: 'Units used in the United States: inches, feet, yards, miles, ounces, pounds, cups, quarts, gallons.',
+      ex: '1 foot = 12 inches · 1 pound = 16 ounces · 1 gallon = 4 quarts',
+      es: 'sistema usual (sistema inglés)',
+      esDef: 'Unidades que se usan en Estados Unidos: pulgadas, pies, yardas, millas, onzas, libras, tazas, cuartos de galón y galones.',
+      lessons: ['3-6', '3-7'],
+    },
+    {
+      term: 'metric system',
+      def: 'Units based on 10: centimeters, meters, kilometers, grams, kilograms, milliliters, liters.',
+      ex: '1 meter = 100 centimeters · 1 kilogram = 1,000 grams',
+      es: 'sistema métrico',
+      esDef: 'Unidades basadas en el 10: centímetros, metros, kilómetros, gramos, kilogramos, mililitros y litros.',
+      lessons: ['3-6', '3-7'],
+    },
   ];
   RX.REFERENCE_TITLE = 'Measurement reference sheet';
 })(typeof window !== 'undefined' ? window : globalThis);
@@ -3409,27 +3882,55 @@ body.in-trek .at-top {
       term: 'percent',
       def: 'A rate per 100. The symbol % means "out of 100."',
       ex: '37% means 37 out of every 100.',
+      es: 'porcentaje',
+      esDef: 'Una tasa por cada 100. El símbolo % quiere decir "de cada 100".',
+      lessons: ['4-1'],
       visual: () => V.grid100({ shaded: 37, size: 150, aria: '37 of 100 squares shaded' }),
     },
     {
       term: '100-grid (hundredths grid)',
       def: 'A 10 × 10 grid with 100 equal squares. Each square is 1%, and each full row is 10%.',
       ex: '4 full rows shaded = 40 squares = 40%',
+      es: 'cuadrícula de 100 (cuadrícula de centésimos)',
+      esDef: 'Una cuadrícula de 10 × 10 con 100 cuadros iguales. Cada cuadro es el 1% y cada fila completa es el 10%.',
+      lessons: ['4-1'],
       visual: () => V.grid100({ shaded: 40, size: 150, aria: '4 full rows shaded, 40 of 100 squares' }),
     },
     {
-      term: 'percent bar',
-      def: 'A bar split into equal parts that stands for 100%. Shading parts shows a percent.',
-      ex: 'A bar in 10 parts with 3 shaded shows 30%.',
+      term: '100%',
+      def: 'The whole amount. More than 100% is more than the whole; less than 1% is less than one hundredth.',
+      ex: '150% of 20 is 30, which is more than 20.',
+      es: 'el 100% (el total)',
+      esDef: 'La cantidad total, el entero. Más del 100% es más que el total. Menos del 1% es menos de un centésimo.',
+      lessons: ['4-1'],
       visual: () =>
-        V.bar({ parts: 10, shaded: 3, labels: ['0%', '10%', '20%', '30%', '40%', '50%', '60%', '70%', '80%', '90%'], width: 360, aria: 'Percent bar with 3 of 10 parts shaded, 30 percent' }),
+        `<div class="viz-row">${V.grid100({ shaded: 100, size: 90, aria: 'A fully shaded grid, 100 percent' })}${V.grid100({ shaded: 50, size: 90, aria: 'Half of a second grid shaded, 50 percent more' })}</div>`,
     },
-    { term: 'fraction', def: 'A number that shows part of a whole as top ÷ bottom.', ex: '3/4 means 3 of 4 equal parts.' },
-    { term: 'decimal', def: 'A number written with a decimal point. Hundredths line up with percents.', ex: '0.45 = 45 hundredths = 45%' },
+    {
+      term: 'fraction',
+      def: 'A number that shows part of a whole as top ÷ bottom.',
+      ex: '3/4 means 3 of 4 equal parts. 3/4 = 75/100 = 75%.',
+      es: 'fracción',
+      esDef: 'Un número que muestra una parte de un entero como el número de arriba ÷ el número de abajo.',
+      lessons: ['4-2'],
+      visual: () => V.bar({ parts: 4, shaded: 3, width: 240, aria: 'Bar in 4 equal parts with 3 shaded, three fourths' }),
+    },
+    {
+      term: 'decimal',
+      def: 'A number written with a decimal point. Hundredths line up with percents.',
+      ex: '0.45 = 45 hundredths = 45%',
+      es: 'decimal',
+      esDef: 'Un número escrito con punto decimal. Los centésimos coinciden con los porcentajes.',
+      lessons: ['4-2'],
+      visual: () => V.grid100({ shaded: 45, size: 150, aria: '45 of 100 squares shaded, 0.45' }),
+    },
     {
       term: 'equivalent forms',
       def: 'A fraction, a decimal, and a percent that all name the same number.',
-      ex: '',
+      ex: '1/4 = 0.25 = 25%',
+      es: 'formas equivalentes',
+      esDef: 'Una fracción, un decimal y un porcentaje que nombran el mismo número.',
+      lessons: ['4-2'],
       visual: () =>
         V.table(
           [
@@ -3441,11 +3942,13 @@ body.in-trek .at-top {
           { header: true, cls: 'mini' },
         ),
     },
-    { term: '100%', def: 'The whole amount. More than 100% is more than the whole; less than 1% is less than one hundredth.', ex: '150% of 20 is 30, which is more than 20.' },
     {
       term: 'benchmark percent',
       def: 'A friendly percent you can find in your head: 1%, 10%, 25%, 50%, 75%.',
       ex: '10% of 80 is 8. 25% of 80 is 20. 50% of 80 is 40.',
+      es: 'porcentaje de referencia',
+      esDef: 'Un porcentaje fácil que puedes calcular mentalmente: 1%, 10%, 25%, 50%, 75%.',
+      lessons: ['4-3'],
       visual: () =>
         V.dnl(
           { label: 'Percent', values: ['0%', '25%', '50%', '75%', '100%'] },
@@ -3453,12 +3956,53 @@ body.in-trek .at-top {
           { aria: 'Double number line: 0, 25, 50, 75, 100 percent above 0, 20, 40, 60, 80' },
         ),
     },
-    { term: 'estimate', def: 'A close answer found with friendly numbers instead of exact ones.', ex: '23% of 61 is about 25% of 60, which is 15.' },
-    { term: 'percent of a number', def: 'The part you get when you take a percent of a whole. Multiply by the fraction or the decimal.', ex: '30% of 50 = 0.3 × 50 = 15' },
+    {
+      term: 'estimate',
+      def: 'A close answer found with friendly numbers instead of exact ones.',
+      ex: '23% of 61 is about 25% of 60, which is 15.',
+      es: 'estimar (estimación)',
+      esDef: 'Hallar una respuesta cercana con números fáciles en lugar de los números exactos.',
+      lessons: ['4-3'],
+    },
+    {
+      term: 'compatible numbers',
+      def: 'Numbers that are close to the real ones and easy to work with together.',
+      ex: '24% of 79 → 25% of 80 = 20. The numbers 25% and 80 are compatible.',
+      es: 'números compatibles',
+      esDef: 'Números cercanos a los reales que son fáciles de usar juntos.',
+      lessons: ['4-3'],
+    },
+    {
+      term: 'percent bar',
+      def: 'A bar split into equal parts that stands for 100%. Shading parts shows a percent.',
+      ex: 'A bar in 10 parts with 3 shaded shows 30%.',
+      es: 'barra de porcentaje',
+      esDef: 'Una barra dividida en partes iguales que representa el 100%. Las partes sombreadas muestran un porcentaje.',
+      lessons: ['4-3', '4-5'],
+      visual: () =>
+        V.bar({ parts: 10, shaded: 3, labels: ['0%', '10%', '20%', '30%', '40%', '50%', '60%', '70%', '80%', '90%'], width: 360, aria: 'Percent bar with 3 of 10 parts shaded, 30 percent' }),
+    },
+    {
+      term: 'percent of a number',
+      def: 'The part you get when you take a percent of a whole. Multiply by the fraction or the decimal.',
+      ex: '30% of 50 = 0.3 × 50 = 15',
+      es: 'porcentaje de un número',
+      esDef: 'La parte que obtienes al tomar un porcentaje de un total. Multiplica el total por la fracción o el decimal.',
+      lessons: ['4-4'],
+      visual: () =>
+        V.dnl(
+          { label: 'Percent', values: ['0%', '10%', '20%', '30%', '100%'] },
+          { label: 'Amount', values: [0, 5, 10, 15, 50] },
+          { aria: 'Double number line: 30 percent lines up with 15 when 100 percent is 50' },
+        ),
+    },
     {
       term: 'double number line',
       def: 'Two number lines that line up percents with amounts. 100% always lines up with the whole.',
-      ex: '',
+      ex: '20% lines up with 9, so 100% lines up with 45.',
+      es: 'recta numérica doble',
+      esDef: 'Dos rectas numéricas que emparejan porcentajes con cantidades. El 100% siempre se alinea con el total.',
+      lessons: ['4-3', '4-4', '4-5'],
       visual: () =>
         V.dnl(
           { label: 'Percent', values: ['0%', '20%', '40%', '60%', '80%', '100%'] },
@@ -3466,10 +4010,61 @@ body.in-trek .at-top {
           { aria: 'Double number line: 0 to 100 percent above 0 to 45 lanterns' },
         ),
     },
-    { term: 'part', def: 'The piece of the whole that a percent describes.', ex: 'In "12 is 25% of 48," the part is 12.' },
-    { term: 'whole', def: 'The total amount, which is 100%. To find it, divide the part by the percent.', ex: '12 ÷ 0.25 = 48, so the whole is 48.' },
-    { term: 'discount', def: 'An amount taken off a price. It is a percent of the original price.', ex: '20% off $40 → discount $8 → sale price $32' },
-    { term: 'tax and tip', def: 'Amounts added to a price. Each is a percent of the price.', ex: '8% tax on $25 is $2.00, so the total is $27.00.' },
+    {
+      term: 'part',
+      def: 'The piece of the whole that a percent describes.',
+      ex: 'In "12 is 25% of 48," the part is 12.',
+      es: 'parte',
+      esDef: 'El pedazo del total que describe un porcentaje.',
+      lessons: ['4-4', '4-5'],
+      visual: () =>
+        V.tape(
+          [
+            { label: 'Whole', boxes: 4, value: '12', total: '48' },
+            { label: 'Part', boxes: 1, value: '12' },
+          ],
+          { aria: 'Tape diagram: a whole of 48 in 4 boxes of 12; the part is one box, 12, which is 25 percent' },
+        ),
+    },
+    {
+      term: 'discount',
+      def: 'An amount taken off a price. It is a percent of the original price.',
+      ex: '20% off $40 → discount $8 → sale price $32',
+      es: 'descuento',
+      esDef: 'Una cantidad que se resta de un precio. Es un porcentaje del precio original.',
+      lessons: ['4-4'],
+    },
+    {
+      term: 'tax and tip',
+      def: 'Amounts added to a price. Each is a percent of the price.',
+      ex: '8% tax on $25 is $2.00, so the total is $27.00.',
+      es: 'impuesto y propina',
+      esDef: 'Cantidades que se suman a un precio. Cada una es un porcentaje del precio.',
+      lessons: ['4-4'],
+    },
+    {
+      term: 'whole',
+      def: 'The total amount, which is 100%. To find it, divide the part by the percent.',
+      ex: '12 ÷ 0.25 = 48, so the whole is 48.',
+      es: 'total (el entero)',
+      esDef: 'La cantidad completa, que es el 100%. Para hallarla, divide la parte entre el porcentaje.',
+      lessons: ['4-5'],
+      visual: () =>
+        V.dnl(
+          { label: 'Percent', values: ['0%', '25%', '50%', '75%', '100%'] },
+          { label: 'Amount', values: [0, 12, 24, 36, '?'] },
+          { aria: 'Double number line: 25 percent is 12, so 100 percent is 4 times 12' },
+        ),
+    },
+    {
+      term: 'tape diagram',
+      def: 'A model of equal boxes. The whole tape is 100%, so each box is an equal share of the percent.',
+      ex: '4 boxes make 100%, so each box is 25%. If one box is 12, the whole is 4 × 12 = 48.',
+      es: 'diagrama de cinta',
+      esDef: 'Un modelo de cajas iguales. Toda la cinta es el 100%, así que cada caja es una parte igual del porcentaje.',
+      lessons: ['4-5'],
+      visual: () => V.tape([{ label: '100%', boxes: 4, value: '25%' }], { aria: 'Tape diagram of 4 equal boxes, each 25 percent' }),
+    },
   ];
 })(typeof window !== 'undefined' ? window : globalThis);
 
@@ -3941,105 +4536,192 @@ body.in-trek .at-top {
   RX.VOCAB = [
     {
       term: 'area',
+      es: 'área',
       def: 'The number of square units needed to cover a flat figure.',
+      esDef: 'La cantidad de unidades cuadradas que cubren una figura plana.',
       ex: 'A 5 cm by 4 cm rectangle has an area of 20 cm².',
+      lessons: ['5-1'],
       visual: () => V.rectangle(5, 4, { w: '5 cm', h: '4 cm', width: 200, height: 150 }),
     },
-    { term: 'base (of a figure)', def: 'A side of a figure that the height is measured from. Any side can be the base.', ex: 'In a parallelogram with base 8 in and height 3 in, A = 8 × 3 = 24 in².' },
+    {
+      term: 'base (of a figure)',
+      es: 'base (de una figura)',
+      def: 'A side of a figure that the height is measured from. Any side can be the base.',
+      esDef: 'Un lado de la figura desde donde se mide la altura. Cualquier lado puede ser la base.',
+      ex: 'In a parallelogram with base 8 in and height 3 in, A = 8 × 3 = 24 in².',
+      lessons: ['5-2', '5-3'],
+      visual: () => V.triangle(8, 5, { base: 'base 8', height: 'height 5', width: 200 }),
+    },
     {
       term: 'height',
+      es: 'altura',
       def: 'The perpendicular distance from the base to the opposite side or vertex. It makes a right angle with the base. It is not the slanted side.',
+      esDef: 'La distancia perpendicular desde la base hasta el lado o el vértice opuesto. Forma un ángulo recto con la base. No es el lado inclinado.',
       ex: 'The dashed line is the height; the slanted side is longer.',
+      lessons: ['5-1', '5-2'],
       visual: () => V.parallelogram(8, 4, { base: 'base 8', height: 'height 4', side: 'side 5', offset: 3, width: 220 }),
     },
     {
       term: 'parallelogram',
+      es: 'paralelogramo',
       def: 'A quadrilateral with two pairs of parallel sides. Area = base × height.',
+      esDef: 'Un cuadrilátero con dos pares de lados paralelos. Área = base × altura.',
       ex: 'Base 6 m, height 4 m → A = 24 m²',
+      lessons: ['5-1'],
       visual: () => V.parallelogram(6, 4, { base: '6 m', height: '4 m', width: 200 }),
     },
     {
       term: 'rhombus',
+      es: 'rombo',
       def: 'A parallelogram with four equal sides. Its area is still base × height.',
+      esDef: 'Un paralelogramo con cuatro lados iguales. Su área también es base × altura.',
       ex: 'Side 5 cm, height 4 cm → A = 5 × 4 = 20 cm²',
+      lessons: ['5-1'],
       visual: () => V.parallelogram(5, 4, { base: '5 cm', height: '4 cm', side: '5 cm', offset: 3, width: 200 }),
     },
     {
       term: 'triangle area',
+      es: 'área del triángulo',
       def: 'Half of a parallelogram with the same base and height. A = ½ × base × height.',
+      esDef: 'La mitad de un paralelogramo con la misma base y la misma altura. A = ½ × base × altura.',
       ex: 'Base 10 ft, height 6 ft → A = ½ × 10 × 6 = 30 ft²',
+      lessons: ['5-2'],
       visual: () => V.triangle(10, 6, { base: '10 ft', height: '6 ft', width: 200 }),
     },
     {
       term: 'trapezoid',
+      es: 'trapecio',
       def: 'A quadrilateral with exactly one pair of parallel sides, called the bases. A = ½ × (b₁ + b₂) × h.',
+      esDef: 'Un cuadrilátero con un solo par de lados paralelos, que se llaman bases. A = ½ × (b₁ + b₂) × h.',
       ex: 'Bases 6 and 10, height 4 → A = ½ × 16 × 4 = 32',
+      lessons: ['5-3'],
       visual: () => V.trapezoid(10, 6, 4, { b1: '10', b2: '6', height: '4', width: 200 }),
     },
     {
       term: 'decompose',
+      es: 'descomponer',
       def: 'To break a figure into smaller figures whose areas you know, then add them.',
+      esDef: 'Separar una figura en figuras más pequeñas cuya área ya sabes hallar, y luego sumar esas áreas.',
       ex: 'A trapezoid = a rectangle + two triangles.',
+      lessons: ['5-3', '5-4'],
       visual: () => U5.rightTrapezoid(10, 6, 4, { width: 200 }),
     },
     {
       term: 'regular polygon',
+      es: 'polígono regular',
       def: 'A polygon with all sides equal and all angles equal. Split it into identical triangles from the center.',
+      esDef: 'Un polígono con todos los lados iguales y todos los ángulos iguales. Se puede dividir en triángulos idénticos desde el centro.',
       ex: 'A regular hexagon = 6 identical triangles.',
+      lessons: ['5-4'],
       visual: () => U5.regularPolygon(6, { side: 'side 6', height: 'h ≈ 5.2', width: 200 }),
     },
     {
       term: 'composite figure',
+      es: 'figura compuesta',
       def: 'A figure made of two or more simpler figures. Find each part, then add (or subtract).',
+      esDef: 'Una figura formada por dos o más figuras más simples. Halla el área de cada parte y luego suma (o resta).',
       ex: 'An L-shape = two rectangles.',
+      lessons: ['5-4'],
       visual: () => U5.lshape(10, 8, 4, 3, { width: 200, dash: 'v' }),
     },
     {
       term: 'volume',
+      es: 'volumen',
       def: 'The number of cubic units that fill a solid. For a rectangular prism, V = l × w × h, or V = B × h where B is the area of the base.',
+      esDef: 'La cantidad de unidades cúbicas que llenan un cuerpo. En un prisma rectangular, V = l × a × h, o V = B × h, donde B es el área de la base.',
       ex: '4 × 3 × 2 = 24 cubic units',
+      lessons: ['5-5'],
       visual: () => V.prism({ l: 4, w: 3, h: 2, width: 200, height: 160 }),
     },
     {
       term: 'cubic unit',
+      es: 'unidad cúbica',
       def: 'A cube with edges 1 unit long. Volume is measured in cubic units, written with a small 3: cm³, in³, ft³, m³.',
+      esDef: 'Un cubo con aristas de 1 unidad de largo. El volumen se mide en unidades cúbicas y se escribe con un 3 pequeño: cm³, in³, ft³, m³.',
       ex: 'A 1 cm by 1 cm by 1 cm cube has a volume of 1 cm³.',
+      lessons: ['5-5'],
+      visual: () => V.prism({ l: 1, w: 1, h: 1, labels: { l: '1', w: '1', h: '1' }, width: 140, height: 130 }),
+    },
+    {
+      term: 'base area (B)',
+      es: 'área de la base (B)',
+      def: 'The area of the face a prism stands on. Multiply it by the height of the prism to get the volume: V = B × h.',
+      esDef: 'El área de la cara sobre la que se apoya el prisma. Multiplícala por la altura del prisma para hallar el volumen: V = B × h.',
+      ex: 'Base 6 cm by 4 cm → B = 24 cm². Height 5 cm → V = 24 × 5 = 120 cm³.',
+      lessons: ['5-5'],
+      visual: () => V.prism({ l: 6, w: 4, h: 5, labels: { l: '6 cm', w: '4 cm', h: '5 cm' }, width: 200, height: 170 }),
     },
     {
       term: 'rectangular prism',
+      es: 'prisma rectangular',
       def: 'A solid with 6 rectangular faces, 12 edges, and 8 vertices. A box.',
+      esDef: 'Un cuerpo con 6 caras rectangulares, 12 aristas y 8 vértices. Una caja.',
       ex: 'A shoebox, a brick, a tissue box.',
+      lessons: ['5-5'],
       visual: () => V.prism({ l: 5, w: 3, h: 3, width: 200, height: 160 }),
     },
     {
       term: 'net',
+      es: 'red (plantilla)',
       def: 'A flat pattern that folds up to make a solid. Every face of the solid appears once in the net.',
+      esDef: 'Un patrón plano que se dobla para formar un cuerpo. Cada cara del cuerpo aparece una sola vez en la red.',
       ex: 'The net of a rectangular prism has 6 rectangles.',
+      lessons: ['5-6', '5-7'],
       visual: () => V.prismNet({ l: 4, w: 2, h: 3, faceLabels: true, width: 220 }),
     },
     {
       term: 'face, edge, vertex',
+      es: 'cara, arista, vértice',
       def: 'A face is a flat surface of a solid. An edge is where two faces meet. A vertex is a corner where edges meet.',
+      esDef: 'Una cara es una superficie plana de un cuerpo. Una arista es donde se unen dos caras. Un vértice es una esquina donde se unen las aristas.',
       ex: 'A square pyramid has 5 faces, 8 edges, and 5 vertices.',
+      lessons: ['5-6'],
       visual: () => V.pyramid({ b: 6, slant: 5, width: 200, height: 170 }),
     },
-    { term: 'surface area', def: 'The total area of all the faces of a solid. Find the area of each face in the net and add.', ex: 'Faces 12, 12, 20, 20, 15, 15 → SA = 94 square units' },
+    {
+      term: 'pyramid',
+      es: 'pirámide',
+      def: 'A solid with one base and triangular faces that meet at one point at the top. A square pyramid has a square base and 4 triangles.',
+      esDef: 'Un cuerpo con una base y caras triangulares que se unen en un punto arriba. Una pirámide cuadrada tiene una base cuadrada y 4 triángulos.',
+      ex: 'A square pyramid has 5 faces: 1 square and 4 triangles.',
+      lessons: ['5-6', '5-8'],
+      visual: () => V.pyramid({ b: 6, slant: 5, width: 200, height: 170 }),
+    },
     {
       term: 'triangular prism',
+      es: 'prisma triangular',
       def: 'A prism whose two bases are triangles. Its net has 2 triangles and 3 rectangles.',
+      esDef: 'Un prisma cuyas dos bases son triángulos. Su red tiene 2 triángulos y 3 rectángulos.',
       ex: 'A tent, a wedge of cheese, a roof.',
+      lessons: ['5-6', '5-7'],
       visual: () => V.triPrism({ b: 6, h: 4, len: 8, labels: { b: '6', h: '4', len: '8', s1: '5', s2: '5' }, width: 220, height: 170 }),
     },
     {
+      term: 'surface area',
+      es: 'área total (área de la superficie)',
+      def: 'The total area of all the faces of a solid. Find the area of each face in the net and add.',
+      esDef: 'La suma de las áreas de todas las caras de un cuerpo. Halla el área de cada cara de la red y súmalas.',
+      ex: 'Faces 12, 12, 20, 20, 15, 15 → SA = 94 square units',
+      lessons: ['5-7', '5-8'],
+      visual: () => V.prismNet({ l: 5, w: 2, h: 3, faceLabels: true, width: 220 }),
+    },
+    {
       term: 'slant height',
+      es: 'altura inclinada',
       def: 'On a pyramid, the height of one triangular face, measured from the base edge up to the top. It is longer than the vertical height of the pyramid.',
+      esDef: 'En una pirámide, la altura de una cara triangular, medida desde la arista de la base hasta la punta. Es más larga que la altura vertical de la pirámide.',
       ex: 'Use the slant height, not the vertical height, to find the area of a face.',
+      lessons: ['5-8'],
       visual: () => V.pyramidNet({ b: 6, slant: 5, baseLabel: '6', slantLabel: 'slant 5', width: 200 }),
     },
     {
       term: 'lateral area',
+      es: 'área lateral',
       def: 'The area of the side faces only, not the base. For a square pyramid, lateral area = 4 × area of one triangle.',
+      esDef: 'El área de las caras laterales solamente, sin la base. En una pirámide cuadrada, área lateral = 4 × el área de un triángulo.',
       ex: 'One face is 24 in² → lateral area = 4 × 24 = 96 in²',
+      lessons: ['5-8'],
+      visual: () => V.pyramid({ b: 6, slant: 8, width: 180, height: 170 }),
     },
   ];
 
@@ -4064,10 +4746,13 @@ body.in-trek .at-top {
   const RX = root.RX;
   const V = RX.V;
 
-
   /** Unit-local helpers shared by every u6 generator (pack.js loads first). */
   const SUP = { 0: '\u2070', 1: '\u00b9', 2: '\u00b2', 3: '\u00b3', 4: '\u2074', 5: '\u2075', 6: '\u2076', 7: '\u2077', 8: '\u2078', 9: '\u2079' };
-  const supText = (e) => String(e).split('').map((c) => SUP[c] || c).join('');
+  const supText = (e) =>
+    String(e)
+      .split('')
+      .map((c) => SUP[c] || c)
+      .join('');
   RX.U6 = {
     /** Power as HTML: 4<sup>3</sup> */
     pow: (b, e) => `${b}<sup>${e}</sup>`,
@@ -4087,6 +4772,18 @@ body.in-trek .at-top {
     lcm: (a, b) => (a * b) / RX.gcd(a, b),
     /** Human-readable word for a power's exponent. */
     powerWord: (e) => (e === 2 ? 'squared' : e === 3 ? 'cubed' : `to the ${['', 'first', 'second', 'third', 'fourth', 'fifth', 'sixth'][e] || e + 'th'} power`),
+    /** Shared diagnostic for option-based items: the chosen option's misconception note, else a method fallback. */
+    whyWrong: (options, fallback) => (ans) => (options[ans] && options[ans].why) || fallback,
+    /** Improper fraction a/b as HTML mixed number in simplest form (whole numbers stay whole). */
+    asMixed(n, d) {
+      const [w, a, b] = RX.U6.toMixed(n, d);
+      return a === 0 ? String(w) : w === 0 ? RX.V.frac(a, b) : `${w}${RX.V.frac(a, b)}`;
+    },
+    /** Same as asMixed, plain text. */
+    asMixedText(n, d) {
+      const [w, a, b] = RX.U6.toMixed(n, d);
+      return a === 0 ? String(w) : w === 0 ? `${a}/${b}` : `${w} ${a}/${b}`;
+    },
     /** Tiny evaluator for the unit's own expression trees. node = number | { op: '+', '-', '*', '/', '^', a, b } */
     ev(node) {
       if (typeof node === 'number') return node;
@@ -4378,12 +5075,18 @@ body.in-trek .at-top {
       term: 'reciprocal',
       def: 'The fraction you get by flipping the top and bottom. A number times its reciprocal equals 1.',
       ex: 'The reciprocal of 3/4 is 4/3. The reciprocal of 5 (which is 5/1) is 1/5.',
+      es: 'recíproco',
+      esDef: 'La fracción que obtienes al voltear el numerador y el denominador. Un número por su recíproco es igual a 1.',
+      lessons: ['6-1', '6-2'],
       visual: () => V.frac(3, 4) + ' <span class="muted">→ flip →</span> ' + V.frac(4, 3),
     },
     {
       term: 'Keep, Change, Flip',
       def: 'The way to divide fractions: keep the first fraction, change ÷ to ×, flip the second fraction (use its reciprocal). Write a whole number over 1 first.',
       ex: '3 ÷ 1/4 → 3/1 × 4/1 = 12',
+      es: 'Mantén, Cambia, Invierte',
+      esDef: 'La forma de dividir fracciones: mantén la primera fracción, cambia ÷ por × e invierte la segunda fracción (usa su recíproco). Primero escribe un número entero sobre 1.',
+      lessons: ['6-1', '6-2'],
       visual: () =>
         V.table(
           [
@@ -4394,21 +5097,81 @@ body.in-trek .at-top {
         ),
     },
     {
+      term: 'quotient',
+      def: 'The answer to a division problem. Dividing by a fraction less than 1 gives a quotient bigger than the number you started with.',
+      ex: 'In 3 ÷ 1/4 = 12, the quotient is 12. In 1/2 ÷ 3 = 1/6, the quotient is 1/6.',
+      es: 'cociente',
+      esDef: 'El resultado de una división. Si divides entre una fracción menor que 1, el cociente es mayor que el número con el que empezaste.',
+      lessons: ['6-1', '6-2'],
+      visual: () => '<span style="font-size:1.3em">3 ÷ ' + V.frac(1, 4) + ' = <b>12</b></span> <span class="muted">← quotient</span>',
+    },
+    {
+      term: 'mixed number',
+      def: 'A number written as a whole number and a fraction together. Before you divide, rewrite it as a fraction (an improper fraction).',
+      ex: '2 1/3 means 2 + 1/3. As a fraction it is 7/3, because 2 × 3 + 1 = 7.',
+      es: 'número mixto',
+      esDef: 'Un número escrito con un número entero y una fracción juntos. Antes de dividir, escríbelo como fracción (una fracción impropia).',
+      lessons: ['6-2'],
+      visual: () =>
+        V.bar({ parts: 3, shaded: 3, width: 120, aria: 'One whole, all three thirds shaded' }) +
+        ' ' +
+        V.bar({ parts: 3, shaded: 3, width: 120, aria: 'A second whole, all three thirds shaded' }) +
+        ' ' +
+        V.bar({ parts: 3, shaded: 1, width: 120, aria: 'One third shaded' }),
+    },
+    {
+      term: 'improper fraction',
+      def: 'A fraction whose numerator is greater than or equal to its denominator. Its value is 1 or more.',
+      ex: '7/3 is an improper fraction. It equals the mixed number 2 1/3.',
+      es: 'fracción impropia',
+      esDef: 'Una fracción cuyo numerador es mayor o igual que su denominador. Su valor es 1 o más.',
+      lessons: ['6-2'],
+      visual: () => '<span style="font-size:1.3em">2' + V.frac(1, 3) + ' = ' + V.frac(7, 3) + '</span> <span class="muted">(2 × 3 + 1 = 7)</span>',
+    },
+    {
       term: 'power',
       def: 'A short way to write repeated multiplication of the same factor.',
       ex: '4 × 4 × 4 = 4³ (read "4 to the third power" or "4 cubed")',
+      es: 'potencia',
+      esDef: 'Una forma corta de escribir una multiplicación repetida del mismo factor.',
+      lessons: ['6-3', '6-4'],
       visual: () => '<span style="font-size:1.6em"><b>4</b><sup>3</sup></span> <span class="muted">= 4 × 4 × 4 = 64</span>',
     },
-    { term: 'base', def: 'The number being multiplied in a power.', ex: 'In 4³, the base is 4.' },
+    {
+      term: 'base',
+      def: 'The number being multiplied in a power.',
+      ex: 'In 4³, the base is 4.',
+      es: 'base',
+      esDef: 'El número que se multiplica en una potencia.',
+      lessons: ['6-3'],
+      visual: () => '<span style="font-size:1.6em"><b>4</b><sup>3</sup></span> <span class="muted">← the base is 4</span>',
+    },
     {
       term: 'exponent',
       def: 'The small raised number that tells how many times the base is used as a factor. It does NOT multiply the base.',
       ex: 'In 4³, the exponent is 3, so 4³ = 4 × 4 × 4 = 64, not 4 × 3 = 12.',
+      es: 'exponente',
+      esDef: 'El número pequeño y elevado que dice cuántas veces se usa la base como factor. NO multiplica la base.',
+      lessons: ['6-3', '6-4'],
+      visual: () => '<span style="font-size:1.6em">4<sup><b>3</b></sup></span> <span class="muted">← the exponent is 3: three factors of 4</span>',
+    },
+    {
+      term: 'numerical expression',
+      def: 'A math phrase made of numbers and operation symbols. It has no variables and no equal sign.',
+      ex: '"The sum of 8 and 4, times 3" is the numerical expression (8 + 4) × 3.',
+      es: 'expresión numérica',
+      esDef: 'Una frase matemática con números y signos de operación. No tiene variables ni signo igual.',
+      lessons: ['6-4'],
+      visual: () => '<span style="font-size:1.3em">(8 + 4) × 3</span> <span class="muted">= 12 × 3 = 36</span>',
     },
     {
       term: 'order of operations',
       def: 'The agreed order for evaluating: grouping symbols first, then exponents, then multiply and divide left to right, then add and subtract left to right.',
       ex: '3 + 2² × 5 → 3 + 4 × 5 → 3 + 20 → 23',
+      es: 'orden de las operaciones',
+      esDef:
+        'El orden acordado para evaluar: primero los símbolos de agrupación, luego los exponentes, luego multiplica y divide de izquierda a derecha, y al final suma y resta de izquierda a derecha.',
+      lessons: ['6-4', '6-5'],
       visual: () =>
         V.table(
           [
@@ -4420,35 +5183,159 @@ body.in-trek .at-top {
           { header: false, rowHeader: true, cls: 'mini' },
         ),
     },
-    { term: 'algebraic expression', def: 'An expression that contains at least one variable.', ex: '4n + 3 means "3 more than 4 times a number n."' },
-    { term: 'variable', def: 'A letter that stands for a number that can change.', ex: 'In 4n + 3, the variable is n.' },
-    { term: 'term', def: 'A part of an expression separated by + or −. A term can be a number, a variable, or a product of both.', ex: '4n + 3 has two terms: 4n and 3.' },
-    { term: 'coefficient', def: 'The number multiplied by a variable in a term.', ex: 'In 4n + 3, the coefficient of n is 4.' },
-    { term: 'constant', def: 'A term that is just a number. It does not change.', ex: 'In 4n + 3, the constant is 3.' },
-    { term: 'like terms', def: 'Terms that have exactly the same variable part. Only like terms can be combined.', ex: '3x and 2x are like terms: 3x + 2x = 5x. 3x and 5 are not like terms.' },
+    {
+      term: 'algebraic expression',
+      def: 'An expression that contains at least one variable.',
+      ex: '4n + 3 means "3 more than 4 times a number n."',
+      es: 'expresión algebraica',
+      esDef: 'Una expresión que tiene por lo menos una variable.',
+      lessons: ['6-5'],
+      visual: () => '<span style="font-size:1.3em">4<b>n</b> + 3</span> <span class="muted">← n can change</span>',
+    },
+    {
+      term: 'variable',
+      def: 'A letter that stands for a number that can change.',
+      ex: 'In 4n + 3, the variable is n.',
+      es: 'variable',
+      esDef: 'Una letra que representa un número que puede cambiar.',
+      lessons: ['6-5'],
+    },
+    {
+      term: 'term',
+      def: 'A part of an expression separated by + or −. A term can be a number, a variable, or a product of both.',
+      ex: '4n + 3 has two terms: 4n and 3.',
+      es: 'término',
+      esDef: 'Una parte de una expresión separada por + o −. Un término puede ser un número, una variable o un producto de los dos.',
+      lessons: ['6-5', '6-6'],
+      visual: () =>
+        V.table(
+          [
+            ['Term', 'Term'],
+            ['4n', '3'],
+          ],
+          { header: true, cls: 'mini' },
+        ),
+    },
+    {
+      term: 'coefficient',
+      def: 'The number multiplied by a variable in a term.',
+      ex: 'In 4n + 3, the coefficient of n is 4.',
+      es: 'coeficiente',
+      esDef: 'El número que multiplica a una variable en un término.',
+      lessons: ['6-5'],
+      visual: () => '<span style="font-size:1.3em"><b>4</b>n + 3</span> <span class="muted">← the coefficient is 4</span>',
+    },
+    {
+      term: 'constant',
+      def: 'A term that is just a number. It does not change.',
+      ex: 'In 4n + 3, the constant is 3.',
+      es: 'constante',
+      esDef: 'Un término que es solo un número. No cambia.',
+      lessons: ['6-5'],
+      visual: () => '<span style="font-size:1.3em">4n + <b>3</b></span> <span class="muted">← the constant is 3</span>',
+    },
+    {
+      term: 'like terms',
+      def: 'Terms that have exactly the same variable part. Only like terms can be combined.',
+      ex: '3x and 2x are like terms: 3x + 2x = 5x. 3x and 5 are not like terms.',
+      es: 'términos semejantes',
+      esDef: 'Términos que tienen exactamente la misma parte variable. Solo los términos semejantes se pueden combinar.',
+      lessons: ['6-6', '6-8'],
+      visual: () => '<span style="font-size:1.3em"><b>3x</b> + 5 + <b>2x</b> = <b>5x</b> + 5</span>',
+    },
     {
       term: 'equivalent expressions',
       def: 'Expressions that have the same value for every value of the variable.',
       ex: '3(x + 2) and 3x + 6 are equivalent. Test x = 4: 3(6) = 18 and 12 + 6 = 18.',
+      es: 'expresiones equivalentes',
+      esDef: 'Expresiones que tienen el mismo valor para cualquier valor de la variable.',
+      lessons: ['6-6', '6-8'],
       visual: () => V.balance({ left: ['3(x+2)'], right: ['3x+6'], tilt: 0 }),
     },
     {
-      term: 'distributive property',
-      def: 'Multiplying a sum by a number is the same as multiplying each addend and adding. It works forward (expand) and backward (factor).',
-      ex: '3(x + 4) = 3x + 12 and 12x + 18 = 6(2x + 3)',
-      visual: () => V.areaModel({ rows: ['3'], cols: ['x', '4'], cells: [['3x', '12']] }),
+      term: 'factor',
+      def: 'A whole number that divides another whole number with no remainder.',
+      ex: 'The factors of 12 are 1, 2, 3, 4, 6, and 12. Factor pairs: 1 × 12, 2 × 6, 3 × 4.',
+      es: 'factor',
+      esDef: 'Un número entero que divide a otro número entero sin dejar residuo.',
+      lessons: ['6-7'],
+      visual: () =>
+        V.table(
+          [
+            ['1', '12'],
+            ['2', '6'],
+            ['3', '4'],
+          ],
+          { header: false, cls: 'mini' },
+        ),
     },
-    { term: 'commutative property', def: 'You can add or multiply in any order.', ex: 'x + 5 = 5 + x and 4 · n = n · 4' },
-    { term: 'associative property', def: 'You can group addends or factors differently.', ex: '(2 + x) + 5 = 2 + (x + 5) and 4 · (3 · n) = (4 · 3) · n' },
+    {
+      term: 'multiple',
+      def: 'The product of a number and a whole number. Skip-count to list multiples.',
+      ex: 'Multiples of 6: 6, 12, 18, 24, 30, …',
+      es: 'múltiplo',
+      esDef: 'El producto de un número por un número entero. Cuenta de tantos en tantos para hacer la lista de múltiplos.',
+      lessons: ['6-7'],
+      visual: () => '<span style="font-size:1.2em">6 · 12 · 18 · <b>24</b> · 30 …</span>',
+    },
     {
       term: 'greatest common factor (GCF)',
       def: 'The largest number that divides two numbers with no remainder. Use it for sharing or packaging into identical groups.',
       ex: 'Factors of 18: 1, 2, 3, 6, 9, 18. Factors of 24: 1, 2, 3, 4, 6, 8, 12, 24. GCF = 6.',
+      es: 'máximo común divisor (MCD)',
+      esDef: 'El número más grande que divide a dos números sin dejar residuo. Úsalo para repartir o empacar en grupos iguales.',
+      lessons: ['6-7', '6-8'],
+      visual: () =>
+        V.table(
+          [
+            ['18', '1, 2, 3, <b>6</b>, 9, 18'],
+            ['24', '1, 2, 3, 4, <b>6</b>, 8, 12, 24'],
+          ],
+          { header: false, rowHeader: true, cls: 'mini' },
+        ),
     },
     {
       term: 'least common multiple (LCM)',
       def: 'The smallest number that is a multiple of both numbers. Use it for events that repeat and line up again.',
       ex: 'Multiples of 6: 6, 12, 18, 24 … Multiples of 8: 8, 16, 24 … LCM = 24.',
+      es: 'mínimo común múltiplo (mcm)',
+      esDef: 'El número más pequeño que es múltiplo de los dos números. Úsalo para sucesos que se repiten y vuelven a coincidir.',
+      lessons: ['6-7'],
+      visual: () =>
+        V.table(
+          [
+            ['6', '6, 12, 18, <b>24</b>'],
+            ['8', '8, 16, <b>24</b>'],
+          ],
+          { header: false, rowHeader: true, cls: 'mini' },
+        ),
+    },
+    {
+      term: 'distributive property',
+      def: 'Multiplying a sum by a number is the same as multiplying each addend and adding. It works forward (expand) and backward (factor).',
+      ex: '3(x + 4) = 3x + 12 and 12x + 18 = 6(2x + 3)',
+      es: 'propiedad distributiva',
+      esDef: 'Multiplicar una suma por un número es lo mismo que multiplicar cada sumando y luego sumar. Funciona hacia adelante (desarrollar) y hacia atrás (factorizar).',
+      lessons: ['6-6', '6-8'],
+      visual: () => V.areaModel({ rows: ['3'], cols: ['x', '4'], cells: [['3x', '12']] }),
+    },
+    {
+      term: 'commutative property',
+      def: 'You can add or multiply in any order.',
+      ex: 'x + 5 = 5 + x and 4 · n = n · 4',
+      es: 'propiedad conmutativa',
+      esDef: 'Puedes sumar o multiplicar en cualquier orden.',
+      lessons: ['6-8'],
+      visual: () => '<span style="font-size:1.3em">x + 5 = 5 + x</span>',
+    },
+    {
+      term: 'associative property',
+      def: 'You can group addends or factors differently.',
+      ex: '(2 + x) + 5 = 2 + (x + 5) and 4 · (3 · n) = (4 · 3) · n',
+      es: 'propiedad asociativa',
+      esDef: 'Puedes agrupar los sumandos o los factores de otra manera.',
+      lessons: ['6-8'],
+      visual: () => '<span style="font-size:1.3em">(2 + x) + 5 = 2 + (x + 5)</span>',
     },
   ];
 })(typeof window !== 'undefined' ? window : globalThis);
@@ -4707,6 +5594,9 @@ body.in-trek .at-top {
       term: 'integer',
       def: 'A whole number, its opposite, or zero. Integers have no fraction or decimal part.',
       ex: '−3, 0, and 7 are integers. 2.5 is not.',
+      es: 'número entero',
+      esDef: 'Un número entero es un número sin fracción ni decimal, su opuesto o el cero. Por ejemplo, −3, 0 y 7.',
+      lessons: ['7-1'],
       visual: () =>
         NL({
           min: -5,
@@ -4720,12 +5610,49 @@ body.in-trek .at-top {
           aria: 'Number line from negative 5 to 5 with points at negative 3, 0, and 4',
         }),
     },
-    { term: 'positive number', def: 'A number greater than 0. It sits to the right of 0 on a horizontal number line.', ex: '12°F above zero → +12 or 12' },
-    { term: 'negative number', def: 'A number less than 0. It sits to the left of 0 and is written with a negative sign.', ex: '15°F below zero → −15' },
+    {
+      term: 'positive number',
+      def: 'A number greater than 0. It sits to the right of 0 on a horizontal number line.',
+      ex: '12°F above zero → +12 or 12',
+      es: 'número positivo',
+      esDef: 'Un número mayor que 0. Está a la derecha del 0 en una recta numérica horizontal.',
+      lessons: ['7-1'],
+      visual: () =>
+        NL({
+          min: -6,
+          max: 6,
+          step: 1,
+          labelEvery: 2,
+          points: [{ v: 4, label: '+4', color: '#1FA6A2' }],
+          segments: [{ from: 0, to: 6, color: '#1FA6A2' }],
+          aria: 'Number line with the numbers to the right of 0 highlighted and a point at 4',
+        }),
+    },
+    {
+      term: 'negative number',
+      def: 'A number less than 0. It sits to the left of 0 and is written with a negative sign.',
+      ex: '15°F below zero → −15',
+      es: 'número negativo',
+      esDef: 'Un número menor que 0. Está a la izquierda del 0 y se escribe con el signo menos (−).',
+      lessons: ['7-1'],
+      visual: () =>
+        NL({
+          min: -6,
+          max: 6,
+          step: 1,
+          labelEvery: 2,
+          points: [{ v: -5, label: '−5', color: '#C8553D' }],
+          segments: [{ from: -6, to: 0, color: '#C8553D' }],
+          aria: 'Number line with the numbers to the left of 0 highlighted and a point at negative 5',
+        }),
+    },
     {
       term: 'opposite',
       def: 'Two numbers are opposites when they are the same distance from 0 on opposite sides. The opposite of 0 is 0.',
       ex: 'The opposite of −4 is 4. −(−4) = 4.',
+      es: 'opuesto',
+      esDef: 'Dos números son opuestos cuando están a la misma distancia del 0, pero en lados contrarios. El opuesto de 0 es 0.',
+      lessons: ['7-1', '7-2', '7-3'],
       visual: () =>
         NL({
           min: -5,
@@ -4746,6 +5673,9 @@ body.in-trek .at-top {
       term: 'rational number',
       def: 'Any number that can be written as a fraction of two integers. Fractions, decimals, and integers are all rational.',
       ex: '−1.5, ¾, and −2¼ are rational numbers.',
+      es: 'número racional',
+      esDef: 'Cualquier número que se puede escribir como una fracción de dos números enteros. Las fracciones, los decimales y los números enteros son racionales.',
+      lessons: ['7-2', '7-4'],
       visual: () =>
         NL({
           min: -3,
@@ -4760,11 +5690,34 @@ body.in-trek .at-top {
           aria: 'Number line from negative 3 to 3 with points at negative 1.5, three fourths, and negative 2 and one fourth',
         }),
     },
-    { term: 'number line', def: 'A line with 0 in the middle. Numbers get greater as you move right and smaller as you move left.', ex: '−6 is left of −2, so −6 < −2.' },
+    {
+      term: 'number line',
+      def: 'A line with 0 in the middle. Numbers get greater as you move right and smaller as you move left.',
+      ex: '−6 is left of −2, so −6 < −2.',
+      es: 'recta numérica',
+      esDef: 'Una recta con el 0 en el centro. Los números son mayores hacia la derecha y menores hacia la izquierda.',
+      lessons: ['7-1', '7-2', '7-4'],
+      visual: () =>
+        NL({
+          min: -6,
+          max: 6,
+          step: 1,
+          labelEvery: 2,
+          points: [
+            { v: -6, label: '−6', color: '#C8553D' },
+            { v: -2, label: '−2', color: '#1FA6A2' },
+          ],
+          arrow: { from: -6, to: -2, label: 'greater →' },
+          aria: 'Number line from negative 6 to 6 showing negative 2 to the right of negative 6, so negative 2 is greater',
+        }),
+    },
     {
       term: 'absolute value',
       def: 'The distance a number is from 0. Distance is never negative. Written with bars: |−7| = 7.',
       ex: '|−7| = 7 and |7| = 7. Both are 7 units from 0.',
+      es: 'valor absoluto',
+      esDef: 'La distancia de un número al 0. Una distancia nunca es negativa. Se escribe con barras: |−7| = 7.',
+      lessons: ['7-3', '7-6'],
       visual: () =>
         NL({
           min: -8,
@@ -4783,14 +5736,77 @@ body.in-trek .at-top {
         }),
     },
     {
+      term: 'total distance',
+      def: 'When a trip passes through 0, add the two distances from 0. Use absolute value for each part.',
+      ex: 'From −4 up to 3: |−4| + |3| = 4 + 3 = 7 units.',
+      es: 'distancia total',
+      esDef: 'Cuando un recorrido pasa por el 0, suma las dos distancias al 0. Usa el valor absoluto para cada parte.',
+      lessons: ['7-3'],
+      visual: () =>
+        NL({
+          min: -5,
+          max: 5,
+          step: 1,
+          points: [
+            { v: -4, label: '−4', color: '#C8553D' },
+            { v: 3, label: '3', color: '#1FA6A2' },
+          ],
+          segments: [
+            { from: -4, to: 0, color: '#C8553D' },
+            { from: 0, to: 3, color: '#1FA6A2' },
+          ],
+          aria: 'Number line from negative 4 to 3: 4 units to zero plus 3 units past zero is 7 units',
+        }),
+    },
+    {
       term: 'inequality symbols',
       def: 'The symbol < means "is less than." The symbol > means "is greater than." The open side faces the greater number.',
       ex: '−8 < −2 because −8 is farther left on the number line.',
+      es: 'símbolos de desigualdad',
+      esDef: 'El símbolo < significa "es menor que". El símbolo > significa "es mayor que". El lado abierto apunta al número mayor.',
+      lessons: ['7-4'],
+      visual: () =>
+        NL({
+          min: -10,
+          max: 0,
+          step: 1,
+          labelEvery: 2,
+          points: [
+            { v: -8, label: '−8', color: '#C8553D' },
+            { v: -2, label: '−2', color: '#1FA6A2' },
+          ],
+          aria: 'Number line showing negative 8 to the left of negative 2, so negative 8 is less than negative 2',
+        }),
+    },
+    {
+      term: 'order (least to greatest)',
+      def: 'To order numbers from least to greatest, list them as they appear on the number line from left to right.',
+      ex: '−3, −½, 0, 1.5 is ordered least to greatest.',
+      es: 'orden (de menor a mayor)',
+      esDef: 'Para ordenar números de menor a mayor, escríbelos en el orden en que aparecen en la recta numérica, de izquierda a derecha.',
+      lessons: ['7-4'],
+      visual: () =>
+        NL({
+          min: -4,
+          max: 2,
+          step: 0.5,
+          labelEvery: 1,
+          points: [
+            { v: -3, label: '−3', color: '#C8553D' },
+            { v: -0.5, label: '−½', color: '#F2A33A' },
+            { v: 0, label: '0', color: '#17324D' },
+            { v: 1.5, label: '1.5', color: '#1FA6A2' },
+          ],
+          aria: 'Number line with negative 3, negative one half, 0, and 1.5 in order from left to right',
+        }),
     },
     {
       term: 'coordinate plane',
       def: 'A grid made by two number lines that cross at right angles. Every point has an address called an ordered pair.',
       ex: '',
+      es: 'plano de coordenadas',
+      esDef: 'Una cuadrícula formada por dos rectas numéricas que se cruzan en ángulo recto. Cada punto tiene una dirección llamada par ordenado.',
+      lessons: ['7-5', '7-6', '7-7'],
       visual: () =>
         PLANE({
           series: [
@@ -4811,13 +5827,48 @@ body.in-trek .at-top {
       term: 'x-axis',
       def: 'The horizontal number line on the coordinate plane. Right of 0 is positive; left of 0 is negative.',
       ex: 'The point (−5, 0) is on the x-axis, 5 units left of the origin.',
+      es: 'eje x',
+      esDef: 'La recta numérica horizontal del plano de coordenadas. A la derecha del 0 es positivo; a la izquierda es negativo.',
+      lessons: ['7-5'],
+      visual: () =>
+        PLANE({
+          series: [{ points: [[-3, 0]], labels: ['(−3, 0)'] }],
+          aria: 'Coordinate plane with the point negative 3, 0 on the x-axis',
+        }),
     },
-    { term: 'y-axis', def: 'The vertical number line on the coordinate plane. Above 0 is positive; below 0 is negative.', ex: 'The point (0, 3) is on the y-axis, 3 units above the origin.' },
-    { term: 'origin', def: 'The point (0, 0) where the x-axis and y-axis cross. At Polar Station Zero, the station itself.', ex: '(0, 0)' },
+    {
+      term: 'y-axis',
+      def: 'The vertical number line on the coordinate plane. Above 0 is positive; below 0 is negative.',
+      ex: 'The point (0, 3) is on the y-axis, 3 units above the origin.',
+      es: 'eje y',
+      esDef: 'La recta numérica vertical del plano de coordenadas. Arriba del 0 es positivo; abajo es negativo.',
+      lessons: ['7-5'],
+      visual: () =>
+        PLANE({
+          series: [{ points: [[0, 3]], labels: ['(0, 3)'] }],
+          aria: 'Coordinate plane with the point 0, 3 on the y-axis',
+        }),
+    },
+    {
+      term: 'origin',
+      def: 'The point (0, 0) where the x-axis and y-axis cross. At Polar Station Zero, the station itself.',
+      ex: '(0, 0)',
+      es: 'origen',
+      esDef: 'El punto (0, 0), donde se cruzan el eje x y el eje y. En la Estación Polar Cero, es la estación.',
+      lessons: ['7-5'],
+      visual: () =>
+        PLANE({
+          series: [{ points: [[0, 0]], labels: ['(0, 0)'] }],
+          aria: 'Coordinate plane with the origin 0, 0 marked',
+        }),
+    },
     {
       term: 'ordered pair',
       def: 'The address of a point, written (x, y). Move left or right by x first, then up or down by y.',
       ex: '(−3, 2): go 3 left, then 2 up.',
+      es: 'par ordenado',
+      esDef: 'La dirección de un punto, escrita (x, y). Primero muévete a la izquierda o a la derecha según x; luego arriba o abajo según y.',
+      lessons: ['7-5', '7-6'],
       visual: () =>
         PLANE({
           series: [
@@ -4831,6 +5882,9 @@ body.in-trek .at-top {
       term: 'quadrant',
       def: 'One of the four regions of the coordinate plane. Numbered I, II, III, IV counterclockwise from the upper right. Points on an axis are in no quadrant.',
       ex: 'I: (+, +) · II: (−, +) · III: (−, −) · IV: (+, −)',
+      es: 'cuadrante',
+      esDef: 'Una de las cuatro regiones del plano de coordenadas. Se numeran I, II, III y IV en sentido contrario a las agujas del reloj, empezando arriba a la derecha. Un punto sobre un eje no está en ningún cuadrante.',
+      lessons: ['7-5'],
       visual: () =>
         PLANE({
           series: [
@@ -4846,6 +5900,9 @@ body.in-trek .at-top {
       term: 'reflection across an axis',
       def: 'Flipping a point to the other side of an axis. Across the x-axis, y changes sign. Across the y-axis, x changes sign.',
       ex: '(3, 2) across the x-axis → (3, −2). Across the y-axis → (−3, 2).',
+      es: 'reflexión sobre un eje',
+      esDef: 'Pasar un punto al otro lado de un eje, como en un espejo. Sobre el eje x, cambia el signo de y. Sobre el eje y, cambia el signo de x.',
+      lessons: ['7-5'],
       visual: () =>
         PLANE({
           series: [
@@ -4860,6 +5917,9 @@ body.in-trek .at-top {
       term: 'distance between points',
       def: 'For two points on the same horizontal or vertical line, count the units between them. On opposite sides of an axis, add the absolute values.',
       ex: '(−5, 2) to (3, 2): |−5| + |3| = 5 + 3 = 8 units.',
+      es: 'distancia entre puntos',
+      esDef: 'Para dos puntos en la misma recta horizontal o vertical, cuenta las unidades entre ellos. Si están en lados opuestos de un eje, suma los valores absolutos.',
+      lessons: ['7-6', '7-7'],
       visual: () =>
         PLANE({
           xMin: -6,
@@ -4880,9 +5940,35 @@ body.in-trek .at-top {
         }),
     },
     {
+      term: 'polygon',
+      def: 'A closed flat figure made of straight sides. On the coordinate plane, plot the vertices and connect them in order.',
+      ex: 'A triangle, a rectangle, and a trapezoid are all polygons.',
+      es: 'polígono',
+      esDef: 'Una figura plana y cerrada formada por lados rectos. En el plano de coordenadas, marca los vértices y únelos en orden.',
+      lessons: ['7-7'],
+      visual: () =>
+        PLANE({
+          series: [
+            {
+              points: [
+                [-3, -2],
+                [3, -2],
+                [1, 3],
+                [-1, 3],
+              ],
+              polygon: true,
+            },
+          ],
+          aria: 'A trapezoid drawn on the coordinate plane',
+        }),
+    },
+    {
       term: 'vertex',
       def: 'A corner of a polygon. On the coordinate plane each vertex is an ordered pair. The plural is vertices.',
       ex: 'A rectangle with vertices (−2, 1), (3, 1), (3, −2), (−2, −2) has sides 5 and 3 units long.',
+      es: 'vértice',
+      esDef: 'Una esquina de un polígono. En el plano de coordenadas, cada vértice es un par ordenado. El plural es vértices.',
+      lessons: ['7-7'],
       visual: () =>
         PLANE({
           series: [
@@ -4900,7 +5986,37 @@ body.in-trek .at-top {
           aria: 'Rectangle drawn on the coordinate plane with its four vertices labeled',
         }),
     },
-    { term: 'scale', def: 'What one grid unit stands for in real life. Multiply grid lengths by the scale to get real lengths.', ex: '1 unit = 5 m. A side 4 units long is 4 × 5 = 20 m.' },
+    {
+      term: 'perimeter',
+      def: 'The distance around a polygon. Find each side length on the grid, then add all the sides.',
+      ex: 'A 5-by-3 rectangle has perimeter 5 + 3 + 5 + 3 = 16 units.',
+      es: 'perímetro',
+      esDef: 'La distancia alrededor de un polígono. Halla la longitud de cada lado en la cuadrícula y luego suma todos los lados.',
+      lessons: ['7-7'],
+      visual: () =>
+        PLANE({
+          series: [
+            {
+              points: [
+                [-2, 1],
+                [3, 1],
+                [3, -2],
+                [-2, -2],
+              ],
+              polygon: true,
+            },
+          ],
+          aria: 'A 5 by 3 rectangle on the coordinate plane; its perimeter is 16 units',
+        }),
+    },
+    {
+      term: 'scale',
+      def: 'What one grid unit stands for in real life. Multiply grid lengths by the scale to get real lengths.',
+      ex: '1 unit = 5 m. A side 4 units long is 4 × 5 = 20 m.',
+      es: 'escala',
+      esDef: 'Lo que representa una unidad de la cuadrícula en la vida real. Multiplica las longitudes de la cuadrícula por la escala para hallar las longitudes reales.',
+      lessons: ['7-7'],
+    },
   ];
   // ---------- Shared Unit 7 formatting helpers (pack.js loads first, so every generator can use RX.N7) ----------
   const clean = (v) => String(Math.round(v * 1000) / 1000);
@@ -4941,7 +6057,29 @@ body.in-trek .at-top {
   };
   /** Sign word for a value in a real-world context. */
   const signWord = (v) => (v > 0 ? 'positive' : v < 0 ? 'negative' : 'zero');
-  RX.N7 = { dec, mixedHtml, mixedText, pair, quad, signWord, fracParts };
+  /** Improper-fraction parts of a terminating value: -2.75 -> { n: 11, d: 4 }; null for integers. */
+  const improperParts = (v) => {
+    const p = fracParts(v);
+    if (!p || p.n === 0) return null;
+    return { n: p.w * p.d + p.n, d: p.d };
+  };
+  /** Improper fraction as plain text: -2.75 -> "−11/4" (integers fall back to decimals). */
+  const improperText = (v) => {
+    const q = improperParts(v);
+    return q ? (v < 0 ? '−' : '') + q.n + '/' + q.d : dec(v);
+  };
+  /** Improper fraction as HTML: -2.75 -> "−" + V.frac(11, 4). */
+  const improperHtml = (v) => {
+    const q = improperParts(v);
+    return q ? (v < 0 ? '−' : '') + V.frac(q.n, q.d) : dec(v);
+  };
+  /** What the shared number parser reads when a student types a mixed number with a space ("-2 3/4" -> -23/4). */
+  const typedMixed = (v) => {
+    const p = fracParts(v);
+    if (!p || !p.n || !p.w) return null;
+    return (v < 0 ? -1 : 1) * (Number(String(p.w) + String(p.n)) / p.d);
+  };
+  RX.N7 = { dec, mixedHtml, mixedText, pair, quad, signWord, fracParts, improperParts, improperText, improperHtml, typedMixed };
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -5186,41 +6324,180 @@ body.in-trek .at-top {
       term: 'equation',
       def: 'A math sentence that says two expressions are equal. The equals sign works like a balanced scale.',
       ex: 'x + 5 = 12',
+      es: 'ecuación',
+      esDef: 'Una oración matemática que dice que dos expresiones son iguales. El signo igual funciona como una balanza en equilibrio.',
+      lessons: ['8-1', '8-2', '8-3'],
       visual: () => V.balance({ left: ['x', '5'], right: ['12'], aria: 'Pan balance showing x plus 5 on the left and 12 on the right' }),
     },
-    { term: 'variable', def: 'A letter that stands for an unknown number.', ex: 'In m − 12 = 20, the variable is m.' },
-    { term: 'solution of an equation', def: 'The value of the variable that makes the equation true.', ex: 'x = 7 is the solution of x + 5 = 12 because 7 + 5 = 12.' },
-    { term: 'substitute', def: 'Replace the variable with a number to test it.', ex: 'Is 4 a solution of 3x = 12? Substitute: 3 × 4 = 12. Yes.' },
+    {
+      term: 'variable',
+      def: 'A letter that stands for an unknown number.',
+      ex: 'In m − 12 = 20, the variable is m.',
+      es: 'variable',
+      esDef: 'Una letra que representa un número desconocido.',
+      lessons: ['8-1', '8-4'],
+    },
+    {
+      term: 'solution of an equation',
+      def: 'The value of the variable that makes the equation true.',
+      ex: 'x = 7 is the solution of x + 5 = 12 because 7 + 5 = 12.',
+      es: 'solución de una ecuación',
+      esDef: 'El valor de la variable que hace que la ecuación sea verdadera.',
+      lessons: ['8-1', '8-2', '8-3'],
+      visual: () => V.balance({ left: ['7', '5'], right: ['12'], aria: 'Balanced scale: 7 and 5 on the left, 12 on the right, so x = 7 makes x + 5 = 12 true' }),
+    },
+    {
+      term: 'substitute',
+      def: 'Replace the variable with a number to test it.',
+      ex: 'Is 4 a solution of 3x = 12? Substitute: 3 × 4 = 12. Yes.',
+      es: 'sustituir',
+      esDef: 'Reemplazar la variable por un número para comprobar si la oración es verdadera.',
+      lessons: ['8-1', '8-2', '8-5'],
+    },
     {
       term: 'inverse operations',
       def: 'Operations that undo each other. Addition and subtraction are inverses. Multiplication and division are inverses.',
       ex: 'To undo + 8, subtract 8. To undo × 4, divide by 4.',
+      es: 'operaciones inversas',
+      esDef: 'Operaciones que se deshacen entre sí. La suma y la resta son inversas. La multiplicación y la división son inversas.',
+      lessons: ['8-2', '8-3'],
+      visual: () =>
+        V.barModel({
+          total: '15',
+          parts: [
+            { label: 'x', size: 7, unknown: true },
+            { label: '8', size: 8 },
+          ],
+          aria: 'Bar model: whole 15 split into x and 8, so x = 15 − 8',
+        }),
     },
-    { term: 'Properties of Equality', def: 'Whatever you do to one side of an equation, do to the other side. The equation stays balanced.', ex: 'x + 5 = 12 → x + 5 − 5 = 12 − 5 → x = 7' },
-    { term: 'coefficient', def: 'The number multiplied by a variable.', ex: 'In 4x = 20, the coefficient is 4.' },
-    { term: 'inequality', def: 'A math sentence that compares two expressions using <, >, ≤, or ≥. It usually has many solutions.', ex: 'h ≥ 48 (height is at least 48 inches)' },
-    { term: 'at least / at most', def: '"At least" means that number or more (≥). "At most" means that number or less (≤). Both include the number.', ex: 'at least 10 → x ≥ 10; at most 10 → x ≤ 10' },
-    { term: 'more than / less than', def: '"More than" or "exceeds" means > (not including the number). "Less than" or "fewer than" means <.', ex: 'more than 10 → x > 10; fewer than 10 → x < 10' },
-    { term: 'no more than / no less than', def: '"No more than" means at most (≤). "No less than" means at least (≥).', ex: 'no more than 3 pets → p ≤ 3' },
+    {
+      term: 'Properties of Equality',
+      def: 'Whatever you do to one side of an equation, do to the other side. The equation stays balanced.',
+      ex: 'x + 5 = 12 → x + 5 − 5 = 12 − 5 → x = 7',
+      es: 'propiedades de la igualdad',
+      esDef: 'Lo que hagas a un lado de la ecuación, hazlo también al otro lado. Así la ecuación sigue en equilibrio.',
+      lessons: ['8-2', '8-3'],
+      visual: () => V.balance({ left: ['x'], right: ['7'], aria: 'Balanced scale after taking 5 from each pan: x on the left, 7 on the right' }),
+    },
+    {
+      term: 'coefficient',
+      def: 'The number multiplied by a variable.',
+      ex: 'In 4x = 20, the coefficient is 4.',
+      es: 'coeficiente',
+      esDef: 'El número que multiplica a una variable.',
+      lessons: ['8-3'],
+      visual: () =>
+        V.barModel({
+          total: '20',
+          parts: [
+            { label: 'x', size: 1, unknown: true },
+            { label: 'x', size: 1, unknown: true },
+            { label: 'x', size: 1, unknown: true },
+            { label: 'x', size: 1, unknown: true },
+          ],
+          aria: 'Bar model: 20 split into 4 equal parts, each x, showing 4x = 20',
+        }),
+    },
+    {
+      term: 'inequality',
+      def: 'A math sentence that compares two expressions using <, >, ≤, or ≥. It usually has many solutions.',
+      ex: 'h ≥ 48 (height is at least 48 inches)',
+      es: 'desigualdad',
+      esDef: 'Una oración matemática que compara dos expresiones con <, >, ≤ o ≥. Casi siempre tiene muchas soluciones.',
+      lessons: ['8-4', '8-5'],
+      visual: () =>
+        V.numberLine({ min: 44, max: 52, step: 1, width: 360, ray: { v: 48, open: false, dir: 'right' }, aria: 'Number line with a closed circle at 48 shaded to the right, showing h ≥ 48' }),
+    },
+    {
+      term: 'at least / at most',
+      def: '"At least" means that number or more (≥). "At most" means that number or less (≤). Both include the number.',
+      ex: 'at least 10 → x ≥ 10; at most 10 → x ≤ 10',
+      es: 'como mínimo / como máximo',
+      esDef: '"Como mínimo" (al menos) significa ese número o más (≥). "Como máximo" significa ese número o menos (≤). Los dos incluyen el número.',
+      lessons: ['8-4'],
+    },
+    {
+      term: 'more than / less than',
+      def: '"More than" or "exceeds" means > (not including the number). "Less than" or "fewer than" means <.',
+      ex: 'more than 10 → x > 10; fewer than 10 → x < 10',
+      es: 'más de / menos de',
+      esDef: '"Más de" o "excede" significa > (no incluye el número). "Menos de" significa <.',
+      lessons: ['8-4'],
+    },
+    {
+      term: 'no more than / no less than',
+      def: '"No more than" means at most (≤). "No less than" means at least (≥).',
+      ex: 'no more than 3 pets → p ≤ 3',
+      es: 'no más de / no menos de',
+      esDef: '"No más de" significa como máximo (≤). "No menos de" significa como mínimo (≥).',
+      lessons: ['8-4'],
+    },
     {
       term: 'open circle',
       def: 'On a graph, an open circle shows the boundary number is NOT a solution. Used for < and >.',
       ex: 'x > 2',
+      es: 'círculo abierto',
+      esDef: 'En una gráfica, un círculo abierto muestra que el número del límite NO es una solución. Se usa con < y >.',
+      lessons: ['8-4', '8-5'],
       visual: () => V.numberLine({ min: -2, max: 6, step: 1, width: 360, ray: { v: 2, open: true, dir: 'right' }, aria: 'Number line with an open circle at 2 shaded to the right' }),
     },
     {
       term: 'closed circle',
       def: 'On a graph, a closed (filled) circle shows the boundary number IS a solution. Used for ≤ and ≥.',
       ex: 'x ≤ 3',
+      es: 'círculo cerrado',
+      esDef: 'En una gráfica, un círculo cerrado (relleno) muestra que el número del límite SÍ es una solución. Se usa con ≤ y ≥.',
+      lessons: ['8-4', '8-5'],
       visual: () => V.numberLine({ min: -2, max: 6, step: 1, width: 360, ray: { v: 3, open: false, dir: 'left' }, aria: 'Number line with a closed circle at 3 shaded to the left' }),
     },
-    { term: 'solution of an inequality', def: 'Any value that makes the inequality true. Most inequalities have infinitely many solutions.', ex: '5, 6.5, and 100 are all solutions of x > 4.' },
-    { term: 'boundary', def: 'The number where the graph of an inequality starts. The circle sits on the boundary.', ex: 'In x ≥ 3, the boundary is 3.' },
+    {
+      term: 'solution of an inequality',
+      def: 'Any value that makes the inequality true. Most inequalities have infinitely many solutions.',
+      ex: '5, 6.5, and 100 are all solutions of x > 4.',
+      es: 'solución de una desigualdad',
+      esDef: 'Cualquier valor que hace verdadera la desigualdad. La mayoría de las desigualdades tienen infinitas soluciones.',
+      lessons: ['8-5'],
+      visual: () =>
+        V.numberLine({
+          min: 0,
+          max: 10,
+          step: 1,
+          width: 360,
+          ray: { v: 4, open: true, dir: 'right' },
+          points: [
+            { v: 5, label: '5' },
+            { v: 6.5, label: '6.5' },
+          ],
+          aria: 'Number line for x > 4: open circle at 4 shaded to the right, with 5 and 6.5 marked as solutions',
+        }),
+    },
+    {
+      term: 'boundary',
+      def: 'The number where the graph of an inequality starts. The circle sits on the boundary.',
+      ex: 'In x ≥ 3, the boundary is 3.',
+      es: 'límite (punto límite)',
+      esDef: 'El número donde empieza la gráfica de una desigualdad. El círculo va sobre el límite.',
+      lessons: ['8-4', '8-5'],
+      visual: () =>
+        V.numberLine({ min: 0, max: 8, step: 1, width: 360, ray: { v: 3, open: false, dir: 'right' }, aria: 'Number line for x ≥ 3: the boundary 3 has a closed circle, shaded to the right' }),
+    },
     {
       term: 'bar model',
       def: 'A picture that shows a whole split into parts. It helps you see which operation undoes the other.',
       ex: 'x + 7 = 15: the whole is 15, one part is 7, the other part is x.',
-      visual: () => V.barModel({ total: '15', parts: [{ label: 'x', size: 8, unknown: true }, { label: '7', size: 7 }], aria: 'Bar model: whole 15 split into x and 7' }),
+      es: 'modelo de barras',
+      esDef: 'Un dibujo que muestra un total dividido en partes. Te ayuda a ver qué operación deshace a la otra.',
+      lessons: ['8-2', '8-3'],
+      visual: () =>
+        V.barModel({
+          total: '15',
+          parts: [
+            { label: 'x', size: 8, unknown: true },
+            { label: '7', size: 7 },
+          ],
+          aria: 'Bar model: whole 15 split into x and 7',
+        }),
     },
   ];
 })(typeof window !== 'undefined' ? window : globalThis);
@@ -5428,26 +6705,53 @@ body.in-trek .at-top {
   ];
 
   RX.VOCAB = [
-    { term: 'variable', def: 'A letter or quantity that can change. In this unit, two variables change together.', ex: 'The number of stops and the fare are two variables.' },
+    {
+      term: 'variable',
+      def: 'A letter or quantity that can change. In this unit, two variables change together.',
+      ex: 'The number of stops and the fare are two variables.',
+      es: 'variable',
+      esDef: 'Una letra o cantidad que puede cambiar. En esta unidad, dos variables cambian juntas.',
+      lessons: ['9-1'],
+    },
     {
       term: 'independent variable',
       def: 'The quantity you choose or control. Its value does not depend on the other quantity. It goes in the top row of a table and on the horizontal (x) axis.',
       ex: 'You choose how many stops to ride. Stops is the independent variable.',
+      es: 'variable independiente',
+      esDef: 'La cantidad que tú eliges o controlas. Su valor no depende de la otra cantidad. Va en la fila de arriba de una tabla y en el eje horizontal (eje x).',
+      lessons: ['9-1'],
+      visual: () =>
+        V.table(
+          [
+            ['Stops (chosen)', '1', '2', '3'],
+            ['Fare in $ (responds)', '2', '4', '6'],
+          ],
+          { header: false, rowHeader: true, cls: 'mini' },
+        ),
     },
     {
       term: 'dependent variable',
       def: 'The quantity that responds. Its value depends on the independent variable. It goes in the bottom row of a table and on the vertical (y) axis.',
       ex: 'The fare depends on the number of stops. Fare is the dependent variable.',
+      es: 'variable dependiente',
+      esDef: 'La cantidad que responde. Su valor depende de la variable independiente. Va en la fila de abajo de una tabla y en el eje vertical (eje y).',
+      lessons: ['9-1'],
     },
     {
       term: 'relationship between two variables',
       def: 'A rule that connects an input to an output. Change the input and the output changes in a predictable way.',
       ex: 'Fare = 2 × stops. Ride 5 stops and the fare is $10.',
+      es: 'relación entre dos variables',
+      esDef: 'Una regla que conecta una entrada con una salida. Si cambias la entrada, la salida cambia de una manera que puedes predecir.',
+      lessons: ['9-1'],
     },
     {
       term: 'table of values',
       def: 'A table that lists pairs of values for the two variables. Each column (or row) is one input and its output.',
       ex: '',
+      es: 'tabla de valores',
+      esDef: 'Una tabla que muestra pares de valores de las dos variables. Cada columna (o fila) es una entrada y su salida.',
+      lessons: ['9-1', '9-3'],
       visual: () =>
         V.table(
           [
@@ -5461,11 +6765,45 @@ body.in-trek .at-top {
       term: 'ordered pair',
       def: 'Two numbers written (x, y). The independent value is always first; the dependent value is second.',
       ex: '(3, 6) means 3 stops cost $6. It is not the same as (6, 3).',
+      es: 'par ordenado',
+      esDef: 'Dos números escritos así: (x, y). El valor independiente siempre va primero; el valor dependiente va segundo.',
+      lessons: ['9-2'],
+      visual: () =>
+        V.graph({
+          xLabel: 'Stops',
+          yLabel: 'Fare ($)',
+          xMax: 5,
+          yMax: 8,
+          yStep: 2,
+          size: 170,
+          series: [{ points: [[3, 6]], color: '#C8553D', label: '(3, 6)' }],
+        }),
+    },
+    {
+      term: 'x-axis and y-axis',
+      def: 'The x-axis is the horizontal number line; the independent variable goes there. The y-axis is the vertical number line; the dependent variable goes there. Read the scale on each axis: it may count by 1s, 2s, or 4s.',
+      ex: 'On a y-axis that counts by 4s, the grid line after 8 is 12, so a point halfway between them is at 10.',
+      es: 'eje x y eje y',
+      esDef: 'El eje x es la recta numérica horizontal; ahí va la variable independiente. El eje y es la recta numérica vertical; ahí va la variable dependiente. Lee la escala de cada eje: puede contar de 1 en 1, de 2 en 2 o de 4 en 4.',
+      lessons: ['9-2'],
+      visual: () =>
+        V.graph({
+          xLabel: 'Stops (x)',
+          yLabel: 'Fare in $ (y)',
+          xMax: 5,
+          yMax: 16,
+          yStep: 4,
+          size: 170,
+          series: [],
+        }),
     },
     {
       term: 'graph of a relationship',
       def: 'Each ordered pair from the table becomes a point. The points for y = kx or y = kx + b line up in a straight line.',
       ex: '',
+      es: 'gráfica de una relación',
+      esDef: 'Cada par ordenado de la tabla se convierte en un punto. Los puntos de y = kx o de y = kx + b quedan en una línea recta.',
+      lessons: ['9-2'],
       visual: () =>
         V.graph({
           xLabel: 'Stops',
@@ -5491,48 +6829,128 @@ body.in-trek .at-top {
       term: 'rate of change',
       def: 'How much y changes each time x goes up by 1. In a table, subtract one y-value from the next. On a graph, it is how steep the line is.',
       ex: 'Fares 5, 7, 9, 11 go up by 2 each stop. The rate of change is 2.',
+      es: 'tasa de cambio',
+      esDef: 'Cuánto cambia y cada vez que x aumenta 1. En una tabla, resta un valor de y del siguiente. En una gráfica, es qué tan inclinada está la línea.',
+      lessons: ['9-2', '9-3'],
+      visual: () =>
+        V.table(
+          [
+            ['Stops (x)', '1', '2', '3', '4'],
+            ['Fare in $ (y)', '5', '7', '9', '11'],
+            ['Change', '', '+2', '+2', '+2'],
+          ],
+          { header: false, rowHeader: true, cls: 'mini' },
+        ),
     },
     {
       term: 'starting value',
       def: 'The value of y when x is 0. In an equation like y = 2x + 3, the starting value is 3. On a graph it is where the line meets the vertical axis.',
       ex: 'A $3 boarding fee is the starting value. Even 0 stops costs $3.',
+      es: 'valor inicial',
+      esDef: 'El valor de y cuando x es 0. En una ecuación como y = 2x + 3, el valor inicial es 3. En una gráfica, es donde la línea toca el eje vertical.',
+      lessons: ['9-2', '9-3'],
+      visual: () =>
+        V.graph({
+          xLabel: 'Stops',
+          yLabel: 'Fare ($)',
+          xMax: 5,
+          yMax: 12,
+          yStep: 2,
+          size: 170,
+          series: [
+            {
+              points: [
+                [0, 3],
+                [1, 5],
+                [2, 7],
+                [3, 9],
+                [4, 11],
+              ],
+              line: true,
+            },
+            { points: [[0, 3]], color: '#C8553D', label: '(0, 3)' },
+          ],
+        }),
     },
     {
       term: 'equation',
       def: 'A math sentence with an equals sign that gives the rule for the relationship.',
       ex: 'y = 4x means every y is 4 times its x. y = x + 4 means every y is 4 more than its x.',
+      es: 'ecuación',
+      esDef: 'Una oración matemática con un signo igual que da la regla de la relación.',
+      lessons: ['9-3'],
     },
     {
       term: 'y = kx',
       def: 'The equation for a relationship where y is always the same multiple of x. The graph goes through (0, 0).',
       ex: 'Cable: 6 meters per tower. m = 6t.',
+      es: 'y = kx',
+      esDef: 'La ecuación de una relación en la que y siempre es el mismo múltiplo de x. La gráfica pasa por (0, 0).',
+      lessons: ['9-3'],
+      visual: () =>
+        V.table(
+          [
+            ['Towers (t)', '1', '2', '3'],
+            ['Cable in m (m)', '6', '12', '18'],
+          ],
+          { header: false, rowHeader: true, cls: 'mini' },
+        ),
     },
     {
       term: 'y = kx + b',
       def: 'The equation for a relationship with a rate of change k and a starting value b.',
       ex: 'Fare: $3 fee plus $2 per stop. c = 2s + 3.',
+      es: 'y = kx + b',
+      esDef: 'La ecuación de una relación con una tasa de cambio k y un valor inicial b.',
+      lessons: ['9-3'],
+      visual: () =>
+        V.table(
+          [
+            ['Stops (s)', '0', '1', '2', '3'],
+            ['Fare in $ (c)', '3', '5', '7', '9'],
+          ],
+          { header: false, rowHeader: true, cls: 'mini' },
+        ),
     },
     {
       term: 'substitute',
       def: 'Replace a variable with a number, then evaluate.',
       ex: 'In c = 2s + 3, substitute s = 4: c = 2(4) + 3 = 11.',
+      es: 'sustituir',
+      esDef: 'Reemplazar una variable por un número y luego calcular.',
+      lessons: ['9-4'],
     },
     {
       term: 'working backward',
       def: 'Start with the output and undo each operation in reverse order to find the input. Undo adding by subtracting; undo multiplying by dividing.',
       ex: 'c = 2s + 3 and c = 15. Subtract 3: 12. Divide by 2: s = 6.',
+      es: 'trabajar hacia atrás',
+      esDef: 'Empieza con la salida y deshaz cada operación en orden inverso para hallar la entrada. Deshaz la suma restando; deshaz la multiplicación dividiendo.',
+      lessons: ['9-4'],
+    },
+    {
+      term: 'inverse operation',
+      def: 'The operation that undoes another one. Subtraction undoes addition. Division undoes multiplication.',
+      ex: 'To undo + 3, subtract 3. To undo × 2, divide by 2.',
+      es: 'operación inversa',
+      esDef: 'La operación que deshace otra. La resta deshace la suma. La división deshace la multiplicación.',
+      lessons: ['9-4'],
     },
     {
       term: 'solution of an equation in two variables',
       def: 'An ordered pair (x, y) that makes the equation true.',
       ex: '(4, 11) is a solution of y = 2x + 3 because 2(4) + 3 = 11.',
+      es: 'solución de una ecuación con dos variables',
+      esDef: 'Un par ordenado (x, y) que hace verdadera la ecuación.',
+      lessons: ['9-4'],
     },
   ];
 
   /* Shared Unit 9 context pool. Each context describes one two-variable situation.
      xw/yw: variable names in words · one/many: units for x · yu: unit word for y · money: y is dollars
      xv/yv: letters used when the equation is written for the situation
-     prop(name, k): story for y = kx · aff(name, k, b): story for y = kx + b */
+     prop(name, k): story for y = kx · aff(name, k, b): story for y = kx + b
+     Spanish (used by hintEs only): xwEs/ywEs carry their article · oneEs/manyEs/yuEs are the unit words. */
   const P = (n, one, many) => `${n} ${n === 1 ? one : many}`;
   const isAre = (n) => (n === 1 ? 'is' : 'are');
   const CTX = [
@@ -5547,6 +6965,11 @@ body.in-trek .at-top {
       money: true,
       xv: 's',
       yv: 'c',
+      xwEs: 'el número de paradas',
+      ywEs: 'la tarifa total',
+      oneEs: 'parada',
+      manyEs: 'paradas',
+      yuEs: 'dólares',
       prop: (n, k) => `${n} rides a sky-tram that charges $${k} for every stop.`,
       aff: (n, k, b) => `${n} rides a sky-tram that charges a $${b} boarding fee plus $${k} for every stop.`,
     },
@@ -5561,6 +6984,11 @@ body.in-trek .at-top {
       money: false,
       xv: 't',
       yv: 'm',
+      xwEs: 'el número de torres',
+      ywEs: 'la longitud del cable',
+      oneEs: 'torre',
+      manyEs: 'torres',
+      yuEs: 'metros',
       prop: (n, k) => `${n} is stringing relay cable. Each signal tower needs ${P(k, 'meter', 'meters')} of cable.`,
       aff: (n, k, b) => `${n} is stringing relay cable. The line starts with ${P(b, 'meter', 'meters')} at the depot, then needs ${P(k, 'more meter', 'more meters')} for each tower.`,
     },
@@ -5575,6 +7003,11 @@ body.in-trek .at-top {
       money: false,
       xv: 'h',
       yv: 'p',
+      xwEs: 'el número de horas',
+      ywEs: 'el número de páginas leídas',
+      oneEs: 'hora',
+      manyEs: 'horas',
+      yuEs: 'páginas',
       prop: (n, k) => `${n} reads ${P(k, 'page', 'pages')} of the operator manual every hour.`,
       aff: (n, k, b) => `${n} had already read ${P(b, 'page', 'pages')} of the operator manual, and now reads ${P(k, 'page', 'pages')} every hour.`,
     },
@@ -5589,6 +7022,11 @@ body.in-trek .at-top {
       money: false,
       xv: 'c',
       yv: 'p',
+      xwEs: 'el número de vagones',
+      ywEs: 'el número de pasajeros',
+      oneEs: 'vagón',
+      manyEs: 'vagones',
+      yuEs: 'pasajeros',
       prop: (n, k) => `${n} is loading a sky-tram. Each tram car seats ${P(k, 'passenger', 'passengers')}.`,
       aff: (n, k, b) => `${n} is loading a sky-tram. There ${isAre(b)} ${P(b, 'crew member', 'crew members')} on board, and each tram car seats ${P(k, 'passenger', 'passengers')}.`,
     },
@@ -5603,6 +7041,11 @@ body.in-trek .at-top {
       money: true,
       xv: 'w',
       yv: 'd',
+      xwEs: 'el número de semanas',
+      ywEs: 'el ahorro total',
+      oneEs: 'semana',
+      manyEs: 'semanas',
+      yuEs: 'dólares',
       prop: (n, k) => `${n} saves $${k} every week for a tram pass.`,
       aff: (n, k, b) => `${n} starts with $${b} and saves $${k} every week for a tram pass.`,
     },
@@ -5617,6 +7060,11 @@ body.in-trek .at-top {
       money: false,
       xv: 'm',
       yv: 'n',
+      xwEs: 'el número de minutos',
+      ywEs: 'el número de lámparas encendidas',
+      oneEs: 'minuto',
+      manyEs: 'minutos',
+      yuEs: 'lámparas',
       prop: (n, k) => `${n} restarts a signal tower. It lights ${P(k, 'lamp', 'lamps')} every minute.`,
       aff: (n, k, b) => `${n} restarts a signal tower. ${P(b, 'lamp', 'lamps')} ${isAre(b)} already lit, and ${k} more light up every minute.`,
     },
@@ -5631,6 +7079,11 @@ body.in-trek .at-top {
       money: false,
       xv: 'b',
       yv: 't',
+      xwEs: 'el número de cajas',
+      ywEs: 'el número de fichas',
+      oneEs: 'caja',
+      manyEs: 'cajas',
+      yuEs: 'fichas',
       prop: (n, k) => `${n} collects tram tokens. Each box holds ${P(k, 'token', 'tokens')}.`,
       aff: (n, k, b) => `${n} collects tram tokens. ${n} already has ${P(b, 'token', 'tokens')}, and each new box holds ${k} more.`,
     },
@@ -5645,6 +7098,11 @@ body.in-trek .at-top {
       money: false,
       xv: 'd',
       yv: 'h',
+      xwEs: 'el número de días',
+      ywEs: 'la altura de la enredadera',
+      oneEs: 'día',
+      manyEs: 'días',
+      yuEs: 'centímetros',
       prop: (n, k) => `${n} tracks a vine on the depot wall. It grows ${P(k, 'centimeter', 'centimeters')} every day.`,
       aff: (n, k, b) => `${n} tracks a vine on the depot wall. It is ${P(b, 'centimeter', 'centimeters')} tall today and grows ${P(k, 'centimeter', 'centimeters')} every day.`,
     },
@@ -5662,6 +7120,15 @@ body.in-trek .at-top {
   function yWord(c, v) {
     return c.money ? '$' + v : `${v} ${v === 1 && YU_ONE[c.yu] ? YU_ONE[c.yu] : c.yu}`;
   }
+  /** Spanish value of y: "$12" or "12 metros". */
+  const YU_ONE_ES = { metros: 'metro', páginas: 'página', pasajeros: 'pasajero', lámparas: 'lámpara', fichas: 'ficha', centímetros: 'centímetro', dólares: 'dólar' };
+  function yWordEs(c, v) {
+    return c.money ? '$' + v : `${v} ${v === 1 && YU_ONE_ES[c.yuEs] ? YU_ONE_ES[c.yuEs] : c.yuEs}`;
+  }
+  /** Spanish "de" + article phrase: de('el número de paradas') → "del número de paradas". */
+  const de = (s) => (s.startsWith('el ') ? 'del ' + s.slice(3) : 'de ' + s);
+  /** Spanish count: "1 parada" / "3 paradas". */
+  const countEs = (c, n) => `${n} ${n === 1 ? c.oneEs : c.manyEs}`;
   /** Grid settings so the largest y fits with yMax ≤ 24 and a readable yStep. */
   function grid(yTop) {
     const yStep = yTop > 16 ? 4 : yTop > 8 ? 2 : 1;
@@ -5683,8 +7150,14 @@ body.in-trek .at-top {
     if (k === 1) return `add ${b} to x`;
     return `multiply x by ${k}, then add ${b}`;
   }
+  /** Rule in words, in Spanish. */
+  function ruleWordsEs(k, b) {
+    if (b === 0) return `multiplica x por ${k}`;
+    if (k === 1) return `suma ${b} a x`;
+    return `multiplica x por ${k} y luego suma ${b}`;
+  }
 
-  RX.U9 = { CTX, eq, yWord, grid, rows, ruleWords };
+  RX.U9 = { CTX, eq, yWord, yWordEs, de, countEs, grid, rows, ruleWords, ruleWordsEs, P, isAre };
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -6084,7 +7557,7 @@ body.in-trek .at-top {
     const base = RX.V.graph({ xLabel: q.xLabel, yLabel: q.yLabel, xMax: q.xMax, yMax: q.yMax, yStep: ys, size, series: [] });
     const wrap = h(`<div class="plot"><div class="plot-stage">${base}</div><div class="plot-status" aria-live="polite"></div></div>`);
     host.appendChild(wrap);
-    const svg = wrap.querySelector('svg'); svg.classList.add('plot-svg'); svg.setAttribute('width', '100%'); svg.removeAttribute('height');
+    const svg = wrap.querySelector('svg'); svg.classList.add('plot-svg'); svg.setAttribute('role', 'group'); svg.setAttribute('aria-label', 'Coordinate grid. Choose grid points to place them.'); svg.setAttribute('width', '100%'); svg.removeAttribute('height');
     const ns = 'http://www.w3.org/2000/svg';
     const pts = new Map();
     const layer = document.createElementNS(ns, 'g'); svg.appendChild(layer);
@@ -6189,6 +7662,8 @@ body.in-trek .at-top {
     host.appendChild(stage);
     const svg = stage.querySelector('svg');
     svg.classList.add('nl-svg');
+    svg.setAttribute('role', 'group');
+    svg.setAttribute('aria-label', `Number line from ${q.min} to ${q.max}. Each tick is ${q.step}. Choose a tick to place a point.`);
     svg.setAttribute('width', '100%');
     svg.removeAttribute('height');
     svg.setAttribute('viewBox', `0 0 ${w} ${hgt}`);
@@ -6494,6 +7969,8 @@ body.in-trek .at-top {
     host.appendChild(wrap);
     const svg = wrap.querySelector('svg');
     svg.classList.add('plot-svg');
+    svg.setAttribute('role', 'group');
+    svg.setAttribute('aria-label', 'Coordinate grid. Choose grid points to place them.');
     svg.setAttribute('width', '100%');
     svg.removeAttribute('height');
     const pts = new Map();
@@ -6591,7 +8068,7 @@ body.in-trek .at-top {
     if (!o) { refs.hud.innerHTML = ''; refs.hud.hidden = true; return; }
     refs.hud.hidden = false;
     refs.hud.innerHTML = `<div class="hud-inner"><button type="button" class="hud-brand" data-act="map" aria-label="Back to the map">${icon('map')}<span>${esc(RX.UNIT.brand)}</span></button>${RX.UNIT.hubUrl ? `<a class="hud-atlas" href="${esc(RX.UNIT.hubUrl)}" aria-label="Back to the Expedition Atlas">${icon('atlas')}<span>Atlas</span></a>` : ''}
-      <div class="hud-mid">${o.title ? `<span class="hud-zone">${esc(o.title)}</span>` : ''}${o.sub ? `<span class="hud-sub">${esc(o.sub)}</span>` : ''}${o.dots ? `<div class="hud-dots" aria-label="Question progress">${o.dots.map((d) => `<span class="dot ${d}"></span>`).join('')}</div>` : ''}</div>
+      <div class="hud-mid">${o.title ? `<span class="hud-zone">${esc(o.title)}</span>` : ''}${o.sub ? `<span class="hud-sub">${esc(o.sub)}</span>` : ''}${o.dots ? `<div class="hud-dots" role="img" aria-label="Question ${Math.max(1, o.dots.indexOf('now') + 1)} of ${o.dots.length}: ${o.dots.filter((d) => d === 'done').length} correct so far">${o.dots.map((d) => `<span class="dot ${d}"></span>`).join('')}</div>` : ''}</div>
       <div class="hud-right"><span class="hud-stat" title="Experience points">${icon('xp')}<b>${o.xp}</b> XP</span><span class="hud-stat ${o.streak >= 3 ? 'hot' : ''}" title="Streak">${icon('flame')}<b>${o.streak}</b></span>
       <button type="button" class="hud-btn" data-act="guide" aria-label="Field Guide">${icon('book')}<span>Field Guide</span></button><button type="button" class="hud-btn" data-act="settings" aria-label="Settings">${icon('settings')}</button></div></div>`;
   }
@@ -6614,7 +8091,21 @@ body.in-trek .at-top {
   function confirm(title, body, okLabel) { return new Promise((res) => { modal({ title, body, actions: [{ label: 'Cancel', onClick: () => res(false) }, { label: okLabel || 'Yes', cls: 'btn-danger', onClick: () => res(true) }], onClose: () => res(false) }); }); }
   function toast(msg, kind) { const t = h(`<div class="toast ${kind || ''}" role="status">${msg}</div>`); refs.toast.appendChild(t); setTimeout(() => t.classList.add('show'), 10); setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 2800); }
 
-  function speak(text) { try { if (!root.speechSynthesis) return; root.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text.replace(/\s+/g, ' ').trim()); u.rate = 0.95; root.speechSynthesis.speak(u); } catch (e) { /* unsupported */ } }
+  /** Read text aloud. lang 'es' picks a Spanish voice when the device has one. */
+  function speak(text, lang) {
+    try {
+      if (!root.speechSynthesis) return;
+      root.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(String(text).replace(/\s+/g, ' ').trim());
+      u.rate = 0.95;
+      if (lang === 'es') {
+        u.lang = 'es-US';
+        const v = root.speechSynthesis.getVoices().find((x) => /^es(-|_)/i.test(x.lang));
+        if (v) u.voice = v;
+      }
+      root.speechSynthesis.speak(u);
+    } catch (e) { /* unsupported */ }
+  }
 
   // ---------- Map ----------
   /** Node positions (percent of the map canvas). A pack may supply RX.UNIT.mapPositions; otherwise a serpentine route is generated. */
@@ -6669,6 +8160,315 @@ body.in-trek .at-top {
 
 </script>
 <script>
+/* Grade 6 Review Expeditions — support layer: student levels, Key Words screen, inline first hint (with Spanish),
+   worked examples, and the portable progress code used by the teacher's Class Snapshot. No game flow lives here. */
+(function (root) {
+  'use strict';
+  const RX = root.RX;
+
+  const LEVELS = [
+    { id: 0, label: 'Level 0 · Most Support', short: 'Level 0', desc: 'Key words first, a hint on every question, read-aloud on, Spanish help.' },
+    { id: 1, label: 'Level 1 · Support', short: 'Level 1', desc: 'Key words first. A hint appears after a wrong try.' },
+    { id: 2, label: 'Level 2 · Enrichment', short: 'Level 2', desc: 'Harder versions of every challenge. Hints only when you ask. More XP.' },
+  ];
+  const levelOf = (s) => (s && s.settings && [0, 1, 2].includes(s.settings.level) ? s.settings.level : 1);
+  const levelInfo = (id) => LEVELS.find((l) => l.id === id) || LEVELS[1];
+  const LEVEL2_XP = 1.25;
+
+  /** Level picker markup: radio cards. Bind with bindLevelPicker(container, onChange). */
+  function levelPicker(current, name) {
+    return `<div class="lvl-pick" role="radiogroup" aria-label="Choose your level">${LEVELS.map((l) => `<label class="lvl-card ${l.id === current ? 'is-on' : ''}"><input type="radio" name="${name || 'rx-level'}" value="${l.id}" ${l.id === current ? 'checked' : ''}><span class="lvl-k">${RX.esc(l.label)}</span><span class="lvl-d">${RX.esc(l.desc)}</span></label>`).join('')}</div>`;
+  }
+  function bindLevelPicker(el, onChange) {
+    el.querySelectorAll('.lvl-card input').forEach((inp) =>
+      inp.addEventListener('change', () => {
+        el.querySelectorAll('.lvl-card').forEach((c) => c.classList.toggle('is-on', c.contains(inp) && inp.checked));
+        onChange(Number(inp.value));
+      }),
+    );
+  }
+
+  // ---------- Key Words ----------
+  const lessonIds = (z) =>
+    String(z.lesson || '')
+      .split(/\s*\/\s*/)
+      .filter(Boolean);
+  function keyWordsFor(z) {
+    if (!z || z.final || z.optional) return [];
+    const ids = lessonIds(z);
+    return (RX.VOCAB || []).filter((v) => Array.isArray(v.lessons) && v.lessons.some((l) => ids.includes(l)));
+  }
+  function keyWordCard(v, i, showEs) {
+    const vis = v.visual ? `<div class="kw-viz">${v.visual()}</div>` : '';
+    return `<article class="kw-card" style="--d:${i}"><div class="kw-text"><h3 class="kw-term">${RX.esc(v.term)}</h3>${v.es ? `<p class="kw-es" ${showEs ? '' : 'hidden'}><span class="kw-flag">ES</span> ${RX.esc(v.es)}</p>` : ''}<p class="kw-def">${v.def}</p>${v.esDef ? `<p class="kw-esdef" ${showEs ? '' : 'hidden'}>${RX.esc(v.esDef)}</p>` : ''}${v.ex ? `<p class="kw-ex"><b>Example:</b> ${RX.esc(v.ex)}</p>` : ''}</div>${vis}</article>`;
+  }
+  /** Full-screen Key Words step before a zone's first mission. opts: { level, onStart, onBack } */
+  function showKeyWords(z, opts) {
+    const words = keyWordsFor(z);
+    const showEs = opts.level === 0;
+    RX.UI.hud({ xp: opts.xp, streak: opts.streak, title: z.name, sub: 'Key words' });
+    RX.UI.screen(
+      'keywords',
+      `<section class="keywords" style="--accent:${z.accent}"><div class="kw-head"><p class="eyebrow">Lesson ${RX.esc(z.lesson)} · ${RX.esc(z.lessonName)}</p><h2>Key words for ${RX.esc(z.name)}</h2><p class="lede">Read each word, its meaning, and the picture. You will use these words in the challenges.</p>
+      <div class="kw-tools"><button type="button" class="btn btn-ghost btn-sm" id="kw-es" aria-pressed="${showEs}">${RX.icon('book')} <span>${showEs ? 'Hide Español' : 'Español'}</span></button><button type="button" class="btn btn-ghost btn-sm" id="kw-speak">${RX.icon('speaker')} Read aloud</button></div></div>
+      <div class="kw-grid" style="--kw-cols:${words.length === 4 || words.length === 2 ? 2 : 3}">${words.map((v, i) => keyWordCard(v, i, showEs)).join('')}</div>
+      <div class="title-actions"><button type="button" class="btn btn-primary btn-lg" id="kw-go">I know these words. Start ${RX.icon('arrow')}</button><button type="button" class="btn btn-ghost" id="kw-back">Back to the map</button></div></section>`,
+    );
+    const tog = document.getElementById('kw-es');
+    tog.addEventListener('click', () => {
+      const on = tog.getAttribute('aria-pressed') !== 'true';
+      tog.setAttribute('aria-pressed', String(on));
+      tog.querySelector('span').textContent = on ? 'Hide Español' : 'Español';
+      document.querySelectorAll('.kw-es, .kw-esdef').forEach((el) => {
+        el.hidden = !on;
+      });
+    });
+    document.getElementById('kw-speak').addEventListener('click', () => RX.UI.speak(words.map((v) => `${v.term}. ${String(v.def).replace(/<[^>]+>/g, '')}`).join(' ')));
+    document.getElementById('kw-go').addEventListener('click', opts.onStart);
+    document.getElementById('kw-back').addEventListener('click', opts.onBack);
+  }
+
+  // ---------- Inline first hint ----------
+  function inlineHintHtml(q, visible) {
+    if (!q.hints || !q.hints[0]) return '';
+    return `<div class="q-inline" id="q-inline" ${visible ? '' : 'hidden'}><div class="qi-head"><span class="qi-k">${RX.icon('bulb')} Hint</span><span class="qi-tools"><button type="button" class="qi-lang qi-say" id="qi-say" aria-label="Read the hint aloud">${RX.icon('speaker')}</button>${q.hintEs ? '<button type="button" class="qi-lang" id="qi-lang" aria-pressed="false">Español</button>' : ''}</span></div><div class="qi-en">${q.hints[0]}</div>${q.hintEs ? `<div class="qi-es" hidden lang="es">${q.hintEs}</div>` : ''}</div>`;
+  }
+  function bindInlineHint() {
+    const say = document.getElementById('qi-say');
+    if (say) say.addEventListener('click', () => { const es = document.querySelector('#q-inline .qi-es'); const useEs = es && !es.hidden; RX.UI.speak((useEs ? es : document.querySelector('#q-inline .qi-en')).innerText, useEs ? 'es' : 'en'); });
+    const b = document.getElementById('qi-lang');
+    if (!b) return;
+    b.addEventListener('click', () => {
+      const on = b.getAttribute('aria-pressed') !== 'true';
+      b.setAttribute('aria-pressed', String(on));
+      b.textContent = on ? 'English' : 'Español';
+      document.querySelector('#q-inline .qi-en').hidden = on;
+      document.querySelector('#q-inline .qi-es').hidden = !on;
+    });
+  }
+  function revealInlineHint() {
+    const el = document.getElementById('q-inline');
+    if (el && el.hidden) {
+      el.hidden = false;
+      el.classList.add('is-new');
+    }
+  }
+
+  // ---------- Worked example: same generator, different numbers ----------
+  function workedExample(q, seed, level) {
+    try {
+      const ex = RX.G.make(q.gen, RX.R.make((seed ^ 0x5bd1e995) >>> 0), level === 2 ? { hard: true } : {});
+      if (RX.stripTags ? RX.stripTags(ex.prompt) === RX.stripTags(q.prompt) : ex.prompt === q.prompt) return null;
+      return `<div class="worked"><span class="worked-k">${RX.icon('book')} Worked example · different numbers</span><div class="worked-q">${ex.prompt}</div><div class="worked-s">${ex.solution}</div><p class="worked-foot">Now use the same steps on your own question.</p></div>`;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // ---------- Portable progress code (student report → teacher Class Snapshot) ----------
+  const b64e = (str) =>
+    root
+      .btoa(unescape(encodeURIComponent(str)))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+  const b64d = (str) => decodeURIComponent(escape(root.atob(str.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((str.length + 3) % 4))));
+  function progressPayload(s, unitKey, name) {
+    const k = {};
+    Object.keys(s.skills || {}).forEach((id) => {
+      const sk = s.skills[id];
+      if (sk.seen) k[id] = [sk.seen, sk.first];
+    });
+    const zonesDone = Object.keys(s.zones || {}).filter((z) => s.zones[z].completed).length;
+    const d = new Date();
+    return {
+      v: 1,
+      u: unitKey,
+      n: String(name || '').slice(0, 40),
+      d: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`,
+      l: levelOf(s),
+      x: s.xp || 0,
+      a: (s.stats && s.stats.answered) || 0,
+      f: (s.stats && s.stats.firstTry) || 0,
+      z: zonesDone,
+      k,
+    };
+  }
+  const encodeProgress = (p) => 'RX1.' + b64e(JSON.stringify(p));
+  /** Find every RX1 code in pasted text. Returns [{...payload}] (invalid codes are skipped and counted). */
+  function decodeAll(text) {
+    const out = [];
+    let bad = 0;
+    String(text || '').replace(/RX1\.([A-Za-z0-9_-]{8,})/g, (m, body) => {
+      try {
+        const p = JSON.parse(b64d(body));
+        if (p && p.v === 1 && p.u && p.k) out.push(p);
+        else bad++;
+      } catch (e) {
+        bad++;
+      }
+      return m;
+    });
+    return { codes: out, bad };
+  }
+
+  RX.Support = {
+    LEVELS,
+    LEVEL2_XP,
+    levelOf,
+    levelInfo,
+    levelPicker,
+    bindLevelPicker,
+    keyWordsFor,
+    showKeyWords,
+    inlineHintHtml,
+    bindInlineHint,
+    revealInlineHint,
+    workedExample,
+    progressPayload,
+    encodeProgress,
+    decodeAll,
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* Grade 6 Review Expeditions — Mission Report screen, the copyable teacher report, and the name prompt.
+   Split out of game.js; the controller passes its live state and navigation through ctx. */
+(function (root) {
+  'use strict';
+  const RX = root.RX;
+  const { UI, State, Rules, esc, icon } = RX;
+  const Sup = () => RX.Support;
+  let s, ctx;
+  const levelNow = () => Sup().levelOf(s);
+  const story = () => RX.STORY;
+  const zoneById = (id) => RX.ZONES.find((z) => z.id === id);
+  const exitTo = () => ctx.exitTo();
+  const openZone = (z) => ctx.openZone(z);
+  function skillReport() {
+    return Object.keys(RX.SKILLS).map((k) => {
+      const sk = s.skills[k] || { seen: 0, first: 0 };
+      const rate = sk.seen ? sk.first / sk.seen : null;
+      return {
+        k,
+        label: RX.SKILLS[k].label,
+        lesson: RX.SKILLS[k].lesson,
+        zone: RX.SKILLS[k].zone,
+        rate,
+        seen: sk.seen,
+        band: rate == null ? 'Not yet seen' : Rules.skillBand(rate),
+      };
+    });
+  }
+  /** Plain-text report a student can paste into Canvas, email, or show a teacher. */
+  function reportText() {
+    const skills = skillReport();
+    const acc = s.stats.answered ? Math.round((100 * s.stats.firstTry) / s.stats.answered) : 0;
+    const zonesDone = RX.ZONES.filter((z) => Rules.isZoneComplete(s, z.id)).length;
+    const lines = [
+      `${RX.UNIT.brand} — Mission Report${s.settings.studentName ? ' — ' + s.settings.studentName : ''}`,
+      `${RX.UNIT.unitLabel}`,
+      `Date: ${new Date().toLocaleDateString()}`,
+      '',
+      `First-try accuracy: ${acc}%  ·  XP: ${s.xp}  ·  Zones cleared: ${zonesDone}/${RX.ZONES.length}  ·  Challenges answered: ${s.stats.answered}`,
+      '',
+      'Skills:',
+    ];
+    skills.forEach((x) =>
+      lines.push(
+        `  ${x.band === 'Strong' ? '✔' : x.band === 'Almost There' ? '~' : x.band === 'Not yet seen' ? '·' : '✘'} ${x.label} (Lesson ${x.lesson}): ${x.band}${x.seen ? ` — ${x.seen} seen` : ''}`,
+      ),
+    );
+    lines.push('', `Achievements: ${Object.keys(s.achievements).length}/${RX.ACHIEVEMENTS.length}`);
+    lines.push(`Level: ${Sup().levelInfo(levelNow()).label}`);
+    lines.push('', `Teacher code: ${Sup().encodeProgress(Sup().progressPayload(s, RX.UNIT.id, s.settings.studentName))}`);
+    return lines.join('\n');
+  }
+  /** Ask once for a name or initials so the teacher's Class Snapshot can tell reports apart. */
+  function askName(then) {
+    if (s.settings.studentName) return then();
+    const m = UI.modal({
+      title: `${icon('ref')} Your name for the report`,
+      body: '<p>Type your first name or initials so your teacher knows whose report this is. It stays on this device.</p><label class="fld"><span class="fld-label">Name or initials</span><input type="text" id="rx-name" maxlength="40" autocomplete="off"></label>',
+      actions: [
+        { label: 'Cancel' },
+        {
+          label: 'Save and copy',
+          cls: 'btn-primary',
+          onClick: () => {
+            const v = (m.el.querySelector('#rx-name').value || '').trim();
+            if (!v) { UI.toast('Type a name or initials first.', 'warn'); return false; }
+            s.settings.studentName = v;
+            State.save();
+            setTimeout(then, 50);
+          },
+        },
+      ],
+    });
+  }
+  function showResults() {
+    s = State.load();
+    const skills = skillReport();
+    const seen = skills.filter((x) => x.rate != null);
+    const strong = seen.filter((x) => x.band === 'Strong'),
+      practice = seen.filter((x) => x.band !== 'Strong');
+    const acc = s.stats.answered ? Math.round((100 * s.stats.firstTry) / s.stats.answered) : 0;
+    const zonesDone = RX.ZONES.filter((z) => Rules.isZoneComplete(s, z.id));
+    const finished = Rules.isZoneComplete(s, Rules.finalZone().id);
+    const opt = Rules.optionalZones()[0];
+    UI.hud({ xp: s.xp, streak: s.streak, title: 'Mission Report' });
+    UI.screen(
+      'results',
+      `<section class="results"><div class="results-card"><p class="eyebrow">${esc(RX.UNIT.brand)} · ${esc(RX.UNIT.unitLabel)}</p><h2>${finished ? 'Mission Complete' : 'Progress Report'}</h2><p class="lede">${finished ? story().resultsLede : 'Here is how the expedition is going so far. Keep clearing zones to finish the route.'}</p>
+      <div class="stat-row"><div class="stat"><b>${acc}%</b><span>first-try accuracy</span></div><div class="stat"><b>${s.xp}</b><span>XP earned</span></div><div class="stat"><b>${zonesDone.length}/${RX.ZONES.length}</b><span>zones cleared</span></div><div class="stat"><b>${Object.keys(s.achievements).length}/${RX.ACHIEVEMENTS.length}</b><span>achievements</span></div></div>
+      <div class="results-cols"><div><h3>Strongest skills</h3>${strong.length ? strong.map((x) => `<div class="skill-row"><span>${esc(x.label)}</span><span class="band band-strong">Strong</span></div>`).join('') : '<p class="muted">Keep practicing to build strong skills.</p>'}</div>
+      <div><h3>Keep practicing</h3>${practice.length ? practice.map((x) => `<div class="skill-row"><span>${esc(x.label)}</span><span class="band band-${x.band.replace(/\s/g, '').toLowerCase()}">${x.band}</span></div>`).join('') : `<p class="muted">Every skill you have met is strong.${opt ? ` Try ${esc(opt.name)} for a challenge.` : ''}</p>`}</div></div>
+      ${
+        practice.length
+          ? `<div class="recommend"><h3>Recommended replays</h3><div class="rec-list">${[...new Set(practice.map((x) => x.zone))]
+              .filter((zid) => zoneById(zid))
+              .map((zid) => {
+                const z = zoneById(zid);
+                return `<button type="button" class="btn btn-ghost" data-zone="${z.id}">${icon(z.emblem)} ${esc(z.name)}</button>`;
+              })
+              .join('')}</div></div>`
+          : ''
+      }
+      <div class="ach-reveal">${RX.ACHIEVEMENTS.filter((a) => s.achievements[a.id])
+        .map((a) => `<span class="ach-chip">${icon(a.icon)} ${esc(a.name)}</span>`)
+        .join('')}</div>
+      <div class="title-actions"><button type="button" class="btn btn-primary btn-lg" id="btn-map" autofocus>${RX.UNIT.onExit ? 'Back to the Atlas' : 'Back to the map'} ${icon('arrow')}</button><button type="button" class="btn btn-ghost" id="btn-copy">${icon('ref')} Copy report for my teacher</button><button type="button" class="btn btn-ghost" id="btn-print">${icon('print')} Print report</button></div></div></section>`,
+    );
+    document.getElementById('btn-map').addEventListener('click', exitTo);
+    document.getElementById('btn-copy').addEventListener('click', () => askName(copyReport));
+    async function copyReport() {
+      const t = reportText();
+      try {
+        await navigator.clipboard.writeText(t);
+        UI.toast('Report copied. Paste it anywhere.', 'ok');
+      } catch (e) {
+        UI.modal({
+          title: 'Your report',
+          body: `<pre class="report-pre">${esc(t)}</pre>`,
+        });
+      }
+    }
+    document.getElementById('btn-print').addEventListener('click', () => root.print());
+    document.querySelectorAll('.rec-list [data-zone]').forEach((b) => b.addEventListener('click', () => openZone(zoneById(b.dataset.zone))));
+  }
+
+
+  RX.Report = {
+    bind(c) { ctx = c; },
+    showResults() { s = ctx.state(); showResults(); s = ctx.state(); },
+    reportText() { s = ctx.state(); return reportText(); },
+    skillReport() { s = ctx.state(); return skillReport(); },
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
 /* Grade 6 Review Expeditions — game controller: flow, scoring, feedback, hints, achievements.
    Everything unit-specific comes from the pack: RX.UNIT (ids, brand, save key), RX.STORY (text), RX.ZONES, RX.SKILLS, RX.VOCAB,
    RX.ACHIEVEMENTS, and optionally RX.REFERENCE_SHEET. */
@@ -6683,11 +8483,20 @@ body.in-trek .at-top {
   const zoneById = (id) => RX.ZONES.find((z) => z.id === id);
   const missionDef = (zid, mid) => zoneById(zid).missions.find((m) => m.id === mid);
   const story = () => RX.STORY;
+  const Sup = () => RX.Support;
+  const levelNow = () => Sup().levelOf(s);
+  /** The challenge list of the running mission: an ad-hoc retry list, or the mission's own generators. */
+  const specsOf = (cur) => cur.gens || missionDef(cur.zone, cur.mission).gens;
+  const missionName = (cur) => (cur.retry ? 'Practice what you missed' : missionDef(cur.zone, cur.mission).name);
   const exitTo = () => (RX.UNIT.onExit ? RX.UNIT.onExit() : showMap());
 
   // ---------- Boot / title ----------
+  function bindReport() {
+    RX.Report.bind({ state: () => s, exitTo: () => exitTo(), openZone: (z) => openZone(z) });
+  }
   function boot() {
     s = State.load();
+    bindReport();
     applySettings();
     UI.mount();
     document.body.addEventListener('click', onGlobalClick);
@@ -6698,6 +8507,7 @@ body.in-trek .at-top {
   function bootMission(zid, mid) {
     State.unload();
     s = State.load();
+    bindReport();
     applySettings();
     UI.mount();
     if (!bootedOnce) {
@@ -6711,6 +8521,7 @@ body.in-trek .at-top {
     document.documentElement.classList.toggle('large-text', !!st.largeText);
     document.documentElement.classList.toggle('reduce-motion', !!st.reduceMotion);
     document.documentElement.classList.toggle('dyslexic', !!st.dyslexic);
+    [0, 1, 2].forEach((l) => document.documentElement.classList.toggle('level-' + l, levelNow() === l));
   }
   function onGlobalClick(e) {
     const act = e.target.closest('[data-act]');
@@ -6780,8 +8591,10 @@ body.in-trek .at-top {
       'intro',
       `<section class="intro"><div class="intro-card"><p class="eyebrow">Mission Briefing</p><h2>${esc(st.briefingTitle)}</h2>${st.intro.map((p) => `<p>${p}</p>`).join('')}
       <div class="brief-grid"><div><span class="brief-k">Your role</span><span>${esc(st.role)}</span></div><div><span class="brief-k">Objective</span><span>${esc(st.objective)}</span></div><div><span class="brief-k">Tools</span><span>${esc(st.tools)}</span></div></div>
+      <h3 class="lvl-h">Choose how you want to play</h3><p class="muted">You can change this any time in Settings.</p>${Sup().levelPicker(levelNow(), 'intro-level')}
       <div class="title-actions"><button type="button" class="btn btn-primary btn-lg" id="btn-go" autofocus>Open the Map ${icon('arrow')}</button></div></div></section>`,
     );
+    Sup().bindLevelPicker(document.querySelector('.intro .lvl-pick'), setLevel);
     document.getElementById('btn-go').addEventListener('click', showMap);
   }
 
@@ -6847,29 +8660,59 @@ body.in-trek .at-top {
         return `<button type="button" class="mission-row ${done ? 'is-done' : ''} ${open ? '' : 'is-locked'}" data-m="${m.id}" ${open ? '' : 'disabled'}><span class="mr-num">${done ? icon('check') : open ? i + 1 : icon('lock')}</span><span class="mr-body"><span class="mr-name">${esc(m.name)}</span><span class="mr-meta">${m.gens.length} challenges${done ? ` · best ${md.best.first}/${md.best.total} first try` : ''}</span></span><span class="mr-cta">${done ? 'Replay' : 'Start'} ${icon('arrow')}</span></button>`;
       })
       .join('')}</div>`;
+    const words = Sup().keyWordsFor(z);
     const m = UI.modal({
       title: `<span class="zone-title" style="--accent:${z.accent}">${icon(z.emblem)} ${esc(z.name)}</span>`,
-      body,
+      body: body + (words.length ? `<div class="zone-kw"><span>${icon('book')} Key words: ${words.map((v) => esc(v.term)).join(' · ')}</span><button type="button" class="btn btn-ghost btn-sm" id="zone-kw-open">Review key words</button></div>` : ''),
       cls: 'modal-zone',
     });
+    const go = (mid) => {
+      s.kwSeen = s.kwSeen || {};
+      const gate = words.length && levelNow() <= 1 && !s.kwSeen[z.id];
+      if (!gate) return startMission(z.id, mid);
+      showKeyWordsFor(z, () => startMission(z.id, mid));
+    };
     m.el.querySelectorAll('.mission-row').forEach((b) =>
       b.addEventListener('click', () => {
         m.close();
-        startMission(z.id, b.dataset.m);
+        go(b.dataset.m);
       }),
     );
+    const kwb = m.el.querySelector('#zone-kw-open');
+    if (kwb) kwb.addEventListener('click', () => { m.close(); showKeyWordsFor(z, () => openZone(z)); });
+  }
+
+  function showKeyWordsFor(z, then) {
+    Sup().showKeyWords(z, {
+      level: levelNow(),
+      xp: s.xp,
+      streak: s.streak,
+      onStart: () => { s.kwSeen = s.kwSeen || {}; s.kwSeen[z.id] = Date.now(); State.save(); then(); },
+      onBack: showMap,
+    });
+  }
+  function setLevel(l) {
+    s.settings.level = l;
+    if (l === 0) s.settings.readAloud = true;
+    State.save();
+    applySettings();
+    UI.toast(`${Sup().levelInfo(l).label} is on.`, 'ok');
   }
 
   // ---------- Mission flow ----------
-  function startMission(zid, mid) {
+  function startMission(zid, mid, extra) {
     const seed = (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
-    s.current = { zone: zid, mission: mid, seed, qIndex: 0, results: [] };
+    s.current = Object.assign({ zone: zid, mission: mid, seed, qIndex: 0, results: [], level: levelNow() }, extra || {});
     State.save();
     renderQuestion();
   }
   function buildQuestions(cur) {
     const r = RX.R.make(cur.seed);
-    return missionDef(cur.zone, cur.mission).gens.map((g) => (Array.isArray(g) ? RX.G.make(g[0], r, g[1]) : RX.G.make(g, r, {})));
+    const hard = cur.level === 2;
+    return specsOf(cur).map((g) => {
+      const [key, opts] = Array.isArray(g) ? g : [g, {}];
+      return RX.G.make(key, r, hard ? Object.assign({}, opts, { hard: true }) : opts);
+    });
   }
   function dotsFor(cur, qs) {
     return qs.map((_, i) => (i < cur.qIndex ? (cur.results[i] && cur.results[i].correct ? 'done' : 'miss') : i === cur.qIndex ? 'now' : ''));
@@ -6877,7 +8720,7 @@ body.in-trek .at-top {
   function renderQuestion() {
     const cur = s.current;
     const z = zoneById(cur.zone),
-      m = missionDef(cur.zone, cur.mission);
+      m = { name: missionName(cur) };
     const qs = buildQuestions(cur);
     q = qs[cur.qIndex];
     attempts = 0;
@@ -6896,7 +8739,7 @@ body.in-trek .at-top {
     UI.screen(
       'mission',
       `<section class="mission" style="--accent:${z.accent}"><div class="q-card"><div class="q-head"><span class="q-skill">${icon('star')} Skill: ${esc(skill.label)}</span><span class="q-num">Challenge ${cur.qIndex + 1} of ${qs.length}${z.final ? ' · ' + esc(glyphWord.charAt(0).toUpperCase() + glyphWord.slice(1)) : ''}</span></div>
-      ${z.final ? `<div class="glyphs" aria-label="Chamber ${esc(glyphWord)}s">${qs.map((_, i) => `<span class="glyph ${i < cur.qIndex ? 'is-lit' : i === cur.qIndex ? 'is-now' : ''}">${icon('star')}</span>`).join('')}<span class="glyph-label">${cur.qIndex} of ${qs.length} ${esc(glyphWord)}s lit</span></div>` : ''}<h2 class="q-title">${esc(q.title)}</h2><div class="q-prompt">${q.prompt}</div><div class="q-body" id="q-body"></div>
+      ${z.final ? `<div class="glyphs" aria-label="Chamber ${esc(glyphWord)}s">${qs.map((_, i) => `<span class="glyph ${i < cur.qIndex ? 'is-lit' : i === cur.qIndex ? 'is-now' : ''}">${icon('star')}</span>`).join('')}<span class="glyph-label">${cur.qIndex} of ${qs.length} ${esc(glyphWord)}s lit</span></div>` : ''}<h2 class="q-title">${esc(q.title)}</h2><div class="q-prompt">${q.prompt}</div>${Sup().inlineHintHtml(q, cur.level === 0)}<div class="q-body" id="q-body"></div>
       <div class="q-actions"><div class="q-actions-left"><button type="button" class="btn btn-ghost" id="btn-help">${icon('help')} Need help?</button>${q.reference && RX.REFERENCE_SHEET ? `<button type="button" class="btn btn-ghost" data-act="reference">${icon('ref')} Reference sheet</button>` : ''}${s.settings.readAloud ? `<button type="button" class="btn btn-ghost btn-icon" data-act="speak" aria-label="Read aloud">${icon('speaker')}</button>` : ''}</div><button type="button" class="btn btn-primary" id="btn-check">Check answer</button></div>
       <div class="q-feedback" id="q-feedback" aria-live="polite" hidden></div></div></section>`,
     );
@@ -6905,6 +8748,7 @@ body.in-trek .at-top {
     });
     document.getElementById('btn-check').addEventListener('click', submit);
     document.getElementById('btn-help').addEventListener('click', openHelp);
+    Sup().bindInlineHint();
     setTimeout(() => {
       const first = document.querySelector('#q-body input, #q-body .choice, #q-body button');
       if (first && root.innerWidth > 700) first.focus({ preventScroll: true });
@@ -6927,7 +8771,7 @@ body.in-trek .at-top {
     const cur = s.current;
     if (res.correct) {
       const first = attempts === 1 && !solutionShown;
-      const mult = solutionShown ? XP_AFTER_SOLUTION : attempts === 1 ? 1 : XP_SECOND;
+      const mult = (solutionShown ? XP_AFTER_SOLUTION : attempts === 1 ? 1 : XP_SECOND) * (cur.level === 2 ? Sup().LEVEL2_XP : 1);
       const xp = Math.round(q.xp * mult);
       const missRunBefore = s.stats.missRun;
       s.xp += xp;
@@ -6963,7 +8807,8 @@ body.in-trek .at-top {
         State.save();
       } else {
         widget.markResult(Object.assign({ final: false }, res));
-        showFeedback(false, `${wrongText(ans, res)} <span class="fb-again">Try once more. You can also open <b>Need help?</b> for a hint.</span>`, 0, false, false);
+        if (cur.level <= 1) Sup().revealInlineHint();
+        showFeedback(false, `${wrongText(ans, res)} <span class="fb-again">${cur.level <= 1 ? 'Read the hint above the answer area, then try once more.' : 'Try once more. You can also open <b>Need help?</b> for a hint.'}</span>`, 0, false, false);
         State.save();
       }
     }
@@ -6971,13 +8816,18 @@ body.in-trek .at-top {
       xp: s.xp,
       streak: s.streak,
       title: zoneById(cur.zone).name,
-      sub: missionDef(cur.zone, cur.mission).name,
+      sub: missionName(cur),
       dots: dotsFor(cur, buildQuestions(cur)),
     });
   }
   function wrongText(ans, res) {
     const w = q.feedback.wrong;
-    let t = typeof w === 'function' ? w(ans, res.detail || {}) : w;
+    let t;
+    try {
+      t = typeof w === 'function' ? w(ans, res.detail || {}) : w;
+    } catch (e) {
+      t = null; // a feedback function must never block the student; fall back below
+    }
     if (!t && q.options && typeof ans === 'number' && q.options[ans] && q.options[ans].why) t = q.options[ans].why;
     if (!t) t = q.hints[0] || 'Not quite. Look at the question again.';
     return `<span class="fb-text">${t}</span>`;
@@ -6999,7 +8849,7 @@ body.in-trek .at-top {
     fb.hidden = false;
     fb.className = 'q-feedback ' + (ok ? 'is-ok' : final ? 'is-final' : 'is-retry');
     const done = ok || final;
-    fb.innerHTML = `<div class="fb-head">${icon(ok ? 'check' : 'x')}<b>${ok ? (first ? 'Correct!' : 'Correct') : final ? "Let's look at the solution" : 'Not yet'}</b>${ok ? `<span class="fb-xp">+${xp} XP${first ? '' : ' (retry)'}</span>` : ''}</div><div class="fb-body">${html}</div>${done ? `<div class="fb-actions"><button type="button" class="btn btn-primary" id="btn-next">${s.current.qIndex + 1 < missionDef(s.current.zone, s.current.mission).gens.length ? 'Next challenge' : 'Finish mission'} ${icon('arrow')}</button></div>` : ''}`;
+    fb.innerHTML = `<div class="fb-head">${icon(ok ? 'check' : 'x')}<b>${ok ? (first ? 'Correct!' : 'Correct') : final ? "Let's look at the solution" : 'Not yet'}</b>${ok ? `<span class="fb-xp">+${xp} XP${first ? '' : ' (retry)'}</span>` : ''}</div><div class="fb-body">${html}</div>${done ? `<div class="fb-actions"><button type="button" class="btn btn-primary" id="btn-next">${s.current.qIndex + 1 < specsOf(s.current).length ? 'Next challenge' : s.current.retry ? 'Finish practice' : 'Finish mission'} ${icon('arrow')}</button></div>` : ''}`;
     const check = document.getElementById('btn-check');
     if (done) {
       check.disabled = true;
@@ -7019,8 +8869,7 @@ body.in-trek .at-top {
   function next() {
     const cur = s.current;
     cur.qIndex++;
-    const m = missionDef(cur.zone, cur.mission);
-    if (cur.qIndex >= m.gens.length) return completeMission();
+    if (cur.qIndex >= specsOf(cur).length) return cur.retry ? completeRetry() : completeMission();
     State.save();
     renderQuestion();
   }
@@ -7076,13 +8925,41 @@ body.in-trek .at-top {
           : ''
       }
       <div class="skill-rows">${skillRows}</div>
-      <div class="title-actions">${zoneNowDone && z.final ? `<button type="button" class="btn btn-primary btn-lg" id="btn-results" autofocus>${icon('chart')} See your Mission Report</button>` : `<button type="button" class="btn btn-primary btn-lg" id="btn-map" autofocus>${RX.UNIT.onExit ? 'Back to the Atlas' : 'Back to the map'} ${icon('arrow')}</button>`}<button type="button" class="btn btn-ghost" id="btn-replay">${icon('replay')} Replay this mission</button></div></div></section>`,
+      <div class="title-actions">${zoneNowDone && z.final ? `<button type="button" class="btn btn-primary btn-lg" id="btn-results" autofocus>${icon('chart')} See your Mission Report</button>` : `<button type="button" class="btn btn-primary btn-lg" id="btn-map" autofocus>${RX.UNIT.onExit ? 'Back to the Atlas' : 'Back to the map'} ${icon('arrow')}</button>`}${missedSpecs(cur, m).length ? `<button type="button" class="btn btn-ghost" id="btn-missed">${icon('bulb')} Practice the ${missedSpecs(cur, m).length} I missed (new numbers)</button>` : ''}<button type="button" class="btn btn-ghost" id="btn-replay">${icon('replay')} Replay this mission</button></div></div></section>`,
     );
+    const bmiss = document.getElementById('btn-missed');
+    if (bmiss) bmiss.addEventListener('click', () => startMission(z.id, m.id, { retry: true, gens: missedSpecs(cur, m) }));
     const bm = document.getElementById('btn-map');
     if (bm) bm.addEventListener('click', exitTo);
     const br = document.getElementById('btn-results');
     if (br) br.addEventListener('click', showResults);
     document.getElementById('btn-replay').addEventListener('click', () => startMission(z.id, m.id));
+  }
+  /** Generator specs a student did not get right on the first try in this run. */
+  function missedSpecs(cur, m) {
+    const specs = cur.gens || m.gens;
+    return specs.filter((g, i) => cur.results[i] && !cur.results[i].firstTry);
+  }
+  function completeRetry() {
+    const cur = s.current,
+      z = zoneById(cur.zone);
+    const total = cur.results.length,
+      first = cur.results.filter((r) => r.firstTry).length;
+    s.current = null;
+    State.save();
+    const still = cur.gens.filter((g, i) => cur.results[i] && !cur.results[i].firstTry);
+    UI.hud({ xp: s.xp, streak: s.streak, title: z.name, sub: 'Practice complete' });
+    UI.screen(
+      'complete',
+      `<section class="complete" style="--accent:${z.accent}"><div class="complete-card"><p class="eyebrow">${esc(z.name)} · Practice what you missed</p><h2>${first === total ? 'All fixed' : 'Practice complete'}</h2>
+      <div class="stat-row"><div class="stat"><b>${first}/${total}</b><span>right on the first try</span></div><div class="stat"><b>${s.xp}</b><span>total XP</span></div></div>
+      <p class="lede">${first === total ? 'You got every one of them this time. Those skills are stronger now.' : 'Each try with new numbers makes the skill stronger. Practice the rest again, or move on.'}</p>
+      <div class="skill-rows">${summarizeSkills(cur.results)}</div>
+      <div class="title-actions"><button type="button" class="btn btn-primary btn-lg" id="btn-map" autofocus>${RX.UNIT.onExit ? 'Back to the Atlas' : 'Back to the map'} ${icon('arrow')}</button>${still.length ? `<button type="button" class="btn btn-ghost" id="btn-again">${icon('replay')} Practice the ${still.length} again</button>` : ''}</div></div></section>`,
+    );
+    document.getElementById('btn-map').addEventListener('click', exitTo);
+    const again = document.getElementById('btn-again');
+    if (again) again.addEventListener('click', () => startMission(z.id, cur.mission, { retry: true, gens: still }));
   }
   function zoneFirstRate(z) {
     let f = 0,
@@ -7119,8 +8996,9 @@ body.in-trek .at-top {
     const got = Rules.evaluate(s, { event: 'help' });
     State.save();
     announce(got);
+    let example = null;
     const render = () =>
-      `<div class="help-steps">${q.hints
+      `${hintLevel >= 1 || levelNow() === 0 ? `<div class="help-ex">${example || '<button type="button" class="btn btn-ghost btn-sm" id="btn-example">' + icon('book') + ' See a worked example with different numbers</button>'}</div>` : ''}<div class="help-steps">${q.hints
         .slice(0, hintLevel)
         .map((t, i) => `<div class="help-step"><span class="hs-k">Hint ${i + 1}</span><div>${t}</div></div>`)
         .join(
@@ -7148,9 +9026,15 @@ body.in-trek .at-top {
         },
       ],
     });
+    const body = m.el.querySelector('.modal-body');
+    body.addEventListener('click', (e) => {
+      if (!e.target.closest('#btn-example')) return;
+      example = Sup().workedExample(q, (s.current.seed + s.current.qIndex * 7919) >>> 0, s.current.level) || '<p class="muted">No worked example is available for this one. Try the hints.</p>';
+      body.innerHTML = render();
+    });
     if (hintLevel === 0 && !solutionShown) {
       hintLevel = 1;
-      m.el.querySelector('.modal-body').innerHTML = render();
+      body.innerHTML = render();
     }
   }
 
@@ -7163,7 +9047,7 @@ body.in-trek .at-top {
     UI.modal({
       title: `${icon('book')} Field Guide`,
       wide: true,
-      body: `<p class="muted">Tap a term to see its meaning and an example.</p><div class="vocab">${RX.VOCAB.map((v) => `<details class="vocab-item"><summary>${esc(v.term)}</summary><div class="vocab-body"><p>${v.def}</p>${v.ex ? `<p class="vocab-ex"><b>Example:</b> ${esc(v.ex)}</p>` : ''}${v.visual ? `<div class="vocab-viz">${v.visual()}</div>` : ''}</div></details>`).join('')}</div>${RX.REFERENCE_SHEET ? `<h3 class="ref-h">Reference sheet</h3>${RX.REFERENCE_SHEET}` : ''}`,
+      body: `<p class="muted">Tap a term to see its meaning and an example.</p><div class="vocab">${RX.VOCAB.map((v) => `<details class="vocab-item"><summary>${esc(v.term)}${v.es ? ` <span class="vocab-es" lang="es">${esc(v.es)}</span>` : ''}</summary><div class="vocab-body"><p>${v.def}</p>${v.esDef ? `<p class="vocab-esdef" lang="es">${esc(v.esDef)}</p>` : ''}${v.ex ? `<p class="vocab-ex"><b>Example:</b> ${esc(v.ex)}</p>` : ''}${v.visual ? `<div class="vocab-viz">${v.visual()}</div>` : ''}</div></details>`).join('')}</div>${RX.REFERENCE_SHEET ? `<h3 class="ref-h">Reference sheet</h3>${RX.REFERENCE_SHEET}` : ''}`,
     });
   }
   function openReference() {
@@ -7179,7 +9063,12 @@ body.in-trek .at-top {
       `<label class="setting"><span><b>${label}</b><small>${desc}</small></span><input type="checkbox" data-k="${k}" ${st[k] ? 'checked' : ''}><span class="switch" aria-hidden="true"></span></label>`;
     const m = UI.modal({
       title: `${icon('settings')} Settings`,
-      body: `<div class="settings">${row('readAloud', 'Read-aloud button', 'Adds a speaker button to each challenge.')}${row('largeText', 'Larger text', 'Increases text size across the game.')}${row('dyslexic', 'Extra letter spacing', 'Wider spacing between letters and lines.')}${row('reduceMotion', 'Reduce motion', 'Turns off animations and transitions.')}</div><div class="settings-reset"><button type="button" class="btn btn-ghost btn-sm" id="btn-reset">Reset Adventure</button><small>Teacher option. Erases all saved progress for this expedition on this device.</small></div>`,
+      body: `<h3 class="lvl-h">Level</h3>${Sup().levelPicker(levelNow(), 'set-level')}<p class="muted lvl-note">A new level starts with your next mission.</p><div class="settings">${row('readAloud', 'Read-aloud button', 'Adds a speaker button to each challenge.')}${row('largeText', 'Larger text', 'Increases text size across the game.')}${row('dyslexic', 'Extra letter spacing', 'Wider spacing between letters and lines.')}${row('reduceMotion', 'Reduce motion', 'Turns off animations and transitions.')}</div><div class="settings-reset"><button type="button" class="btn btn-ghost btn-sm" id="btn-reset">Reset Adventure</button><small>Teacher option. Erases all saved progress for this expedition on this device.</small></div>`,
+    });
+    Sup().bindLevelPicker(m.el.querySelector('.lvl-pick'), (l) => {
+      setLevel(l);
+      const ra = m.el.querySelector('input[data-k="readAloud"]');
+      if (ra) ra.checked = !!s.settings.readAloud;
     });
     m.el.querySelectorAll('input[type="checkbox"]').forEach((c) =>
       c.addEventListener('change', () => {
@@ -7218,93 +9107,13 @@ body.in-trek .at-top {
     });
   }
 
-  // ---------- Results / report ----------
-  function skillReport() {
-    return Object.keys(RX.SKILLS).map((k) => {
-      const sk = s.skills[k] || { seen: 0, first: 0 };
-      const rate = sk.seen ? sk.first / sk.seen : null;
-      return {
-        k,
-        label: RX.SKILLS[k].label,
-        lesson: RX.SKILLS[k].lesson,
-        zone: RX.SKILLS[k].zone,
-        rate,
-        seen: sk.seen,
-        band: rate == null ? 'Not yet seen' : Rules.skillBand(rate),
-      };
-    });
-  }
-  /** Plain-text report a student can paste into Canvas, email, or show a teacher. */
-  function reportText() {
-    const skills = skillReport();
-    const acc = s.stats.answered ? Math.round((100 * s.stats.firstTry) / s.stats.answered) : 0;
-    const zonesDone = RX.ZONES.filter((z) => Rules.isZoneComplete(s, z.id)).length;
-    const lines = [
-      `${RX.UNIT.brand} — Mission Report`,
-      `${RX.UNIT.unitLabel}`,
-      `Date: ${new Date().toLocaleDateString()}`,
-      '',
-      `First-try accuracy: ${acc}%  ·  XP: ${s.xp}  ·  Zones cleared: ${zonesDone}/${RX.ZONES.length}  ·  Challenges answered: ${s.stats.answered}`,
-      '',
-      'Skills:',
-    ];
-    skills.forEach((x) =>
-      lines.push(
-        `  ${x.band === 'Strong' ? '✔' : x.band === 'Almost There' ? '~' : x.band === 'Not yet seen' ? '·' : '✘'} ${x.label} (Lesson ${x.lesson}): ${x.band}${x.seen ? ` — ${x.seen} seen` : ''}`,
-      ),
-    );
-    lines.push('', `Achievements: ${Object.keys(s.achievements).length}/${RX.ACHIEVEMENTS.length}`);
-    return lines.join('\n');
-  }
+  // ---------- Results / report (js/engine/report.js) ----------
   function showResults() {
+    RX.Report.showResults();
     s = State.load();
-    const skills = skillReport();
-    const seen = skills.filter((x) => x.rate != null);
-    const strong = seen.filter((x) => x.band === 'Strong'),
-      practice = seen.filter((x) => x.band !== 'Strong');
-    const acc = s.stats.answered ? Math.round((100 * s.stats.firstTry) / s.stats.answered) : 0;
-    const zonesDone = RX.ZONES.filter((z) => Rules.isZoneComplete(s, z.id));
-    const finished = Rules.isZoneComplete(s, Rules.finalZone().id);
-    const opt = Rules.optionalZones()[0];
-    UI.hud({ xp: s.xp, streak: s.streak, title: 'Mission Report' });
-    UI.screen(
-      'results',
-      `<section class="results"><div class="results-card"><p class="eyebrow">${esc(RX.UNIT.brand)} · ${esc(RX.UNIT.unitLabel)}</p><h2>${finished ? 'Mission Complete' : 'Progress Report'}</h2><p class="lede">${finished ? story().resultsLede : 'Here is how the expedition is going so far. Keep clearing zones to finish the route.'}</p>
-      <div class="stat-row"><div class="stat"><b>${acc}%</b><span>first-try accuracy</span></div><div class="stat"><b>${s.xp}</b><span>XP earned</span></div><div class="stat"><b>${zonesDone.length}/${RX.ZONES.length}</b><span>zones cleared</span></div><div class="stat"><b>${Object.keys(s.achievements).length}/${RX.ACHIEVEMENTS.length}</b><span>achievements</span></div></div>
-      <div class="results-cols"><div><h3>Strongest skills</h3>${strong.length ? strong.map((x) => `<div class="skill-row"><span>${esc(x.label)}</span><span class="band band-strong">Strong</span></div>`).join('') : '<p class="muted">Keep practicing to build strong skills.</p>'}</div>
-      <div><h3>Keep practicing</h3>${practice.length ? practice.map((x) => `<div class="skill-row"><span>${esc(x.label)}</span><span class="band band-${x.band.replace(/\s/g, '').toLowerCase()}">${x.band}</span></div>`).join('') : `<p class="muted">Every skill you have met is strong.${opt ? ` Try ${esc(opt.name)} for a challenge.` : ''}</p>`}</div></div>
-      ${
-        practice.length
-          ? `<div class="recommend"><h3>Recommended replays</h3><div class="rec-list">${[...new Set(practice.map((x) => x.zone))]
-              .filter((zid) => zoneById(zid))
-              .map((zid) => {
-                const z = zoneById(zid);
-                return `<button type="button" class="btn btn-ghost" data-zone="${z.id}">${icon(z.emblem)} ${esc(z.name)}</button>`;
-              })
-              .join('')}</div></div>`
-          : ''
-      }
-      <div class="ach-reveal">${RX.ACHIEVEMENTS.filter((a) => s.achievements[a.id])
-        .map((a) => `<span class="ach-chip">${icon(a.icon)} ${esc(a.name)}</span>`)
-        .join('')}</div>
-      <div class="title-actions"><button type="button" class="btn btn-primary btn-lg" id="btn-map" autofocus>${RX.UNIT.onExit ? 'Back to the Atlas' : 'Back to the map'} ${icon('arrow')}</button><button type="button" class="btn btn-ghost" id="btn-copy">${icon('ref')} Copy report for my teacher</button><button type="button" class="btn btn-ghost" id="btn-print">${icon('print')} Print report</button></div></div></section>`,
-    );
-    document.getElementById('btn-map').addEventListener('click', exitTo);
-    document.getElementById('btn-copy').addEventListener('click', async () => {
-      const t = reportText();
-      try {
-        await navigator.clipboard.writeText(t);
-        UI.toast('Report copied. Paste it anywhere.', 'ok');
-      } catch (e) {
-        UI.modal({
-          title: 'Your report',
-          body: `<pre class="report-pre">${esc(t)}</pre>`,
-        });
-      }
-    });
-    document.getElementById('btn-print').addEventListener('click', () => root.print());
-    document.querySelectorAll('.rec-list [data-zone]').forEach((b) => b.addEventListener('click', () => openZone(zoneById(b.dataset.zone))));
   }
+  const reportText = () => RX.Report.reportText();
+  const skillReport = () => RX.Report.skillReport();
 
   RX.Game = {
     boot,
@@ -7447,6 +9256,7 @@ body.in-trek .at-top {
     if (view === 'skills') return skillsView();
     if (view === 'teacher') return teacherView();
     if (view === 'print') return RX.Printer.view();
+    if (view === 'snapshot') return RX.Snapshot.view();
     return homeView();
   }
 
@@ -7549,24 +9359,34 @@ body.in-trek .at-top {
     document.getElementById('sk-print').addEventListener('click', () => root.print());
   }
   function skillReportText() {
-    const lines = ['Grade 6 Review Expeditions — Skill Atlas', `Date: ${new Date().toLocaleDateString()}`, ''];
+    const codes = [];
+    const lines = [`Grade 6 Review Expeditions — Skill Atlas${studentName() ? ' — ' + studentName() : ''}`, `Date: ${new Date().toLocaleDateString()}`, ''];
     keys().forEach((k) => {
       const p = pack(k),
         pr = progressOf(k);
       lines.push(`Unit ${p.UNIT.unit} · ${p.UNIT.brand} — ${pr.done}/${pr.total} missions, ${pr.xp} XP${pr.acc != null ? `, ${pr.acc}% first try` : ''}`);
+      const save = saveOf(k);
+      if (save && save.stats && save.stats.answered) codes.push(`Teacher code (Unit ${p.UNIT.unit}): ${RX.Support.encodeProgress(RX.Support.progressPayload(save, k, studentName()))}`);
       skillsOf(k).forEach((x) => {
         if (x.seen) lines.push(`  ${x.band === 'Strong' ? '✔' : x.band === 'Almost There' ? '~' : '✘'} ${x.label} (Lesson ${x.lesson}): ${x.band}`);
       });
       lines.push('');
     });
-    return lines.join('\n');
+    return lines.concat(codes).join('\n');
+  }
+  /** The name a student typed on any unit's report (most recently updated save wins). */
+  function studentName() {
+    let best = null;
+    keys().forEach((k) => { const sv = saveOf(k); if (sv && sv.settings && sv.settings.studentName && (!best || (sv.updatedAt || 0) > best.t)) best = { n: sv.settings.studentName, t: sv.updatedAt || 0 }; });
+    return best ? best.n : '';
   }
 
   function teacherView() {
     main().innerHTML = `<section class="at-page"><p class="eyebrow">Teacher Tools</p><h1>Run the expeditions in your classroom</h1>
       <div class="tt-grid">
         <article class="tt-card"><h3>${icon('print')} Quiz Printer</h3><p>Build a printable quiz, warm-up, or exit ticket from any zone of any unit, with an answer key on the last page. Same generators as the game, so the paper matches the practice.</p><a class="btn btn-primary" href="#print">${icon('arrow')} Open the Quiz Printer</a></article>
-        <article class="tt-card"><h3>${icon('chart')} Reading student reports</h3><p>Students press <b>Copy report for my teacher</b> on any Mission Report. The text lists first-try accuracy, XP, zones cleared, and a band for every skill. Paste into Canvas, a form, or a gradebook comment.</p><p class="muted">Bands: Strong ≥ 80% first try · Almost There 50–79% · Practice Again &lt; 50%.</p></article>
+        <article class="tt-card tt-feature"><h3>${icon('chart')} Class Snapshot</h3><p>Students press <b>Copy report for my teacher</b> on any Mission Report and paste it into Canvas, a form, or an email. Paste all of the reports here at once to see every student's skills in one table per unit, with suggested small groups.</p><a class="btn btn-primary" href="#snapshot">${icon('arrow')} Open the Class Snapshot</a><p class="muted">Bands: Strong ≥ 80% first try · Almost There 50–79% · Practice Again &lt; 50%.</p></article>
+        <article class="tt-card"><h3>${icon('trek')} Levels for every student</h3><p>Each student picks a level when they start, and can change it in Settings.</p><ul><li><b>Level 0 · Most Support:</b> key words with Spanish first, a hint on every question, read-aloud on.</li><li><b>Level 1 · Support:</b> key words first; a hint appears after a wrong try.</li><li><b>Level 2 · Enrichment:</b> harder versions of every challenge, more XP.</li></ul><p class="muted">The level shows on each student's report.</p></article>
         <article class="tt-card"><h3>${icon('book')} Suggested routines</h3><ul><li><b>Unit review week:</b> one zone per day in order, final mission on the last day.</li><li><b>Warm-up:</b> the Daily Trek (8 mixed challenges, about 10 minutes).</li><li><b>Small group:</b> replay the zones the Skill Atlas marks Practice Again.</li><li><b>Printable:</b> Quiz Printer, 6 questions from one zone, as an exit ticket.</li></ul></article>
         <article class="tt-card"><h3>${icon('settings')} Device reset</h3><p>Progress is saved per browser on this device (no accounts). On a shared computer, reset between students.</p><button type="button" class="btn btn-danger btn-sm" id="tt-reset">Erase every expedition on this device</button></article>
       </div></section>`;
@@ -7589,7 +9409,7 @@ body.in-trek .at-top {
   // ---------- Router ----------
   function route() {
     const v = (location.hash || '#home').slice(1).split('/')[0];
-    show(['home', 'trek', 'skills', 'teacher', 'print'].includes(v) ? v : 'home');
+    show(['home', 'trek', 'skills', 'teacher', 'print', 'snapshot'].includes(v) ? v : 'home');
   }
   function boot() {
     RX.UI.mount();
@@ -7632,6 +9452,18 @@ body.in-trek .at-top {
     } catch (e) {
       /* ignore */
     }
+  }
+  function trekLevel() {
+    try { const raw = root.localStorage.getItem(TREK_SAVE); const sv = raw ? JSON.parse(raw) : null; return RX.Support.levelOf(sv); } catch (e) { return 1; }
+  }
+  function setTrekLevel(l) {
+    try {
+      const raw = root.localStorage.getItem(TREK_SAVE);
+      const sv = raw ? JSON.parse(raw) : RX.State.defaults();
+      sv.settings = Object.assign({}, sv.settings, { level: l });
+      if (l === 0) sv.settings.readAloud = true;
+      root.localStorage.setItem(TREK_SAVE, JSON.stringify(sv));
+    } catch (e) { /* storage blocked: level stays at the default */ }
   }
   function reset() {
     try {
@@ -7929,8 +9761,10 @@ body.in-trek .at-top {
       <div class="tk-days" aria-label="Last 14 days">${days.map((x) => `<div class="tk-day ${x.rec && x.rec.done ? 'is-done' : ''} ${x.today ? 'is-today' : ''}" title="${x.k}${x.rec && x.rec.done ? ` — ${x.rec.first}/${x.rec.total} first try` : ''}"><span>${x.label}</span><b>${x.day}</b></div>`).join('')}</div>
       <div class="tk-grid"><div class="tk-card"><h3>${sm.todayDone ? 'Today is done' : 'Ready when you are'}</h3>
           ${sm.todayDone ? `<p class="tk-score"><b>${sm.todayFirst}/${sm.todayTotal}</b> first try today · streak <b>${sm.streak}</b> day${sm.streak === 1 ? '' : 's'}</p>` : `<p class="muted">${sm.anyProgress ? `Drawn from ${unitsLine}.` : 'You have not started an expedition yet, so this trek samples every unit.'}</p>`}
+          <h4 class="tk-lvl-h">Level for the trek</h4>${RX.Support.levelPicker(trekLevel(), 'trek-level')}
           <div class="title-actions"><button type="button" class="btn btn-primary btn-lg" id="tk-start">${icon('arrow')} ${sm.todayDone ? "Replay today's trek" : "Start today's trek"}</button><button type="button" class="btn btn-ghost" id="tk-bonus">${icon('replay')} Bonus trek (new mix)</button><button type="button" class="btn btn-ghost" id="tk-all">${icon('atlas')} Trek across all units</button></div></div>
         <div class="tk-card"><h3>What's in today's trek</h3><ol class="tk-list">${skillLines}</ol></div></div></section>`;
+    RX.Support.bindLevelPicker(document.querySelector('.tk-card .lvl-pick'), setTrekLevel);
     document.getElementById('tk-start').addEventListener('click', () => start(sm.anyProgress ? 'started' : 'all', false));
     document.getElementById('tk-bonus').addEventListener('click', () => start(sm.anyProgress ? 'started' : 'all', true));
     document.getElementById('tk-all').addEventListener('click', () => start('all', true));
@@ -8065,11 +9899,22 @@ body.in-trek .at-top {
     const body = questions
       .map(
         (q, i) =>
-          `<section class="pr-q"><div class="pr-qhead"><span class="pr-num">${i + 1}</span><span class="pr-skill">${esc(p.SKILLS[q.skill] ? p.SKILLS[q.skill].label : q.skill)}</span></div><div class="pr-prompt">${q.prompt}</div><div class="pr-body">${(S[q.type] || (() => ''))(q)}</div></section>`,
+          `<section class="pr-q"><div class="pr-qhead"><span class="pr-num">${i + 1}</span><span class="pr-skill">${esc(p.SKILLS[q.skill] ? p.SKILLS[q.skill].label : q.skill)}</span></div><div class="pr-prompt">${q.prompt}</div>${hintBox(q, spec.hintMode)}<div class="pr-body">${(S[q.type] || (() => ''))(q)}</div></section>`,
       )
       .join('');
     const key = `<section class="pr-key-page"><header class="pr-head"><div><p class="pr-eyebrow">Answer key</p><h1>${esc(title)}</h1><p class="pr-sub">Quiz code ${spec.seed} · regenerate this exact quiz by entering the code</p></div></header><ol class="pr-keys">${questions.map((q) => `<li><div class="pr-key-ans">${(K[q.type] || (() => '—'))(q)}</div><div class="pr-key-sol">${q.type === 'cr' ? '' : q.solution}</div></li>`).join('')}</ol></section>`;
-    return `<article class="pr-doc">${header}<div class="pr-body-all">${body}</div>${spec.noKey ? '' : key}</article>`;
+    return `<article class="pr-doc">${spec.keyWords ? keyWordsPage(p, zones, title) : ''}${header}<div class="pr-body-all">${body}</div>${spec.noKey ? '' : key}</article>`;
+  }
+  function hintBox(q, mode) {
+    if (!mode || mode === 'none' || !q.hints || !q.hints[0]) return '';
+    return `<div class="pr-hint"><b>Hint:</b> ${q.hints[0]}${mode === 'both' && q.hintEs ? `<div class="pr-hint-es" lang="es"><b>Pista:</b> ${q.hintEs}</div>` : ''}</div>`;
+  }
+  /** A printable word-wall page: every key word for the chosen lessons, English and Spanish, with its picture. */
+  function keyWordsPage(p, zones, title) {
+    const ids = new Set(zones.flatMap((z) => String(z.lesson).split(/\s*\/\s*/)));
+    const words = (p.VOCAB || []).filter((v) => (v.lessons || []).some((l) => ids.has(l)));
+    if (!words.length) return '';
+    return `<section class="pr-kw-page"><header class="pr-head"><div><p class="pr-eyebrow">Key words · Palabras clave</p><h1>${esc(title)}</h1><p class="pr-sub">Read each word before the questions.</p></div></header><div class="pr-kw-grid">${words.map((v) => `<div class="pr-kw"><div class="pr-kw-t"><b>${esc(v.term)}</b>${v.es ? `<span lang="es">${esc(v.es)}</span>` : ''}</div><p>${v.def}</p>${v.esDef ? `<p class="pr-kw-es" lang="es">${esc(v.esDef)}</p>` : ''}${v.visual ? `<div class="pr-kw-v">${v.visual()}</div>` : ''}</div>`).join('')}</div></section>`;
   }
 
   // ---------- View ----------
@@ -8089,7 +9934,9 @@ body.in-trek .at-top {
           <label>Questions <input type="number" id="pr-count" min="3" max="30" value="8"></label>
           <label>Quiz code <input type="number" id="pr-seed" min="1" max="999999" value="${Math.floor(1000 + Math.random() * 9000)}"></label>
           <label>Type <select id="pr-kind"><option>Exit Ticket</option><option>Warm-Up</option><option>Practice</option><option>Quiz</option><option>Unit Review</option></select></label>
-          <label class="pr-check"><input type="checkbox" id="pr-hard"> Harder versions</label>
+          <label>Level <select id="pr-level"><option value="1">Level 0–1 · standard questions</option><option value="2">Level 2 · Enrichment versions</option></select></label>
+          <label>Printed hint <select id="pr-hintmode"><option value="none">No hint</option><option value="en">Hint 1 under each question</option><option value="both">Hint 1 in English and Spanish</option></select></label>
+          <label class="pr-check"><input type="checkbox" id="pr-kw"> Key Words page first (English + Spanish)</label>
           <label class="pr-check"><input type="checkbox" id="pr-nokey"> No answer key</label></div>
         <div class="pr-row"><span class="pr-k">Lessons</span><div class="pr-zones" id="pr-zones">${zoneBoxes(ks[0])}</div><div class="pr-zone-tools"><button type="button" class="btn btn-ghost btn-sm" id="pr-all">All</button><button type="button" class="btn btn-ghost btn-sm" id="pr-none">None</button></div></div>
         <div class="pr-row pr-actions"><button type="submit" class="btn btn-primary">${icon('arrow')} Build quiz</button><button type="button" class="btn btn-ghost" id="pr-print" disabled>${icon('print')} Print</button><span class="muted" id="pr-hint">Build first, then print or save as PDF from the print dialog.</span></div>
@@ -8115,7 +9962,9 @@ body.in-trek .at-top {
         count: Math.max(3, Math.min(30, Number(document.getElementById('pr-count').value) || 8)),
         seed: Number(document.getElementById('pr-seed').value) || 1,
         kind: document.getElementById('pr-kind').value,
-        hard: document.getElementById('pr-hard').checked,
+        hard: document.getElementById('pr-level').value === '2',
+        hintMode: document.getElementById('pr-hintmode').value,
+        keyWords: document.getElementById('pr-kw').checked,
         noKey: document.getElementById('pr-nokey').checked,
       };
       const out = document.getElementById('pr-out');
@@ -8136,6 +9985,172 @@ body.in-trek .at-top {
   }
 
   RX.Printer = { view, build, render, S, K };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+    <script>
+/* Class Snapshot — the teacher pastes students' copied reports; the page decodes their teacher codes and shows a class
+   skill table per unit plus suggested small groups. Nothing leaves the browser. */
+(function (root) {
+  'use strict';
+  const RX = root.RX;
+  const { esc, icon } = RX;
+  const A = () => RX.Atlas;
+  const KEY = 'rx-snapshot-draft-v1';
+
+  const band = (seen, first) => (!seen ? null : first / seen >= 0.8 ? 'Strong' : first / seen >= 0.5 ? 'Almost There' : 'Practice Again');
+  const bandCls = (b) => (b ? 'band-' + b.replace(/\s/g, '').toLowerCase() : 'band-none');
+
+  /** Keep one code per student per unit: the one with the most answered questions (ties: the newest). */
+  function dedupe(codes) {
+    const by = {};
+    codes.forEach((c) => {
+      const k = (c.n || '(no name)').toLowerCase() + '|' + c.u;
+      const prev = by[k];
+      if (!prev || c.a > prev.a || (c.a === prev.a && c.d > prev.d)) by[k] = c;
+    });
+    return Object.values(by);
+  }
+
+  function unitSection(unitKey, rows) {
+    const pack = A().pack(unitKey);
+    if (!pack) return `<section class="snap-unit"><h3>Unknown unit ${esc(unitKey)}</h3></section>`;
+    const skills = Object.keys(pack.SKILLS);
+    const students = rows.slice().sort((a, b) => (a.n || '').localeCompare(b.n || ''));
+    const head = `<tr><th scope="col">Student</th><th scope="col">Level</th><th scope="col">First try</th>${skills.map((id) => `<th scope="col" class="snap-skill" title="${esc(pack.SKILLS[id].label)}"><span>${esc(pack.SKILLS[id].lesson)}</span>${esc(pack.SKILLS[id].label)}</th>`).join('')}</tr>`;
+    const body = students
+      .map((c) => {
+        const acc = c.a ? Math.round((100 * c.f) / c.a) : 0;
+        return `<tr><th scope="row">${esc(c.n || '(no name)')}<small>${esc(c.d)}</small></th><td>${c.l}</td><td class="num">${c.a ? acc + '%' : '—'}</td>${skills
+          .map((id) => {
+            const v = c.k[id];
+            const b = v ? band(v[0], v[1]) : null;
+            return `<td class="snap-cell ${bandCls(b)}" title="${esc(pack.SKILLS[id].label)}: ${b || 'not yet seen'}${v ? ` (${v[1]}/${v[0]} first try)` : ''}">${v ? `${v[1]}/${v[0]}` : ''}</td>`;
+          })
+          .join('')}</tr>`;
+      })
+      .join('');
+    // suggested groups: skills where 2+ students are below Strong (seen at least twice)
+    const groups = skills
+      .map((id) => {
+        const need = students.filter((c) => {
+          const v = c.k[id];
+          return v && v[0] >= 2 && v[1] / v[0] < 0.8;
+        });
+        return { id, need, worst: need.filter((c) => c.k[id][1] / c.k[id][0] < 0.5).length };
+      })
+      .filter((g) => g.need.length >= 2)
+      .sort((a, b) => b.worst - a.worst || b.need.length - a.need.length);
+    const groupHtml = groups.length
+      ? `<div class="snap-groups"><h4>${icon('help')} Suggested small groups</h4>${groups
+          .slice(0, 6)
+          .map(
+            (g) =>
+              `<div class="snap-group"><b>${esc(pack.SKILLS[g.id].label)}</b> <span class="muted">Lesson ${esc(pack.SKILLS[g.id].lesson)}</span><div>${g.need.map((c) => `<span class="snap-chip ${bandCls(band(c.k[g.id][0], c.k[g.id][1]))}">${esc(c.n || '(no name)')}</span>`).join('')}</div></div>`,
+          )
+          .join('')}</div>`
+      : '<p class="muted">No skill has two or more students below Strong yet.</p>';
+    return `<section class="snap-unit" style="--accent:${pack.UNIT.accent || '#1FA6A2'}"><div class="snap-unit-head"><h3>Unit ${pack.UNIT.unit} · ${esc(pack.UNIT.brand)}</h3><span class="muted">${students.length} student${students.length === 1 ? '' : 's'}</span></div><div class="snap-scroll"><table class="snap-table"><thead>${head}</thead><tbody>${body}</tbody></table></div>${groupHtml}</section>`;
+  }
+
+  function groupsText(codes) {
+    const lines = ['Suggested small groups — ' + new Date().toLocaleDateString(), ''];
+    const byUnit = {};
+    codes.forEach((c) => (byUnit[c.u] = byUnit[c.u] || []).push(c));
+    Object.keys(byUnit)
+      .sort()
+      .forEach((u) => {
+        const pack = A().pack(u);
+        if (!pack) return;
+        lines.push(`Unit ${pack.UNIT.unit} · ${pack.UNIT.brand}`);
+        Object.keys(pack.SKILLS).forEach((id) => {
+          const need = byUnit[u].filter((c) => {
+            const v = c.k[id];
+            return v && v[0] >= 2 && v[1] / v[0] < 0.8;
+          });
+          if (need.length >= 2) lines.push(`  ${pack.SKILLS[id].label} (Lesson ${pack.SKILLS[id].lesson}): ${need.map((c) => c.n || '(no name)').join(', ')}`);
+        });
+        lines.push('');
+      });
+    return lines.join('\n');
+  }
+
+  function render(text) {
+    const out = document.getElementById('snap-out');
+    const { codes, bad } = RX.Support.decodeAll(text);
+    if (!codes.length) {
+      out.innerHTML = `<p class="snap-empty">${bad ? `${bad} code${bad === 1 ? ' was' : 's were'} damaged. Ask the student to copy the report again.` : 'No teacher codes found yet. Each copied report ends with a line that starts with "Teacher code: RX1."'}</p>`;
+      return;
+    }
+    const list = dedupe(codes);
+    const byUnit = {};
+    list.forEach((c) => (byUnit[c.u] = byUnit[c.u] || []).push(c));
+    const names = new Set(list.map((c) => (c.n || '').toLowerCase()));
+    out.innerHTML = `<div class="snap-sum"><div class="stat"><b>${names.size}</b><span>students</span></div><div class="stat"><b>${Object.keys(byUnit).length}</b><span>units</span></div><div class="stat"><b>${list.length}</b><span>reports</span></div>${bad ? `<div class="stat"><b>${bad}</b><span>damaged codes skipped</span></div>` : ''}<button type="button" class="btn btn-ghost" id="snap-copy">${icon('ref')} Copy small groups</button></div>
+      <p class="snap-legend"><span class="snap-chip band-strong">Strong 80%+</span><span class="snap-chip band-almostthere">Almost There 50–79%</span><span class="snap-chip band-practiceagain">Practice Again &lt;50%</span> Cells show first-try correct / questions seen.</p>
+      ${Object.keys(byUnit)
+        .sort()
+        .map((u) => unitSection(u, byUnit[u]))
+        .join('')}`;
+    document.getElementById('snap-copy').addEventListener('click', async () => {
+      const t = groupsText(list);
+      try {
+        await navigator.clipboard.writeText(t);
+        RX.UI.toast('Small groups copied.', 'ok');
+      } catch (e) {
+        RX.UI.modal({ title: 'Small groups', body: `<pre class="report-pre">${esc(t)}</pre>` });
+      }
+    });
+  }
+
+  /** Three made-up reports so the page can show what it does before real ones are pasted. */
+  function sampleText() {
+    const mk = (n, l, x, a, f, k) => RX.Support.encodeProgress({ v: 1, u: 'u3', n, d: '2026-10-01', l, x, a, f, z: 3, k });
+    return [
+      'Example only — three made-up students:',
+      'Teacher code: ' + mk('Example A', 1, 420, 30, 24, { 'ratio-language': [6, 6], 'unit-rate': [6, 5], tables: [4, 2], graphs: [4, 1] }),
+      'Teacher code: ' + mk('Example B', 0, 260, 26, 12, { 'ratio-language': [6, 4], 'unit-rate': [6, 2], tables: [4, 1], graphs: [3, 1] }),
+      'Teacher code: ' + mk('Example C', 2, 610, 34, 30, { 'ratio-language': [6, 6], 'unit-rate': [6, 6], tables: [4, 3], graphs: [4, 2] }),
+    ].join('\n');
+  }
+
+  function view() {
+    let draft = '';
+    try {
+      draft = root.localStorage.getItem(KEY) || '';
+    } catch (e) {
+      /* storage blocked */
+    }
+    document.getElementById('atlas').innerHTML = `<section class="at-page"><p class="eyebrow">${icon('chart')} Class Snapshot</p><h1>See the whole class at once</h1>
+      <p class="lede">Students press <b>Copy report for my teacher</b> on any Mission Report and paste it into Canvas, a form, or an email. Paste as many reports as you like below, all at once. The page reads the teacher code at the end of each report and builds a skill table for each unit, with suggested small groups. Nothing leaves this browser.</p>
+      <label class="fld snap-fld" for="snap-in"><span class="fld-label">Paste reports</span><textarea id="snap-in" rows="7" placeholder="Paste copied reports here…">${esc(draft)}</textarea></label>
+      <div class="snap-actions"><button type="button" class="btn btn-primary" id="snap-go">${icon('arrow')} Build snapshot</button><button type="button" class="btn btn-ghost" id="snap-sample">Try with example reports</button><button type="button" class="btn btn-ghost" id="snap-clear">Clear</button></div>
+      <div id="snap-out" class="snap-out"></div></section>`;
+    const ta = document.getElementById('snap-in');
+    const save = () => {
+      try {
+        root.localStorage.setItem(KEY, ta.value);
+      } catch (e) {
+        /* storage blocked */
+      }
+    };
+    document.getElementById('snap-go').addEventListener('click', () => {
+      save();
+      render(ta.value);
+    });
+    document.getElementById('snap-sample').addEventListener('click', () => {
+      ta.value = sampleText();
+      render(ta.value);
+    });
+    document.getElementById('snap-clear').addEventListener('click', () => {
+      ta.value = '';
+      save();
+      document.getElementById('snap-out').innerHTML = '';
+    });
+    if (draft) render(draft);
+  }
+
+  RX.Snapshot = { view, render, dedupe, groupsText, sampleText };
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
