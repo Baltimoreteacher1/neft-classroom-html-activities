@@ -209,14 +209,14 @@
       "cloze": "The average distance of each value from the mean is the ___.",
       "examples": [
         {
-          "text": "(3 + 0 + 3) ÷ 3 = 2",
+          "text": "Data 7, 10, 13 has a mean of 10 and a MAD of 2",
           "isExample": true,
-          "why": "Absolute distances from the mean, then averaged."
+          "why": "The distances from 10 are 3, 0 and 3. (3 + 0 + 3) ÷ 3 = 2."
         },
         {
-          "text": "(−3 + 0 + 3) ÷ 3 = 0",
+          "text": "Data 7, 10, 13 has a MAD of 0",
           "isExample": false,
-          "why": "Signed deviations always cancel — that is why they are made absolute."
+          "why": "That adds −3, 0 and 3. The MAD uses distances, which are never negative."
         }
       ]
     },
@@ -229,14 +229,14 @@
       "cloze": "How far a single value is from the mean is its ___.",
       "examples": [
         {
-          "text": "7 being 3 away from a mean of 10",
+          "text": "7 is 3 less than the mean of 10",
           "isExample": true,
-          "why": "It measures distance from the mean."
+          "why": "A deviation tells how far a value is from the mean."
         },
         {
-          "text": "7 being 3 away from 4",
+          "text": "7 is 3 more than the value 4",
           "isExample": false,
-          "why": "Deviation is measured from the mean, not another value."
+          "why": "A deviation is measured from the mean, not from another value."
         }
       ]
     },
@@ -408,58 +408,221 @@
       "caption": "This dot plot shows ONLY Player A's scores: they cluster tightly near 20 (low MAD = consistent). Picture Player B's scores from the story (10, 30, 25, 12, 23) on the same axis — they would land far from 20 on both ends, showing a much wider spread (higher MAD)."
     },
     "conceptIntro": {
-      "heading": "Push further — What is the mean absolute deviation (MAD)?",
-      "intro": "You already can do this. So we go up a level, not up a number: find what is always true, show it a second way, and be ready to defend it with a reason instead of an answer.",
-      "keyIdea": "MAD = the average of how far each number is from the mean (always a positive distance) — and you can say why it is true, and where it would stop being true.",
+      "heading": "Describe Data by Mean Absolute Deviation",
+      "intro": "Two data sets can have the same mean but different spread. The MAD shows which set is more consistent.",
+      "introEs": "Dos conjuntos de datos pueden tener la misma media pero distinta dispersión. La DMA muestra cuál es más constante.",
+      "keyIdea": "The MAD measures spread: a small MAD means the values stay close to the mean, and a large MAD means they are spread out.",
+      "keyIdeaEs": "La DMA mide la dispersión: una DMA pequeña significa que los valores se quedan cerca de la media, y una grande significa que están dispersos.",
       "iDo": {
-        "title": "Watch me",
+        "title": "Example · Same mean, different spread",
+        "titleEs": "Ejemplo · Misma media, distinta dispersión",
         "lines": [
-          "My data set: 6, 8, 10, 12. First I find the mean: 6 + 8 + 10 + 12 = 36, then 36 ÷ 4 = 9. The mean is 9.",
-          "Next I find each deviation (value − mean): 6−9 = −3, 8−9 = −1, 10−9 = 1, 12−9 = 3.",
-          "Then I take the absolute value of each (the distance, never negative): 3, 1, 1, 3.",
-          "Finally I average those distances: 3 + 1 + 1 + 3 = 8, then 8 ÷ 4 = 2. So the MAD = 2 points."
+          "Player A scored 18, 22, 20, 24, 16 points. Player B scored 20, 21, 20, 19, 20 points. Both have a mean of 20. Which player is more consistent?",
+          "Check that both means are 20: 100 ÷ 5 = 20",
+          "Find Player A's MAD: 2 + 2 + 0 + 4 + 4 = 12; 12 ÷ 5 = 2.4",
+          "Find Player B's MAD: 0 + 1 + 0 + 1 + 0 = 2; 2 ÷ 5 = 0.4",
+          "Compare the two MADs: 0.4 < 2.4",
+          "Player B is more consistent. Player B's MAD is 0.4, and Player A's MAD is 2.4."
         ],
         "linesEs": [
-          "Mi conjunto de datos: 6, 8, 10, 12. Primero hallo la media: 6 + 8 + 10 + 12 = 36, luego 36 ÷ 4 = 9. La media es 9.",
-          "Luego hallo cada desviación (valor − media): 6−9 = −3, 8−9 = −1, 10−9 = 1, 12−9 = 3.",
-          "Después tomo el valor absoluto de cada una (la distancia, nunca negativa): 3, 1, 1, 3.",
-          "Por último promedio esas distancias: 3 + 1 + 1 + 3 = 8, luego 8 ÷ 4 = 2. Así que la desviación media absoluta = 2 puntos."
-        ],
-        "titleEs": "Mírame"
+          "El jugador A anotó 18, 22, 20, 24, 16 puntos. El jugador B anotó 20, 21, 20, 19, 20 puntos. Los dos tienen una media de 20. ¿Cuál jugador es más constante?",
+          "Comprueba que las dos medias son 20: 100 ÷ 5 = 20",
+          "Halla la DMA del jugador A: 2 + 2 + 0 + 4 + 4 = 12; 12 ÷ 5 = 2.4",
+          "Halla la DMA del jugador B: 0 + 1 + 0 + 1 + 0 = 2; 2 ÷ 5 = 0.4",
+          "Compara las dos DMA: 0.4 < 2.4",
+          "El jugador B es más constante. La DMA del jugador B es 0.4, y la DMA del jugador A es 2.4."
+        ]
       },
       "weDo": {
         "title": "Try it together — then prove it",
+        "titleEs": "Inténtalo juntos — y luego demuéstralo",
         "lines": [
-          "New data set: 9, 10, 11. First, what is the mean? Add the three numbers and divide by 3.",
-          "Now find how far each number is from the mean. What is the distance for 9? For 10? For 11?",
-          "Add those distances and divide by 3. Is this MAD small or large? What does that tell us about the spread?",
-          "Now prove it: say why that move had to work at all — not just that it did.",
-          "Sentence frame — convince a skeptic: \"My method works because ___ . It would stop working if ___ .\""
+          "Find the MAD of this data set: 9, 10, 11.",
+          "Find the mean. (30 ÷ 3 = 10)",
+          "Find each distance from 10. Then find the MAD. (Distances 1, 0, 1 → (1 + 0 + 1) ÷ 3 = 2/3)",
+          "The deviations −1, 0 and 1 add to 0. Why do we use distances instead? (Signed deviations always add to 0. Then every data set would look like it has no spread.)"
         ],
         "linesEs": [
-          "Conjunto de datos nuevo: 9, 10, 11. Primero, ¿cuál es la media? Suma los tres números y divide entre 3.",
-          "Ahora halla qué tan lejos está cada número de la media. ¿Cuál es la distancia del 9? ¿Del 10? ¿Del 11?",
-          "Suma esas distancias y divide entre 3. ¿Es esta desviación pequeña o grande? ¿Qué nos dice eso sobre la dispersión?",
-          "Ahora demuéstralo: di por qué ese paso tenía que funcionar — no solo que funcionó.",
-          "Marco de oración — convence a alguien que duda: «Mi método funciona porque ___ . Dejaría de funcionar si ___ .»"
-        ],
-        "titleEs": "Inténtalo con nosotros — luego demuéstralo"
+          "Halla la DMA de este conjunto de datos: 9, 10, 11.",
+          "Halla la media. (30 ÷ 3 = 10)",
+          "Halla cada distancia a 10. Luego halla la DMA. (Distancias 1, 0, 1 → (1 + 0 + 1) ÷ 3 = 2/3)",
+          "Las desviaciones −1, 0 y 1 suman 0. ¿Por qué usamos distancias? (Las desviaciones con signo siempre suman 0. Así, todos los conjuntos parecerían no tener dispersión.)"
+        ]
       },
       "youDo": {
-        "title": "Now you try — and defend it",
+        "title": "Your turn",
+        "titleEs": "Tu turno",
         "lines": [
-          "Try the problems below on your own. Getting the answer is half the work — be ready to say why your method works, and where it would stop working.",
-          "Then pick one problem and show it a second way. If two different methods agree, that agreement is your proof."
+          "Data set: 3, 7, 7, 11. The mean is 7. Maya adds the deviations −4, 0, 0 and 4. She says the MAD is 0. What is the correct MAD?",
+          "Explain why Maya's answer of 0 is wrong."
         ],
         "linesEs": [
-          "Intenta los problemas de abajo por tu cuenta. Obtener la respuesta es la mitad del trabajo — prepárate para decir por qué funciona tu método y dónde dejaría de funcionar.",
-          "Luego elige un problema y muéstralo de una segunda manera. Si dos métodos distintos coinciden, esa coincidencia es tu prueba."
+          "Conjunto de datos: 3, 7, 7, 11. La media es 7. Maya suma las desviaciones −4, 0, 0 y 4. Dice que la DMA es 0. ¿Cuál es la DMA correcta?",
+          "Explica por qué la respuesta de Maya, 0, es incorrecta."
+        ]
+      }
+    },
+    "build": {
+      "todayIdea": "Two data sets can have the same mean but different spread. The MAD shows which set is more consistent.",
+      "todayIdeaEs": "Dos conjuntos de datos pueden tener la misma media pero distinta dispersión. La DMA muestra cuál es más constante.",
+      "examples": [
+        {
+          "title": "Example · Same mean, different spread",
+          "titleEs": "Ejemplo · Misma media, distinta dispersión",
+          "problem": "Player A scored 18, 22, 20, 24, 16 points. Player B scored 20, 21, 20, 19, 20 points. Both have a mean of 20. Which player is more consistent?",
+          "problemEs": "El jugador A anotó 18, 22, 20, 24, 16 puntos. El jugador B anotó 20, 21, 20, 19, 20 puntos. Los dos tienen una media de 20. ¿Cuál jugador es más constante?",
+          "figure": {
+            "kind": "table",
+            "headers": [
+              "Player A",
+              "Distance from 20",
+              "Player B",
+              "Distance from 20"
+            ],
+            "rows": [
+              [
+                "18",
+                "2",
+                "20",
+                "0"
+              ],
+              [
+                "22",
+                "2",
+                "21",
+                "1"
+              ],
+              [
+                "20",
+                "0",
+                "20",
+                "0"
+              ],
+              [
+                "24",
+                "4",
+                "19",
+                "1"
+              ],
+              [
+                "16",
+                "4",
+                "20",
+                "0"
+              ]
+            ],
+            "caption": "Player A's scores are farther from the mean.",
+            "captionEs": "Los puntajes del jugador A están más lejos de la media."
+          },
+          "steps": [
+            {
+              "do": "Check that both means are 20.",
+              "doEs": "Comprueba que las dos medias son 20.",
+              "math": "100 ÷ 5 = 20",
+              "why": "Each player's 5 scores add to 100.",
+              "whyEs": "Los 5 puntajes de cada jugador suman 100."
+            },
+            {
+              "do": "Find Player A's MAD.",
+              "doEs": "Halla la DMA del jugador A.",
+              "math": [
+                "2 + 2 + 0 + 4 + 4 = 12",
+                "12 ÷ 5 = 2.4"
+              ]
+            },
+            {
+              "do": "Find Player B's MAD.",
+              "doEs": "Halla la DMA del jugador B.",
+              "math": [
+                "0 + 1 + 0 + 1 + 0 = 2",
+                "2 ÷ 5 = 0.4"
+              ]
+            },
+            {
+              "do": "Compare the two MADs.",
+              "doEs": "Compara las dos DMA.",
+              "math": "0.4 < 2.4",
+              "why": "A smaller MAD means the scores stay closer to the mean.",
+              "whyEs": "Una DMA menor significa que los puntajes se quedan más cerca de la media."
+            }
+          ],
+          "answer": "Player B is more consistent. Player B's MAD is 0.4, and Player A's MAD is 2.4.",
+          "answerEs": "El jugador B es más constante. La DMA del jugador B es 0.4, y la DMA del jugador A es 2.4."
+        }
+      ],
+      "together": {
+        "title": "Try it together — then prove it",
+        "titleEs": "Inténtalo juntos — y luego demuéstralo",
+        "problem": "Find the MAD of this data set: 9, 10, 11.",
+        "problemEs": "Halla la DMA de este conjunto de datos: 9, 10, 11.",
+        "figure": {
+          "kind": "numberLine",
+          "min": 8,
+          "max": 12,
+          "step": 1,
+          "points": [
+            {
+              "value": 9
+            },
+            {
+              "value": 10,
+              "text": "mean"
+            },
+            {
+              "value": 11
+            }
+          ],
+          "jumps": [
+            {
+              "from": 10,
+              "to": 9,
+              "text": "1"
+            },
+            {
+              "from": 10,
+              "to": 11,
+              "text": "1"
+            }
+          ]
+        },
+        "steps": [
+          {
+            "ask": "Find the mean.",
+            "askEs": "Halla la media.",
+            "answer": "30 ÷ 3 = 10"
+          },
+          {
+            "ask": "Find each distance from 10. Then find the MAD.",
+            "askEs": "Halla cada distancia a 10. Luego halla la DMA.",
+            "answer": "Distances 1, 0, 1 ⟶ (1 + 0 + 1) ÷ 3 = {2/3}",
+            "answerEs": "Distancias 1, 0, 1 ⟶ (1 + 0 + 1) ÷ 3 = {2/3}"
+          },
+          {
+            "ask": "The deviations −1, 0 and 1 add to 0. Why do we use distances instead?",
+            "askEs": "Las desviaciones −1, 0 y 1 suman 0. ¿Por qué usamos distancias?",
+            "answer": "Signed deviations always add to 0. Then every data set would look like it has no spread.",
+            "answerEs": "Las desviaciones con signo siempre suman 0. Así, todos los conjuntos parecerían no tener dispersión."
+          }
         ],
-        "titleEs": "Ahora inténtalo tú — y defiéndelo"
+        "answer": "The MAD is {2/3}. We use distances so that values on both sides of the mean count as spread.",
+        "answerEs": "La DMA es {2/3}. Usamos distancias para que los valores a los dos lados de la media cuenten como dispersión."
       },
-      "headingEs": "Ve más allá — ¿Qué es la desviación media absoluta?",
-      "introEs": "Esto ya lo sabes hacer. Así que subimos de nivel, no de número: halla lo que siempre es cierto, muéstralo de una segunda manera y prepárate para defenderlo con una razón en lugar de una respuesta.",
-      "keyIdeaEs": "Desviación media absoluta = el promedio de qué tan lejos está cada número de la media (siempre una distancia positiva) — y puedes decir por qué es cierto y dónde dejaría de serlo."
+      "tryIt": {
+        "problem": "Data set: 3, 7, 7, 11. The mean is 7. Maya adds the deviations −4, 0, 0 and 4. She says the MAD is 0. What is the correct MAD?",
+        "problemEs": "Conjunto de datos: 3, 7, 7, 11. La media es 7. Maya suma las desviaciones −4, 0, 0 y 4. Dice que la DMA es 0. ¿Cuál es la DMA correcta?",
+        "answer": "2",
+        "accept": [
+          "2"
+        ],
+        "hint": "Use distances, which are never negative: 4, 0, 0 and 4. Find their mean.",
+        "hintEs": "Usa distancias, que nunca son negativas: 4, 0, 0 y 4. Halla su media.",
+        "explain": "Explain why Maya's answer of 0 is wrong.",
+        "explainEs": "Explica por qué la respuesta de Maya, 0, es incorrecta.",
+        "modelExplanation": "Maya added signed deviations. The −4 and the 4 cancel, so she got 0. The MAD uses distances, which are never negative: (4 + 0 + 0 + 4) ÷ 4 = 2.",
+        "modelExplanationEs": "Maya sumó desviaciones con signo. El −4 y el 4 se cancelan, así que obtuvo 0. La DMA usa distancias, que nunca son negativas: (4 + 0 + 0 + 4) ÷ 4 = 2."
+      },
+      "bigIdea": "The MAD measures spread: a small MAD means the values stay close to the mean, and a large MAD means they are spread out.",
+      "bigIdeaEs": "La DMA mide la dispersión: una DMA pequeña significa que los valores se quedan cerca de la media, y una grande significa que están dispersos."
     }
   },
   "explore": {
@@ -2030,5 +2193,6 @@
       ],
       "explanationEs": "Encuentra la media: 27.2. Escribe las desviaciones absolutas: 2.2, 1.2, 1.2, 0.8, 3.8. Calcula el promedio de las desviaciones: 1.84."
     }
-  ]
+  ],
+  "topic": "Describe Data by Mean Absolute Deviation"
 }

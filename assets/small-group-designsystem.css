@@ -19,14 +19,7 @@
    should line up column to column.
    --------------------------------------------------------------------------- */
 
-.sg-obj,
-.sg-context,
-.sg-build-intro,
-.sg-apply-text,
-.sg-cloze-sentence,
-.sg-buildstep-body,
-.sg-directions,
-.q {
+.sg-obj,.sg-context,.sg-apply-text,.sg-cloze-sentence,.sg-directions,.q{
   text-wrap: pretty;
 }
 
@@ -155,17 +148,7 @@
    reads as a smudge rather than a sheet of paper.
    --------------------------------------------------------------------------- */
 
-.card,
-.sg-mission,
-.sg-talk,
-.prob,
-.sg-vcard,
-.sg-map,
-.sg-stage,
-.sg-cloze,
-.sg-reflect,
-.sg-figure,
-.sg-lab-mount .card {
+.card,.sg-mission,.sg-talk,.prob,.sg-vcard,.sg-map,.sg-cloze,.sg-reflect,.sg-figure,.sg-lab-mount .card{
   box-shadow: var(--sg-shadow);
   border-color: color-mix(in srgb, var(--sg-line) 88%, var(--sg-ink));
 }
@@ -216,16 +199,6 @@
   line-height: 1.5;
 }
 
-.sg-stage {
-  padding: 19px 19px 17px;
-  border-radius: var(--sg-radius);
-}
-
-.sg-buildstep-body {
-  font-size: 18px;
-  line-height: 1.55;
-}
-
 .sg-talk,
 .sg-reflect {
   padding: 24px;
@@ -274,9 +247,7 @@
    muted text on a flat fill with a dashed edge, no transparency.
    --------------------------------------------------------------------------- */
 
-.sg-stage.locked,
-.sg-apply-step.locked,
-.gs-row.locked {
+.sg-apply-step.locked,.gs-row.locked{
   opacity: 1;
   filter: none;
   color: var(--sg-muted);
@@ -294,17 +265,10 @@
   filter: none;
 }
 
-.sg-stage.locked {
-  border: 2px dashed var(--sg-line);
-  box-shadow: none;
-}
-
 /* The base sheet already sets pointer-events:none on a locked stage, so its
    button cannot be pressed — but it was still painted as a full-strength navy
    primary, which is a button that lies. Paint it as what it is. */
-.sg-stage.locked .btn,
-.sg-apply-step.locked .btn,
-.gs-row.locked .btn {
+.sg-apply-step.locked .btn,.gs-row.locked .btn{
   color: var(--sg-muted);
   border-color: var(--sg-line);
   border-style: dashed;
@@ -312,14 +276,8 @@
   box-shadow: none;
 }
 
-.sg-stage.locked .block-lab,
-.sg-apply-step.locked .sg-step-lab {
+.sg-apply-step.locked .sg-step-lab{
   color: var(--sg-muted);
-}
-
-.sg-stage.done {
-  border-color: color-mix(in srgb, var(--sg-good) 45%, var(--sg-line));
-  background: color-mix(in srgb, var(--sg-good-bg) 40%, var(--sg-card));
 }
 
 .sg-donechip {
@@ -672,13 +630,7 @@
    student has to see or drag cannot.
    --------------------------------------------------------------------------- */
 
-.sg-lab,
-.sg-lab-mount,
-.sg-figure,
-.sg-problem-visual,
-.sg-problem-model,
-.sg-mission-visual,
-.sg-step-visual {
+.sg-lab,.sg-lab-mount,.sg-figure,.sg-problem-visual,.sg-problem-model,.sg-mission-visual{
   --sg-line: #7b93ab;
   --line: #7b93ab; /* engine/components/* draw with the generic token */
   --sg-fill: #e7eef6;
@@ -797,10 +749,10 @@
 
 .sg-langbar > span:first-child {
   font-family: var(--sg-display);
-  font-size: 12.5px;
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
+  letter-spacing:0;
+  text-transform:none;
   color: var(--sg-muted);
 }
 
@@ -961,28 +913,13 @@
     page-break-after: avoid;
   }
 
-  table,
-  figure,
-  svg,
-  .sg-figure,
-  .sg-stage,
-  .sg-problem-visual,
-  .sg-problem-model,
-  .sg-vcard,
-  .prob {
+  table,figure,svg,.sg-figure,.sg-problem-visual,.sg-problem-model,.sg-vcard,.prob{
     break-inside: avoid;
     page-break-inside: avoid;
     max-width: 100%;
   }
 
-  .card,
-  .prob,
-  .sg-vcard,
-  .sg-map,
-  .sg-stage,
-  .sg-figure,
-  .sg-problem-visual,
-  .sg-problem-model {
+  .card,.prob,.sg-vcard,.sg-map,.sg-figure,.sg-problem-visual,.sg-problem-model{
     box-shadow: none;
   }
 
@@ -1163,10 +1100,16 @@
    plainly interactive and no longer promises a page change. The aria-haspopup
    already on the button says the same thing to a screen reader. */
 .sg-vocab-inline {
+  /* A dotted rule and nothing else: the shared button fill made every term a
+     shaded box, so a sentence with four terms read as a row of controls. */
+  padding: 0;
+  border: 0;
   border-bottom: 2px dotted color-mix(in srgb, var(--sg) 65%, transparent);
-  border-radius: 2px;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
   color: inherit;
-  font-weight: inherit;
+  font: inherit;
   text-decoration: none;
 }
 
@@ -1235,12 +1178,7 @@
   box-shadow: none;
 }
 
-.sg-vcard,
-.prob,
-.sg-stage,
-.sg-talk,
-.sg-reflect,
-.sg-map {
+.sg-vcard,.prob,.sg-talk,.sg-reflect,.sg-map{
   border-radius: var(--sg-radius, 14px);
   transition:
     transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
@@ -1248,9 +1186,7 @@
     border-color 0.2s ease;
 }
 
-.sg-vcard:hover,
-.prob:hover,
-.sg-stage:hover:not(.locked) {
+.sg-vcard:hover,.prob:hover{
   border-color: color-mix(in srgb, var(--sg-pop) 45%, var(--sg-line));
 }
 
@@ -1510,12 +1446,7 @@
    distinct. It is the only surface that keeps a visible lift, because it is
    the one a student is meant to look at and manipulate.
    --------------------------------------------------------------------------- */
-.sg-problem-visual,
-.sg-problem-model,
-.sg-figure,
-.sg-model,
-.sg-lab-stage,
-.sg-step-visual {
+.sg-problem-visual,.sg-problem-model,.sg-figure,.sg-model,.sg-lab-stage{
   border: 1px solid color-mix(in srgb, var(--sg) 22%, var(--sg-line));
   border-radius: var(--sg-radius);
   background: var(--sg-figure);
@@ -1578,11 +1509,7 @@
    The rule is one step of chrome per level of meaning: the card is a sheet,
    the stage is a task, and everything inside those is content.
    --------------------------------------------------------------------------- */
-.sg-panel .sg-stage .sg-callout,
-.sg-panel .sg-stage .sg-note,
-.sg-panel .sg-stage .sg-hintbox,
-.sg-stage .sg-tbody > .sg-card,
-.sg-panel .sg-panel {
+.sg-panel .sg-panel{
   box-shadow: none;
 }
 

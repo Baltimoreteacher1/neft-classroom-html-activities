@@ -325,14 +325,23 @@ const rules = [
         if (typeof node[k] !== "string") continue;
         const raw = node[k].trim();
         if (!/=|\bor\b/i.test(raw)) continue;
-        const forms = splitEquivalents(raw).map((f) => stripUnits(f).text);
-        const values = forms.map((f) => evaluateExpression(f));
-        if (values.length < 2 || values.some((v) => v === null)) continue;
-        for (let x = 1; x < values.length; x++) {
-          add.check(
-            values[0].eq(values[x]),
-            `${k} lists "${forms[0]}" and "${forms[x]}" as equal, but they are ${values[0].toString()} and ${values[x].toString()}`,
-          );
+        // "1,344 ÷ 12 = 112": a comma before three digits is a thousands
+        // separator, not a list. And "2 × 12 = 24, 2 × 8 = 16" is a list of
+        // separate equations: when an answer states "=", each comma clause is
+        // its own chain. Without "=", commas still separate equivalent forms
+        // ("0.5, 1/2 or 50%").
+        const plain = raw.replace(/(\d),(?=\d{3}\b)/g, "$1");
+        const clauses = plain.includes("=") ? plain.split(/\s*[,;]\s*/) : [plain];
+        for (const clause of clauses) {
+          const forms = splitEquivalents(clause).map((f) => stripUnits(f).text);
+          const values = forms.map((f) => evaluateExpression(f));
+          if (values.length < 2 || values.some((v) => v === null)) continue;
+          for (let x = 1; x < values.length; x++) {
+            add.check(
+              values[0].eq(values[x]),
+              `${k} lists "${forms[0]}" and "${forms[x]}" as equal, but they are ${values[0].toString()} and ${values[x].toString()}`,
+            );
+          }
         }
       }
     },

@@ -188,12 +188,12 @@
       "cloze": "The range uses the ___ values; the interquartile range uses the ___.",
       "examples": [
         {
-          "text": "Range 26 with IQR 12.5",
+          "text": "All scores spread over 26 points, and the middle half over 12.5",
           "isExample": true,
-          "why": "The IQR is always the smaller of the two — it sits inside the range."
+          "why": "The IQR is part of the range, so it is never bigger."
         },
         {
-          "text": "Range 12.5 with IQR 26",
+          "text": "A range of 12.5 and an IQR of 26",
           "isExample": false,
           "why": "The middle half cannot be wider than all of the data."
         }
@@ -209,14 +209,14 @@
       "cloze": "Subtract the least value from the ___ value to find the range.",
       "examples": [
         {
-          "text": "30 − 12 = 18",
+          "text": "Scores from 12 to 30: 30 − 12 = 18",
           "isExample": true,
-          "why": "Greatest minus least."
+          "why": "The range is the greatest value minus the least value."
         },
         {
-          "text": "30 + 12 = 42",
+          "text": "Scores from 12 to 30: 30 + 12 = 42",
           "isExample": false,
-          "why": "A range is a difference, never a sum."
+          "why": "The range is a difference. Subtract, do not add."
         }
       ]
     },
@@ -229,12 +229,12 @@
       "image": "/assets/vocab-images/quartile.svg",
       "examples": [
         {
-          "text": "Q1 = 9 for the lower half 4, 8, 10, 14",
+          "text": "Q1 = 9, the middle of the lower half 4, 8, 10, 14",
           "isExample": true,
-          "why": "It is the median OF that half."
+          "why": "Q1 is the median of the lower half. 9 is halfway between 8 and 10."
         },
         {
-          "text": "The smallest value, 4",
+          "text": "The least value, 4",
           "isExample": false,
           "why": "That is the minimum, not a quartile."
         }
@@ -250,14 +250,14 @@
       "image": "/assets/vocab-images/interquartile-range.svg",
       "examples": [
         {
-          "text": "88 − 75.5 = 12.5",
+          "text": "Q3 − Q1 = 88 − 75.5 = 12.5",
           "isExample": true,
-          "why": "Q3 minus Q1 — the middle half's width."
+          "why": "The IQR is Q3 minus Q1, the spread of the middle half."
         },
         {
-          "text": "94 − 68 = 26",
+          "text": "Greatest − least = 94 − 68 = 26",
           "isExample": false,
-          "why": "That is the range, using the extremes."
+          "why": "That uses the two end values. That is the range."
         }
       ],
       "cloze": "The spread of the middle half of the data, Q3 − Q1, is the ___ ___."
@@ -365,14 +365,14 @@
       "cloze": "The way data values are spread out across a range is the ___.",
       "examples": [
         {
-          "text": "“Most scores cluster near 85, with one down at 68”",
+          "text": "Most scores are near 85, and one score is 68",
           "isExample": true,
-          "why": "It says where the data sits and how it spreads."
+          "why": "It tells where most of the data is and how spread out it is."
         },
         {
-          "text": "“The highest score was 94”",
+          "text": "The highest score was 94",
           "isExample": false,
-          "why": "One value describes a point, not the shape of the set."
+          "why": "It tells about one value, not the whole data set."
         }
       ]
     }
@@ -421,62 +421,248 @@
       "caption": "Range = 94 − 68 = 26 (the whole span, whisker tip to whisker tip). IQR = 88 − 75.5 = 12.5 (just the width of the box — the middle half)."
     },
     "conceptIntro": {
-      "heading": "Push further — How spread out is the data?",
-      "intro": "You already can do this. So we go up a level, not up a number: find what is always true, show it a second way, and be ready to defend it with a reason instead of an answer.",
-      "keyIdea": "Range = greatest − least, and it covers every value. Interquartile range = Q3 − Q1, and it covers only the middle half, so one faraway value cannot stretch it — and you can say why it is true, and where it would stop being true.",
+      "heading": "Describe Data by Range and Interquartile Range",
+      "intro": "One extreme value can stretch the range a lot, but it barely moves the IQR.",
+      "introEs": "Un valor extremo puede estirar mucho el rango, pero casi no mueve el RIC.",
+      "keyIdea": "The range depends on the two end values, so one extreme value can stretch it. The IQR uses the middle half, so it stays steady.",
+      "keyIdeaEs": "El rango depende de los dos valores de los extremos, así que un valor extremo lo puede estirar. El RIC usa la mitad central, así que se mantiene estable.",
       "iDo": {
-        "title": "Watch me measure the spread of the test scores",
+        "title": "Example 1 · One extreme value",
+        "titleEs": "Ejemplo 1 · Un valor extremo",
         "lines": [
-          "Here are 20 history test scores in order: 68, 70, 73, 74, 75, 76, 77, 80, 82, 83, 84, 85, 86, 86, 88, 88, 90, 90, 93, 94. Ordering them first is what makes every step after this possible.",
-          "Range: I subtract the least value from the greatest. 94 − 68 = 26. The scores span 26 points from end to end.",
-          "Now the quartiles. The median splits the 20 scores into two halves of 10. The median is halfway between the 10th and 11th values: (83 + 84) ÷ 2 = 83.5.",
-          "Q1 is the median of the lower 10 values: halfway between 75 and 76, so Q1 = 75.5. Q3 is the median of the upper 10: halfway between 88 and 88, so Q3 = 88.",
-          "Interquartile range: IQR = Q3 − Q1 = 88 − 75.5 = 12.5. The middle half of the students' scores differed by only 12.5 points, even though the full range was 26."
+          "Seven friends read 6, 7, 7, 8, 9, 10 and 30 books this summer. Find the range and the IQR. Which one better describes most of the data?",
+          "Find the range: 30 − 6 = 24",
+          "Find Q1 and Q3: lower half: 6, 7, 7 → 7; upper half: 9, 10, 30 → 10",
+          "Find the IQR: 10 − 7 = 3",
+          "Compare the two numbers: 24 > 3",
+          "The range is 24 and the IQR is 3. The IQR better describes most of the data, because 30 is an extreme value.",
+          "A data set has a range of 30 and an IQR of 12. The least value is 64 and Q1 is 75. Find Q3 and the greatest value.",
+          "Add the IQR to Q1: 75 + 12 = 87",
+          "Add the range to the least value: 64 + 30 = 94",
+          "Q3 is 87. The greatest value is 94."
         ],
         "linesEs": [
-          "Aquí están 20 calificaciones del examen de historia en orden: 68, 70, 73, 74, 75, 76, 77, 80, 82, 83, 84, 85, 86, 86, 88, 88, 90, 90, 93, 94. Ordenarlas primero es lo que hace posible cada paso siguiente.",
-          "Rango: resto el valor menor del mayor. 94 − 68 = 26. Las calificaciones abarcan 26 puntos de extremo a extremo.",
-          "Ahora los cuartiles. La mediana divide las 20 calificaciones en dos mitades de 10. La mediana está a la mitad entre el 10.º y el 11.º valor: (83 + 84) ÷ 2 = 83.5.",
-          "Q1 es la mediana de los 10 valores inferiores: a la mitad entre 75 y 76, así que Q1 = 75.5. Q3 es la mediana de los 10 superiores: a la mitad entre 88 y 88, así que Q3 = 88.",
-          "Rango intercuartílico: Q3 − Q1 = 88 − 75.5 = 12.5. La mitad central de las calificaciones de los estudiantes se diferenció en solo 12.5 puntos, aunque el rango completo fue de 26."
-        ],
-        "titleEs": "Mírame medir la dispersión de las calificaciones del examen"
+          "Siete amigos leyeron 6, 7, 7, 8, 9, 10 y 30 libros este verano. Halla el rango y el RIC. ¿Cuál describe mejor a la mayoría de los datos?",
+          "Halla el rango: 30 − 6 = 24",
+          "Halla Q1 y Q3: mitad inferior: 6, 7, 7 → 7; mitad superior: 9, 10, 30 → 10",
+          "Halla el RIC: 10 − 7 = 3",
+          "Compara los dos números: 24 > 3",
+          "El rango es 24 y el RIC es 3. El RIC describe mejor a la mayoría de los datos, porque 30 es un valor extremo.",
+          "Un conjunto de datos tiene un rango de 30 y un RIC de 12. El valor menor es 64 y Q1 es 75. Halla Q3 y el valor mayor.",
+          "Suma el RIC a Q1: 75 + 12 = 87",
+          "Suma el rango al valor menor: 64 + 30 = 94",
+          "Q3 es 87. El valor mayor es 94."
+        ]
       },
       "weDo": {
         "title": "Try it together — then prove it",
+        "titleEs": "Inténtalo juntos — y luego demuéstralo",
         "lines": [
-          "Class A's box plot reads: least 62, Q1 74, median 81, Q3 87, greatest 90. Find the range first.",
-          "Range = 90 − 62 = 28 points from the lowest score to the highest.",
-          "Now the IQR: subtract Q1 from Q3. IQR = 87 − 74 = 13 points across the middle half.",
-          "Say what each one means: the whole class's scores span 28 points, but the middle half of the class is packed into 13 points.",
-          "Now prove it: say why that move had to work at all — not just that it did.",
-          "Sentence frame — convince a skeptic: \"My method works because ___ . It would stop working if ___ .\""
+          "Class A's box plot shows: least 62, Q1 74, median 81, Q3 87, greatest 90. Find the range and the IQR.",
+          "Find the range. (90 − 62 = 28)",
+          "Find the IQR. (87 − 74 = 13)",
+          "Why is the IQR smaller than the range? (The IQR uses only the middle half of the data. The range uses all of it, from least to greatest.)"
         ],
         "linesEs": [
-          "El diagrama de caja de la clase A indica: mínimo 62, Q1 74, mediana 81, Q3 87, máximo 90. Halla primero el rango.",
-          "Rango = 90 − 62 = 28 puntos desde la calificación más baja hasta la más alta.",
-          "Ahora el rango intercuartílico: resta Q1 de Q3. Q3 − Q1 = 87 − 74 = 13 puntos en la mitad central.",
-          "Di lo que significa cada uno: las calificaciones de toda la clase abarcan 28 puntos, pero la mitad central de la clase se concentra en 13 puntos.",
-          "Ahora demuéstralo: di por qué ese paso tenía que funcionar — no solo que funcionó.",
-          "Marco de oración — convence a alguien que duda: «Mi método funciona porque ___ . Dejaría de funcionar si ___ .»"
-        ],
-        "titleEs": "Inténtalo con nosotros — luego demuéstralo"
+          "El diagrama de caja de la clase A muestra: menor 62, Q1 74, mediana 81, Q3 87, mayor 90. Halla el rango y el RIC.",
+          "Halla el rango. (90 − 62 = 28)",
+          "Halla el RIC. (87 − 74 = 13)",
+          "¿Por qué el RIC es menor que el rango? (El RIC usa solo la mitad central de los datos. El rango los usa todos, del menor al mayor.)"
+        ]
       },
       "youDo": {
-        "title": "Now you try — and defend it",
+        "title": "Your turn",
+        "titleEs": "Tu turno",
         "lines": [
-          "Try the problems below on your own. Getting the answer is half the work — be ready to say why your method works, and where it would stop working.",
-          "Then pick one problem and show it a second way. If two different methods agree, that agreement is your proof."
+          "Team B's box plot shows: least 15, Q1 20, median 25, Q3 26, greatest 36. Team A has the same median and an IQR of 12. What is Team B's IQR?",
+          "Which team's middle scores are closer together? How does the IQR show it?"
         ],
         "linesEs": [
-          "Intenta los problemas de abajo por tu cuenta. Obtener la respuesta es la mitad del trabajo — prepárate para decir por qué funciona tu método y dónde dejaría de funcionar.",
-          "Luego elige un problema y muéstralo de una segunda manera. Si dos métodos distintos coinciden, esa coincidencia es tu prueba."
+          "El diagrama de caja del equipo B muestra: menor 15, Q1 20, mediana 25, Q3 26, mayor 36. El equipo A tiene la misma mediana y un RIC de 12. ¿Cuánto es el RIC del equipo B?",
+          "¿Qué equipo tiene las calificaciones centrales más juntas? ¿Cómo lo muestra el RIC?"
+        ]
+      }
+    },
+    "build": {
+      "todayIdea": "One extreme value can stretch the range a lot, but it barely moves the IQR.",
+      "todayIdeaEs": "Un valor extremo puede estirar mucho el rango, pero casi no mueve el RIC.",
+      "examples": [
+        {
+          "title": "Example 1 · One extreme value",
+          "titleEs": "Ejemplo 1 · Un valor extremo",
+          "problem": "Seven friends read 6, 7, 7, 8, 9, 10 and 30 books this summer. Find the range and the IQR. Which one better describes most of the data?",
+          "problemEs": "Siete amigos leyeron 6, 7, 7, 8, 9, 10 y 30 libros este verano. Halla el rango y el RIC. ¿Cuál describe mejor a la mayoría de los datos?",
+          "figure": {
+            "kind": "dotPlot",
+            "values": [
+              6,
+              7,
+              7,
+              8,
+              9,
+              10,
+              30
+            ],
+            "min": 0,
+            "max": 32,
+            "label": "Books read",
+            "caption": "Six values are close together. 30 is far away.",
+            "captionEs": "Seis valores están juntos. El 30 está lejos."
+          },
+          "steps": [
+            {
+              "do": "Find the range.",
+              "doEs": "Halla el rango.",
+              "math": "30 − 6 = 24"
+            },
+            {
+              "do": "Find Q1 and Q3.",
+              "doEs": "Halla Q1 y Q3.",
+              "math": [
+                "lower half: 6, 7, 7 ⟶ 7",
+                "upper half: 9, 10, 30 ⟶ 10"
+              ],
+              "mathEs": [
+                "mitad inferior: 6, 7, 7 ⟶ 7",
+                "mitad superior: 9, 10, 30 ⟶ 10"
+              ],
+              "why": "The median is 8. It is left out of both halves.",
+              "whyEs": "La mediana es 8. Se deja fuera de las dos mitades."
+            },
+            {
+              "do": "Find the IQR.",
+              "doEs": "Halla el RIC.",
+              "math": "10 − 7 = 3"
+            },
+            {
+              "do": "Compare the two numbers.",
+              "doEs": "Compara los dos números.",
+              "math": "24 > 3",
+              "why": "Only 30 is far away. It stretches the range, but not the IQR.",
+              "whyEs": "Solo el 30 está lejos. Estira el rango, pero no el RIC."
+            }
+          ],
+          "answer": "The range is 24 and the IQR is 3. The IQR better describes most of the data, because 30 is an extreme value.",
+          "answerEs": "El rango es 24 y el RIC es 3. El RIC describe mejor a la mayoría de los datos, porque 30 es un valor extremo."
+        },
+        {
+          "title": "Example 2 · Work backward",
+          "titleEs": "Ejemplo 2 · Trabaja hacia atrás",
+          "problem": "A data set has a range of 30 and an IQR of 12. The least value is 64 and Q1 is 75. Find Q3 and the greatest value.",
+          "problemEs": "Un conjunto de datos tiene un rango de 30 y un RIC de 12. El valor menor es 64 y Q1 es 75. Halla Q3 y el valor mayor.",
+          "figure": {
+            "kind": "numberLine",
+            "min": 60,
+            "max": 95,
+            "step": 1,
+            "labelEvery": 5,
+            "points": [
+              {
+                "value": 64,
+                "text": "least"
+              },
+              {
+                "value": 75,
+                "text": "Q1"
+              },
+              {
+                "value": 87,
+                "text": "Q3"
+              },
+              {
+                "value": 94,
+                "text": "greatest"
+              }
+            ],
+            "jumps": [
+              {
+                "from": 75,
+                "to": 87,
+                "text": "IQR 12"
+              },
+              {
+                "from": 64,
+                "to": 94,
+                "text": "range 30"
+              }
+            ],
+            "caption": "Count up from the least value and from Q1.",
+            "captionEs": "Cuenta hacia adelante desde el valor menor y desde Q1."
+          },
+          "steps": [
+            {
+              "do": "Add the IQR to Q1.",
+              "doEs": "Suma el RIC a Q1.",
+              "math": "75 + 12 = 87",
+              "why": "The IQR is the distance from Q1 up to Q3.",
+              "whyEs": "El RIC es la distancia de Q1 hasta Q3."
+            },
+            {
+              "do": "Add the range to the least value.",
+              "doEs": "Suma el rango al valor menor.",
+              "math": "64 + 30 = 94",
+              "why": "The range is the distance from the least value up to the greatest.",
+              "whyEs": "El rango es la distancia del valor menor hasta el mayor."
+            }
+          ],
+          "answer": "Q3 is 87. The greatest value is 94.",
+          "answerEs": "Q3 es 87. El valor mayor es 94."
+        }
+      ],
+      "together": {
+        "title": "Try it together — then prove it",
+        "titleEs": "Inténtalo juntos — y luego demuéstralo",
+        "problem": "Class A's box plot shows: least 62, Q1 74, median 81, Q3 87, greatest 90. Find the range and the IQR.",
+        "problemEs": "El diagrama de caja de la clase A muestra: menor 62, Q1 74, mediana 81, Q3 87, mayor 90. Halla el rango y el RIC.",
+        "figure": {
+          "kind": "boxPlot",
+          "min": 62,
+          "q1": 74,
+          "median": 81,
+          "q3": 87,
+          "max": 90,
+          "axisMin": 60,
+          "axisMax": 92,
+          "step": 2
+        },
+        "steps": [
+          {
+            "ask": "Find the range.",
+            "askEs": "Halla el rango.",
+            "answer": "90 − 62 = 28"
+          },
+          {
+            "ask": "Find the IQR.",
+            "askEs": "Halla el RIC.",
+            "answer": "87 − 74 = 13"
+          },
+          {
+            "ask": "Why is the IQR smaller than the range?",
+            "askEs": "¿Por qué el RIC es menor que el rango?",
+            "answer": "The IQR uses only the middle half of the data. The range uses all of it, from least to greatest.",
+            "answerEs": "El RIC usa solo la mitad central de los datos. El rango los usa todos, del menor al mayor."
+          }
         ],
-        "titleEs": "Ahora inténtalo tú — y defiéndelo"
+        "answer": "The range is 28 points and the IQR is 13 points. The middle half is always inside the full range.",
+        "answerEs": "El rango es 28 puntos y el RIC es 13 puntos. La mitad central siempre está dentro del rango completo."
       },
-      "headingEs": "Ve más allá — ¿Qué tan dispersos están los datos?",
-      "introEs": "Esto ya lo sabes hacer. Así que subimos de nivel, no de número: halla lo que siempre es cierto, muéstralo de una segunda manera y prepárate para defenderlo con una razón en lugar de una respuesta.",
-      "keyIdeaEs": "Rango = mayor − menor, y abarca todos los valores. El rango intercuartílico = Q3 − Q1, y abarca solo la mitad central, así que un valor lejano no puede estirarlo — y puedes decir por qué es cierto y dónde dejaría de serlo."
+      "tryIt": {
+        "problem": "Team B's box plot shows: least 15, Q1 20, median 25, Q3 26, greatest 36. Team A has the same median and an IQR of 12. What is Team B's IQR?",
+        "problemEs": "El diagrama de caja del equipo B muestra: menor 15, Q1 20, mediana 25, Q3 26, mayor 36. El equipo A tiene la misma mediana y un RIC de 12. ¿Cuánto es el RIC del equipo B?",
+        "answer": "6",
+        "accept": [
+          "6",
+          "six"
+        ],
+        "hint": "Subtract Q1 from Q3.",
+        "hintEs": "Resta Q1 de Q3.",
+        "explain": "Which team's middle scores are closer together? How does the IQR show it?",
+        "explainEs": "¿Qué equipo tiene las calificaciones centrales más juntas? ¿Cómo lo muestra el RIC?",
+        "modelExplanation": "Team B. Its IQR is 6, and Team A's IQR is 12. A smaller IQR means the middle half of the scores is closer together.",
+        "modelExplanationEs": "El equipo B. Su RIC es 6, y el RIC del equipo A es 12. Un RIC más pequeño significa que la mitad central de las calificaciones está más junta."
+      },
+      "bigIdea": "The range depends on the two end values, so one extreme value can stretch it. The IQR uses the middle half, so it stays steady.",
+      "bigIdeaEs": "El rango depende de los dos valores de los extremos, así que un valor extremo lo puede estirar. El RIC usa la mitad central, así que se mantiene estable."
     }
   },
   "explore": {
@@ -2066,5 +2252,6 @@
       ],
       "explanationEs": "Busca equilibrio, una cola, grupos o espacios: cluster with a gap. Nombra la forma de la distribución: cluster with a gap."
     }
-  ]
+  ],
+  "topic": "Describe Data by Range and Interquartile Range"
 }

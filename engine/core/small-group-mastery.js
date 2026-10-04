@@ -115,12 +115,12 @@ function savedField(labelText, labelEs, key, state, store, placeholder = "") {
  */
 function createLevelFourPanel(_config, state, store, onProgress) {
   const panel = el("section", "sg-m4");
-  panel.setAttribute("aria-label", "Go for a 4");
+  panel.setAttribute("aria-label", "Show you really understand it");
   panel.appendChild(
     el(
       "div",
       "sg-h",
-      `<span class="n">4</span><div><div class="sg-eyebrow">${esc("Top of the rubric")}</div><h2>Go for a 4</h2></div>`,
+      `<span class="n">4</span><div><div class="sg-eyebrow">${esc("Level 4 · the highest level")}</div><h2>Show you really understand it</h2></div>`,
     ),
   );
   panel.appendChild(

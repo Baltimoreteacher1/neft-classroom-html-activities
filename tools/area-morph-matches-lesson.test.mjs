@@ -97,7 +97,11 @@ for (const id of lessons) {
     }
   }
 
-  // 2. The seeder must still recover those dimensions unaided.
+  // 2. The seeder must still recover those dimensions unaided. It runs only in
+  // a core lesson's Learn It; a small-group studio always authors its diagram
+  // (tools/generate-small-group-lessons.mjs), and its worked example is the
+  // structured Build, not seeder prose.
+  if (!/^\d+-\d+$/.test(id)) continue;
   const seeded = seedAreaMorph({ kind: "area-morph", figure: diagram.figure }, text);
   for (const key of ["b", "h"]) {
     if (diagram[key] == null) continue;

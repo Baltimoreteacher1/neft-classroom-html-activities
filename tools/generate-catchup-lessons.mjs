@@ -22,8 +22,8 @@ import {
   mergeAuthoredOverlay,
 } from "./lib/authored-overlay.mjs";
 import { LESSON_JS, shellHtml } from "./lib/compact-shell.mjs";
-import { derive } from "./lib/es-concept-compose.mjs";
 import { derive as deriveReflect } from "./lib/es-reflect-compose.mjs";
+import { applyCatchupBuild, loadBuild } from "./lib/small-group-build.mjs";
 import { buildParallelPractice } from "./lib/small-group-parallel-practice.mjs";
 import {
   assertWriteSetContained,
@@ -122,16 +122,7 @@ const cfg = (id) => JSON.parse(readFileSync(join(LESSONS, id, "config.json"), "u
  * translation; it is the principle es-concept-compose.mjs states, read from the
  * file the student actually reads. The dictionary loads last so it wins on any
  * disagreement.
- *
- * CATCHUP_FRAME_ES is this generator's own connective tissue: sentences it
- * writes itself, whose Spanish belongs beside the English that produced it,
- * exactly like FRAME in the composer. */
-const CATCHUP_FRAME_ES = {
-  "Here is the one thing to remember from each lesson, plus a quick guided example. If one of these feels shaky, that lesson is right above this one in the menu — you can open it any time.":
-    "Aquí está lo único que hay que recordar de cada lección, más un ejemplo guiado rápido. Si alguna te parece insegura, esa lección está justo encima de esta en el menú — puedes abrirla cuando quieras.",
-  "Stuck on one lesson's problems? Open that lesson from the curriculum menu for the full re-teach.":
-    "¿Te atoraste con los problemas de una lección? Abre esa lección desde el menú del currículo para el repaso completo.",
-};
+ */
 
 const ES_MEMORY = new Map();
 {
@@ -167,7 +158,17 @@ const ES_MEMORY = new Map();
       s.lines.forEach((en, i) => ES_MEMORY.set(en, s.linesEs[i]));
     }
   }
-  for (const [en, es] of Object.entries(CATCHUP_FRAME_ES)) ES_MEMORY.set(en, es);
+  // The dictionary loads last so it wins on any disagreement.
+  const dictDir = join(ROOT, "data/es-translations");
+  if (existsSync(dictDir)) {
+    for (const file of readdirSync(dictDir).filter((f) => f.startsWith("concept-intro-"))) {
+      for (const [en, es] of Object.entries(
+        JSON.parse(readFileSync(join(dictDir, file), "utf8")),
+      )) {
+        ES_MEMORY.set(en, es);
+      }
+    }
+  }
   /* The dictionary loads LAST so it wins on any disagreement: it is what
    * validate:es-concept-intro composes with, and generator and gate must agree
    * byte for byte. */
@@ -221,35 +222,6 @@ function composeReflectEs(config) {
   else delete ticket.stemEs;
 }
 
-function composeConceptIntroEs(config) {
-  const ci = config?.launch?.conceptIntro;
-  if (!ci) return;
-  const composed = (en) => (en ? derive(en, ES_MEMORY) || ES_MEMORY.get(en) || null : null);
-  for (const [field, esField] of [
-    ["intro", "introEs"],
-    ["heading", "headingEs"],
-    ["keyIdea", "keyIdeaEs"],
-  ]) {
-    const built = composed(ci[field]);
-    if (built) ci[esField] = built;
-    else delete ci[esField];
-  }
-  for (const stage of ["iDo", "weDo", "youDo"]) {
-    if (!Array.isArray(ci[stage]?.lines)) continue;
-    const built = ci[stage].lines.map(composed);
-    if (built.length && built.every(Boolean)) ci[stage].linesEs = built;
-    else delete ci[stage].linesEs;
-  }
-  const dir = join(ROOT, "data/es-translations");
-  if (existsSync(dir)) {
-    for (const file of readdirSync(dir).filter((f) => f.startsWith("concept-intro-"))) {
-      for (const [en, es] of Object.entries(JSON.parse(readFileSync(join(dir, file), "utf8")))) {
-        ES_MEMORY.set(en, es);
-      }
-    }
-  }
-}
-
 // Prefix a practice item's student-facing lead field with its source lesson tag.
 function tagItem(item, tag) {
   const it = JSON.parse(JSON.stringify(item));
@@ -280,12 +252,15 @@ for (const band of bands) {
   const id = band.id || `${lastSrc.id}-catchup`;
   // Unit-slice bands are contiguous, so a dash range reads truthfully; the
   // legacy strands are scattered in the current numbering, so they list.
-  const range = band.id ? srcs.map((s) => s.dot).join(" · ") : `${srcs[0].dot}–${lastSrc.dot}`;
+  const range = band.id
+    ? srcs.map((s) => s.dot).join(" · ")
+    : srcs.length === 1
+      ? lastSrc.dot
+      : `${srcs[0].dot}–${lastSrc.dot}`;
   const base = JSON.parse(JSON.stringify(lastSrc.c));
   const mid = srcs[Math.floor((srcs.length - 1) / 2)];
 
   const titles = srcs.map((s) => `${s.dot} ${s.c.title}`).join(", ");
-  const keyIdeaOf = (s) => s.c.launch?.conceptIntro?.keyIdea || s.c.contentObjective || s.c.title;
 
   const out = base;
   out.lessonId = id;
@@ -315,8 +290,10 @@ for (const band of bands) {
     delete out.launch.visual;
   }
 
-  out.contentObjective = `I can show I am caught up on Lessons ${range} by using each lesson's big idea in mixed practice.`;
-  out.languageObjective = `I can explain which lesson's big idea I used and how, using key vocabulary from Lessons ${range}.`;
+  // "Lesson 9.4" for a one-lesson band, "Lessons 2.1–2.3" otherwise.
+  const lessonsRange = `${srcs.length === 1 ? "Lesson" : "Lessons"} ${range}`;
+  out.contentObjective = `I can show I am caught up on ${lessonsRange} by using ${srcs.length === 1 ? "the lesson's" : "each lesson's"} big idea in mixed practice.`;
+  out.languageObjective = `I can explain which lesson's big idea I used and how, using key vocabulary from ${lessonsRange}.`;
 
   // Merged vocab: top terms per lesson, deduped.
   const seen = new Set();
@@ -359,33 +336,8 @@ for (const band of bands) {
   }
 
   out.launch.badge = "Catch-Up Station";
-  out.launch.narrative = `Missed a lesson — or just want a refresher? This catch-up station reviews Lessons ${range}: ${titles}. Read the Big Ideas, warm up with the review problem, then prove you're caught up in the mixed practice.`;
-  out.launch.conceptIntro = {
-    heading: `The Big Ideas — Lessons ${range}`,
-    intro:
-      "Here is the one thing to remember from each lesson, plus a quick guided example. If one of these feels shaky, that lesson is right above this one in the menu — you can open it any time.",
-    keyIdea: srcs.map((s) => `${s.dot}: ${keyIdeaOf(s)}`).join(" • "),
-    iDo: {
-      title: "The Big Ideas (one per lesson)",
-      lines: srcs.map((s) => `Lesson ${s.dot} — ${s.c.title}: ${keyIdeaOf(s)}`),
-    },
-    weDo: {
-      title: "Quick guided checks — one from each lesson",
-      lines: srcs
-        .map((s) => {
-          const l = s.c.launch?.conceptIntro?.weDo?.lines?.[0];
-          return l ? `From ${s.dot}: ${l}` : null;
-        })
-        .filter(Boolean),
-    },
-    youDo: {
-      title: "Show you're caught up",
-      lines: [
-        `The practice below mixes problems from Lessons ${range}. Each problem is tagged with its lesson number.`,
-        "Stuck on one lesson's problems? Open that lesson from the curriculum menu for the full re-teach.",
-      ],
-    },
-  };
+  out.launch.narrative = `Missed a lesson — or just want a refresher? This catch-up station reviews ${lessonsRange}: ${titles}. Work one example from each lesson, then prove you're caught up in the mixed practice.`;
+  // launch.build / launch.conceptIntro: tools/lib/small-group-build.mjs, applied after the merge.
 
   const sample = (tier, per) =>
     srcs.flatMap((s) =>
@@ -575,7 +527,16 @@ for (const band of bands) {
      * survives beside a freshly composed two ("linesEs has 3 entries for 2
      * lines"), and the stage then renders in English entirely. */
     if (prior?.warmup) merged.warmup = prior.warmup;
-    composeConceptIntroEs(merged);
+    // Range-derived wording is the generator's own ("9.4 Catch-Up", never
+    // "9.4–9.4"), so it is set from this run rather than kept from disk.
+    merged.title = out.title;
+    merged.contentObjective = out.contentObjective;
+    merged.languageObjective = out.languageObjective;
+    merged.launch.narrative = out.launch.narrative;
+    applyCatchupBuild(merged, {
+      sources: srcs.map((src) => ({ ...src, data: loadBuild(src.id) })),
+      range,
+    });
     composeReflectEs(merged);
     writeFileSync(file, JSON.stringify(merged, null, 2) + "\n");
     recordWrite(file);
@@ -584,7 +545,11 @@ for (const band of bands) {
     // strips them. No-op on a brand-new lesson, which has nothing to preserve.
     writeGenerated(
       join(LESSONS, id, "index.html"),
-      shellHtml(id, `${range} Catch-Up`, `Grade 6 Reveal Math catch-up review — Lessons ${range}`),
+      shellHtml(
+        id,
+        `${range} Catch-Up`,
+        `Grade 6 Reveal Math catch-up review — ${srcs.length === 1 ? "Lesson" : "Lessons"} ${range}`,
+      ),
     );
     recordWrite(join(LESSONS, id, "index.html"));
     writeFileSync(join(LESSONS, id, "lesson.js"), LESSON_JS);

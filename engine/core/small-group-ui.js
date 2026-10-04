@@ -1,5 +1,7 @@
-import { DIVISION_FIGURE_CSS } from "./division-walk-figure.js";
 import { getPreferredLang } from "./i18n.js";
+import { FIGURE_CSS } from "./small-group-build-figures.js";
+import { SHAPE_FIGURE_CSS } from "./small-group-build-figures-shapes.js";
+import { BUILD_CSS } from "./small-group-build-section.js";
 
 //
 // These are the SITE brand values, not a private small-group palette. Until
@@ -504,16 +506,15 @@ export function injectSmallGroupStyles(accent) {
        competes with a background. Judged by those two numbers rather than by
        eye — saturation for the cast, contrast for the separation. */
     :root{color-scheme:light;--sg:${accent.hue};--sg-deep:${accent.deep};--sg-soft:${accent.soft};--sg-ink:${accent.deep};--sg-rule:${accent.deep};--sg-line:#dde3ea;--sg-paper:#e6e8eb;--sg-card:#fff;--sg-plate:#f7f4ec;--sg-text:#1d2a36;--sg-muted:#516175;--sg-good:#0b706b;--sg-warn:#7a5205;--sg-good-bg:#e4f3f0;--sg-good-ink:#084f4b;--sg-bad:#bd5032;--sg-bad-bg:#fceee9;--sg-bad-ink:#85381f;--sg-warn-bg:#fdf4e3;--sg-warn-ink:#6f4904;--sg-warn-line:#d9a33a;--sg-figure:#fff;--sg-fill:#eaeff5;
-      /* Type pairing. Outfit (the site display face, already loaded by the
-         lesson shell) for anything that acts as a heading or a label; Atkinson
-         Hyperlegible — chosen for these pathways because it is the most legible
-         face available to a struggling reader — for every line of running text.
-         Nunito was dropped 2026-07-31: the shell requested it, a second sheet
-         then overrode it to Hanken Grotesk on .sg-* elements only, and plain
-         <p> text inside a card kept rendering in a third face. One pairing. */
-      --sg-display:"Outfit","Atkinson Hyperlegible",system-ui,sans-serif;
-      --sg-body:"Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;
-      --sg-mono:"Outfit",ui-monospace,SFMono-Regular,Menlo,monospace;
+      /* One family, Lexend, for headings and text (2026-10-04). It was Outfit
+         for headings over Atkinson Hyperlegible for text: two faces with
+         different shapes on one card, and Atkinson's slashed zero printed
+         "130" as "13Ø" in every worked example, which reads as the empty-set
+         sign. Lexend was designed for reading fluency, draws a plain zero, and
+         its figures line up in columns (tabular-nums) for worked math. */
+      --sg-display:"Lexend",system-ui,-apple-system,sans-serif;
+      --sg-body:"Lexend",system-ui,-apple-system,sans-serif;
+      --sg-mono:"Lexend",ui-monospace,SFMono-Regular,Menlo,monospace;
       /* SEPARATION COMES FROM THE CANVAS, NOT FROM SHADOWS.
          A white sheet on a neutral ground is already legible as a sheet, so
          the shadows here are hairlines rather than lift. The page previously
@@ -542,7 +543,7 @@ export function injectSmallGroupStyles(accent) {
        Neutral rather than warm because the sheet is white: sand next to white
        reads as a slightly dirty white, and the contrast between ground and
        sheet is what carries the layout now that the shadows are hairlines. */
-    body{margin:0;color:var(--sg-text);font-family:var(--sg-body);font-size:17px;line-height:1.62;background-color:var(--sg-paper);background-image:none;
+    body{margin:0;color:var(--sg-text);font-family:var(--sg-body);font-size:18px;line-height:1.6;font-variant-numeric:lining-nums;background-color:var(--sg-paper);background-image:none;
       -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;font-optical-sizing:auto}
     button,input,textarea{font:inherit}
     button,a,input,textarea,summary{outline-offset:4px}
@@ -574,7 +575,7 @@ export function injectSmallGroupStyles(accent) {
     /* Group identity is a LABEL, not a badge with a background. It has to be
        readable at a glance and forgettable a second later; the pathway is
        already carried by the accent edge beside it. */
-    .sg-kicker{display:inline-flex;align-items:center;gap:8px;padding:0;border:0;border-radius:0;background:none;color:var(--sg-muted);font-family:var(--sg-display);font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+    .sg-kicker{display:inline-flex;align-items:center;gap:8px;padding:0;border:0;border-radius:0;background:none;color:var(--sg-muted);font-family:var(--sg-display);font-size:14px;font-weight:700;letter-spacing:0;text-transform:none}
     .sg-hero h1{max-width:780px;margin:9px 0 7px;font-size:clamp(24px,2.6vw,32px);font-weight:700;letter-spacing:-.02em;text-wrap:balance}
     .sg-obj{max-width:760px;margin-bottom:8px;color:var(--sg-ink);font-size:17px;font-weight:400;line-height:1.45;text-wrap:pretty}
     .sg-obj-more{max-width:760px;margin-top:2px}
@@ -586,7 +587,7 @@ export function injectSmallGroupStyles(accent) {
     .sg-langobj{max-width:760px;font-size:15px;color:var(--sg-muted)}
     .sg-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
     .sg-chip{display:inline-flex;align-items:center;padding:5px 12px;border:1px solid var(--sg-line);border-radius:999px;background:var(--sg-card);color:var(--sg-muted);font-size:13px;font-weight:400}
-    .sg-hero-scene-chip{display:inline-flex;align-items:center;margin-top:10px;padding:4px 11px;border:1px solid var(--sg-line);border-radius:999px;background:var(--sg-soft);color:var(--sg-muted);font-family:var(--sg-display);font-size:11.5px;font-weight:400;letter-spacing:.07em;text-transform:uppercase}
+    .sg-hero-scene-chip{display:inline-flex;align-items:center;margin-top:10px;padding:4px 11px;border:1px solid var(--sg-line);border-radius:999px;background:var(--sg-soft);color:var(--sg-muted);font-family:var(--sg-display);font-size:14px;font-weight:400;letter-spacing:0;text-transform:none}
     .sg-hero-mark{display:grid;width:132px;height:132px;place-items:center;overflow:hidden;border:1px solid var(--sg-line);border-radius:18px;background:var(--sg-card);font-size:58px;box-shadow:var(--sg-shadow)}
     .sg-hero-mark.has-theme svg,.sg-hero-mark.has-art img{display:block;width:100%;height:100%;object-fit:cover}
     .sg-teacher{margin:0 0 22px}
@@ -600,7 +601,7 @@ export function injectSmallGroupStyles(accent) {
     .sg-moves{margin:10px 0 14px;padding:12px 14px;border-left:3px solid var(--sg);background:var(--sg-soft);border-radius:0 8px 8px 0}
     .sg-move{display:grid;grid-template-columns:88px 1fr;gap:4px 12px;align-items:baseline}
     .sg-move+.sg-move{margin-top:9px;padding-top:9px;border-top:1px solid color-mix(in srgb,var(--sg-line) 60%,transparent)}
-    .sg-move dt{margin:0;font-family:var(--sg-display);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sg)}
+    .sg-move dt{margin:0;font-family:var(--sg-display);font-size:14px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--sg)}
     .sg-move dd{margin:0;font-size:14px;line-height:1.45;color:var(--sg-ink)}
     .sg-move--extend dt{color:var(--sg-pop,#2f8f7d)}
     @media (max-width:640px){.sg-move{grid-template-columns:1fr;gap:2px}}
@@ -676,7 +677,7 @@ export function injectSmallGroupStyles(accent) {
        run to "2.1"/"3.2", which a fixed 40px square clips. */
     .sg-h .n{display:grid;min-width:40px;height:40px;flex:none;padding:0 9px;place-items:center;border-radius:var(--sg-radius-sm);color:#fff;background:var(--sg);font-family:var(--sg-display);font-size:15.5px;font-weight:700;letter-spacing:-.01em;box-shadow:0 0 0 3px color-mix(in srgb,var(--sg-pop) 30%,transparent)}
     .sg-h h2{font-size:clamp(22px,3.2vw,29px);font-weight:700;letter-spacing:-.022em;text-wrap:balance}
-    .sg-eyebrow{margin-bottom:3px;color:var(--sg-good);font-family:var(--sg-display);font-size:12.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+    .sg-eyebrow{margin-bottom:3px;color:var(--sg-good);font-family:var(--sg-display);font-size:14px;font-weight:700;letter-spacing:0;text-transform:none}
     .card,.sg-mission,.sg-talk,.prob{border:1px solid var(--sg-line);border-radius:var(--sg-radius);background:var(--sg-card);box-shadow:var(--sg-shadow)}
     .card{padding:22px;margin-bottom:16px}
     .sg-mission{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(250px,.75fr);overflow:hidden}
@@ -703,14 +704,12 @@ export function injectSmallGroupStyles(accent) {
     .sg-match-btn:disabled{cursor:default;opacity:.7}
     .sg-pulse-btn[aria-pressed="true"],.sg-role-btn.active{border-color:var(--sg);color:var(--sg-ink);background:var(--sg-soft)}
     .sg-ta{width:100%;min-height:82px;padding:11px 12px;border:2px solid var(--sg-line);border-radius:10px;color:var(--sg-text);background:var(--sg-card);resize:vertical}
-    .keyidea{position:relative;margin:20px 0 12px;padding:18px 20px 18px 22px;border:1px solid color-mix(in srgb,var(--sg) 16%,var(--sg-line));border-left:6px solid var(--sg);border-radius:var(--sg-radius-sm);background:var(--sg-soft);color:var(--sg-ink);font-size:19.5px;line-height:1.5;font-weight:700}
-    .keyidea .lab,.block-lab{display:block;margin-bottom:6px;color:var(--sg-good);font-family:var(--sg-display);font-size:12.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
-    .sg-build-intro{font-size:19px;line-height:1.55;font-weight:400}
+    .block-lab{display:block;margin-bottom:6px;color:var(--sg-good);font-family:var(--sg-display);font-size:14px;font-weight:700;letter-spacing:0;text-transform:none}
     .we-steps,.steplist{margin:10px 0;border:1px solid var(--sg-line);border-radius:13px;padding:7px 16px}.steps{margin:0;padding:0;list-style:none;counter-reset:step}
     .steps li{position:relative;padding:8px 0 8px 35px;border-bottom:1px dashed var(--sg-line)}.steps li:last-child{border:0}.steps li::before{counter-increment:step;content:counter(step);position:absolute;left:0;top:8px;display:grid;width:23px;height:23px;place-items:center;border-radius:8px;background:var(--sg-soft);color:var(--sg-ink);font-weight:700}
     .sg-vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
     .sg-vcard{position:relative;padding:17px;border:1px solid var(--sg-line);border-radius:16px;background:var(--sg-card);box-shadow:0 5px 16px rgba(23,32,51,.05)}.sg-vcard-picture{display:grid;aspect-ratio:4/3;margin:-5px -5px 14px;place-items:center;overflow:hidden;border-radius:13px;background:var(--sg-plate)}.sg-vcard-picture img{display:block;width:100%;height:100%;object-fit:contain;transition:opacity .18s ease}.sg-vcard-picture img[data-image-state="loading"]{opacity:.35}
-    .sg-vterm{padding-right:42px;color:var(--sg-ink);font-family:var(--sg-display);font-size:21px;font-weight:700}.sg-vtranslations{margin:5px 0;color:var(--sg-muted);font-size:14px}.sg-vdef{margin-top:12px;padding-top:12px;border-top:1px dashed var(--sg-line)}.sg-vdef-line{margin:0 0 9px}.sg-vdef-line:last-child{margin-bottom:0}.sg-vdef-language{display:block;color:var(--sg);font-family:var(--sg-display);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+    .sg-vterm{padding-right:42px;color:var(--sg-ink);font-family:var(--sg-display);font-size:21px;font-weight:700}.sg-vtranslations{margin:5px 0;color:var(--sg-muted);font-size:14px}.sg-vdef{margin-top:12px;padding-top:12px;border-top:1px dashed var(--sg-line)}.sg-vdef-line{margin:0 0 9px}.sg-vdef-line:last-child{margin-bottom:0}.sg-vdef-language{display:block;color:var(--sg);font-family:var(--sg-display);font-size:14px;letter-spacing:0;text-transform:none}
     .sg-speak{position:absolute;right:10px;top:10px;display:grid;width:44px;height:44px;place-items:center;border:1px solid var(--sg-line);border-radius:50%;background:var(--sg-card);cursor:pointer}
     /* Practice panels (word match, cloze). Both are "now you try" surfaces, so
        they share one treatment — a tinted panel inside the white sheet. They
@@ -804,7 +803,7 @@ export function injectSmallGroupStyles(accent) {
     .hintbox p{margin:7px 0;padding:9px 12px;border-radius:9px;background:var(--sg-soft);color:var(--sg-ink)}
     .eqcap{margin-bottom:7px;color:var(--sg-ink);font-family:var(--sg-display);font-size:19px;font-weight:700}.colmath{display:inline-grid;min-width:160px;justify-items:end;gap:2px;padding:11px 18px;border-radius:13px;background:var(--sg-soft);font-family:var(--sg-mono);font-size:27px;font-weight:700}.col-op{margin-right:15px;color:var(--sg)}.col-rule{width:100%;height:3px;margin:3px 0;background:var(--sg-rule)}
     .fillline,.stepline,.gs-row{display:flex;align-items:center;flex-wrap:wrap;gap:7px}.fillline{margin:5px 0}.fillin,.stepfill{border:0;border-bottom:3px solid var(--sg);color:var(--sg-ink);background:transparent;font-weight:700;text-align:center}.fillin{width:150px;padding:3px 7px;font-size:24px}.stepfill{width:90px;padding:2px 4px}.fillin.ok,.stepfill.ok{color:var(--sg-good);border-color:var(--sg-good);animation:sg-okpulse .5s ease}.fillin.bad,.stepfill.bad{color:var(--sg-bad);border-color:var(--sg-bad);animation:sg-nudge .3s ease}.filllab{font-weight:700}.fillunit{color:var(--sg-muted);font-weight:700}
-    .wbank{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}.wbank-lab{font-size:13px;font-weight:700;text-transform:uppercase}.wchip{padding:7px 12px;border:2px solid var(--sg);color:var(--sg-ink);background:var(--sg-soft);font-weight:700}.stepline,.gs-row{padding:9px 0;border-bottom:1px dashed var(--sg-line)}.stepline:last-child,.gs-row:last-child{border:0}.sn{display:grid;width:25px;height:25px;flex:none;place-items:center;border-radius:8px;color:var(--sg-ink);background:var(--sg-soft);font-weight:700}.gs-row.locked{opacity:.35;pointer-events:none}.gs-check{min-height:44px;padding:8px 12px}.sg-watchout{margin-bottom:14px;padding:13px 16px;border:2px solid var(--sg-warn-line);border-radius:14px;color:var(--sg-warn-ink);background:var(--sg-warn-bg)}
+    .wbank{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}.wbank-lab{font-size:14px;font-weight:700;text-transform:none}.wchip{padding:7px 12px;border:2px solid var(--sg);color:var(--sg-ink);background:var(--sg-soft);font-weight:700}.stepline,.gs-row{padding:9px 0;border-bottom:1px dashed var(--sg-line)}.stepline:last-child,.gs-row:last-child{border:0}.sn{display:grid;width:25px;height:25px;flex:none;place-items:center;border-radius:8px;color:var(--sg-ink);background:var(--sg-soft);font-weight:700}.gs-row.locked{opacity:.35;pointer-events:none}.gs-check{min-height:44px;padding:8px 12px}.sg-watchout{margin-bottom:14px;padding:13px 16px;border:2px solid var(--sg-warn-line);border-radius:14px;color:var(--sg-warn-ink);background:var(--sg-warn-bg)}
     .sg-watchout-head{font-family:var(--sg-display);font-size:18px;font-weight:800;line-height:1.25}
     .sg-watchout-list{margin:10px 0 0;padding:0;list-style:none;display:grid;gap:8px}
     .sg-watchout-item{display:grid;grid-template-columns:auto 1fr;align-items:start;gap:11px;padding:9px 12px;border-radius:11px;background:var(--sg-card)}
@@ -835,7 +834,7 @@ export function injectSmallGroupStyles(accent) {
        authenticated teacher flow adding body.sg-is-teacher. */
     .sg-lens{display:none;margin-top:12px;padding:10px 12px;border-radius:10px;background:color-mix(in srgb, var(--sg-accent, #6b5b95) 8%, var(--sg-card, #fff));border:1px dashed color-mix(in srgb, var(--sg-accent, #6b5b95) 45%, transparent)}
     body.sg-is-teacher .sg-lens{display:block}
-    .sg-lens-tag{font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--sg-accent-ink, #4a3f6b);margin-bottom:6px}
+    .sg-lens-tag{font-size:14px;font-weight:800;letter-spacing:0;text-transform:none;color:var(--sg-accent-ink, #4a3f6b);margin-bottom:6px}
     .sg-lens-row{display:flex;flex-direction:column;gap:2px;padding:5px 0;border-top:1px solid color-mix(in srgb, var(--sg-line, #d9dde5) 60%, transparent);font-size:14px}
     .sg-lens-row b{color:var(--sg-ink, #232831)}
     .sg-lens-row span{color:var(--sg-muted, #5a6170)}
@@ -854,7 +853,7 @@ export function injectSmallGroupStyles(accent) {
     .sg-datachips-unit{margin-top:9px;color:var(--sg-muted);font-weight:700}
     .sg-apply-step{transition:opacity .25s}
     .sg-apply-step.locked{opacity:.35;pointer-events:none}
-    .sg-step-lab{margin-bottom:9px;font-family:var(--sg-display);font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--sg)}
+    .sg-step-lab{margin-bottom:9px;font-family:var(--sg-display);font-size:14px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--sg)}
     .sg-apply-text{font-size:18px;font-weight:400;line-height:1.7}
     .sg-num{margin:0 2px;padding:2px 9px;border:2px dashed var(--sg);border-radius:9px;background:var(--sg-card);color:var(--sg-ink);font-weight:700;font-size:17px;cursor:pointer}
     .sg-num.on{background:var(--sg-pop);border-style:solid;color:#332000;box-shadow:0 2px 0 rgba(0,0,0,.15)}
@@ -869,7 +868,7 @@ export function injectSmallGroupStyles(accent) {
     .sg-info-body{padding:20px 22px 22px;background:var(--sg-card);color:var(--sg-ink)}
     .sg-info-body h2{margin:0 34px 10px 0;font-size:21px;line-height:1.3}
     .sg-info-what{margin:0 0 12px;font-size:17px;font-weight:400;line-height:1.6}
-    .sg-info-label{font-family:var(--sg-display);font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--sg)}
+    .sg-info-label{font-family:var(--sg-display);font-size:14px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--sg)}
     .sg-info-example{margin:4px 0 0;padding:10px 12px;border-radius:11px;background:var(--sg-soft);font-weight:400;line-height:1.6}
     .sg-info-close{position:absolute;top:10px;right:12px;width:38px;height:38px;border:0;border-radius:50%;background:transparent;font-size:24px;line-height:1;color:var(--sg-ink);cursor:pointer}
     .sg-sample{margin:10px 0;border:1px solid var(--sg-line);border-radius:12px;background:var(--sg-soft)}
@@ -923,7 +922,7 @@ export function injectSmallGroupStyles(accent) {
     .sg-write-status{min-height:0;color:var(--sg-ink)}
     .sg-write-model{margin-top:11px;padding:12px 14px;border-left:5px solid var(--sg-good);border-radius:10px;background:var(--sg-soft);font-size:16px;line-height:1.6}
     .sg-write-model[hidden]{display:none}
-    .sg-write-modellab{display:block;color:var(--sg-good);font-family:var(--sg-display);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+    .sg-write-modellab{display:block;color:var(--sg-good);font-family:var(--sg-display);font-size:14px;letter-spacing:0;text-transform:none}
     /* ── Learning map + progress meter ── */
     .sg-map{margin:0 0 24px;padding:20px 22px;border:1px solid var(--sg-line);border-left:6px solid var(--sg);border-radius:18px;background:var(--sg-card);box-shadow:0 8px 24px rgba(23,32,51,.07)}
     .sg-map-goal{margin:0 0 6px;font-size:18px;font-weight:700;color:var(--sg-ink)}
@@ -946,32 +945,17 @@ export function injectSmallGroupStyles(accent) {
     .sg-streak[hidden]{display:none}
     .sg-vlang-tag{color:var(--sg);font-family:var(--sg-display);font-size:12px;font-weight:700;letter-spacing:.05em}
     /* ── Interactive build stepper ── */
-    .sg-stage{transition:opacity .25s}
-    .sg-stage.locked{opacity:.38;pointer-events:none}
-    .sg-stage.done{border-color:var(--sg-good)}
-    .sg-stage-steps{margin:4px 0 12px}
-    .sg-buildstep{display:flex;gap:10px;padding:9px 0;border-bottom:1px dashed var(--sg-line);animation:sg-stepin .3s ease}
-    .sg-buildstep:last-child{border:0}
-    .sg-buildstep.now{margin:0 -10px;padding-inline:10px;border-radius:10px;background:var(--sg-soft);border-bottom:0}
-    .sg-buildstep-body{font-size:18px;line-height:1.5;font-weight:400}
     @keyframes sg-stepin{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
     /* ── Per-step visual models (Level 1 Build the idea) ── */
-    .sg-step-visual{margin:9px 0 2px;padding:8px 10px;border:1px solid var(--sg-line);border-radius:12px;background:var(--sg-card);box-shadow:0 4px 14px rgba(23,32,51,.05);animation:sg-stepin .3s ease}
-    .sg-step-visual svg{display:block;width:100%;max-width:360px;height:auto}
     /* The vertical long-division tableau reads as a worked page, not a chart:
        it needs more width than a relation diagram and a monospace-ish column
        alignment, and its caption names what the student is looking at. */
-    .sg-divfig{max-width:420px}
-    .sg-divfig svg{max-width:100%;margin:0 auto}
-    ${DIVISION_FIGURE_CSS}
-    .sg-divfig-cap{margin-top:6px;color:var(--sg-muted);font-size:13px;font-weight:700;text-align:center;text-transform:uppercase;letter-spacing:.04em}
+    ${FIGURE_CSS}
+    ${SHAPE_FIGURE_CSS}
+    ${BUILD_CSS}
     .sg-checkstep-wrap{margin:0 0 9px}
     .sg-checkstep-wrap .sg-checkstep{margin:0}
-    .sg-checkstep-wrap .sg-step-visual{margin:6px 0 0}
-    @media (prefers-reduced-motion:reduce){.sg-step-visual{animation:none}}
-    .sg-visual-gate{margin:9px 0 2px}
-    .sg-visual-gate .sg-reveal{margin-left:0}
-    .sg-visual-gate .sg-step-visual{margin:8px 0 0}
+    
     .sg-check-transfer{margin-top:14px;padding-top:12px;border-top:2px dashed var(--sg-line)}
     .sg-check-transfer .block-lab{margin:0 0 8px}
     /* ── Same-problem alternative strategy (revealed only after an attempt) ── */
@@ -979,7 +963,7 @@ export function injectSmallGroupStyles(accent) {
     .sg-another [hidden]{display:none!important}
     .sg-another-toggle{min-height:44px;padding:8px 13px}
     .sg-another-panel{margin-top:11px;padding:16px;border:1px solid var(--sg-line);border-left:4px solid var(--sg);border-radius:var(--sg-radius-lg);background:var(--sg-card)}
-    .sg-another-kicker{margin-bottom:3px;color:var(--sg);font-family:var(--sg-display);font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+    .sg-another-kicker{margin-bottom:3px;color:var(--sg);font-family:var(--sg-display);font-size:14px;font-weight:700;letter-spacing:0;text-transform:none}
     /* Was an <h3>; see small-group-strategies.js. Keeps the h3 look, out of the outline. */
     .sg-another-title{margin:0 0 6px;font-family:var(--sg-display);font-size:18px;font-weight:700;color:var(--sg-ink)}
     .sg-another-panel h3{font-size:20px}.sg-another-lede{margin:7px 0 12px;color:var(--sg-muted)}
@@ -988,8 +972,6 @@ export function injectSmallGroupStyles(accent) {
     .sg-another-choice:hover{border-color:var(--sg)}.sg-another-choice[aria-pressed="true"]{border-color:var(--sg);color:var(--sg-ink);background:var(--sg-soft)}
     .sg-another-prompt{margin-top:12px;padding:12px 14px;border-left:5px solid var(--sg);border-radius:10px;background:var(--sg-card);color:var(--sg-ink)}
     .sg-another-model .sg-figure{margin:12px 0;box-shadow:none}.sg-another-notes{margin-top:7px;background:var(--sg-card)}
-    .sg-reveal{margin-left:8px;min-height:44px;padding:8px 13px;border:2px dashed var(--sg);border-radius:999px;background:var(--sg-card);color:var(--sg-ink);font-size:13px;font-weight:700;cursor:pointer}
-    .sg-reveal-answer{display:inline-block;margin-left:8px;padding:3px 10px;border-radius:8px;background:var(--sg-soft);color:var(--sg-ink);font-weight:700;animation:sg-stepin .3s ease}
     .sg-checkstep{display:flex;width:100%;align-items:center;gap:10px;margin:0 0 7px;padding:11px 13px;border:2px solid var(--sg-line);border-radius:11px;background:var(--sg-card);font-weight:400;text-align:left;cursor:pointer}
     .sg-checkstep:hover{border-color:var(--sg)}
     .sg-checkstep.on{border-color:var(--sg-good);background:var(--sg-good-bg)}
@@ -1019,19 +1001,45 @@ export function injectSmallGroupStyles(accent) {
     .sg-step{min-height:46px;font-size:12.5px;padding:5px 4px}.sg-step[aria-selected="true"]::after{bottom:-7px;width:18px}
     .sg-tabs .sg-step .lbl{display:inline}.sg-match-options{grid-template-columns:1fr}
     .sg-h{gap:11px;margin-bottom:15px;padding-bottom:12px}.sg-h .n{width:34px;height:34px;font-size:14px}
-    .card,.prob,.sg-stage{padding:17px}.sg-pulse{display:grid;grid-template-columns:1fr;gap:8px}.sg-pulse-btn{width:100%}
-    /* Keep the passport, timer, save controls, and Hide buttons in separate
-       rows on phones. The passport stylesheet arrives later. */
-    .ntp-pill{top:auto!important;bottom:122px!important;left:12px!important}
-    .sg-station-timer{bottom:68px!important;left:14px!important;right:auto!important}
-    #mwb-launcher{bottom:124px!important}}
+    .card,.prob{padding:17px}.sg-pulse{display:grid;grid-template-columns:1fr;gap:8px}.sg-pulse-btn{width:100%}
+    }
+    /* FLOATING CONTROLS NEVER COVER THE WORK (2026-10-04).
+       Seven fixed controls from five modules (timer, Hide buttons, Save/Resume,
+       passport, tool dock, annotation rail, workbench) used to float over the
+       lesson: on a Chromebook the timer sat on the Big Idea, on a phone four of
+       them covered an answer box. Wide screens: the column narrows so every
+       control lives in a margin. Narrower screens: the bottom row of controls
+       sits in a bar with its own background, the side tools stack above it,
+       and the column keeps clear of them. Several of these controls set their
+       own position later in the cascade, hence !important. */
+    @media (min-width:1100px){
+      #app{max-width:min(1160px,calc(100vw - 380px))}
+      .sg-station-timer{left:14px!important;right:auto!important;bottom:72px!important}
+    }
+    @media (max-width:1099px){
+      body{padding-bottom:76px}
+      body::after{content:"";position:fixed;left:0;right:0;bottom:0;height:62px;background:var(--sg-card);border-top:1px solid var(--sg-line);z-index:880;pointer-events:none}
+      #app{padding-right:58px}
+      .sg-station-timer{top:auto!important;bottom:12px!important;left:8px!important;right:auto!important}
+      #nt-focus-fab{top:auto!important;bottom:9px!important;left:178px!important;right:auto!important;width:44px;min-width:44px;padding:0!important;justify-content:center}
+      #nt-focus-fab .nt-focus-label{display:none}
+      #nsr-root{top:auto!important;bottom:16px!important;right:8px!important;left:auto!important}
+      /* Passport and Save/Resume go icon-only in the bar; both keep their
+         accessible names (aria-label), so nothing is lost to a screen reader. */
+      .ntp-pill{top:auto!important;bottom:9px!important;left:230px!important;right:auto!important}
+      .ntp-pill .ntp-pill-meta{display:none}
+      #nsr-launcher .nsr-launcher-label{display:none}
+      #mwb-launcher{top:auto!important;bottom:70px!important;right:8px!important}
+      .sg-annotation-tools{top:auto!important;bottom:122px!important;right:4px!important;transform:none!important}
+      .nt-tooldock{top:auto!important;bottom:178px!important;right:4px!important}
+    }
     @media(max-width:420px){body{font-size:16px}.sg-hero h1{font-size:29px}.sg-context,.sg-talk-q{font-size:17px}.sg-tabs{position:static;grid-template-columns:repeat(2,1fr)}.sg-problem-nav{grid-template-columns:1fr 1fr}.sg-problem-count{grid-column:1/-1;grid-row:1}.sg-problem-support-head{align-items:flex-start;flex-direction:column}.sg-problem-visual svg{min-height:210px}.sg-fill-step{grid-template-columns:auto minmax(0,1fr)}.sg-step-check{grid-column:2}.sg-step-status{grid-column:1/-1}.btn,.sg-pulse-btn,.sg-role-btn,.sg-match-btn,.choice,.sg-another-choice{width:100%;justify-content:flex-start}.sg-another-panel{padding:13px}.sg-another-choices{grid-template-columns:1fr}.sg-timer{align-items:flex-start;flex-direction:column}.sg-timer-track{width:100%;flex:none}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.sg-burst{display:none!important}.sg-hero-mark{animation:none}.sg-tabpanel:not([hidden]){animation:none}.sg-meter-fill::after{animation:none}.choice.correct,.choice.wrong,.sg-match-btn.correct,.sg-match-btn.wrong,.fillin.ok,.fillin.bad,.stepfill.ok,.stepfill.bad,.sg-fill-step.complete{animation:none}.btn,.choice{transition:none}}
     @media print{:root{--sg-paper:#fff;--sg-card:#fff;--sg-figure:#fff;--sg-text:#111;--sg-ink:#12355b;--sg-muted:#3f5166;--sg-soft:#f2f4f8;--sg-line:#cfd7e2;--sg-rule:#12355b;--sg-fill:#e9edf2;--sg-good-bg:#eef8f1;--sg-good-ink:#0e5033;--sg-bad-bg:#fdeeec;--sg-bad-ink:#7c2d24;--sg-warn-bg:#fdf3e3;--sg-warn-ink:#743706}
     /* Kill the page ground: the graph rule and colour washes cost toner and
        print as grey haze behind the work a student is handing in. */
     body{background:#fff;background-image:none}
-    .sg-hero::before,.sg-hero::after{display:none}.sg-h{border-bottom-color:#111}.sg-mode,.sg-tabs,.sg-rail,.sg-meter,.sg-reveal,.sg-toolrow,.sg-pulse,.sg-timer,.sg-foot,.sg-teacher,.sg-another,.btn,.sg-speak,#mwb-launcher,.sg-problem-nav,.sg-annotation-tools{display:none!important}.sg-tabpanel[hidden]{display:block!important}.prob[hidden]{display:block!important}.sg-guidance[hidden]{display:block!important}.sg-watchout-why>p{display:block!important}.sg-watchout-why::details-content{content-visibility:visible!important}.sg-fill-step[hidden]{display:grid!important}.sg-fill-step.locked,.gs-row.locked,.sg-stage.locked,.sg-apply-step.locked{opacity:1!important;pointer-events:auto}.sg-reveal-answer[hidden]{display:inline-block!important}.sg-visual-gate .sg-step-visual[hidden]{display:block!important}#app{max-width:none;padding:0}.sg-hero{margin:0 0 16px;padding:0 0 12px;color:#111;background:var(--sg-card);border-bottom:3px solid #111}.sg-hero h1,.sg-obj,.sg-langobj{color:#111}.sg-kicker,.sg-chip{color:#111;background:#eee;border-color:#bbb}.card,.sg-mission,.sg-talk,.prob,.sg-vcard{box-shadow:none;break-inside:avoid}.sg-mission{display:block}.sg-mission-visual{display:none}.sg-sec{margin-bottom:18px}}
+    .sg-hero::before,.sg-hero::after{display:none}.sg-h{border-bottom-color:#111}.sg-mode,.sg-tabs,.sg-rail,.sg-meter,.sg-toolrow,.sg-pulse,.sg-timer,.sg-foot,.sg-teacher,.sg-another,.btn,.sg-speak,#mwb-launcher,.sg-problem-nav,.sg-annotation-tools{display:none!important}.sg-tabpanel[hidden]{display:block!important}.prob[hidden]{display:block!important}.sg-guidance[hidden]{display:block!important}.sg-watchout-why>p{display:block!important}.sg-watchout-why::details-content{content-visibility:visible!important}.sg-fill-step[hidden]{display:grid!important}.sg-fill-step.locked,.gs-row.locked,.sg-apply-step.locked{opacity:1!important;pointer-events:auto}#app{max-width:none;padding:0}.sg-hero{margin:0 0 16px;padding:0 0 12px;color:#111;background:var(--sg-card);border-bottom:3px solid #111}.sg-hero h1,.sg-obj,.sg-langobj{color:#111}.sg-kicker,.sg-chip{color:#111;background:#eee;border-color:#bbb}.card,.sg-mission,.sg-talk,.prob,.sg-vcard{box-shadow:none;break-inside:avoid}.sg-mission{display:block}.sg-mission-visual{display:none}.sg-sec{margin-bottom:18px}}
     /* prefers-contrast: darker lines + text and a heavier focus ring. */
     @media (prefers-contrast:more){:root{--sg-line:#5a6b82;--sg-muted:#26313f;--sg-rule:var(--sg-deep)}
       button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline-width:4px}

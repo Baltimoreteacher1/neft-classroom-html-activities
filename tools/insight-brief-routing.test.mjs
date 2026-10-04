@@ -37,7 +37,9 @@ export async function validateCatchupRouting(options = {}) {
   // The 20 canonical unit-slice stations (excluding the 16 legacy-strand stations)
   const canonicalCatchupRows =
     options.customStations ||
-    allCatchupRows.filter((r) => r.range && r.range.includes("–") && !r.range.includes("·"));
+    // Legacy strands list their lessons with "·"; a unit-slice station is a
+    // dash range, or a single lesson ("9.4") when its band holds one lesson.
+    allCatchupRows.filter((r) => r.range && !r.range.includes("·"));
   assert.equal(canonicalCatchupRows.length, 20, "expected exactly 20 canonical catchup rows");
 
   const canonStationMap = new Map(canonicalCatchupRows.map((r) => [r.id, r]));
@@ -141,7 +143,8 @@ export async function validateCatchupRouting(options = {}) {
 
     const canonInfo = canonStationMap.get(stationId);
     if (canonInfo && canonInfo.range) {
-      const [startStr, endStr] = canonInfo.range.split("–");
+      // A one-lesson band reads "9.4"; it starts and ends at that lesson.
+      const [startStr, endStr = startStr] = canonInfo.range.split("–");
       const startNum = Number(startStr.split(".")[1]);
       const endNum = Number(endStr.split(".")[1]);
       if (sourceLessonNum < startNum || sourceLessonNum > endNum) {

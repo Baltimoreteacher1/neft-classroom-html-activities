@@ -637,7 +637,7 @@ export function createAdaptiveCoach(variant, state, store = null) {
   section.setAttribute("role", "region");
   section.setAttribute("aria-label", "Adaptive next-move coach");
   section.innerHTML =
-    '<div class="sg-innovation-kicker">Transparent coaching</div><h2>What should I try next?</h2><p>The coach uses only this session’s confidence, attempts, hints, and completed checks. It never labels your ability.</p>';
+    '<div class="sg-innovation-kicker">Your coach</div><h2>What should I try next?</h2><p>The coach looks only at today’s work: how sure you felt, your tries, your hints, and your checks.</p>';
   const result = el("div", "sg-coach-result");
   result.setAttribute("aria-live", "polite");
   // Tab buttons are id'd `sg-tab-<step.id>` where step.id is already

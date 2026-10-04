@@ -4,7 +4,7 @@
  *
  * A revealed hint must be able to define its own words.
  *
- * The vocabulary underliner caps triggers at 2 per term per SECTION. That is
+ * The vocabulary underliner caps triggers at 1 per term per SECTION. That is
  * the right rule for prose a student scans — underlining every "factor" turns
  * a page into a wall of buttons. It is the wrong rule for a hint, which is
  * opened deliberately by a student who is already stuck and read on its own,

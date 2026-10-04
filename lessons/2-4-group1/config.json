@@ -201,28 +201,6 @@
   "vocabMode": "matching",
   "vocabulary": [
     {
-      "term": "Display Data with Box Plots",
-      "termEs": "Representar datos con diagramas de caja",
-      "definition": "Show a data set's five-number summary in a box-and-whisker display.",
-      "definitionEs": "Mostrar el resumen de cinco números de un conjunto de datos en un diagrama de caja y bigotes.",
-      "visual": "minimum | Q1 [ median ] Q3 | maximum",
-      "image": "/assets/vocab-images/concept-display-data-with-box-plots.svg",
-      "cloze": "A box plot shows the ___-number summary: least, Q1, median, Q3, greatest.",
-      "examples": [
-        {
-          "text": "A box from Q1 75.5 to Q3 88 with whiskers to 68 and 94",
-          "isExample": true,
-          "why": "All five summary numbers are placed."
-        },
-        {
-          "text": "A bar chart of the same scores",
-          "isExample": false,
-          "why": "Bars show counts, not quartiles."
-        }
-      ],
-      "role": "concept"
-    },
-    {
       "term": "Box Plot",
       "termEs": "Diagrama de caja",
       "definition": "A graph that shows how data is spread using five key numbers.",
@@ -231,14 +209,14 @@
       "cloze": "A graph that shows data with a box and whiskers based on the five-number summary is a ___.",
       "examples": [
         {
-          "text": "A box holding the middle half, with whiskers to the extremes",
+          "text": "Box from 8 to 22, line at 14, whiskers to 4 and 28",
           "isExample": true,
-          "why": "It displays the five-number summary."
+          "why": "It shows the five key numbers of the data."
         },
         {
           "text": "A line graph of scores over time",
           "isExample": false,
-          "why": "That tracks change, not spread."
+          "why": "A line graph shows change over time, not how data is spread."
         }
       ]
     },
@@ -253,12 +231,12 @@
         {
           "text": "17 in 5, 9, 13, 17, 21, 25, 29",
           "isExample": true,
-          "why": "The middle value once the numbers are in order."
+          "why": "The values are in order, and 17 is the middle value."
         },
         {
-          "text": "13 in the unsorted list 5, 25, 13, 9, 29",
+          "text": "9, the middle of the list 5, 25, 9, 13, 29",
           "isExample": false,
-          "why": "Middle of an unsorted list is not the median."
+          "why": "The list is not in order. In order, the median is 13."
         }
       ]
     },
@@ -271,12 +249,12 @@
       "cloze": "A value that divides the data into four equal parts is a ___.",
       "examples": [
         {
-          "text": "Q1 = 9 for the lower half 4, 8, 10, 14",
+          "text": "Q1 = 9, the middle of the lower half 4, 8, 10, 14",
           "isExample": true,
-          "why": "It is the median OF that half."
+          "why": "Q1 is the median of the lower half. 9 is halfway between 8 and 10."
         },
         {
-          "text": "The smallest value, 4",
+          "text": "The least value, 4",
           "isExample": false,
           "why": "That is the minimum, not a quartile."
         }
@@ -291,14 +269,14 @@
       "cloze": "The distance between the first and third quartiles, showing the middle 50% of data, is the ___.",
       "examples": [
         {
-          "text": "88 − 75.5 = 12.5",
+          "text": "Q3 − Q1 = 22 − 8 = 14",
           "isExample": true,
-          "why": "Q3 minus Q1 — the middle half's width."
+          "why": "The IQR is Q3 minus Q1, the width of the box."
         },
         {
-          "text": "94 − 68 = 26",
+          "text": "Greatest − least = 28 − 4 = 24",
           "isExample": false,
-          "why": "That is the range, using the extremes."
+          "why": "That uses the two end values. That is the range."
         }
       ]
     },
@@ -311,14 +289,14 @@
       "cloze": "The way data values are spread out is the ___.",
       "examples": [
         {
-          "text": "“Most scores cluster near 85, with one down at 68”",
+          "text": "Most scores are near 85, and one score is 68",
           "isExample": true,
-          "why": "It says where the data sits and how it spreads."
+          "why": "It tells where most of the data is and how spread out it is."
         },
         {
-          "text": "“The highest score was 94”",
+          "text": "The highest score was 94",
           "isExample": false,
-          "why": "One value describes a point, not the shape of the set."
+          "why": "It tells about one value, not the whole data set."
         }
       ]
     },
@@ -351,14 +329,14 @@
       "cloze": "The minimum, Q1, median, Q3, and maximum together are the ___.",
       "examples": [
         {
-          "text": "29, 34, 37, 40, 47 for the finish times",
+          "text": "4, 8, 14, 22, 28: least, Q1, median, Q3, greatest",
           "isExample": true,
-          "why": "Those are the five values that build the box plot."
+          "why": "These are the five numbers that build the box plot."
         },
         {
-          "text": "The mean and the range of the finish times",
+          "text": "The mean and the range of the data",
           "isExample": false,
-          "why": "The mean and range are not part of the five values."
+          "why": "The mean and range are not part of the five numbers."
         }
       ]
     }
@@ -407,58 +385,191 @@
       "caption": "The box shows the middle 50% (Q1–Q3). The line inside is the median. Whiskers reach the lowest and highest scores."
     },
     "conceptIntro": {
-      "heading": "Let's build it together — What is a box plot?",
-      "intro": "A box plot is a simple picture that shows how a set of data is spread out, using just five key numbers: the lowest value, the first quartile (Q1), the median (middle), the third quartile (Q3), and the highest value. We'll walk through a worked example, try one together, then you'll try a few with hints right there when you need them.",
-      "keyIdea": "The box always holds the middle 50% of the data, and the line inside the box is the median.",
+      "heading": "Represent and Describe Data in a Box Plot",
+      "intro": "A box plot shows five numbers: the least value, Q1, the median, Q3 and the greatest value.",
+      "introEs": "Un diagrama de caja muestra cinco números: el valor menor, Q1, la mediana, Q3 y el valor mayor.",
+      "keyIdea": "To build a box plot, find the median, then the middle of each half, then the least and greatest values.",
+      "keyIdeaEs": "Para construir un diagrama de caja, halla la mediana, luego el medio de cada mitad y luego el valor menor y el mayor.",
       "iDo": {
-        "title": "Watch me build one",
+        "title": "Example · Build a box plot",
+        "titleEs": "Ejemplo · Construye un diagrama de caja",
         "lines": [
-          "My data, in order: 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. There are 11 numbers.",
-          "The middle number is the 6th one, 14, so the median = 14.",
-          "The lower half is 4, 6, 8, 10, 12. Its middle is 8, so Q1 = 8.",
-          "The upper half is 15, 18, 22, 24, 28. Its middle is 22, so Q3 = 22.",
-          "The lowest is 4 and the highest is 28. I draw a box from 8 to 22, a line at 14, and whiskers out to 4 and 28."
+          "Make a box plot of this data: 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. There are 11 values.",
+          "Find the median, the middle value: 11 values → 6th value → 14",
+          "Find Q1, the middle of the lower half: 4, 6, 8, 10, 12 → 8",
+          "Find Q3, the middle of the upper half: 15, 18, 22, 24, 28 → 22",
+          "Find the least and greatest values: 4 and 28",
+          "Draw the box, the median line and the whiskers: box: 8 to 22; line: 14; whiskers: 4 and 28",
+          "Least 4, Q1 8, median 14, Q3 22, greatest 28."
         ],
         "linesEs": [
-          "Mis datos, en orden: 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. Hay 11 números.",
-          "El número del medio es el 6.º, que es 14, así que la mediana = 14.",
-          "La mitad inferior es 4, 6, 8, 10, 12. Su valor del medio es 8, así que Q1 = 8.",
-          "La mitad superior es 15, 18, 22, 24, 28. Su valor del medio es 22, así que Q3 = 22.",
-          "El menor es 4 y el mayor es 28. Dibujo una caja de 8 a 22, una línea en 14 y bigotes hasta 4 y 28."
-        ],
-        "titleEs": "Mírame construir uno"
+          "Haz un diagrama de caja con estos datos: 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. Hay 11 valores.",
+          "Halla la mediana, el valor del medio: 11 valores → 6.º valor → 14",
+          "Halla Q1, el medio de la mitad inferior: 4, 6, 8, 10, 12 → 8",
+          "Halla Q3, el medio de la mitad superior: 15, 18, 22, 24, 28 → 22",
+          "Halla el valor menor y el valor mayor: 4 y 28",
+          "Dibuja la caja, la línea de la mediana y los bigotes: caja: 8 a 22; línea: 14; bigotes: 4 y 28",
+          "Menor 4, Q1 8, mediana 14, Q3 22, mayor 28."
+        ]
       },
       "weDo": {
-        "title": "Let's try one together",
+        "title": "Let's do one together",
+        "titleEs": "Hagamos uno juntos",
         "lines": [
-          "New, smaller data set: 2, 5, 5, 8, 11. First, what is the median (the middle value)?",
-          "The lower half is 2, 5 and the upper half is 8, 11. What is Q1? What is Q3?",
-          "What are the lowest and highest values? Now picture the box stretching from Q1 to Q3 with the median line inside.",
-          "Sentence frame — say it with me: \"My first step is ___ , because the problem asks for ___ .\""
+          "Find the five numbers for a box plot of this data: 2, 5, 5, 8, 11.",
+          "What is the median of 2, 5, 5, 8, 11? (5, the 3rd value.)",
+          "The lower half is 2 and 5. What is Q1? ((2 + 5) ÷ 2 = 3.5)",
+          "The upper half is 8 and 11. What is Q3? ((8 + 11) ÷ 2 = 9.5)",
+          "What are the least and greatest values? (2 and 11)"
         ],
         "linesEs": [
-          "Conjunto de datos nuevo y más pequeño: 2, 5, 5, 8, 11. Primero, ¿cuál es la mediana (el valor del medio)?",
-          "La mitad inferior es 2, 5 y la mitad superior es 8, 11. ¿Cuánto es Q1? ¿Cuánto es Q3?",
-          "¿Cuáles son el valor menor y el mayor? Ahora imagina la caja extendiéndose de Q1 a Q3 con la línea de la mediana adentro.",
-          "Marco de oración — dilo conmigo: «Mi primer paso es ___ , porque el problema pide ___ .»"
-        ],
-        "titleEs": "Intentemos uno juntos"
+          "Halla los cinco números para un diagrama de caja con estos datos: 2, 5, 5, 8, 11.",
+          "¿Cuál es la mediana de 2, 5, 5, 8, 11? (5, el 3.er valor.)",
+          "La mitad inferior es 2 y 5. ¿Cuánto es Q1? ((2 + 5) ÷ 2 = 3.5)",
+          "La mitad superior es 8 y 11. ¿Cuánto es Q3? ((8 + 11) ÷ 2 = 9.5)",
+          "¿Cuáles son el valor menor y el valor mayor? (2 y 11)"
+        ]
       },
       "youDo": {
-        "title": "Now you try — with support",
+        "title": "Your turn",
+        "titleEs": "Tu turno",
         "lines": [
-          "Try the practice problems below. The hint button is right there whenever you get stuck — use it, that's smart.",
-          "Remember the key idea: The box always holds the middle 50% of the data, and the line inside the box is the median.."
+          "Here are 7 values in order: 3, 5, 6, 8, 10, 12, 13. What is Q1, the first quartile?"
         ],
         "linesEs": [
-          "Intenta los problemas de práctica de abajo. El botón de pistas está ahí cuando te atores — úsalo, eso es ser listo.",
-          "Recuerda la idea clave: La caja siempre contiene el 50% central de los datos, y la línea dentro de la caja es la mediana."
+          "Aquí hay 7 valores en orden: 3, 5, 6, 8, 10, 12, 13. ¿Cuánto es Q1, el primer cuartil?"
+        ]
+      }
+    },
+    "build": {
+      "todayIdea": "A box plot shows five numbers: the least value, Q1, the median, Q3 and the greatest value.",
+      "todayIdeaEs": "Un diagrama de caja muestra cinco números: el valor menor, Q1, la mediana, Q3 y el valor mayor.",
+      "examples": [
+        {
+          "title": "Example · Build a box plot",
+          "titleEs": "Ejemplo · Construye un diagrama de caja",
+          "problem": "Make a box plot of this data: 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. There are 11 values.",
+          "problemEs": "Haz un diagrama de caja con estos datos: 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. Hay 11 valores.",
+          "figure": {
+            "kind": "boxPlot",
+            "min": 4,
+            "q1": 8,
+            "median": 14,
+            "q3": 22,
+            "max": 28,
+            "axisMin": 0,
+            "axisMax": 30,
+            "step": 2,
+            "caption": "The box goes from 8 to 22. The median is 14.",
+            "captionEs": "La caja va de 8 a 22. La mediana es 14."
+          },
+          "steps": [
+            {
+              "do": "Find the median, the middle value.",
+              "doEs": "Halla la mediana, el valor del medio.",
+              "math": "11 values ⟶ 6th value ⟶ 14",
+              "mathEs": "11 valores ⟶ 6.º valor ⟶ 14",
+              "why": "The 6th value has 5 values on each side.",
+              "whyEs": "El 6.º valor tiene 5 valores a cada lado."
+            },
+            {
+              "do": "Find Q1, the middle of the lower half.",
+              "doEs": "Halla Q1, el medio de la mitad inferior.",
+              "math": "4, 6, 8, 10, 12 ⟶ 8",
+              "why": "The lower half is the values before the median.",
+              "whyEs": "La mitad inferior son los valores antes de la mediana."
+            },
+            {
+              "do": "Find Q3, the middle of the upper half.",
+              "doEs": "Halla Q3, el medio de la mitad superior.",
+              "math": "15, 18, 22, 24, 28 ⟶ 22"
+            },
+            {
+              "do": "Find the least and greatest values.",
+              "doEs": "Halla el valor menor y el valor mayor.",
+              "math": "4 and 28",
+              "mathEs": "4 y 28"
+            },
+            {
+              "do": "Draw the box, the median line and the whiskers.",
+              "doEs": "Dibuja la caja, la línea de la mediana y los bigotes.",
+              "math": [
+                "box: 8 to 22",
+                "line: 14",
+                "whiskers: 4 and 28"
+              ],
+              "mathEs": [
+                "caja: 8 a 22",
+                "línea: 14",
+                "bigotes: 4 y 28"
+              ],
+              "why": "The whiskers reach out to the least and greatest values.",
+              "whyEs": "Los bigotes llegan hasta el valor menor y el valor mayor."
+            }
+          ],
+          "answer": "Least 4, Q1 8, median 14, Q3 22, greatest 28.",
+          "answerEs": "Menor 4, Q1 8, mediana 14, Q3 22, mayor 28."
+        }
+      ],
+      "together": {
+        "title": "Let's do one together",
+        "titleEs": "Hagamos uno juntos",
+        "problem": "Find the five numbers for a box plot of this data: 2, 5, 5, 8, 11.",
+        "problemEs": "Halla los cinco números para un diagrama de caja con estos datos: 2, 5, 5, 8, 11.",
+        "figure": {
+          "kind": "boxPlot",
+          "min": 2,
+          "q1": 3.5,
+          "median": 5,
+          "q3": 9.5,
+          "max": 11,
+          "axisMin": 0,
+          "axisMax": 12,
+          "step": 1,
+          "caption": "The box goes from 3.5 to 9.5.",
+          "captionEs": "La caja va de 3.5 a 9.5."
+        },
+        "steps": [
+          {
+            "ask": "What is the median of 2, 5, 5, 8, 11?",
+            "askEs": "¿Cuál es la mediana de 2, 5, 5, 8, 11?",
+            "answer": "5, the 3rd value.",
+            "answerEs": "5, el 3.er valor."
+          },
+          {
+            "ask": "The lower half is 2 and 5. What is Q1?",
+            "askEs": "La mitad inferior es 2 y 5. ¿Cuánto es Q1?",
+            "answer": "(2 + 5) ÷ 2 = 3.5"
+          },
+          {
+            "ask": "The upper half is 8 and 11. What is Q3?",
+            "askEs": "La mitad superior es 8 y 11. ¿Cuánto es Q3?",
+            "answer": "(8 + 11) ÷ 2 = 9.5"
+          },
+          {
+            "ask": "What are the least and greatest values?",
+            "askEs": "¿Cuáles son el valor menor y el valor mayor?",
+            "answer": "2 and 11",
+            "answerEs": "2 y 11"
+          }
         ],
-        "titleEs": "Ahora inténtalo tú — con apoyo"
+        "answer": "Least 2, Q1 3.5, median 5, Q3 9.5, greatest 11. The box goes from 3.5 to 9.5, with a line at 5.",
+        "answerEs": "Menor 2, Q1 3.5, mediana 5, Q3 9.5, mayor 11. La caja va de 3.5 a 9.5, con una línea en 5."
       },
-      "headingEs": "Construyámoslo juntos — ¿Qué es un diagrama de caja?",
-      "introEs": "Un diagrama de caja es una imagen sencilla que muestra cómo se reparte un conjunto de datos, usando solo cinco números clave: el valor menor, el primer cuartil (Q1), la mediana (el medio), el tercer cuartil (Q3) y el valor mayor. Veremos un ejemplo resuelto, haremos uno juntos y luego harás algunos con pistas disponibles cuando las necesites.",
-      "keyIdeaEs": "La caja siempre contiene el 50% central de los datos, y la línea dentro de la caja es la mediana."
+      "tryIt": {
+        "problem": "Here are 7 values in order: 3, 5, 6, 8, 10, 12, 13. What is Q1, the first quartile?",
+        "problemEs": "Aquí hay 7 valores en orden: 3, 5, 6, 8, 10, 12, 13. ¿Cuánto es Q1, el primer cuartil?",
+        "answer": "5",
+        "accept": [
+          "5",
+          "Q1 5",
+          "Q1=5"
+        ],
+        "hint": "The median is 8. Find the middle of the lower half: 3, 5, 6.",
+        "hintEs": "La mediana es 8. Halla el medio de la mitad inferior: 3, 5, 6."
+      },
+      "bigIdea": "To build a box plot, find the median, then the middle of each half, then the least and greatest values.",
+      "bigIdeaEs": "Para construir un diagrama de caja, halla la mediana, luego el medio de cada mitad y luego el valor menor y el mayor."
     }
   },
   "explore": {
@@ -1986,5 +2097,6 @@
       ],
       "explanationEs": "Mínimo y máximo: 25, 31. Mediana: 26. Escribe mínimo, Q1, mediana, Q3, máximo: 25, 25.5, 26, 29.5, 31."
     }
-  ]
+  ],
+  "topic": "Represent and Describe Data in a Box Plot"
 }
