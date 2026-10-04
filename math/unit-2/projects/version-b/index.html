@@ -816,6 +816,7 @@
     <!-- projects-interactive-hero-injected:begin (interactive centerpiece — tools/inject-projects-interactive-hero.mjs) -->
     <link rel="stylesheet" href="/shared/projects/projects-interactive-hero.css" />
     <!-- projects-interactive-hero-injected:end -->
+  <script src="/shared/projects/projects-notify.js?v=20261004" defer></script>
 </head>
   <body class="level-1 pro-projects declutter-projects" id="body">
     <!-- ====== HERO ====== -->
@@ -2754,10 +2755,10 @@
       function buildReport() {
         const isEs = document.body.classList.contains("es");
         if (!window.projectData) {
-          alert(
+          NTNotify.fix(
             isEs
               ? "Por favor ingresa las temperaturas y realiza los cálculos en el Paso 1 antes de generar el resumen."
-              : "Please enter temperatures and run calculations on Step 1 before generating the summary.",
+              : "Please enter temperatures and run calculations on Step 1 before generating the summary."
           );
           return false;
         }
@@ -2882,16 +2883,16 @@
         const txt = document.getElementById("reportBox")?.textContent;
         const isEs = document.body.classList.contains("es");
         if (!txt) {
-          alert(
+          NTNotify.fix(
             isEs
               ? "Por favor haz clic en 'Generar resumen' primero."
-              : "Please click 'Generate Summary' first.",
+              : "Please click 'Generate Summary' first."
           );
           return;
         }
         navigator.clipboard
           ?.writeText(txt)
-          .then(() => alert(isEs ? "¡Copiado al portapapeles!" : "Copied to clipboard!"));
+          .then(() => NTNotify.toast(isEs ? "¡Copiado al portapapeles!" : "Copied to clipboard!"));
       }
 
       function downloadTxt() {
@@ -2913,9 +2914,9 @@
       function onFinishBtnClick() {
         const isEs = document.body.classList.contains("es");
         if (isEs) {
-          alert("¡Felicitaciones! 🎉 Muestra esta pantalla y tu informe generado a tu profesor.");
+          NTNotify.toast("¡Felicitaciones! 🎉 Muestra esta pantalla y tu informe generado a tu profesor.", { tone: "success" });
         } else {
-          alert("Congratulations! 🎉 Show this screen and your generated report to your teacher.");
+          NTNotify.toast("Congratulations! 🎉 Show this screen and your generated report to your teacher.", { tone: "success" });
         }
       }
 
@@ -3172,7 +3173,7 @@
           dlAnchor.click();
           dlAnchor.remove();
         } catch (e) {
-          alert("Export failed: " + e.message);
+          NTNotify.toast("Export failed: " + e.message, { tone: "error" });
         }
       };
 
@@ -3196,12 +3197,12 @@
                   el.dispatchEvent(new Event("change", { bubbles: true }));
                 }
               }
-              alert("Successfully imported student backup!");
+              NTNotify.toast(NTNotify.t("Your backup was restored.", "Tu copia de seguridad se restauró."), { tone: "success" });
             } else {
-              alert("Invalid backup file structure.");
+              NTNotify.toast(NTNotify.t("That file is not a project backup. Choose the .json backup file you saved.", "Ese archivo no es una copia de seguridad del proyecto. Elige el archivo .json que guardaste."), { tone: "error" });
             }
           } catch (err) {
-            alert("Error parsing backup file: " + err.message);
+            NTNotify.toast("Error parsing backup file: " + err.message, { tone: "error" });
           }
         };
         reader.readAsText(file);

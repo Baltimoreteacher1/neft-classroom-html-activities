@@ -257,40 +257,107 @@
     window.addEventListener("resize", function () {
       avoidBottomBar(a);
     });
+    // Save/Resume and page bars can mount after load; settle once more.
+    setTimeout(function () {
+      avoidBottomBar(a);
+    }, 1500);
   }
 
-  // Measure the tallest fixed element pinned to the bottom edge that spans
-  // most of the viewport width and would overlap the launcher, then offset the
-  // launcher above it (plus a small gap). Falls back to the default position.
+  // Right-edge stack. Three floating controls share the bottom-right corner —
+  // Save/Resume (#nsr-root), this launcher, and NetFold on geometry pages —
+  // and pages may pin a full-width action bar (e.g. .nt-pe-bar "Save as PDF/DOC")
+  // to the bottom edge. Each control is placed above the one below it, the whole
+  // stack sits above any bottom bar, and a control that still collides with
+  // another fixed control (e.g. the learning-supports dock) is lifted above it.
+  // Positions only — no page content changes.
+  var STACK_GAP = 8;
+  function visibleRect(el) {
+    if (!el) return null;
+    var cs = getComputedStyle(el);
+    if (cs.position !== "fixed" || cs.display === "none" || cs.visibility === "hidden") return null;
+    var b = el.getBoundingClientRect();
+    return b.width && b.height ? b : null;
+  }
+  function bottomBarHeight(stack) {
+    var h = 0;
+    var nodes = document.body.querySelectorAll("*");
+    for (var i = 0; i < nodes.length; i++) {
+      var el = nodes[i];
+      if (
+        stack.some(function (s) {
+          return s && (s === el || s.contains(el));
+        })
+      )
+        continue;
+      var cs = getComputedStyle(el);
+      if (cs.position !== "fixed" || cs.pointerEvents === "none") continue;
+      var b = visibleRect(el);
+      if (!b) continue;
+      // A bar is pinned to the bottom edge, spans most of the width, and is
+      // short — full-height modals and overlays are not bars.
+      if (window.innerHeight - b.bottom > 2) continue;
+      if (b.width < window.innerWidth * 0.6 || b.height > window.innerHeight * 0.4) continue;
+      if (b.height > h) h = b.height;
+    }
+    return Math.round(h);
+  }
+  function liftClearOf(el, stack) {
+    // Lift el above any other visible fixed control it overlaps (max 3 passes).
+    for (var pass = 0; pass < 3; pass++) {
+      var r = visibleRect(el);
+      if (!r) return;
+      var hit = null;
+      var nodes = document.body.querySelectorAll("a,button,[role=button]");
+      for (var i = 0; i < nodes.length && !hit; i++) {
+        var o = nodes[i];
+        if (el.contains(o) || o.contains(el)) continue;
+        if (
+          stack.some(function (s) {
+            return s && s.contains(o);
+          })
+        )
+          continue;
+        var fixedAncestor = o.closest && o.closest("*");
+        while (fixedAncestor && getComputedStyle(fixedAncestor).position !== "fixed")
+          fixedAncestor = fixedAncestor.parentElement;
+        if (!fixedAncestor) continue;
+        var q = visibleRect(fixedAncestor) && o.getBoundingClientRect();
+        if (!q || !q.width) continue;
+        if (
+          Math.min(r.right, q.right) - Math.max(r.left, q.left) > 2 &&
+          Math.min(r.bottom, q.bottom) - Math.max(r.top, q.top) > 2
+        )
+          hit = q;
+      }
+      if (!hit) return;
+      el.style.bottom = Math.round(window.innerHeight - hit.top + STACK_GAP) + "px";
+    }
+  }
   function avoidBottomBar(a) {
-    var base = 72; // matches the default bottom offset (stacked above the Save/Resume pill, bottom-right)
-    var clearance = base;
     try {
-      var nodes = document.body.querySelectorAll("*");
-      for (var i = 0; i < nodes.length; i++) {
-        var el = nodes[i];
-        if (el === a || el.id === "mwb-launcher") continue;
-        var cs = getComputedStyle(el);
-        if (cs.position !== "fixed") continue;
-        if (cs.display === "none" || cs.visibility === "hidden") continue;
-        if (cs.pointerEvents === "none") continue;
-        var b = el.getBoundingClientRect();
-        if (b.height === 0 || b.width === 0) continue;
-        // Anchored to the bottom edge and spanning most of the width.
-        var atBottom = window.innerHeight - b.bottom <= 2;
-        var fullWidth = b.width >= window.innerWidth * 0.6;
-        if (!atBottom || !fullWidth) continue;
-        // Only react to bars that stack above the launcher.
-        var z = parseInt(cs.zIndex, 10);
-        if (isNaN(z) || z < 2147483000) continue;
-        var need = Math.round(b.height) + 10;
-        if (need > clearance) clearance = need;
+      var nsr = document.getElementById("nsr-root");
+      var nf = document.getElementById("netfold-launcher");
+      if (nsr && nsr.classList.contains("nsr-open")) return; // never move an open panel
+      var stack = [nsr, a, nf];
+      var floor = bottomBarHeight(stack);
+      floor = floor ? floor + STACK_GAP : 0;
+      if (nsr) {
+        nsr.style.bottom = floor ? floor + "px" : "";
+        var nr = visibleRect(nsr);
+        if (nr) floor = Math.max(floor, Math.round(window.innerHeight - nr.top + STACK_GAP));
+      }
+      a.style.bottom = "";
+      var ar = visibleRect(a);
+      if (ar && window.innerHeight - ar.bottom < floor) a.style.bottom = floor + "px";
+      liftClearOf(a, stack);
+      if (nf) {
+        ar = visibleRect(a);
+        nf.style.bottom = ar ? Math.round(window.innerHeight - ar.top + STACK_GAP) + "px" : "";
+        liftClearOf(nf, stack);
       }
     } catch (_e) {
-      /* defensive: keep default position on any failure */
+      /* defensive: keep default positions on any failure */
     }
-    a.style.bottom =
-      clearance > base ? "calc(" + clearance + "px + env(safe-area-inset-bottom))" : "";
   }
 
   if (document.readyState === "loading") {

@@ -85,6 +85,11 @@
       "file": "tools/curriculum-resource-audit.test.mjs",
       "targets": "repo-scratch",
       "reason": "Writes synthetic configs, manifest and route fixtures only under mkdtempSync in ignored .qa-logs/resource-audit-*; subprocess source root is redirected with REPO. Static discovery excludes this scratch directory. Never writes taught lessons or tracked outputs."
+    },
+    {
+      "file": "tools/gen-solve-along.test.mjs",
+      "targets": "tmpdir",
+      "reason": "copies three sidecars into mkdtempSync(join(tmpdir(), 'gen-solve-along-')) fixtures and mutates/removes only those; the real-tree run is --check, which writes nothing"
     }
   ]
 }

@@ -433,8 +433,15 @@
             (typeof window !== "undefined" && window.localStorage
               ? window.localStorage.getItem("nt-student-save-code")
               : null) || "WORK-SAVED";
-          if (typeof window !== "undefined" && typeof window.alert === "function") {
-            window.alert("Your work is saved in this browser! Checkpoint save code: " + code);
+          var notify = /** @type {any} */ (window).NTNotify;
+          if (notify) {
+            notify.toast(
+              notify.t(
+                "Your work is saved in this browser. Checkpoint save code: " + code,
+                "Tu trabajo está guardado en este navegador. Código de punto de control: " + code,
+              ),
+              { tone: "success" },
+            );
           }
         }
       });
@@ -701,10 +708,11 @@
       if (typeof window.comparePartner === "function") window.comparePartner();
       if (typeof window.calcUnitRates === "function") window.calcUnitRates();
       if (typeof window.checkDesign === "function") window.checkDesign();
-
-      if (typeof window !== "undefined" && typeof window.alert === "function") {
-        window.alert(
-          "✨ Exemplar plan populated! All verification cards updated for whole-class demonstration.",
+      var notify = /** @type {any} */ (window).NTNotify;
+      if (notify) {
+        notify.toast(
+          "✨ Exemplar plan filled in. Every check card is updated for the whole-class demo.",
+          { tone: "success" },
         );
       }
     });

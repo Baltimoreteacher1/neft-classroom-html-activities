@@ -729,7 +729,7 @@ window.LESSON_PROJECTS = {
     },
     {
       "text": "🧱 Factor Frenzy — Brick Breaker",
-      "href": "/math/unit-1/games/unit1-factor-frenzy.html"
+      "href": "/math/games/u1-factor-frenzy/"
     },
     {
       "text": "📖 Prime Station: The Factor Code (Part 1)",

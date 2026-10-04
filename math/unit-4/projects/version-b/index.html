@@ -825,6 +825,7 @@
     <meta name="nt-project-reveal-unit" content="4" />
     <link rel="stylesheet" href="/shared/projects/projects-meta.css?v=20260727-v2" />
     <!-- projects-meta-injected:end -->
+  <script src="/shared/projects/projects-notify.js?v=20261004" defer></script>
 </head>
   <body class="level-1 pro-projects declutter-projects" id="body">
     <!-- ====== HERO ====== -->
@@ -3915,7 +3916,7 @@
         const txt = document.getElementById("reportBox").textContent;
         navigator.clipboard?.writeText(txt).then(() => {
           const isEs = document.body.classList.contains("es");
-          alert(isEs ? "¡Copiado al portapapeles!" : "Copied to clipboard!");
+          NTNotify.toast(isEs ? "¡Copiado al portapapeles!" : "Copied to clipboard!");
         });
       }
 
@@ -3958,17 +3959,17 @@
           );
         }
         if (missing.length) {
-          alert(
+          NTNotify.fix(
             (isEs ? "Casi listo. Antes de entregar:\n\n• " : "Almost there. Before you turn it in:\n\n• ") +
-              missing.join("\n• "),
+              missing.join("\n• ")
           );
           return;
         }
         playConfetti();
-        alert(
+        NTNotify.toast(
           isEs
             ? "¡Excelente trabajo! 🎉 Ya puedes entregar: imprime o descarga tu informe de resumen y dáselo a tu maestro."
-            : "Fantastic job! 🎉 You are ready to turn in: print or download your summary report and hand it to your teacher.",
+            : "Fantastic job! 🎉 You are ready to turn in: print or download your summary report and hand it to your teacher.", { tone: "success" }
         );
       }
 
@@ -4051,7 +4052,7 @@
           dlAnchor.click();
           dlAnchor.remove();
         } catch (e) {
-          alert("Export failed: " + e.message);
+          NTNotify.toast("Export failed: " + e.message, { tone: "error" });
         }
       };
 
@@ -4075,12 +4076,12 @@
                   el.dispatchEvent(new Event("change", { bubbles: true }));
                 }
               }
-              alert("Successfully imported student backup!");
+              NTNotify.toast(NTNotify.t("Your backup was restored.", "Tu copia de seguridad se restauró."), { tone: "success" });
             } else {
-              alert("Invalid backup file structure.");
+              NTNotify.toast(NTNotify.t("That file is not a project backup. Choose the .json backup file you saved.", "Ese archivo no es una copia de seguridad del proyecto. Elige el archivo .json que guardaste."), { tone: "error" });
             }
           } catch (err) {
-            alert("Error parsing backup file: " + err.message);
+            NTNotify.toast("Error parsing backup file: " + err.message, { tone: "error" });
           }
         };
         reader.readAsText(file);

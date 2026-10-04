@@ -1444,6 +1444,7 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
+  <script src="/shared/projects/projects-notify.js?v=20261004" defer></script>
 </head>
   <body>
 <!-- play-game-injected:begin -->
@@ -5321,8 +5322,8 @@ document.addEventListener("click",function(e){if(!on)return;if(e.target.closest(
         navigator.clipboard
           .writeText(text)
           .then(() => {
-            alert(
-              "Portfolio copied to clipboard! You can now paste it into Google Classroom.",
+            NTNotify.toast(
+              "Portfolio copied to clipboard! You can now paste it into Google Classroom."
             );
           })
           .catch(() => {
@@ -5333,14 +5334,14 @@ document.addEventListener("click",function(e){if(!on)return;if(e.target.closest(
             ta.select();
             document.execCommand("copy");
             document.body.removeChild(ta);
-            alert("Portfolio copied!");
+            NTNotify.toast(NTNotify.t("Portfolio copied!", "¡Portafolio copiado!"));
           });
       }
 
       function submitToClassroom() {
         const name = document.getElementById("studentName").value || "";
         if (!name.trim()) {
-          alert("Please enter your name in Phase 1 before submitting.");
+          NTNotify.fix("Please enter your name in Phase 1 before submitting.");
           return;
         }
         // Build share URL

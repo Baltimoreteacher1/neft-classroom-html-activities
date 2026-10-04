@@ -380,7 +380,7 @@ export const EXACT = {
     "/math/statistics/mean-median-modegallerywalk/",
     301,
   ],
-  "/games/unit1-factor-frenzy.html": ["/math/unit-1/games/unit1-factor-frenzy.html", 301],
+  "/games/unit1-factor-frenzy.html": ["/math/games/u1-factor-frenzy/", 301],
   "/games/unit2-fraction-kitchen.html": ["/math/unit-2/games/unit2-fraction-kitchen.html", 301],
   "/games/unit3-ratio-rally.html": ["/math/unit-3/games/unit3-ratio-rally.html", 301],
   "/games/unit4-discount-dash.html": ["/math/unit-4/games/unit4-discount-dash.html", 301],
@@ -388,7 +388,7 @@ export const EXACT = {
   "/games/unit6-expression-engine.html": ["/math/unit-6/games/unit6-expression-engine.html", 301],
   "/games/unit7-equation-escape.html": ["/math/unit-8/games/unit7-equation-escape.html", 301],
   "/games/unit8-stats-slam.html": ["/math/statistics/games/unit8-stats-slam.html", 301],
-  "/games/unit9-coordinate-quest.html": ["/math/unit-7/games/unit9-coordinate-quest.html", 301],
+  "/games/unit9-coordinate-quest.html": ["/math/games/u9-coordinate-quest/", 301],
   "/games/unit10-volume-vault.html": ["/math/unit-10/games/unit10-volume-vault.html", 301],
   "/unit-1/": ["/math/unit-1/supplemental/", 301],
   "/unit-1": ["/math/unit-1/supplemental/", 301],
@@ -491,6 +491,10 @@ export const EXACT = {
   "/lessons/9-7-catchup": ["/lessons/7-9-catchup/", 301],
   "/planning": ["/curriculum/planning/", 301],
   "/student-supports": ["/curriculum/student-supports/", 301],
+  "/math/unit-1/games/unit1-factor-frenzy.html": ["/math/games/u1-factor-frenzy/", 301],
+  "/math/unit-7/games/unit9-coordinate-quest.html": ["/math/games/u9-coordinate-quest/", 301],
+  "/math/unit-1/games/unit1-factor-frenzy": ["/math/games/u1-factor-frenzy/", 301],
+  "/math/unit-7/games/unit9-coordinate-quest": ["/math/games/u9-coordinate-quest/", 301],
 };
 
 /** [prefix, destination, status, destinationTakesSplat] */

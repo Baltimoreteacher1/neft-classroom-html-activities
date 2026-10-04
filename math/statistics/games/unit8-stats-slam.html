@@ -371,6 +371,7 @@
       // answer; Tier 2 = the worked step with the last value left for the
       // student; after that the full solution. Wrong answers never auto-advance.
       function methodHint(q) {
+        if (q.hint) return q.hint;
         const t = q.text;
         if (/MAD/.test(t))
           return "MAD: find the mean, find how far each value is from the mean, then find the mean of those distances.";
@@ -391,6 +392,7 @@
         return "Read the data again and use the measure the question names.";
       }
       function workedStep(q) {
+        if (q.step) return q.step;
         if (/mode/i.test(q.text) && !/MAD/.test(q.text))
           return "Count how many times each value appears. The mode appears 3 times.";
         const parts = q.explain.split(/(?<=\.)\s+(?=[A-Z$])/);
@@ -398,6 +400,652 @@
         const cut = q.explain.replace(/\s*[=≈]\s*[^=≈]+$/, "");
         return cut !== q.explain ? cut + " = ?" : q.explain;
       }
+
+      // ── Replay generator: new numbers on every replay ───────────────────
+      // The FIRST completed season uses the authored data sets in
+      // genQuestions() (the lesson's own numbers). Every season after that
+      // rebuilds the SAME 15 question types from a seeded generator, so a
+      // replay is never a memorised answer. All arithmetic is on whole
+      // numbers (thousandths for batting averages, tenths/halves for clean
+      // decimals), so answers, distractors and explanations are exact.
+      // Distractors come from real misconceptions: unsorted median, sum
+      // instead of mean, range instead of IQR, dividing by the wrong count…
+      const StatsGen = (() => {
+        function mulberry32(seed) {
+          let a = seed >>> 0;
+          return function () {
+            a = (a + 0x6d2b79f5) >>> 0;
+            let t = a;
+            t = Math.imul(t ^ (t >>> 15), t | 1);
+            t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+          };
+        }
+        // Exact n/d (n >= 0, d > 0, integers) to `places` decimals, half up.
+        function fx(n, d, places) {
+          const p = 10 ** places;
+          const q = Math.floor((2 * n * p + d) / (2 * d));
+          if (!places) return String(q);
+          return Math.floor(q / p) + "." + String(q % p).padStart(places, "0");
+        }
+        // Exact terminating n/d in its shortest form (up to 3 places).
+        function exact(n, d) {
+          for (let pl = 0; pl <= 3; pl++) {
+            if ((n * 10 ** pl) % d === 0) return fx(n, d, pl);
+          }
+          return null;
+        }
+        const thou = (v) => "." + String(v).padStart(3, "0");
+        const sum = (a) => a.reduce((s, v) => s + v, 0);
+        const sorted = (a) => [...a].sort((x, y) => x - y);
+
+        function tools(rng) {
+          const ri = (lo, hi) => lo + Math.floor(rng() * (hi - lo + 1));
+          const pick = (a) => a[Math.floor(rng() * a.length)];
+          const shuffle = (a) => {
+            const b = [...a];
+            for (let i = b.length - 1; i > 0; i--) {
+              const j = Math.floor(rng() * (i + 1));
+              [b[i], b[j]] = [b[j], b[i]];
+            }
+            return b;
+          };
+          const distinct = (lo, hi, n) => {
+            const s = new Set();
+            while (s.size < n) s.add(ri(lo, hi));
+            return [...s];
+          };
+          // Shuffled data that is NOT already in order (so sorting matters).
+          const messy = (a) => {
+            let b = shuffle(a);
+            for (let g = 0; g < 20 && b.every((v, i) => !i || b[i - 1] <= v); g++) b = shuffle(a);
+            return b;
+          };
+          return { ri, pick, shuffle, distinct, messy };
+        }
+
+        // Three wrong values from misconception candidates (integers in the
+        // kind's own unit), topped up with near misses. All distinct, > 0.
+        function wrongs(correct, cands, step) {
+          const out = [];
+          for (const c of cands) {
+            if (out.length === 3) break;
+            if (c == null || !Number.isInteger(c) || c <= 0 || c === correct) continue;
+            if (!out.includes(c)) out.push(c);
+          }
+          for (let k = 1; out.length < 3; k++) {
+            for (const c of [correct + k * step, correct - k * step]) {
+              if (out.length < 3 && c > 0 && !out.includes(c)) out.push(c);
+            }
+          }
+          return out;
+        }
+
+        // Each builder returns { text, data, correct, wrongs[], explain,
+        // step, hint?, raw }; raw keeps the numbers for independent checks.
+        const B = {};
+
+        B.mean = (t, n) => {
+          const ctx =
+            n === 5
+              ? t.pick([
+                  ["Scout Report: Player scored ", " points in 5 games. What is the mean?"],
+                  ["Scout: Rebounds in 5 games: ", ". What is the mean?"],
+                  ["Scout: Minutes played in 5 games: ", ". What is the mean?"],
+                ])
+              : t.pick([
+                  ["Games won per set: ", ". What is the mean?"],
+                  ["Laps run in 4 practices: ", ". What is the mean?"],
+                  ["Goals in 4 matches: ", ". What is the mean?"],
+                ]);
+          let v, m;
+          for (;;) {
+            m = n === 5 ? t.ri(12, 26) : t.ri(6, 15);
+            const spread = n === 5 ? 9 : 5;
+            v = [];
+            for (let i = 0; i < n - 1; i++) v.push(t.ri(m - spread, m + spread));
+            const last = n * m - sum(v);
+            if (last < m - spread || last > m + spread || last < 1) continue;
+            v.push(last);
+            if (new Set(v).size < n - 1) continue;
+            v = t.messy(v);
+            break;
+          }
+          const s = sum(v),
+            srt = sorted(v);
+          const med2 = n % 2 ? 2 * srt[(n - 1) / 2] : srt[n / 2 - 1] + srt[n / 2];
+          return {
+            text: ctx[0] + v.join(", ") + ctx[1],
+            data: v.join(", "),
+            correct: m,
+            wrongs: wrongs(
+              m,
+              [
+                med2 % 2 ? null : med2 / 2, // the median, not the mean
+                n % 2 ? v[(n - 1) / 2] : null, // middle of the unsorted list
+                s % (n - 1) ? null : s / (n - 1), // divided by the wrong count
+                s, // the sum — forgot to divide
+              ],
+              1,
+            ).map(String),
+            explain: "Mean = (" + v.join("+") + ")/" + n + " = " + s + "/" + n + " = " + m,
+            step: "Add them: " + v.join(" + ") + " = " + s + ". Now divide by " + n + ": " + s + " ÷ " + n + " = ?",
+            raw: { kind: "mean", values: v },
+          };
+        };
+
+        B.median5 = (t) => {
+          const ctx = t.pick([
+            "Scout: Assists per match: ",
+            "Scout: Steals per game: ",
+            "Scout: Shots made per game: ",
+          ]);
+          let v, srt;
+          for (;;) {
+            v = t.messy(t.distinct(2, 30, 5));
+            srt = sorted(v);
+            if (v[2] !== srt[2]) break;
+          }
+          const s = sum(v);
+          return {
+            text: ctx + v.join(", ") + ". What is the median?",
+            data: v.join(", "),
+            correct: srt[2],
+            wrongs: wrongs(srt[2], [v[2], s % 5 ? null : s / 5, srt[1], srt[3]], 1).map(String),
+            explain: "Sort: " + srt.join(",") + ". Middle value = " + srt[2],
+            step: "Sort them: " + srt.join(", ") + ". The middle (3rd) value is ?",
+            raw: { kind: "median", values: v },
+          };
+        };
+
+        B.mode = (t) => {
+          const ctx = t.pick(["Goalie saves per game: ", "Shots blocked per game: ", "Corner kicks per game: "]);
+          let M, S, U, v;
+          for (;;) {
+            [M, S, U] = t.distinct(5, 30, 3);
+            if ([M, S, U].includes(3)) continue;
+            v = t.shuffle([M, M, M, S, S, U]);
+            if (v[0] === v[1] && v[1] === v[2]) continue;
+            break;
+          }
+          const srt = sorted(v),
+            s = sum(v),
+            med2 = srt[2] + srt[3];
+          const order = [...new Set(v)];
+          const count = (x) => v.filter((y) => y === x).length;
+          return {
+            text: ctx + v.join(", ") + ". What is the mode?",
+            data: v.join(", "),
+            correct: M,
+            wrongs: wrongs(M, [S, 3, med2 % 2 ? null : med2 / 2, U, s % 6 ? null : s / 6], 1).map(String),
+            explain: M + " appears 3 times (most frequent) = mode",
+            step:
+              "Count each value: " +
+              order.map((x) => x + " appears " + count(x) + (count(x) === 1 ? " time" : " times")).join(", ") +
+              ". The value that appears most often is ?",
+            raw: { kind: "mode", values: v },
+          };
+        };
+
+        B.range = (t) => {
+          const ctx = t.pick([
+            ["Sprint times: ", " sec. What is the range?"],
+            ["Jump heights: ", " in. What is the range?"],
+            ["Free-throw attempts: ", ". What is the range?"],
+          ]);
+          let v, srt;
+          for (;;) {
+            v = t.messy(t.distinct(30, 70, 5));
+            srt = sorted(v);
+            if (Math.abs(v[4] - v[0]) !== srt[4] - srt[0]) break;
+          }
+          const r = srt[4] - srt[0];
+          return {
+            text: ctx[0] + v.join(", ") + ctx[1],
+            data: v.join(", "),
+            correct: r,
+            wrongs: wrongs(r, [Math.abs(v[4] - v[0]), srt[4] - srt[1], srt[3] - srt[0], srt[0], srt[4]], 1).map(
+              String,
+            ),
+            explain: "Range = " + srt[4] + " - " + srt[0] + " = " + r,
+            step:
+              "Greatest value = " +
+              srt[4] +
+              ", least value = " +
+              srt[0] +
+              ". Now subtract: " +
+              srt[4] +
+              " − " +
+              srt[0] +
+              " = ?",
+            raw: { kind: "range", values: v },
+          };
+        };
+
+        const STAT_Q = [
+          "How do points scored vary game to game?",
+          "How tall are the players on the team?",
+          "How many laps can each runner finish?",
+          "How many free throws do players make?",
+          "How long do players practice each week?",
+        ];
+        const NOT_STAT_Q = [
+          "How many points last Tuesday?",
+          "Who is tallest on roster?",
+          "What color are jerseys?",
+          "What time does tonight's game start?",
+          "How tall is the basketball hoop?",
+          "What is the coach's name?",
+        ];
+        B.statQ = (t) => {
+          const right = t.pick(STAT_Q);
+          const wrong = t.shuffle(NOT_STAT_Q).slice(0, 3);
+          return {
+            text: "Which is a statistical question?",
+            data: "",
+            correct: right,
+            wrongs: wrong,
+            explain: "A statistical question expects variability in answers.",
+            step:
+              'Ask of each choice: would you get many different answers? "' +
+              wrong[0] +
+              '" has just one answer. So does "' +
+              wrong[1] +
+              '". The question whose answers vary is ?',
+            raw: { kind: "statQ", right: right, wrong: wrong },
+          };
+        };
+
+        B.meanTenth = (t) => {
+          const ctx = t.pick([
+            ["Lap times: ", " sec. Mean (round to nearest tenth)?"],
+            ["Points per game: ", ". Mean (round to nearest tenth)?"],
+            ["Minutes played: ", ". Mean (round to nearest tenth)?"],
+          ]);
+          let v;
+          for (;;) {
+            v = [];
+            for (let i = 0; i < 7; i++) v.push(t.ri(15, 38));
+            if (sum(v) % 7 && new Set(v).size >= 5) break;
+          }
+          const s = sum(v),
+            srt = sorted(v);
+          const ten = Number(fx(s, 7, 1).replace(".", ""));
+          return {
+            text: ctx[0] + v.join(", ") + ctx[1],
+            data: v.join(", "),
+            correct: fx(ten, 10, 1),
+            wrongs: wrongs(
+              ten,
+              [
+                Math.floor((10 * s) / 7), // cut off instead of rounding
+                10 * Math.round(s / 7), // rounded to a whole number
+                10 * srt[3], // the median
+                Number(fx(s, 6, 1).replace(".", "")), // divided by 6
+              ],
+              1,
+            ).map((w) => fx(w, 10, 1)),
+            explain: "Mean = " + s + "/7 ≈ " + fx(s, 7, 1),
+            step: "Add: " + v.join(" + ") + " = " + s + ". Divide, then round to the nearest tenth: " + s + " ÷ 7 ≈ ?",
+            raw: { kind: "meanTenth", values: v },
+          };
+        };
+
+        B.rangeThou = (t) => {
+          let v, srt;
+          for (;;) {
+            v = t.messy(t.distinct(255, 315, 7));
+            srt = sorted(v);
+            if (srt[6] - srt[0] >= 10 && Math.abs(v[6] - v[0]) !== srt[6] - srt[0]) break;
+          }
+          const r = srt[6] - srt[0];
+          const d = v.map(thou).join(", ");
+          return {
+            text: "Batting avgs: " + d + ". Range?",
+            data: d,
+            correct: thou(r),
+            wrongs: wrongs(r, [Math.abs(v[6] - v[0]), srt[6] - srt[1], srt[5] - srt[0], srt[5] - srt[1]], 1).map(
+              thou,
+            ),
+            explain: "Range = " + thou(srt[6]) + " - " + thou(srt[0]) + " = " + thou(r),
+            step:
+              "Greatest = " +
+              thou(srt[6]) +
+              ", least = " +
+              thou(srt[0]) +
+              ". Subtract: " +
+              thou(srt[6]) +
+              " − " +
+              thou(srt[0]) +
+              " = ?",
+            raw: { kind: "rangeThou", values: v },
+          };
+        };
+
+        B.median6 = (t) => {
+          const ctx = t.pick([
+            ["Long jump distances: ", " ft. Median?"],
+            ["Points per game: ", ". Median?"],
+            ["Passes completed: ", ". Median?"],
+          ]);
+          let v, srt;
+          for (;;) {
+            v = t.messy(t.distinct(10, 32, 6));
+            srt = sorted(v);
+            if (v[2] + v[3] !== srt[2] + srt[3]) break;
+          }
+          const half = (h) => fx(h, 2, h % 2 ? 1 : 0); // value given in halves
+          const m2 = srt[2] + srt[3],
+            s = sum(v);
+          return {
+            text: ctx[0] + v.join(", ") + ctx[1],
+            data: v.join(", "),
+            correct: half(m2),
+            wrongs: wrongs(
+              m2,
+              [
+                v[2] + v[3], // middle pair of the UNSORTED list
+                2 * srt[2], // only one middle value
+                2 * srt[3],
+                s % 3 ? null : s / 3, // the mean (in halves)
+                srt[1] + srt[4],
+              ],
+              1,
+            ).map(half),
+            explain:
+              "Sort: " + srt.join(",") + ". 6 values: median = (" + srt[2] + "+" + srt[3] + ")/2 = " + half(m2),
+            step:
+              "Sort: " +
+              srt.join(", ") +
+              ". The two middle values are " +
+              srt[2] +
+              " and " +
+              srt[3] +
+              ". Average them: (" +
+              srt[2] +
+              " + " +
+              srt[3] +
+              ") ÷ 2 = ?",
+            raw: { kind: "median", values: v },
+          };
+        };
+
+        B.iqr = (t) => {
+          const mn = t.ri(40, 60),
+            q1 = mn + t.ri(4, 12),
+            md = q1 + t.ri(3, 10),
+            q3 = md + t.ri(3, 10),
+            mx = q3 + t.ri(4, 14);
+          const iqr = q3 - q1;
+          return {
+            text:
+              "Box plot: Min=" +
+              mn +
+              ", Q1=" +
+              q1 +
+              ", Med=" +
+              md +
+              ", Q3=" +
+              q3 +
+              ", Max=" +
+              mx +
+              ". What is the IQR?",
+            data: "Min " + mn + " | Q1 " + q1 + " | Med " + md + " | Q3 " + q3 + " | Max " + mx,
+            correct: iqr,
+            wrongs: wrongs(iqr, [mx - mn, q3 - md, md - q1, mx - q3, q1 - mn], 1).map(String),
+            explain: "IQR = Q3 - Q1 = " + q3 + " - " + q1 + " = " + iqr,
+            step: "IQR = Q3 − Q1 = " + q3 + " − " + q1 + " = ?",
+            raw: { kind: "iqr", five: [mn, q1, md, q3, mx] },
+          };
+        };
+
+        // MAD with a whole-number mean. wantWhole: MAD is a whole number
+        // (shown as whole numbers) or a one-place decimal (shown to tenths).
+        B.mad = (t, wantWhole) => {
+          const ctx = wantWhole
+            ? t.pick(["Gymnast scores: ", "Diving scores: ", "Judges' scores: "])
+            : t.pick(["Rebounds: ", "Assists: ", "Points: "]);
+          let v, m, devs, sa;
+          for (;;) {
+            m = wantWhole ? t.ri(70, 88) : t.ri(14, 24);
+            const sp = wantWhole ? 10 : 6;
+            v = [];
+            for (let i = 0; i < 4; i++) v.push(t.ri(m - sp, m + sp));
+            const last = 5 * m - sum(v);
+            if (last < m - sp || last > m + sp) continue;
+            v.push(last);
+            if (new Set(v).size < 4) continue;
+            devs = v.map((x) => Math.abs(x - m));
+            sa = sum(devs);
+            if (!sa || (sa % 5 === 0) !== wantWhole) continue;
+            break;
+          }
+          const srt = sorted(v);
+          // Work in tenths: MAD = sa/5 = 2·sa tenths.
+          const mad10 = 2 * sa;
+          const cands = [
+            10 * sa, // forgot to divide by 5
+            (10 * sa) % 4 ? null : (10 * sa) / 4, // divided by 4, not 5
+            10 * (srt[4] - srt[0]), // the range
+            10 * m, // the mean, not the spread
+          ];
+          const ws = wrongs(mad10, cands, wantWhole ? 10 : 2);
+          const fmt = (x) => (wantWhole ? (x % 10 ? null : String(x / 10)) : fx(x, 10, 1));
+          let shown = ws.map(fmt);
+          if (shown.includes(null)) {
+            // keep the whole-number look: replace off-format candidates
+            shown = wrongs(
+              mad10,
+              cands.map((c) => (c != null && c % 10 === 0 ? c : null)),
+              10,
+            ).map(fmt);
+          }
+          const madS = wantWhole ? String(sa / 5) : fx(sa, 5, 1);
+          return {
+            text: ctx + v.join(", ") + (wantWhole ? ". What is the MAD?" : ". MAD?"),
+            data: v.join(", "),
+            correct: madS,
+            wrongs: shown,
+            explain: "Mean=" + m + ". Deviations: " + devs.join(",") + ". MAD=" + sa + "/5=" + madS,
+            step:
+              "Mean = " +
+              m +
+              ". Distances from the mean: " +
+              devs.join(", ") +
+              ". Their total is " +
+              sa +
+              ". Now divide: " +
+              sa +
+              " ÷ 5 = ?",
+            raw: { kind: "mad", values: v },
+          };
+        };
+
+        B.outlier = (t) => {
+          const ctx = t.pick(["Goals", "Saves", "Assists"]);
+          let v4, o;
+          for (;;) {
+            v4 = [];
+            for (let i = 0; i < 4; i++) v4.push(t.ri(6, 16));
+            if (sum(v4) % 2) continue;
+            o = t.ri(35, 50);
+            break;
+          }
+          const s4 = sum(v4),
+            s5 = s4 + o;
+          // tenths: mean5 = 2·s5, mean4 = 2.5·s4 (s4 even ⇒ whole tenths)
+          const m5 = 2 * s5,
+            m4 = (5 * s4) / 2,
+            d = m5 - m4;
+          const sh = (x) => exact(x, 10);
+          const pos = t.ri(0, 4);
+          const v = [...v4];
+          v.splice(pos, 0, o);
+          return {
+            text: ctx + ": " + v.join(",") + ". The " + o + " is an error. Removing it changes mean by:",
+            data: v.join(", "),
+            correct: "Mean decreases by " + sh(d),
+            wrongs: [
+              "Mean increases by " + sh(d), // wrong direction
+              "Mean stays same",
+              "Mean decreases by " + sh(10 * o - m4), // the outlier's distance, not the change
+            ],
+            explain: "With " + o + ": mean=" + sh(m5) + ". Without: mean=" + sh(m4) + ". Diff=" + sh(d),
+            step:
+              "With the " +
+              o +
+              ": " +
+              s5 +
+              " ÷ 5 = " +
+              sh(m5) +
+              ". Without it: " +
+              s4 +
+              " ÷ 4 = " +
+              sh(m4) +
+              ". The change is " +
+              sh(m5) +
+              " − " +
+              sh(m4) +
+              " = ?",
+            hint:
+              "Find the mean WITH the " + o + " (5 values), then the mean WITHOUT it (4 values), then subtract.",
+            raw: { kind: "outlier", values: v, outlier: o },
+          };
+        };
+
+        // Lower/upper quartile = median of each half (the Grade 6 method).
+        function quartiles(srt) {
+          const n = srt.length,
+            h = Math.floor(n / 2);
+          const med2 = (a) => (a.length % 2 ? 2 * a[(a.length - 1) / 2] : a[a.length / 2 - 1] + a[a.length / 2]);
+          return { q1x2: med2(srt.slice(0, h)), q3x2: med2(srt.slice(n - h)) };
+        }
+
+        B.bestCenter = (t) => {
+          const ctx = t.pick(["Times", "Minutes late", "Fouls per game"]);
+          let v, o;
+          for (;;) {
+            const b = t.ri(2, 9);
+            const base = [];
+            for (let i = 0; i < 7; i++) base.push(b + t.ri(0, 4));
+            if (new Set(base).size === 7 || new Set(base).size < 3) continue;
+            o = Math.max(...base) + t.ri(12, 22);
+            v = sorted([...base, o]);
+            const q = quartiles(v);
+            // o must be an outlier by the 1.5 × IQR rule (all ×2 to stay whole)
+            if (2 * o <= q.q3x2 + 1.5 * (q.q3x2 - q.q1x2)) continue;
+            break;
+          }
+          const s = sum(v),
+            med = exact(v[3] + v[4], 2);
+          return {
+            text: ctx + ": " + v.join(",") + ". Best measure of center?",
+            data: v.join(", "),
+            correct: "Median",
+            wrongs: ["Mean", "Mode", "Range"],
+            explain: "Outlier " + o + " skews mean to " + exact(s, 8) + ". Median (" + med + ") resists outliers.",
+            step:
+              "The " +
+              o +
+              " is far from the other values. It pulls the mean up to " +
+              exact(s, 8) +
+              ", but the middle of the data stays at " +
+              med +
+              ". The measure an outlier barely moves is ?",
+            raw: { kind: "bestCenter", values: v, outlier: o },
+          };
+        };
+
+        B.consistency = (t) => {
+          const rs = t.ri(8, 20),
+            rb = rs + t.ri(8, 20);
+          const sLo = t.ri(60, 100 - rs),
+            bLo = t.ri(45, 100 - rb);
+          const aSmall = t.ri(0, 1) === 1;
+          const A = aSmall ? [sLo, sLo + rs] : [bLo, bLo + rb];
+          const Bt = aSmall ? [bLo, bLo + rb] : [sLo, sLo + rs];
+          const X = aSmall ? "A" : "B",
+            Y = aSmall ? "B" : "A";
+          const rA = A[1] - A[0],
+            rB = Bt[1] - Bt[0];
+          return {
+            text:
+              "Team A: " +
+              A[0] +
+              "-" +
+              A[1] +
+              " (range " +
+              rA +
+              "). Team B: " +
+              Bt[0] +
+              "-" +
+              Bt[1] +
+              " (range " +
+              rB +
+              "). Which is true?",
+            data: "A: " + A[0] + "-" + A[1] + " | B: " + Bt[0] + "-" + Bt[1],
+            correct: "Team " + X + " more consistent (smaller range)",
+            // (no "higher mean" option: with generated scores that claim could be true)
+            wrongs: ["Team " + Y + " more consistent", "Same consistency", "Range does not show consistency"],
+            explain:
+              "Range " +
+              Math.min(rA, rB) +
+              " < " +
+              Math.max(rA, rB) +
+              ". Smaller range = less spread = more consistent",
+            step:
+              "Team A's range is " +
+              rA +
+              "; Team B's range is " +
+              rB +
+              ". Less spread means more consistent, so the more consistent team is ?",
+            raw: { kind: "consistency", A: A, B: Bt },
+          };
+        };
+
+        // Same 15 slots, tiers and phases as the authored season.
+        const PLAN = [
+          [1, "Scout", (t) => B.mean(t, 5)],
+          [1, "Scout", B.median5],
+          [1, "Scout", B.mode],
+          [1, "Scout", B.range],
+          [1, "Scout", (t) => B.mean(t, 4)],
+          [2, "Draft", B.statQ],
+          [2, "Draft", B.meanTenth],
+          [2, "Draft", B.rangeThou],
+          [2, "Draft", B.median6],
+          [2, "Draft", B.iqr],
+          [3, "Champ", (t) => B.mad(t, true)],
+          [3, "Champ", B.outlier],
+          [3, "Champ", B.bestCenter],
+          [3, "Champ", B.consistency],
+          [3, "Champ", (t) => B.mad(t, false)],
+        ];
+
+        function season(seed) {
+          const rng = mulberry32(seed);
+          const t = tools(rng);
+          return PLAN.map(([tier, phase, make]) => {
+            const g = make(t);
+            const correct = String(g.correct);
+            return {
+              text: g.text,
+              correct: correct,
+              options: t.shuffle([correct, ...g.wrongs.map(String)]),
+              explain: g.explain,
+              step: g.step,
+              hint: g.hint,
+              tier: tier,
+              phase: phase,
+              data: g.data,
+              raw: g.raw,
+              fresh: true,
+            };
+          });
+        }
+        return { season: season, mulberry32: mulberry32, fx: fx, exact: exact };
+      })();
+      // end StatsGen
 
       function genQuestions() {
         const qs = [];
@@ -615,7 +1263,34 @@
           ),
         );
 
-        return shuf(qs).slice(0, 15);
+        return rampByTier(qs);
+      }
+
+      // Scouting → Draft Day → Championship, shuffled inside each phase, so
+      // the season ramps instead of jumping between phases.
+      function rampByTier(qs) {
+        const order = qs.map((q) => ({ q, k: q.tier + Math.random() * 0.5 }));
+        return order.sort((a, b) => a.k - b.k).map((o) => o.q).slice(0, 15);
+      }
+
+      // First completed season = the authored data sets; every replay after
+      // that = fresh numbers. `?seed=N` replays one exact generated season.
+      const PLAYS_KEY = "statsSlam_seasonsPlayed";
+      function seasonsPlayed() {
+        try {
+          return parseInt(localStorage.getItem(PLAYS_KEY) || "0", 10) || 0;
+        } catch (e) {
+          return 0;
+        }
+      }
+      function seasonQuestions() {
+        let seed = NaN;
+        try {
+          seed = parseInt(new URLSearchParams(location.search).get("seed"), 10);
+        } catch (e) {}
+        if (Number.isFinite(seed)) return rampByTier(StatsGen.season(seed));
+        if (seasonsPlayed() === 0) return genQuestions();
+        return rampByTier(StatsGen.season((Math.random() * 4294967296) >>> 0));
       }
 
       // --- BOOT ---
@@ -923,7 +1598,8 @@
         }
         create() {
           sfx.init();
-          this.questions = genQuestions();
+          this.questions = seasonQuestions();
+          this.freshSeason = this.questions.some((q) => q.fresh);
           const studioTier = this.sys.settings.data?.studioTier || 2;
           if (studioTier !== 2) {
             const chosenTier = studioTier === 1 ? 1 : Math.max(...this.questions.map(q => q.tier));
@@ -962,6 +1638,8 @@
           this.buildScoreboard();
           this.loadQuestion();
           this.input.keyboard.on("keydown", this.handleKey, this);
+          if (this.freshSeason)
+            this.showFloatingText(W / 2, 120, "New season — new numbers!", "#60a5fa", "20px");
         }
 
         // Floating score text popup
@@ -1969,6 +2647,11 @@
           if (this.shotTimer) this.shotTimer.remove();
           if (this.ambientTimer) this.ambientTimer.remove();
           const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+
+          // A finished season unlocks fresh numbers for every replay.
+          try {
+            localStorage.setItem(PLAYS_KEY, String(seasonsPlayed() + 1));
+          } catch (e) {}
 
           // Save high score
           const prevBest = parseInt(localStorage.getItem(LS_KEY) || "0");

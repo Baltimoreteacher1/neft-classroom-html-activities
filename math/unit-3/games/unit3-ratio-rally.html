@@ -167,7 +167,7 @@
           this.noise(0.2, 0.15);
           this.play("square", 80, 0.15, 0.1);
         },
-        countdown() {
+        tap() {
           this.play("square", 440, 0.15, 0.15);
         },
         go() {
@@ -822,13 +822,13 @@
 
         btn.on("pointerdown", () => {
           SFX.init();
-          SFX.countdown();
+          SFX.tap();
           this.cameras.main.fadeOut(400);
           this.time.delayedCall(400, () => this.scene.start("DiffSelect"));
         });
         const goTracks = () => {
           SFX.init();
-          SFX.countdown();
+          SFX.tap();
           this.cameras.main.fadeOut(400);
           this.time.delayedCall(400, () => this.scene.start("DiffSelect"));
         };
@@ -929,7 +929,7 @@
             btn.setScale(1);
           });
           const go = () => {
-            SFX.countdown();
+            SFX.tap();
             this.cameras.main.fadeOut(300);
             this.time.delayedCall(300, () =>
               this.scene.start("Game", { difficulty: d.key }),

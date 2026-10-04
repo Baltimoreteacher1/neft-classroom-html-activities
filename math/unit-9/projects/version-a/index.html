@@ -814,6 +814,7 @@
     <meta name="nt-project-reveal-unit" content="7" />
     <link rel="stylesheet" href="/shared/projects/projects-meta.css?v=20260727-v2" />
     <!-- projects-meta-injected:end -->
+  <script src="/shared/projects/projects-notify.js?v=20261004" defer></script>
 </head>
   <body class="level-1 pro-projects declutter-projects" id="body">
     <!-- ====== HERO ====== -->
@@ -3189,7 +3190,7 @@
 
       function copyReport() {
         const txt = document.getElementById("reportBox").textContent;
-        navigator.clipboard?.writeText(txt).then(() => alert("Copied to clipboard!"));
+        navigator.clipboard?.writeText(txt).then(() => NTNotify.toast(NTNotify.t("Copied to clipboard!", "¡Copiado al portapapeles!")));
       }
 
       function downloadTxt() {
@@ -3309,7 +3310,7 @@
 
       function readAloud() {
         if (!window.speechSynthesis) {
-          alert("Sorry, your browser does not support the Web Speech API.");
+          NTNotify.toast(NTNotify.t("Read aloud is not available in this browser.", "La lectura en voz alta no está disponible en este navegador."), { tone: "error" });
           return;
         }
 

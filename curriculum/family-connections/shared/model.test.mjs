@@ -51,7 +51,7 @@ meaningfulWeek.week.days[0] = {
 assert.equal(familyModel.weekHasMeaningfulContent(meaningfulWeek), true);
 
 const lessonWithArcade = lessons.find((item) => item.id === "6-13");
-assert.equal(lessonWithArcade.arcadePath, "/math/unit-1/games/unit1-factor-frenzy.html");
+assert.equal(lessonWithArcade.arcadePath, "/math/games/u1-factor-frenzy/");
 assert.match(lessonWithArcade.arcadeTitle, /Factor Frenzy/i);
 assert.equal(lessons.find((item) => item.id === "1-1").arcadePath, "");
 

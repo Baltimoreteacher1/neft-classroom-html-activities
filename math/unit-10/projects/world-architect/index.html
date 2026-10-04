@@ -1266,6 +1266,7 @@
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
+  <script src="/shared/projects/projects-notify.js?v=20261004" defer></script>
 </head>
   <body>
     <header class="site-header">
@@ -3288,8 +3289,8 @@
         }
       }
       function openClassroom() {
-        alert(
-          "Open the assignment your teacher posted in Google Classroom, then attach or paste your report there.",
+        NTNotify.toast(
+          "Open the assignment your teacher posted in Google Classroom, then attach or paste your report there."
         );
       }
       function submitViaEmail() {
@@ -3306,9 +3307,18 @@
         $("email-confirm").style.display = "block";
       }
       function restartProject() {
-        if (!confirm("Start over and clear saved work?")) return;
-        localStorage.removeItem(STORAGE_KEY);
-        location.reload();
+        NTNotify.confirm("This clears every answer you saved for this project on this device. You cannot undo it.", {
+          title: "Start over?",
+          confirmLabel: "Yes, start over",
+          cancelLabel: "Keep my work",
+        }).then((ok) => {
+          if (!ok) return;
+          // The beforeunload autosave would re-save a started project during
+          // the reload below and undo the reset.
+          state.started = false;
+          localStorage.removeItem(STORAGE_KEY);
+          location.reload();
+        });
       }
 
       function visualSvg(type) {

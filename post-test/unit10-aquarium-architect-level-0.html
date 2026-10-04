@@ -1271,6 +1271,7 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
+  <script src="/shared/projects/projects-notify.js?v=20261004" defer></script>
 </head>
   <body>
 <!-- play-game-injected:begin -->
@@ -4162,7 +4163,7 @@ document.addEventListener("click",function(e){if(!on)return;if(e.target.closest(
           });
         navigator.clipboard
           .writeText(text)
-          .then(() => alert("Portfolio copied to clipboard!"));
+          .then(() => NTNotify.toast(NTNotify.t("Portfolio copied to clipboard!", "¡Portafolio copiado al portapapeles!")));
       }
 
       function downloadPortfolio() {

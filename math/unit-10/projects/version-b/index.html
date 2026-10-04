@@ -811,6 +811,7 @@
     <meta name="nt-project-reveal-unit" content="10" />
     <link rel="stylesheet" href="/shared/projects/projects-meta.css?v=20260727-v2" />
     <!-- projects-meta-injected:end -->
+  <script src="/shared/projects/projects-notify.js?v=20261004" defer></script>
 </head>
   <body class="level-1 pro-projects declutter-projects" id="body">
     <!-- ====== HERO ====== -->
@@ -3594,7 +3595,7 @@
         if (!txt) return;
         const isEs = document.getElementById("body").classList.contains("es");
         navigator.clipboard?.writeText(txt).then(() => {
-          alert(isEs ? "¡Copiado al portapapeles!" : "Copied to clipboard!");
+          NTNotify.toast(isEs ? "¡Copiado al portapapeles!" : "Copied to clipboard!");
         });
       }
 
@@ -3641,21 +3642,21 @@
                 : 'You have not pressed "📝 Generate Summary" yet to create your report.',
             );
           }
-          alert(
+          NTNotify.fix(
             (isEs ? "Casi listo. " : "Almost there. ") +
               parts.join(" ") +
               (isEs
                 ? " Termina eso y vuelve a presionar este botón."
-                : " Finish that, then press this button again."),
+                : " Finish that, then press this button again.")
           );
           return;
         }
 
         playConfetti();
-        alert(
+        NTNotify.toast(
           isEs
             ? "¡Increíble trabajo! 🎉 Entrega tu informe: imprímelo, descárgalo o muéstralo a tu maestro."
-            : "Amazing work! 🎉 Turn in your report: print it, download it, or show it to your teacher.",
+            : "Amazing work! 🎉 Turn in your report: print it, download it, or show it to your teacher.", { tone: "success" }
         );
       }
 

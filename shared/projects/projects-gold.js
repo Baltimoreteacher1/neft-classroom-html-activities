@@ -230,6 +230,11 @@
     window.toggleGradingConsole = function () {};
   }
 
+  // Non-blocking status message (shared/projects/projects-notify.js).
+  function notify(en, es, tone) {
+    if (window.NTNotify) window.NTNotify.toast(window.NTNotify.t(en, es), { tone: tone });
+  }
+
   function installBackupHandlers() {
     setTimeout(function () {
       var engine = window.NeftSaveResume;
@@ -238,7 +243,11 @@
         try {
           engine.exportRecord();
         } catch (_error) {
-          window.alert("We could not export this backup. Save your work and try again.");
+          notify(
+            "We could not export this backup. Save your work and try again.",
+            "No pudimos exportar esta copia. Guarda tu trabajo e inténtalo de nuevo.",
+            "error",
+          );
         }
       };
       window.importStudentBackup = function (event) {
@@ -248,12 +257,20 @@
         engine
           .importRecord(file)
           .then(function () {
-            window.alert("Your project backup was restored successfully.");
+            notify(
+              "Your project backup was restored.",
+              "Tu copia de seguridad del proyecto se restauró.",
+              "success",
+            );
           })
           .catch(function (error) {
-            window.alert(
-              error && error.message ? error.message : "That backup could not be restored.",
-            );
+            if (error && error.message) notify(error.message, error.message, "error");
+            else
+              notify(
+                "That backup could not be restored.",
+                "No se pudo restaurar esa copia de seguridad.",
+                "error",
+              );
           })
           .finally(function () {
             input.value = "";

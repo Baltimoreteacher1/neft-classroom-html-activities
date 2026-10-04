@@ -815,6 +815,7 @@
     <meta name="nt-project-reveal-unit" content="4" />
     <link rel="stylesheet" href="/shared/projects/projects-meta.css?v=20260727-v2" />
     <!-- projects-meta-injected:end -->
+  <script src="/shared/projects/projects-notify.js?v=20261004" defer></script>
 </head>
   <body class="level-1 pro-projects declutter-projects" id="body">
     <!-- ====== HERO ====== -->
@@ -3009,10 +3010,10 @@
         }
 
         if (!window.speechSynthesis) {
-          alert(
+          NTNotify.toast(
             lang === "es"
               ? "La síntesis de voz no es compatible con este navegador."
-              : "Speech synthesis is not supported in this browser.",
+              : "Speech synthesis is not supported in this browser.", { tone: "error" }
           );
           return;
         }
@@ -3949,8 +3950,8 @@
       function copyReport() {
         const txt = document.getElementById("reportBox").textContent;
         navigator.clipboard?.writeText(txt).then(() => {
-          alert(
-            lang === "es" ? "¡Resumen copiado al portapapeles!" : "Summary copied to clipboard!",
+          NTNotify.toast(
+            lang === "es" ? "¡Resumen copiado al portapapeles!" : "Summary copied to clipboard!"
           );
         });
       }
@@ -3992,18 +3993,18 @@
           );
         }
         if (missing.length) {
-          alert(
+          NTNotify.fix(
             (lang === "es"
               ? "Casi listo. Antes de entregar:\n\n• "
-              : "Almost there. Before you turn it in:\n\n• ") + missing.join("\n• "),
+              : "Almost there. Before you turn it in:\n\n• ") + missing.join("\n• ")
           );
           return;
         }
         playConfetti();
-        alert(
+        NTNotify.toast(
           lang === "es"
             ? "¡Felicitaciones! 🎉 Ya puedes entregar: imprime o descarga tu informe de resumen y dáselo a tu maestro."
-            : "Congratulations! 🎉 You are ready to turn in: print or download your summary report and hand it to your teacher.",
+            : "Congratulations! 🎉 You are ready to turn in: print or download your summary report and hand it to your teacher.", { tone: "success" }
         );
       }
 
@@ -4112,7 +4113,7 @@
           dlAnchor.click();
           dlAnchor.remove();
         } catch (e) {
-          alert("Export failed: " + e.message);
+          NTNotify.toast("Export failed: " + e.message, { tone: "error" });
         }
       };
 
@@ -4136,12 +4137,12 @@
                   el.dispatchEvent(new Event("change", { bubbles: true }));
                 }
               }
-              alert("Successfully imported student backup!");
+              NTNotify.toast(NTNotify.t("Your backup was restored.", "Tu copia de seguridad se restauró."), { tone: "success" });
             } else {
-              alert("Invalid backup file structure.");
+              NTNotify.toast(NTNotify.t("That file is not a project backup. Choose the .json backup file you saved.", "Ese archivo no es una copia de seguridad del proyecto. Elige el archivo .json que guardaste."), { tone: "error" });
             }
           } catch (err) {
-            alert("Error parsing backup file: " + err.message);
+            NTNotify.toast("Error parsing backup file: " + err.message, { tone: "error" });
           }
         };
         reader.readAsText(file);

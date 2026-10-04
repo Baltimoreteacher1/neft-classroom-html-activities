@@ -803,6 +803,7 @@
     <meta name="nt-project-reveal-unit" content="3" />
     <link rel="stylesheet" href="/shared/projects/projects-meta.css?v=20260727-v2" />
     <!-- projects-meta-injected:end -->
+  <script src="/shared/projects/projects-notify.js?v=20261004" defer></script>
 </head>
   <body class="level-1 pro-projects declutter-projects" id="body">
     <!-- ====== HERO ====== -->
@@ -3580,14 +3581,14 @@
         const txt = document.getElementById("reportBox").textContent;
         const isEs = isSpanish();
         if (!txt) {
-          alert(
-            isEs ? "¡Por favor genera el resumen primero!" : "Please generate the summary first!",
+          NTNotify.fix(
+            isEs ? "¡Por favor genera el resumen primero!" : "Please generate the summary first!"
           );
           return;
         }
         navigator.clipboard
           ?.writeText(txt)
-          .then(() => alert(isEs ? "¡Copiado al portapapeles!" : "Copied to clipboard!"));
+          .then(() => NTNotify.toast(isEs ? "¡Copiado al portapapeles!" : "Copied to clipboard!"));
       }
 
       function downloadTxt() {

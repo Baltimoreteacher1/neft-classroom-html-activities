@@ -1603,7 +1603,7 @@
             return "A batch to portion out: " + j2.a + " ÷ " + j2.b + ".";
           }
           if (shopId === "tape") return w3Data(lv).prompt;
-          var j4 = W4_JOBS[lv];
+          var j4 = w4Job(lv);
           return (
             "A trail-mix order: " +
             (j4.mixed ? j4.mixed.w + " " + j4.mixed.n + "/" + j4.mixed.d : j4.A.n + "/" + j4.A.d) +
@@ -2913,8 +2913,53 @@
           { kind: "frac", n: 3, d: 5, whole: 5 },
           { kind: "frac", n: 2, d: 3, whole: 4 },
         ];
+        /* Same idea as w1Job: a served dough order returns with new numbers.
+           Each slot keeps its shape — levels 0-2 are WHOLE ÷ UNIT FRACTION
+           (the answer is whole × d sticks), levels 3-4 are PROPER FRACTION ÷
+           WHOLE. Level 3 lands in lowest terms straight away (like 3/5 ÷ 5);
+           level 4 needs a simplify step (like 2/3 ÷ 4 = 2/12 = 1/6). The ticket,
+           the notebook entry, the prep bench and the tape all read this one
+           job, so they always agree. */
+        var W3_RANGE = [
+          { wLo: 2, wHi: 5, dLo: 2, dHi: 5 },
+          { wLo: 3, wHi: 6, dLo: 2, dHi: 4 },
+          { wLo: 3, wHi: 6, dLo: 5, dHi: 8 },
+        ];
+        function isW3Authored(kind, whole, d, n) {
+          return W3_JOBS.some(function (o) {
+            return o.kind === kind && o.whole === whole && o.d === d && (kind === "whole" || o.n === n);
+          });
+        }
+        function w3Job(lv) {
+          var base = W3_JOBS[lv];
+          if (!starsOf("tape", lv)) return base;
+          var key = "tape:" + lv;
+          if (!VARIANT[key]) {
+            var j = null;
+            for (var guard = 0; guard < 500 && !j; guard++) {
+              if (base.kind === "whole") {
+                var r = W3_RANGE[lv],
+                  w = rnd(r.wLo, r.wHi),
+                  dd = rnd(r.dLo, r.dHi);
+                if (w * dd > 48 || isW3Authored("whole", w, dd)) continue;
+                j = { kind: "whole", whole: w, d: dd };
+              } else {
+                var fd = rnd(3, 8),
+                  fn = rnd(2, fd - 1),
+                  fw = rnd(2, 6);
+                if (gcd(fn, fd) !== 1) continue;
+                // level 3: already in lowest terms; level 4: needs simplifying
+                if ((gcd(fn, fw) === 1) !== (lv === 3)) continue;
+                if (isW3Authored("frac", fw, fd, fn)) continue;
+                j = { kind: "frac", n: fn, d: fd, whole: fw };
+              }
+            }
+            VARIANT[key] = j || base;
+          }
+          return VARIANT[key];
+        }
         function w3Data(lv) {
-          var j = W3_JOBS[lv];
+          var j = w3Job(lv);
           if (j.kind === "whole") {
             return {
               j: j,
@@ -3019,32 +3064,13 @@
             );
           },
           remediate: function (lv, a) {
-            var set = W3_JOBS;
-            var j = set[lv];
-            var expr, ansN, ansD, prompt;
-            if (j.kind === "whole") {
-              expr = j.whole + " ÷ 1/" + j.d;
-              ansN = j.whole * j.d;
-              ansD = 1;
-              prompt =
-                "A " +
-                j.whole +
-                "-foot rope of pretzel dough, cut into 1/" +
-                j.d +
-                "-foot sticks. How many sticks?";
-            } else {
-              var f = fr(j.n, j.d * j.whole);
-              expr = j.n + "/" + j.d + " ÷ " + j.whole;
-              ansN = f.n;
-              ansD = f.d;
-              prompt =
-                j.n +
-                "/" +
-                j.d +
-                " of a pound of fudge shared equally between " +
-                j.whole +
-                " boxes. How much each?";
-            }
+            // The bench reads the SAME job as the ticket and the notebook entry.
+            var dt = w3Data(lv);
+            var j = dt.j,
+              expr = dt.expr,
+              ansN = dt.ansN,
+              ansD = dt.ansD,
+              prompt = dt.prompt;
             var overOne = false,
               flipped = false,
               answered = false;
@@ -3303,6 +3329,80 @@
           { A: { n: 10, d: 3 }, B: { n: 2, d: 3 }, mixed: { w: 3, n: 1, d: 3 } },
           { A: { n: 9, d: 4 }, B: { n: 3, d: 8 }, mixed: { w: 2, n: 1, d: 4 } },
         ];
+        /* Same idea as w1Job: a served Keep-Change-Flip order returns with new
+           numbers in the same shape as its slot, and — like every authored
+           order here — a WHOLE-number answer, so the single answer box, the
+           simplify step and the result card stay exactly as designed.
+             0-1  proper a/b ÷ unit 1/m, with b | m      (3/4 ÷ 1/8 = 6)
+             2    mixed ÷ unit 1/m, m a multiple of d    (3 1/2 ÷ 1/4 = 14)
+             3    mixed ÷ p/d, same denominator, p | top (3 1/3 ÷ 2/3 = 5)
+             4    mixed ÷ p/(k·d), k = 2 or 3, p | k·top  (2 1/4 ÷ 3/8 = 6)
+           Every fraction on the ticket is in lowest terms; mixed parts are
+           proper. The ticket, the notebook entry and the bench all read this. */
+        function w4Mixed(wLo, wHi, dList) {
+          for (;;) {
+            var d = dList[rnd(0, dList.length - 1)],
+              n = rnd(1, d - 1),
+              w = rnd(wLo, wHi);
+            if (gcd(n, d) === 1) return { A: { n: w * d + n, d: d }, mixed: { w: w, n: n, d: d } };
+          }
+        }
+        function w4Make(lv) {
+          var A, B, mixed = null, m, p;
+          if (lv <= 1) {
+            var b = rnd(3, 8),
+              a = rnd(2, b - 1),
+              k = rnd(2, 4);
+            if (gcd(a, b) !== 1 || b * k > 16) return null;
+            A = { n: a, d: b };
+            B = { n: 1, d: b * k };
+          } else if (lv === 2) {
+            var x = w4Mixed(1, 4, [2, 3, 4]);
+            m = x.A.d * rnd(2, 3);
+            if (m > 12) return null;
+            A = x.A;
+            mixed = x.mixed;
+            B = { n: 1, d: m };
+          } else if (lv === 3) {
+            var y = w4Mixed(1, 4, [3, 4, 5, 6, 7, 8]);
+            p = rnd(2, y.A.d - 1);
+            if (gcd(p, y.A.d) !== 1 || y.A.n % p) return null;
+            A = y.A;
+            mixed = y.mixed;
+            B = { n: p, d: y.A.d };
+          } else {
+            var z = w4Mixed(1, 4, [2, 3, 4, 5]);
+            var kk = rnd(2, 3),
+              q = kk * z.A.d;
+            p = rnd(2, q - 1);
+            if (q > 16 || gcd(p, q) !== 1 || (kk * z.A.n) % p || (kk * z.A.n) / p < 2) return null;
+            A = z.A;
+            mixed = z.mixed;
+            B = { n: p, d: q };
+          }
+          return { A: A, B: B, mixed: mixed };
+        }
+        function w4Job(lv) {
+          var base = W4_JOBS[lv];
+          if (!starsOf("kcf", lv)) return base;
+          var key = "kcf:" + lv;
+          if (!VARIANT[key]) {
+            var j = null;
+            for (var guard = 0; guard < 500 && !j; guard++) {
+              j = w4Make(lv);
+              // never one of the authored orders — a replay is always new
+              if (
+                j &&
+                W4_JOBS.some(function (o) {
+                  return j.A.n === o.A.n && j.A.d === o.A.d && j.B.n === o.B.n && j.B.d === o.B.d;
+                })
+              )
+                j = null;
+            }
+            VARIANT[key] = j || base;
+          }
+          return VARIANT[key];
+        }
         var W4 = {
           id: "kcf",
           lesson: "6.2",
@@ -3312,7 +3412,7 @@
             "Fractions and mixed numbers, solved in your notebook — the bench opens if you slip.",
           closing: "a/b ÷ c/d = a/b × d/c — and the page it was worked on was yours.",
           build: function (lv, a) {
-            var j = W4_JOBS[lv];
+            var j = w4Job(lv);
             var ans = fr(j.A.n * j.B.d, j.A.d * j.B.n);
             var label =
               (j.mixed ? j.mixed.w + " " + j.mixed.n + "/" + j.mixed.d : j.A.n + "/" + j.A.d) +
@@ -3359,7 +3459,7 @@
             );
           },
           remediate: function (lv, a) {
-            var j = W4_JOBS[lv];
+            var j = w4Job(lv);
             var raw = { n: j.A.n * j.B.d, d: j.A.d * j.B.n };
             var ans = fr(raw.n, raw.d);
             var stage = j.mixed ? "convert" : "flip";
@@ -3420,7 +3520,8 @@
               OP.textContent = isFlipped ? "×" : "÷";
               OP.className = "op kOp" + (isFlipped ? " armed" : "");
               if (stage === "done") {
-                R.innerHTML = F(ans);
+                R.innerHTML =
+                  ans.d === 1 ? '<span style="font-size:32px;font-weight:900">' + ans.n + "</span>" : F(ans);
                 R.classList.add("filled");
               }
               trail.innerHTML = trailBits.join(" &nbsp;·&nbsp; ");

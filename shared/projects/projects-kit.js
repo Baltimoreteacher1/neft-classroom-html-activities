@@ -5,7 +5,8 @@
    Neft Teacher — Projects Kit (shared)
    Reusable, dependency-free helpers for culminating projects built to the
    "Stats of My Life" standard. Reference as /shared/projects/projects-kit.js
-   (load with `defer` or at end of <body>).
+   (load with `defer` or at end of <body>). Messages need
+   /shared/projects/projects-notify.js (window.NTNotify) loaded first.
 
    Everything is namespaced under window.PK. Pages call small init/helper
    functions and supply their own unit-specific data and calculators.
@@ -306,15 +307,8 @@
   PK.copyReport = function (boxId) {
     const box = $(boxId);
     if (!box) return;
-    const txt = box.textContent || "";
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(txt).then(
-        () => alert("Report copied to the clipboard."),
-        () => alert("Could not copy automatically — select the text instead."),
-      );
-    } else {
-      alert("Copy is not available in this browser — select the text instead.");
-    }
+    // Non-blocking copy with a manual-copy dialog fallback (projects-notify.js).
+    window.NTNotify.copyText(box.textContent || "", { message: "Report copied to the clipboard." });
   };
 
   PK.dl = function (name, type, text) {
@@ -353,9 +347,9 @@
     });
     try {
       localStorage.setItem(storageKey, JSON.stringify(data));
-      if (opts.silent !== true) alert("Saved on this device.");
+      if (opts.silent !== true) window.NTNotify.toast("Saved on this device.", { tone: "success" });
     } catch (_e) {
-      alert("Could not save on this device.");
+      window.NTNotify.toast("Could not save on this device.", { tone: "error" });
     }
   };
 
@@ -374,7 +368,7 @@
       else el.value = data[k];
     });
     if (typeof opts.after === "function") opts.after();
-    if (opts.show === true) alert("Loaded your saved work.");
+    if (opts.show === true) window.NTNotify.toast("Loaded your saved work.");
   };
 
   /* ---------------- numeric helpers ---------------- */
