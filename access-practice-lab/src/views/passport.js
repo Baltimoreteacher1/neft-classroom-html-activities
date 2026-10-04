@@ -1,7 +1,8 @@
 // My Passport: stamps per skill, practice streak, badges, a printable report,
 // and a portable progress code (move progress to another device, no account).
 import { crumbsHTML, domainGlyph, ringHTML } from "../components.js";
-import { bandDomains } from "../content.js";
+import { evidenceLabel } from "../learning.js";
+import { bandDomains, bandRows } from "../content.js";
 import {
   clearAll,
   exportCode,
@@ -77,6 +78,7 @@ export async function render(ctx) {
     });
     return { domain: d, done, total, byLevel, color: domains[d].color };
   });
+  const evidence = (await bandRows(band)).map((row) => ({ ...row, result: loadRecord(band, row.domain, row.level).results[row.id] })).filter((row) => row.result?.date && row.result.meaningful !== false && row.result.words !== 0 && row.result.practiced !== false).sort((a,b) => b.result.date.localeCompare(a.result.date));
   const days = practiceDays();
   const streak = weekStreak(days);
   const list = badges(stats, streak, days);
@@ -143,6 +145,8 @@ export async function render(ctx) {
               </article>`,
           )}
         </div>
+        <section class="panel"><h2>What my practice shows</h2><p>Stamps show completed practice, not mastery or an ACCESS score. A correct answer after help, a reviewed draft, spoken practice, and a worksheet are different kinds of evidence. Older records may not include support details.</p>
+          ${evidence.length ? html`<ul class="evidence-list">${evidence.slice(0,20).map((r) => html`<li><a href="${BASE}/${r.domain}/${r.level}/${r.id}?grades=${band}">${r.title}</a><span>${evidenceLabel(r.result)}</span></li>`)}</ul><p class="fine">Showing ${Math.min(20,evidence.length)} most recent practice records. Open an activity to review your work.</p>` : html`<p>Complete a meaningful attempt to begin your practice record.</p>`}</section>
         <h2 class="section-title">Badges</h2>
         <ul class="badges">
           ${list.map((b) => html`<li class="${b.on ? "is-on" : ""}"><span class="badge-icon" aria-hidden="true">${b.icon}</span><strong>${b.name}</strong><span>${b.on ? "Earned!" : b.how}</span></li>`)}
@@ -155,8 +159,10 @@ export async function render(ctx) {
       <section class="panel no-print">
         <h2>Use another computer</h2>
         <p>
-          Your progress is saved on this device only. Copy your progress code, then paste it on
-          another device.
+          Your written answers, planning notes, checklists, first drafts, revision reflections and practice records are saved in this browser. Clearing browser data can remove them. Audio recordings are not included.
+          Copy the full ACCESS1 progress code, then paste it here on another device. It contains your work, so keep it private. No name is required to practice.
+          On a shared device, export your own work before using the clear option; do not clear another student’s work.
+          Site Save/Resume short codes are a separate system; for a portable lab backup use this full progress code.
         </p>
         <div class="row-actions">
           <button type="button" class="btn" data-export>Copy my progress code</button>

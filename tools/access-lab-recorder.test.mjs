@@ -101,3 +101,26 @@ test("recorder construction and start errors both close acquired microphones", a
   }
   globalThis.MediaRecorder = FakeRecorder;
 });
+
+test("download extension follows the browser recording format", async () => {
+  for (const [mimeType, extension] of [
+    ["audio/mp4", "m4a"],
+    ["audio/ogg;codecs=opus", "ogg"],
+    ["audio/webm", "webm"],
+  ]) {
+    setMic(async () => stream());
+    globalThis.MediaRecorder = class extends FakeRecorder {
+      mimeType = mimeType;
+      stop() {
+        const data = new Event("dataavailable");
+        data.data = new Blob(["synthetic recording"], { type: mimeType });
+        this.dispatchEvent(data);
+        super.stop();
+      }
+    };
+    await recorder.start(mimeType);
+    await recorder.stop();
+    assert.equal(recorder.takesFor(mimeType)[0].extension, extension);
+  }
+  globalThis.MediaRecorder = FakeRecorder;
+});

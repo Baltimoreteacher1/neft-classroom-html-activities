@@ -39,6 +39,7 @@ export async function start(key, { onLevel, onStop } = {}) {
     const list = takes.get(key) || [];
     if (blob.size) list.push({
       url: URL.createObjectURL(blob),
+      extension: blob.type.includes("mp4") ? "m4a" : blob.type.includes("ogg") ? "ogg" : "webm",
       seconds: Math.round((Date.now() - state.started) / 1000),
     });
     // Keep the three most recent takes so a student can compare tries.

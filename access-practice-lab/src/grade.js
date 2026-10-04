@@ -1,4 +1,5 @@
 // Scoring — one source of truth for practice activities and practice tests.
+import { purposeOf, taskCriteria, wordBank } from "./learning.js";
 import { wordCount } from "./util.js";
 
 const sameSet = (want, got) => {
@@ -99,7 +100,7 @@ export function analyzeWriting(text, activity, level) {
   const t = String(text || "");
   const lower = t.toLowerCase();
   const words = wordCount(t);
-  const bank = [...(activity.wordBank || []), ...(activity.vocabulary || []).map((v) => v[0])]
+  const bank = wordBank(activity)
     .map((w) => String(w).split("/")[0].trim().toLowerCase())
     .filter(Boolean);
   // Match complete words and phrases, including Unicode letters. A word such
@@ -127,9 +128,9 @@ export function analyzeWriting(text, activity, level) {
       tip: "Reread the question. Add a useful detail if your answer needs one; longer is not always better.",
     },
     {
-      ok: connectors.length > 0,
-      label: "Connects ideas (because, so, then…)",
-      tip: "Join two ideas with because, so, or then.",
+      ok: purposeOf(activity) === "inform" ? sentences > 0 : connectors.length > 0,
+      label: purposeOf(activity) === "inform" ? "A sentence to reread for a useful detail" : "A connecting word to check in context",
+      tip: taskCriteria(activity)[1],
     },
     {
       ok: !bank.length || usedWords.length > 0,

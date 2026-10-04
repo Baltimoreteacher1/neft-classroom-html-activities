@@ -70,6 +70,8 @@ export async function render(ctx) {
   if (extra.length)
     cats.push({ id: "more", title: "More practice", activityIds: extra.map((a) => a.id) });
 
+  const packetBase = `${band === "3-5" ? "g3-5-" : ""}${domain}-${level}`.replace(/\s+/g, "");
+
   const row = (a) => {
     const savedStatus = activityStatus(record, a.id);
     const status = savedStatus === "done" ? "done" : savedStatus === "new" ? "new" : "tried";
@@ -118,6 +120,10 @@ export async function render(ctx) {
           : ""
       }
       <p><a class="btn" href="${BASE}/library?grades=${band}&domain=${domain}&level=${level}">Search activities & build a practice set →</a></p>
+      <section class="packet-downloads" aria-labelledby="packetHeading">
+        <div><h2 id="packetHeading">Take this practice to paper</h2><p>Illustrated activities, clear directions, and room to respond. Student edition · ${bandLabel(band)}.</p></div>
+        <div class="row-actions"><a class="btn" href="${BASE}/printables/${packetBase}.html">Preview &amp; print</a><a class="btn" href="${BASE}/printables/${packetBase}.docx" download>Download Word packet</a></div>
+      </section>
       <section class="strands" aria-label="All activities">
         ${cats.map((c) => {
           const acts = c.activityIds.map((id) => byId.get(id)).filter(Boolean);

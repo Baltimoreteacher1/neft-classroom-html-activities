@@ -10,7 +10,8 @@ const hasValue = (value) => {
 
 export function activityStatus(record, id) {
   if (record.complete?.includes(id)) return "done";
-  if (record.results?.[id]) return "retry";
+  const result = record.results?.[id];
+  if (result && result.meaningful !== false && result.words !== 0 && result.practiced !== false) return "retry";
   if (
     hasValue(answerOf({ answers: {}, ...record }, id)) ||
     hasValue(record.notes?.[id]) ||

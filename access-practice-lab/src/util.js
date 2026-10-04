@@ -66,9 +66,24 @@ export function safeJson(text, fallback) {
   }
 }
 
-/** localStorage that never throws (private mode, blocked storage, quota). */
+// If device storage fails, preserve edits in this tab and tell the learner.
+const volatile = new Map();
+function storageWarning() {
+  if (typeof document === "undefined") return;
+  const node = document.getElementById("labStorageWarning");
+  if (node) {
+    node.hidden = !volatile.size;
+    node.textContent = document.documentElement?.lang === "es"
+      ? "No se pudo guardar en este dispositivo. El trabajo nuevo está solo en esta pestaña. Exporta un código de Pasaporte antes de cerrar o recargar."
+      : "This device could not save your latest work. It is kept only in this tab. Export a Passport code before closing or reloading.";
+  }
+}
+/** localStorage with explicit session fallback (private mode, blocked storage, quota). */
 export const storage = {
+  get isVolatile() { return volatile.size > 0; },
+  refreshWarning: storageWarning,
   get(key) {
+    if (volatile.has(key)) return volatile.get(key);
     try {
       return localStorage.getItem(key);
     } catch {
@@ -78,21 +93,27 @@ export const storage = {
   set(key, value) {
     try {
       localStorage.setItem(key, value);
+      volatile.delete(key);
+      storageWarning();
       return true;
     } catch {
+      volatile.set(key, value);
+      storageWarning();
       return false;
     }
   },
   remove(key) {
     try {
       localStorage.removeItem(key);
-    } catch {}
+      volatile.delete(key);
+    } catch { volatile.set(key, null); }
+    storageWarning();
   },
   keys() {
     try {
-      return Object.keys(localStorage);
+      return [...new Set([...Object.keys(localStorage), ...volatile.keys()])].filter((key) => !volatile.has(key) || volatile.get(key) !== null);
     } catch {
-      return [];
+      return [...volatile.keys()].filter((key) => volatile.get(key) !== null);
     }
   },
 };

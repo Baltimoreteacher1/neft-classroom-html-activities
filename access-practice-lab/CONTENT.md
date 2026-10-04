@@ -27,7 +27,7 @@ pictures/<name>.svg          scene illustrations referenced by `picture.src`
   "description": "One sentence a student can read.",
   "levels": {
     "A": {
-      "tier": { "name": "Starting", "range": "WIDA 1.0–2.4" },
+      "tier": { "name": "Starting support", "range": "Classroom support choice; not a WIDA proficiency level" },
       "studentGoal": "I can …",
       "info": { "headline": "…", "summary": "…", "canDo": ["I can …"] },
       "categories": [{ "id": "kebab", "title": "…", "desc": "…", "activityIds": ["…"] }],
@@ -140,3 +140,14 @@ timer, and it never auto-submits.
 `{ "<band>": { "weeks": [{ "n": 1, "start": "2026-10-05", "taskType": "Narrate",
 "theme": "…", "focus": "…", "activities": ["<id>", …], "family": { "en": "…",
 "es": "…" } }] } }` — 12 weeks, every id must exist in that band.
+
+
+## Instructional audit additions (October 2026)
+
+- `successCriteria` is a list of observable, task-specific response checks for constructed tasks. These are self-review prompts, not automated proficiency judgments.
+- `modelNotes` maps model keys A/B/C to teaching annotations. A model may be brief and strong; length is not a proficiency scale. Park models deliberately stay within the one- or two-sentence task.
+- Each weekly playlist has `activityRationale`, keyed by every selected activity ID. The rationale explains its contribution to the weekly language function. A few early argument weeks use an explicitly labeled supported stretch because the elementary beginning listening/reading bank has limited argument tasks. The 24 playlists retain one task per domain, except the two-task family week.
+- A/B/C are local classroom support choices, not calibrated WIDA proficiency ranges. Classroom test sets use fixed items and differ from official ACCESS routing, difficulty, timing, and scoring.
+- Verify content invariants with `node --test tools/access-audit-content.test.mjs`, then rebuild the index and run the main lab validator.
+
+Official sources checked October 4, 2026: [WIDA online/paper administration](https://wida.wisc.edu/news/focus-wida-access-grades-1-12-0) confirms adaptive Listening/Reading, subsequent tier placement, and paper Writing for grades 1–3. [Maryland WIDA dates](https://wida.wisc.edu/about/consortium/md) supports the 2027 state window; each school schedules individual dates. Keep dates and format explanations current with these primary sources.

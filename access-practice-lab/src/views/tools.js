@@ -1,5 +1,4 @@
-// Test tools warm-up: try every control used on the practice tests (and the
-// real test) before test day — listen/replay, choose, flag, record, type.
+// Lab device readiness and supported-practice controls; not an official test simulation.
 import { crumbsHTML, listenPlayerHTML, recorderHTML } from "../components.js";
 import { choiceTarget, inputHTML, reduceAnswer } from "../items.js";
 import { isRecording } from "../recorder.js";
@@ -28,26 +27,26 @@ export async function render(ctx) {
       </div>
     </li>`;
   return {
-    title: "Test tools warm-up",
+    title: "Lab tools and device check",
     html: html`${crumbsHTML([
         ["Lab", `${BASE}/`],
-        ["Test tools", null],
+        ["Lab tools", null],
       ])}
       <section class="room-hero">
         <div>
-          <h1 tabindex="-1">🧰 Test tools warm-up</h1>
+          <h1 tabindex="-1">🧰 Lab tools and device check</h1>
           <p class="lead">
-            Try each tool once. On test day, you will already know what every button does.
+            Try the lab controls and check your headphones before practicing. These are lab practice tools, not an official test simulation.
           </p>
         </div>
       </section>
+      <section class="panel"><h2>Prepare for the actual test</h2><p>Replay, slower speech, flagging, and recording here may work differently on ACCESS. Use the <a href="https://wida.wisc.edu/assess/access/preparing-students" target="_blank" rel="noopener">official WIDA preparation resources and test demo (new tab)</a> to learn the real test interface. Follow your teacher’s directions about allowed tools.</p></section>
       <ol class="tool-steps">
         ${step(
           1,
-          "Listen and listen again",
+          "Headphones and playback check",
           html`<p>
-              Press the button. Then press it again to hear it one more time. Try the slower speed
-              too.
+              Connect your headphones and set a comfortable volume. Press Listen, then Stop audio. Replay and try slower speech. If you hear nothing, check the volume and audio output, then ask your teacher.
             </p>
             ${listenPlayerHTML("tools-listen", ["Point to the book on the table. Then choose the book."], { rate: ctx.prefs.rate })}`,
         )}
@@ -74,15 +73,18 @@ export async function render(ctx) {
           4,
           "Record your voice",
           html`<p>
-              Press Record, say your name and your favorite food, then press Stop and play it back.
+              Optional microphone check: press Record, say “The book is on the table,” then press Stop and play it back. Do not say your name or other personal information.
             </p>
-            ${recorderHTML("tools-rec", { recording: isRecording("tools-rec") })}`,
+            ${recorderHTML("tools-rec", { recording: isRecording("tools-rec") })}
+            <p>No microphone, permission denied, or no playback? Practice the sentence aloud with a partner or teacher. You can continue without recording. Recordings disappear when this page closes or reloads; resume codes do not contain audio.</p>`,
         )}
         ${step(
           5,
           "Type an answer",
           html`<p>Type one sentence. Use a capital letter and a period.</p>
+            <label for="tool-typing">Practice sentence</label>
             <textarea
+              id="tool-typing"
               rows="2"
               data-tool-type
               placeholder="My favorite subject is ___ because ___."

@@ -6,9 +6,9 @@ import { loadTestRecord } from "../store.js";
 import { BASE, bandLabel, html } from "../util.js";
 
 const KIND = {
-  full: "Full practice tests",
+  full: "Four-domain classroom practice",
   domain: "Single-skill tests",
-  mini: "Mini tests (10–15 minutes)",
+  mini: "Short practice sets",
 };
 
 export async function render(ctx) {
@@ -25,7 +25,7 @@ export async function render(ctx) {
         ? "In progress"
         : "Not started";
     return html`<li class="test-card">
-      <a href="${BASE}/test/${t.id}">
+      <a href="${BASE}/test/${t.id}?grades=${ctx.band}">
         <strong>${t.title}</strong>
         <span
           >${t.domain ? `${t.domain} · ` : "Listening · Reading · Speaking · Writing · "}${t.items}
@@ -50,6 +50,7 @@ export async function render(ctx) {
             language confidence; they do not predict an ACCESS score. No clock
             unless you turn one on.
           </p>
+          <p class="fine">Actual ACCESS Online adapts Listening and Reading and uses those results for Speaking and Writing tier placement. These fixed classroom sets do not reproduce that routing, timing, scoring, or difficulty. Grade 3 ACCESS Writing uses paper; ask your teacher about your assigned format.</p>
           ${bandSwitchHTML(ctx.band, ctx.bands)}
         </div>
       </section>

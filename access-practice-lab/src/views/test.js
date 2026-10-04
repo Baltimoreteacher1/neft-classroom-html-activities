@@ -78,6 +78,7 @@ function grade() {
       title: s.title || s.domain,
       correct,
       total: auto.length,
+      attempted: auto.filter((it) => isAnswered(it, T.rec.answers[it.id])).length,
       open: open.length,
       openDone,
     };
@@ -86,6 +87,7 @@ function grade() {
   const t = sections.reduce((n, s) => n + s.total, 0);
   return {
     sections,
+    meaningful: sections.some((s) => s.attempted > 0 || s.openDone > 0),
     correct: c,
     total: t,
     pct: t ? Math.round((c / t) * 100) : null,
@@ -118,7 +120,7 @@ function introHTML() {
   const inProgress = Boolean(T.rec.startedAt || Object.keys(T.rec.answers || {}).length);
   return html`<section class="panel test-intro">
     <p class="eyebrow">
-      Practice test · ${bandLabel(test.band)}${test.tier ? ` · ${test.tier}` : ""}
+      Classroom practice · ${bandLabel(test.band)}
     </p>
     <h1 tabindex="-1">${test.title}</h1>
     ${test.overview ? html`<p class="lead">${test.overview}</p>` : ""}
@@ -132,7 +134,8 @@ function introHTML() {
       </li>
       <li>Listening: press <strong>▶ Listen</strong>. You may listen more than once.</li>
       <li>
-        Speaking: press <strong>Record</strong> and say your answer. Writing: type your answer.
+        Speaking: record your answer or say it to a teacher or partner. Writing: type your answer.
+        For Grade 3 ACCESS preparation, also practice handwriting on paper with your teacher.
       </li>
     </ul>
     <label class="timer-opt"
@@ -147,7 +150,11 @@ function introHTML() {
       <a class="ghost" href="${BASE}/tests">All tests</a>
     </div>
     <p class="disclaimer">
-      Original classroom practice inspired by WIDA ACCESS — not an official WIDA test or score.
+      Original classroom practice, not an official WIDA test or score. Actual ACCESS Online adapts
+      Listening and Reading and uses those results for Speaking and Writing tier placement.
+      This fixed practice set does not reproduce its difficulty, scoring, timing, or routing.
+      Use the <a href="https://wbte.drcedirect.com/WIDA" target="_blank" rel="noopener">official WIDA demo</a>
+      to learn the actual testing interface.
     </p>
   </section>`;
 }

@@ -45,7 +45,7 @@ export async function render(ctx) {
     >
       <a
         class="stop-head"
-        href="${BASE}/road/${w.n}"
+        href="${BASE}/road/${w.n}?grades=${band}"
         aria-current="${w.n === focus.n ? "step" : "false"}"
       >
         <span class="stop-n">${n === acts.length && acts.length ? "✓" : w.n}</span>
@@ -57,6 +57,7 @@ export async function render(ctx) {
     </li>`;
   };
   const acts = focus.activities.map((id) => byId.get(id)).filter(Boolean);
+  const minutes = acts.reduce((sum, a) => sum + (Number(a.minutes) || parseInt(a.time, 10) || 8), 0);
   return {
     title: `Road to ACCESS · Week ${focus.n}`,
     html: html`${crumbsHTML([
@@ -65,11 +66,11 @@ export async function render(ctx) {
       ])}
       <section class="room-hero">
         <div>
-          <p class="eyebrow">${bandLabel(band)} · 12 weeks to test day</p>
+          <p class="eyebrow">${bandLabel(band)} · 12-week classroom practice plan</p>
           <h1 tabindex="-1">🗺️ Road to ACCESS</h1>
           <p class="lead">
-            One stop a week: one activity in each skill, plus something to talk about at home. About
-            30 minutes.
+            A weekly playlist with a language goal and something to talk about at home.
+            Family week has two activities. Some weeks include a supported stretch or a familiar review.
           </p>
           ${bandSwitchHTML(band, ctx.bands)}
         </div>
@@ -84,14 +85,14 @@ export async function render(ctx) {
             ${formatDate(focus.start, { weekday: "long", month: "long", day: "numeric" })}
           </p>
           <h2 id="weekTitle">${focus.taskType}: ${focus.theme}</h2>
-          <p>${focus.focus}</p>
+          <p>${focus.focus}</p><p class="fine">About ${minutes} minutes for ${acts.length} activities, plus family conversation. Take breaks as needed.</p>
           <ol class="week-acts">
             ${acts.map(
               (a) =>
                 html`<li class="${isDone(a.id) ? "is-done" : ""}">
-                  <a href="${activityHref(a.domain, a.level, a.id)}"
+                  <a href="${activityHref(a.domain, a.level, a.id)}?grades=${band}"
                     ><span aria-hidden="true">${domainGlyph(a.domain)}</span
-                    ><span><strong>${a.title}</strong><span>${a.domain}</span></span
+                    ><span><strong>${a.title}</strong><span>${a.domain} · ${Number(a.minutes) || parseInt(a.time, 10) || 8} min</span><span>${focus.activityRationale?.[a.id] || a.skill}</span></span
                     ><span class="tick">${isDone(a.id) ? "✓" : ""}</span></a
                   >
                 </li>`,

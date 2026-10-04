@@ -41,7 +41,7 @@ export function listenPlayerHTML(
         >${n ? `Played ${n} time${n === 1 ? "" : "s"}` : test ? "Press play. You may listen more than once." : "Press play to hear it."}</span
       >
     </div>
-    <div class="speed" role="group" aria-label="Speaking speed">
+    <div class="speed" role="group" aria-label="Audio speed">
       <button type="button" class="speed-btn" data-rate="0.75" aria-pressed="${rate <= 0.78}">
         🐢 Slower
       </button>
@@ -64,7 +64,7 @@ export function transcriptHTML(key, segments, { title = "What you heard" } = {})
 /** Recorder block for Speaking. `key` scopes takes to one activity/test item. */
 export function recorderHTML(
   key,
-  { prompt = "", models = null, level = "A", recording = false, level01 = 0, seconds = 0 } = {},
+  { prompt = "", models = null, level = "A", recording = false, level01 = 0, seconds = 0, activity = {} } = {},
 ) {
   const takes = takesFor(key);
   if (!canRecord())
@@ -73,11 +73,13 @@ export function recorderHTML(
         <strong>This browser cannot record.</strong> Say your answer aloud to a partner or your
         teacher, then use the checklist.
       </p>
+      ${models ? modelLadderHTML(models, level, activity) : ""}
     </div>`;
   return html`<section
     class="recorder ${recording ? "is-recording" : ""}"
     aria-label="Record your answer"
   >
+    <p class="fine">Use a quiet place and check your headphones. Microphone permission is optional: you can practice aloud with a partner instead.</p>
     <div class="rec-main">
       ${
         recording
@@ -98,24 +100,25 @@ export function recorderHTML(
     ${
       takes.length
         ? html`<ol class="takes">
-            ${takes.map((t, i) => html`<li><span>Try ${i + 1}${t.seconds ? ` · ${t.seconds}s` : ""}</span><audio controls preload="none" src="${t.url}"></audio></li>`)}
+            ${takes.map((t, i) => html`<li><span>Try ${i + 1}${t.seconds ? ` · ${t.seconds}s` : ""}</span><audio aria-label="Play recording ${i + 1}" controls preload="none" src="${t.url}"></audio><a class="ghost small" href="${t.url}" download="practice-recording-${i + 1}.${t.extension || "webm"}">Download this recording</a></li>`)}
           </ol>`
         : ""
     }
+    <p class="rec-error" data-rec-error="${key}" role="status"></p>
     <p class="fine">Listen to your answer. Choose one detail to add, then record again if you want.</p>
-    <p class="fine">Recordings stay in this tab and disappear when you close or reload this tab. They are never uploaded.</p>
-    ${models ? modelLadderHTML(models, level) : ""}
+    <p class="fine">Recordings stay in this tab and disappear when you close or reload it. They are never uploaded. Download a recording before leaving if you want to keep it; a progress code does not include audio.</p>
+    ${models ? modelLadderHTML(models, level, activity) : ""}
   </section>`;
 }
 
-export function modelLadderHTML(models, level) {
+export function modelLadderHTML(models, level, activity = {}) {
   const rows = LEVEL_KEYS.filter((k) => models[k]);
   if (!rows.length) return "";
   return html`<details class="ladder">
     <summary>🪜 Hear answers that grow</summary>
     <p class="fine">
-      The same question, answered with different amounts of detail. Borrow a useful phrase,
-      then explain your own idea. These examples are not WIDA scores.
+      Notice how each response communicates an idea. A short, specific answer can be strong.
+      Borrow a useful technique, then explain your own idea. These examples are not WIDA scores.
     </p>
     <ol>
       ${rows.map(
@@ -123,6 +126,7 @@ export function modelLadderHTML(models, level) {
           html`<li class="${k === level ? "is-you" : ""}">
             <span class="ladder-tier">${TIERS[k].name}</span>
             <p>${models[k]}</p>
+            <p class="fine"><strong>Notice:</strong> ${activity.modelNotes?.[k] || (k === "A" ? "Find the main idea. Which words make it clear?" : k === "B" ? "Find a specific detail. How does it help answer the question?" : "Find a connection between ideas. Is every detail useful?")}</p>
             <button type="button" class="ghost small" data-say="${models[k]}">🔊 Listen</button>
           </li>`,
       )}
@@ -149,11 +153,10 @@ export function selfCheckHTML(checks, saved = {}, { title = "Check your answer" 
 export const speakingChecksHTML = (saved) =>
   selfCheckHTML(SPEAKING_CHECKS, saved, { title: "Speaking checklist" });
 
-export function vocabHTML(activity, shared) {
+export function vocabHTML(activity, shared, { focused = true } = {}) {
   const terms = activity.vocabulary || [];
-  const frames = activity.frames || [];
-  const focus =
-    activity.listenFor || activity.readFor || activity.sayFor || activity.writeFor || [];
+  const frames = focused || activity.type === "constructed" ? activity.frames || [] : [];
+  const focus = focused ? activity.listenFor || activity.readFor || activity.sayFor || activity.writeFor || [] : [];
   if (!terms.length && !frames.length && !focus.length) return "";
   return html`<details class="helpers">
     <summary>💡 Help: words &amp; sentence starters <span lang="es">· Ayuda</span></summary>
@@ -161,7 +164,7 @@ export function vocabHTML(activity, shared) {
       ${
         focus.length
           ? html`<section>
-              <h4>Look for</h4>
+              <h2 class="helper-title">A focused clue after your attempt</h2>
               <ul class="chips">
                 ${focus.map((f) => html`<li>${f}</li>`)}
               </ul>
@@ -171,7 +174,7 @@ export function vocabHTML(activity, shared) {
       ${
         terms.length
           ? html`<section>
-              <h4>Key words</h4>
+              <h2 class="helper-title">Vocabulary support</h2>
               <dl class="vocab">
                 ${terms.map(([en, def, es]) => {
                   const spanish = String(es || "").replace(
@@ -201,7 +204,7 @@ export function vocabHTML(activity, shared) {
       ${
         frames.length
           ? html`<section>
-              <h4>Sentence starters</h4>
+              <h2 class="helper-title">Sentence starters</h2>
               <ul class="frames">
                 ${frames.map((f) => html`<li>${f}</li>`)}
               </ul>
@@ -225,7 +228,7 @@ export function tierPickerHTML(domain, level, hrefFor) {
           <strong>${TIERS[k].name}</strong><span>${TIERS[k].range}</span>
         </a>`,
     )}
-  </nav><p class="fine">Choose the support that helps today. These practice choices are not WIDA scores or placement levels.</p>`;
+  </nav><p class="fine">Support choice changes the task set: Starting uses words and short sentences; Growing connects ideas; Expanding develops details and explanations. Each set still offers optional help. These are not WIDA scores or placement levels.</p>`;
 }
 
 export function bandSwitchHTML(band, bands) {

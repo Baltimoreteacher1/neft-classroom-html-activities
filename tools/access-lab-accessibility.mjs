@@ -54,6 +54,8 @@ try {
 
   await page.setViewportSize({ width: 1366, height: 900 });
   await go("");
+  await page.locator("#planOptions summary").focus();
+  await page.keyboard.press("Enter");
   await page.locator("#planFocus").focus();
   await page.selectOption("#planFocus", "Writing");
   await page.waitForFunction(() =>
@@ -69,6 +71,12 @@ try {
   check((await page.inputValue("#planFocus")) === "Writing", "planner preference survives reload");
 
   await go("library?grades=6-8");
+  await page.locator('[data-page="2"]').focus();
+  await page.keyboard.press("Enter");
+  check(
+    await page.evaluate(() => document.activeElement.id === "libraryResultTitle"),
+    "pagination moves keyboard focus to results",
+  );
   await page.locator("#librarySearch").fill("water");
   check(
     await page.evaluate(() => document.activeElement.id === "librarySearch"),
@@ -124,7 +132,10 @@ try {
   });
   await go("");
   check(
-    (await page.locator(".session-list a").first().getAttribute("href")).endsWith(draftId),
+    new URL(
+      await page.locator(".session-list a").first().getAttribute("href"),
+      base,
+    ).pathname.endsWith(draftId),
     "home resumes synthetic unfinished draft first",
   );
 } finally {

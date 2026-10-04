@@ -52,10 +52,13 @@ export function loadRecord(band, domain, level) {
     selfChecks: r.selfChecks || {},
     practiced: r.practiced || {},
     attempts: r.attempts || {},
+    drafts: r.drafts || {},
+    reflections: r.reflections || {},
+    evidence: r.evidence || {},
   };
 }
 export function saveRecord(band, domain, level, record) {
-  storage.set(progressKey(band, domain, level), JSON.stringify(record));
+  return storage.set(progressKey(band, domain, level), JSON.stringify(record));
 }
 
 /** The stored answer for one activity, including answers saved by the old lab. */
@@ -95,11 +98,11 @@ export function practiceDays() {
   const days = new Set();
   for (const { record } of allRecords())
     for (const r of Object.values(record.results))
-      if (r?.date) days.add(todayISO(new Date(r.date)));
+      if (r?.date && r.meaningful !== false && r.words !== 0 && r.practiced !== false) days.add(todayISO(new Date(r.date)));
   for (const key of storage.keys())
     if (key.startsWith(`${PREFIX}:test:`)) {
       const t = loadTestRecord(key.slice(`${PREFIX}:test:`.length));
-      if (t.results?.date) days.add(todayISO(new Date(t.results.date)));
+      if (t.results?.date && (t.results.meaningful ?? t.results.sections?.some((s) => s.openDone > 0 || s.attempted > 0 || s.correct > 0))) days.add(todayISO(new Date(t.results.date)));
     }
   return [...days].sort().reverse();
 }
