@@ -110,6 +110,12 @@ test("actual family view renders selected homework, due date and Spanish action,
     assert.equal(root.querySelector(".homework-card"), null);
     assert.match(root.querySelector("#family-week h2").textContent, /Waiting for this week/);
     assert.match(root.textContent, /Last posted: Sep 21, 2026 – Sep 25, 2026/);
+    // Between weeks the last plan stays one tap away (audit 2026-10-04: the
+    // waiting card had no homework link at all).
+    assert.equal(
+      root.querySelector(".catch-up-link").getAttribute("href"),
+      "?section=all-families&week=2026-09-21",
+    );
     assert.match(root.querySelector(".week-dates").textContent, /Sep 28, 2026 – Oct 2, 2026/);
   } finally {
     globalThis.document = previous;

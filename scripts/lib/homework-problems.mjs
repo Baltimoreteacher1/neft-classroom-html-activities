@@ -1,3 +1,20 @@
+import { existsSync, readFileSync } from "node:fs";
+
+/* Spanish for the authored per-choice feedback, keyed by the exact English
+   string (the same shape as data/homework-choices-spanish.json). Before this,
+   1,067 of 1,081 multiple-choice items told a Spanish-reading family the same
+   generic "Revisa tu elección" for every wrong choice while English named the
+   specific mistake. */
+const feedbackSpanishPath = new URL("../../data/homework-feedback-spanish.json", import.meta.url);
+const FEEDBACK_ES = existsSync(feedbackSpanishPath)
+  ? JSON.parse(readFileSync(feedbackSpanishPath, "utf8"))
+  : {};
+
+export function choiceFeedbackSpanish(en) {
+  const key = String(en || "").trim();
+  return key ? FEEDBACK_ES[key] || "" : "";
+}
+
 /** Normalize the two authored homework contracts without changing saved answer keys. */
 export function matchingPairs(item) {
   return (item.pairs || []).map((pair) => ({
@@ -95,10 +112,17 @@ export function spanishChoiceFeedback(item) {
   return (item.choices || []).map(
     (_, index) =>
       item.choiceFeedbackEs?.[index] ||
+      (index !== (item.correctIndex ?? 0) && choiceFeedbackSpanish(item.choiceFeedback?.[index])) ||
       (index === (item.correctIndex ?? 0)
         ? `Correcto. ${item.explanationEs || "Explica cómo lo sabes."}`
         : `Revisa tu elección. ${item.hintsEs?.[0] || item.explanationEs || "Vuelve a leer la pregunta y comprueba los datos y las unidades."}`),
   );
+}
+
+/* Cards that are whole sentences ("I can't do this... yet.") cannot be
+   comma-joined without printing "yet., Mistakes…". */
+function joinCards(texts) {
+  return texts.join(texts.some((t) => /[.!?]$/.test(String(t).trim())) ? " · " : ", ");
 }
 
 export function slugId(label, idx) {
@@ -254,9 +278,9 @@ export function answerKeyLines(item, { translate } = {}) {
           if (!members.length) continue;
           const anyEs = cat.labelEs || members.some((m) => m.textEs);
           lines.push({
-            en: `${cat.label}: ${members.map((m) => m.text).join(", ")}`,
+            en: `${cat.label}: ${joinCards(members.map((m) => m.text))}`,
             es: anyEs
-              ? `${cat.labelEs || cat.label}: ${members.map((m) => m.textEs || m.text).join(", ")}`
+              ? `${cat.labelEs || cat.label}: ${joinCards(members.map((m) => m.textEs || m.text))}`
               : "",
           });
         }

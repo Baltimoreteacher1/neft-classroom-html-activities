@@ -876,7 +876,38 @@ async function fetchResource(res) {
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const buffer = await response.arrayBuffer();
   if (!buffer.byteLength) throw new Error("empty file");
-  return new Uint8Array(buffer);
+  const bytes = new Uint8Array(buffer);
+  return /\.html?($|\?)/i.test(res.url) ? inlineSharedHomeworkCode(bytes) : bytes;
+}
+
+/* Homework pages load their shared script and styles from
+   /assets/homework/ (one cached copy instead of 166 inlined ones). A page
+   opened from a ZIP has no site to load them from, so the packaged copy gets
+   them inlined back — the same self-contained file the page used to be. */
+const SHARED_HOMEWORK_RE =
+  /<link rel="stylesheet" href="(\/assets\/homework\/[\w.-]+\.css)">|<script src="(\/assets\/homework\/[\w.-]+\.js)"><\/script>/g;
+const sharedHomeworkText = new Map();
+async function inlineSharedHomeworkCode(bytes) {
+  const html = new TextDecoder("utf-8").decode(bytes);
+  const urls = [...html.matchAll(SHARED_HOMEWORK_RE)].map((m) => m[1] || m[2]);
+  if (!urls.length) return bytes;
+  for (const url of urls) {
+    if (!sharedHomeworkText.has(url)) {
+      sharedHomeworkText.set(
+        url,
+        fetch(url, { credentials: "same-origin" }).then((r) => {
+          if (!r.ok) throw new Error(`HTTP ${r.status} for ${url}`);
+          return r.text();
+        }),
+      );
+    }
+  }
+  const texts = new Map();
+  for (const url of urls) texts.set(url, await sharedHomeworkText.get(url));
+  const out = html.replace(SHARED_HOMEWORK_RE, (_, css, js) =>
+    css ? `<style>\n${texts.get(css)}</style>` : `<script>\n${texts.get(js)}</script>`,
+  );
+  return new TextEncoder().encode(out);
 }
 
 /** One fetched worksheet page, parsed into { title, css, body }. */

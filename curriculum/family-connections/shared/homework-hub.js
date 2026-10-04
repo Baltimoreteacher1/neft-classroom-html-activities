@@ -195,6 +195,18 @@ export function renderHomeworkHub(
         "quiet last-posted",
       ),
     );
+    /* Between weeks this card used to be a dead end: no homework link at all
+       until a new plan was posted. The last plan stays one tap away. */
+    const catchUp = new URLSearchParams({ section: section.id, week: section.week.startDate });
+    if (es) catchUp.set("lang", "es");
+    week.append(
+      el(
+        "a",
+        t("Catch up on last week’s homework", "Ponte al día con la tarea de la semana pasada"),
+        "button catch-up-link",
+      ),
+    );
+    week.lastChild.setAttribute("href", `?${catchUp}`);
   } else if (phase === "empty") {
     week.append(
       el(
@@ -321,17 +333,8 @@ export function renderHomeworkHub(
         content.append(
           el("p", `${t("Due", "Entrega")}: ${dateLabel(item.entry.dueDate, lang)}`, "due-date"),
         );
-      else
-        content.append(
-          el(
-            "p",
-            t(
-              "Due date: ask Mr. Neft if needed.",
-              "Fecha de entrega: consulta al Sr. Neft si la necesitas.",
-            ),
-            "quiet",
-          ),
-        );
+      // No authored due date: say nothing rather than "ask Mr. Neft" on every
+      // card. The week's own guidance already explains catch-up days.
       content.append(
         el(
           "p",

@@ -4,7 +4,8 @@ import test from "node:test";
 import { JSDOM, VirtualConsole } from "jsdom";
 import { onRequest } from "../functions/lessons/_middleware.js";
 import { HOMEWORK_TABS_JS } from "../scripts/homework-guided-notes.mjs";
-import { lessonPath } from "./lib/curriculum-source.mjs";
+import { inlineSharedFromDisk } from "../scripts/lib/homework-shared-assets.mjs";
+import { lessonPath, REPO_ROOT } from "./lib/curriculum-source.mjs";
 
 const defaultPolicy = "camera=(), microphone=(self), geolocation=(), payment=(), usb=()";
 test("camera permission is scoped to homework HTML without changing other policy directives", async () => {
@@ -50,7 +51,12 @@ async function homework(id = "3-2") {
   console.on("jsdomError", (e) => {
     if (e.type !== "css parsing" && e.type !== "not implemented") errors.push(e);
   });
-  const source = readFileSync(lessonPath(id, "homework.html"), "utf8");
+  // The page loads its shared script/CSS from /assets/homework/; jsdom has no
+  // server, so read them in the way the browser would assemble the page.
+  const source = inlineSharedFromDisk(
+    REPO_ROOT,
+    readFileSync(lessonPath(id, "homework.html"), "utf8"),
+  );
   const dom = new JSDOM(source, {
     url: "https://eduwonderlab.com/lessons/" + id + "/homework?route=full&lang=en",
     runScripts: "dangerously",

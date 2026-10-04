@@ -3,6 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { interactiveVisualHost } from "@eduwonderlab/engine/core/interactive-visual.js";
 import { augmentVocabWithGlossary } from "@eduwonderlab/engine/core/math-glossary.js";
+import { toolMeta } from "@eduwonderlab/engine/core/tool-catalog.js";
 import {
   hasRealVocabImage,
   resolveVocabImage,
@@ -54,6 +55,11 @@ import {
   spanishChoiceFeedback,
   tableModel,
 } from "./lib/homework-problems.mjs";
+import {
+  externalizeSharedCode,
+  staleSharedFiles,
+  writeSharedFiles,
+} from "./lib/homework-shared-assets.mjs";
 import { compareFamilyHomeworkIds, generatesFamilyHomework } from "./lib/lesson-scope.mjs";
 import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 import { toHomeworkShape } from "./lib/review-lesson-shape.mjs";
@@ -65,6 +71,13 @@ const tableSpanish = existsSync(tableSpanishPath)
 const choiceSpanish = JSON.parse(
   readFileSync(new URL("../data/homework-choices-spanish.json", import.meta.url), "utf8"),
 );
+/* Spanish for open-response sentence starters, keyed by the exact English.
+   54 of 56 starters had none, so a Spanish-mode page offered an English
+   frame to insert. */
+const startersSpanishPath = new URL("../data/homework-starters-spanish.json", import.meta.url);
+const startersSpanish = existsSync(startersSpanishPath)
+  ? JSON.parse(readFileSync(startersSpanishPath, "utf8"))
+  : {};
 const tableEs = (en, authored) => authored || tableSpanish[String(en)] || "";
 function langOption(value, en, es = "") {
   return `<option value="${esc(value)}" data-text-en="${esc(en)}" data-text-es="${esc(es || en)}">${esc(en)}</option>`;
@@ -345,8 +358,13 @@ function renderProblemTypeChip(displayType) {
   return `<div class="problem-type-badge"><span class="lang-en">${esc(label.en)}</span><span class="lang-es" lang="es">${esc(label.es)}</span></div>`;
 }
 
+/* Each type's tip prints once per page. The same "Read the question
+   together…" line on every problem added ~900px to a phone's Check stop. */
+let familyTipsShown = new Set();
 function renderFamilyTip(typeKey) {
   const tip = FAMILY_TIPS_BY_TYPE[typeKey] || FAMILY_TIPS_BY_TYPE["multiple-choice"];
+  if (familyTipsShown.has(tip)) return "";
+  familyTipsShown.add(tip);
   return `<p class="family-problem-tip"><span class="lang-en">👪 ${esc(tip.en)}</span><span class="lang-es" lang="es">👪 ${esc(tip.es)}</span></p>`;
 }
 
@@ -556,7 +574,12 @@ function renderWorkspace(pIdx, g, topic) {
     ? `<span class="lang-en">👆 Tap to graph: ${esc(g.draw)}</span><span class="lang-es" lang="es">👆 Toca para graficar: ${esc(g.drawEs)}</span>`
     : `<span class="lang-en">✏️ Draw your model: ${esc(g.draw)}</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: ${esc(g.drawEs)}</span>`;
 
+  /* Closed by default. Every problem used to carry an open drawing grid AND a
+     work box under it, which is most of why the Check stop ran ~15 phone
+     screens for "about 7 minutes". One tap opens both; saved work reopens it. */
   return `
+      <details class="hw-workspace-toggle">
+        <summary><span class="lang-en">✏️ Show my work: drawing pad and notes</span><span class="lang-es" lang="es">✏️ Mostrar mi trabajo: dibujo y notas</span></summary>
       <div class="hw-workspace">
         <div class="hw-visual">
           <div class="hw-visual-caption">${caption}</div>
@@ -566,7 +589,8 @@ function renderWorkspace(pIdx, g, topic) {
           <label class="hw-work-label" for="work_${pIdx}"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
           <textarea id="work_${pIdx}" name="work_${pIdx}" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
         </div>
-      </div>`;
+      </div>
+      </details>`;
 }
 
 /* The family answer key. Every practice problem ends with a closed
@@ -579,6 +603,48 @@ function renderWorkspace(pIdx, g, topic) {
    worksheet. The lines come from answerKeyLines() in lib/homework-problems.mjs,
    the same normalized models the problem itself renders from, so the key can
    never disagree with the auto-checker. */
+/* The results a written answer should reach: every number the authored
+   model answer states right after an "=" (2⁶ = … = 64 → 64). A student's
+   explanation is compared against these to say whether it shows the key
+   result — never to call it correct, which a string match cannot know. */
+function openResponseKeyNumbers(it) {
+  const model = String(
+    it.modelAnswer || it.sampleAnswer || it.answer || it.exemplar || it.explanation || "",
+  );
+  /* The result of a chain is what follows its LAST "=" (2⁶ = 2 × 2 × … = 64
+     → 64, not the 2 after the first). The first sentence with a chain states
+     the answer; later ones are usually the contrast ("adding would give 13"). */
+  for (const sentence of model.split(/(?<=[.!?])\s+/)) {
+    const results = [...sentence.matchAll(/=\s*\$?(-?\d[\d,]*(?:\.\d+)?)/g)];
+    if (results.length) return [results[results.length - 1][1].replace(/,/g, "")];
+  }
+  return [];
+}
+
+/* One printable page with every core answer, for families who work on paper.
+   Printed only through its own button; the on-screen keys stay closed and
+   hidden in a normal print so a paper copy is still a worksheet. */
+function renderAnswerSheet(items, title) {
+  const rows = items
+    .map(({ it, labelEn, labelEs }) => {
+      const { lines, note } = answerKeyLines(it, { translate: tableEs });
+      const body =
+        (lines.length
+          ? `<ul>${lines.map((l) => `<li>${bi(l.en, l.es)}</li>`).join("")}</ul>`
+          : "") + (note ? `<p>${bi(note.en, note.es)}</p>` : "");
+      if (!body) return "";
+      return `<li><strong>${bi(labelEn, labelEs)}</strong>${body}</li>`;
+    })
+    .join("");
+  if (!rows) return "";
+  return `
+<section class="hw-answer-sheet" aria-hidden="true">
+  <h2>${bi("Answer sheet", "Hoja de respuestas")} · ${esc(title)}</h2>
+  <p>${bi("Check the work after trying each problem. Talk about why each answer makes sense.", "Revisen el trabajo después de intentar cada problema. Hablen de por qué cada respuesta tiene sentido.")}</p>
+  <ol>${rows}</ol>
+</section>`;
+}
+
 function renderAnswerKey(it, pIdx) {
   const { lines, note } = answerKeyLines(it, { translate: tableEs });
   if (!lines.length && !note) return "";
@@ -599,6 +665,7 @@ function renderAnswerKey(it, pIdx) {
         </summary>
         <div class="hw-answer-key-body">
           <p class="hw-answer-key-label">${bi("Answer key for families — compare, then talk about why.", "Clave de respuestas para la familia — comparen y hablen del porqué.")}</p>
+          <p class="hw-answer-key-try">${bi("Not tried yet? Close this and give it one try first. A wrong first try still helps.", "¿Todavía no lo intentaron? Ciérrenla y hagan un intento primero. Un primer intento equivocado también ayuda.")}</p>
           ${lineHtml ? `<ul class="hw-answer-key-lines">${lineHtml}</ul>` : ""}
           ${noteHtml}
         </div>
@@ -752,7 +819,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
               ${items
                 .map(
                   (item, itemIdx) => `
-                <div class="drag-card"
+                <div class="drag-card${items.every((x) => String(x.text).length <= 10) ? " drag-card--short" : ""}"
                      draggable="true"
                      id="card_${pIdx}_${itemIdx}"
                      data-item-index="${itemIdx}"
@@ -806,9 +873,14 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
                 <tr>
                   ${row
                     .map((cell, cIdx) => {
+                      // Phones stack each row into a card; the column heading
+                      // rides along inside the cell so every value keeps its label.
+                      const cellLabel = headers[cIdx]
+                        ? `<span class="fill-cell-label" aria-hidden="true" data-no-vocab>${bi(headers[cIdx], tableEs(headers[cIdx], headersEs[cIdx]))}</span>`
+                        : "";
                       if (cell.isEditable) {
                         return `
-                        <td>
+                        <td>${cellLabel}
                           <div class="table-input-wrapper">
                             <input type="text"
                                    class="custom-input table-input"
@@ -822,7 +894,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
                         </td>
                       `;
                       } else {
-                        return `<td>${bi(cell.val, tableEs(cell.val, cell.valEs))}</td>`;
+                        return `<td>${cellLabel}${bi(cell.val, tableEs(cell.val, cell.valEs))}</td>`;
                       }
                     })
                     .join("")}
@@ -903,9 +975,10 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     const prompt = it.prompt || it.stem || "";
     const promptEs = it.promptEs || it.stemEs || "";
     const sentenceFrame = it.sentenceFrame || "";
-    const sentenceFrameEs = it.sentenceFrameEs || "";
+    const sentenceFrameEs = it.sentenceFrameEs || startersSpanish[sentenceFrame] || "";
     const keywords = it.keywords || [];
     const minLength = it.minLength || 15;
+    const keyNumbers = openResponseKeyNumbers(it);
 
     content = `
       <div class="problem-body">
@@ -929,6 +1002,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
                     class="custom-textarea open-response-textarea" aria-label="${esc(prompt)} / ${esc(promptEs)}"
                     data-min-length="${minLength}"
                     data-keywords="${esc(JSON.stringify(keywords))}"
+                    data-key-numbers="${esc(JSON.stringify(keyNumbers))}"
                     placeholder="Write your mathematical explanation here..."
                     oninput="saveState(); updateProgress();"></textarea>
           <span class="feedback-badge"></span>
@@ -1029,11 +1103,17 @@ function selectLessonInteractiveModel(config) {
       (a, b) => Number(b.kind === "line-grapher") - Number(a.kind === "line-grapher"),
     );
   for (const candidate of candidates) {
+    /* A model with no title of its own takes the TOOL's catalogued name
+       ("Powers & Exponents Lab"), not the lesson title: the lesson title was
+       printed a second time as the Touch & Try heading right under the hero. */
+    const meta = toolMeta(candidate);
     const candidateTitle =
       candidate.title ||
       (candidate.kind === "fraction-divide"
         ? "Fraction Division Visualizer & Lab"
-        : lessonTitle || "Interactive Lesson Model");
+        : meta.catalogued
+          ? meta.name
+          : lessonTitle || "Interactive Lesson Model");
     const html = interactiveVisualHost(candidate, {
       ariaLabel: `Interactive ${candidateTitle}`,
       fallback: "Turn on JavaScript to use the interactive lesson model.",
@@ -1043,6 +1123,8 @@ function selectLessonInteractiveModel(config) {
         kind: candidate.kind,
         manip: candidate.manip,
         title: candidateTitle,
+        titleEs: !candidate.title && meta.catalogued ? meta.nameEs : "",
+        purposeEs: meta.purposeEs,
         html,
       };
     }
@@ -1051,6 +1133,7 @@ function selectLessonInteractiveModel(config) {
 }
 
 function generateHtml(lessonId, config) {
+  familyTipsShown = new Set();
   config.lessonId = config.lessonId || lessonId;
   config.id = config.id || lessonId;
   /* A `-part2` config titles itself "2.1 · Part II" — the label the lesson page
@@ -1133,6 +1216,21 @@ function generateHtml(lessonId, config) {
   );
   const helpModalHtml = renderHelpModal();
   const refrigeratorSheetHtml = renderRefrigeratorSheet(config, lessonId);
+  const answerSheetHtml = renderAnswerSheet(
+    [
+      ...warmup.map((it, i) => ({
+        it,
+        labelEn: `Warm-up ${i + 1}`,
+        labelEs: `Calentamiento ${i + 1}`,
+      })),
+      ...challenge.map((it, i) => ({
+        it,
+        labelEn: `Level up ${i + 1}`,
+        labelEs: `Sube de nivel ${i + 1}`,
+      })),
+    ],
+    title,
+  );
 
   return `<!doctype html>
 <html lang="en">
@@ -1181,7 +1279,9 @@ ${EDITORIAL_FONT_IMPORT}
   --shadow-sm: 0 4px 12px rgba(18, 53, 91, 0.02);
 }
 
+/*hw-theme:begin*/
 ${themeCss}
+/*hw-theme:end*/
 
 /* Save/Resume normally adds a shortcut to the site-wide workbench. Family
    homework owns a stricter contract: only the lesson-matched manipulative may
@@ -1779,6 +1879,21 @@ header.homework-header h1 {
   font-weight: 700;
   color: var(--success);
 }
+.hw-answer-sheet { display: none; }
+@media print {
+  body.print-answer-sheet > *:not(.hw-answer-sheet) { display: none !important; }
+  body.print-answer-sheet .hw-answer-sheet { display: block !important; font-size: 12pt; color: #000; }
+  body.print-answer-sheet .hw-answer-sheet h2 { font-size: 16pt; margin: 0 0 6pt; }
+  body.print-answer-sheet .hw-answer-sheet ol > li { margin: 0 0 8pt; break-inside: avoid; }
+  body.print-answer-sheet .hw-answer-sheet ul { margin: 2pt 0 0; padding-left: 16pt; }
+}
+
+.hw-answer-key-try {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
 .hw-answer-key-lines {
   margin: 0;
   padding-left: 20px;
@@ -1821,6 +1936,16 @@ header.homework-header h1 {
   background: var(--error-bg);
   border-color: var(--error);
   color: var(--error);
+}
+
+.problem-check-result.is-reviewed {
+  background: #eef4fb;
+  border-color: #6b8db5;
+  color: #1e3a5f;
+}
+
+.problem-section.reviewed {
+  border-color: #6b8db5;
 }
 
 .problem-check-result.is-hint {
@@ -2155,6 +2280,14 @@ header.homework-header h1 {
   gap: 8px;
 }
 
+/* Phones: a long answer option sized the select past the card (9-4 scrolled
+   sideways). Stack the term over its picker and let the picker shrink. */
+@media (max-width: 640px) {
+  .matching-row { flex-direction: column; align-items: stretch; gap: 8px; }
+  .matching-select-container { min-width: 0; }
+  .matching-select { flex: 1 1 auto; min-width: 0; max-width: 100%; }
+}
+
 /* Drag Sort Layout */
 .drag-sort-workspace {
   display: flex;
@@ -2194,6 +2327,15 @@ header.homework-header h1 {
   flex-direction: column;
   gap: 8px;
   min-height: 100px;
+}
+
+/* Phones sort with the "Move to…" menu, so an empty column only needs room
+   for its heading and the first card; 160px of dashed space per column added
+   a screen of scrolling to every sort problem. */
+@media (max-width: 640px) {
+  .drag-column { min-height: 0; padding: 10px; }
+  .drag-column-header { margin-bottom: 6px; }
+  .drag-column-slots { min-height: 44px; }
 }
 
 .drag-source-section {
@@ -2373,6 +2515,19 @@ header.homework-header h1 {
     font-size: 13px;
     padding: 6px 8px;
   }
+  /* A short card ("2⁵", "7 × 7") fits beside its picker. Stacking those made
+     each card 137px and a six-card sort ~900px of scrolling. Long statements
+     keep the stacked layout above. */
+  .drag-card.drag-card--short {
+    flex-wrap: nowrap;
+    align-items: center;
+    padding: 6px 10px;
+  }
+  .drag-card.drag-card--short .card-text { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+  .drag-card.drag-card--short .mobile-cat-select {
+    flex: 0 0 8.5em;
+    margin: 0;
+  }
 }
 
 /* Fill Table */
@@ -2416,6 +2571,46 @@ header.homework-header h1 {
 
 .fill-table tr:nth-child(even) td {
   background: var(--cream);
+}
+
+.fill-cell-label {
+  display: none;
+}
+
+.hw-workspace-toggle {
+  margin-top: 12px;
+}
+.hw-workspace-toggle > summary {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 6px 14px;
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--navy);
+  list-style: none;
+}
+.hw-workspace-toggle > summary::-webkit-details-marker { display: none; }
+.hw-workspace-toggle[open] > summary { border-style: solid; margin-bottom: 8px; }
+
+/* Phones: the 560px table scrolled sideways inside a 275px box, so the column
+   a student fills in (Value, Answer) sat off-screen with nothing saying it was
+   there (audit 2026-10-04: 60 tables on 43 pages). Under 640px every row is a
+   card and every cell carries its own heading, so nothing needs scrolling. */
+@media (max-width: 640px) {
+  .table-responsive { overflow-x: visible; border: 0; }
+  .fill-table { min-width: 0; border: 0; background: transparent; }
+  .fill-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .fill-table, .fill-table tbody, .fill-table tr, .fill-table td { display: block; width: 100%; box-sizing: border-box; }
+  .fill-table tr { margin: 0 0 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--white); overflow: hidden; }
+  .fill-table tr:nth-child(even) td { background: transparent; }
+  .fill-table th, .fill-table td { border: 0; border-bottom: 1px solid var(--line); padding: 8px 12px; word-break: normal; overflow-wrap: anywhere; }
+  .fill-table td:last-child { border-bottom: 0; }
+  .fill-cell-label { display: block; font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; text-transform: uppercase; color: var(--navy); margin-bottom: 3px; }
+  .table-input { max-width: none; width: 100%; }
 }
 
 .table-input-wrapper {
@@ -2549,21 +2744,33 @@ header.homework-header h1 {
   color: var(--hint);
 }
 
+/* The starter is the most useful line in the card, so it reads at the
+   question's size: it was a small italic underlined button that was hard to
+   read on a phone. */
 .sentence-frame-text {
-  font-style: italic;
-  font-weight: 700;
-  color: var(--navy);
+  display: block;
+  width: 100%;
+  font: inherit;
+  font-size: 15.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: left;
+  color: var(--ink, #1f2937);
+  background: var(--white);
+  border: 1.5px solid var(--amber);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
   cursor: pointer;
-  text-decoration: underline dotted var(--navy);
 }
 
-.sentence-frame-text:hover {
-  color: var(--teal);
-  text-decoration: underline dotted var(--teal);
+.sentence-frame-text:hover,
+.sentence-frame-text:focus-visible {
+  border-color: var(--navy);
+  outline: none;
 }
 
 .click-to-insert-hint {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
 }
 
@@ -3447,6 +3654,7 @@ body {
 </div>
 
 ${helpModalHtml}
+${answerSheetHtml}
 
 ${renderMathKeypad()}
 
@@ -3487,6 +3695,7 @@ window.LESSON_TITLE = "${escAttr(title)}";
 window.HW_CORE_COUNT = ${coreSelected.length};
 window.__HW_VOCAB__ = ${vocabGlossary ? jsonForScript(vocabGlossary.entries) : "[]"};
 window.__HW_VOCAB_MATCH__ = ${vocabGlossary ? jsonForScript(vocabGlossary.match) : "null"};
+/*hw-shared-js:begin*/
 ${HOMEWORK_TABS_JS}
 ${HOMEWORK_GAME_JS}
 ${VISUAL_LABS_JS}
@@ -3946,10 +4155,18 @@ function triggerHighFive() {
 }
 
 function updateCelebrationTab() {
+  // Read from the Done stop, so the Check panel itself is hidden: only a
+  // hidden ancestor OTHER than a tab panel (the route's unused tier) excludes.
+  const hiddenBelowPanel = (el) => {
+    for (let n = el; n && !n.matches("[data-tab-panel]"); n = n.parentElement) {
+      if (n.hidden) return true;
+    }
+    return false;
+  };
   const problems = Array.from(document.querySelectorAll(".problem-section")).filter(
-    (s) => !s.closest(".more-practice") && !s.hidden && !s.closest("[hidden]"),
+    (s) => !s.closest(".more-practice") && !hiddenBelowPanel(s),
   );
-  const correctCount = problems.filter((s) => s.classList.contains("correct")).length;
+  const correctCount = problems.filter((s) => s.classList.contains("correct") || s.classList.contains("reviewed")).length;
   const practiceGoal = Math.min(
     3,
     typeof activeHomeworkRoute === "function" ? activeHomeworkRoute().problemLimit : 3,
@@ -3962,7 +4179,27 @@ function updateCelebrationTab() {
   const bMission = document.getElementById("badge_achieve_mission");
 
   if (bLearn) bLearn.classList.add("is-unlocked");
-  if (bArcade) bArcade.classList.add("is-unlocked");
+  // Game Master is earned on the Play stop, not handed out on arrival.
+  try {
+    const journey = JSON.parse(localStorage.getItem("hw_journey_" + (window.LESSON_ID || location.pathname)) || "{}");
+    if (bArcade && journey.play) bArcade.classList.add("is-unlocked");
+  } catch (e) {}
+
+  /* Say how much is actually done. "Finished for today" and a badge shelf
+     appeared at 2/6 exactly as at 6/6. */
+  const summary = document.getElementById("hw_done_summary");
+  if (summary) {
+    const total = problems.length;
+    const left = total - correctCount;
+    if (total && left <= 0) {
+      summary.className = "done-summary is-complete";
+      summary.innerHTML = '<span class="lang-en">✓ All ' + total + ' problems checked. Great work tonight!</span><span class="lang-es" lang="es">✓ Revisaste los ' + total + ' problemas. ¡Buen trabajo hoy!</span>';
+    } else if (total) {
+      summary.className = "done-summary is-partial";
+      summary.innerHTML = '<span class="lang-en">You checked ' + correctCount + ' of ' + total + ' problems. ' + left + ' left to finish.</span><span class="lang-es" lang="es">Revisaste ' + correctCount + ' de ' + total + ' problemas. Faltan ' + left + '.</span>' +
+        '<br><button type="button" class="btn btn-secondary" onclick="switchHomeworkTab(&#39;check&#39;)"><span class="lang-en">Back to the problems</span><span class="lang-es" lang="es">Volver a los problemas</span></button>';
+    }
+  }
   if (bPractice && correctCount >= practiceGoal) bPractice.classList.add("is-unlocked");
   try {
     if (bVocab && localStorage.getItem(STORAGE_KEY + "_vocab_won")) {
@@ -4196,7 +4433,7 @@ function resetDragOrder(probIdx) {
     restoreOrderList(probIdx, initial);
   }
   const pCard = document.getElementById("problem_" + probIdx);
-  if (pCard) pCard.classList.remove("correct", "incorrect");
+  if (pCard) pCard.classList.remove("correct", "incorrect", "reviewed");
 }
 
 function shuffleOrderRows(probIdx) {
@@ -4253,7 +4490,7 @@ function resetDragSort(probIdx) {
   });
 
   const pCard = document.getElementById("problem_" + probIdx);
-  if (pCard) pCard.classList.remove("correct", "incorrect");
+  if (pCard) pCard.classList.remove("correct", "incorrect", "reviewed");
 }
 
 // Open Response Word chip inserters
@@ -4295,7 +4532,7 @@ function insertSentenceStarter(probIdx, starter) {
 }
 
 // State Persistence (localStorage)
-const STORAGE_KEY = "hw_state_lesson_" + ${JSON.stringify(lessonId)};
+const STORAGE_KEY = "hw_state_lesson_" + window.LESSON_ID;
 
 function saveState() {
   const state = {
@@ -4357,6 +4594,9 @@ function loadState() {
         }
       }
     }
+
+    // Restored ladder choices answer back again.
+    document.querySelectorAll(".ladder-choices input:checked").forEach((i) => checkLadderChoice(i, true));
 
     if (state.studentName) {
       const studentNameInput = document.getElementById("student_name_input");
@@ -4546,6 +4786,41 @@ function pickLangText(en, es) {
 }
 
 
+/* A workspace with saved work reopens; printing opens them all so paper
+   still has room to work. */
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(() => {
+    document.querySelectorAll(".hw-workspace-toggle").forEach((d) => {
+      const work = d.querySelector(".hw-work-input");
+      const graph = d.querySelector("[data-graph-state]");
+      if ((work && work.value.trim()) || (graph && graph.value)) d.open = true;
+    });
+  }, 0);
+});
+window.addEventListener("beforeprint", () => {
+  document.querySelectorAll(".hw-workspace-toggle").forEach((d) => { d.open = true; });
+});
+
+/* Try Together ladder: a tapped choice answers back at once — green with the
+   explanation when right, the authored reason for THAT mistake when not. */
+function checkLadderChoice(input, silent) {
+  const item = input.closest(".ladder-item");
+  if (!item) return;
+  const fbEl = item.querySelector(".ladder-feedback");
+  item.querySelectorAll(".ladder-choice").forEach((l) => l.classList.remove("is-correct", "is-incorrect"));
+  const right = input.dataset.correct === "true";
+  input.closest(".ladder-choice")?.classList.add(right ? "is-correct" : "is-incorrect");
+  if (fbEl) {
+    const why = pickLangText(input.dataset.fb, input.dataset.fbEs);
+    fbEl.className = "ladder-feedback " + (right ? "is-correct" : "is-incorrect");
+    fbEl.textContent = right
+      ? [pickLangText("✓ Yes!", "✓ ¡Sí!"), why].filter(Boolean).join(" ")
+      : [pickLangText("Not quite.", "Todavía no."), why || pickLangText("Try another choice.", "Prueba otra opción.")].join(" ");
+  }
+  if (!silent) saveState();
+}
+
+
 function translateProblemOptions() {
   const es = document.body.classList.contains("lang-mode-es");
   document.querySelectorAll("option[data-text-en]").forEach(option => { option.textContent = es ? option.dataset.textEs : option.dataset.textEn; });
@@ -4585,10 +4860,10 @@ window.speakHomeworkText = speakBigIdea;
 // Math Talk Prompt Spinner
 const mathTalkList = [
   {
-    qEn: "Can you show me how you see that in the picture above?",
-    qEs: "¿Puedes mostrarme cómo ves eso en el dibujo de arriba?",
-    fEn: "Follow-up: Point to where the numbers match the visual model.",
-    fEs: "Seguimiento: Señala dónde los números coinciden con el modelo visual.",
+    qEn: "Can you show me how you see that in your work or a quick sketch?",
+    qEs: "¿Puedes mostrarme cómo ves eso en tu trabajo o en un dibujo rápido?",
+    fEn: "Follow-up: Point to where each number from the problem shows up.",
+    fEs: "Seguimiento: Señala dónde aparece cada número del problema.",
   },
   {
     qEn: "What would happen if we doubled the numbers in this problem?",
@@ -4863,9 +5138,10 @@ function checkProblem(idx, options) {
 
   const type = section.dataset.problemType;
   let isProblemCorrect = true;
+  let reviewOnly = false;
   let feedbackMessage = "";
 
-  section.classList.remove("correct", "incorrect");
+  section.classList.remove("correct", "incorrect", "reviewed");
   const explanationBoxes = section.querySelectorAll(".explanation-box, .visual-explanation-card");
   explanationBoxes.forEach((b) => b.remove());
 
@@ -5162,28 +5438,30 @@ function checkProblem(idx, options) {
       const minLen = parseInt(textarea.dataset.minLength) || 15;
       const text = textarea.value.trim();
 
-      // A vocabulary match cannot assess the reasoning or the language a
-      // student chooses. Record a substantial response for self-review.
-      const hasLength = text.length >= minLen;
-      if (hasLength) {
-        textarea.classList.add("is-correct");
-        badge.classList.add("success-check");
+      /* A written explanation cannot be marked right by a script. It used to
+         turn green and count as correct for ANY 15+ characters — a long wrong
+         answer ("12 because you add 2 six times") scored 2/6. Now a long
+         enough answer is SAVED for review: neutral colour, the answer key
+         opens beside it, and the only thing claimed is whether the key result
+         appears in what the student wrote. */
+      if (text.length >= minLen) {
+        reviewOnly = true;
+        let keyNumbers = [];
+        try { keyNumbers = JSON.parse(textarea.dataset.keyNumbers || "[]"); } catch (e) {}
+        const said = (text.replace(/,/g, "").match(/-?\\d+(?:\\.\\d+)?/g) || []);
+        const hit = keyNumbers.find((n) => said.includes(n));
+        feedbackMessage = !keyNumbers.length
+          ? pickLangText("Saved. Now open the answer key below and compare your reasoning with it.", "Guardado. Ahora abre la clave de respuestas y compara tu razonamiento.")
+          : hit
+            ? pickLangText("Saved. Your answer includes " + hit + " — compare your reasoning with the answer key below.", "Guardado. Tu respuesta incluye " + hit + ": compara tu razonamiento con la clave de abajo.")
+            : pickLangText("Saved, but the key result is not in your answer yet. Check your numbers against the answer key below.", "Guardado, pero el resultado clave todavía no aparece. Revisa tus números con la clave de abajo.");
+        const key = section.querySelector(".hw-answer-key");
+        if (key && !silent) key.open = true;
       } else {
         isProblemCorrect = false;
         textarea.classList.add("is-incorrect");
         badge.classList.add("error-cross");
-
-        // Add helpful dynamic guidance if they failed checking
-        const msg = pickLangText("Write a bit more to explain your reasoning.", "Escribe un poco más para explicar tu razonamiento.");
-
-        const expDiv = document.createElement("div");
-        expDiv.className = "explanation-box";
-        expDiv.style.backgroundColor = "var(--error-bg)";
-        expDiv.style.borderColor = "var(--error)";
-        expDiv.style.color = "var(--error)";
-        expDiv.textContent = pickLangText("Hint: ", "Pista: ") + msg;
-        textarea.parentElement.parentElement.appendChild(expDiv);
-        feedbackMessage = msg;
+        feedbackMessage = pickLangText("Write a bit more to explain your reasoning.", "Escribe un poco más para explicar tu razonamiento.");
       }
     }
 
@@ -5247,6 +5525,13 @@ function checkProblem(idx, options) {
     }
   }
 
+  if (reviewOnly) {
+    section.classList.add("reviewed");
+    setProblemCheckResult(idx, true, feedbackMessage, "is-reviewed");
+    if (!silent) updateScoreSummary();
+    return { correct: false, done: true, message: feedbackMessage };
+  }
+
   if (isProblemCorrect) {
     section.classList.add("correct");
     currentStreak++;
@@ -5284,8 +5569,9 @@ function checkProblem(idx, options) {
 
 function updateScoreSummary() {
   const problems = activeCoreProblems();
-  const checked = problems.filter((s) => s.classList.contains("correct") || s.classList.contains("incorrect"));
-  const correctCount = problems.filter((s) => s.classList.contains("correct")).length;
+  const checked = problems.filter((s) => s.classList.contains("correct") || s.classList.contains("incorrect") || s.classList.contains("reviewed"));
+  // "Done" = checked right, or a written answer saved and compared with the key.
+  const correctCount = problems.filter((s) => s.classList.contains("correct") || s.classList.contains("reviewed")).length;
   const total = problems.length;
   if (checked.length > 0) {
     document.getElementById("progress_text").textContent = correctCount + " / " + total;
@@ -5315,7 +5601,7 @@ function checkWorksheet() {
     const idx = parseInt((section.id || "").replace("problem_", ""), 10);
     if (Number.isNaN(idx)) return;
     const result = checkProblem(idx, { silent: true });
-    if (result.correct) correctCount++;
+    if (result.correct || result.done) correctCount++;
   });
 
   const total = problems.length;
@@ -5364,8 +5650,9 @@ function resetWorksheet() {
     const radios = document.querySelectorAll("input[type='radio']");
     radios.forEach(r => r.checked = false);
 
-    const labels = document.querySelectorAll(".mc-option-label");
+    const labels = document.querySelectorAll(".mc-option-label, .ladder-choice");
     labels.forEach(l => l.classList.remove("is-correct", "is-incorrect"));
+    document.querySelectorAll(".ladder-feedback").forEach((el) => { el.textContent = ""; el.className = "ladder-feedback"; });
 
     // Clear feedback badges and sections
     const badges = document.querySelectorAll(".feedback-badge");
@@ -5378,7 +5665,7 @@ function resetWorksheet() {
     });
 
     sections.forEach(s => {
-      s.classList.remove("correct", "incorrect");
+      s.classList.remove("correct", "incorrect", "reviewed");
       const expBoxes = s.querySelectorAll(".explanation-box");
       expBoxes.forEach(b => b.remove());
 
@@ -5873,10 +6160,13 @@ function main() {
   let count = 0;
 
   const staleHomework = [];
+  const sharedFiles = {};
   for (const { id, config } of lessons) {
     const homeworkHtml = localizeBilingualLabels(generateHtml(id, config));
     const lessonPath = join(lessonsDir, id, "homework.html");
-    const normalizedHtml = `${homeworkHtml.replace(/[ \t]+$/gm, "").trimEnd()}\n`;
+    const split = externalizeSharedCode(`${homeworkHtml.replace(/[ \t]+$/gm, "").trimEnd()}\n`);
+    Object.assign(sharedFiles, split.files);
+    const normalizedHtml = split.html;
     // --check: report drift, write nothing. This page does NOT run in
     // `npm run build`, so it rots whenever a config field it renders is added
     // later — which is exactly how 18 pages ended up missing the vocabulary
@@ -5896,6 +6186,8 @@ function main() {
     count++;
   }
 
+  if (CHECK) staleHomework.push(...staleSharedFiles(root, sharedFiles));
+  else writeSharedFiles(root, sharedFiles);
   if (CHECK) {
     if (staleHomework.length) {
       console.error(
@@ -5908,7 +6200,9 @@ function main() {
     console.log(`Homework pages up to date (${lessons.length} lessons).`);
     return;
   }
-  console.log(`Successfully generated ${count} interactive homework HTML files.`);
+  console.log(
+    `Successfully generated ${count} interactive homework HTML files (${Object.keys(sharedFiles).length} shared files in assets/homework/).`,
+  );
 }
 
 main();

@@ -16,6 +16,7 @@ import {
 const root = join(import.meta.dirname, "..");
 
 import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
+import { inlineSharedFromDisk } from "./lib/homework-shared-assets.mjs";
 
 /* THE SUBJECT IS EVERY PAGE THAT EXISTS, not every page whose name was
    anticipated. This used to be `/^(\d+)-(\d+)(-flagship)?$/`, and a name-shaped
@@ -172,7 +173,15 @@ function loadLessons() {
           ...(config.familyNotes || {}),
         };
       }
-      return { id, config, html: readFileSync(join(lessonsDir, id, "homework.html"), "utf8") };
+      // Audited as the browser assembles it: page + /assets/homework/ shared files.
+      return {
+        id,
+        config,
+        html: inlineSharedFromDisk(
+          join(lessonsDir, ".."),
+          readFileSync(join(lessonsDir, id, "homework.html"), "utf8"),
+        ),
+      };
     });
 }
 

@@ -500,7 +500,7 @@
    * here instead. tools/validate-download-manifest.mjs pins this ?v= to the
    * file's content hash, exactly as it pins the shim's copy.
    */
-  const DOWNLOADER_URL = "/assets/curriculum-download.js?v=ab774a8a";
+  const DOWNLOADER_URL = "/assets/curriculum-download.js?v=2a2b096e";
   let downloaderPromise = null;
   const loadDownloader = () => {
     if (window.NTCurriculumDownload) return Promise.resolve();
