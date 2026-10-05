@@ -7677,17 +7677,14 @@ export function renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt) {
       ${gameHtml}
       <div class="vocab-toolbar">
         <div class="vocab-filter-group" role="radiogroup" aria-label="Filter vocabulary cards">
-          <button type="button" class="btn btn-sm btn-filter is-active" data-filter="all" onclick="filterVocabCards('all', this)"><span class="lang-en">All</span><span class="lang-es" lang="es">Todos</span></button>
-          <button type="button" class="btn btn-sm btn-filter" data-filter="review" onclick="filterVocabCards('review', this)"><span class="lang-en">Needs Review</span><span class="lang-es" lang="es">Por repasar</span></button>
+          <button type="button" class="btn btn-sm btn-filter is-active" data-filter="all" onclick="filterVocabCards('all', this)"><span class="lang-en">All words</span><span class="lang-es" lang="es">Todas</span></button>
+          <button type="button" class="btn btn-sm btn-filter" data-filter="review" onclick="filterVocabCards('review', this)"><span class="lang-en">Needs review</span><span class="lang-es" lang="es">Por repasar</span></button>
           <button type="button" class="btn btn-sm btn-filter" data-filter="mastered" onclick="filterVocabCards('mastered', this)">⭐ <span class="lang-en">Mastered</span><span class="lang-es" lang="es">Dominadas</span></button>
-        </div>
-        <div class="vocab-speed-toggle">
-          <button type="button" class="btn btn-sm btn-secondary" id="vocab_speed_btn" onclick="toggleVocabSpeed()" title="Toggle voice speed / Cambiar velocidad">🐢 <span id="vocab_speed_label">Normal</span></button>
         </div>
       </div>
       <p class="vocab-family-note bilingual-block">
-        <span class="lang-en">Tap a card to flip. Use these words when you talk about the math together.</span>
-        <span class="lang-es" lang="es">Toquen una tarjeta para voltearla. Usen estas palabras cuando hablen de la matemática juntos.</span>
+        <span class="lang-en">Tap any card to flip and explore its definition and example.</span>
+        <span class="lang-es" lang="es">Toca cualquier tarjeta para voltearla y explorar su definición y ejemplo.</span>
       </p>
       <div class="vocab-container">
         ${vocabList
@@ -7700,28 +7697,51 @@ export function renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt) {
             const imgSrc = resolveVocabImage(term, v.image);
             const imgAlt = vocabImageAlt(term, definition);
             return `
-            <div class="vocab-card" id="vocab_card_${vIdx}" onclick="this.classList.toggle('flipped')">
+            <div class="vocab-card" id="vocab_card_${vIdx}" onclick="this.classList.toggle('flipped')" role="button" tabindex="0" aria-label="${escAttr(term)} flashcard. Tap to flip." onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped');}">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
                   <div class="vocab-card-top-bar">
-                    <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord('${escAttr(term)}', '${escAttr(termEs)}')" title="Listen / Escuchar" aria-label="Pronounce ${esc(term)}">🔊</button>
-                    <button type="button" class="vocab-master-toggle" data-term-idx="${vIdx}" onclick="event.stopPropagation(); toggleVocabCardMastery(${vIdx})" title="Mark Mastered / Marcar Dominado" aria-label="Mark ${esc(term)} mastered">★</button>
+                    <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord('${escAttr(term)}', '${escAttr(termEs)}')" title="Listen / Escuchar" aria-label="Pronounce ${esc(term)}">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
+                    <button type="button" class="vocab-master-toggle" data-term-idx="${vIdx}" onclick="event.stopPropagation(); toggleVocabCardMastery(${vIdx})" title="Mark Mastered / Marcar Dominado" aria-label="Mark ${esc(term)} mastered">★ <span class="vocab-btn-label lang-en">Mastered</span><span class="vocab-btn-label lang-es" lang="es">Dominada</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="${esc(imgSrc)}" alt="${esc(imgAlt)}" loading="lazy" width="72" height="72" />
+                    <img class="vocab-thumb" src="${esc(imgSrc)}" alt="${esc(imgAlt)}" loading="lazy" width="76" height="76" />
                   </div>
-                  <h3>${esc(term)}</h3>
-                  ${termEs ? `<p class="vocab-es" lang="es">${esc(termEs)}</p>` : ""}
-                  ${visual ? `<div class="vocab-visual-hint">💡 ${esc(visual)}</div>` : ""}
-                  <div class="flip-prompt">Tap / Toca ➔</div>
+                  <div class="vocab-front-body">
+                    <h3 class="vocab-term term-text">
+                      <span class="lang-en">${esc(term)}</span>
+                      <span class="lang-es" lang="es">${esc(termEs || term)}</span>
+                    </h3>
+                    ${termEs ? `<p class="vocab-es" lang="es">${esc(termEs)}</p>` : ""}
+                    ${visual ? `<div class="vocab-visual-hint">💡 ${esc(visual)}</div>` : ""}
+                  </div>
+                  <div class="flip-prompt" aria-hidden="true">
+                    <span class="flip-icon">↻</span>
+                    <span class="lang-en">Tap to see definition</span>
+                    <span class="lang-es" lang="es">Toca para ver definición</span>
+                  </div>
                 </div>
                 <div class="vocab-card-back">
-                  <p class="vocab-def">${esc(definition)}</p>
-                  ${definitionEs ? `<p class="vocab-def-es" lang="es">${esc(definitionEs)}</p>` : ""}
-                  ${visual ? `<p class="vocab-back-visual">📌 ${esc(visual)}</p>` : ""}
+                  <div class="vocab-back-header">
+                    <span class="vocab-back-badge">DEFINITION / DEFINICIÓN</span>
+                    <h4 class="vocab-back-term">
+                      <span class="lang-en">${esc(term)}</span>
+                      <span class="lang-es" lang="es">${esc(termEs || term)}</span>
+                    </h4>
+                    ${termEs ? `<p class="vocab-back-term-es" lang="es">${esc(termEs)}</p>` : ""}
+                  </div>
+                  <div class="vocab-back-content">
+                    <p class="vocab-def">${esc(definition)}</p>
+                    ${definitionEs ? `<p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> ${esc(definitionEs)}</p>` : ""}
+                    ${visual ? `<div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>${esc(visual)}</span></div>` : ""}
+                  </div>
                   <div class="vocab-card-back-actions">
-                    <button type="button" class="btn btn-sm btn-outline-success" onclick="event.stopPropagation(); markVocabCardKnown(${vIdx}, true)"><span class="lang-en">Got it! 👍</span><span class="lang-es" lang="es">¡Lo sé! 👍</span></button>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); markVocabCardKnown(${vIdx}, false)"><span class="lang-en">Review 🔄</span><span class="lang-es" lang="es">Repasar 🔄</span></button>
+                    <button type="button" class="btn btn-sm vocab-btn-gotit" onclick="event.stopPropagation(); markVocabCardKnown(${vIdx}, true)"><span class="lang-en">Got it! 👍</span><span class="lang-es" lang="es">¡Lo sé! 👍</span></button>
+                    <button type="button" class="btn btn-sm vocab-btn-review" onclick="event.stopPropagation(); markVocabCardKnown(${vIdx}, false)"><span class="lang-en">Review 🔄</span><span class="lang-es" lang="es">Repasar 🔄</span></button>
+                  </div>
+                  <div class="flip-back-prompt" aria-hidden="true">
+                    <span class="lang-en">Tap anywhere to flip back ↺</span>
+                    <span class="lang-es" lang="es">Toca para voltear ↺</span>
                   </div>
                 </div>
               </div>
@@ -12706,35 +12726,46 @@ body.lang-mode-es .bilingual-grid {
   align-items: center;
   width: 100%;
   margin-bottom: 6px;
+  position: relative;
+  z-index: 2;
 }
 .vocab-speak-btn, .vocab-master-toggle {
-  background: rgba(18, 53, 91, 0.06);
-  border: none;
-  border-radius: 50%;
-  width: 26px;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: rgba(18, 53, 91, 0.05);
+  border: 1px solid rgba(18, 53, 91, 0.12);
+  border-radius: 999px;
+  padding: 5px 11px;
   font-size: 12px;
+  font-weight: 700;
+  color: var(--navy, #12355b);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.15s ease;
+  transition: all 0.15s ease;
+  line-height: 1;
 }
-.vocab-speak-btn:hover { background: var(--teal-light); transform: scale(1.1); }
-.vocab-master-toggle:hover { transform: scale(1.1); }
+.vocab-speak-btn:hover {
+  background: #e6fffa;
+  border-color: #1fa6a2;
+  color: #0d766e;
+  transform: scale(1.03);
+}
+.vocab-master-toggle:hover {
+  background: rgba(18, 53, 91, 0.09);
+  transform: scale(1.03);
+}
 .vocab-master-toggle.is-mastered {
-  color: #f59e0b;
+  color: #b45309;
   background: #fef3c7;
+  border-color: #f59e0b;
 }
 .vocab-card-back-actions {
-  margin-top: 12px;
+  margin-top: 8px;
   display: flex;
-  gap: 8px;
+  gap: 10px;
   justify-content: center;
-}
-.vocab-card-back-actions .btn {
-  font-size: 11px;
-  padding: 4px 10px;
+  position: relative;
+  z-index: 2;
 }
 
 /* Skill Power-Up Challenge */

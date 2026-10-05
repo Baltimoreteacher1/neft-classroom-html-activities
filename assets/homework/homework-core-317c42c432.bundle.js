@@ -3761,8 +3761,10 @@ function loadState() {
       }
       document.querySelectorAll(".vocab-master-toggle").forEach((btn) => {
         const idx = btn.dataset.termIdx;
-        if (localStorage.getItem(STORAGE_KEY + "_vocab_mastered_" + idx) === "1") {
+        if (localStorage.getItem(STORAGE_KEY + "_vocab_mastered_" + idx) === "1" || localStorage.getItem(STORAGE_KEY + "_vocab_known_" + idx) === "1") {
           btn.classList.add("is-mastered");
+          const card = document.getElementById("vocab_card_" + idx);
+          if (card) card.classList.add("is-known");
         }
       });
     } catch(e) {}
