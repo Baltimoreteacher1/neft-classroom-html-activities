@@ -111,7 +111,7 @@ export function renderExtraHelp(
 ${units}
 <footer class="eh-footer"><p>Lesson names and order: Reveal Math Grade 6, Volumes 1–2, table of contents. Help and practice resources: EduWonderLab.</p><a href="/curriculum/">Back to curriculum</a></footer>
 </main></body></html>`,
-    "",
+    "help",
   );
 }
 

@@ -9,7 +9,7 @@ for (const [file, active] of shellPages) {
   assert.equal(withCurriculumShell(html, active), html, `${file}: shared shell is deterministic`);
   const doc = new JSDOM(html).window.document;
   assert.equal(doc.querySelectorAll("nav.ewl-course-nav").length, 1);
-  assert.equal(doc.querySelectorAll(".ewl-course-nav li a").length, 6);
+  assert.equal(doc.querySelectorAll(".ewl-course-nav li a").length, 7);
   assert.equal(
     doc.querySelectorAll('.ewl-course-nav [aria-current="page"]').length,
     active ? 1 : 0,

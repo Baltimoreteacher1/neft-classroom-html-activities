@@ -54,13 +54,13 @@ assert.ok(
 );
 assert.ok(html.includes("<noscript>"), "No-JS browsing available");
 const hub = readFileSync(join(REPO_ROOT, "curriculum/index.html"), "utf8");
-assert.match(
-  hub,
-  /class="hub-extra-help-shortcut" href="\/curriculum\/extra-help\/">Extra Help<\/a>/,
-);
-assert.ok(
-  hub.indexOf("hub-extra-help-shortcut") < hub.indexOf('id="main-content"'),
-  "Shortcut at top",
+const hubDocument = new JSDOM(hub).window.document;
+const helpLink = hubDocument.querySelector('.ewl-course-nav a[href="/curriculum/extra-help/"]');
+assert.ok(helpLink, "Extra Help is in the top navigation");
+assert.equal(helpLink.closest("li").previousElementSibling.textContent, "Homework");
+assert.equal(
+  hubDocument.querySelectorAll('.hub-shortcuts a[href="/curriculum/extra-help/"]').length,
+  0,
 );
 const broken = structuredClone(manifest);
 broken.lessons = broken.lessons.filter((lesson) => lesson.id !== "3-2");
