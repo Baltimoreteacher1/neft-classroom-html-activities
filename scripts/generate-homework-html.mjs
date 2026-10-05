@@ -3592,6 +3592,8 @@ body {
   <meta property="og:url" content="https://eduwonderlab.com/lessons/${esc(lessonId)}/homework.html">
   <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
   <!-- enthead-injected:end -->
+  <script type="module" src="/assets/js/family-interactives.js"></script>
+  <link rel="stylesheet" href="/assets/css/modern-upgrade.css">
 </head>
 <body>
 
