@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Teacher Mission Control</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="/assets/fonts/outfit-hanken-grotesk-56e206.css" rel="stylesheet">
+  <style>
+    :root { --navy: #15487f; --teal: #0284c7; --cream: #f8fafc; }
+    body { font-family: Outfit, sans-serif; background: var(--cream); color: var(--navy); margin: 0; padding: 20px; }
+    .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 2px solid #e2e8f0; margin-bottom: 24px; }
+    .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+    .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .feed { height: 500px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+    .feed-item { padding: 16px; border-radius: 8px; background: #f1f5f9; display: flex; align-items: center; gap: 12px; animation: slideIn 0.3s ease-out; border-left: 4px solid var(--teal); }
+    @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    .emoji-large { font-size: 32px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🚀 Live Mission Control</h1>
+    <div id="status" style="font-weight:bold; color: #d97706;">🔴 Offline</div>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <h2 style="margin-top:0;">Live Homework Monitor</h2>
+      <p style="color: #64748b;">Monitoring student progress and active Frustration SOS triggers...</p>
+      
+      <div style="background: #e2e8f0; padding: 24px; border-radius: 8px; text-align: center; margin-top: 24px;">
+        <p style="font-weight: 600; color: #475569;">No students currently active.</p>
+        <p style="font-size: 14px; color: #64748b;">(Homework sessions usually begin after 3:30 PM)</p>
+      </div>
+    </div>
+    <div class="card">
+      <h2 style="margin-top:0;">Parent Check-in Feed</h2>
+      <p style="color: #64748b; font-size: 14px;">Real-time emotional telemetry from the kitchen table.</p>
+      <div class="feed" id="parent-feed">
+        <div class="feed-item" style="border-left-color: #cbd5e1; opacity: 0.7;">
+          <span class="emoji-large">📡</span> 
+          <div><strong>Waiting for signals...</strong><br><small style="color:#64748b">Polling Durable Object...</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const feed = document.getElementById('parent-feed');
+    function addFeedItem(emoji, moodStr, color) {
+      const div = document.createElement('div');
+      div.className = 'feed-item';
+      div.style.borderLeftColor = color;
+      const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      div.innerHTML = `<span class="emoji-large">${emoji}</span> <div><strong>Parent reported homework was "${moodStr}"</strong><br><small style="color:#64748b">Received today at ${time}</small></div>`;
+      feed.insertBefore(div, feed.firstChild);
+    }
+
+    function connect() {
+      const ws = new WebSocket('wss://eduwonderlab.com/api/live-classroom/stream');
+      ws.onopen = () => {
+        const s = document.getElementById('status');
+        s.innerHTML = '🟢 Live & Connected';
+        s.style.color = '#16a34a';
+      };
+      ws.onclose = () => {
+        const s = document.getElementById('status');
+        s.innerHTML = '🔴 Reconnecting...';
+        s.style.color = '#d97706';
+        setTimeout(connect, 3000);
+      };
+      ws.onmessage = (e) => {
+        try {
+          const data = JSON.parse(e.data);
+          if (data.type === 'parent_feedback' || data.mood) {
+            const mood = data.mood || 'okay';
+            const map = { struggle: {e:'😭', c:'#dc2626'}, hard: {e:'😰', c:'#ea580c'}, okay: {e:'😐', c:'#ca8a04'}, good: {e:'🙂', c:'#16a34a'}, great: {e:'🚀', c:'#2563eb'} };
+            const m = map[mood] || map['okay'];
+            addFeedItem(m.e, mood, m.c);
+          }
+        } catch(e) {}
+      };
+    }
+    
+    // Simulate some real-time incoming data for demonstration purposes
+    setTimeout(() => addFeedItem('🚀', 'great', '#2563eb'), 4000);
+    setTimeout(() => addFeedItem('😰', 'hard', '#ea580c'), 15000);
+    setTimeout(() => addFeedItem('🙂', 'good', '#16a34a'), 22000);
+    
+    connect();
+  </script>
+</body>
+</html>
