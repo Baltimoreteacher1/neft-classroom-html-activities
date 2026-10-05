@@ -3724,6 +3724,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/extra-help/",
+    title: "Extra Help — Reveal Math Unit & Lesson Index",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/family-connections/",
     title: "Family homework",
     category: "Hub",

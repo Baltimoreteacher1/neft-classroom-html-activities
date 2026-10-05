@@ -9,6 +9,7 @@ const destinations = [
 ];
 export const shellPages = new Map([
   ["curriculum/index.html", "home"],
+  ["curriculum/extra-help/index.html", ""],
   ["curriculum/units/index.html", "units"],
   ["curriculum/arcade/index.html", "games"],
   ["curriculum/projects/index.html", ""],
