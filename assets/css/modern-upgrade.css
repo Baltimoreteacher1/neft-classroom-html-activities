@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+/* 1. Typography */
+body {
+  font-family: 'Atkinson Hyperlegible', system-ui, -apple-system, sans-serif !important;
+}
+
+/* 2. Focus Mode Layout */
+.sheet {
+  box-shadow: 0 12px 48px rgba(18, 53, 91, 0.08) !important;
+  border-radius: 16px !important;
+  transition: all 0.3s ease;
+}
+@media (max-width: 760px) {
+  .sheet {
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 24px 16px !important;
+  }
+}
+
+/* 3. Smart Scaffolding Containers */
+.scaffold-box, .hint-box, .sentence-frame {
+  background-color: var(--teal-light, #dff2ee);
+  border-left: 4px solid var(--teal-ink, #0c6f6b);
+  border-radius: 0 8px 8px 0;
+  padding: 16px;
+  margin: 16px 0;
+  color: var(--ink, #21313f);
+}
+
+/* 4. Micro-Interactions */
+button, input, select, textarea, .print-btn {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease !important;
+}
+button:hover, .print-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+button:active, .print-btn:active {
+  transform: translateY(1px);
+}
+*:focus-visible {
+  outline: 3px solid var(--amber, #f2c15b) !important;
+  outline-offset: 2px !important;
+}
+
+/* 5. Native Dark Mode */
+@media (prefers-color-scheme: dark) {
+  html:root {
+    --cream: #0f172a !important;
+    --card: #1e293b !important;
+    --ink: #e2e8f0 !important;
+    --navy: #334155 !important;
+    --navy-light: #475569 !important;
+    --line: #334155 !important;
+    --muted: #94a3b8 !important;
+    --teal-light: #0f3a47 !important;
+    --teal-ink: #38bdf8 !important;
+    --hw-world-border: #334155 !important;
+  }
+  body {
+    background-color: var(--cream) !important;
+    color: var(--ink) !important;
+  }
+  .sheet {
+    background-color: var(--card) !important;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4) !important;
+  }
+  .topbar {
+    background-color: #020617 !important;
+  }
+  img {
+    opacity: 0.9;
+  }
+}
