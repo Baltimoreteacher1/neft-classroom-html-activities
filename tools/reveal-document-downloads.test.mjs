@@ -16,13 +16,13 @@ const resources = bulk.units.flatMap((unit) => [
   ...unit.lessons.flatMap((lesson) => lesson.resources),
 ]);
 const staticDom = new JSDOM(readFileSync(join(root, "curriculum/units/index.html"), "utf8"));
-assert.equal(manifest.sourceFileCount, 571);
-assert.equal(manifest.documents.length, 569);
+assert.equal(manifest.sourceFileCount, 1630);
+assert.equal(manifest.documents.length, 1630);
 assert.equal(
   manifest.documents.reduce((sum, doc) => sum + doc.sources.length, 0),
-  571,
+  1630,
 );
-assert.equal(new Set(manifest.documents.map((doc) => doc.url)).size, 569);
+assert.equal(new Set(manifest.documents.map((doc) => doc.url)).size, 1630);
 assert.equal(new Set(manifest.documents.map((doc) => doc.sourceLesson).filter(Boolean)).size, 54);
 for (const doc of manifest.documents) {
   const bytes = readFileSync(
@@ -55,7 +55,7 @@ for (const doc of manifest.documents) {
   }
 }
 const median = manifest.documents.filter((doc) => doc.sourceLesson === "2-6");
-assert.equal(median.length, 10);
+assert.equal(median.length, 29);
 assert.ok(median.every((doc) => doc.targetLesson === "2-3" && doc.filename.startsWith("2.6")));
 assert.equal(manifest.documents.filter((doc) => doc.targetLesson === "2-6").length, 0);
 staticDom.window.close();
@@ -77,25 +77,25 @@ select("3-4");
 await tick();
 assert.equal(preview.querySelectorAll("[data-reveal-documents]").length, 1);
 assert.equal(preview.firstElementChild.nextElementSibling.dataset.revealDocuments, "3-4");
-const practice = preview.querySelector('a[href$="3.4-session-1.docx"]');
+const practice = preview.querySelector('a[href$="3.4-session-1-practice-form-a.docx"]');
 assert.ok(practice);
-assert.equal(practice.download, "3.4 Session 1.docx");
+assert.equal(practice.download, "3.4 Session 1 Practice - Form A.docx");
 const teacher = preview.querySelector('a[href*="/teacher/"]');
 assert.ok(teacher.closest(".hub-teacher-only"));
 assert.ok(preview.querySelector('a[href$="3.4-homework-packet.pdf"]').hasAttribute("download"));
 select("2-3");
 await tick();
-assert.ok(preview.querySelector('a[href$="2.6-session-1.docx"]'));
+assert.ok(preview.querySelector('a[href$="2.6-session-1-practice-form-a.docx"]'));
 assert.equal(preview.querySelectorAll("[data-reveal-documents]").length, 1);
 select("2-6");
 await tick();
-assert.equal(preview.querySelector('a[href$="2.6-session-1.docx"]'), null);
+assert.equal(preview.querySelector('a[href$="2.6-session-1-practice-form-a.docx"]'), null);
 const launch = window.document.createElement("a");
 launch.target = "_blank";
-launch.href = "/lessons/3-4/downloads/reveal/3.4-session-1.docx";
+launch.href = "/lessons/3-4/downloads/reveal/3.4-session-1-practice-form-a.docx";
 window.document.body.appendChild(launch);
 await tick();
-assert.equal(launch.download, "3.4 Session 1.docx");
+assert.equal(launch.download, "3.4 Session 1 Practice - Form A.docx");
 assert.equal(launch.target, "");
 launch.href = "/lessons/3-4/";
 await tick();
