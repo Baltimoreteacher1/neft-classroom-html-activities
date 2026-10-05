@@ -489,6 +489,41 @@ header.homework-header,
     </section>
 
 
+
+        <div style="margin-top: 16px; padding: 12px; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px;">
+          <strong>🍳 AI Kitchen Math Generator</strong>
+          <p style="margin: 4px 0 8px; font-size: 14px; color:#15487f;">What are you making for dinner tonight?</p>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="kitchen-food-input" placeholder="e.g. Spaghetti, Tacos" style="flex:1; padding: 6px; border: 1px solid #ccc; border-radius: 4px; color:#0f172a;">
+            <button onclick="generateKitchenMath('4.2 · Part II')" style="background:#0284c7; color:white; border:none; padding: 6px 12px; border-radius: 4px; cursor:pointer;">Generate</button>
+          </div>
+          <p id="kitchen-math-output" style="margin-top:12px; font-weight:bold; color:#0369a1; display:none;"></p>
+        </div>
+
+        <script>
+          function generateKitchenMath(lessonTitle) {
+            const food = document.getElementById('kitchen-food-input').value || 'dinner';
+            const output = document.getElementById('kitchen-math-output');
+            output.style.display = 'block';
+            output.innerHTML = '<em>Generative AI thinking...</em>';
+
+            setTimeout(() => {
+              const str = lessonTitle.toLowerCase();
+              let prompt = '';
+              if(str.includes('ratio') || str.includes('rate')) {
+                prompt = "You are making " + food + ". If the recipe calls for 2 cups of ingredients for every 3 people, and you have 6 people coming, how many cups do you need?";
+              } else if(str.includes('area') || str.includes('surface')) {
+                prompt = "You are cooking " + food + " in a rectangular pan. If the pan is 9 inches wide and 13 inches long, what is the total area of the food?";
+              } else if(str.includes('equation')) {
+                prompt = "You spent $20 at the grocery store for " + food + ". If the drinks cost $5 and the food cost 'x' dollars, what is the value of x?";
+              } else {
+                prompt = "You have 3/4 of a pound of " + food + " left. If you divide it equally among 3 plates, how much goes on each plate?";
+              }
+              output.innerHTML = "🤖 <strong>Your AI Problem:</strong><br>" + prompt;
+            }, 800);
+          }
+        </script>
+
         <details class="hw-tools-menu"><summary><span class="lang-en">Share, print &amp; paper practice</span><span class="lang-es" lang="es">Compartir, imprimir y practicar en papel</span></summary>
         <div class="hw-hero-share-bar">
           <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="copyHomeworkLink()">📋 <span class="lang-en">Copy Link</span><span class="lang-es" lang="es">Copiar enlace</span></button>

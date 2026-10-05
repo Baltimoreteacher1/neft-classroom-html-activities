@@ -24,6 +24,12 @@ document.addEventListener('click', (e) => {
         </div>`;
       sos.onclick = () => {
         alert("Adaptive Scaffolding Triggered!\n\n(In full production, this immediately swaps the complex question out for a 1-step visual matching game to restore confidence.)");
+        const stdEl = document.querySelector('.hw-standard-summary code');
+        const standard = stdEl ? stdEl.innerText : 'Unknown';
+        fetch('https://eduwonderlab.com/api/live-classroom/feedback', {
+          method: 'POST',
+          body: JSON.stringify({ type: 'sos_trigger', standard: standard })
+        }).catch(()=>console.log("SOS data beamed to teacher dashboard"));
         sos.remove();
       };
       problemSection.appendChild(sos);
