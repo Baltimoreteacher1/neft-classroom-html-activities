@@ -96,3 +96,26 @@ button:active, .print-btn:active {
     text-shadow: none !important;
   }
 }
+
+/* ====== ANTI-FADE FIX ====== */
+/* Force all text inside the hero to be maximum brightness and fully opaque */
+.hw-hero, .hw-hero *, .hw-hero p, .hw-hero span, .hw-hero .lang-en, .hw-hero .lang-es {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  text-shadow: 0 2px 5px rgba(0,0,0,0.7) !important;
+  font-weight: 700 !important;
+}
+
+/* Ensure the main document text outside the hero isn't faded */
+body, .sheet, .problem-section {
+  color: #0f172a !important; /* High contrast dark navy */
+}
+.lang-es, .lang-en {
+  opacity: 1 !important;
+}
+
+/* Exempt the toolkit/interactive buttons from the white-text override if they are inside the hero */
+.family-toolkit *, .hw-route-option *, .hw-tools-menu * {
+  color: #0f172a !important;
+  text-shadow: none !important;
+}
