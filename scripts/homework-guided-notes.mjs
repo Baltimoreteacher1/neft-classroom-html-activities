@@ -2420,42 +2420,6 @@ export function renderWelcomeBanner(config, lessonId) {
         </ul>
 
         ${renderQuickPlan()}
-        ${renderFamilyToolkit(title)}
-
-        
-        <div style="margin-top: 16px; padding: 12px; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px;">
-          <strong>🍳 AI Kitchen Math Generator</strong>
-          <p style="margin: 4px 0 8px; font-size: 14px; color:#15487f;">What are you making for dinner tonight?</p>
-          <div style="display: flex; gap: 8px;">
-            <input type="text" id="kitchen-food-input" placeholder="e.g. Spaghetti, Tacos" style="flex:1; padding: 6px; border: 1px solid #ccc; border-radius: 4px; color:#0f172a;">
-            <button onclick="generateKitchenMath('${esc(title)}')" style="background:#0284c7; color:white; border:none; padding: 6px 12px; border-radius: 4px; cursor:pointer;">Generate</button>
-          </div>
-          <p id="kitchen-math-output" style="margin-top:12px; font-weight:bold; color:#0369a1; display:none;"></p>
-        </div>
-        
-        <script>
-          function generateKitchenMath(lessonTitle) {
-            const food = document.getElementById('kitchen-food-input').value || 'dinner';
-            const output = document.getElementById('kitchen-math-output');
-            output.style.display = 'block';
-            output.innerHTML = '<em>Generative AI thinking...</em>';
-            
-            setTimeout(() => {
-              const str = lessonTitle.toLowerCase();
-              let prompt = '';
-              if(str.includes('ratio') || str.includes('rate')) {
-                prompt = "You are making " + food + ". If the recipe calls for 2 cups of ingredients for every 3 people, and you have 6 people coming, how many cups do you need?";
-              } else if(str.includes('area') || str.includes('surface')) {
-                prompt = "You are cooking " + food + " in a rectangular pan. If the pan is 9 inches wide and 13 inches long, what is the total area of the food?";
-              } else if(str.includes('equation')) {
-                prompt = "You spent $20 at the grocery store for " + food + ". If the drinks cost $5 and the food cost 'x' dollars, what is the value of x?";
-              } else {
-                prompt = "You have 3/4 of a pound of " + food + " left. If you divide it equally among 3 plates, how much goes on each plate?";
-              }
-              output.innerHTML = "🤖 <strong>Your AI Problem:</strong><br>" + prompt;
-            }, 800);
-          }
-        </script>
 
         <details class="hw-tools-menu"><summary><span class="lang-en">Share, print &amp; paper practice</span><span class="lang-es" lang="es">Compartir, imprimir y practicar en papel</span></summary>
         <div class="hw-hero-share-bar">
@@ -2492,80 +2456,6 @@ export function renderWelcomeBanner(config, lessonId) {
 }
 
 /* The route chooser lives inside the hero, before secondary controls. */
-
-function renderFamilyToolkit(title) {
-  const templates = {
-    geometry: {
-      keywords: ['area', 'volume', 'prism', 'polygon', 'surface', 'triangle', 'rectangle'],
-      convo: "Why do we measure 3D space differently than flat shapes? Can you show me a flat face vs an edge?",
-      mistake: "A student just added all the numbers they saw together. Why doesn't that work for finding Area or Volume?",
-      kitchen: "Grab a cereal box or a can from the pantry. Ask your student to identify the faces, and discuss how you would measure its capacity or surface."
-    },
-    fractions: {
-      keywords: ['fraction', 'decimal', 'percent', 'divide', 'multiply', 'ratio', 'rational', 'convert'],
-      convo: "When is it easier to use a fraction instead of a decimal in real life?",
-      mistake: "A student added the denominators (bottom numbers) together. Why is that mathematically illegal?",
-      kitchen: "Look at a recipe or a measuring cup in the kitchen. Ask your student to mentally double or halve an ingredient amount."
-    },
-    algebra: {
-      keywords: ['equation', 'expression', 'variable', 'solve', 'inequality', 'algebra'],
-      convo: "What does a variable like 'x' actually represent? Is it always the same number?",
-      mistake: "A student did an operation to one side of the equation but forgot the other. Why is an equation like a balanced scale?",
-      kitchen: "Create a mystery number game at dinner: 'I am thinking of a number. If you multiply it by 2 and add 1, you get 11. What is it?'"
-    },
-    default: {
-      convo: "What was the trickiest part of today's lesson, and how did you figure it out?",
-      mistake: "A student rushed through the steps and got an answer that doesn't make sense in the real world. How can we estimate to check our work?",
-      kitchen: "Find a number or pattern in the real world around us right now, and explain how today's math could apply to it."
-    }
-  };
-
-  const lower = (title || '').toLowerCase();
-  let domain = templates.default;
-  for (const [key, data] of Object.entries(templates)) {
-    if (key === 'default') continue;
-    if (data.keywords.some(kw => lower.includes(kw))) {
-      domain = data;
-      break;
-    }
-  }
-
-  const vizType = domain === templates.geometry ? 'geometry' : (domain === templates.algebra ? 'algebra' : 'default');
-
-  return `
-    <section class="family-toolkit" style="margin-top: 24px; padding: 20px; background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 2px solid var(--amber);">
-      <h3 style="margin: 0 0 16px; color: var(--navy); font-size: 20px;">💡 Family Night Toolkit</h3>
-      
-      <div style="display: grid; gap: 16px;">
-        <div style="background: var(--teal-light); padding: 12px; border-radius: 8px; border-left: 4px solid var(--teal-ink);">
-          <strong style="color: var(--teal-ink);">🗣️ Conversation Starter:</strong>
-          <p style="margin: 4px 0 0; font-style: italic;">"${domain.convo}"</p>
-        </div>
-
-        <div style="background: var(--amber-light); padding: 12px; border-radius: 8px; border-left: 4px solid var(--amber);">
-          <strong style="color: var(--amber);">🕵️ Spot the Mistake:</strong>
-          <p style="margin: 4px 0 0;">${domain.mistake}</p>
-        </div>
-
-        <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; border-left: 4px solid #64748b;">
-          <strong style="color: #475569;">🍳 Kitchen Math:</strong>
-          <p style="margin: 4px 0 0;">${domain.kitchen}</p>
-        </div>
-
-        <details class="hw-toolkit-details" style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed var(--teal);">
-          <summary style="cursor: pointer; font-weight: bold; color: var(--teal-ink);">
-            🔓 Parent Cheat Code (Hints & Visuals)
-          </summary>
-          <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0;">
-            <p style="margin-bottom:8px;"><strong>How to help:</strong> Encourage your student to draw a visual model or break the problem into smaller pieces.</p>
-            <family-visualizer type="${vizType}"></family-visualizer>
-          </div>
-        </details>
-      </div>
-    </section>
-  `;
-}
-
 export function renderQuickPlan() {
   /* Tabs, practice count, time remaining, and every Continue button follow the choice. */
   return `
