@@ -419,6 +419,36 @@ header.packet h1::after{
 }
 @media print{ body{ background:#fff !important; } }
 
+
+.sgf{margin:0;padding:14px 16px 10px;background:var(--sg-figure,#fff);border:1px solid var(--sg-line,#dde3ea);border-radius:var(--sg-radius,12px);display:flex;flex-direction:column;align-items:center;gap:6px;max-width:100%;overflow-x:auto}
+.sgf-svg{max-width:100%;height:auto;font-family:var(--sg-body,inherit);font-variant-numeric:tabular-nums lining-nums}
+.sgf-cap{font-size:15px;color:var(--sg-muted,#516175);text-align:center;line-height:1.4}
+.sgf-t{fill:var(--sg-text,#1d2a36);font-size:15px}
+.sgf-frac{font-size:12px}
+.sgf-fracbar{stroke:var(--sg-text,#1d2a36);stroke-width:1.4}
+.sgf-num{font-size:15px;font-weight:600}
+.sgf-small{font-size:13px}
+.sgf-axis-title,.sgf-row-label{font-size:14px;font-weight:700;fill:var(--sg-muted,#516175)}
+.sgf-callout{font-size:14px;font-weight:700;fill:var(--sg-deep,#0b2540)}
+.sgf-halo{paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
+.sgf-axis,.sgf-tick{stroke:var(--sg-text,#1d2a36);stroke-width:2;fill:none}
+.sgf-axis-head{fill:var(--sg-text,#1d2a36)}
+.sgf-grid{stroke:#d5dce5;stroke-width:1}
+.sgf-dot{fill:#9aa9b9}
+.sgf-dot.sgf-on,.sgf-pt.sgf-on{fill:var(--sg,#1f6fb2)}
+.sgf-pt{fill:var(--sg-text,#1d2a36);stroke:#fff;stroke-width:2}
+.sgf-pt.sgf-open{fill:#fff;stroke:var(--sg,#1f6fb2);stroke-width:3}
+.sgf-marker{fill:var(--sg,#1f6fb2)}
+.sgf-jump,.sgf-connect{fill:none;stroke:var(--sg,#1f6fb2);stroke-width:2.5}
+.sgf-jump-head,.sgf-ray-head{fill:var(--sg,#1f6fb2)}
+.sgf-ray{stroke:var(--sg,#1f6fb2);stroke-width:6;stroke-linecap:round}
+.sgf-link{stroke:#b9c4d0;stroke-width:1.5;stroke-dasharray:4 4}
+.sgf-poly{fill:color-mix(in srgb,var(--sg,#1f6fb2) 16%,transparent);stroke:var(--sg,#1f6fb2);stroke-width:2.5}
+.sgf-box{fill:color-mix(in srgb,var(--sg,#1f6fb2) 16%,transparent);stroke:var(--sg-text,#1d2a36);stroke-width:2}
+.sgf-whisker{stroke:var(--sg-text,#1d2a36);stroke-width:2}
+.sgf-median{stroke:var(--sg,#1f6fb2);stroke-width:4}
+.sgf-bar{fill:color-mix(in srgb,var(--sg,#1f6fb2) 30%,#fff);stroke:var(--sg-text,#1d2a36);stroke-width:1.5}
+
 </style>
   <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
@@ -454,37 +484,30 @@ header.packet h1::after{
       <p class="ws-target"><b>Learning target</b> I can represent a real-world situation with a tape diagram or table and use decimal operations to solve it, explain what each part stands for, and build one for a situation I have not seen before.</p>
     </header>
     <section class="ws-block ws-block-keynote"><h2 class="ws-block-title"><span class="ws-block-kicker">Start here page</span>Now you try — model solution</h2><ol class="ws-example-steps"><li>How many rides are needed for 4,000 passengers? (4,000 ÷ 80 = 50 rides)</li><li>Why do we divide 4,000 by 80? (The 4,000 passengers are split into equal groups of 80. Dividing counts the groups.)</li><li>How many minutes do 50 rides take? (12.5 × 50 = 625 minutes)</li><li>About how many hours is 625 minutes? (625 ÷ 60 ≈ 10.42 hours)</li></ol></section>
-    <div class="ws-section-head"><span class="ws-section-n">Part 1</span><span class="ws-section-name">Understand the idea</span><span class="ws-section-tag">models and meaning</span></div>
-        <ol class="ws-problems">
+    <ol class="ws-problems">
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Complete the table. Show how you found each value.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Each tram ride takes 12.5 minutes. Complete the table of total minutes.</p>
-  <table class="ws-table"><thead><tr><th>Rides</th><th>Expression</th><th>Total minutes</th></tr></thead><tbody><tr><td>10</td><td class="ws-correct"></td><td class="ws-correct"></td></tr><tr><td>20</td><td class="ws-correct"></td><td class="ws-correct"></td></tr><tr><td>50</td><td class="ws-correct"></td><td class="ws-correct"></td></tr></tbody></table>
-  <p class="ws-keynote"><b>Why:</b> 10 × 12.5 = 125 minutes. Doubling the rides doubles the time: 20 rides take 250 minutes. And 50 rides is five times 10 rides, so 5 × 125 = 625 minutes — the same 625 the lesson converts to about 10.4 hours.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><figure class="sgf sgf--ratioTable"><table class="sgf-table"><thead><tr><th scope="col">Round trips</th><th scope="col">Minutes</th></tr></thead><tbody><tr><td>1</td><td>45</td></tr><tr><td>10</td><td>450</td></tr><tr><td>11</td><td>495</td></tr></tbody></table><figcaption class="sgf-cap">Compare each row with the minutes in 8 hours.</figcaption></figure><p class="ws-stem">One bus makes a round trip in 45 minutes. How many full round trips can it make in 8 hours?</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">Change 8 hours to minutes.</span><span class="ws-blank ws-correct">480 minutes</span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">How many minutes do 10 trips take? 11 trips?</span><span class="ws-blank ws-correct">450 minutes and 495 minutes</span></li><li class="ws-gf-step"><span class="ws-step-n">3</span><span class="ws-gf-prompt">How many full round trips fit in 480 minutes?</span><span class="ws-blank ws-correct">10</span></li></ol><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">The bus makes 10 full round trips. 480 − 450 = 30 minutes are left over.</span></div></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Write the letter of the matching item on each line.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Match each tram question to the operation that answers it.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm ws-correct">A</span><span class="ws-term-lbl">Minutes for 40 rides (12.5 min each)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm ws-correct">B</span><span class="ws-term-lbl">Rides needed for 400 passengers (80 per ride)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm ws-correct">C</span><span class="ws-term-lbl">Hours in 625 minutes</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm ws-correct">D</span><span class="ws-term-lbl">Passengers on 30 full rides</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">40 × 12.5</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">400 ÷ 80</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">625 ÷ 60</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">30 × 80</span></li></ul></div>
-  <p class="ws-keynote"><b>Why:</b> Choosing the operation is the modeling step: totals built from equal groups multiply (40 × 12.5 minutes; 30 × 80 passengers), while totals split into equal groups divide (400 ÷ 80 rides; 625 ÷ 60 to convert minutes to hours).</p></div>
-    </li></ol><div class="ws-section-head"><span class="ws-section-n">Part 2</span><span class="ws-section-name">Apply it</span><span class="ws-section-tag">real-world problems</span></div>
-        <ol class="ws-problems">
-    <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">The round trip is 5 miles. How far does a tram car travel in 5 round trips?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">1 mile</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10 miles</span></li><li class="ws-opt ws-correct"><span class="ws-bub">C</span><span class="ws-opt-text">25 miles</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">50 miles</span></li></ol><p class="ws-keynote"><b>Answer:</b> C — 25 miles</p><p class="ws-keynote"><b>Why:</b> 5 round trips × 5 miles per trip = 25 miles.</p><p class="ws-watch"><b>Watch for:</b> Converting minutes to hours by moving the decimal point — 625 minutes is NOT 6.25 hours. An hour is 60 minutes, so divide by 60: 625 ÷ 60 ≈ 10.42 hours.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">A ferry carries 40 people on each trip. Each trip takes 8.5 minutes. How many minutes does it take to move 700 people?</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">Divide 700 ÷ 40. What do you get?</span><span class="ws-blank ws-correct">17.5</span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">The ferry cannot make half a trip. How many trips are needed?</span><span class="ws-blank ws-correct">18</span></li><li class="ws-gf-step"><span class="ws-step-n">3</span><span class="ws-gf-prompt">How many minutes do 18 trips take?</span><span class="ws-blank ws-correct">153 minutes</span></li><li class="ws-gf-step"><span class="ws-step-n">4</span><span class="ws-gf-prompt">Why do we round 17.5 up, not down?</span><span class="ws-blank ws-correct">17 trips carry only 680 people. The last 20 people still need a ride.</span></li></ol><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">The ferry needs 18 trips, so it takes 153 minutes.</span></div></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Apply — What Time Is It? The new year starts at midnight on January 1st. What time will it be 2,022 minutes after midnight?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">8:22 p.m. on January 1</span></li><li class="ws-opt ws-correct"><span class="ws-bub">B</span><span class="ws-opt-text">9:42 a.m. on January 2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">9:42 a.m. on January 1</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">9:42 p.m. on January 2</span></li></ol><p class="ws-keynote"><b>Answer:</b> B — 9:42 a.m. on January 2</p><p class="ws-keynote"><b>Why:</b> 2,022 ÷ 60 = 33 remainder 42, so 2,022 minutes is 33 hours 42 minutes. That is 24 hours (one full day) plus 9 hours 42 minutes — 9:42 a.m. on January 2.</p><p class="ws-watch"><b>Watch for:</b> Converting minutes to hours by moving the decimal point — 625 minutes is NOT 6.25 hours. An hour is 60 minutes, so divide by 60: 625 ÷ 60 ≈ 10.42 hours.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">A round trip takes 25 minutes. How many full round trips fit in 3 hours?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">7 trips</span></div><p class="ws-keynote"><b>Why:</b> Change hours to minutes: 3 × 60 = 180 Try 7 trips and 8 trips: 7 × 25 = 175; 8 × 25 = 200 Keep the trips that fit: 175 &lt; 180 &lt; 200</p></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">5</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">How many rides would the tram need for 10,000 passengers, at 80 passengers per ride?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12.5 rides</span></li><li class="ws-opt ws-correct"><span class="ws-bub">B</span><span class="ws-opt-text">125 rides</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">250 rides</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1,250 rides</span></li></ol><p class="ws-keynote"><b>Answer:</b> B — 125 rides</p><p class="ws-keynote"><b>Why:</b> 10,000 ÷ 80 = 125 rides. Those rides would take 125 × 12.5 = 1,562.5 minutes.</p><p class="ws-watch"><b>Watch for:</b> Converting minutes to hours by moving the decimal point — 625 minutes is NOT 6.25 hours. An hour is 60 minutes, so divide by 60: 625 ÷ 60 ≈ 10.42 hours.</p></div>
-    </li></ol><div class="ws-section-head"><span class="ws-section-n">Part 3</span><span class="ws-section-name">Explain and correct</span><span class="ws-section-tag">reasoning</span></div>
-        <ol class="ws-problems">
+      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">One tram ride takes 12.5 minutes. How many full rides fit in 5 hours?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">24 rides</span></div><p class="ws-keynote"><b>Why:</b> Change hours to minutes: 5 × 60 = 300 Divide by the minutes for one ride: 300 ÷ 12.5 = 24</p></div>
+    </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">6</span><span class="ws-directions">Answer in complete sentences.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">How does the answer change if the tram must transport 6,000 passengers? (Each ride carries 80 passengers and takes 12.5 minutes.) Show your steps.</p><p class="ws-keynote"><b>Sample answer:</b> 6,000 ÷ 80 = 75 rides. Then 75 × 12.5 = 937.5 minutes. Dividing by 60, that is 937.5 ÷ 60 = 15.625, so about 15.63 hours — half again as long as the 10.42 hours for 4,000 passengers, which makes sense because 6,000 is one and a half times 4,000.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">5</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">A bus carries 35 students on each trip. Each trip takes 9.5 minutes. How many minutes does it take to move 420 students?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">114 minutes</span></div><p class="ws-keynote"><b>Why:</b> Find the number of trips: 420 ÷ 35 = 12 Multiply the trips by the minutes: 12 × 9.5 = 114</p></div>
+    </li>
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">6</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">A van holds 12 people. 100 people need a ride. Dev says 100 ÷ 12 is about 8.3, so the van needs 8 trips. How many trips are really needed?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">9 trips</span></div><p class="ws-keynote"><b>Why:</b> Find the people 8 trips carry: 8 × 12 = 96 Find the people left: 100 − 96 = 4 Add one more trip for them: 8 + 1 = 9</p></div>
     </li></ol>
     
   </section>

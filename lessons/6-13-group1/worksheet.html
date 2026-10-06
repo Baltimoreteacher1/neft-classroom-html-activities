@@ -419,6 +419,36 @@ header.packet h1::after{
 }
 @media print{ body{ background:#fff !important; } }
 
+
+.sgf{margin:0;padding:14px 16px 10px;background:var(--sg-figure,#fff);border:1px solid var(--sg-line,#dde3ea);border-radius:var(--sg-radius,12px);display:flex;flex-direction:column;align-items:center;gap:6px;max-width:100%;overflow-x:auto}
+.sgf-svg{max-width:100%;height:auto;font-family:var(--sg-body,inherit);font-variant-numeric:tabular-nums lining-nums}
+.sgf-cap{font-size:15px;color:var(--sg-muted,#516175);text-align:center;line-height:1.4}
+.sgf-t{fill:var(--sg-text,#1d2a36);font-size:15px}
+.sgf-frac{font-size:12px}
+.sgf-fracbar{stroke:var(--sg-text,#1d2a36);stroke-width:1.4}
+.sgf-num{font-size:15px;font-weight:600}
+.sgf-small{font-size:13px}
+.sgf-axis-title,.sgf-row-label{font-size:14px;font-weight:700;fill:var(--sg-muted,#516175)}
+.sgf-callout{font-size:14px;font-weight:700;fill:var(--sg-deep,#0b2540)}
+.sgf-halo{paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
+.sgf-axis,.sgf-tick{stroke:var(--sg-text,#1d2a36);stroke-width:2;fill:none}
+.sgf-axis-head{fill:var(--sg-text,#1d2a36)}
+.sgf-grid{stroke:#d5dce5;stroke-width:1}
+.sgf-dot{fill:#9aa9b9}
+.sgf-dot.sgf-on,.sgf-pt.sgf-on{fill:var(--sg,#1f6fb2)}
+.sgf-pt{fill:var(--sg-text,#1d2a36);stroke:#fff;stroke-width:2}
+.sgf-pt.sgf-open{fill:#fff;stroke:var(--sg,#1f6fb2);stroke-width:3}
+.sgf-marker{fill:var(--sg,#1f6fb2)}
+.sgf-jump,.sgf-connect{fill:none;stroke:var(--sg,#1f6fb2);stroke-width:2.5}
+.sgf-jump-head,.sgf-ray-head{fill:var(--sg,#1f6fb2)}
+.sgf-ray{stroke:var(--sg,#1f6fb2);stroke-width:6;stroke-linecap:round}
+.sgf-link{stroke:#b9c4d0;stroke-width:1.5;stroke-dasharray:4 4}
+.sgf-poly{fill:color-mix(in srgb,var(--sg,#1f6fb2) 16%,transparent);stroke:var(--sg,#1f6fb2);stroke-width:2.5}
+.sgf-box{fill:color-mix(in srgb,var(--sg,#1f6fb2) 16%,transparent);stroke:var(--sg-text,#1d2a36);stroke-width:2}
+.sgf-whisker{stroke:var(--sg-text,#1d2a36);stroke-width:2}
+.sgf-median{stroke:var(--sg,#1f6fb2);stroke-width:4}
+.sgf-bar{fill:color-mix(in srgb,var(--sg,#1f6fb2) 30%,#fff);stroke:var(--sg-text,#1d2a36);stroke-width:1.5}
+
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -519,41 +549,34 @@ header.packet h1::after{
       <p class="ws-target"><b>Learning target</b> With my small group, I can write a number as a product of its prime factors using a factor tree — one step at a time, with support.</p>
     </header>
     
-    <div class="ws-section-head"><span class="ws-section-n">Part 1</span><span class="ws-section-name">Understand the idea</span><span class="ws-section-tag">models and meaning</span></div>
-        <ol class="ws-problems">
+    <ol class="ws-problems">
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Write the name of the correct group on each line.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Sort each expression: is it a COMPLETE prime factorization, or does it still have composite factors?</p>
-  <div class="ws-cats-bar"><b>Groups:</b> <span class="ws-cat-pill">Complete Prime Factorization</span> <span class="ws-cat-pill">NOT Complete (Has Composite Factors)</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-md"></span><span class="ws-sort-text">2 × 2 × 3 (for 12)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md"></span><span class="ws-sort-text">2 × 3 × 5 (for 30)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md"></span><span class="ws-sort-text">2 × 2 × 2 × 3 (for 24)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md"></span><span class="ws-sort-text">4 × 3 (for 12)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md"></span><span class="ws-sort-text">6 × 5 (for 30)</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md"></span><span class="ws-sort-text">8 × 3 (for 24)</span></li></ul>
-  <p class="ws-hint"><span class="ws-hint-tag">Hint</span> 'Complete' means every single factor shown is prime. Even one composite factor makes the whole expression NOT complete.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><figure class="sgf sgf--factorTree"><svg class="sgf-svg" viewBox="0 0 148 142" width="148" height="142" role="img" aria-label="Factor tree for 36" xmlns="http://www.w3.org/2000/svg"><line class="sgf-branch" x1="74" y1="50" x2="42" y2="82"/><circle class="sgf-node sgf-on" cx="42" cy="100" r="19"/><text class="sgf-t sgf-num sgf-leaf" x="42.0" y="106.0" text-anchor="middle">4</text><line class="sgf-branch" x1="74" y1="50" x2="106" y2="82"/><circle class="sgf-node sgf-on" cx="106" cy="100" r="19"/><text class="sgf-t sgf-num sgf-leaf" x="106.0" y="106.0" text-anchor="middle">9</text><circle class="sgf-node" cx="74" cy="34" r="19"/><text class="sgf-t sgf-num" x="74.0" y="40.0" text-anchor="middle">36</text></svg><figcaption class="sgf-cap">Keep splitting until every end is prime.</figcaption></figure><p class="ws-stem">Find the prime factorization of 36. Use a factor tree.</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">Split 36 into 4 × 9. Is 4 prime? Is 9 prime?</span><span class="ws-blank"></span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">Split 4 and 9 into primes.</span><span class="ws-blank"></span></li><li class="ws-gf-step"><span class="ws-step-n">3</span><span class="ws-gf-prompt">Fill in the blank: 36 = 2 × 2 × 3 × ___.</span><span class="ws-blank"></span></li><li class="ws-gf-step"><span class="ws-step-n">4</span><span class="ws-gf-prompt">Write it with exponents.</span><span class="ws-blank"></span></li></ol><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line"></span></div></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Write the letter of the matching item on each line.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Match each number to its prime factorization.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">12</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">18</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">20</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">28</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">45</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">50</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">2 × 2 × 3</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">2 × 3 × 3</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">2 × 2 × 5</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">2 × 2 × 7</span></li><li><span class="ws-bub ws-bub-sm">E</span><span class="ws-match-desc">3 × 3 × 5</span></li><li><span class="ws-bub ws-bub-sm">F</span><span class="ws-match-desc">2 × 5 × 5</span></li></ul></div>
-  <p class="ws-hint"><span class="ws-hint-tag">Hint</span> Look at each number's last digit: ending in 0 or 5 means a factor of 5; an even number needs at least one 2.</p></div>
-    </li></ol><div class="ws-section-head"><span class="ws-section-n">Part 2</span><span class="ws-section-name">Apply it</span><span class="ws-section-tag">real-world problems</span></div>
-        <ol class="ws-problems">
-    <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Which of the following is a prime number?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">9</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">15</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">17</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">21</span></li></ol><p class="ws-hint"><span class="ws-hint-tag">Hint</span> Re-read what 'prime' means: exactly two factors, 1 and itself. Any extra factor makes a number composite.</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
+      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><figure class="sgf sgf--factorTree"><svg class="sgf-svg" viewBox="0 0 148 142" width="148" height="142" role="img" aria-label="Factor tree for 45" xmlns="http://www.w3.org/2000/svg"><line class="sgf-branch" x1="74" y1="50" x2="42" y2="82"/><circle class="sgf-node sgf-on" cx="42" cy="100" r="19"/><text class="sgf-t sgf-num sgf-leaf" x="42.0" y="106.0" text-anchor="middle">5</text><line class="sgf-branch" x1="74" y1="50" x2="106" y2="82"/><circle class="sgf-node sgf-on" cx="106" cy="100" r="19"/><text class="sgf-t sgf-num sgf-leaf" x="106.0" y="106.0" text-anchor="middle">9</text><circle class="sgf-node" cx="74" cy="34" r="19"/><text class="sgf-t sgf-num" x="74.0" y="40.0" text-anchor="middle">45</text></svg><figcaption class="sgf-cap">45 is odd, so 2 is not a factor.</figcaption></figure><p class="ws-stem">Find the prime factorization of 45. This number is odd.</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">45 is odd, so 2 does not work. Try 5 × 9. Is 5 prime?</span><span class="ws-blank"></span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">Is 9 prime? Split it if it is not.</span><span class="ws-blank"></span></li><li class="ws-gf-step"><span class="ws-step-n">3</span><span class="ws-gf-prompt">How many 3s are in the prime factorization of 45?</span><span class="ws-blank"></span></li></ol><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line"></span></div></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">What is the prime factorization of 30?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">2 × 3 × 5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2 × 15</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">3 × 10</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">5 × 6</span></li></ol><p class="ws-hint"><span class="ws-hint-tag">Hint</span> A prime factorization uses ONLY prime numbers. Look at each choice: are ALL of its factors prime?</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
+      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Fill in the blank: 18 = 2 × 3 × ___.</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div><p class="ws-hint"><span class="ws-hint-tag">Hint</span> Start with 18 = 2 × 9. Then split 9.</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line"></span></div></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">5</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">What is the prime factorization of 18?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">2 × 3 × 3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2 × 9</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">3 × 6</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6 × 3</span></li></ol><p class="ws-hint"><span class="ws-hint-tag">Hint</span> Check every factor in each choice — numbers like 9 and 6 are composite, so they can't appear in a prime factorization.</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
+      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Make a factor tree for 48. How many 2s are in its prime factorization?</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div><p class="ws-hint"><span class="ws-hint-tag">Hint</span> Start with 48 = 6 × 8. Keep splitting until every branch is prime. Then count the 2s.</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line"></span></div></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">6</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Which of these numbers is composite?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">23</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">27</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">29</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">31</span></li></ol><p class="ws-hint"><span class="ws-hint-tag">Hint</span> Composite means MORE than two factors. Ask for each number: can I split it into two smaller whole numbers?</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
+      <div class="ws-problem-head"><span class="ws-pnum">5</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">A teacher has 70 stickers. She writes 70 as a product of primes to plan equal groups: 70 = 2 × 5 × ___. What is the missing prime?</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div><p class="ws-hint"><span class="ws-hint-tag">Hint</span> Start with 70 = 7 × 10. Then split 10.</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line"></span></div></div>
+    </li>
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">6</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Kai says the prime factorization of 24 is 2 × 3 × 4. He is not done. Which of his factors is not prime?</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div><p class="ws-hint"><span class="ws-hint-tag">Hint</span> A prime number has exactly two factors, 1 and itself. Test each factor.</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line"></span></div></div>
     </li></ol>
     <section class="ws-block ws-block-explain">
-    <h2 class="ws-block-title"><span class="ws-block-kicker">Explain your thinking</span>How did you decide whether a number is prime or composite? What strategy did you use?</h2>
-    <p class="ws-frame"><span class="ws-frame-tag">Sentence starter</span> I know ___ is prime because its only factors are ___ and ___. I know ___ is composite because it has factors like ___.</p>
+    <h2 class="ws-block-title"><span class="ws-block-kicker">Explain your thinking</span>How do you know when a factor tree is finished? Use Kai's mistake with 24 to explain.</h2>
+    <p class="ws-frame"><span class="ws-frame-tag">Sentence starter</span> A branch stops when the number is ___.  ·  Kai was not done because ___.</p>
     <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
   </section><div class="ws-confidence"><b>How did it go?</b>
     <span>&#9744; 4 · I can teach it</span><span>&#9744; 3 · I've got it</span><span>&#9744; 2 · I need a hint</span><span>&#9744; 1 · I need help</span></div>

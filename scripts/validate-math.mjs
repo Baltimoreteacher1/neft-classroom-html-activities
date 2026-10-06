@@ -445,6 +445,10 @@ const rules = [
       const stem = text(node.stem) || text(node.prompt);
       if (!/prime factor(izapt)?/i.test(stem) && !/prime factorization/i.test(stem)) return;
       if (!/factorization/i.test(stem)) return;
+      // "How many 2s are in…", "What is the exponent on 3?", "Which factor is
+      // not prime?" ask about ONE part of the factorization, so the answer is
+      // that part, not the product.
+      if (/\b(how many|exponent|which)\b/i.test(stem)) return;
       const nums = stem.match(/\b\d{2,5}\b/g);
       if (!nums || nums.length !== 1) return; // ambiguous target → skip
       const target = Number(nums[0]);

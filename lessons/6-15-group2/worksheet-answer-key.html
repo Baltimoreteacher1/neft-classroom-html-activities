@@ -419,6 +419,36 @@ header.packet h1::after{
 }
 @media print{ body{ background:#fff !important; } }
 
+
+.sgf{margin:0;padding:14px 16px 10px;background:var(--sg-figure,#fff);border:1px solid var(--sg-line,#dde3ea);border-radius:var(--sg-radius,12px);display:flex;flex-direction:column;align-items:center;gap:6px;max-width:100%;overflow-x:auto}
+.sgf-svg{max-width:100%;height:auto;font-family:var(--sg-body,inherit);font-variant-numeric:tabular-nums lining-nums}
+.sgf-cap{font-size:15px;color:var(--sg-muted,#516175);text-align:center;line-height:1.4}
+.sgf-t{fill:var(--sg-text,#1d2a36);font-size:15px}
+.sgf-frac{font-size:12px}
+.sgf-fracbar{stroke:var(--sg-text,#1d2a36);stroke-width:1.4}
+.sgf-num{font-size:15px;font-weight:600}
+.sgf-small{font-size:13px}
+.sgf-axis-title,.sgf-row-label{font-size:14px;font-weight:700;fill:var(--sg-muted,#516175)}
+.sgf-callout{font-size:14px;font-weight:700;fill:var(--sg-deep,#0b2540)}
+.sgf-halo{paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
+.sgf-axis,.sgf-tick{stroke:var(--sg-text,#1d2a36);stroke-width:2;fill:none}
+.sgf-axis-head{fill:var(--sg-text,#1d2a36)}
+.sgf-grid{stroke:#d5dce5;stroke-width:1}
+.sgf-dot{fill:#9aa9b9}
+.sgf-dot.sgf-on,.sgf-pt.sgf-on{fill:var(--sg,#1f6fb2)}
+.sgf-pt{fill:var(--sg-text,#1d2a36);stroke:#fff;stroke-width:2}
+.sgf-pt.sgf-open{fill:#fff;stroke:var(--sg,#1f6fb2);stroke-width:3}
+.sgf-marker{fill:var(--sg,#1f6fb2)}
+.sgf-jump,.sgf-connect{fill:none;stroke:var(--sg,#1f6fb2);stroke-width:2.5}
+.sgf-jump-head,.sgf-ray-head{fill:var(--sg,#1f6fb2)}
+.sgf-ray{stroke:var(--sg,#1f6fb2);stroke-width:6;stroke-linecap:round}
+.sgf-link{stroke:#b9c4d0;stroke-width:1.5;stroke-dasharray:4 4}
+.sgf-poly{fill:color-mix(in srgb,var(--sg,#1f6fb2) 16%,transparent);stroke:var(--sg,#1f6fb2);stroke-width:2.5}
+.sgf-box{fill:color-mix(in srgb,var(--sg,#1f6fb2) 16%,transparent);stroke:var(--sg-text,#1d2a36);stroke-width:2}
+.sgf-whisker{stroke:var(--sg-text,#1d2a36);stroke-width:2}
+.sgf-median{stroke:var(--sg,#1f6fb2);stroke-width:4}
+.sgf-bar{fill:color-mix(in srgb,var(--sg,#1f6fb2) 30%,#fff);stroke:var(--sg-text,#1d2a36);stroke-width:1.5}
+
 </style>
   <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
@@ -454,40 +484,30 @@ header.packet h1::after{
       <p class="ws-target"><b>Learning target</b> I can simplify algebraic expressions by combining like terms, explain why the method works, and use it on a problem I have not seen before.</p>
     </header>
     <section class="ws-block ws-block-keynote"><h2 class="ws-block-title"><span class="ws-block-kicker">Start here page</span>Now you try — model solution</h2><ol class="ws-example-steps"><li>Are 5x and 3x like terms? (Yes. Both have the variable x.)</li><li>Simplify 5x + 3x. (8x)</li><li>Why is the answer 8x and not 8x²? (We are adding. We count 5 x's plus 3 x's. Adding does not multiply x by x.)</li></ol></section>
-    <div class="ws-section-head"><span class="ws-section-n">Part 1</span><span class="ws-section-name">Understand the idea</span><span class="ws-section-tag">models and meaning</span></div>
-        <ol class="ws-problems">
+    <ol class="ws-problems">
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Complete the table. Show how you found each value.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Simplify each expression by combining like terms.</p>
-  <table class="ws-table"><thead><tr><th>Expression</th><th>Like Terms Combined</th><th>Simplified</th></tr></thead><tbody><tr><td>3a + 5a + 2</td><td>3a + 5a = 8a</td><td class="ws-correct"></td></tr><tr><td>6x + 4 + 2x + 7</td><td class="ws-correct"></td><td class="ws-correct"></td></tr><tr><td>10m − 3m + 5</td><td class="ws-correct"></td><td class="ws-correct"></td></tr><tr><td>4y + 3 + y + 9</td><td class="ws-correct"></td><td class="ws-correct"></td></tr></tbody></table>
-  <p class="ws-keynote"><b>Why:</b> In each row you combine the variable terms and the constants separately: 3a + 5a = 8a leaves 8a + 2; 6x + 2x = 8x with 4 + 7 = 11 gives 8x + 11; 10m − 3m = 7m gives 7m + 5; and 4y + y = 5y with 3 + 9 = 12 gives 5y + 12. The constants never merge with the variable terms because they have no variable.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><figure class="sgf sgf--table"><table class="sgf-table"><thead><tr><th scope="col">m terms</th><th scope="col">Constants</th></tr></thead><tbody><tr><td>?</td><td>?</td></tr><tr><td>?</td><td>?</td></tr></tbody></table><figcaption class="sgf-cap">Each term keeps the sign in front of it.</figcaption></figure><p class="ws-stem">Simplify 7m + 8 − 3m + m − 5.</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">Write each term with the sign in front of it.</span><span class="ws-blank ws-correct">+7m, +8, −3m, +m, −5</span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">Combine the m terms. Remember that m means 1m.</span><span class="ws-blank ws-correct">5m</span></li><li class="ws-gf-step"><span class="ws-step-n">3</span><span class="ws-gf-prompt">Combine the constants.</span><span class="ws-blank ws-correct">3</span></li></ol><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">The simplified expression is 5m + 3.</span></div></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Write the letter of the matching item on each line.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Match each expression to its simplified form.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm ws-correct">A</span><span class="ws-term-lbl">8x + 3x + 1</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm ws-correct">B</span><span class="ws-term-lbl">5a − 2a + 7</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm ws-correct">C</span><span class="ws-term-lbl">4n + n + 6</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm ws-correct">D</span><span class="ws-term-lbl">12y − 5y</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm ws-correct">E</span><span class="ws-term-lbl">3m + 8 + 4m + 2</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm ws-correct">F</span><span class="ws-term-lbl">9p + 1 − 3p</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">11x + 1</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">3a + 7</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">5n + 6</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">7y</span></li><li><span class="ws-bub ws-bub-sm">E</span><span class="ws-match-desc">7m + 10</span></li><li><span class="ws-bub ws-bub-sm">F</span><span class="ws-match-desc">6p + 1</span></li></ul></div>
-  <p class="ws-keynote"><b>Why:</b> Each match comes from combining like terms and carrying the signs: 8x + 3x + 1 = 11x + 1, 5a − 2a + 7 = 3a + 7, 4n + n + 6 = 5n + 6 (the lone n counts as 1n), 12y − 5y = 7y, 3m + 4m = 7m with 8 + 2 = 10 for 7m + 10, and 9p − 3p = 6p leaves 6p + 1.</p></div>
-    </li></ol><div class="ws-section-head"><span class="ws-section-n">Part 2</span><span class="ws-section-name">Apply it</span><span class="ws-section-tag">real-world problems</span></div>
-        <ol class="ws-problems">
-    <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Simplify the track: 4a + 2 + a.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">5a + 2</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">5a²+ 2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">6a</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">7a</span></li></ol><p class="ws-keynote"><b>Answer:</b> A — 5a + 2</p><p class="ws-keynote"><b>Why:</b> 4a + a = 5a (remember a means 1a). The 2 has no like term, so it stays. Result: 5a + 2.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Simplify Algebraic Expressions is sweeping a constant into the variable terms — for example, simplifying 6x + 4 + 2x as 12x by adding all three numbers (6 + 4 + 2 = 12) instead of recognizing that 4 has no variable and cannot combine with 6x and 2x. The correct simplified expression is 8x + 4 (combine 6x + 2x = 8x, and let the 4 stay on its own). Before you submit, check that every term you combined has the exact same variable part.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><figure class="sgf sgf--table"><table class="sgf-table"><thead><tr><th scope="col">x terms</th><th scope="col">Constants</th></tr></thead><tbody><tr><td>6x, −x</td><td>9, −4</td></tr><tr><td>?</td><td>?</td></tr></tbody></table><figcaption class="sgf-cap">This time a lone x is subtracted.</figcaption></figure><p class="ws-stem">Simplify 6x + 9 − x − 4.</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">What is the coefficient of the term −x?</span><span class="ws-blank ws-correct">−1</span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">Combine the x terms. Then combine the constants.</span><span class="ws-blank ws-correct">5x and 5</span></li><li class="ws-gf-step"><span class="ws-step-n">3</span><span class="ws-gf-prompt">Why is 6x − x equal to 5x, and not 6?</span><span class="ws-blank ws-correct">x means 1x. 6x − 1x = 5x. The variable stays.</span></li></ol><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">6x + 9 − x − 4 simplifies to 5x + 5.</span></div></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Clean up this channel: 7y − 3y.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">4y</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">10y</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">21y</span></li></ol><p class="ws-keynote"><b>Answer:</b> A — 4y</p><p class="ws-keynote"><b>Why:</b> Subtract the coefficients of the like terms: 7 − 3 = 4. Keep the variable y, giving 4y.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Simplify Algebraic Expressions is sweeping a constant into the variable terms — for example, simplifying 6x + 4 + 2x as 12x by adding all three numbers (6 + 4 + 2 = 12) instead of recognizing that 4 has no variable and cannot combine with 6x and 2x. The correct simplified expression is 8x + 4 (combine 6x + 2x = 8x, and let the 4 stay on its own). Before you submit, check that every term you combined has the exact same variable part.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Simplify 8r − 3r + 2r. What is the coefficient of r in your answer?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">7</span></div><p class="ws-keynote"><b>Why:</b> Combine the coefficients with their signs: 8 − 3 + 2 = 7 Keep the variable: 7r</p></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">5</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Simplify the mix: 6m + 4 + 3m.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">9m + 4</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">9m + 4m</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">10m</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">13m</span></li></ol><p class="ws-keynote"><b>Answer:</b> A — 9m + 4</p><p class="ws-keynote"><b>Why:</b> 6m + 3m = 9m. The constant 4 has no like term, so it stays. Result: 9m + 4.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Simplify Algebraic Expressions is sweeping a constant into the variable terms — for example, simplifying 6x + 4 + 2x as 12x by adding all three numbers (6 + 4 + 2 = 12) instead of recognizing that 4 has no variable and cannot combine with 6x and 2x. The correct simplified expression is 8x + 4 (combine 6x + 2x = 8x, and let the 4 stay on its own). Before you submit, check that every term you combined has the exact same variable part.</p></div>
-    </li></ol><div class="ws-section-head"><span class="ws-section-n">Part 3</span><span class="ws-section-name">Explain and correct</span><span class="ws-section-tag">reasoning</span></div>
-        <ol class="ws-problems">
+      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Simplify 5h + 7 − 2h − 7. What is the constant in your answer?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">0</span></div><p class="ws-keynote"><b>Why:</b> Combine the h terms: 5 − 2 = 3 → 3h Combine the constants: 7 − 7 = 0 Write the simplified expression: 3h</p></div>
+    </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">6</span><span class="ws-directions">Find the mistake. Explain it, then show the correct work.</span></div>
-      <div class="ws-pbody"><p class="ws-stem"><b>Level 2 Extension — Crossed Channels on the Board</b></p>
-  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Track</span><span class="ws-step-w">3x + 5</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Combine</span><span class="ws-step-w">Add the 3 and the 5</span></li><li class="ws-step-wrong"><span class="ws-step-n">3</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">8x</span></li></ol></div>
-  <p class="ws-prompt">Which step has the mistake? Explain what went wrong, then show the correct work.</p>
-  <p class="ws-keynote"><b>Mistake:</b> Step 3. The Combine step added the 3 and the 5, but 3x has the variable x while 5 has none, so they are not like terms. Nothing can be combined here — 3x + 5 is already in simplest form, and writing 8x changes the value (at x = 2 it gives 16 instead of 11).</p><p class="ws-keynote"><b>Correct work:</b> 3x and 5 are NOT like terms — 3x has the variable x and 5 is a constant with no variable. They cannot be combined. The expression 3x + 5 is already in simplest form. Writing 8x is wrong because it changes the value (at x = 2, 3x + 5 = 11 but 8x = 16).</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">5</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Jen has 6 packs of x pencils. She gives away 2 packs, then buys 5 more packs: 6x − 2x + 5x. How many packs does she have now?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">9 packs</span></div><p class="ws-keynote"><b>Why:</b> Combine the coefficients with their signs: 6 − 2 + 5 = 9 Write the simplified expression: 9x</p></div>
+    </li>
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">6</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Kim simplifies 9p − 4 + 2p and gets 7p − 4. What is the correct coefficient of p?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">11</span></div><p class="ws-keynote"><b>Why:</b> Mark each term with its sign: +9p, −4, +2p Combine the p terms: 9 + 2 = 11 → 11p − 4</p></div>
     </li></ol>
     
   </section>

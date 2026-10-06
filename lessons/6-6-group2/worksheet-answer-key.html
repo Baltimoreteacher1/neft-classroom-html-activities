@@ -419,6 +419,36 @@ header.packet h1::after{
 }
 @media print{ body{ background:#fff !important; } }
 
+
+.sgf{margin:0;padding:14px 16px 10px;background:var(--sg-figure,#fff);border:1px solid var(--sg-line,#dde3ea);border-radius:var(--sg-radius,12px);display:flex;flex-direction:column;align-items:center;gap:6px;max-width:100%;overflow-x:auto}
+.sgf-svg{max-width:100%;height:auto;font-family:var(--sg-body,inherit);font-variant-numeric:tabular-nums lining-nums}
+.sgf-cap{font-size:15px;color:var(--sg-muted,#516175);text-align:center;line-height:1.4}
+.sgf-t{fill:var(--sg-text,#1d2a36);font-size:15px}
+.sgf-frac{font-size:12px}
+.sgf-fracbar{stroke:var(--sg-text,#1d2a36);stroke-width:1.4}
+.sgf-num{font-size:15px;font-weight:600}
+.sgf-small{font-size:13px}
+.sgf-axis-title,.sgf-row-label{font-size:14px;font-weight:700;fill:var(--sg-muted,#516175)}
+.sgf-callout{font-size:14px;font-weight:700;fill:var(--sg-deep,#0b2540)}
+.sgf-halo{paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
+.sgf-axis,.sgf-tick{stroke:var(--sg-text,#1d2a36);stroke-width:2;fill:none}
+.sgf-axis-head{fill:var(--sg-text,#1d2a36)}
+.sgf-grid{stroke:#d5dce5;stroke-width:1}
+.sgf-dot{fill:#9aa9b9}
+.sgf-dot.sgf-on,.sgf-pt.sgf-on{fill:var(--sg,#1f6fb2)}
+.sgf-pt{fill:var(--sg-text,#1d2a36);stroke:#fff;stroke-width:2}
+.sgf-pt.sgf-open{fill:#fff;stroke:var(--sg,#1f6fb2);stroke-width:3}
+.sgf-marker{fill:var(--sg,#1f6fb2)}
+.sgf-jump,.sgf-connect{fill:none;stroke:var(--sg,#1f6fb2);stroke-width:2.5}
+.sgf-jump-head,.sgf-ray-head{fill:var(--sg,#1f6fb2)}
+.sgf-ray{stroke:var(--sg,#1f6fb2);stroke-width:6;stroke-linecap:round}
+.sgf-link{stroke:#b9c4d0;stroke-width:1.5;stroke-dasharray:4 4}
+.sgf-poly{fill:color-mix(in srgb,var(--sg,#1f6fb2) 16%,transparent);stroke:var(--sg,#1f6fb2);stroke-width:2.5}
+.sgf-box{fill:color-mix(in srgb,var(--sg,#1f6fb2) 16%,transparent);stroke:var(--sg-text,#1d2a36);stroke-width:2}
+.sgf-whisker{stroke:var(--sg-text,#1d2a36);stroke-width:2}
+.sgf-median{stroke:var(--sg,#1f6fb2);stroke-width:4}
+.sgf-bar{fill:color-mix(in srgb,var(--sg,#1f6fb2) 30%,#fff);stroke:var(--sg-text,#1d2a36);stroke-width:1.5}
+
 </style>
   <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
@@ -457,37 +487,29 @@ header.packet h1::after{
     <div class="ws-section-head"><span class="ws-section-n">Part 1</span><span class="ws-section-name">Understand the idea</span><span class="ws-section-tag">models and meaning</span></div>
         <ol class="ws-problems">
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Write the name of the correct group on each line.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Match each expression with its simplified form.</p>
-  <div class="ws-cats-bar"><b>Groups:</b> <span class="ws-cat-pill">Correctly Matched</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-md ws-correct">Correctly Matched</span><span class="ws-sort-text">8y + 2y → 10y</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md ws-correct">Correctly Matched</span><span class="ws-sort-text">3(a + 6) → 3a + 18</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md ws-correct">Correctly Matched</span><span class="ws-sort-text">5n + 4 + 2n → 7n + 4</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md ws-correct">Correctly Matched</span><span class="ws-sort-text">9p − 3p → 6p</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md ws-correct">Correctly Matched</span><span class="ws-sort-text">4(2x − 1) → 8x − 4</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md ws-correct">Correctly Matched</span><span class="ws-sort-text">6t + t → 7t</span></li></ul>
-  <p class="ws-keynote"><b>Why:</b> Every card on this deck checks out. 8y + 2y = 10y and 6t + t = 7t come from adding coefficients, 9p − 3p = 6p from subtracting them, and 5n + 4 + 2n = 7n + 4 combines only the n terms while the 4 stays put. The other two come from distributing to BOTH terms inside the parentheses: 3(a + 6) = 3a + 18 and 4(2x − 1) = 8x − 4.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Producer A charges 3x + 15 + 2x dollars for x songs. Producer B charges 5(x + 3) dollars. What does Producer B charge for 4 songs?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">$35</span></div><p class="ws-keynote"><b>Why:</b> Substitute x = 4 into 5(x + 3): 5 × (4 + 3) = 5 × 7 = 35 Check Producer A's charge: 3 × 4 + 15 + 2 × 4 = 12 + 15 + 8 = 35</p></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Write the letter of the matching item on each line.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Match each expression to its simplified equivalent.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm ws-correct">A</span><span class="ws-term-lbl">6x + 2x</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm ws-correct">B</span><span class="ws-term-lbl">3(n + 5)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm ws-correct">C</span><span class="ws-term-lbl">4a + 7 + a</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm ws-correct">D</span><span class="ws-term-lbl">2(3y − 4)</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm ws-correct">E</span><span class="ws-term-lbl">10m − 4m + 1</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm ws-correct">F</span><span class="ws-term-lbl">5(x + 2)</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">8x</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">3n + 15</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">5a + 7</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">6y − 8</span></li><li><span class="ws-bub ws-bub-sm">E</span><span class="ws-match-desc">6m + 1</span></li><li><span class="ws-bub ws-bub-sm">F</span><span class="ws-match-desc">5x + 10</span></li></ul></div>
-  <p class="ws-keynote"><b>Why:</b> Each expression on the left simplifies to exactly one card on the right. Combining like terms gives 6x + 2x = 8x, 4a + 7 + a = 5a + 7, and 10m − 4m + 1 = 6m + 1. Distributing gives 3(n + 5) = 3n + 15, 2(3y − 4) = 6y − 8, and 5(x + 2) = 5x + 10, since the outside factor multiplies both terms inside.</p></div>
-    </li>
-    <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">A track stacks 3x and then one more x. Which expression is equivalent to 3x + x?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">3x²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">3x</span></li><li class="ws-opt ws-correct"><span class="ws-bub">C</span><span class="ws-opt-text">4x</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">4</span></li></ol><p class="ws-keynote"><b>Answer:</b> C — 4x</p><p class="ws-keynote"><b>Why:</b> 3x + x is 3 groups of x plus 1 more group of x = 4x. Add the coefficients: 3 + 1 = 4. Check x = 3: 3(3) + 3 = 12 and 4(3) = 12.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Expressions is adding the exponents instead of the coefficients when combining like terms — writing 3x + 2x as 5x² instead of 5x. Remember: 3x means 3 groups of x and 2x means 2 more groups of x, so you add the coefficients (3 + 2 = 5) and keep the variable's power the same (x¹, not x²).</p></div>
-    </li>
-    <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Producer B flipped a formula to 5 + 2x. Which expression is equivalent?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">2x + 5</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">5x + 2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">7x</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">10x</span></li></ol><p class="ws-keynote"><b>Answer:</b> A — 2x + 5</p><p class="ws-keynote"><b>Why:</b> Order of addition does not change the value (commutative property): 5 + 2x = 2x + 5. Check x = 10: 5 + 2(10) = 25 and 2(10) + 5 = 25.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Expressions is adding the exponents instead of the coefficients when combining like terms — writing 3x + 2x as 5x² instead of 5x. Remember: 3x means 3 groups of x and 2x means 2 more groups of x, so you add the coefficients (3 + 2 = 5) and keep the variable's power the same (x¹, not x²).</p></div>
-    </li>
-    <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">5</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Which expression is equivalent to 4x + 3x?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">7x</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">7x²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">12x</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">43x</span></li></ol><p class="ws-keynote"><b>Answer:</b> A — 7x</p><p class="ws-keynote"><b>Why:</b> 4x + 3x = 7x. Combine the coefficients: 4 + 3 = 7.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Expressions is adding the exponents instead of the coefficients when combining like terms — writing 3x + 2x as 5x² instead of 5x. Remember: 3x means 3 groups of x and 2x means 2 more groups of x, so you add the coefficients (3 + 2 = 5) and keep the variable's power the same (x¹, not x²).</p></div>
-    </li></ol><div class="ws-section-head"><span class="ws-section-n">Part 2</span><span class="ws-section-name">Explain and correct</span><span class="ws-section-tag">reasoning</span></div>
+      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Which expression is NOT equivalent to 6x + 9?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">3(2x + 3)</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">9 + 6x</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">4x + 9 + 2x</span></li><li class="ws-opt ws-correct"><span class="ws-bub">D</span><span class="ws-opt-text">6(x + 9)</span></li></ol><p class="ws-keynote"><b>Answer:</b> D — 6(x + 9)</p><p class="ws-keynote"><b>Why:</b> Simplify the first three choices: 3(2x + 3) → 6x + 9; 9 + 6x → 6x + 9; 4x + 9 + 2x → 6x + 9 Distribute the last choice: 6(x + 9) → 6x + 54</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Expressions is adding the exponents instead of the coefficients when combining like terms — writing 3x + 2x as 5x² instead of 5x. Remember: 3x means 3 groups of x and 2x means 2 more groups of x, so you add the coefficients (3 + 2 = 5) and keep the variable's power the same (x¹, not x²).</p></div>
+    </li></ol><div class="ws-section-head"><span class="ws-section-n">Part 2</span><span class="ws-section-name">Apply it</span><span class="ws-section-tag">real-world problems</span></div>
         <ol class="ws-problems">
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">6</span><span class="ws-directions">Find the mistake. Explain it, then show the correct work.</span></div>
-      <div class="ws-pbody"><p class="ws-stem"><b>Level 2 Extension — The False Remix</b></p>
-  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Expression</span><span class="ws-step-w">2x + 6</span></li><li class="ws-step-wrong"><span class="ws-step-n">2</span><span class="ws-step-l">Claim</span><span class="ws-step-w">2x and 6 are like terms, so combine them</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Result</span><span class="ws-step-w">2x + 6 = 8x</span></li></ol></div>
-  <p class="ws-prompt">Which step has the mistake? Explain what went wrong, then show the correct work.</p>
-  <p class="ws-keynote"><b>Mistake:</b> Step 2. 2x and 6 are NOT like terms — 2x carries a variable and 6 is just a number — so they cannot be merged into one term. 2x + 6 is already in simplest form; the only rewrite available is factoring: 2x + 6 = 2(x + 3). Testing x = 5 confirms it: 2(5) + 6 = 16, but 8(5) = 40.</p><p class="ws-keynote"><b>Correct work:</b> 2x and 6 are NOT like terms — 2x has a variable and 6 is just a number, so they cannot be combined into one term. 2x + 6 is already simplified. You could rewrite it by factoring: 2x + 6 = 2(x + 3). Check x = 5: 2(5) + 6 = 16, but 8(5) = 40 — not equal, so 8x is wrong.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><figure class="sgf sgf--table"><table class="sgf-table"><thead><tr><th scope="col">x</th><th scope="col">3x + 4</th><th scope="col">5x</th></tr></thead><tbody><tr><td>2</td><td>10</td><td>10</td></tr><tr><td>3</td><td>?</td><td>?</td></tr></tbody></table><figcaption class="sgf-cap">Lily tested x = 2. Now test x = 3.</figcaption></figure><p class="ws-stem">Lily tests x = 2. She gets 10 for 3x + 4 and 10 for 5x. She says they are equivalent. Is she right?</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">Check Lily's test. What is 3x + 4 when x = 2?</span><span class="ws-blank ws-correct">10</span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">Test x = 3. What is 3x + 4?</span><span class="ws-blank ws-correct">13</span></li><li class="ws-gf-step"><span class="ws-step-n">3</span><span class="ws-gf-prompt">Test x = 3. What is 5x?</span><span class="ws-blank ws-correct">15</span></li><li class="ws-gf-step"><span class="ws-step-n">4</span><span class="ws-gf-prompt">Are the expressions equivalent?</span><span class="ws-blank ws-correct">No. At x = 3 they give 13 and 15.</span></li></ol><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">Lily is not right. The expressions match at x = 2 but not at x = 3.</span></div></div>
+    </li>
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><figure class="sgf sgf--table"><table class="sgf-table"><thead><tr><th scope="col">x</th><th scope="col">4(x + 3)</th><th scope="col">4x + 12</th></tr></thead><tbody><tr><td>1</td><td>?</td><td>?</td></tr></tbody></table><figcaption class="sgf-cap">Substitute x = 1 into both expressions.</figcaption></figure><p class="ws-stem">Are 4(x + 3) and 4x + 12 equivalent? Test x = 1. Then prove it for every x.</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">Find 4(x + 3) when x = 1.</span><span class="ws-blank ws-correct">16</span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">Find 4x + 12 when x = 1.</span><span class="ws-blank ws-correct">16</span></li><li class="ws-gf-step"><span class="ws-step-n">3</span><span class="ws-gf-prompt">Use the Distributive Property on 4(x + 3).</span><span class="ws-blank ws-correct">4 × x + 4 × 3, which is 4x + 12</span></li><li class="ws-gf-step"><span class="ws-step-n">4</span><span class="ws-gf-prompt">Why do they match for every x, not just 1?</span><span class="ws-blank ws-correct">4 groups of (x + 3) is 4 x's and 4 threes. That is 4x + 12 for any x.</span></li></ol><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">Yes. 4(x + 3) distributes to 4x + 12, so they are equivalent for every x.</span></div></div>
+    </li>
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">5</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Fill in the box so the expressions are equivalent: 5(x + 2) and 5x + ☐. What number goes in the box?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">10</span></div><p class="ws-keynote"><b>Why:</b> Multiply 5 by each term: 5 × x + 5 × 2 Simplify: 5x + 10</p></div>
+    </li>
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">6</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Kim says 6x + 2 and 8x are equivalent. They match at x = 1. Test x = 4. What is 6x + 2 when x = 4?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">26</span></div><p class="ws-keynote"><b>Why:</b> Substitute x = 4 into 6x + 2: 6 × 4 + 2 = 24 + 2 = 26 Substitute x = 4 into 8x: 8 × 4 = 32 Compare the values: 26 ≠ 32</p></div>
     </li></ol>
     
   </section>

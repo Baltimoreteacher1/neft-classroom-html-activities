@@ -419,6 +419,36 @@ header.packet h1::after{
 }
 @media print{ body{ background:#fff !important; } }
 
+
+.sgf{margin:0;padding:14px 16px 10px;background:var(--sg-figure,#fff);border:1px solid var(--sg-line,#dde3ea);border-radius:var(--sg-radius,12px);display:flex;flex-direction:column;align-items:center;gap:6px;max-width:100%;overflow-x:auto}
+.sgf-svg{max-width:100%;height:auto;font-family:var(--sg-body,inherit);font-variant-numeric:tabular-nums lining-nums}
+.sgf-cap{font-size:15px;color:var(--sg-muted,#516175);text-align:center;line-height:1.4}
+.sgf-t{fill:var(--sg-text,#1d2a36);font-size:15px}
+.sgf-frac{font-size:12px}
+.sgf-fracbar{stroke:var(--sg-text,#1d2a36);stroke-width:1.4}
+.sgf-num{font-size:15px;font-weight:600}
+.sgf-small{font-size:13px}
+.sgf-axis-title,.sgf-row-label{font-size:14px;font-weight:700;fill:var(--sg-muted,#516175)}
+.sgf-callout{font-size:14px;font-weight:700;fill:var(--sg-deep,#0b2540)}
+.sgf-halo{paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
+.sgf-axis,.sgf-tick{stroke:var(--sg-text,#1d2a36);stroke-width:2;fill:none}
+.sgf-axis-head{fill:var(--sg-text,#1d2a36)}
+.sgf-grid{stroke:#d5dce5;stroke-width:1}
+.sgf-dot{fill:#9aa9b9}
+.sgf-dot.sgf-on,.sgf-pt.sgf-on{fill:var(--sg,#1f6fb2)}
+.sgf-pt{fill:var(--sg-text,#1d2a36);stroke:#fff;stroke-width:2}
+.sgf-pt.sgf-open{fill:#fff;stroke:var(--sg,#1f6fb2);stroke-width:3}
+.sgf-marker{fill:var(--sg,#1f6fb2)}
+.sgf-jump,.sgf-connect{fill:none;stroke:var(--sg,#1f6fb2);stroke-width:2.5}
+.sgf-jump-head,.sgf-ray-head{fill:var(--sg,#1f6fb2)}
+.sgf-ray{stroke:var(--sg,#1f6fb2);stroke-width:6;stroke-linecap:round}
+.sgf-link{stroke:#b9c4d0;stroke-width:1.5;stroke-dasharray:4 4}
+.sgf-poly{fill:color-mix(in srgb,var(--sg,#1f6fb2) 16%,transparent);stroke:var(--sg,#1f6fb2);stroke-width:2.5}
+.sgf-box{fill:color-mix(in srgb,var(--sg,#1f6fb2) 16%,transparent);stroke:var(--sg-text,#1d2a36);stroke-width:2}
+.sgf-whisker{stroke:var(--sg-text,#1d2a36);stroke-width:2}
+.sgf-median{stroke:var(--sg,#1f6fb2);stroke-width:4}
+.sgf-bar{fill:color-mix(in srgb,var(--sg,#1f6fb2) 30%,#fff);stroke:var(--sg-text,#1d2a36);stroke-width:1.5}
+
 </style>
   <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
@@ -454,41 +484,30 @@ header.packet h1::after{
       <p class="ws-target"><b>Learning target</b> I can use a ratio table to find equivalent ratios, explain why the method works, and use it on a problem I have not seen before.</p>
     </header>
     
-    <div class="ws-section-head"><span class="ws-section-n">Part 1</span><span class="ws-section-name">Understand the idea</span><span class="ws-section-tag">models and meaning</span></div>
-        <ol class="ws-problems">
+    <ol class="ws-problems">
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Complete the table. Show how you found each value.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Complete the ratio table for lemon juice to water in Chef Reyes's lemonade recipe (1 cup lemon juice for every 4 cups water).</p>
-  <table class="ws-table"><thead><tr><th>Pitchers</th><th>Lemon Juice (cups)</th><th>Water (cups)</th></tr></thead><tbody><tr><td>1</td><td>1</td><td>4</td></tr><tr><td>2</td><td class="ws-correct"></td><td class="ws-correct"></td></tr><tr><td>5</td><td class="ws-correct"></td><td class="ws-correct"></td></tr><tr><td>10</td><td class="ws-correct"></td><td class="ws-correct"></td></tr></tbody></table>
-  <p class="ws-keynote"><b>Why:</b> One pitcher takes 1 cup of lemon juice and 4 cups of water, so multiply both amounts by the number of pitchers: 2 pitchers give 2 and 8, 5 pitchers give 5 and 20, and 10 pitchers give 10 and 40. Every row keeps 4 times as much water as juice, which is what makes the rows equivalent to 1:4.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><figure class="sgf sgf--ratioTable"><table class="sgf-table"><thead><tr><th scope="col">Flour (cups)</th><th scope="col">Water (cups)</th></tr></thead><tbody><tr><td>8</td><td>12</td></tr><tr><td>2</td><td>?</td></tr><tr><td>6</td><td>?</td></tr></tbody></table><figcaption class="sgf-cap">Divide first, then multiply.</figcaption></figure><p class="ws-stem">A recipe uses 8 cups of flour for every 12 cups of water. How many cups of water go with 6 cups of flour?</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">Divide both numbers by 4. How much water goes with 2 cups of flour?</span><span class="ws-blank ws-correct">3</span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">Multiply both numbers by 3. How much water goes with 6 cups of flour?</span><span class="ws-blank ws-correct">9</span></li></ol><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">9 cups of water go with 6 cups of flour. 8:12, 2:3 and 6:9 are equivalent.</span></div></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Write the name of the correct group on each line.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Which rows belong in a ratio table for 3:4? Sort them into correct and incorrect.</p>
-  <div class="ws-cats-bar"><b>Groups:</b> <span class="ws-cat-pill">Belongs in 3:4 Table</span> <span class="ws-cat-pill">Does NOT Belong</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-md ws-correct">Belongs in 3:4 Table</span><span class="ws-sort-text">6:8</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md ws-correct">Belongs in 3:4 Table</span><span class="ws-sort-text">9:12</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md ws-correct">Belongs in 3:4 Table</span><span class="ws-sort-text">15:20</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md ws-correct">Does NOT Belong</span><span class="ws-sort-text">6:10</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md ws-correct">Does NOT Belong</span><span class="ws-sort-text">12:14</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md ws-correct">Does NOT Belong</span><span class="ws-sort-text">9:16</span></li></ul>
-  <p class="ws-keynote"><b>Why:</b> A row belongs only if both parts came from 3:4 through the same multiplier: 6:8 is ×2, 9:12 is ×3, and 15:20 is ×5. The others use different multipliers on each part — 6:10 is ×2 and ×2.5, 12:14 is ×4 and ×3.5, 9:16 is ×3 and ×4 — so they are not equivalent to 3:4.</p></div>
-    </li></ol><div class="ws-section-head"><span class="ws-section-n">Part 2</span><span class="ws-section-name">Apply it</span><span class="ws-section-tag">real-world problems</span></div>
-        <ol class="ws-problems">
-    <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">The food truck sells tacos at a steady rate: 2 tacos cost $5. At that rate, how much do 6 tacos cost?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">$11</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">$12</span></li><li class="ws-opt ws-correct"><span class="ws-bub">C</span><span class="ws-opt-text">$15</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">$30</span></li></ol><p class="ws-keynote"><b>Answer:</b> C — $15</p><p class="ws-keynote"><b>Why:</b> 6 tacos is 3 times 2 tacos, so multiply the cost by 3: $5 x 3 = $15.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Ratio Tables is scaling only ONE part of the ratio, or adding the scale factor to a part instead of multiplying by it — for example, turning 2:3 into 6:3 (multiplying only the first number by 3 and forgetting the second) or into 4:5 (adding the scale factor 2 to the second number instead of multiplying, since 3+2=5 but 3×2=6). Before you submit, multiply BOTH numbers by the same scale factor and check that your new ratio simplifies back to the original.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><figure class="sgf sgf--ratioTable"><table class="sgf-table"><thead><tr><th scope="col">Bags of chips</th><th scope="col">Juice boxes</th></tr></thead><tbody><tr><td>6</td><td>15</td></tr><tr><td>?</td><td>?</td></tr><tr><td>10</td><td>?</td></tr></tbody></table></figure><p class="ws-stem">A party plan uses 6 bags of chips for every 15 juice boxes. How many juice boxes go with 10 bags of chips?</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">Divide both numbers by 3. What is the smaller ratio?</span><span class="ws-blank ws-correct">2:5</span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">Multiply both by 5. How many juice boxes go with 10 bags?</span><span class="ws-blank ws-correct">25</span></li><li class="ws-gf-step"><span class="ws-step-n">3</span><span class="ws-gf-prompt">Ben adds 4 to both numbers and gets 10:19. Why is that wrong?</span><span class="ws-blank ws-correct">Adding changes the ratio. In 6:15, there are 5 juice boxes for every 2 bags. 10:19 does not keep that.</span></li></ol><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">10 bags of chips go with 25 juice boxes. 6:15 and 10:25 are both equivalent to 2:5.</span></div></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">A smoothie recipe at the truck uses 4 cups of mango for every 3 cups of pineapple. How many cups of mango are needed for 9 cups of pineapple?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">9</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">10</span></li><li class="ws-opt ws-correct"><span class="ws-bub">C</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">13</span></li></ol><p class="ws-keynote"><b>Answer:</b> C — 12</p><p class="ws-keynote"><b>Why:</b> The scale factor is 9 div 3 = 3. Multiply the mango by 3: 4 x 3 = 12 cups.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Ratio Tables is scaling only ONE part of the ratio, or adding the scale factor to a part instead of multiplying by it — for example, turning 2:3 into 6:3 (multiplying only the first number by 3 and forgetting the second) or into 4:5 (adding the scale factor 2 to the second number instead of multiplying, since 3+2=5 but 3×2=6). Before you submit, multiply BOTH numbers by the same scale factor and check that your new ratio simplifies back to the original.</p></div>
-    </li></ol><div class="ws-section-head"><span class="ws-section-n">Part 3</span><span class="ws-section-name">Explain and correct</span><span class="ws-section-tag">reasoning</span></div>
-        <ol class="ws-problems">
-    <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">5</span><span class="ws-directions">Answer in complete sentences.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">A recipe uses 4 cups of flour for every 3 cups of sugar. A student filled in a ratio table: 4:3, 8:6, 12:9, 14:12. Find and fix the error in the last row. Explain what went wrong.</p><p class="ws-keynote"><b>Sample answer:</b> The last row is wrong. The pattern multiplies by the same scale factor. 4×1=4, 4×2=8, 4×3=12, so the 4th row should be 4×4=16 cups of flour and 3×4=12 cups of sugar → 16:12. The student added 2 to 12 instead of adding 4. Or: 12+4=16, not 12+2=14.</p><p class="ws-keynote"><b>Look for:</b> 16:12, multiply, scale factor, added wrong, pattern</p><p class="ws-keynote"><b>Why:</b> The flour column grows by 4 each row, so after 12 it should be 16, not 14 — the last row should read 16:12. The student added 2 to the flour while still adding 3 to the sugar, which breaks the 4:3 relationship.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">A ratio table shows 12 pens for every 4 boxes. How many pens are in 7 boxes?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">21</span></div><p class="ws-keynote"><b>Why:</b> Divide both numbers by 4: 12 ÷ 4 = 3; 4 ÷ 4 = 1 Multiply both numbers by 7: 3 × 7 = 21; 1 × 7 = 7</p></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">6</span><span class="ws-directions">Find the mistake. Explain it, then show the correct work.</span></div>
-      <div class="ws-pbody"><p class="ws-stem"><b>Level 2 Extension — Catch the Food Truck Error</b></p>
-  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the order</span><span class="ws-step-w">The hot sauce mix uses a ratio of 2 spoons of pepper to 5 spoons of tomato (2:5). Find an equivalent row for a bigger batch.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Pick a scale factor</span><span class="ws-step-w">To make the batch bigger, Maya picks a scale factor of 3. A scale factor should multiply BOTH parts.</span></li><li class="ws-step-wrong"><span class="ws-step-n">3</span><span class="ws-step-l">Scale the pepper</span><span class="ws-step-w">2 + 1 = 3 spoons of pepper</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Scale the tomato</span><span class="ws-step-w">5 + 1 = 6 spoons of tomato</span></li></ol></div>
-  <p class="ws-prompt">Which step has the mistake? Explain what went wrong, then show the correct work.</p>
-  <p class="ws-keynote"><b>Mistake:</b> Step 3. In the pepper step Maya wrote 2 + 1 = 3 and then 5 + 1 = 6, adding 1 instead of using the scale factor of 3 she had just chosen. Multiplying both parts by 3 gives 2 × 3 = 6 spoons of pepper and 5 × 3 = 15 spoons of tomato, so the equivalent row is 6:15.</p><p class="ws-keynote"><b>Correct work:</b> Maya added 1 to each part instead of multiplying. To scale 2:5 by a scale factor of 3, multiply BOTH parts: 2 x 3 = 6 spoons of pepper and 5 x 3 = 15 spoons of tomato, giving 6:15.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><figure class="sgf sgf--ratioTable"><table class="sgf-table"><thead><tr><th scope="col">Strawberries</th><th scope="col">Bananas</th></tr></thead><tbody><tr><td>15</td><td>6</td></tr><tr><td>?</td><td>?</td></tr><tr><td>?</td><td>8</td></tr></tbody></table></figure><p class="ws-stem">A smoothie uses 15 strawberries for every 6 bananas. How many strawberries go with 8 bananas?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">20</span></div><p class="ws-keynote"><b>Why:</b> Divide both numbers by 3: 15 ÷ 3 = 5; 6 ÷ 3 = 2 Multiply both numbers by 4: 5 × 4 = 20; 2 × 4 = 8</p></div>
+    </li>
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">5</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">A food truck sells 9 burritos for $24. At that rate, how much do 6 burritos cost?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">$16</span></div><p class="ws-keynote"><b>Why:</b> Divide both numbers by 3: 9 ÷ 3 = 3; $24 ÷ 3 = $8 Multiply both numbers by 2: 3 × 2 = 6; $8 × 2 = $16</p></div>
+    </li>
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">6</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">A table shows 10 cups of rice for every 4 cups of beans. Kim says 15 cups of rice need 9 cups of beans, because 10 + 5 = 15 and 4 + 5 = 9. How many cups of beans are right?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">6</span></div><p class="ws-keynote"><b>Why:</b> Divide both numbers by 2: 10 ÷ 2 = 5; 4 ÷ 2 = 2 Multiply both numbers by 3: 5 × 3 = 15; 2 × 3 = 6</p></div>
     </li></ol>
     
   </section>

@@ -419,6 +419,36 @@ header.packet h1::after{
 }
 @media print{ body{ background:#fff !important; } }
 
+
+.sgf{margin:0;padding:14px 16px 10px;background:var(--sg-figure,#fff);border:1px solid var(--sg-line,#dde3ea);border-radius:var(--sg-radius,12px);display:flex;flex-direction:column;align-items:center;gap:6px;max-width:100%;overflow-x:auto}
+.sgf-svg{max-width:100%;height:auto;font-family:var(--sg-body,inherit);font-variant-numeric:tabular-nums lining-nums}
+.sgf-cap{font-size:15px;color:var(--sg-muted,#516175);text-align:center;line-height:1.4}
+.sgf-t{fill:var(--sg-text,#1d2a36);font-size:15px}
+.sgf-frac{font-size:12px}
+.sgf-fracbar{stroke:var(--sg-text,#1d2a36);stroke-width:1.4}
+.sgf-num{font-size:15px;font-weight:600}
+.sgf-small{font-size:13px}
+.sgf-axis-title,.sgf-row-label{font-size:14px;font-weight:700;fill:var(--sg-muted,#516175)}
+.sgf-callout{font-size:14px;font-weight:700;fill:var(--sg-deep,#0b2540)}
+.sgf-halo{paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
+.sgf-axis,.sgf-tick{stroke:var(--sg-text,#1d2a36);stroke-width:2;fill:none}
+.sgf-axis-head{fill:var(--sg-text,#1d2a36)}
+.sgf-grid{stroke:#d5dce5;stroke-width:1}
+.sgf-dot{fill:#9aa9b9}
+.sgf-dot.sgf-on,.sgf-pt.sgf-on{fill:var(--sg,#1f6fb2)}
+.sgf-pt{fill:var(--sg-text,#1d2a36);stroke:#fff;stroke-width:2}
+.sgf-pt.sgf-open{fill:#fff;stroke:var(--sg,#1f6fb2);stroke-width:3}
+.sgf-marker{fill:var(--sg,#1f6fb2)}
+.sgf-jump,.sgf-connect{fill:none;stroke:var(--sg,#1f6fb2);stroke-width:2.5}
+.sgf-jump-head,.sgf-ray-head{fill:var(--sg,#1f6fb2)}
+.sgf-ray{stroke:var(--sg,#1f6fb2);stroke-width:6;stroke-linecap:round}
+.sgf-link{stroke:#b9c4d0;stroke-width:1.5;stroke-dasharray:4 4}
+.sgf-poly{fill:color-mix(in srgb,var(--sg,#1f6fb2) 16%,transparent);stroke:var(--sg,#1f6fb2);stroke-width:2.5}
+.sgf-box{fill:color-mix(in srgb,var(--sg,#1f6fb2) 16%,transparent);stroke:var(--sg-text,#1d2a36);stroke-width:2}
+.sgf-whisker{stroke:var(--sg-text,#1d2a36);stroke-width:2}
+.sgf-median{stroke:var(--sg,#1f6fb2);stroke-width:4}
+.sgf-bar{fill:color-mix(in srgb,var(--sg,#1f6fb2) 30%,#fff);stroke:var(--sg-text,#1d2a36);stroke-width:1.5}
+
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -457,44 +487,45 @@ header.packet h1::after{
       <p class="ws-target"><b>Learning target</b> I can divide multi-digit whole numbers and explain the meaning of the quotient and remainder.</p>
     </header>
     
-    <div class="ws-section-head"><span class="ws-section-n">Part 1</span><span class="ws-section-name">Practice the skill</span><span class="ws-section-tag">show every step</span></div>
+    <div class="ws-section-head"><span class="ws-section-n">Part 1</span><span class="ws-section-name">Understand the idea</span><span class="ws-section-tag">models and meaning</span></div>
         <ol class="ws-problems">
     <li class="ws-problem-card">
       <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">What is 1,125 ÷ 9?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">115</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">124</span></li><li class="ws-opt ws-correct"><span class="ws-bub">C</span><span class="ws-opt-text">125</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">135</span></li></ol><p class="ws-keynote"><b>Answer:</b> C — 125</p><p class="ws-keynote"><b>Why:</b> 9 × 125 = 1,125. Running the cycle: 11 ÷ 9 → 1 with 2 left, 22 ÷ 9 → 2 with 4 left, 45 ÷ 9 → 5 with 0 left, so the quotient is 125.</p></div>
+      <div class="ws-pbody"><p class="ws-stem">A ribbon is 950 cm long. You cut pieces that are 40 cm long. 950 ÷ 40 → 23 R 30. What does the 30 mean?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span><span class="ws-opt-text">30 cm of ribbon is left over.</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">You can cut 30 pieces.</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Each piece is 30 cm long.</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">You need 30 cm more ribbon.</span></li></ol><p class="ws-keynote"><b>Answer:</b> A — 30 cm of ribbon is left over.</p><p class="ws-keynote"><b>Why:</b> Find what 23 pieces use: 23 × 40 = 920 Find what is left: 950 − 920 = 30</p></div>
+    </li></ol><div class="ws-section-head"><span class="ws-section-n">Part 2</span><span class="ws-section-name">Practice the skill</span><span class="ws-section-tag">show every step</span></div>
+        <ol class="ws-problems">
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">What is 492 ÷ 4?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">123</span></div><p class="ws-keynote"><b>Why:</b> Divide 4, then 9, then 12 by 4: 4 ÷ 4 → 1; 9 ÷ 4 → 2, 9 − 8 = 1; 12 ÷ 4 → 3 Check by multiplying: 4 × 123 = 492</p></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><figure class="sgf sgf--longDivision"><svg class="sgf-svg" viewBox="0 0 230 260" width="230" height="260" role="img" aria-label="Long division: 2064 divided by 16, quotient 129" xmlns="http://www.w3.org/2000/svg"><text class="sgf-t sgf-ld sgf-q" x="99.0" y="34.0" text-anchor="middle">1</text><text class="sgf-t sgf-ld sgf-q" x="121.0" y="34.0" text-anchor="middle">2</text><text class="sgf-t sgf-ld sgf-q" x="143.0" y="34.0" text-anchor="middle">9</text><text class="sgf-t sgf-ld" x="50.0" y="64.0" text-anchor="end">16</text><path class="sgf-bracket" d="M58,72 Q68,58 60,42 L160,42"/><text class="sgf-t sgf-ld" x="77.0" y="64.0" text-anchor="middle">2</text><text class="sgf-t sgf-ld" x="99.0" y="64.0" text-anchor="middle">0</text><text class="sgf-t sgf-ld" x="121.0" y="64.0" text-anchor="middle">6</text><text class="sgf-t sgf-ld" x="143.0" y="64.0" text-anchor="middle">4</text><text class="sgf-t sgf-ld" x="77.0" y="94.0" text-anchor="middle">1</text><text class="sgf-t sgf-ld" x="99.0" y="94.0" text-anchor="middle">6</text><text class="sgf-t sgf-ld" x="61.0" y="94.0" text-anchor="middle">−</text><line class="sgf-rule" x1="64" y1="102" x2="110" y2="102"/><text class="sgf-t sgf-ld" x="99.0" y="124.0" text-anchor="middle">4</text><text class="sgf-t sgf-ld sgf-q" x="121.0" y="124.0" text-anchor="middle">6</text><text class="sgf-t sgf-ld" x="99.0" y="154.0" text-anchor="middle">3</text><text class="sgf-t sgf-ld" x="121.0" y="154.0" text-anchor="middle">2</text><text class="sgf-t sgf-ld" x="83.0" y="154.0" text-anchor="middle">−</text><line class="sgf-rule" x1="86" y1="162" x2="132" y2="162"/><text class="sgf-t sgf-ld" x="99.0" y="184.0" text-anchor="middle">1</text><text class="sgf-t sgf-ld" x="121.0" y="184.0" text-anchor="middle">4</text><text class="sgf-t sgf-ld sgf-q" x="143.0" y="184.0" text-anchor="middle">4</text><text class="sgf-t sgf-ld" x="99.0" y="214.0" text-anchor="middle">1</text><text class="sgf-t sgf-ld" x="121.0" y="214.0" text-anchor="middle">4</text><text class="sgf-t sgf-ld" x="143.0" y="214.0" text-anchor="middle">4</text><text class="sgf-t sgf-ld" x="83.0" y="214.0" text-anchor="middle">−</text><line class="sgf-rule" x1="86" y1="222" x2="154" y2="222"/><text class="sgf-t sgf-ld" x="143.0" y="244.0" text-anchor="middle">0</text></svg></figure><p class="ws-stem">What is 2,064 ÷ 16?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">129</span></div><p class="ws-keynote"><b>Why:</b> Divide 20 by 16. Multiply and subtract: 20 ÷ 16 → 1; 20 − 16 = 4 Bring down the 6. Repeat with 46: 46 ÷ 16 → 2; 2 × 16 = 32; 46 − 32 = 14 Bring down the 4. Repeat with 144: 144 ÷ 16 → 9; 9 × 16 = 144; 144 − 144 = 0</p></div>
+    </li>
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">What is 9,135 ÷ 45?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">203</span></div><p class="ws-keynote"><b>Why:</b> Divide 91 by 45. Multiply and subtract: 91 ÷ 45 → 2; 91 − 90 = 1 Bring down the 3. 45 does not fit: 13 ÷ 45 → 0 Bring down the 5. Divide 135 by 45: 135 ÷ 45 → 3; 45 × 203 = 9,135</p></div>
+    </li>
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">5</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
       <div class="ws-pbody"><p class="ws-stem">What is 936 ÷ 12?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">68</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">76</span></li><li class="ws-opt ws-correct"><span class="ws-bub">C</span><span class="ws-opt-text">78</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">87</span></li></ol><p class="ws-keynote"><b>Answer:</b> C — 78</p><p class="ws-keynote"><b>Why:</b> 12 × 78 = 936. You can verify: 12 × 70 = 840, 12 × 8 = 96, 840 + 96 = 936.</p></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-problem-head"><span class="ws-pnum">6</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
       <div class="ws-pbody"><p class="ws-stem">What is 2,485 ÷ 5?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">487</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">496</span></li><li class="ws-opt ws-correct"><span class="ws-bub">C</span><span class="ws-opt-text">497</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">507</span></li></ol><p class="ws-keynote"><b>Answer:</b> C — 497</p><p class="ws-keynote"><b>Why:</b> 5 × 497 = 2,485. Running the cycle: 24 ÷ 5 → 4 with 4 left, 48 ÷ 5 → 9 with 3 left, 35 ÷ 5 → 7 with 0 left, so the quotient is 497 and the remainder is 0.</p></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
+      <div class="ws-problem-head"><span class="ws-pnum">7</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
       <div class="ws-pbody"><p class="ws-stem">What is 756 ÷ 9?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">83</span></li><li class="ws-opt ws-correct"><span class="ws-bub">B</span><span class="ws-opt-text">84</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">86</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">94</span></li></ol><p class="ws-keynote"><b>Answer:</b> B — 84</p><p class="ws-keynote"><b>Why:</b> 9 × 84 = 756. Running the cycle: 75 ÷ 9 → 8 with 3 left, then 36 ÷ 9 → 4 with 0 left, so the quotient is 84 and the remainder is 0.</p></div>
-    </li></ol><div class="ws-section-head"><span class="ws-section-n">Part 2</span><span class="ws-section-name">Apply it</span><span class="ws-section-tag">real-world problems</span></div>
+    </li></ol><div class="ws-section-head"><span class="ws-section-n">Part 3</span><span class="ws-section-name">Apply it</span><span class="ws-section-tag">real-world problems</span></div>
         <ol class="ws-problems">
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">5</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Worksheet #4 — Solve 2,184 ÷ 14. Give the quotient and remainder.</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">DIVIDE, MULTIPLY, SUBTRACT, BRING DOWN until the digits run out. The quotient on top of the bar is ___.</span><span class="ws-blank ws-correct">156</span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">Check it, the way the worksheet does: 14 × 156 = ___.</span><span class="ws-blank ws-correct">2184</span></li><li class="ws-gf-step"><span class="ws-step-n">3</span><span class="ws-gf-prompt">Add what was left over: 2,184 + ___ = 2,184, so the remainder is that same number.</span><span class="ws-blank ws-correct">0</span></li></ol><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">156 R0</span></div><p class="ws-keynote"><b>Why:</b> 2,184 ÷ 14 = 156 with a remainder of 0. Check it the worksheet way: 14 × 156 = 2,184, and 2,184 + 0 = 2,184.</p></div>
-    </li>
-    <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">6</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Divide 544 by 10. Give the quotient and remainder.</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">10 fits into 544 about ___ times.</span><span class="ws-blank ws-correct">54</span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">Multiply back: 10 × 54 = ___.</span><span class="ws-blank ws-correct">540</span></li><li class="ws-gf-step"><span class="ws-step-n">3</span><span class="ws-gf-prompt">The amount left is ___.</span><span class="ws-blank ws-correct">4</span></li></ol><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">54 R4</span></div><p class="ws-keynote"><b>Why:</b> 10 fits into 544 about 54 times. Multiply back: 10 × 54 = 540. The amount left is 4.</p></div>
-    </li>
-    <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">7</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Divide 632 by 11. Give the quotient and remainder.</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">11 fits into 632 about ___ times.</span><span class="ws-blank ws-correct">57</span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">Multiply back: 11 × 57 = ___.</span><span class="ws-blank ws-correct">627</span></li><li class="ws-gf-step"><span class="ws-step-n">3</span><span class="ws-gf-prompt">The amount left is ___.</span><span class="ws-blank ws-correct">5</span></li></ol><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">57 R5</span></div><p class="ws-keynote"><b>Why:</b> 11 fits into 632 about 57 times. Multiply back: 11 × 57 = 627. The amount left is 5.</p></div>
-    </li>
-    <li class="ws-problem-card">
       <div class="ws-problem-head"><span class="ws-pnum">8</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Divide 451 by 6. Give the quotient and remainder.</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">6 fits into 451 about ___ times.</span><span class="ws-blank ws-correct">75</span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">Multiply back: 6 × 75 = ___.</span><span class="ws-blank ws-correct">450</span></li><li class="ws-gf-step"><span class="ws-step-n">3</span><span class="ws-gf-prompt">The amount left is ___.</span><span class="ws-blank ws-correct">1</span></li></ol><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">75 R1</span></div><p class="ws-keynote"><b>Why:</b> 6 fits into 451 about 75 times. Multiply back: 6 × 75 = 450. The amount left is 1.</p></div>
+      <div class="ws-pbody"><p class="ws-stem">A number divided by 23 gives 46 R 5. What is the number?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">1,063</span></div><p class="ws-keynote"><b>Why:</b> Multiply the quotient by the divisor: 46 × 23 = 1,058 Add the remainder: 1,058 + 5 = 1,063</p></div>
     </li>
     <li class="ws-problem-card">
       <div class="ws-problem-head"><span class="ws-pnum">9</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Divide 547 by 7. Give the quotient and remainder.</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">7 fits into 547 about ___ times.</span><span class="ws-blank ws-correct">78</span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">Multiply back: 7 × 78 = ___.</span><span class="ws-blank ws-correct">546</span></li><li class="ws-gf-step"><span class="ws-step-n">3</span><span class="ws-gf-prompt">The amount left is ___.</span><span class="ws-blank ws-correct">1</span></li></ol><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">78 R1</span></div><p class="ws-keynote"><b>Why:</b> 7 fits into 547 about 78 times. Multiply back: 7 × 78 = 546. The amount left is 1.</p></div>
+      <div class="ws-pbody"><p class="ws-stem">Ms. Diaz has 250 stickers. She gives 8 students the same number of stickers each. How many stickers does each student get?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">31 stickers</span></div><p class="ws-keynote"><b>Why:</b> Divide 25 by 8. Multiply and subtract: 25 ÷ 8 → 3; 25 − 24 = 1 Bring down the 0. Divide 10 by 8: 10 ÷ 8 → 1; 10 − 8 = 2 Read the quotient: 31 R 2 → 31 each, 2 left</p></div>
     </li></ol>
     
   </section>

@@ -478,6 +478,333 @@
       },
       "bigIdea": "A pattern rule can predict forward and be undone backward, and it works because each new disc doubles the old moves, plus one.",
       "bigIdeaEs": "Una regla del patrón puede predecir hacia adelante y deshacerse hacia atrás, y funciona porque cada disco nuevo duplica los movimientos anteriores, más uno."
+    },
+    "practice": {
+      "together": [
+        {
+          "problem": "A tower took 255 moves to solve. For each new disc, the rule is “double the moves, then add 1.” Undo the rule to find how many discs the tower had.",
+          "problemEs": "Una torre tomó 255 movimientos para resolverse. Por cada disco nuevo, la regla es «duplica los movimientos y luego suma 1». Deshaz la regla para hallar cuántos discos tenía la torre.",
+          "figure": {
+            "kind": "table",
+            "headers": [
+              "Discs",
+              "Moves"
+            ],
+            "rows": [
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                "?",
+                255
+              ]
+            ],
+            "caption": "Undo the rule until you reach 1 move.",
+            "captionEs": "Deshaz la regla hasta llegar a 1 movimiento."
+          },
+          "steps": [
+            {
+              "ask": "Undo the rule once: subtract 1, then halve. What do you get?",
+              "askEs": "Deshaz la regla una vez: resta 1 y luego divide entre 2. ¿Qué obtienes?",
+              "answer": "127",
+              "accept": [
+                "127"
+              ]
+            },
+            {
+              "ask": "Keep undoing the rule until you reach 1. List the numbers.",
+              "askEs": "Sigue deshaciendo la regla hasta llegar a 1. Haz la lista de números.",
+              "answer": "63, 31, 15, 7, 3, 1"
+            },
+            {
+              "ask": "Count the numbers in your list, from 1 to 255. How many discs?",
+              "askEs": "Cuenta los números de tu lista, de 1 a 255. ¿Cuántos discos?",
+              "answer": "8",
+              "accept": [
+                "8",
+                "8 discs"
+              ]
+            }
+          ],
+          "answer": "The tower had 8 discs: 1, 3, 7, 15, 31, 63, 127, 255.",
+          "answerEs": "La torre tenía 8 discos: 1, 3, 7, 15, 31, 63, 127, 255."
+        },
+        {
+          "problem": "A pattern uses the rule “double, then add 2.” The 4th number is 54. What is the 1st number?",
+          "problemEs": "Un patrón usa la regla «duplica y luego suma 2». El 4.º número es 54. ¿Cuál es el 1.er número?",
+          "figure": {
+            "kind": "table",
+            "headers": [
+              "Position",
+              "Number"
+            ],
+            "rows": [
+              [
+                1,
+                "?"
+              ],
+              [
+                2,
+                "?"
+              ],
+              [
+                3,
+                "?"
+              ],
+              [
+                4,
+                54
+              ]
+            ]
+          },
+          "steps": [
+            {
+              "ask": "Undo the rule: subtract 2, then halve. What is the 3rd number?",
+              "askEs": "Deshaz la regla: resta 2 y luego divide entre 2. ¿Cuál es el 3.er número?",
+              "answer": "26",
+              "accept": [
+                "26"
+              ]
+            },
+            {
+              "ask": "Undo the rule again. What is the 2nd number?",
+              "askEs": "Deshaz la regla otra vez. ¿Cuál es el 2.º número?",
+              "answer": "12",
+              "accept": [
+                "12"
+              ]
+            },
+            {
+              "ask": "Undo it once more. What is the 1st number?",
+              "askEs": "Deshazla una vez más. ¿Cuál es el 1.er número?",
+              "answer": "5",
+              "accept": [
+                "5"
+              ]
+            },
+            {
+              "ask": "Why do you subtract 2 before you halve?",
+              "askEs": "¿Por qué restas 2 antes de dividir entre 2?",
+              "answer": "The rule adds 2 last, so you undo it first. You undo the steps in reverse order.",
+              "answerEs": "La regla suma 2 al final, así que eso se deshace primero. Deshaces los pasos en orden inverso."
+            }
+          ],
+          "answer": "The 1st number is 5. Check: 5, 12, 26, 54.",
+          "answerEs": "El 1.er número es 5. Comprueba: 5, 12, 26, 54."
+        }
+      ],
+      "onMyOwn": [
+        {
+          "problem": "A 10-disc tower takes 1,023 moves. How many moves does an 11-disc tower take?",
+          "problemEs": "Una torre de 10 discos toma 1,023 movimientos. ¿Cuántos movimientos toma una torre de 11 discos?",
+          "answer": "2047",
+          "accept": [
+            "2047",
+            "2,047",
+            "2047 moves"
+          ],
+          "hint": "Use the rule “double, then add 1.”",
+          "hintEs": "Usa la regla «duplica y luego suma 1».",
+          "steps": [
+            {
+              "do": "Double the moves.",
+              "doEs": "Duplica los movimientos.",
+              "math": "1023 × 2 = 2046"
+            },
+            {
+              "do": "Add 1.",
+              "doEs": "Suma 1.",
+              "math": "2046 + 1 = 2047"
+            }
+          ]
+        },
+        {
+          "problem": "A pattern uses the rule “double, then add 1.” The 4th number is 95. What is the 1st number?",
+          "problemEs": "Un patrón usa la regla «duplica y luego suma 1». El 4.º número es 95. ¿Cuál es el 1.er número?",
+          "answer": "11",
+          "accept": [
+            "11"
+          ],
+          "hint": "Undo the rule three times: subtract 1, then halve.",
+          "hintEs": "Deshaz la regla tres veces: resta 1 y luego divide entre 2.",
+          "steps": [
+            {
+              "do": "Undo the rule from 95.",
+              "doEs": "Deshaz la regla desde 95.",
+              "math": "(95 − 1) ÷ 2 = 47"
+            },
+            {
+              "do": "Undo it two more times.",
+              "doEs": "Deshazla dos veces más.",
+              "math": [
+                "(47 − 1) ÷ 2 = 23",
+                "(23 − 1) ÷ 2 = 11"
+              ]
+            }
+          ],
+          "explain": "How can you check that 11 is right?",
+          "explainEs": "¿Cómo puedes comprobar que 11 es correcto?",
+          "modelExplanation": "Run the rule forward from 11: 11 × 2 + 1 = 23, 23 × 2 + 1 = 47, and 47 × 2 + 1 = 95. The 4th number is 95, so 11 is right.",
+          "modelExplanationEs": "Usa la regla hacia adelante desde 11: 11 × 2 + 1 = 23, 23 × 2 + 1 = 47, y 47 × 2 + 1 = 95. El 4.º número es 95, así que 11 es correcto."
+        },
+        {
+          "problem": "A robot moves 1 disc every 2 seconds. A 4-disc tower takes 15 moves. How many seconds does the robot need for a 5-disc tower?",
+          "problemEs": "Un robot mueve 1 disco cada 2 segundos. Una torre de 4 discos toma 15 movimientos. ¿Cuántos segundos necesita el robot para una torre de 5 discos?",
+          "answer": "62 seconds",
+          "answerEs": "62 segundos",
+          "accept": [
+            "62",
+            "62 seconds"
+          ],
+          "hint": "First find the moves for 5 discs. Each move takes 2 seconds.",
+          "hintEs": "Primero halla los movimientos para 5 discos. Cada movimiento toma 2 segundos.",
+          "steps": [
+            {
+              "do": "Find the moves for 5 discs.",
+              "doEs": "Halla los movimientos para 5 discos.",
+              "math": "15 × 2 + 1 = 31"
+            },
+            {
+              "do": "Multiply by 2 seconds per move.",
+              "doEs": "Multiplica por 2 segundos por movimiento.",
+              "math": "31 × 2 = 62"
+            }
+          ]
+        },
+        {
+          "problem": "A 3-disc tower takes 7 moves. Jay says a 6-disc tower takes 7 × 2 = 14 moves, because 6 is double 3. How many moves does a 6-disc tower take?",
+          "problemEs": "Una torre de 3 discos toma 7 movimientos. Jay dice que una torre de 6 discos toma 7 × 2 = 14 movimientos, porque 6 es el doble de 3. ¿Cuántos movimientos toma una torre de 6 discos?",
+          "answer": "63",
+          "accept": [
+            "63",
+            "63 moves"
+          ],
+          "hint": "The rule goes from one disc to the next disc. Use it once for each new disc.",
+          "hintEs": "La regla va de un disco al disco siguiente. Úsala una vez por cada disco nuevo.",
+          "steps": [
+            {
+              "do": "Use the rule for 4 discs.",
+              "doEs": "Usa la regla para 4 discos.",
+              "math": "7 × 2 + 1 = 15"
+            },
+            {
+              "do": "Use it for 5 discs and 6 discs.",
+              "doEs": "Úsala para 5 discos y 6 discos.",
+              "math": [
+                "15 × 2 + 1 = 31",
+                "31 × 2 + 1 = 63"
+              ]
+            }
+          ],
+          "explain": "Why is Jay's shortcut wrong?",
+          "explainEs": "¿Por qué está mal el atajo de Jay?",
+          "modelExplanation": "The rule works from one disc to the next, and it adds 1 each time. From 3 discs to 6 discs you use the rule 3 times. The moves grow from 7 to 63, not 14.",
+          "modelExplanationEs": "La regla funciona de un disco al siguiente, y suma 1 cada vez. De 3 discos a 6 discos usas la regla 3 veces. Los movimientos crecen de 7 a 63, no a 14."
+        }
+      ],
+      "talk": {
+        "prompt": "Will a tower ever take an even number of moves? Use the rule “double, then add 1” to prove your answer.",
+        "promptEs": "¿Alguna torre tomará un número par de movimientos? Usa la regla «duplica y luego suma 1» para demostrar tu respuesta.",
+        "frames": [
+          "Doubling any whole number gives an ___ number.",
+          "Then adding 1 makes it ___, so ___."
+        ],
+        "framesEs": [
+          "Duplicar cualquier número entero da un número ___.",
+          "Luego sumar 1 lo hace ___, así que ___."
+        ]
+      },
+      "check": [
+        {
+          "problem": "A pattern uses the rule “double, then add 1.” The 4th number is 79. What is the 1st number?",
+          "problemEs": "Un patrón usa la regla «duplica y luego suma 1». El 4.º número es 79. ¿Cuál es el 1.er número?",
+          "answer": "9",
+          "accept": [
+            "9"
+          ],
+          "hint": "Work backward: subtract 1, then halve. Do it three times.",
+          "hintEs": "Trabaja hacia atrás: resta 1 y luego divide entre 2. Hazlo tres veces.",
+          "steps": [
+            {
+              "do": "Undo the rule from 79.",
+              "doEs": "Deshaz la regla desde 79.",
+              "math": "(79 − 1) ÷ 2 = 39"
+            },
+            {
+              "do": "Undo it two more times.",
+              "doEs": "Deshazla dos veces más.",
+              "math": [
+                "(39 − 1) ÷ 2 = 19",
+                "(19 − 1) ÷ 2 = 9"
+              ]
+            }
+          ]
+        },
+        {
+          "problem": "Each week, Maya doubles her savings and then adds $3. After 3 weeks, she has $53. How much money did she start with?",
+          "problemEs": "Cada semana, Maya duplica sus ahorros y luego suma $3. Después de 3 semanas, tiene $53. ¿Con cuánto dinero empezó?",
+          "answer": "$4",
+          "accept": [
+            "4",
+            "$4",
+            "4 dollars"
+          ],
+          "hint": "Work backward. Undo “add $3” first, then undo “double.”",
+          "hintEs": "Trabaja hacia atrás. Primero deshaz «suma $3» y luego deshaz «duplica».",
+          "steps": [
+            {
+              "do": "Undo week 3.",
+              "doEs": "Deshaz la semana 3.",
+              "math": "(53 − 3) ÷ 2 = 25"
+            },
+            {
+              "do": "Undo week 2, then week 1.",
+              "doEs": "Deshaz la semana 2 y luego la semana 1.",
+              "math": [
+                "(25 − 3) ÷ 2 = 11",
+                "(11 − 3) ÷ 2 = 4"
+              ]
+            }
+          ]
+        }
+      ],
+      "stretch": {
+        "problem": "Use the rule “double, then add 1.” A 10-disc tower takes 1,023 moves. What is the smallest tower that takes more than 5,000 moves?",
+        "problemEs": "Usa la regla «duplica y luego suma 1». Una torre de 10 discos toma 1,023 movimientos. ¿Cuál es la torre más pequeña que toma más de 5,000 movimientos?",
+        "answer": "13 discs",
+        "answerEs": "13 discos",
+        "accept": [
+          "13",
+          "13 discs"
+        ],
+        "hint": "Keep using the rule. Stop at the first number of moves greater than 5,000.",
+        "hintEs": "Sigue usando la regla. Detente en el primer número de movimientos mayor que 5,000.",
+        "steps": [
+          {
+            "do": "Use the rule for 11 and 12 discs.",
+            "doEs": "Usa la regla para 11 y 12 discos.",
+            "math": [
+              "1023 × 2 + 1 = 2047",
+              "2047 × 2 + 1 = 4095"
+            ]
+          },
+          {
+            "do": "Use the rule for 13 discs.",
+            "doEs": "Usa la regla para 13 discos.",
+            "math": "4095 × 2 + 1 = 8191"
+          },
+          {
+            "do": "Compare with 5,000.",
+            "doEs": "Compara con 5,000.",
+            "math": "4095 < 5000 < 8191"
+          }
+        ]
+      }
     }
   },
   "explore": {

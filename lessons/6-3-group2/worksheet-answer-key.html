@@ -419,6 +419,36 @@ header.packet h1::after{
 }
 @media print{ body{ background:#fff !important; } }
 
+
+.sgf{margin:0;padding:14px 16px 10px;background:var(--sg-figure,#fff);border:1px solid var(--sg-line,#dde3ea);border-radius:var(--sg-radius,12px);display:flex;flex-direction:column;align-items:center;gap:6px;max-width:100%;overflow-x:auto}
+.sgf-svg{max-width:100%;height:auto;font-family:var(--sg-body,inherit);font-variant-numeric:tabular-nums lining-nums}
+.sgf-cap{font-size:15px;color:var(--sg-muted,#516175);text-align:center;line-height:1.4}
+.sgf-t{fill:var(--sg-text,#1d2a36);font-size:15px}
+.sgf-frac{font-size:12px}
+.sgf-fracbar{stroke:var(--sg-text,#1d2a36);stroke-width:1.4}
+.sgf-num{font-size:15px;font-weight:600}
+.sgf-small{font-size:13px}
+.sgf-axis-title,.sgf-row-label{font-size:14px;font-weight:700;fill:var(--sg-muted,#516175)}
+.sgf-callout{font-size:14px;font-weight:700;fill:var(--sg-deep,#0b2540)}
+.sgf-halo{paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
+.sgf-axis,.sgf-tick{stroke:var(--sg-text,#1d2a36);stroke-width:2;fill:none}
+.sgf-axis-head{fill:var(--sg-text,#1d2a36)}
+.sgf-grid{stroke:#d5dce5;stroke-width:1}
+.sgf-dot{fill:#9aa9b9}
+.sgf-dot.sgf-on,.sgf-pt.sgf-on{fill:var(--sg,#1f6fb2)}
+.sgf-pt{fill:var(--sg-text,#1d2a36);stroke:#fff;stroke-width:2}
+.sgf-pt.sgf-open{fill:#fff;stroke:var(--sg,#1f6fb2);stroke-width:3}
+.sgf-marker{fill:var(--sg,#1f6fb2)}
+.sgf-jump,.sgf-connect{fill:none;stroke:var(--sg,#1f6fb2);stroke-width:2.5}
+.sgf-jump-head,.sgf-ray-head{fill:var(--sg,#1f6fb2)}
+.sgf-ray{stroke:var(--sg,#1f6fb2);stroke-width:6;stroke-linecap:round}
+.sgf-link{stroke:#b9c4d0;stroke-width:1.5;stroke-dasharray:4 4}
+.sgf-poly{fill:color-mix(in srgb,var(--sg,#1f6fb2) 16%,transparent);stroke:var(--sg,#1f6fb2);stroke-width:2.5}
+.sgf-box{fill:color-mix(in srgb,var(--sg,#1f6fb2) 16%,transparent);stroke:var(--sg-text,#1d2a36);stroke-width:2}
+.sgf-whisker{stroke:var(--sg-text,#1d2a36);stroke-width:2}
+.sgf-median{stroke:var(--sg,#1f6fb2);stroke-width:4}
+.sgf-bar{fill:color-mix(in srgb,var(--sg,#1f6fb2) 30%,#fff);stroke:var(--sg-text,#1d2a36);stroke-width:1.5}
+
 </style>
   <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
@@ -454,41 +484,30 @@ header.packet h1::after{
       <p class="ws-target"><b>Learning target</b> I can write and evaluate numbers in exponent form using a base and a power, explain what each part stands for, and build one for a situation I have not seen before.</p>
     </header>
     
-    <div class="ws-section-head"><span class="ws-section-n">Part 1</span><span class="ws-section-name">Understand the idea</span><span class="ws-section-tag">models and meaning</span></div>
-        <ol class="ws-problems">
+    <ol class="ws-problems">
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Complete the table. Show how you found each value.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Evaluate each exponential expression. Show the repeated multiplication and the final value.</p>
-  <table class="ws-table"><thead><tr><th>Power</th><th>Repeated Multiplication</th><th>Value</th></tr></thead><tbody><tr><td>4³</td><td>4 × 4 × 4</td><td class="ws-correct"></td></tr><tr><td>2⁶</td><td>2 × 2 × 2 × 2 × 2 × 2</td><td class="ws-correct"></td></tr><tr><td>5³</td><td>5 × 5 × 5</td><td class="ws-correct"></td></tr><tr><td>10⁴</td><td>10 × 10 × 10 × 10</td><td class="ws-correct"></td></tr></tbody></table>
-  <p class="ws-keynote"><b>Why:</b> Multiply the listed factors with a running total: 4³ = 4 × 4 × 4 = 64, 2⁶ = 64 as well after six doublings, 5³ = 125, and 10⁴ = 10,000. Notice that 4³ and 2⁶ have the same value even though the bases and exponents differ, and that 10⁴ gains one zero for each factor of 10.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><figure class="sgf sgf--table"><table class="sgf-table"><thead><tr><th scope="col">Power</th><th scope="col">Factors</th><th scope="col">Value</th></tr></thead><tbody><tr><td>3⁴</td><td>3 × 3 × 3 × 3</td><td>?</td></tr><tr><td>4³</td><td>4 × 4 × 4</td><td>?</td></tr></tbody></table><figcaption class="sgf-cap">Same two numbers, switched places.</figcaption></figure><p class="ws-stem">Is 3⁴ greater than 4³? Find both values.</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">Find the value of 3⁴.</span><span class="ws-blank ws-correct">81</span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">Find the value of 4³.</span><span class="ws-blank ws-correct">64</span></li><li class="ws-gf-step"><span class="ws-step-n">3</span><span class="ws-gf-prompt">Which is greater? By how much?</span><span class="ws-blank ws-correct">3⁴ is greater by 17.</span></li></ol><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">3⁴ = 81 and 4³ = 64. Yes, 3⁴ is greater by 17.</span></div></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Write the name of the correct group on each line.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Sort each power by whether its value is greater than 50 or not.</p>
-  <div class="ws-cats-bar"><b>Groups:</b> <span class="ws-cat-pill">Value &gt; 50</span> <span class="ws-cat-pill">Value ≤ 50</span></div>
-  <ul class="ws-sort-list"><li class="ws-sort-item"><span class="ws-blank ws-blank-md ws-correct">Value ≤ 50</span><span class="ws-sort-text">2⁵</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md ws-correct">Value &gt; 50</span><span class="ws-sort-text">3⁴</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md ws-correct">Value ≤ 50</span><span class="ws-sort-text">7²</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md ws-correct">Value &gt; 50</span><span class="ws-sort-text">10²</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md ws-correct">Value &gt; 50</span><span class="ws-sort-text">5³</span></li><li class="ws-sort-item"><span class="ws-blank ws-blank-md ws-correct">Value ≤ 50</span><span class="ws-sort-text">4²</span></li></ul>
-  <p class="ws-keynote"><b>Why:</b> Each card already shows its value, so the sorting is a comparison with 50. Above 50 are 3⁴ = 81, 10² = 100, and 5³ = 125. At or below 50 are 2⁵ = 32, 7² = 49, and 4² = 16. Watch 7² = 49: it looks close, but 49 is less than 50, so it belongs with the smaller group.</p></div>
-    </li></ol><div class="ws-section-head"><span class="ws-section-n">Part 2</span><span class="ws-section-name">Apply it</span><span class="ws-section-tag">real-world problems</span></div>
-        <ol class="ws-problems">
-    <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">A synth pattern repeats 7 × 7 × 7. How do you write that as a power?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">3⁷</span></li><li class="ws-opt ws-correct"><span class="ws-bub">B</span><span class="ws-opt-text">7³</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">7 × 3</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">21³</span></li></ol><p class="ws-keynote"><b>Answer:</b> B — 7³</p><p class="ws-keynote"><b>Why:</b> The base 7 is used as a factor 3 times, so the power is 7³. 7³ = 7 × 7 × 7 = 343.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Powers and Exponents is multiplying the base by the exponent instead of using the base as a repeated factor — for example, thinking 2³ = 2 × 3 = 6 instead of 2³ = 2 × 2 × 2 = 8. Before you submit, rewrite the power as repeated multiplication first, then multiply step by step.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><figure class="sgf sgf--table"><table class="sgf-table"><thead><tr><th scope="col">Divide by 5</th><th scope="col">Result</th></tr></thead><tbody><tr><td>625 ÷ 5</td><td>?</td></tr><tr><td>? ÷ 5</td><td>?</td></tr><tr><td>? ÷ 5</td><td>?</td></tr><tr><td>? ÷ 5</td><td>1</td></tr></tbody></table><figcaption class="sgf-cap">Each division by 5 removes one factor of 5.</figcaption></figure><p class="ws-stem">Write 625 as a power of 5.</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">Divide 625 by 5 again and again until you reach 1. List the results.</span><span class="ws-blank ws-correct">125, 25, 5, 1</span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">How many times did you divide by 5? That is the exponent.</span><span class="ws-blank ws-correct">4</span></li><li class="ws-gf-step"><span class="ws-step-n">3</span><span class="ws-gf-prompt">Write 625 as a power.</span><span class="ws-blank ws-correct">5⁴</span></li><li class="ws-gf-step"><span class="ws-step-n">4</span><span class="ws-gf-prompt">Why is 5⁴ not the same as 5 × 4?</span><span class="ws-blank ws-correct">5⁴ uses 5 as a factor 4 times, which makes 625. 5 × 4 is only 20.</span></li></ol><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">625 = 5 × 5 × 5 × 5 = 5⁴.</span></div></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">The bass line doubles for 2⁶ counts. What is the value of 2⁶?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">32</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">36</span></li><li class="ws-opt ws-correct"><span class="ws-bub">D</span><span class="ws-opt-text">64</span></li></ol><p class="ws-keynote"><b>Answer:</b> D — 64</p><p class="ws-keynote"><b>Why:</b> 2⁶ = 2 × 2 × 2 × 2 × 2 × 2 = 64. The exponent 6 counts how many times 2 is a factor.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Powers and Exponents is multiplying the base by the exponent instead of using the base as a repeated factor — for example, thinking 2³ = 2 × 3 = 6 instead of 2³ = 2 × 2 × 2 = 8. Before you submit, rewrite the power as repeated multiplication first, then multiply step by step.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Find the value of 0.3².</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">0.09</span></div><p class="ws-keynote"><b>Why:</b> Write 0.3 as a factor 2 times: 0.3 × 0.3 Multiply. Place the decimal point: 0.3 × 0.3 = 0.09</p></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">5</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">What is the value of 4³?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">7</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">12</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">43</span></li><li class="ws-opt ws-correct"><span class="ws-bub">D</span><span class="ws-opt-text">64</span></li></ol><p class="ws-keynote"><b>Answer:</b> D — 64</p><p class="ws-keynote"><b>Why:</b> 4³ = 4 × 4 × 4 = 64.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Powers and Exponents is multiplying the base by the exponent instead of using the base as a repeated factor — for example, thinking 2³ = 2 × 3 = 6 instead of 2³ = 2 × 2 × 2 = 8. Before you submit, rewrite the power as repeated multiplication first, then multiply step by step.</p></div>
-    </li></ol><div class="ws-section-head"><span class="ws-section-n">Part 3</span><span class="ws-section-name">Explain and correct</span><span class="ws-section-tag">reasoning</span></div>
-        <ol class="ws-problems">
+      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Write 128 as a power of 2. What is the exponent?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">7</span></div><p class="ws-keynote"><b>Why:</b> Double from 2 and count: 2, 4, 8, 16, 32, 64, 128 Count the factors of 2: 128 = 2⁷</p></div>
+    </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">6</span><span class="ws-directions">Find the mistake. Explain it, then show the correct work.</span></div>
-      <div class="ws-pbody"><p class="ws-stem"><b>Level 2 Extension — Spot the Beat-Builder Bug</b></p>
-  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Track says</span><span class="ws-step-w">Play 3⁴ beats</span></li><li class="ws-step-wrong"><span class="ws-step-n">2</span><span class="ws-step-l">Producer's thinking</span><span class="ws-step-w">3 × 4</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Calculate</span><span class="ws-step-w">= 12</span></li></ol></div>
-  <p class="ws-prompt">Which step has the mistake? Explain what went wrong, then show the correct work.</p>
-  <p class="ws-keynote"><b>Mistake:</b> Step 2. The &quot;Producer's thinking&quot; step reads 3⁴ as 3 × 4, which multiplies by the exponent instead of counting factors. The 4 means the base 3 is used four times: 3 × 3 = 9, 9 × 3 = 27, 27 × 3 = 81. The track plays 81 beats, not 12.</p><p class="ws-keynote"><b>Correct work:</b> 3⁴ does NOT mean 3 × 4. The exponent 4 tells you to use the base 3 as a factor 4 times: 3 × 3 × 3 × 3 = 81. So the track plays 81 beats, not 12.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">5</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><figure class="sgf sgf--table"><table class="sgf-table"><thead><tr><th scope="col">Hours</th><th scope="col">Cells</th><th scope="col">Power</th></tr></thead><tbody><tr><td>1</td><td>2</td><td>2¹</td></tr><tr><td>2</td><td>4</td><td>2²</td></tr><tr><td>3</td><td>8</td><td>2³</td></tr></tbody></table><figcaption class="sgf-cap">The exponent matches the number of hours.</figcaption></figure><p class="ws-stem">One cell splits into 2 cells every hour. Each new cell splits too. You start with 1 cell. How many cells are there after 8 hours?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">256 cells</span></div><p class="ws-keynote"><b>Why:</b> Write the power for 8 hours: 2⁸ Keep doubling to find the value: 2, 4, 8, 16, 32, 64, 128, 256</p></div>
+    </li>
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">6</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">How much greater is 2¹⁰ than 10²?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">924</span></div><p class="ws-keynote"><b>Why:</b> Find 2¹⁰ by doubling: 2¹⁰ = 1,024 Find 10²: 10 × 10 = 100 Subtract: 1,024 − 100 = 924</p></div>
     </li></ol>
     
   </section>

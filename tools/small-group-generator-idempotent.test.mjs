@@ -89,14 +89,19 @@ before(() => {
     join(ROOT, "data/misconception-labels.json"),
     join(fixture, "data/misconception-labels.json"),
   );
-  // The generator reads each base lesson's authored Build content.
+  // The generator reads each base lesson's authored Build and practice content.
   mkdirSync(join(fixture, "data/small-group-build"), { recursive: true });
+  mkdirSync(join(fixture, "data/small-group-practice"), { recursive: true });
   for (const id of BASES) {
     mkdirSync(fixturePath(id), { recursive: true });
     copyFileSync(repoPath(id, "config.json"), fixturePath(id, "config.json"));
     copyFileSync(
       join(ROOT, "data/small-group-build", `${id}.json`),
       join(fixture, "data/small-group-build", `${id}.json`),
+    );
+    copyFileSync(
+      join(ROOT, "data/small-group-practice", `${id}.json`),
+      join(fixture, "data/small-group-practice", `${id}.json`),
     );
   }
   for (const id of VARIANTS) {

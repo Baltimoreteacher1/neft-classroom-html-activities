@@ -419,6 +419,36 @@ header.packet h1::after{
 }
 @media print{ body{ background:#fff !important; } }
 
+
+.sgf{margin:0;padding:14px 16px 10px;background:var(--sg-figure,#fff);border:1px solid var(--sg-line,#dde3ea);border-radius:var(--sg-radius,12px);display:flex;flex-direction:column;align-items:center;gap:6px;max-width:100%;overflow-x:auto}
+.sgf-svg{max-width:100%;height:auto;font-family:var(--sg-body,inherit);font-variant-numeric:tabular-nums lining-nums}
+.sgf-cap{font-size:15px;color:var(--sg-muted,#516175);text-align:center;line-height:1.4}
+.sgf-t{fill:var(--sg-text,#1d2a36);font-size:15px}
+.sgf-frac{font-size:12px}
+.sgf-fracbar{stroke:var(--sg-text,#1d2a36);stroke-width:1.4}
+.sgf-num{font-size:15px;font-weight:600}
+.sgf-small{font-size:13px}
+.sgf-axis-title,.sgf-row-label{font-size:14px;font-weight:700;fill:var(--sg-muted,#516175)}
+.sgf-callout{font-size:14px;font-weight:700;fill:var(--sg-deep,#0b2540)}
+.sgf-halo{paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
+.sgf-axis,.sgf-tick{stroke:var(--sg-text,#1d2a36);stroke-width:2;fill:none}
+.sgf-axis-head{fill:var(--sg-text,#1d2a36)}
+.sgf-grid{stroke:#d5dce5;stroke-width:1}
+.sgf-dot{fill:#9aa9b9}
+.sgf-dot.sgf-on,.sgf-pt.sgf-on{fill:var(--sg,#1f6fb2)}
+.sgf-pt{fill:var(--sg-text,#1d2a36);stroke:#fff;stroke-width:2}
+.sgf-pt.sgf-open{fill:#fff;stroke:var(--sg,#1f6fb2);stroke-width:3}
+.sgf-marker{fill:var(--sg,#1f6fb2)}
+.sgf-jump,.sgf-connect{fill:none;stroke:var(--sg,#1f6fb2);stroke-width:2.5}
+.sgf-jump-head,.sgf-ray-head{fill:var(--sg,#1f6fb2)}
+.sgf-ray{stroke:var(--sg,#1f6fb2);stroke-width:6;stroke-linecap:round}
+.sgf-link{stroke:#b9c4d0;stroke-width:1.5;stroke-dasharray:4 4}
+.sgf-poly{fill:color-mix(in srgb,var(--sg,#1f6fb2) 16%,transparent);stroke:var(--sg,#1f6fb2);stroke-width:2.5}
+.sgf-box{fill:color-mix(in srgb,var(--sg,#1f6fb2) 16%,transparent);stroke:var(--sg-text,#1d2a36);stroke-width:2}
+.sgf-whisker{stroke:var(--sg-text,#1d2a36);stroke-width:2}
+.sgf-median{stroke:var(--sg,#1f6fb2);stroke-width:4}
+.sgf-bar{fill:color-mix(in srgb,var(--sg,#1f6fb2) 30%,#fff);stroke:var(--sg-text,#1d2a36);stroke-width:1.5}
+
 </style>
   <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
@@ -454,20 +484,18 @@ header.packet h1::after{
       <p class="ws-target"><b>Learning target</b> I can represent a real-world situation with a tape diagram or table and use decimal operations to solve it.</p>
     </header>
     
-    <div class="ws-section-head"><span class="ws-section-n">Part 1</span><span class="ws-section-name">Apply it</span><span class="ws-section-tag">real-world problems</span></div>
-        <ol class="ws-problems">
+    <ol class="ws-problems">
     <li class="ws-problem-card">
       <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">(Lesson 1.3) One tram trip takes 12.5 minutes. Build the table: 1 trip → 12.5 min, 10 trips → ___, and use it to find the minutes for 20 trips.</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">10 trips: 12.5 × 10 = ___ (multiplying by 10 shifts the decimal point).</span><span class="ws-blank ws-correct">125</span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">20 trips is double that: 125 × 2 = ___.</span><span class="ws-blank ws-correct">250</span></li></ol><p class="ws-hint"><span class="ws-hint-tag">Hint</span> Re-read the question. What exactly is it asking you to find?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">250</span></div><p class="ws-keynote"><b>Why:</b> 10 trips: 12.5 × 10 = 125 (multiplying by 10 shifts the decimal point). 20 trips is double that: 125 × 2 = 250.</p></div>
+      <div class="ws-pbody"><p class="ws-stem">One ride takes 5.5 minutes. How many minutes do 10 rides take?</p><p class="ws-hint"><span class="ws-hint-tag">Hint</span> Multiply 5.5 × 10. Each digit moves one place to the left.</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">55 minutes</span></div><p class="ws-keynote"><b>Why:</b> Write one ride in the table: 1 → 5.5 Multiply by 10: 5.5 × 10 = 55</p></div>
     </li>
     <li class="ws-problem-card">
       <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">(Lesson 1.3) One tram trip takes 7.5 minutes. Build the table: 1 trip → 7.5 min, 10 trips → ___, and use it to find the minutes for 20 trips.</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">10 trips: 7.5 × 10 = ___ (multiplying by 10 shifts the decimal point).</span><span class="ws-blank ws-correct">75</span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">20 trips is double that: 75 × 2 = ___.</span><span class="ws-blank ws-correct">150</span></li></ol><p class="ws-hint"><span class="ws-hint-tag">Hint</span> Re-read the question. What exactly is it asking you to find?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">150</span></div><p class="ws-keynote"><b>Why:</b> 10 trips: 7.5 × 10 = 75 (multiplying by 10 shifts the decimal point). 20 trips is double that: 75 × 2 = 150.</p></div>
-    </li></ol><div class="ws-section-head"><span class="ws-section-n">Part 2</span><span class="ws-section-name">Explain and correct</span><span class="ws-section-tag">reasoning</span></div>
-        <ol class="ws-problems">
+      <div class="ws-pbody"><figure class="sgf sgf--ratioTable"><table class="sgf-table"><thead><tr><th scope="col">Rides</th><th scope="col">Minutes</th></tr></thead><tbody><tr><td>1</td><td>7.5</td></tr><tr><td>10</td><td>75</td></tr><tr class="sgf-hl"><td>20</td><td>?</td></tr></tbody></table></figure><p class="ws-stem">One ride takes 7.5 minutes. How many minutes do 20 rides take?</p><p class="ws-hint"><span class="ws-hint-tag">Hint</span> Find 10 rides first. Then double it.</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">150 minutes</span></div><p class="ws-keynote"><b>Why:</b> Find the minutes for 10 rides: 7.5 × 10 = 75 Double it for 20 rides: 75 × 2 = 150</p></div>
+    </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Answer in complete sentences.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">A coin display has about 15 stacks that look the same size. You count 10 coins in one stack. About how many coins are in the display? Explain how to estimate without counting every coin.</p><div class="ws-frame"><span class="ws-frame-tag">Sentence starter</span> First I counted ___ .<br>Then I estimated about ___ because ___ .</div><p class="ws-keynote"><b>Sample answer:</b> I counted one small stack of about 10 coins, then estimated that about 15 stacks like it fill the picture, so about 150 coins. An estimate is a reasoned answer that is close enough to be useful.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">One trip takes 2.5 minutes. How many minutes do 30 trips take?</p><p class="ws-hint"><span class="ws-hint-tag">Hint</span> Find 10 trips first. Then multiply by 3.</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">75 minutes</span></div><p class="ws-keynote"><b>Why:</b> Find the minutes for 10 trips: 2.5 × 10 = 25 Multiply by 3 for 30 trips: 25 × 3 = 75</p></div>
     </li></ol>
     
   </section>
@@ -488,16 +516,16 @@ header.packet h1::after{
     
     <ol class="ws-problems">
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">The 50 rides take 625 minutes. About how many HOURS is that?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">About 6.25 hours</span></li><li class="ws-opt ws-correct"><span class="ws-bub">B</span><span class="ws-opt-text">About 10.42 hours</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">About 12.5 hours</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">About 62.5 hours</span></li></ol><p class="ws-keynote"><b>Answer:</b> B — About 10.42 hours</p><p class="ws-keynote"><b>Why:</b> 625 ÷ 60 ≈ 10.42, so it would take about 10.42 hours to transport 4,000 passengers.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">One ride takes 12.5 minutes. Jen says 30 rides take 37.5 minutes. Is that reasonable? How many minutes do 30 rides take?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">375 minutes</span></div><p class="ws-keynote"><b>Why:</b> Find the minutes for 10 rides: 12.5 × 10 = 125 Multiply by 3 for 30 rides: 125 × 3 = 375 Compare with Jen's answer: 375 ≠ 37.5</p></div>
     </li>
     <li class="ws-problem-card">
       <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">One tram trip takes 6.5 minutes. Build the table: 1 trip → 6.5 min, 10 trips → ___, and use it to find the minutes for 20 trips.</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">10 trips: 6.5 × 10 = ___ (multiplying by 10 shifts the decimal point).</span><span class="ws-blank ws-correct">65</span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">20 trips is double that: 65 × 2 = ___.</span><span class="ws-blank ws-correct">130</span></li></ol><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">130</span></div><p class="ws-keynote"><b>Why:</b> 10 trips: 6.5 × 10 = 65 (multiplying by 10 shifts the decimal point). 20 trips is double that: 65 × 2 = 130.</p></div>
+      <div class="ws-pbody"><p class="ws-stem">A round trip takes 25 minutes. How many full round trips fit in 3 hours?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">7 trips</span></div><p class="ws-keynote"><b>Why:</b> Change hours to minutes: 3 × 60 = 180 Try 7 trips and 8 trips: 7 × 25 = 175; 8 × 25 = 200 Keep the trips that fit: 175 &lt; 180 &lt; 200</p></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">How does the answer change for 2,000 passengers? Each ride carries 80 passengers and takes 12.5 minutes. How many MINUTES are needed?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">31.25 minutes</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">300 minutes</span></li><li class="ws-opt ws-correct"><span class="ws-bub">C</span><span class="ws-opt-text">312.5 minutes</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">3,125 minutes</span></li></ol><p class="ws-keynote"><b>Answer:</b> C — 312.5 minutes</p><p class="ws-keynote"><b>Why:</b> 2,000 ÷ 80 = 25 rides, and 25 × 12.5 = 312.5 minutes — half the passengers, half the 625 minutes.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">One ride takes 6.5 minutes. How many minutes do 20 rides take?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">130 minutes</span></div><p class="ws-keynote"><b>Why:</b> Find the minutes for 10 rides: 6.5 × 10 = 65 Double it for 20 rides: 65 × 2 = 130</p></div>
     </li></ol>
     
   </section>
@@ -518,16 +546,16 @@ header.packet h1::after{
     
     <ol class="ws-problems">
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Apply — What Time Is It? The new year starts at midnight on January 1st. What time will it be 2,022 minutes after midnight?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">8:22 p.m. on January 1</span></li><li class="ws-opt ws-correct"><span class="ws-bub">B</span><span class="ws-opt-text">9:42 a.m. on January 2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">9:42 a.m. on January 1</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">9:42 p.m. on January 2</span></li></ol><p class="ws-keynote"><b>Answer:</b> B — 9:42 a.m. on January 2</p><p class="ws-keynote"><b>Why:</b> 2,022 ÷ 60 = 33 remainder 42, so 2,022 minutes is 33 hours 42 minutes. That is 24 hours (one full day) plus 9 hours 42 minutes — 9:42 a.m. on January 2.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">A van holds 12 people. 100 people need a ride. Dev says 100 ÷ 12 is about 8.3, so the van needs 8 trips. How many trips are really needed?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">9 trips</span></div><p class="ws-keynote"><b>Why:</b> Find the people 8 trips carry: 8 × 12 = 96 Find the people left: 100 − 96 = 4 Add one more trip for them: 8 + 1 = 9</p></div>
     </li>
     <li class="ws-problem-card">
       <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">One tram trip takes 6.5 minutes. Build the table: 1 trip → 6.5 min, 10 trips → ___, and use it to find the minutes for 20 trips.</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">10 trips: 6.5 × 10 = ___ (multiplying by 10 shifts the decimal point).</span><span class="ws-blank ws-correct">65</span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">20 trips is double that: 65 × 2 = ___.</span><span class="ws-blank ws-correct">130</span></li></ol><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">130</span></div><p class="ws-keynote"><b>Why:</b> 10 trips: 6.5 × 10 = 65 (multiplying by 10 shifts the decimal point). 20 trips is double that: 65 × 2 = 130.</p></div>
+      <div class="ws-pbody"><p class="ws-stem">One round trip takes 55 minutes. How many full round trips fit in 7 hours?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">7 trips</span></div><p class="ws-keynote"><b>Why:</b> Change hours to minutes: 7 × 60 = 420 Try 7 trips and 8 trips: 7 × 55 = 385; 8 × 55 = 440 Keep the trips that fit: 385 &lt; 420 &lt; 440</p></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">How many rides would the tram need for 10,000 passengers, at 80 passengers per ride?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">12.5 rides</span></li><li class="ws-opt ws-correct"><span class="ws-bub">B</span><span class="ws-opt-text">125 rides</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">250 rides</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">1,250 rides</span></li></ol><p class="ws-keynote"><b>Answer:</b> B — 125 rides</p><p class="ws-keynote"><b>Why:</b> 10,000 ÷ 80 = 125 rides. Those rides would take 125 × 12.5 = 1,562.5 minutes.</p></div>
+      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">A song lasts 3.5 minutes. How many full songs can play in 1 hour?</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line ws-correct">17 songs</span></div><p class="ws-keynote"><b>Why:</b> Divide 60 minutes by 3.5: 60 ÷ 3.5 ≈ 17.1 Try 17 songs and 18 songs: 17 × 3.5 = 59.5; 18 × 3.5 = 63 Keep the songs that fit: 59.5 &lt; 60 &lt; 63</p></div>
     </li></ol>
     
   </section>

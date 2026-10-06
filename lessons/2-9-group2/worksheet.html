@@ -419,6 +419,36 @@ header.packet h1::after{
 }
 @media print{ body{ background:#fff !important; } }
 
+
+.sgf{margin:0;padding:14px 16px 10px;background:var(--sg-figure,#fff);border:1px solid var(--sg-line,#dde3ea);border-radius:var(--sg-radius,12px);display:flex;flex-direction:column;align-items:center;gap:6px;max-width:100%;overflow-x:auto}
+.sgf-svg{max-width:100%;height:auto;font-family:var(--sg-body,inherit);font-variant-numeric:tabular-nums lining-nums}
+.sgf-cap{font-size:15px;color:var(--sg-muted,#516175);text-align:center;line-height:1.4}
+.sgf-t{fill:var(--sg-text,#1d2a36);font-size:15px}
+.sgf-frac{font-size:12px}
+.sgf-fracbar{stroke:var(--sg-text,#1d2a36);stroke-width:1.4}
+.sgf-num{font-size:15px;font-weight:600}
+.sgf-small{font-size:13px}
+.sgf-axis-title,.sgf-row-label{font-size:14px;font-weight:700;fill:var(--sg-muted,#516175)}
+.sgf-callout{font-size:14px;font-weight:700;fill:var(--sg-deep,#0b2540)}
+.sgf-halo{paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
+.sgf-axis,.sgf-tick{stroke:var(--sg-text,#1d2a36);stroke-width:2;fill:none}
+.sgf-axis-head{fill:var(--sg-text,#1d2a36)}
+.sgf-grid{stroke:#d5dce5;stroke-width:1}
+.sgf-dot{fill:#9aa9b9}
+.sgf-dot.sgf-on,.sgf-pt.sgf-on{fill:var(--sg,#1f6fb2)}
+.sgf-pt{fill:var(--sg-text,#1d2a36);stroke:#fff;stroke-width:2}
+.sgf-pt.sgf-open{fill:#fff;stroke:var(--sg,#1f6fb2);stroke-width:3}
+.sgf-marker{fill:var(--sg,#1f6fb2)}
+.sgf-jump,.sgf-connect{fill:none;stroke:var(--sg,#1f6fb2);stroke-width:2.5}
+.sgf-jump-head,.sgf-ray-head{fill:var(--sg,#1f6fb2)}
+.sgf-ray{stroke:var(--sg,#1f6fb2);stroke-width:6;stroke-linecap:round}
+.sgf-link{stroke:#b9c4d0;stroke-width:1.5;stroke-dasharray:4 4}
+.sgf-poly{fill:color-mix(in srgb,var(--sg,#1f6fb2) 16%,transparent);stroke:var(--sg,#1f6fb2);stroke-width:2.5}
+.sgf-box{fill:color-mix(in srgb,var(--sg,#1f6fb2) 16%,transparent);stroke:var(--sg-text,#1d2a36);stroke-width:2}
+.sgf-whisker{stroke:var(--sg-text,#1d2a36);stroke-width:2}
+.sgf-median{stroke:var(--sg,#1f6fb2);stroke-width:4}
+.sgf-bar{fill:color-mix(in srgb,var(--sg,#1f6fb2) 30%,#fff);stroke:var(--sg-text,#1d2a36);stroke-width:1.5}
+
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -516,44 +546,33 @@ header.packet h1::after{
       <p class="ws-target"><b>Learning target</b> I can find the mean absolute deviation (MAD) to describe how spread out data is, explain how I can tell, and judge a case I have not seen before.</p>
     </header>
     
-    <div class="ws-section-head"><span class="ws-section-n">Part 1</span><span class="ws-section-name">Understand the idea</span><span class="ws-section-tag">models and meaning</span></div>
-        <ol class="ws-problems">
+    <ol class="ws-problems">
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Complete the table. Show how you found each value.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Deviation Detective: the quiz scores are 12, 8, 10, 14, 6 and the mean is 10. Complete each deviation and absolute deviation, then compute the MAD.</p>
-  <table class="ws-table"><thead><tr><th>Score</th><th>Deviation (Score − Mean)</th><th>Absolute Deviation</th></tr></thead><tbody><tr><td>12</td><td class="ws-cell-blank"></td><td class="ws-cell-blank"></td></tr><tr><td>8</td><td class="ws-cell-blank"></td><td class="ws-cell-blank"></td></tr><tr><td>10</td><td class="ws-cell-blank"></td><td class="ws-cell-blank"></td></tr><tr><td>14</td><td class="ws-cell-blank"></td><td class="ws-cell-blank"></td></tr><tr><td>6</td><td class="ws-cell-blank"></td><td class="ws-cell-blank"></td></tr></tbody></table>
-  <div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
+      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><figure class="sgf sgf--table"><table class="sgf-table"><thead><tr><th scope="col">Team A</th><th scope="col">Distance from 10</th><th scope="col">Team B</th><th scope="col">Distance from 10</th></tr></thead><tbody><tr><td>4</td><td>6</td><td>9</td><td>1</td></tr><tr><td>9</td><td>1</td><td>11</td><td>1</td></tr><tr><td>10</td><td>0</td><td>10</td><td>0</td></tr><tr><td>13</td><td>3</td><td>8</td><td>2</td></tr><tr><td>14</td><td>4</td><td>12</td><td>2</td></tr></tbody></table><figcaption class="sgf-cap">Team A&#39;s scores are farther from the mean.</figcaption></figure><p class="ws-stem">Team A scored 4, 9, 10, 13 and 14 goals. Team B scored 9, 11, 10, 8 and 12 goals. Both means are 10. Which team is more consistent?</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">Find each distance from 10 for Team A.</span><span class="ws-blank"></span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">What is Team A's MAD?</span><span class="ws-blank"></span></li><li class="ws-gf-step"><span class="ws-step-n">3</span><span class="ws-gf-prompt">What is Team B's MAD?</span><span class="ws-blank"></span></li><li class="ws-gf-step"><span class="ws-step-n">4</span><span class="ws-gf-prompt">Which team is more consistent?</span><span class="ws-blank"></span></li></ol><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line"></span></div></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Write the letter of the matching item on each line.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Match each MAD value to what it tells you about the data.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">MAD = 1.5</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">MAD = 8.0</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">MAD = 0</span></li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span><span class="ws-term-lbl">MAD = 4.2</span></li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span><span class="ws-match-desc">Very consistent data</span></li><li><span class="ws-bub ws-bub-sm">B</span><span class="ws-match-desc">Very spread out data</span></li><li><span class="ws-bub ws-bub-sm">C</span><span class="ws-match-desc">All values are identical</span></li><li><span class="ws-bub ws-bub-sm">D</span><span class="ws-match-desc">Moderate spread</span></li></ul></div>
-  </div>
-    </li></ol><div class="ws-section-head"><span class="ws-section-n">Part 2</span><span class="ws-section-name">Apply it</span><span class="ws-section-tag">real-world problems</span></div>
-        <ol class="ws-problems">
-    <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">A guard scored 2, 4, 6, 8 points in four scrimmages, so the mean is 5 points. The distances from the mean are 3, 1, 1, 3. What is the mean absolute deviation (MAD)?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">1</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">2</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">8</span></li></ol><div class="wsd-wrap"><div class="wss-body"><div class="wss-slot"><span class="wss-slot-t">Put the data in order</span><span class="wss-slot-w"></span></div>
-      <div class="wss-panel wss-panel-tight"><span class="wss-panel-t">Work</span><div class="wss-rules"><span class="wss-rule"></span><span class="wss-rule"></span></div></div></div></div></div>
+      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><figure class="sgf sgf--numberLine"><svg class="sgf-svg" viewBox="0 0 580 78" width="580" height="78" role="img" aria-label="Number line from 2 to 13: 3, 4, 5, 6, 12" xmlns="http://www.w3.org/2000/svg"><line class="sgf-axis" x1="26" y1="34" x2="554" y2="34"/><path class="sgf-axis-head" d="M20,34 l9,-6 v12 z"/><path class="sgf-axis-head" d="M560,34 l-9,-6 v12 z"/><line class="sgf-tick" x1="40.0" y1="27" x2="40.0" y2="41"/><text class="sgf-t sgf-num" x="40.0" y="60.0" text-anchor="middle">2</text><line class="sgf-tick" x1="85.5" y1="27" x2="85.5" y2="41"/><text class="sgf-t sgf-num" x="85.5" y="60.0" text-anchor="middle">3</text><line class="sgf-tick" x1="130.9" y1="27" x2="130.9" y2="41"/><text class="sgf-t sgf-num" x="130.9" y="60.0" text-anchor="middle">4</text><line class="sgf-tick" x1="176.4" y1="27" x2="176.4" y2="41"/><text class="sgf-t sgf-num" x="176.4" y="60.0" text-anchor="middle">5</text><line class="sgf-tick" x1="221.8" y1="27" x2="221.8" y2="41"/><text class="sgf-t sgf-num" x="221.8" y="60.0" text-anchor="middle">6</text><line class="sgf-tick" x1="267.3" y1="27" x2="267.3" y2="41"/><text class="sgf-t sgf-num" x="267.3" y="60.0" text-anchor="middle">7</text><line class="sgf-tick" x1="312.7" y1="27" x2="312.7" y2="41"/><text class="sgf-t sgf-num" x="312.7" y="60.0" text-anchor="middle">8</text><line class="sgf-tick" x1="358.2" y1="27" x2="358.2" y2="41"/><text class="sgf-t sgf-num" x="358.2" y="60.0" text-anchor="middle">9</text><line class="sgf-tick" x1="403.6" y1="27" x2="403.6" y2="41"/><text class="sgf-t sgf-num" x="403.6" y="60.0" text-anchor="middle">10</text><line class="sgf-tick" x1="449.1" y1="27" x2="449.1" y2="41"/><text class="sgf-t sgf-num" x="449.1" y="60.0" text-anchor="middle">11</text><line class="sgf-tick" x1="494.5" y1="27" x2="494.5" y2="41"/><text class="sgf-t sgf-num" x="494.5" y="60.0" text-anchor="middle">12</text><line class="sgf-tick" x1="540.0" y1="27" x2="540.0" y2="41"/><text class="sgf-t sgf-num" x="540.0" y="60.0" text-anchor="middle">13</text><circle class="sgf-pt" cx="85.45454545454545" cy="34" r="7"/><circle class="sgf-pt" cx="130.9090909090909" cy="34" r="7"/><circle class="sgf-pt" cx="176.36363636363635" cy="34" r="7"/><circle class="sgf-pt" cx="221.8181818181818" cy="34" r="7"/><circle class="sgf-pt" cx="494.5454545454545" cy="34" r="7"/></svg><figcaption class="sgf-cap">One value is far from the others.</figcaption></figure><p class="ws-stem">Find the MAD of 3, 4, 5, 6, 12. The MAD of 3, 4, 5, 6 alone is 1. Why does 12 change it so much?</p><ol class="ws-gf-steps"><li class="ws-gf-step"><span class="ws-step-n">1</span><span class="ws-gf-prompt">The values add to 30. What is the mean?</span><span class="ws-blank"></span></li><li class="ws-gf-step"><span class="ws-step-n">2</span><span class="ws-gf-prompt">Find each distance from 6. Then find the MAD.</span><span class="ws-blank"></span></li><li class="ws-gf-step"><span class="ws-step-n">3</span><span class="ws-gf-prompt">Why does the value 12 make the MAD larger?</span><span class="ws-blank"></span></li></ol><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line"></span></div></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Two shooters average 11 points a game. Shooter A's MAD is 2 points and Shooter B's MAD is 6 points. Which shooter is MORE consistent?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Shooter B, because a bigger MAD means a bigger average</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">They are equally consistent because they have the same mean</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Shooter A, because a smaller MAD means scores stay closer to the average</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">You cannot tell consistency from MAD</span></li></ol><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
+      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Find the MAD of this data set: 1.5, 2.5, 3.5, 4.5.</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line"></span></div></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">5</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">Claim: “A data set's MAD can equal 0.” Always, sometimes, or never true — and when?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">Never — absolute values are always positive, so their average is too</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">Always — every data set has SOME value equal to its mean</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">Sometimes — whenever the mean happens to be 0</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">Sometimes — exactly when every value in the set is identical</span></li></ol><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
-    </li></ol><div class="ws-section-head"><span class="ws-section-n">Part 3</span><span class="ws-section-name">Explain and correct</span><span class="ws-section-tag">reasoning</span></div>
-        <ol class="ws-problems">
+      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Five snacks cost $2, $5, $3, $6 and $4. Find the MAD of the prices.</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line"></span></div></div>
+    </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">6</span><span class="ws-directions">Find the mistake. Explain it, then show the correct work.</span></div>
-      <div class="ws-pbody"><p class="ws-stem"><b>Level 2 Extension — The Deviations That Vanished</b></p>
-  <div class="ws-steps-box"><ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data set</span><span class="ws-step-w">A center's rebounds: 3, 7, 11, 15, 19</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the mean</span><span class="ws-step-w">Sum = 55, Count = 5, Mean = 55 ÷ 5 = 11</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find each deviation (value − mean)</span><span class="ws-step-w">−8, −4, 0, 4, 8</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Find the MAD</span><span class="ws-step-w">MAD = (−8 + −4 + 0 + 4 + 8) ÷ 5 = 0 ÷ 5 = 0</span></li></ol></div>
-  <p class="ws-prompt">Which step has the mistake? Explain what went wrong, then show the correct work.</p>
-  <div class="ws-work"><span class="ws-work-label">Correct work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div><div class="ws-answer-line"><span class="ws-answer-label">Correct answer:</span><span class="ws-fill-line"></span></div></div>
+      <div class="ws-problem-head"><span class="ws-pnum">5</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Slide heights at a water park are 60, 75, 80, 85 and 100 feet. Find the MAD of the heights.</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line"></span></div></div>
+    </li>
+    <li class="ws-problem-card">
+      <div class="ws-problem-head"><span class="ws-pnum">6</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">Kai finds the deviations of 2, 6, 7, 9 from their mean, 6. He gets −4, 0, 1 and 3. He adds them and says the MAD is 0. What is the MAD?</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line"></span></div></div>
     </li></ol>
     <section class="ws-block ws-block-explain">
-    <h2 class="ws-block-title"><span class="ws-block-kicker">Explain your thinking</span>Player A's MAD is 2.4 points. If Player B's MAD is 7.2 points, what does that tell you about their consistency?</h2>
+    <h2 class="ws-block-title"><span class="ws-block-kicker">Explain your thinking</span>Two classes have the same mean test score. One class has a MAD of 3. The other has a MAD of 12. Which class has scores more alike? Defend it.</h2>
     
     <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div>
   </section><section class="ws-block ws-block-author">

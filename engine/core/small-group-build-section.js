@@ -15,10 +15,11 @@ import { mathHtml, numericValue } from "./small-group-build-figure-kit.js";
 import { figureMarkup } from "./small-group-build-figures.js";
 import { biHtml, el, esc, sectionHeading } from "./small-group-ui.js";
 
-const line = (en, es) => biHtml(mathHtml(en), es ? mathHtml(es) : "");
+export const line = (en, es) => biHtml(mathHtml(en), es ? mathHtml(es) : "");
 
 /** A figure with its caption in the student's language lane. */
-const figure = (f) => figureMarkup(f, { caption: f.caption ? line(f.caption, f.captionEs) : "" });
+export const figure = (f) =>
+  figureMarkup(f, { caption: f.caption ? line(f.caption, f.captionEs) : "" });
 
 /** Normalize a typed answer for comparison: case, spaces, commas, minus signs, $ and %. */
 export function normalizeAnswer(value) {
@@ -40,11 +41,11 @@ export function isAccepted(value, accept) {
   });
 }
 
-function label(text) {
+export function label(text) {
   return `<span class="sgb-label">${esc(text)}</span>`;
 }
 
-function revealButton(textOn, onReveal) {
+export function revealButton(textOn, onReveal) {
   const button = el("button", "sgb-check", esc(textOn));
   button.type = "button";
   button.addEventListener("click", () => {
@@ -54,7 +55,7 @@ function revealButton(textOn, onReveal) {
   return button;
 }
 
-function workedStep(step, index) {
+export function workedStep(step, index) {
   const li = el("li", "sgb-step");
   li.appendChild(el("span", "sgb-num", String(index + 1)));
   const body = el("div", "sgb-step-body");

@@ -26,7 +26,12 @@
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { FIGURE_CSS } from "@eduwonderlab/engine/core/small-group-build-figures.js";
 import { LESSONS_DIR as LESSONS, listLessonDirs } from "../tools/lib/curriculum-source.mjs";
+import {
+  togetherToPracticeItem,
+  toPracticeItem,
+} from "../tools/lib/small-group-practice-items.mjs";
 import { EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 import { esc } from "./lib/worksheet-figures.mjs";
@@ -83,6 +88,21 @@ function setAEditions(cfg) {
     return split.setA
       .map((pool, i) => ({ pool, ...(split.tiered ? PART_TWO_TIERS[i] : single) }))
       .filter((t) => t.pool.length);
+  }
+  // Small groups print the studio's own authored practice: the two Practice
+  // Together problems as guided steps, then On My Own.
+  const authored = cfg.launch?.practice;
+  if (authored && kind !== "core" && kind !== "partTwo") {
+    const pool = [
+      ...(authored.together || []).map(togetherToPracticeItem),
+      ...(authored.onMyOwn || []).map(toPracticeItem),
+    ];
+    const edition = {
+      group1: { label: "Group 1", note: "Supported practice", supported: true },
+      group2: { label: "Group 2", note: "Challenge practice", supported: false, extras: "author" },
+      catchup: { label: "Catch-Up", note: "Skill bridge", supported: true },
+    }[kind];
+    return [{ pool, ...edition }];
   }
   if (kind === "group1") {
     const pool = (approaching.length ? approaching : onLevel).slice(0, 6);
@@ -230,7 +250,7 @@ export function buildWorksheet(cfg, { key = false, set = "A" } = {}) {
 <link href="/assets/fonts/worksheet-pages.css" rel="stylesheet" />
 <style>
 ${WORKSHEET_CSS}
-${EDITORIAL_OVERRIDES}
+${EDITORIAL_OVERRIDES}${pages.some((p) => p.includes('class="sgf ')) ? `\n${FIGURE_CSS}` : ""}
 </style>
 </head>
 <body>

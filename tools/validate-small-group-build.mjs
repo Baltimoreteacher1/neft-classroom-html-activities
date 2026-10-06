@@ -95,7 +95,7 @@ export function arithmeticErrors(text) {
   return errors;
 }
 
-function checkText(err, path, value, { limit, es = true, obj } = {}) {
+export function checkText(err, path, value, { limit, es = true, obj } = {}) {
   if (!isStr(value)) return err(`${path} missing`);
   if (limit && words(value) > limit) err(`${path} is ${words(value)} words (max ${limit})`);
   for (const [re, msg] of BANNED) if (re.test(value)) err(`${path} ${msg}`);
@@ -118,7 +118,7 @@ const UNITS = new Set(
 export const mathHasWords = (line) =>
   (String(line).match(/[A-Za-z]{2,}/g) || []).some((w) => !UNITS.has(w));
 
-function checkMathEs(err, path, math, mathEs) {
+export function checkMathEs(err, path, math, mathEs) {
   const lines = Array.isArray(math) ? math : [math];
   if (!lines.some(mathHasWords)) {
     if (mathEs !== undefined) err(`${path}Es is set but the math has no words to translate`);
@@ -133,7 +133,7 @@ function checkMathEs(err, path, math, mathEs) {
   });
 }
 
-function checkMath(err, path, math) {
+export function checkMath(err, path, math) {
   const lines = Array.isArray(math) ? math : [math];
   for (const line of lines) {
     if (!isStr(line)) return err(`${path} empty`);

@@ -57,6 +57,22 @@ const cases = [
   },
   {
     want: "fail",
+    name: "stem asks for a prime factorization, answer multiplies to another number",
+    config: {
+      parallelPractice: [{ stem: "Find the prime factorization of 24.", answer: "2 × 2 × 3" }],
+    },
+  },
+  {
+    want: "skip",
+    name: "stem asks about one part of a prime factorization",
+    config: {
+      parallelPractice: [
+        { stem: "Find the prime factorization of 54. What is the exponent on 3?", answer: "3" },
+      ],
+    },
+  },
+  {
+    want: "fail",
     name: "non-prime in factor-tree answer",
     config: { practice: { rows: [{ given: "24", split: "4 × 6", answer: "4 × 6" }] } },
   },

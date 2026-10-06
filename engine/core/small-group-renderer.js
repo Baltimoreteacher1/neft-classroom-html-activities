@@ -4,7 +4,6 @@
 
 import { createLessonCourseNav } from "./curriculum-nav.js";
 import { createRhythmCoach } from "./facilitation-rhythm.js";
-import { createGoDeeper } from "./go-deeper.js";
 import { observeContentImageZoom } from "./image-zoom.js";
 import { enableKeyboardScrolling } from "./keyboard-scroll.js";
 import {
@@ -19,45 +18,22 @@ import {
 // all — the stylesheet reaches the page through Vite's shared CSS chunk, which
 // every lesson entry links.
 import { mountPresentWidget } from "./present-mode.js";
-import { mountStepGuide, simplifyStudioHeader } from "./reading-flow.js";
+import { simplifyStudioHeader } from "./reading-flow.js";
 import { ensureCanvasBridge } from "./scorm-bridge.js";
-import { createAutoPilot } from "./small-group-adaptive.js";
 import { installSmallGroupAnnotation } from "./small-group-annotation.js";
 import { buildSection } from "./small-group-build-section.js";
-import {
-  createMissionSection,
-  createReflectionSection,
-  createTalkSection,
-  createVocabularySection,
-  makePulse,
-  selectedTalk,
-} from "./small-group-engagement.js";
+import { createVocabularySection, selectedTalk } from "./small-group-engagement.js";
 import { syncSmallGroupEvidence, trackSmallGroupStep } from "./small-group-evidence.js";
-import {
-  createAdaptiveCoach,
-  createAutoSupportTracker,
-  createConsensusLab,
-  createEvidenceCard,
-  createMisconceptionCard,
-  createStudioPacket,
-  createTeacherEvidenceConsole,
-} from "./small-group-innovation.js";
-import {
-  createApplyLab,
-  createExploreLab,
-  createModelLab,
-  figureBlock,
-} from "./small-group-labs.js";
-import { createMasteryLadder } from "./small-group-mastery.js";
-import { createMathCheckLab } from "./small-group-math-check.js";
+import { createMisconceptionCard, createTeacherEvidenceConsole } from "./small-group-innovation.js";
+import { createApplyLab } from "./small-group-labs.js";
 import { installSmallGroupPassport } from "./small-group-passport.js";
 import {
-  collectPracticeItems,
-  createCheckSection,
-  createPracticeSection,
-} from "./small-group-practice.js";
+  createChallengeCard,
+  createExitCheckSection,
+  createOnMyOwnSection,
+  createTogetherSection,
+} from "./small-group-practice-path.js";
 import { createReachLog } from "./small-group-reach.js";
-import { createRoom, createRoomChip } from "./small-group-room.js";
 import { masteryBand } from "./small-group-rubric.js";
 import { resolveStandard } from "./small-group-standards.js";
 import { createStudioStore } from "./small-group-state.js";
@@ -84,35 +60,6 @@ import {
 import { mountTeacherClearButton } from "./teacher-clear.js";
 import { mountToolDrawer } from "./tool-drawer.js";
 import { isToolsMode, mountToolsMenuItem, renderToolsPage } from "./tools-mode.js";
-
-// In-tab sub-steps: quiet-canvas styling (flat surfaces, sg tokens, no
-// gradients — sweep:small-group holds that), 44px targets, and a print block
-// that reveals every hidden step so the packet never loses a section.
-let substepStylesInjected = false;
-function injectSubstepStyles() {
-  if (substepStylesInjected || document.getElementById("sg-substep-styles")) {
-    substepStylesInjected = true;
-    return;
-  }
-  substepStylesInjected = true;
-  const s = document.createElement("style");
-  s.id = "sg-substep-styles";
-  s.textContent = `
-  .sg-substeps{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;margin:0 0 16px;background:var(--sg-card);border:1px solid var(--sg-line);border-radius:14px}
-  .sg-substep-chip{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:0 14px;font-family:var(--sg-display,inherit);font-size:14px;font-weight:700;color:var(--sg-muted);background:var(--sg-soft,#f5f7fa);border:1.5px solid var(--sg-line);border-radius:999px;cursor:pointer}
-  .sg-substep-chip:hover{border-color:var(--sg);color:var(--sg-ink)}
-  .sg-substep-chip.is-on{color:#fff;background:var(--sg);border-color:var(--sg)}
-  .sg-substep-num{display:inline-grid;place-items:center;width:1.6em;height:1.6em;border-radius:50%;background:var(--sg-fill,#eaeff5);color:var(--sg-ink);font-size:12px;font-weight:800;font-style:normal}
-  .sg-substep-chip.is-on .sg-substep-num{background:rgba(255,255,255,.25);color:#fff}
-  .sg-substep[hidden]{display:none!important}
-  .sg-substep-next{display:flex;justify-content:flex-end;margin:18px 0 4px}
-  .sg-substep-nextbtn{min-height:44px;padding:10px 22px;font-weight:800;border-radius:12px;color:#fff;background:var(--sg);border:1.5px solid var(--sg);cursor:pointer}
-  .sg-substep-nextbtn:hover{background:var(--sg-deep,var(--sg));border-color:var(--sg-deep,var(--sg))}
-  @media (max-width:1099px){.sg-substeps{position:static}}
-  @media print{.sg-substeps,.sg-substep-next{display:none!important}.sg-substep[hidden]{display:block!important}}
-  `;
-  document.head.appendChild(s);
-}
 
 function teacherPanel(config, accent, talk) {
   const group = config.smallGroup;
@@ -533,7 +480,6 @@ function renderStudio(config) {
   };
   mountTeacherClearButton(window.__ntClearLessonAnswers);
   mountPresentWidget();
-  mountStationTimer();
   const state = {
     before: null,
     after: null,
@@ -541,67 +487,21 @@ function renderStudio(config) {
     incorrectAttempts: 0,
     hints: 0,
     solved: 0,
-    // Cross-session studio evidence — rehydrated so the Evidence Card and the
-    // consensus/coach labs survive a reload instead of resetting to "—".
-    mathCheckDone: Boolean(store.get("mathCheckDone")),
-    consensusVotes: store.get("consensusVotes") || [],
-    masteryLevel: store.get("masteryLevel") || null,
-    selfCheck: store.get("selfCheck") || {},
-    selfCheckEvidence: store.get("selfCheckEvidence") || "",
-    m4Justify: store.get("m4Justify") || "",
-    m4Generalize: store.get("m4Generalize") || "",
-    m4Create: store.get("m4Create") || "",
-    revision: store.get("revision") || null,
-    revisionReason: store.get("revisionReason") || "",
-    adaptivePath: store.get("adaptivePath") || null,
-    // Best consecutive-correct run, persisted so the Evidence Card can show
-    // it across sessions (session streak itself always restarts at zero).
+    // Best consecutive-correct run, persisted for the teacher console.
     bestStreak: Number(store.get("bestStreak")) || 0,
     // Named misconceptions seen on this device, as {id: count}. Counts only —
     // the typed response that produced them is never stored or transmitted.
     misconceptions: store.get("misconceptions") || {},
-    // Last revealed table distribution, so "convince a skeptic" can name a real
-    // peer's position instead of inventing an objection.
-    roomConsensus: store.get("roomConsensus") || null,
   };
   // Reach instrumentation: which tabs students actually arrive at, and how long
   // the studio takes to put a problem in front of them. See small-group-reach.js
   // for why arrivals — not completions — are the number that matters here.
   const reach = createReachLog(store);
 
-  // The shared table. Strictly additive: with no room, no backend, or no network
-  // the studio behaves exactly as it always has. See small-group-room.js.
-  const room = createRoom(config.lessonId || "lesson");
-
-  // Opens every unsolved problem's supports once misses spread across two
-  // different problems. Until now the only route to set-wide scaffolding was
-  // tapping "Find our next move" in the adaptive coach, so students who never
-  // opened the coach worked the whole set unscaffolded no matter how it went.
-  const autoSupport = createAutoSupportTracker();
-
-  // Automatic difficulty pilot — the rule the coach never applied on its own:
-  // two consecutive misses step the set down (supports + a worked model from
-  // the student's own solved work); three hint-free solves step it up. The
-  // pilot resumes from the stored path so a reload doesn't reset difficulty.
-  const autoPilot = createAutoPilot(state.adaptivePath);
-
   const events = {
     onAttempt({ correct, item, response, choiceIndex = null }) {
       state.attempts++;
       reach.markFirstProblem();
-      // Identify the PROBLEM, not the attempt: `_practiceIndex` is the authored
-      // slot and survives adaptive reordering, so repeat misses on one card
-      // collapse to a single entry instead of counting twice.
-      if (
-        autoSupport.recordAttempt({
-          correct,
-          key: Number.isInteger(item?._practiceIndex)
-            ? `i${item._practiceIndex}`
-            : item?.stem || item?.title || "",
-        })
-      ) {
-        document.dispatchEvent(new CustomEvent("sg:auto-support"));
-      }
       let namedThisAttempt = null;
       if (!correct && item) {
         // A wrong answer is the richest signal in the room; until now it was
@@ -665,16 +565,9 @@ function renderStudio(config) {
       // Live momentum chip in the sticky rail (tabs mount after restore, so
       // the optional chain keeps restored solves from crashing the studio).
       tabs?.setStreak?.(state.streak || 0);
-      const autoMove = autoPilot.recordAttempt(Boolean(correct));
-      if (autoMove) {
-        state.adaptivePath = autoMove.path;
-        store.set("adaptivePath", autoMove.path);
-        document.dispatchEvent(new CustomEvent("sg:auto-move", { detail: autoMove }));
-      }
     },
     onHint() {
       state.hints++;
-      autoPilot.noteHint();
     },
     onSolved() {
       state.solved++;
@@ -714,7 +607,6 @@ function renderStudio(config) {
     total: 0,
     solved: 0,
     update() {
-      completion.innerHTML = `<b>${this.solved} of ${this.total}</b> practice checks complete. Keep using hints, revisions, and group questions.`;
       tabs?.setProgress(
         this.solved + phaseProgress.done.size,
         this.total + phaseProgress.keys.size,
@@ -723,8 +615,8 @@ function renderStudio(config) {
   };
 
   // Session evidence → proficiency band (approaching/meeting/exceeding),
-  // computed on demand so the Evidence Card, console, and telemetry all read
-  // the same current answer.
+  // computed on demand so the teacher console and telemetry read the same
+  // current answer.
   const getBand = () =>
     masteryBand({
       solved: tally.solved,
@@ -733,237 +625,91 @@ function renderStudio(config) {
       incorrectAttempts: state.incorrectAttempts,
       hints: state.hints,
     });
-  const evidence = createEvidenceCard(config, state, getBand);
-  const packet = createStudioPacket(config, state, store);
-  const reflection = createReflectionSection(
-    config,
-    state,
-    () => {
-      phaseDone("sg-tab-practice", "reflectDone")();
-      completion.hidden = false;
-      completion.innerHTML = `<h2>Studio complete 🎉</h2><p>${esc(voice.completeBody)}</p>`;
-      completion.appendChild(packet.button());
-      evidence.reveal();
-      // Section-scoped, name-free evidence for the teacher mastery dashboard.
-      // Sent once, only on genuine completion, only if a class identity exists.
-      syncSmallGroupEvidence(config, {
-        kind: "complete",
-        variant,
-        phasesDone: phaseProgress.done.size,
-        phasesTotal: phaseProgress.keys.size,
-        practiceSolved: tally.solved,
-        practiceTotal: tally.total,
-        confidenceBefore: state.before,
-        confidenceAfter: state.after,
-        attempts: state.attempts,
-        incorrectAttempts: state.incorrectAttempts,
-        hints: state.hints,
-        bestStreak: state.bestStreak,
-        adaptivePath: state.adaptivePath,
-        band: getBand().id,
-        explained: Boolean(store.get("checkExplained")),
-        // Independent-evidence band: first-attempt score across the exit ticket
-        // and its transfer item, so the dashboard sees a mastery decision rather
-        // than a single multiple-choice tap.
-        checkBand: store.get("checkBand") || "",
-        checkBandScore: store.get("checkBandScore") ?? null,
-        // Every rendered item carries its standard, so evidence rolls up per
-        // standard and not only per lesson.
-        standards: [...new Set(allPractice.map((item) => item._standard).filter(Boolean))],
-        // Named misconceptions as {id: count} — counts only, never the typed
-        // response. This is the signal a next-move recommendation runs on.
-        misconceptions: state.misconceptions || {},
-        // Which tabs were ever reached, and seconds to the first problem. Without
-        // this a feature wave cannot tell whether it added value or just surface.
-        ...reach.summary(),
-      });
-    },
-    store,
-  );
-  const revealReflection = () => {
-    mark("sg-tab-practice");
-    reflection.reveal();
-  };
 
-  // A small-group rotation opens on the mathematics, not on a quiz (Joel,
-  // 2026-08-25: "get rid of 1 🎯 Warm-Up Check"). The two-minute entry
-  // diagnostic used to take the practice pool's tail; with it gone the tail
-  // returns to practice, which is where those items were authored to be.
-  const allPractice = collectPracticeItems(config);
-  const preferredGuided =
-    Number(config.smallGroupPractice?.guidedCount) || (variant === "group2" ? 3 : 4);
-  const guidedCount =
-    allPractice.length <= 2
-      ? Math.min(1, allPractice.length)
-      : Math.min(preferredGuided, allPractice.length - 2);
-  const remaining = allPractice.slice(guidedCount);
-  const independentCount = Math.ceil(remaining.length / 2);
-  const guidedItems = allPractice.slice(0, guidedCount);
-  const independentItems = remaining.slice(0, independentCount);
-  const moreItems = remaining.slice(independentCount);
-
-  const check = createCheckSection(config, revealReflection, tally, events, store);
-  // Mission is the capstone — it renders after practice and supports.
-  const mission = createMissionSection(config, variant, phaseDone("sg-tab-more", "launchDone"));
-  // One private question, posted above the strip rather than made a step of its
-  // own: `state.before` steers the adaptive layer (small-group-innovation.js)
-  // and is exported as `confidenceBefore`, so it has to be asked, but it is a
-  // five-second rating and never was a moment in the session.
-  const pulseCard = el("div", "card sg-pulse-card");
-  pulseCard.appendChild(el("p", "block-lab", "Private readiness pulse — how ready do you feel?"));
-  pulseCard.appendChild(
-    makePulse(
-      state,
-      "before",
-      (value) => store.set("pulseBefore", value),
-      store.get("pulseBefore"),
-    ),
-  );
-  const build = buildSection(config, phaseDone("sg-tab-learn", "buildDone"), { store });
-  // Group 2 checks its challenge with the specific mathematical process for
-  // this lesson. Group 1 keeps its supportive partner talk in Practice.
-  const mathCheck =
-    variant === "group2"
-      ? createMathCheckLab(config, state, phaseDone("sg-tab-prove", "mathCheckDone"), store)
-      : null;
-  const explore = createExploreLab(config, variant, {
-    store,
-    events,
-    onDone: phaseDone("sg-tab-learn", "exploreDone"),
-  });
-  const model = createModelLab(config, variant, {
-    store,
-    events,
-    onDone: phaseDone("sg-tab-learn", "modelDone"),
-  });
-  const vocab = createVocabularySection(
-    config,
-    variant,
-    phaseDone("sg-tab-vocab", "vocabDone"),
-    store,
-  );
-  // Partner talk lives inside the Practice tab so discussion is part of
-  // practicing, not a detour.
-  const talk =
-    variant === "group2"
-      ? null
-      : createTalkSection(config, variant, phaseDone("sg-tab-practice", "talkDone"));
-  if (talk) talk.appendChild(createConsensusLab(config, variant, state, store, room));
-  // Mid-rotation checkpoint: when the guided set lands, send one name-free
-  // section-scoped ping so the teacher's class view moves DURING the rotation,
-  // not only after completion. Same privacy gate as the completion sync.
-  let guidedCheckpointSent = false;
-  const guidedPhaseDone = phaseDone("sg-tab-guided", "guidedDone");
-  const guidedDoneWithCheckpoint = () => {
-    guidedPhaseDone();
-    if (guidedCheckpointSent) return;
-    guidedCheckpointSent = true;
+  // Studio complete: the student pressed Finish after the exit check.
+  let completeSent = false;
+  const onComplete = () => {
+    phaseDone("sg-tab-check", "checkDone")();
+    completion.hidden = false;
+    completion.innerHTML = `<h2>Studio complete 🎉</h2><p>${esc(voice.completeBody)}</p>`;
+    if (completeSent) return;
+    completeSent = true;
+    // Section-scoped, name-free evidence for the teacher mastery dashboard.
+    // Sent once, only on genuine completion, only if a class identity exists.
     syncSmallGroupEvidence(config, {
-      kind: "checkpoint",
+      kind: "complete",
       variant,
+      phasesDone: phaseProgress.done.size,
+      phasesTotal: phaseProgress.keys.size,
       practiceSolved: tally.solved,
       practiceTotal: tally.total,
+      confidenceBefore: state.before,
+      confidenceAfter: state.after,
       attempts: state.attempts,
       incorrectAttempts: state.incorrectAttempts,
       hints: state.hints,
-      confidenceBefore: state.before,
+      bestStreak: state.bestStreak,
       band: getBand().id,
-      // Mid-rotation checkpoints carry misconceptions too: a teacher needs the
-      // named error while the group is still at the table, not at completion.
+      // Independent-evidence band: first-attempt score across the two exit
+      // check problems, so the dashboard sees a mastery decision rather than
+      // a single tap.
+      checkBand: store.get("checkBand") || "",
+      checkBandScore: store.get("checkBandScore") ?? null,
+      standards: config.standard ? [config.standard] : [],
+      // Named misconceptions as {id: count} — counts only, never the typed
+      // response.
       misconceptions: state.misconceptions || {},
       ...reach.summary(),
     });
   };
-  const guided = createPracticeSection(config, guidedDoneWithCheckpoint, tally, events, store, {
-    items: guidedItems,
-    id: "sg-guided-practice",
-    title: "Let’s solve together",
-    eyebrow: "Guided practice",
-    directions: voice.guidedDir,
-    directionsEs: voice.guidedDirEs,
-    scaffold: "all",
-    showMistake: true,
-    mode: "guided",
-  });
-  const practice = createPracticeSection(
-    config,
-    phaseDone("sg-tab-practice", "practiceDone"),
-    tally,
-    events,
-    store,
-    {
-      items: independentItems,
-      id: "sg-independent-practice",
-      title: "Try it on your own",
-      eyebrow: "Independent practice",
-      directions: voice.soloDir,
-      directionsEs: voice.soloDirEs,
-      scaffold: variant === "group2" ? "none" : "default",
-      showMistake: false,
-      indexOffset: guidedCount,
-      mode: "practice",
-    },
-  );
-  const morePractice = createPracticeSection(
-    config,
-    phaseDone("sg-tab-more", "moreDone"),
-    tally,
-    events,
-    store,
-    {
-      items: moreItems,
-      id: "sg-more-practice",
-      title: "More practice",
-      eyebrow: "Build fluency",
-      directions: voice.moreDir,
-      directionsEs: voice.moreDirEs,
-      scaffold: variant === "group2" ? "none" : "default",
-      showMistake: false,
-      includeOptional: true,
-      indexOffset: guidedCount + independentItems.length,
-      mode: "more",
-      // Restore last session's coach path so More Practice reorders on boot
-      // the same way a live "Find our next move" choice would.
-      adaptivePath: state.adaptivePath || store.get("adaptivePath") || "connect",
-    },
-  );
-  // More Practice used to be "the same set again". The mastery ladder in front
-  // of it makes the section a rubric a student can act on: criteria, a level
-  // they choose, level-4 tasks anyone can attempt, and a self-check.
-  const masteryLadder = createMasteryLadder({
-    config,
-    state,
-    store,
-    practiceSection: morePractice,
-  });
 
+  // One path, six steps, every problem authored for THIS lesson
+  // (data/small-group-practice, docs/specs/small-group-practice-v1.md):
+  // Key Words → Learn It → Practice Together → On My Own → Check → Apply.
+  // The 2026-10-06 audit found the old three-part shell (each part with its own
+  // sub-step strip) showed two "Step 1"s at once and stacked a readiness pulse,
+  // strategy pickers, a level ladder, a consensus protocol, a coach and two
+  // data labs around practice that had drifted to other lessons' mathematics.
+  const practiceCtx = (tabId, storeKey) => ({
+    store,
+    events,
+    tally,
+    standard: config.standard || "",
+    onDone: phaseDone(tabId, storeKey),
+  });
+  const vocab = createVocabularySection(
+    config,
+    variant,
+    phaseDone("sg-tab-words", "vocabDone"),
+    store,
+  );
+  const build = buildSection(config, phaseDone("sg-tab-learn", "buildDone"), { store });
+  const together = createTogetherSection(config, practiceCtx("sg-tab-together", "togetherDone"));
+  const own = createOnMyOwnSection(config, practiceCtx("sg-tab-own", "ownDone"));
+  const check = createExitCheckSection(config, state, {
+    ...practiceCtx("sg-tab-check", null),
+    onComplete,
+  });
   const apply = createApplyLab(config, variant, {
+    number: 6,
     store,
     events,
-    onDone: phaseDone("sg-tab-more", "applyDone"),
+    onDone: phaseDone("sg-tab-apply", "applyDone"),
+  });
+  const challenge = createChallengeCard(config, {
+    store,
+    events,
+    tally,
+    standard: config.standard || "",
   });
 
-  // Go Deeper stretch parity: group1/catch-up get the optional advanced path
-  // (group2 already has the topic-specific Math Check lab). Deliberately NOT registered in
-  // trackedPhases — it's an invitation, never part of the progress denominator.
-  const goDeeper =
-    variant === "group2"
-      ? null
-      : createGoDeeper({ config, lessonId: config.lessonId, variant, peers: state.roomConsensus });
-
-  // Register the phase checks that exist in THIS lesson (labs are optional),
-  // and restore ones finished last session, so the meter's denominator is
-  // honest and prior work still counts. Practice-driven phase marks
-  // (guided/practice/more/check) stay out — their items are already tallied.
+  // Register the phase checks that exist in THIS lesson, and restore ones
+  // finished last session, so the meter's denominator is honest. Practice
+  // problems are tallied one by one, not as phases.
   const trackedPhases = [
     [vocab, "vocabDone"],
     [build, "buildDone"],
-    [explore, "exploreDone"],
-    [model, "modelDone"],
-    [talk, "talkDone"],
-    [mission, "launchDone"],
     [apply, "applyDone"],
-    [reflection.section, "reflectDone"],
   ];
   for (const [section, storeKey] of trackedPhases) {
     if (!section) continue;
@@ -978,174 +724,47 @@ function renderStudio(config) {
     return panel;
   };
 
-  // A tab whose sections all stack is a 6,000px scroll — the same crowding the
-  // whole-group Acts had before their step strips. Group each tab's sections
-  // into named moments shown ONE at a time behind a compact strip. Everything
-  // still renders (save/resume, graders and the teacher console read hidden
-  // panels fine); only visibility changes, and print reveals every step.
-  injectSubstepStyles();
-  const makeStepPanel = (id, groups, lead = []) => {
-    const live = groups
-      .map((g) => ({ ...g, children: g.children.filter(Boolean) }))
-      .filter((g) => g.children.length);
-    // One real group needs no strip — render it plainly.
-    if (live.length < 2) {
-      return makePanel(id, [...lead, ...live.flatMap((g) => g.children)].filter(Boolean));
-    }
-    const panel = el("div", "sg-panel");
-    panel.id = id;
-    // `lead` sits outside the strip: posted for the whole tab, not one step of it.
-    for (const node of lead) if (node) panel.appendChild(node);
-    const strip = el("div", "sg-substeps");
-    strip.setAttribute("role", "tablist");
-    strip.setAttribute("aria-label", "Steps in this part of the session");
-    panel.appendChild(strip);
-    const updateGuide = mountStepGuide(
-      strip,
-      live.map((step) => step.label),
-      { collapsed: false },
-    );
-    /** @type {HTMLElement[]} */
-    const hosts = [];
-    /** @type {HTMLButtonElement[]} */
-    const chips = [];
-    const storeKey = `substep-${id}`;
-    const show = (i, save) => {
-      hosts.forEach((h, j) => {
-        h.hidden = j !== i;
-      });
-      chips.forEach((c, j) => {
-        c.classList.toggle("is-on", j === i);
-        c.setAttribute("aria-selected", j === i ? "true" : "false");
-      });
-      updateGuide(i, save);
-      if (save) {
-        store.set(storeKey, live[i].label);
-        trackSmallGroupStep(config, { tab: id, step: live[i].label, index: i, count: live.length });
-        panel.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    };
-    live.forEach((g, i) => {
-      const chip = el("button", "sg-substep-chip");
-      chip.type = "button";
-      chip.setAttribute("role", "tab");
-      chip.innerHTML = `<b class="sg-substep-num">${i + 1}</b> ${g.icon} ${esc(g.label)}`;
-      chip.addEventListener("click", () => show(i, true));
-      strip.appendChild(chip);
-      chips.push(chip);
-      const host = el("div", "sg-substep");
-      host.hidden = true;
-      for (const child of g.children) host.appendChild(child);
-      if (i < live.length - 1) {
-        const row = el("div", "sg-substep-next");
-        const next = el("button", "btn sg-substep-nextbtn");
-        next.type = "button";
-        next.innerHTML = `Next: ${live[i + 1].icon} ${esc(live[i + 1].label)} →`;
-        next.addEventListener("click", () => show(i + 1, true));
-        row.appendChild(next);
-        host.appendChild(row);
-      }
-      panel.appendChild(host);
-      hosts.push(host);
-    });
-    // Saves name the step a student was on. Steps merged on 2026-10-04 map
-    // onto the step that now holds their content.
-    const MERGED = {
-      "Get Ready": "Key Words",
-      Explore: "Hands-On Model",
-      "Worked Model": "Hands-On Model",
-      "Explore Together": "Guided",
-      "Choose a Strategy": "Guided",
-      "Math Check": "Check",
-      Reflect: "Check",
-      "My Evidence": "Grow",
-      "More Practice": "Grow",
-      Apply: "Mission",
-      "Go Deeper": "Mission",
-    };
-    const saved = store.get(storeKey);
-    const label = typeof saved === "string" ? MERGED[saved] || saved : null;
-    const restored = live.findIndex((step) => step.label === label);
-    show(restored >= 0 ? restored : 0, false);
-    return panel;
-  };
-
-  const practiceLabs = config.practice?.diagram
-    ? (Array.isArray(config.practice.diagram)
-        ? config.practice.diagram
-        : [config.practice.diagram]
-      ).map((d, i) => figureBlock(d, { store, slot: `practice-lab-${i}` }))
-    : [];
   const tabSteps = [
     {
+      id: "sg-tab-words",
+      label: "Key Words",
+      sub: "Words for today",
+      panel: makePanel("sg-tab-words", [vocab]),
+    },
+    {
       id: "sg-tab-learn",
-      label: "Focus & Learn",
-      sub: "Key words & worked model",
-      panel: makeStepPanel(
-        "sg-tab-learn",
-        [
-          { icon: "🔑", label: "Key Words", children: [vocab] },
-          { icon: "🧱", label: "Build the Idea", children: [build] },
-          { icon: "🔍", label: "Hands-On Model", children: [explore, model] },
-        ],
-        // The readiness pulse is a five-second rating, not a moment of the
-        // session, so it is posted above the strip rather than made a step.
-        [pulseCard],
-      ),
+      label: "Learn It",
+      sub: "See how it works",
+      panel: makePanel("sg-tab-learn", [build]),
     },
     {
-      id: "sg-tab-practice",
-      label: "Practice Studio",
-      sub: "Guided & independent",
-      panel: makeStepPanel("sg-tab-practice", [
-        {
-          icon: "🤝",
-          label: "Guided",
-          // The practice lab and the strategy coach serve the guided set, so
-          // they sit inside it instead of being steps of their own.
-          children: [guided, ...practiceLabs, createAdaptiveCoach(variant, state, store)],
-        },
-        { icon: "✏️", label: "On My Own", children: [practice] },
-        { icon: "🗣️", label: "Talk It Out", children: [talk] },
-      ]),
+      id: "sg-tab-together",
+      label: "Practice Together",
+      sub: "Solve with your group",
+      panel: makePanel("sg-tab-together", [together]),
     },
     {
-      id: "sg-tab-more",
-      label: "Check & Growth",
-      sub: "Show it & celebrate",
-      panel: makeStepPanel("sg-tab-more", [
-        {
-          icon: "✅",
-          label: "Check",
-          // Reflect appears only once the check is answered, so it lives under
-          // the check — as its own step it was an empty screen until then.
-          children: [mathCheck, check, reflection.section],
-        },
-        {
-          icon: "📈",
-          label: "Grow",
-          children: [completion, masteryLadder, morePractice, evidence.section, packet.section],
-        },
-        { icon: "🚀", label: "Mission", children: [mission, apply, goDeeper] },
-      ]),
+      id: "sg-tab-own",
+      label: "On My Own",
+      sub: "Solve by yourself",
+      panel: makePanel("sg-tab-own", [own]),
+    },
+    {
+      id: "sg-tab-check",
+      label: "Check",
+      sub: "Show what you know",
+      panel: makePanel("sg-tab-check", [check, completion]),
+    },
+    {
+      id: "sg-tab-apply",
+      // Not every lesson has a Reveal word problem; then the step is the Challenge.
+      label: apply ? "Apply" : "Challenge",
+      sub: apply ? "Use it in a real problem" : "One harder problem",
+      panel: makePanel("sg-tab-apply", [apply, challenge]),
     },
   ];
 
   const heroNode = hero(config, accent, voice);
-  // The table chip sits behind the Full objectives disclosure so the masthead
-  // stays compact and the first task is immediately visible above the fold.
-  const more = heroNode.querySelector(".sg-obj-more");
-  const roomChip = createRoomChip(room, {
-    onJoined: () => {
-      // Re-render the talk section's consensus lab against the new membership.
-      window.location.reload();
-    },
-  });
-  if (more) {
-    more.appendChild(roomChip);
-  } else {
-    heroNode.appendChild(roomChip);
-  }
   const courseNav = createLessonCourseNav(config);
   if (courseNav) app.appendChild(courseNav);
   app.appendChild(heroNode);
@@ -1240,19 +859,12 @@ function renderStudio(config) {
     openedForPrint.clear();
   });
   const RESTORE_MARKS = {
-    vocabDone: "sg-tab-vocab",
-    launchDone: "sg-tab-more",
+    vocabDone: "sg-tab-words",
     buildDone: "sg-tab-learn",
-    exploreDone: "sg-tab-learn",
-    modelDone: "sg-tab-learn",
-    talkDone: "sg-tab-practice",
-    guidedDone: "sg-tab-guided",
-    practiceDone: "sg-tab-practice",
-    checkSolved: "sg-tab-practice",
-    reflectDone: "sg-tab-practice",
-    moreDone: "sg-tab-more",
-    applyDone: "sg-tab-more",
-    mathCheckDone: "sg-tab-prove",
+    togetherDone: "sg-tab-together",
+    ownDone: "sg-tab-own",
+    checkDone: "sg-tab-check",
+    applyDone: "sg-tab-apply",
   };
   for (const [storeKey, tabId] of Object.entries(RESTORE_MARKS))
     if (store.get(storeKey)) mark(tabId);
@@ -1264,6 +876,8 @@ function renderStudio(config) {
     renderTeacher(facilitation) {
       if (teacherToolsAdded) return;
       teacherToolsAdded = true;
+      // The rotation timer is the teacher's tool; students never see a clock.
+      mountStationTimer();
       const teacherConfig = { ...config, smallGroup: facilitation };
       const evidenceConsole = createTeacherEvidenceConsole(teacherConfig, state, getBand);
       const misconceptions = createMisconceptionCard(config);

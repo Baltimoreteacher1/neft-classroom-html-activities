@@ -8,6 +8,7 @@
  * publisher overhaul; the drawing code did not change.
  */
 import { DIVISION_FIGURE_CSS } from "@eduwonderlab/engine/core/division-walk-figure.js";
+import { figureMarkup } from "@eduwonderlab/engine/core/small-group-build-figures.js";
 
 export { DIVISION_FIGURE_CSS };
 
@@ -466,6 +467,9 @@ function renderBalanceScaleSvg(cfg) {
 }
 
 export function renderProblemDiagram(it) {
+  // Authored small-group practice carries a Build figure spec, drawn by the
+  // same library the studio uses so the sheet shows the studio's picture.
+  if (it.buildFigure) return figureMarkup(it.buildFigure);
   const d = it.diagram || it.visual || it.figure;
   if (d && typeof d === "object") {
     const kind = d.kind || d.type || "";

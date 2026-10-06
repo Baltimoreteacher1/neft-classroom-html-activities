@@ -45,7 +45,7 @@ import { augmentVocabWithGlossary } from "./math-glossary.js";
 import { renderMathNotesStep } from "./notebook-checkpoint.js";
 import { resolveObjectiveVisuals } from "./objective-visuals.js";
 import { ensureCanvasBridge } from "./scorm-bridge.js";
-import { visualMarkup } from "./small-group-visual-practice.js";
+import { FIGURE_CSS, figureMarkup } from "./small-group-build-figures.js";
 import { mountStuckSupport } from "./stuck-support.js";
 import { isTeacherMode } from "./teacher-mode.js";
 import { hasRealVocabImage, resolveVocabImage, vocabImageAlt } from "./vocab-images.js";
@@ -761,24 +761,25 @@ const LEVELS = [
  * looking at.
  */
 /**
- * The figure for a table-practice problem lifted from a small-group bank.
- *
- * These items were authored against `small-group-visual-practice.js` and every
- * one of them declares a `visual.kind` — xy-table, volume-prism, fraction-bars,
- * ratio-dots and 34 more. `renderComponent` draws an item figure through
- * `buildVisual`, which knows a different 39-kind vocabulary and overlaps this
- * one on five kinds, so before this existed the generator simply refused to
- * carry any of them: 68 of 76 Apply Days shipped with no figure at any level
- * while 2,376 figure-bearing authored problems sat unused in the variant banks.
- *
- * Marked at generation time with `sgFigure` rather than sniffed from a kind
- * list here, so the two files cannot drift into disagreeing about which
- * dispatcher owns a kind.
+ * The figure for a table-practice problem lifted from the authored small-group
+ * practice (data/small-group-practice). Those items carry a Build figure spec
+ * (`buildFigure`) — dot plots, number lines, tapes, ratio tables, shapes —
+ * drawn by the same library the studios use, so a problem looks the same at
+ * the Apply Day table as it did in small group. Its stylesheet carries its own
+ * fallbacks for every token, so it needs no small-group shell around it.
  */
+let figureCssMounted = false;
 function appendBankFigure(slot, item) {
-  if (!item || !item.sgFigure || !(item.visual && item.visual.kind)) return;
-  const markup = visualMarkup(item);
+  if (!item?.buildFigure) return;
+  const markup = figureMarkup(item.buildFigure);
   if (!markup) return;
+  if (!figureCssMounted) {
+    figureCssMounted = true;
+    const style = document.createElement("style");
+    style.id = "part-two-figure-css";
+    style.textContent = FIGURE_CSS;
+    document.head.append(style);
+  }
   const fig = el("div", "problem-item-figure");
   fig.innerHTML = markup;
   if (!fig.firstElementChild) return;

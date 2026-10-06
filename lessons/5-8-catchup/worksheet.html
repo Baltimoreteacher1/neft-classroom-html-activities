@@ -419,6 +419,36 @@ header.packet h1::after{
 }
 @media print{ body{ background:#fff !important; } }
 
+
+.sgf{margin:0;padding:14px 16px 10px;background:var(--sg-figure,#fff);border:1px solid var(--sg-line,#dde3ea);border-radius:var(--sg-radius,12px);display:flex;flex-direction:column;align-items:center;gap:6px;max-width:100%;overflow-x:auto}
+.sgf-svg{max-width:100%;height:auto;font-family:var(--sg-body,inherit);font-variant-numeric:tabular-nums lining-nums}
+.sgf-cap{font-size:15px;color:var(--sg-muted,#516175);text-align:center;line-height:1.4}
+.sgf-t{fill:var(--sg-text,#1d2a36);font-size:15px}
+.sgf-frac{font-size:12px}
+.sgf-fracbar{stroke:var(--sg-text,#1d2a36);stroke-width:1.4}
+.sgf-num{font-size:15px;font-weight:600}
+.sgf-small{font-size:13px}
+.sgf-axis-title,.sgf-row-label{font-size:14px;font-weight:700;fill:var(--sg-muted,#516175)}
+.sgf-callout{font-size:14px;font-weight:700;fill:var(--sg-deep,#0b2540)}
+.sgf-halo{paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
+.sgf-axis,.sgf-tick{stroke:var(--sg-text,#1d2a36);stroke-width:2;fill:none}
+.sgf-axis-head{fill:var(--sg-text,#1d2a36)}
+.sgf-grid{stroke:#d5dce5;stroke-width:1}
+.sgf-dot{fill:#9aa9b9}
+.sgf-dot.sgf-on,.sgf-pt.sgf-on{fill:var(--sg,#1f6fb2)}
+.sgf-pt{fill:var(--sg-text,#1d2a36);stroke:#fff;stroke-width:2}
+.sgf-pt.sgf-open{fill:#fff;stroke:var(--sg,#1f6fb2);stroke-width:3}
+.sgf-marker{fill:var(--sg,#1f6fb2)}
+.sgf-jump,.sgf-connect{fill:none;stroke:var(--sg,#1f6fb2);stroke-width:2.5}
+.sgf-jump-head,.sgf-ray-head{fill:var(--sg,#1f6fb2)}
+.sgf-ray{stroke:var(--sg,#1f6fb2);stroke-width:6;stroke-linecap:round}
+.sgf-link{stroke:#b9c4d0;stroke-width:1.5;stroke-dasharray:4 4}
+.sgf-poly{fill:color-mix(in srgb,var(--sg,#1f6fb2) 16%,transparent);stroke:var(--sg,#1f6fb2);stroke-width:2.5}
+.sgf-box{fill:color-mix(in srgb,var(--sg,#1f6fb2) 16%,transparent);stroke:var(--sg-text,#1d2a36);stroke-width:2}
+.sgf-whisker{stroke:var(--sg-text,#1d2a36);stroke-width:2}
+.sgf-median{stroke:var(--sg,#1f6fb2);stroke-width:4}
+.sgf-bar{fill:color-mix(in srgb,var(--sg,#1f6fb2) 30%,#fff);stroke:var(--sg-text,#1d2a36);stroke-width:1.5}
+
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -521,30 +551,20 @@ header.packet h1::after{
     
     <ol class="ws-problems">
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">(Lesson 5.7) What is the surface area of a rectangular prism with l = 5 cm, w = 4 cm, h = 3 cm?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">47 cm²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">60 cm²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">94 cm²</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">94 cm³</span></li></ol><p class="ws-hint"><span class="ws-hint-tag">Hint</span> You need surface area — the total of all 6 face areas of the 5 × 4 × 3 prism — not the space inside.</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
-      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div></div>
+      <div class="ws-problem-head"><span class="ws-pnum">1</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">A rectangular prism is 6 in long, 2 in wide, and 1 in tall. Find its surface area.</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div><p class="ws-hint"><span class="ws-hint-tag">Hint</span> Find each pair of matching faces. Then add.</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line"></span></div></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">(Lesson 5.7) How many faces does a triangular prism have?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6</span></li></ol><p class="ws-hint"><span class="ws-hint-tag">Hint</span> Picture a tent or a triangular chocolate box: two triangle ends plus rectangles wrapping around the sides.</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
+      <div class="ws-problem-head"><span class="ws-pnum">2</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><figure class="sgf sgf--shape"><svg class="sgf-svg" viewBox="0 0 247 352" width="247" height="352" role="img" aria-label="Figure with sides 2 cm, 10 cm, 12 cm" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="sgf-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" class="sgf-hatch"/></pattern></defs><polygon class="sgf-face" points="116.0,296.0 131.0,296.0 131.0,221.0 116.0,221.0"/><polygon class="sgf-face" points="116.0,221.0 131.0,221.0 131.0,131.0 116.0,131.0"/><polygon class="sgf-face" points="116.0,131.0 131.0,131.0 131.0,56.0 116.0,56.0"/><polygon class="sgf-face" points="116.0,221.0 116.0,131.0 56.0,176.0"/><polygon class="sgf-face" points="131.0,221.0 131.0,131.0 191.0,176.0"/><line class="sgf-height" x1="191" y1="176" x2="131" y2="176"/><path class="sgf-right" d="M141,176 v-10 h-10"/><text class="sgf-t sgf-callout sgf-halo" x="169.0" y="201.0" text-anchor="start">8 cm</text><text class="sgf-t sgf-num sgf-halo" x="123.5" y="320.0" text-anchor="middle">2 cm</text><text class="sgf-t sgf-num sgf-halo" x="145.0" y="263.5" text-anchor="start">10 cm</text><text class="sgf-t sgf-num sgf-halo" x="145.0" y="181.0" text-anchor="start">12 cm</text></svg></figure><p class="ws-stem">A triangular prism is 2 cm long. Each triangle end has a base of 12 cm and a height of 8 cm. The slanted sides are 10 cm. Find the surface area.</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div><p class="ws-hint"><span class="ws-hint-tag">Hint</span> Find the 2 triangles. Then find the 3 rectangles. Add all 5 faces.</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line"></span></div></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">(Lesson 5.8) A square pyramid has a base edge of 5 in and a slant height of 7 in. What is the surface area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">70 in²</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">95 in²</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">95 in³</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">120 in²</span></li></ol><p class="ws-hint"><span class="ws-hint-tag">Hint</span> A square pyramid has TWO kinds of faces: one square base (5 × 5) and four identical triangles with slant height 7.</p><div class="wsd-wrap wsd-supported"><div class="wss-body"><div class="wss-steps">
-      <div class="wss-slot"><span class="wss-slot-t">Formula</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Put the numbers in</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Work it out</span><span class="wss-slot-w"></span></div>
-      <div class="wss-slot"><span class="wss-slot-t">Answer <b>with its unit</b></span><span class="wss-slot-w"></span></div>
-    </div></div><ol class="wsd-rail"><li class="wsd-step"><span class="wsd-step-n">1</span><span class="wsd-step-t">Name it</span><span class="wsd-step-h">Which measure is asked?</span></li><li class="wsd-step"><span class="wsd-step-n">2</span><span class="wsd-step-t">Write the formula</span><span class="wsd-step-h">Before any numbers.</span></li><li class="wsd-step"><span class="wsd-step-n">3</span><span class="wsd-step-t">Substitute</span><span class="wsd-step-h">Match each letter.</span></li><li class="wsd-step"><span class="wsd-step-n">4</span><span class="wsd-step-t">Unit</span><span class="wsd-step-h">units, sq units, or cubic?</span></li></ol></div></div>
+      <div class="ws-problem-head"><span class="ws-pnum">3</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><figure class="sgf sgf--shape"><svg class="sgf-svg" viewBox="0 0 352 352" width="352" height="352" role="img" aria-label="Figure with sides 2 in" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="sgf-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" class="sgf-hatch"/></pattern></defs><polygon class="sgf-face" points="156.0,196.0 196.0,196.0 196.0,156.0 156.0,156.0"/><polygon class="sgf-face" points="156.0,196.0 196.0,196.0 176.0,296.0"/><polygon class="sgf-face" points="196.0,196.0 196.0,156.0 296.0,176.0"/><polygon class="sgf-face" points="156.0,156.0 196.0,156.0 176.0,56.0"/><polygon class="sgf-face" points="156.0,196.0 156.0,156.0 56.0,176.0"/><line class="sgf-height" x1="176" y1="196" x2="176" y2="296"/><path class="sgf-right" d="M186,296 v-10 h-10"/><text class="sgf-t sgf-callout sgf-halo" x="242.0" y="201.0" text-anchor="middle">base</text><text class="sgf-t sgf-callout sgf-halo" x="184.0" y="251.0" text-anchor="start">5 in</text><text class="sgf-t sgf-num sgf-halo" x="210.0" y="181.0" text-anchor="start">2 in</text></svg></figure><p class="ws-stem">A square pyramid has a base that is 2 in by 2 in. Its slant height is 5 in. Find its surface area.</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div><p class="ws-hint"><span class="ws-hint-tag">Hint</span> Find the base. Then find the 4 triangle faces. Add them.</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line"></span></div></div>
     </li>
     <li class="ws-problem-card">
-      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Circle the letter of the best answer. Show how you know.</span></div>
-      <div class="ws-pbody"><p class="ws-stem">(Lesson 5.8) How many lateral (triangular) faces does a square pyramid have?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span><span class="ws-opt-text">3</span></li><li class="ws-opt"><span class="ws-bub">B</span><span class="ws-opt-text">4</span></li><li class="ws-opt"><span class="ws-bub">C</span><span class="ws-opt-text">5</span></li><li class="ws-opt"><span class="ws-bub">D</span><span class="ws-opt-text">6</span></li></ol><p class="ws-hint"><span class="ws-hint-tag">Hint</span> Lateral faces are the slanted triangles on the sides — the square base itself doesn't count.</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></div>
+      <div class="ws-problem-head"><span class="ws-pnum">4</span><span class="ws-directions">Complete each step, then write the final answer.</span></div>
+      <div class="ws-pbody"><p class="ws-stem">A square pyramid has a base that is 6 cm by 6 cm. Its slant height is 4 cm. Find its surface area.</p><div class="ws-work"><span class="ws-work-label">Show your work</span><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div><p class="ws-hint"><span class="ws-hint-tag">Hint</span> One triangle face is half of 6 × 4.</p><div class="ws-answer-line"><span class="ws-answer-label">Final answer:</span><span class="ws-fill-line"></span></div></div>
     </li></ol>
     <section class="ws-block ws-block-explain">
     <h2 class="ws-block-title"><span class="ws-block-kicker">Explain your thinking</span>Display B has the largest surface area (280 in²). What contributes more to the total — the base or the lateral faces? Why?</h2>
