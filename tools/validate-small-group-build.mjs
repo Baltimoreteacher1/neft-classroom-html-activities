@@ -163,6 +163,19 @@ function checkExample(err, path, ex, { together = false } = {}) {
       if (!isStr(s.answer)) err(`${p}.answer missing (every together step needs one)`);
       else for (const e of arithmeticErrors(s.answer)) err(`${p}.answer ${e}`);
       if (s.do) err(`${p} uses "do" — together steps use ask/answer`);
+      if (s.accept !== undefined) {
+        // A typed together step: its box must accept the step's own answer.
+        if (!Array.isArray(s.accept) || !s.accept.length || !s.accept.every(isStr))
+          err(`${p}.accept must be a non-empty string array`);
+        else {
+          // "100 × 3 = 300 centimeters" shows its work; the result follows the last "=".
+          const result = String(s.answer).split("=").pop();
+          const lead = result.match(/[−-]?\d[\d,]*(?:\.\d+)?/);
+          const want = lead ? numericValue(lead[0]) : null;
+          if (want !== null && !s.accept.some((x) => numericValue(x) === want))
+            err(`${p}.accept has no entry equal to the answer's number "${lead[0]}"`);
+        }
+      }
     } else {
       checkText(err, `${p}.do`, s.do, { limit: LIMITS.do, obj: s });
       if (s.math !== undefined) {

@@ -408,7 +408,7 @@
         "titleEs": "Ejemplo · Haz que la leche sea igual",
         "lines": [
           "Chef Reyes uses 3 tablespoons of cocoa for 5 ounces of milk. Chef Tran uses 4 tablespoons of cocoa for 7 ounces of milk. Whose cocoa is more chocolatey?",
-          "Notice that the milk amounts are different: 5 oz and 7 oz",
+          "Write each chef's recipe in a table: 3 : 5; 4 : 7",
           "Find a milk amount both recipes can reach: 5 × 7 = 35; 7 × 5 = 35",
           "Scale Chef Reyes's recipe by 7: 3 × 7 = 21 → 21:35",
           "Scale Chef Tran's recipe by 5: 4 × 5 = 20 → 20:35",
@@ -417,7 +417,7 @@
         ],
         "linesEs": [
           "El chef Reyes usa 3 cucharadas de cocoa por 5 onzas de leche. El chef Tran usa 4 cucharadas de cocoa por 7 onzas de leche. ¿Cuál cocoa es más chocolatosa?",
-          "Observa que las cantidades de leche son distintas: 5 oz y 7 oz",
+          "Escribe la receta de cada chef en una tabla: 3 : 5; 4 : 7",
           "Halla una cantidad de leche a la que lleguen las dos recetas: 5 × 7 = 35; 7 × 5 = 35",
           "Escala la receta del chef Reyes por 7: 3 × 7 = 21 → 21:35",
           "Escala la receta del chef Tran por 5: 4 × 5 = 20 → 20:35",
@@ -431,15 +431,15 @@
         "lines": [
           "Store A sells 2 pens for $6. Store B sells 3 pens for $12. Which store has the better deal?",
           "What should we find for each store? (The unit rate: the price for 1 pen.)",
-          "Find Store A's price for 1 pen. ($6 ÷ 2 = $3)",
-          "Find Store B's price for 1 pen. ($12 ÷ 3 = $4)",
+          "Divide Store A's table by 2. What does 1 pen cost? ($3, because $6 ÷ 2 = $3.)",
+          "Divide Store B's table by 3. What does 1 pen cost? ($4, because $12 ÷ 3 = $4.)",
           "Which store has the better deal? (Store A, because $3 < $4.)"
         ],
         "linesEs": [
           "La tienda A vende 2 plumas por $6. La tienda B vende 3 plumas por $12. ¿Qué tienda tiene la mejor oferta?",
           "¿Qué debemos hallar para cada tienda? (La tasa unitaria: el precio de 1 pluma.)",
-          "Halla el precio de 1 pluma en la tienda A. ($6 ÷ 2 = $3)",
-          "Halla el precio de 1 pluma en la tienda B. ($12 ÷ 3 = $4)",
+          "Divide la tabla de la tienda A entre 2. ¿Cuánto cuesta 1 pluma? ($3, porque $6 ÷ 2 = $3.)",
+          "Divide la tabla de la tienda B entre 3. ¿Cuánto cuesta 1 pluma? ($4, porque $12 ÷ 3 = $4.)",
           "¿Qué tienda tiene la mejor oferta? (La tienda A, porque $3 < $4.)"
         ]
       },
@@ -465,36 +465,45 @@
           "problem": "Chef Reyes uses 3 tablespoons of cocoa for 5 ounces of milk. Chef Tran uses 4 tablespoons of cocoa for 7 ounces of milk. Whose cocoa is more chocolatey?",
           "problemEs": "El chef Reyes usa 3 cucharadas de cocoa por 5 onzas de leche. El chef Tran usa 4 cucharadas de cocoa por 7 onzas de leche. ¿Cuál cocoa es más chocolatosa?",
           "figure": {
-            "kind": "table",
+            "kind": "ratioTable",
             "headers": [
-              "Chef",
-              "Cocoa : milk",
-              "Scale factor",
-              "Cocoa : 35 oz milk"
+              "Cocoa (tbsp)",
+              "Milk (oz)"
             ],
             "rows": [
               [
-                "Reyes",
-                "3:5",
-                "× 7",
-                "21:35"
+                3,
+                5
               ],
               [
-                "Tran",
-                "4:7",
-                "× 5",
-                "20:35"
+                21,
+                35
+              ],
+              [
+                4,
+                7
+              ],
+              [
+                20,
+                35
               ]
             ],
-            "caption": "Both recipes now use 35 ounces of milk.",
-            "captionEs": "Las dos recetas ahora usan 35 onzas de leche."
+            "scales": [
+              "× 7",
+              null,
+              "× 5"
+            ],
+            "caption": "Reyes: first two columns. Tran: last two.",
+            "captionEs": "Reyes: las dos primeras columnas. Tran: las dos últimas."
           },
           "steps": [
             {
-              "do": "Notice that the milk amounts are different.",
-              "doEs": "Observa que las cantidades de leche son distintas.",
-              "math": "5 oz and 7 oz",
-              "mathEs": "5 oz y 7 oz",
+              "do": "Write each chef's recipe in a table.",
+              "doEs": "Escribe la receta de cada chef en una tabla.",
+              "math": [
+                "3 : 5",
+                "4 : 7"
+              ],
               "why": "We cannot compare the cocoa until the milk is the same.",
               "whyEs": "No podemos comparar la cocoa hasta que la leche sea igual."
             },
@@ -534,29 +543,36 @@
         "problem": "Store A sells 2 pens for $6. Store B sells 3 pens for $12. Which store has the better deal?",
         "problemEs": "La tienda A vende 2 plumas por $6. La tienda B vende 3 plumas por $12. ¿Qué tienda tiene la mejor oferta?",
         "figure": {
-          "kind": "table",
+          "kind": "ratioTable",
           "headers": [
-            "Store",
             "Pens",
-            "Cost",
-            "Price for 1 pen"
+            "Cost ($)"
           ],
           "rows": [
             [
-              "A",
               2,
-              "$6",
+              6
+            ],
+            [
+              1,
               "?"
             ],
             [
-              "B",
               3,
-              "$12",
+              12
+            ],
+            [
+              1,
               "?"
             ]
           ],
-          "caption": "Find the price for 1 pen at each store.",
-          "captionEs": "Halla el precio de 1 pluma en cada tienda."
+          "scales": [
+            "÷ ?",
+            null,
+            "÷ ?"
+          ],
+          "caption": "Store A: first two columns. Store B: last two.",
+          "captionEs": "Tienda A: las dos primeras columnas. Tienda B: las dos últimas."
         },
         "steps": [
           {
@@ -566,14 +582,24 @@
             "answerEs": "La tasa unitaria: el precio de 1 pluma."
           },
           {
-            "ask": "Find Store A's price for 1 pen.",
-            "askEs": "Halla el precio de 1 pluma en la tienda A.",
-            "answer": "$6 ÷ 2 = $3"
+            "ask": "Divide Store A's table by 2. What does 1 pen cost?",
+            "askEs": "Divide la tabla de la tienda A entre 2. ¿Cuánto cuesta 1 pluma?",
+            "answer": "$3, because $6 ÷ 2 = $3.",
+            "answerEs": "$3, porque $6 ÷ 2 = $3.",
+            "accept": [
+              "3",
+              "$3"
+            ]
           },
           {
-            "ask": "Find Store B's price for 1 pen.",
-            "askEs": "Halla el precio de 1 pluma en la tienda B.",
-            "answer": "$12 ÷ 3 = $4"
+            "ask": "Divide Store B's table by 3. What does 1 pen cost?",
+            "askEs": "Divide la tabla de la tienda B entre 3. ¿Cuánto cuesta 1 pluma?",
+            "answer": "$4, because $12 ÷ 3 = $4.",
+            "answerEs": "$4, porque $12 ÷ 3 = $4.",
+            "accept": [
+              "4",
+              "$4"
+            ]
           },
           {
             "ask": "Which store has the better deal?",
@@ -588,6 +614,38 @@
       "tryIt": {
         "problem": "Store A sells 4 notebooks for $8. Store B sells 5 notebooks for $15. Which store has the lower price for 1 notebook?",
         "problemEs": "La tienda A vende 4 cuadernos por $8. La tienda B vende 5 cuadernos por $15. ¿Qué tienda tiene el precio más bajo por 1 cuaderno?",
+        "figure": {
+          "kind": "ratioTable",
+          "headers": [
+            "Notebooks",
+            "Cost ($)"
+          ],
+          "rows": [
+            [
+              4,
+              8
+            ],
+            [
+              1,
+              "?"
+            ],
+            [
+              5,
+              15
+            ],
+            [
+              1,
+              "?"
+            ]
+          ],
+          "scales": [
+            "÷ ?",
+            null,
+            "÷ ?"
+          ],
+          "caption": "Store A: first two columns. Store B: last two.",
+          "captionEs": "Tienda A: las dos primeras columnas. Tienda B: las dos últimas."
+        },
         "answer": "Store A",
         "accept": [
           "Store A",
@@ -605,29 +663,36 @@
           "problem": "Juice A uses 2 cups of mango for 3 cups of water. Juice B uses 3 cups of mango for 4 cups of water. Which juice tastes more like mango?",
           "problemEs": "El jugo A usa 2 tazas de mango por 3 tazas de agua. El jugo B usa 3 tazas de mango por 4 tazas de agua. ¿Qué jugo sabe más a mango?",
           "figure": {
-            "kind": "table",
+            "kind": "ratioTable",
             "headers": [
-              "Juice",
-              "Mango : water",
-              "Scale factor",
-              "Mango : same water"
+              "Mango (cups)",
+              "Water (cups)"
             ],
             "rows": [
               [
-                "A",
-                "2:3",
-                "× 4",
-                "?:?"
+                2,
+                3
               ],
               [
-                "B",
-                "3:4",
-                "× 3",
-                "?:?"
+                "?",
+                "?"
+              ],
+              [
+                3,
+                4
+              ],
+              [
+                "?",
+                "?"
               ]
             ],
-            "caption": "Make the water the same in both.",
-            "captionEs": "Haz que el agua sea igual en los dos."
+            "scales": [
+              "× ?",
+              null,
+              "× ?"
+            ],
+            "caption": "Juice A: first two columns. Juice B: last two.",
+            "captionEs": "Jugo A: las dos primeras columnas. Jugo B: las dos últimas."
           },
           "steps": [
             {
@@ -671,34 +736,41 @@
           "problem": "Store A sells 4 muffins for $6. Store B sells 5 muffins for $8. Which store has the lower price for 1 muffin?",
           "problemEs": "La tienda A vende 4 panecillos por $6. La tienda B vende 5 panecillos por $8. ¿Qué tienda tiene el precio más bajo por 1 panecillo?",
           "figure": {
-            "kind": "table",
+            "kind": "ratioTable",
             "headers": [
-              "Store",
               "Muffins",
-              "Cost",
-              "Price for 1 muffin"
+              "Cost ($)"
             ],
             "rows": [
               [
-                "A",
                 4,
-                "$6",
+                6
+              ],
+              [
+                1,
                 "?"
               ],
               [
-                "B",
                 5,
-                "$8",
+                8
+              ],
+              [
+                1,
                 "?"
               ]
             ],
-            "caption": "This time, find each unit rate.",
-            "captionEs": "Esta vez, halla cada tasa unitaria."
+            "scales": [
+              "÷ ?",
+              null,
+              "÷ ?"
+            ],
+            "caption": "Store A: first two columns. Store B: last two.",
+            "captionEs": "Tienda A: las dos primeras columnas. Tienda B: las dos últimas."
           },
           "steps": [
             {
-              "ask": "Find Store A's price for 1 muffin.",
-              "askEs": "Halla el precio de 1 panecillo en la tienda A.",
+              "ask": "Divide Store A's table by 4. What does 1 muffin cost?",
+              "askEs": "Divide la tabla de la tienda A entre 4. ¿Cuánto cuesta 1 panecillo?",
               "answer": "$1.50",
               "accept": [
                 "1.50",
@@ -707,8 +779,8 @@
               ]
             },
             {
-              "ask": "Find Store B's price for 1 muffin.",
-              "askEs": "Halla el precio de 1 panecillo en la tienda B.",
+              "ask": "Divide Store B's table by 5. What does 1 muffin cost?",
+              "askEs": "Divide la tabla de la tienda B entre 5. ¿Cuánto cuesta 1 panecillo?",
               "answer": "$1.60",
               "accept": [
                 "1.60",
@@ -731,6 +803,38 @@
         {
           "problem": "Pack A has 2 apples for $1. Pack B has 5 apples for $3. What is the lower price for 1 apple?",
           "problemEs": "El paquete A tiene 2 manzanas por $1. El paquete B tiene 5 manzanas por $3. ¿Cuál es el precio más bajo por 1 manzana?",
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Apples",
+              "Cost ($)"
+            ],
+            "rows": [
+              [
+                2,
+                1
+              ],
+              [
+                1,
+                "?"
+              ],
+              [
+                5,
+                3
+              ],
+              [
+                1,
+                "?"
+              ]
+            ],
+            "scales": [
+              "÷ ?",
+              null,
+              "÷ ?"
+            ],
+            "caption": "Pack A: first two columns. Pack B: last two.",
+            "captionEs": "Paquete A: las dos primeras columnas. Paquete B: las dos últimas."
+          },
           "answer": "$0.50",
           "accept": [
             "0.50",
@@ -742,8 +846,16 @@
           "hintEs": "Divide cada costo entre el número de manzanas. Luego compara.",
           "steps": [
             {
-              "do": "Find each price for 1 apple.",
-              "doEs": "Halla cada precio por 1 manzana.",
+              "do": "Write each pack in its own table.",
+              "doEs": "Escribe cada paquete en su propia tabla.",
+              "math": [
+                "2 : $1",
+                "5 : $3"
+              ]
+            },
+            {
+              "do": "Divide each table down to 1 apple.",
+              "doEs": "Divide cada tabla hasta llegar a 1 manzana.",
               "math": [
                 "$1 ÷ 2 = $0.50",
                 "$3 ÷ 5 = $0.60"
@@ -759,6 +871,38 @@
         {
           "problem": "Chef Reyes uses 2 tablespoons of cocoa for 3 ounces of milk. Chef Tran uses 3 tablespoons for 5 ounces of milk. Scale both to 15 ounces of milk. Whose cocoa is more chocolatey?",
           "problemEs": "El chef Reyes usa 2 cucharadas de cocoa por 3 onzas de leche. El chef Tran usa 3 cucharadas por 5 onzas de leche. Escala las dos a 15 onzas de leche. ¿Cuál cocoa es más chocolatosa?",
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Cocoa (tbsp)",
+              "Milk (oz)"
+            ],
+            "rows": [
+              [
+                2,
+                3
+              ],
+              [
+                "?",
+                15
+              ],
+              [
+                3,
+                5
+              ],
+              [
+                "?",
+                15
+              ]
+            ],
+            "scales": [
+              "× ?",
+              null,
+              "× ?"
+            ],
+            "caption": "Reyes: first two columns. Tran: last two.",
+            "captionEs": "Reyes: las dos primeras columnas. Tran: las dos últimas."
+          },
           "answer": "Chef Reyes",
           "answerEs": "El chef Reyes",
           "accept": [
@@ -771,6 +915,14 @@
           "hint": "Multiply each recipe so the milk is 15 ounces. Then compare the cocoa.",
           "hintEs": "Multiplica cada receta para que la leche sea 15 onzas. Luego compara la cocoa.",
           "steps": [
+            {
+              "do": "Find each scale factor to 15 ounces.",
+              "doEs": "Halla cada factor de escala hasta 15 onzas.",
+              "math": [
+                "15 ÷ 3 = 5",
+                "15 ÷ 5 = 3"
+              ]
+            },
             {
               "do": "Scale Chef Reyes's recipe by 5.",
               "doEs": "Escala la receta del chef Reyes por 5.",
@@ -791,6 +943,38 @@
         {
           "problem": "Tom runs 3 miles in 27 minutes. Ana runs 4 miles in 32 minutes. Who takes less time to run 1 mile?",
           "problemEs": "Tom corre 3 millas en 27 minutos. Ana corre 4 millas en 32 minutos. ¿Quién tarda menos en correr 1 milla?",
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Distance (mi)",
+              "Time (min)"
+            ],
+            "rows": [
+              [
+                3,
+                27
+              ],
+              [
+                1,
+                "?"
+              ],
+              [
+                4,
+                32
+              ],
+              [
+                1,
+                "?"
+              ]
+            ],
+            "scales": [
+              "÷ ?",
+              null,
+              "÷ ?"
+            ],
+            "caption": "Tom: first two columns. Ana: last two.",
+            "captionEs": "Tom: las dos primeras columnas. Ana: las dos últimas."
+          },
           "answer": "Ana",
           "answerEs": "Ana",
           "accept": [
@@ -800,13 +984,21 @@
           "hintEs": "Divide cada tiempo entre las millas. Eso es los minutos de 1 milla.",
           "steps": [
             {
-              "do": "Find Tom's minutes for 1 mile.",
-              "doEs": "Halla los minutos de Tom por 1 milla.",
+              "do": "Write each runner in a table.",
+              "doEs": "Escribe a cada corredor en una tabla.",
+              "math": [
+                "3 : 27",
+                "4 : 32"
+              ]
+            },
+            {
+              "do": "Divide Tom's table by 3.",
+              "doEs": "Divide la tabla de Tom entre 3.",
               "math": "27 ÷ 3 = 9"
             },
             {
-              "do": "Find Ana's minutes for 1 mile.",
-              "doEs": "Halla los minutos de Ana por 1 milla.",
+              "do": "Divide Ana's table by 4.",
+              "doEs": "Divide la tabla de Ana entre 4.",
               "math": "32 ÷ 4 = 8"
             },
             {
@@ -819,6 +1011,38 @@
         {
           "problem": "Box A has 10 granola bars for $4. Box B has 12 granola bars for $6. Which box is the better buy?",
           "problemEs": "La caja A tiene 10 barras de granola por $4. La caja B tiene 12 barras de granola por $6. ¿Qué caja es la mejor compra?",
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Granola bars",
+              "Cost ($)"
+            ],
+            "rows": [
+              [
+                10,
+                4
+              ],
+              [
+                1,
+                "?"
+              ],
+              [
+                12,
+                6
+              ],
+              [
+                1,
+                "?"
+              ]
+            ],
+            "scales": [
+              "÷ ?",
+              null,
+              "÷ ?"
+            ],
+            "caption": "Box A: first two columns. Box B: last two.",
+            "captionEs": "Caja A: las dos primeras columnas. Caja B: las dos últimas."
+          },
           "choices": [
             "Box A — $0.40 per bar",
             "Box B — $0.50 per bar",
@@ -848,8 +1072,16 @@
           "hintEs": "Halla el precio de 1 barra en cada caja.",
           "steps": [
             {
-              "do": "Find each price for 1 bar.",
-              "doEs": "Halla cada precio por 1 barra.",
+              "do": "Write each box in its own table.",
+              "doEs": "Escribe cada caja en su propia tabla.",
+              "math": [
+                "10 : $4",
+                "12 : $6"
+              ]
+            },
+            {
+              "do": "Divide each table down to 1 bar.",
+              "doEs": "Divide cada tabla hasta llegar a 1 barra.",
               "math": [
                 "$4 ÷ 10 = $0.40",
                 "$6 ÷ 12 = $0.50"
@@ -879,6 +1111,38 @@
         {
           "problem": "Store A sells 3 pens for $3.60. Store B sells 5 pens for $5.50. What is the lower price for 1 pen?",
           "problemEs": "La tienda A vende 3 plumas por $3.60. La tienda B vende 5 plumas por $5.50. ¿Cuál es el precio más bajo por 1 pluma?",
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Pens",
+              "Cost ($)"
+            ],
+            "rows": [
+              [
+                3,
+                "3.60"
+              ],
+              [
+                1,
+                "?"
+              ],
+              [
+                5,
+                "5.50"
+              ],
+              [
+                1,
+                "?"
+              ]
+            ],
+            "scales": [
+              "÷ ?",
+              null,
+              "÷ ?"
+            ],
+            "caption": "Store A: first two columns. Store B: last two.",
+            "captionEs": "Tienda A: las dos primeras columnas. Tienda B: las dos últimas."
+          },
           "answer": "$1.10",
           "accept": [
             "1.10",
@@ -889,8 +1153,16 @@
           "hintEs": "Divide cada costo entre el número de plumas. Luego compara.",
           "steps": [
             {
-              "do": "Find each price for 1 pen.",
-              "doEs": "Halla cada precio por 1 pluma.",
+              "do": "Write each store in its own table.",
+              "doEs": "Escribe cada tienda en su propia tabla.",
+              "math": [
+                "3 : $3.60",
+                "5 : $5.50"
+              ]
+            },
+            {
+              "do": "Divide each table down to 1 pen.",
+              "doEs": "Divide cada tabla hasta llegar a 1 pluma.",
               "math": [
                 "$3.60 ÷ 3 = $1.20",
                 "$5.50 ÷ 5 = $1.10"
@@ -906,6 +1178,38 @@
         {
           "problem": "Paint A mixes 1 cup of red with 2 cups of white. Paint B mixes 2 cups of red with 5 cups of white. Which paint is more red?",
           "problemEs": "La pintura A mezcla 1 taza de rojo con 2 tazas de blanco. La pintura B mezcla 2 tazas de rojo con 5 tazas de blanco. ¿Qué pintura es más roja?",
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Red (cups)",
+              "White (cups)"
+            ],
+            "rows": [
+              [
+                1,
+                2
+              ],
+              [
+                "?",
+                10
+              ],
+              [
+                2,
+                5
+              ],
+              [
+                "?",
+                10
+              ]
+            ],
+            "scales": [
+              "× ?",
+              null,
+              "× ?"
+            ],
+            "caption": "Paint A: first two columns. Paint B: last two.",
+            "captionEs": "Pintura A: las dos primeras columnas. Pintura B: las dos últimas."
+          },
           "answer": "Paint A",
           "answerEs": "La pintura A",
           "accept": [
@@ -917,6 +1221,14 @@
           "hint": "Scale both mixes to 10 cups of white. Then compare the red.",
           "hintEs": "Escala las dos mezclas a 10 tazas de blanco. Luego compara el rojo.",
           "steps": [
+            {
+              "do": "Find each scale factor to 10 cups.",
+              "doEs": "Halla cada factor de escala hasta 10 tazas.",
+              "math": [
+                "10 ÷ 2 = 5",
+                "10 ÷ 5 = 2"
+              ]
+            },
             {
               "do": "Scale Paint A by 5.",
               "doEs": "Escala la pintura A por 5.",
@@ -938,6 +1250,38 @@
       "stretch": {
         "problem": "Mix A uses 3 cups of lemon juice for 8 cups of water. Mix B uses 5 cups of lemon juice for 12 cups of water. Which mix is more lemony?",
         "problemEs": "La mezcla A usa 3 tazas de jugo de limón por 8 tazas de agua. La mezcla B usa 5 tazas de jugo de limón por 12 tazas de agua. ¿Qué mezcla sabe más a limón?",
+        "figure": {
+          "kind": "ratioTable",
+          "headers": [
+            "Lemon juice (cups)",
+            "Water (cups)"
+          ],
+          "rows": [
+            [
+              3,
+              8
+            ],
+            [
+              "?",
+              "?"
+            ],
+            [
+              5,
+              12
+            ],
+            [
+              "?",
+              "?"
+            ]
+          ],
+          "scales": [
+            "× ?",
+            null,
+            "× ?"
+          ],
+          "caption": "Mix A: first two columns. Mix B: last two.",
+          "captionEs": "Mezcla A: las dos primeras columnas. Mezcla B: las dos últimas."
+        },
         "answer": "Mix B",
         "answerEs": "La mezcla B",
         "accept": [
@@ -949,6 +1293,14 @@
         "hint": "Find a water amount both can reach. 24 works for 8 and 12.",
         "hintEs": "Halla una cantidad de agua a la que lleguen las dos. 24 sirve para 8 y 12.",
         "steps": [
+          {
+            "do": "Find a water amount both can reach.",
+            "doEs": "Halla una cantidad de agua a la que lleguen las dos.",
+            "math": [
+              "8 × 3 = 24",
+              "12 × 2 = 24"
+            ]
+          },
           {
             "do": "Scale Mix A by 3.",
             "doEs": "Escala la mezcla A por 3.",

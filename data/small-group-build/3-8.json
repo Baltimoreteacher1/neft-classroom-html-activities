@@ -13,7 +13,7 @@
           "kind": "ratioTable",
           "headers": [
             "Tokens",
-            "Cost"
+            "Cost ($)"
           ],
           "rows": [
             [
@@ -29,23 +29,38 @@
               "$0.12"
             ]
           ],
+          "scales": [
+            "÷ 5",
+            "÷ 100"
+          ],
           "highlight": 2,
           "caption": "Divide both numbers by 5, then by 100.",
           "captionEs": "Divide los dos números entre 5 y luego entre 100."
         },
         "steps": [
           {
-            "do": "Write the deal as a rate.",
-            "doEs": "Escribe la oferta como una tasa.",
-            "math": "$60 for 500 tokens",
-            "mathEs": "$60 por 500 fichas"
+            "do": "Write the deal in the table.",
+            "doEs": "Escribe la oferta en la tabla.",
+            "math": "500 tokens : $60",
+            "mathEs": "500 fichas : $60"
           },
           {
-            "do": "Divide the price by the number of tokens.",
-            "doEs": "Divide el precio entre el número de fichas.",
-            "math": "$60 ÷ 500 = $0.12",
-            "why": "This gives the cost for just 1 token.",
-            "whyEs": "Esto da el costo de solo 1 ficha."
+            "do": "Divide both numbers by 5.",
+            "doEs": "Divide los dos números entre 5.",
+            "math": [
+              "500 ÷ 5 = 100",
+              "$60 ÷ 5 = $12"
+            ]
+          },
+          {
+            "do": "Divide both numbers by 100.",
+            "doEs": "Divide los dos números entre 100.",
+            "math": [
+              "100 ÷ 100 = 1",
+              "$12 ÷ 100 = $0.12"
+            ],
+            "why": "Now the table shows the cost for 1 token.",
+            "whyEs": "Ahora la tabla muestra el costo de 1 ficha."
           },
           {
             "do": "Write the unit rate.",
@@ -66,50 +81,58 @@
       "problem": "Arcade Depot sells 350 tokens for $38.50. Fun Supply Co. charges $0.12 per token. Which store is the better buy?",
       "problemEs": "Arcade Depot vende 350 fichas por $38.50. Fun Supply Co. cobra $0.12 por ficha. ¿Qué tienda es la mejor compra?",
       "figure": {
-        "kind": "table",
+        "kind": "ratioTable",
         "headers": [
-          "Store",
-          "Deal",
-          "Cost per token"
+          "Tokens",
+          "Arcade Depot cost ($)"
         ],
         "rows": [
           [
-            "Fun Supply Co.",
-            "500 for $60",
-            "$0.12"
+            350,
+            "$38.50"
           ],
           [
-            "Arcade Depot",
-            "350 for $38.50",
+            1,
             "?"
           ]
         ],
-        "caption": "Find Arcade Depot's cost per token.",
-        "captionEs": "Halla el costo por ficha de Arcade Depot."
+        "scales": [
+          "÷ ?"
+        ],
+        "highlight": 1,
+        "caption": "Compare with $0.12 per token at Fun Supply.",
+        "captionEs": "Compara con $0.12 por ficha en Fun Supply."
       },
       "steps": [
         {
-          "ask": "What do we divide?",
-          "askEs": "¿Qué dividimos?",
-          "answer": "The price by the number of tokens.",
-          "answerEs": "El precio entre el número de fichas."
+          "ask": "Write Arcade Depot's deal in the table.",
+          "askEs": "Escribe la oferta de Arcade Depot en la tabla.",
+          "answer": "350 tokens : $38.50",
+          "answerEs": "350 fichas : $38.50"
         },
         {
-          "ask": "Find $38.50 ÷ 350.",
-          "askEs": "Halla $38.50 ÷ 350.",
-          "answer": "$38.50 ÷ 350 = $0.11"
+          "ask": "What do you divide 350 by to reach 1 token?",
+          "askEs": "¿Entre cuánto divides 350 para llegar a 1 ficha?",
+          "answer": "÷ 350",
+          "accept": [
+            "350"
+          ]
         },
         {
-          "ask": "Is $0.11 less than $0.12?",
-          "askEs": "¿Es $0.11 menos que $0.12?",
-          "answer": "Yes.",
-          "answerEs": "Sí."
+          "ask": "Divide $38.50 by the same number. What is the cost for 1 token?",
+          "askEs": "Divide $38.50 entre el mismo número. ¿Cuánto cuesta 1 ficha?",
+          "answer": "$0.11",
+          "accept": [
+            "0.11",
+            "$0.11",
+            ".11"
+          ]
         },
         {
           "ask": "Which store is the better buy?",
           "askEs": "¿Qué tienda es la mejor compra?",
-          "answer": "Arcade Depot, at $0.11 per token.",
-          "answerEs": "Arcade Depot, a $0.11 por ficha."
+          "answer": "Arcade Depot, because $0.11 < $0.12.",
+          "answerEs": "Arcade Depot, porque $0.11 < $0.12."
         }
       ],
       "answer": "Arcade Depot is the better buy: $0.11 per token is less than $0.12 per token.",
@@ -118,6 +141,26 @@
     "tryIt": {
       "problem": "A store sells 20 tokens for $3. What is the cost for 1 token, in dollars?",
       "problemEs": "Una tienda vende 20 fichas por $3. ¿Cuál es el costo de 1 ficha, en dólares?",
+      "figure": {
+        "kind": "ratioTable",
+        "headers": [
+          "Tokens",
+          "Cost ($)"
+        ],
+        "rows": [
+          [
+            20,
+            "$3"
+          ],
+          [
+            1,
+            "?"
+          ]
+        ],
+        "scales": [
+          "÷ ?"
+        ]
+      },
       "answer": "$0.15",
       "accept": [
         "0.15",
@@ -125,8 +168,8 @@
         ".15",
         "$.15"
       ],
-      "hint": "Divide the price by the number of tokens: $3 ÷ 20.",
-      "hintEs": "Divide el precio entre el número de fichas: $3 ÷ 20."
+      "hint": "Divide both numbers by 20 to reach 1 token.",
+      "hintEs": "Divide los dos números entre 20 para llegar a 1 ficha."
     },
     "bigIdea": "To find the unit price, divide the price by the quantity. Compare unit prices to find the better buy.",
     "bigIdeaEs": "Para hallar el precio unitario, divide el precio entre la cantidad. Compara los precios unitarios para hallar la mejor compra."
@@ -143,41 +186,58 @@
         "figure": {
           "kind": "ratioTable",
           "headers": [
-            "Tokens",
-            "Fun Supply Co.",
-            "Arcade Depot"
+            "Fun Supply tokens",
+            "Fun Supply cost ($)",
+            "Arcade Depot tokens",
+            "Arcade Depot cost ($)"
           ],
           "rows": [
             [
+              500,
+              "$60",
+              350,
+              "$38.50"
+            ],
+            [
               1,
               "$0.12",
+              1,
               "$0.11"
             ],
             [
               700,
               "$84",
+              700,
               "$77"
             ]
           ],
-          "highlight": 1,
-          "caption": "Multiply each unit price by 700.",
-          "captionEs": "Multiplica cada precio unitario por 700."
+          "scales": [
+            null,
+            "× 700"
+          ],
+          "highlight": 2,
+          "caption": "Scale each deal to 1 token, then to 700.",
+          "captionEs": "Escala cada oferta a 1 ficha y luego a 700."
         },
         "steps": [
           {
-            "do": "Find each unit price.",
-            "doEs": "Halla cada precio unitario.",
+            "do": "Write both deals in the table.",
+            "doEs": "Escribe las dos ofertas en la tabla."
+          },
+          {
+            "do": "Scale each deal down to 1 token.",
+            "doEs": "Escala cada oferta hasta 1 ficha.",
             "math": [
               "$60 ÷ 500 = $0.12",
               "$38.50 ÷ 350 = $0.11"
             ]
           },
           {
-            "do": "Multiply each unit price by 700.",
-            "doEs": "Multiplica cada precio unitario por 700.",
+            "do": "Multiply both deals by 700.",
+            "doEs": "Multiplica las dos ofertas por 700.",
             "math": [
-              "700 × $0.12 = $84",
-              "700 × $0.11 = $77"
+              "$0.12 × 700 = $84",
+              "$0.11 × 700 = $77"
             ],
             "why": "Total cost = unit price × number of tokens.",
             "whyEs": "Costo total = precio unitario × número de fichas."
@@ -200,30 +260,53 @@
       "problem": "Arcade Depot sells 350 tokens for $38.50. Fun Supply Co. sells 500 tokens for $60. Which store is the better buy?",
       "problemEs": "Arcade Depot vende 350 fichas por $38.50. Fun Supply Co. vende 500 fichas por $60. ¿Qué tienda es la mejor compra?",
       "figure": {
-        "kind": "table",
+        "kind": "ratioTable",
         "headers": [
-          "Store",
-          "Deal",
-          "Cost per token"
+          "Fun Supply tokens",
+          "Fun Supply cost ($)",
+          "Arcade Depot tokens",
+          "Arcade Depot cost ($)"
         ],
         "rows": [
           [
-            "Fun Supply Co.",
-            "500 for $60",
-            "$0.12"
+            500,
+            "$60",
+            350,
+            "$38.50"
           ],
           [
-            "Arcade Depot",
-            "350 for $38.50",
-            "$0.11"
+            1,
+            "?",
+            1,
+            "?"
           ]
-        ]
+        ],
+        "scales": [
+          "÷ ?"
+        ],
+        "caption": "Scale each deal down to 1 token.",
+        "captionEs": "Escala cada oferta hasta 1 ficha."
       },
       "steps": [
         {
-          "ask": "Find Arcade Depot's cost per token.",
-          "askEs": "Halla el costo por ficha de Arcade Depot.",
-          "answer": "$38.50 ÷ 350 = $0.11"
+          "ask": "What is Fun Supply's cost for 1 token?",
+          "askEs": "¿Cuánto cuesta 1 ficha en Fun Supply?",
+          "answer": "$0.12",
+          "accept": [
+            "0.12",
+            "$0.12",
+            ".12"
+          ]
+        },
+        {
+          "ask": "What is Arcade Depot's cost for 1 token?",
+          "askEs": "¿Cuánto cuesta 1 ficha en Arcade Depot?",
+          "answer": "$0.11",
+          "accept": [
+            "0.11",
+            "$0.11",
+            ".11"
+          ]
         },
         {
           "ask": "Which store is the better buy?",
@@ -244,13 +327,39 @@
     "tryIt": {
       "problem": "Pack A has 40 tokens for $6. Pack B has 25 tokens for $4. Which pack costs less per token?",
       "problemEs": "El paquete A tiene 40 fichas por $6. El paquete B tiene 25 fichas por $4. ¿Qué paquete cuesta menos por ficha?",
+      "figure": {
+        "kind": "ratioTable",
+        "headers": [
+          "Pack A tokens",
+          "Pack A cost ($)",
+          "Pack B tokens",
+          "Pack B cost ($)"
+        ],
+        "rows": [
+          [
+            40,
+            "$6",
+            25,
+            "$4"
+          ],
+          [
+            1,
+            "?",
+            1,
+            "?"
+          ]
+        ],
+        "scales": [
+          "÷ ?"
+        ]
+      },
       "answer": "Pack A",
       "accept": [
         "Pack A",
         "A"
       ],
-      "hint": "Find $6 ÷ 40 and $4 ÷ 25. Compare the two unit prices.",
-      "hintEs": "Halla $6 ÷ 40 y $4 ÷ 25. Compara los dos precios unitarios.",
+      "hint": "Scale each pack down to 1 token: $6 ÷ 40 and $4 ÷ 25.",
+      "hintEs": "Escala cada paquete hasta 1 ficha: $6 ÷ 40 y $4 ÷ 25.",
       "explain": "Pack B costs less in total. Why is Pack A still the better buy?",
       "explainEs": "El paquete B cuesta menos en total. ¿Por qué el paquete A sigue siendo la mejor compra?",
       "modelExplanation": "Pack A costs $6 ÷ 40 = $0.15 per token. Pack B costs $4 ÷ 25 = $0.16 per token. Pack A costs less for each token, even though its total is higher.",
@@ -268,7 +377,7 @@
       "kind": "ratioTable",
       "headers": [
         "Tokens",
-        "Cost"
+        "Cost ($)"
       ],
       "rows": [
         [
@@ -280,13 +389,25 @@
           "$0.12"
         ]
       ],
+      "scales": [
+        "÷ 500"
+      ],
       "highlight": 1
     },
     "steps": [
       {
-        "do": "Divide the price by the number of tokens.",
-        "doEs": "Divide el precio entre el número de fichas.",
-        "math": "$60 ÷ 500 = $0.12"
+        "do": "Write the deal in the table.",
+        "doEs": "Escribe la oferta en la tabla.",
+        "math": "500 tokens : $60",
+        "mathEs": "500 fichas : $60"
+      },
+      {
+        "do": "Divide both numbers by 500.",
+        "doEs": "Divide los dos números entre 500.",
+        "math": [
+          "500 ÷ 500 = 1",
+          "$60 ÷ 500 = $0.12"
+        ]
       },
       {
         "do": "Write the unit price.",
@@ -300,6 +421,26 @@
     "check": {
       "problem": "A store sells 20 tokens for $5. What is the cost for 1 token, in dollars?",
       "problemEs": "Una tienda vende 20 fichas por $5. ¿Cuál es el costo de 1 ficha, en dólares?",
+      "figure": {
+        "kind": "ratioTable",
+        "headers": [
+          "Tokens",
+          "Cost ($)"
+        ],
+        "rows": [
+          [
+            20,
+            "$5"
+          ],
+          [
+            1,
+            "?"
+          ]
+        ],
+        "scales": [
+          "÷ ?"
+        ]
+      },
       "answer": "$0.25",
       "accept": [
         "0.25",
@@ -307,8 +448,8 @@
         ".25",
         "$.25"
       ],
-      "hint": "Divide the price by the number of tokens: $5 ÷ 20.",
-      "hintEs": "Divide el precio entre el número de fichas: $5 ÷ 20."
+      "hint": "Divide both numbers by 20 to reach 1 token.",
+      "hintEs": "Divide los dos números entre 20 para llegar a 1 ficha."
     }
   }
 }

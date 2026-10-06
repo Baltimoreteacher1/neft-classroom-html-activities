@@ -261,13 +261,15 @@
         "lines": [
           "In September, we estimated a Ferris wheel: 20 cars with about 4 riders each. The wheel makes 6 turns an hour. About how many riders can it carry in one hour?",
           "Find the riders for one turn: 20 × 4 = 80",
-          "Multiply by the turns in one hour: 80 × 6 = 480",
+          "Scale 1 turn to 6 turns: × 6: 80 × 6 = 480",
+          "Check with the 2-turn column: 160 × 3 = 480",
           "The wheel can carry about 480 riders in one hour."
         ],
         "linesEs": [
           "En septiembre estimamos una rueda de la fortuna: 20 cabinas con unos 4 pasajeros cada una. La rueda da 6 vueltas por hora. ¿Aproximadamente cuántos pasajeros puede llevar en una hora?",
           "Halla los pasajeros de una vuelta: 20 × 4 = 80",
-          "Multiplica por las vueltas en una hora: 80 × 6 = 480",
+          "Escala 1 vuelta a 6 vueltas: × 6: 80 × 6 = 480",
+          "Comprueba con la columna de 2 vueltas: 160 × 3 = 480",
           "La rueda puede llevar unos 480 pasajeros en una hora."
         ]
       },
@@ -335,7 +337,11 @@
             ],
             "highlight": 2,
             "caption": "Each turn adds about 80 riders.",
-            "captionEs": "Cada vuelta suma unos 80 pasajeros."
+            "captionEs": "Cada vuelta suma unos 80 pasajeros.",
+            "scales": [
+              "× 2",
+              "× 3"
+            ]
           },
           "steps": [
             {
@@ -346,11 +352,18 @@
               "whyEs": "Esta es nuestra estimación de septiembre: unos 80 pasajeros."
             },
             {
-              "do": "Multiply by the turns in one hour.",
-              "doEs": "Multiplica por las vueltas en una hora.",
+              "do": "Scale 1 turn to 6 turns: × 6.",
+              "doEs": "Escala 1 vuelta a 6 vueltas: × 6.",
               "math": "80 × 6 = 480",
-              "why": "The wheel makes 6 turns of about 80 riders each.",
-              "whyEs": "La rueda da 6 vueltas de unos 80 pasajeros cada una."
+              "why": "Do the same to both rows: 6 turns of about 80 riders.",
+              "whyEs": "Haz lo mismo en las dos filas: 6 vueltas de unos 80 pasajeros."
+            },
+            {
+              "do": "Check with the 2-turn column.",
+              "doEs": "Comprueba con la columna de 2 vueltas.",
+              "math": "160 × 3 = 480",
+              "why": "Scaling 2 turns by × 3 also reaches 6 turns.",
+              "whyEs": "Escalar 2 vueltas por × 3 también llega a 6 vueltas."
             }
           ],
           "answer": "The wheel can carry about 480 riders in one hour.",
@@ -413,7 +426,29 @@
           "46 1/2"
         ],
         "hint": "50% means half. Find 93 ÷ 2.",
-        "hintEs": "50% significa la mitad. Halla 93 ÷ 2."
+        "hintEs": "50% significa la mitad. Halla 93 ÷ 2.",
+        "figure": {
+          "kind": "ratioTable",
+          "headers": [
+            "Percent",
+            "Amount"
+          ],
+          "rows": [
+            [
+              "100%",
+              93
+            ],
+            [
+              "50%",
+              "?"
+            ]
+          ],
+          "scales": [
+            "÷ ?"
+          ],
+          "caption": "100% is the whole: 93.",
+          "captionEs": "El 100% es el total: 93."
+        }
       },
       "bigIdea": "Your math story grows when you use new tools, like percents, on old problems, and the answers still agree.",
       "bigIdeaEs": "Tu historia matemática crece cuando usas herramientas nuevas, como los porcentajes, en problemas viejos, y las respuestas siguen coincidiendo."
@@ -440,12 +475,15 @@
               ]
             ],
             "caption": "Find the riders for one turn first.",
-            "captionEs": "Primero halla los pasajeros de una vuelta."
+            "captionEs": "Primero halla los pasajeros de una vuelta.",
+            "scales": [
+              "× ?"
+            ]
           },
           "steps": [
             {
-              "ask": "About how many riders fit in one turn?",
-              "askEs": "¿Aproximadamente cuántos pasajeros caben en una vuelta?",
+              "ask": "About how many riders fit in one turn? Write it in the table.",
+              "askEs": "¿Aproximadamente cuántos pasajeros caben en una vuelta? Escríbelo en la tabla.",
               "answer": "60",
               "accept": [
                 "60",
@@ -453,8 +491,18 @@
               ]
             },
             {
-              "ask": "Multiply by 7 turns. About how many riders in one hour?",
-              "askEs": "Multiplica por 7 vueltas. ¿Aproximadamente cuántos pasajeros en una hora?",
+              "ask": "What do you multiply 1 turn by to get 7 turns?",
+              "askEs": "¿Por cuánto multiplicas 1 vuelta para llegar a 7 vueltas?",
+              "answer": "7",
+              "accept": [
+                "7",
+                "× 7",
+                "times 7"
+              ]
+            },
+            {
+              "ask": "Do the same to the riders. About how many riders in one hour?",
+              "askEs": "Haz lo mismo con los pasajeros. ¿Aproximadamente cuántos pasajeros en una hora?",
               "answer": "420",
               "accept": [
                 "420",
@@ -475,31 +523,49 @@
           "problem": "On a cold night, the same wheel is only 50% full. A full turn has about 60 riders, and it makes 7 turns an hour. About how many riders ride in one hour?",
           "problemEs": "En una noche fría, la misma rueda está llena solo al 50%. Una vuelta llena tiene unos 60 pasajeros, y da 7 vueltas por hora. ¿Aproximadamente cuántos pasajeros suben en una hora?",
           "figure": {
-            "kind": "tape",
-            "rows": [
-              {
-                "label": "Full hour",
-                "parts": 2,
-                "shaded": 1,
-                "partText": "?",
-                "total": "? riders"
-              }
+            "kind": "ratioTable",
+            "headers": [
+              "Percent",
+              "Riders per turn"
             ],
-            "caption": "50% is 1 of 2 equal parts.",
-            "captionEs": "El 50% es 1 de 2 partes iguales."
+            "rows": [
+              [
+                "100%",
+                60
+              ],
+              [
+                "50%",
+                "?"
+              ]
+            ],
+            "scales": [
+              "÷ ?"
+            ],
+            "caption": "A full turn is 100%: about 60 riders.",
+            "captionEs": "Una vuelta llena es el 100%: unos 60 pasajeros."
           },
           "steps": [
             {
-              "ask": "How many riders ride in a full hour?",
-              "askEs": "¿Cuántos pasajeros suben en una hora llena?",
-              "answer": "420",
+              "ask": "What do you divide 100% by to get 50%?",
+              "askEs": "¿Entre cuánto divides 100% para llegar a 50%?",
+              "answer": "2",
               "accept": [
-                "420"
+                "2",
+                "÷ 2"
               ]
             },
             {
-              "ask": "What is 50% of 420?",
-              "askEs": "¿Cuánto es el 50% de 420?",
+              "ask": "Do the same to 60. How many riders per turn at 50%?",
+              "askEs": "Haz lo mismo con 60. ¿Cuántos pasajeros por vuelta al 50%?",
+              "answer": "30",
+              "accept": [
+                "30",
+                "about 30"
+              ]
+            },
+            {
+              "ask": "Multiply by 7 turns. About how many riders in one hour?",
+              "askEs": "Multiplica por 7 vueltas. ¿Aproximadamente cuántos pasajeros en una hora?",
               "answer": "210",
               "accept": [
                 "210",
@@ -507,9 +573,10 @@
               ]
             },
             {
-              "ask": "Check another way: half of 60 riders, times 7 turns.",
-              "askEs": "Comprueba de otra manera: la mitad de 60 pasajeros, por 7 vueltas.",
-              "answer": "30 × 7 = 210"
+              "ask": "Check: is 210 half of a full hour of 420 riders?",
+              "askEs": "Comprueba: ¿210 es la mitad de una hora llena de 420 pasajeros?",
+              "answer": "Yes: 420 ÷ 2 = 210",
+              "answerEs": "Sí: 420 ÷ 2 = 210"
             }
           ],
           "answer": "About 210 riders ride in one hour: 50% of 420 = 210.",
@@ -529,16 +596,43 @@
           "hintEs": "50% significa la mitad. Divide 47 en 2 partes iguales.",
           "steps": [
             {
-              "do": "Change 50% to a fraction.",
-              "doEs": "Cambia 50% a una fracción.",
-              "math": "50% = {1/2}"
+              "do": "Write 100% ⟶ 47 in the table.",
+              "doEs": "Escribe 100% ⟶ 47 en la tabla.",
+              "math": "100% ⟶ 47"
             },
             {
-              "do": "Find half of the number.",
-              "doEs": "Halla la mitad del número.",
+              "do": "Find the scale factor from 100% to 50%.",
+              "doEs": "Halla el factor de escala de 100% a 50%.",
+              "math": "100 ÷ 50 = 2"
+            },
+            {
+              "do": "Divide 47 by the same number.",
+              "doEs": "Divide 47 entre el mismo número.",
               "math": "47 ÷ 2 = 23.5"
             }
-          ]
+          ],
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Percent",
+              "Amount"
+            ],
+            "rows": [
+              [
+                "100%",
+                47
+              ],
+              [
+                "50%",
+                "?"
+              ]
+            ],
+            "scales": [
+              "÷ ?"
+            ],
+            "caption": "100% is the whole: 47.",
+            "captionEs": "El 100% es el total: 47."
+          }
         },
         {
           "problem": "In September, a class wrote 36.5 = 30 + 6.5. Now write 36.5 as a number divided by 2. What number is divided by 2?",
@@ -581,16 +675,43 @@
               "math": "15 × 6 = 90"
             },
             {
-              "do": "Find the riders for one hour.",
-              "doEs": "Halla los pasajeros de una hora.",
+              "do": "Scale 1 turn to 4 turns (one hour).",
+              "doEs": "Escala 1 vuelta a 4 vueltas (una hora).",
               "math": "90 × 4 = 360"
             },
             {
-              "do": "Find the riders for 2 hours.",
-              "doEs": "Halla los pasajeros de 2 horas.",
+              "do": "Scale 4 turns to 8 turns (2 hours).",
+              "doEs": "Escala 4 vueltas a 8 vueltas (2 horas).",
               "math": "360 × 2 = 720"
             }
-          ]
+          ],
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Turns",
+              "Riders"
+            ],
+            "rows": [
+              [
+                1,
+                "?"
+              ],
+              [
+                4,
+                "?"
+              ],
+              [
+                8,
+                "?"
+              ]
+            ],
+            "scales": [
+              "× ?",
+              "× ?"
+            ],
+            "caption": "One turn, then one hour, then 2 hours.",
+            "captionEs": "Una vuelta, luego una hora, luego 2 horas."
+          }
         },
         {
           "problem": "Tia says 50% of 89 is 89 ÷ 50 = 1.78. Is she right? What is 50% of 89?",
@@ -606,16 +727,43 @@
           "hintEs": "50% significa 50 de cada 100. Eso es la mitad, no «dividir entre 50».",
           "steps": [
             {
-              "do": "Change 50% to a fraction.",
-              "doEs": "Cambia 50% a una fracción.",
-              "math": "50% = {1/2}"
+              "do": "Write 100% ⟶ 89 in the table.",
+              "doEs": "Escribe 100% ⟶ 89 en la tabla.",
+              "math": "100% ⟶ 89"
             },
             {
-              "do": "Find half of 89.",
-              "doEs": "Halla la mitad de 89.",
+              "do": "Find the scale factor from 100% to 50%.",
+              "doEs": "Halla el factor de escala de 100% a 50%.",
+              "math": "100 ÷ 50 = 2"
+            },
+            {
+              "do": "Divide 89 by the same number.",
+              "doEs": "Divide 89 entre el mismo número.",
               "math": "89 ÷ 2 = 44.5"
             }
-          ]
+          ],
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Percent",
+              "Amount"
+            ],
+            "rows": [
+              [
+                "100%",
+                89
+              ],
+              [
+                "50%",
+                "?"
+              ]
+            ],
+            "scales": [
+              "÷ ?"
+            ],
+            "caption": "100% is the whole: 89.",
+            "captionEs": "El 100% es el total: 89."
+          }
         }
       ],
       "talk": {
@@ -643,16 +791,43 @@
           "hintEs": "50% significa la mitad. Divide 65 en 2 partes iguales.",
           "steps": [
             {
-              "do": "Change 50% to a fraction.",
-              "doEs": "Cambia 50% a una fracción.",
-              "math": "50% = {1/2}"
+              "do": "Write 100% ⟶ 65 in the table.",
+              "doEs": "Escribe 100% ⟶ 65 en la tabla.",
+              "math": "100% ⟶ 65"
             },
             {
-              "do": "Find half of the number.",
-              "doEs": "Halla la mitad del número.",
+              "do": "Find the scale factor from 100% to 50%.",
+              "doEs": "Halla el factor de escala de 100% a 50%.",
+              "math": "100 ÷ 50 = 2"
+            },
+            {
+              "do": "Divide 65 by the same number.",
+              "doEs": "Divide 65 entre el mismo número.",
               "math": "65 ÷ 2 = 32.5"
             }
-          ]
+          ],
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Percent",
+              "Amount"
+            ],
+            "rows": [
+              [
+                "100%",
+                65
+              ],
+              [
+                "50%",
+                "?"
+              ]
+            ],
+            "scales": [
+              "÷ ?"
+            ],
+            "caption": "100% is the whole: 65.",
+            "captionEs": "El 100% es el total: 65."
+          }
         },
         {
           "problem": "A school bus holds about 40 students. It makes 3 trips each morning. About how many students can it carry in 5 mornings?",
@@ -668,16 +843,49 @@
           "hintEs": "Esto funciona como la rueda de la fortuna. Primero halla los estudiantes de una mañana.",
           "steps": [
             {
-              "do": "Find the students for one morning.",
-              "doEs": "Halla los estudiantes de una mañana.",
+              "do": "Write 1 trip ⟶ 40 students.",
+              "doEs": "Escribe 1 viaje ⟶ 40 estudiantes.",
+              "math": "1 trip ⟶ 40 students",
+              "mathEs": "1 viaje ⟶ 40 estudiantes"
+            },
+            {
+              "do": "Scale to 3 trips, one morning.",
+              "doEs": "Escala a 3 viajes, una mañana.",
               "math": "40 × 3 = 120"
             },
             {
-              "do": "Multiply by 5 mornings.",
-              "doEs": "Multiplica por 5 mañanas.",
+              "do": "Scale 3 trips to 15 trips, 5 mornings.",
+              "doEs": "Escala 3 viajes a 15 viajes, 5 mañanas.",
               "math": "120 × 5 = 600"
             }
-          ]
+          ],
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Trips",
+              "Students"
+            ],
+            "rows": [
+              [
+                1,
+                40
+              ],
+              [
+                3,
+                "?"
+              ],
+              [
+                15,
+                "?"
+              ]
+            ],
+            "scales": [
+              "× ?",
+              "× ?"
+            ],
+            "caption": "One trip carries about 40 students.",
+            "captionEs": "Un viaje lleva unos 40 estudiantes."
+          }
         }
       ],
       "stretch": {
@@ -700,14 +908,10 @@
             "math": "90 × 5 = 450"
           },
           {
-            "do": "Find the 2 half-full hours.",
-            "doEs": "Halla las 2 horas a la mitad.",
+            "do": "Scale 100% to 50%, then use 2 hours.",
+            "doEs": "Escala 100% a 50% y luego usa 2 horas.",
             "math": [
-              "50% of 450 = 225",
-              "225 × 2 = 450"
-            ],
-            "mathEs": [
-              "50% de 450 = 225",
+              "450 ÷ 2 = 225",
               "225 × 2 = 450"
             ]
           },
@@ -719,7 +923,29 @@
               "450 + 1350 = 1800"
             ]
           }
-        ]
+        ],
+        "figure": {
+          "kind": "ratioTable",
+          "headers": [
+            "Percent",
+            "Riders in 1 hour"
+          ],
+          "rows": [
+            [
+              "100%",
+              "?"
+            ],
+            [
+              "50%",
+              "?"
+            ]
+          ],
+          "scales": [
+            "÷ ?"
+          ],
+          "caption": "Find a full hour first, then 50% of it.",
+          "captionEs": "Primero halla una hora llena y luego su 50%."
+        }
       }
     }
   },

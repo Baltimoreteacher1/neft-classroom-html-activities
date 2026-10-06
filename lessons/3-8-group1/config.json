@@ -347,15 +347,17 @@
         "titleEs": "Ejemplo · Costo de 1 ficha",
         "lines": [
           "Fun Supply Co. sells 500 tokens for $60. What is the cost for 1 token?",
-          "Write the deal as a rate: $60 for 500 tokens",
-          "Divide the price by the number of tokens: $60 ÷ 500 = $0.12",
+          "Write the deal in the table: 500 tokens : $60",
+          "Divide both numbers by 5: 500 ÷ 5 = 100; $60 ÷ 5 = $12",
+          "Divide both numbers by 100: 100 ÷ 100 = 1; $12 ÷ 100 = $0.12",
           "Write the unit rate: $0.12 per token",
           "The deal costs $0.12 per token."
         ],
         "linesEs": [
           "Fun Supply Co. vende 500 fichas por $60. ¿Cuál es el costo de 1 ficha?",
-          "Escribe la oferta como una tasa: $60 por 500 fichas",
-          "Divide el precio entre el número de fichas: $60 ÷ 500 = $0.12",
+          "Escribe la oferta en la tabla: 500 fichas : $60",
+          "Divide los dos números entre 5: 500 ÷ 5 = 100; $60 ÷ 5 = $12",
+          "Divide los dos números entre 100: 100 ÷ 100 = 1; $12 ÷ 100 = $0.12",
           "Escribe la tasa unitaria: $0.12 por ficha",
           "La oferta cuesta $0.12 por ficha."
         ]
@@ -365,17 +367,17 @@
         "titleEs": "Hagamos uno juntos",
         "lines": [
           "Arcade Depot sells 350 tokens for $38.50. Fun Supply Co. charges $0.12 per token. Which store is the better buy?",
-          "What do we divide? (The price by the number of tokens.)",
-          "Find $38.50 ÷ 350. ($38.50 ÷ 350 = $0.11)",
-          "Is $0.11 less than $0.12? (Yes.)",
-          "Which store is the better buy? (Arcade Depot, at $0.11 per token.)"
+          "Write Arcade Depot's deal in the table. (350 tokens : $38.50)",
+          "What do you divide 350 by to reach 1 token? (÷ 350)",
+          "Divide $38.50 by the same number. What is the cost for 1 token? ($0.11)",
+          "Which store is the better buy? (Arcade Depot, because $0.11 < $0.12.)"
         ],
         "linesEs": [
           "Arcade Depot vende 350 fichas por $38.50. Fun Supply Co. cobra $0.12 por ficha. ¿Qué tienda es la mejor compra?",
-          "¿Qué dividimos? (El precio entre el número de fichas.)",
-          "Halla $38.50 ÷ 350. ($38.50 ÷ 350 = $0.11)",
-          "¿Es $0.11 menos que $0.12? (Sí.)",
-          "¿Qué tienda es la mejor compra? (Arcade Depot, a $0.11 por ficha.)"
+          "Escribe la oferta de Arcade Depot en la tabla. (350 fichas : $38.50)",
+          "¿Entre cuánto divides 350 para llegar a 1 ficha? (÷ 350)",
+          "Divide $38.50 entre el mismo número. ¿Cuánto cuesta 1 ficha? ($0.11)",
+          "¿Qué tienda es la mejor compra? (Arcade Depot, porque $0.11 < $0.12.)"
         ]
       },
       "youDo": {
@@ -402,7 +404,7 @@
             "kind": "ratioTable",
             "headers": [
               "Tokens",
-              "Cost"
+              "Cost ($)"
             ],
             "rows": [
               [
@@ -418,23 +420,38 @@
                 "$0.12"
               ]
             ],
+            "scales": [
+              "÷ 5",
+              "÷ 100"
+            ],
             "highlight": 2,
             "caption": "Divide both numbers by 5, then by 100.",
             "captionEs": "Divide los dos números entre 5 y luego entre 100."
           },
           "steps": [
             {
-              "do": "Write the deal as a rate.",
-              "doEs": "Escribe la oferta como una tasa.",
-              "math": "$60 for 500 tokens",
-              "mathEs": "$60 por 500 fichas"
+              "do": "Write the deal in the table.",
+              "doEs": "Escribe la oferta en la tabla.",
+              "math": "500 tokens : $60",
+              "mathEs": "500 fichas : $60"
             },
             {
-              "do": "Divide the price by the number of tokens.",
-              "doEs": "Divide el precio entre el número de fichas.",
-              "math": "$60 ÷ 500 = $0.12",
-              "why": "This gives the cost for just 1 token.",
-              "whyEs": "Esto da el costo de solo 1 ficha."
+              "do": "Divide both numbers by 5.",
+              "doEs": "Divide los dos números entre 5.",
+              "math": [
+                "500 ÷ 5 = 100",
+                "$60 ÷ 5 = $12"
+              ]
+            },
+            {
+              "do": "Divide both numbers by 100.",
+              "doEs": "Divide los dos números entre 100.",
+              "math": [
+                "100 ÷ 100 = 1",
+                "$12 ÷ 100 = $0.12"
+              ],
+              "why": "Now the table shows the cost for 1 token.",
+              "whyEs": "Ahora la tabla muestra el costo de 1 ficha."
             },
             {
               "do": "Write the unit rate.",
@@ -455,50 +472,58 @@
         "problem": "Arcade Depot sells 350 tokens for $38.50. Fun Supply Co. charges $0.12 per token. Which store is the better buy?",
         "problemEs": "Arcade Depot vende 350 fichas por $38.50. Fun Supply Co. cobra $0.12 por ficha. ¿Qué tienda es la mejor compra?",
         "figure": {
-          "kind": "table",
+          "kind": "ratioTable",
           "headers": [
-            "Store",
-            "Deal",
-            "Cost per token"
+            "Tokens",
+            "Arcade Depot cost ($)"
           ],
           "rows": [
             [
-              "Fun Supply Co.",
-              "500 for $60",
-              "$0.12"
+              350,
+              "$38.50"
             ],
             [
-              "Arcade Depot",
-              "350 for $38.50",
+              1,
               "?"
             ]
           ],
-          "caption": "Find Arcade Depot's cost per token.",
-          "captionEs": "Halla el costo por ficha de Arcade Depot."
+          "scales": [
+            "÷ ?"
+          ],
+          "highlight": 1,
+          "caption": "Compare with $0.12 per token at Fun Supply.",
+          "captionEs": "Compara con $0.12 por ficha en Fun Supply."
         },
         "steps": [
           {
-            "ask": "What do we divide?",
-            "askEs": "¿Qué dividimos?",
-            "answer": "The price by the number of tokens.",
-            "answerEs": "El precio entre el número de fichas."
+            "ask": "Write Arcade Depot's deal in the table.",
+            "askEs": "Escribe la oferta de Arcade Depot en la tabla.",
+            "answer": "350 tokens : $38.50",
+            "answerEs": "350 fichas : $38.50"
           },
           {
-            "ask": "Find $38.50 ÷ 350.",
-            "askEs": "Halla $38.50 ÷ 350.",
-            "answer": "$38.50 ÷ 350 = $0.11"
+            "ask": "What do you divide 350 by to reach 1 token?",
+            "askEs": "¿Entre cuánto divides 350 para llegar a 1 ficha?",
+            "answer": "÷ 350",
+            "accept": [
+              "350"
+            ]
           },
           {
-            "ask": "Is $0.11 less than $0.12?",
-            "askEs": "¿Es $0.11 menos que $0.12?",
-            "answer": "Yes.",
-            "answerEs": "Sí."
+            "ask": "Divide $38.50 by the same number. What is the cost for 1 token?",
+            "askEs": "Divide $38.50 entre el mismo número. ¿Cuánto cuesta 1 ficha?",
+            "answer": "$0.11",
+            "accept": [
+              "0.11",
+              "$0.11",
+              ".11"
+            ]
           },
           {
             "ask": "Which store is the better buy?",
             "askEs": "¿Qué tienda es la mejor compra?",
-            "answer": "Arcade Depot, at $0.11 per token.",
-            "answerEs": "Arcade Depot, a $0.11 por ficha."
+            "answer": "Arcade Depot, because $0.11 < $0.12.",
+            "answerEs": "Arcade Depot, porque $0.11 < $0.12."
           }
         ],
         "answer": "Arcade Depot is the better buy: $0.11 per token is less than $0.12 per token.",
@@ -507,6 +532,26 @@
       "tryIt": {
         "problem": "A store sells 20 tokens for $3. What is the cost for 1 token, in dollars?",
         "problemEs": "Una tienda vende 20 fichas por $3. ¿Cuál es el costo de 1 ficha, en dólares?",
+        "figure": {
+          "kind": "ratioTable",
+          "headers": [
+            "Tokens",
+            "Cost ($)"
+          ],
+          "rows": [
+            [
+              20,
+              "$3"
+            ],
+            [
+              1,
+              "?"
+            ]
+          ],
+          "scales": [
+            "÷ ?"
+          ]
+        },
         "answer": "$0.15",
         "accept": [
           "0.15",
@@ -514,8 +559,8 @@
           ".15",
           "$.15"
         ],
-        "hint": "Divide the price by the number of tokens: $3 ÷ 20.",
-        "hintEs": "Divide el precio entre el número de fichas: $3 ÷ 20."
+        "hint": "Divide both numbers by 20 to reach 1 token.",
+        "hintEs": "Divide los dos números entre 20 para llegar a 1 ficha."
       },
       "bigIdea": "To find the unit price, divide the price by the quantity. Compare unit prices to find the better buy.",
       "bigIdeaEs": "Para hallar el precio unitario, divide el precio entre la cantidad. Compara los precios unitarios para hallar la mejor compra."
@@ -529,7 +574,7 @@
             "kind": "ratioTable",
             "headers": [
               "Tickets",
-              "Cost"
+              "Cost ($)"
             ],
             "rows": [
               [
@@ -537,28 +582,35 @@
                 "$36"
               ],
               [
-                100,
-                "$9"
-              ],
-              [
                 1,
                 "?"
               ]
             ],
-            "highlight": 2,
-            "caption": "Divide both numbers by 4, then by 100.",
-            "captionEs": "Divide los dos números entre 4 y luego entre 100."
+            "scales": [
+              "÷ ?"
+            ],
+            "highlight": 1,
+            "caption": "Scale the deal down to 1 ticket.",
+            "captionEs": "Escala la oferta hasta 1 boleto."
           },
           "steps": [
             {
-              "ask": "What do we divide?",
-              "askEs": "¿Qué dividimos?",
-              "answer": "The price by the number of tickets.",
-              "answerEs": "El precio entre el número de boletos."
+              "ask": "Write the deal in the first column.",
+              "askEs": "Escribe la oferta en la primera columna.",
+              "answer": "400 tickets : $36",
+              "answerEs": "400 boletos : $36"
             },
             {
-              "ask": "Find $36 ÷ 400.",
-              "askEs": "Halla $36 ÷ 400.",
+              "ask": "What do you divide 400 by to get 1 ticket?",
+              "askEs": "¿Entre cuánto divides 400 para llegar a 1 boleto?",
+              "answer": "÷ 400",
+              "accept": [
+                "400"
+              ]
+            },
+            {
+              "ask": "Divide $36 by the same number. What is the cost for 1 ticket?",
+              "askEs": "Divide $36 entre el mismo número. ¿Cuánto cuesta 1 boleto?",
               "answer": "$0.09",
               "accept": [
                 "0.09",
@@ -566,12 +618,6 @@
                 ".09",
                 "$.09"
               ]
-            },
-            {
-              "ask": "Write the unit rate with its units.",
-              "askEs": "Escribe la tasa unitaria con sus unidades.",
-              "answer": "$0.09 per ticket",
-              "answerEs": "$0.09 por boleto"
             }
           ],
           "answer": "The cost is $0.09 per ticket.",
@@ -581,31 +627,43 @@
           "problem": "Store A sells 4 juice boxes for $3. Store B sells 6 juice boxes for $4.20. Which store is the better buy?",
           "problemEs": "La tienda A vende 4 cajitas de jugo por $3. La tienda B vende 6 cajitas de jugo por $4.20. ¿Qué tienda tiene la mejor compra?",
           "figure": {
-            "kind": "table",
+            "kind": "ratioTable",
             "headers": [
-              "Store",
-              "Deal",
-              "Cost per box"
+              "Store A boxes",
+              "Store A cost ($)",
+              "Store B boxes",
+              "Store B cost ($)"
             ],
             "rows": [
               [
-                "Store A",
-                "4 for $3",
-                "?"
+                4,
+                "$3",
+                6,
+                "$4.20"
               ],
               [
-                "Store B",
-                "6 for $4.20",
+                1,
+                "?",
+                1,
                 "?"
               ]
             ],
-            "caption": "Find the cost for 1 box at each store.",
-            "captionEs": "Halla el costo de 1 cajita en cada tienda."
+            "scales": [
+              "÷ ?"
+            ],
+            "caption": "Scale each deal down to 1 box.",
+            "captionEs": "Escala cada oferta hasta 1 cajita."
           },
           "steps": [
             {
-              "ask": "Find Store A's cost for 1 box: $3 ÷ 4.",
-              "askEs": "Halla el costo de 1 cajita en la tienda A: $3 ÷ 4.",
+              "ask": "Write both deals in the table.",
+              "askEs": "Escribe las dos ofertas en la tabla.",
+              "answer": "Store A: 4 boxes : $3. Store B: 6 boxes : $4.20.",
+              "answerEs": "Tienda A: 4 cajitas : $3. Tienda B: 6 cajitas : $4.20."
+            },
+            {
+              "ask": "Divide Store A's numbers by 4. What does 1 box cost?",
+              "askEs": "Divide los números de la tienda A entre 4. ¿Cuánto cuesta 1 cajita?",
               "answer": "$0.75",
               "accept": [
                 "0.75",
@@ -615,8 +673,8 @@
               ]
             },
             {
-              "ask": "Find Store B's cost for 1 box: $4.20 ÷ 6.",
-              "askEs": "Halla el costo de 1 cajita en la tienda B: $4.20 ÷ 6.",
+              "ask": "Divide Store B's numbers by 6. What does 1 box cost?",
+              "askEs": "Divide los números de la tienda B entre 6. ¿Cuánto cuesta 1 cajita?",
               "answer": "$0.70",
               "accept": [
                 "0.70",
@@ -647,6 +705,26 @@
         {
           "problem": "5 pens cost $4. What is the cost for 1 pen?",
           "problemEs": "5 plumas cuestan $4. ¿Cuánto cuesta 1 pluma?",
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Pens",
+              "Cost ($)"
+            ],
+            "rows": [
+              [
+                5,
+                "$4"
+              ],
+              [
+                1,
+                "?"
+              ]
+            ],
+            "scales": [
+              "÷ ?"
+            ]
+          },
           "answer": "$0.80",
           "accept": [
             "0.80",
@@ -660,21 +738,46 @@
           "hintEs": "Divide el precio entre el número de plumas.",
           "steps": [
             {
-              "do": "Divide the price by the number of pens.",
-              "doEs": "Divide el precio entre el número de plumas.",
-              "math": "$4 ÷ 5 = $0.80"
+              "do": "Write the deal in the table.",
+              "doEs": "Escribe la oferta en la tabla.",
+              "math": "5 pens : $4",
+              "mathEs": "5 plumas : $4"
             },
             {
-              "do": "Write the unit price.",
-              "doEs": "Escribe el precio unitario.",
-              "math": "$0.80 per pen",
-              "mathEs": "$0.80 por pluma"
+              "do": "Find the factor from 5 to 1.",
+              "doEs": "Halla el factor de 5 a 1.",
+              "math": "5 ÷ 5 = 1"
+            },
+            {
+              "do": "Divide the cost by the same number.",
+              "doEs": "Divide el costo entre el mismo número.",
+              "math": "$4 ÷ 5 = $0.80"
             }
           ]
         },
         {
           "problem": "Game World sells 250 tokens for $35. What is the cost for 1 token?",
           "problemEs": "Game World vende 250 fichas por $35. ¿Cuánto cuesta 1 ficha?",
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Tokens",
+              "Cost ($)"
+            ],
+            "rows": [
+              [
+                250,
+                "$35"
+              ],
+              [
+                1,
+                "?"
+              ]
+            ],
+            "scales": [
+              "÷ ?"
+            ]
+          },
           "answer": "$0.14",
           "accept": [
             "0.14",
@@ -682,25 +785,56 @@
             ".14",
             "$.14"
           ],
-          "hint": "Divide the price by the number of tokens: $35 ÷ 250.",
-          "hintEs": "Divide el precio entre el número de fichas: $35 ÷ 250.",
+          "hint": "Divide both numbers by 250 to reach 1. Do it to the cost too.",
+          "hintEs": "Divide los dos números entre 250 para llegar a 1. Hazlo también con el costo.",
           "steps": [
             {
-              "do": "Divide the price by the number of tokens.",
-              "doEs": "Divide el precio entre el número de fichas.",
-              "math": "$35 ÷ 250 = $0.14"
+              "do": "Write the deal in the table.",
+              "doEs": "Escribe la oferta en la tabla.",
+              "math": "250 tokens : $35",
+              "mathEs": "250 fichas : $35"
             },
             {
-              "do": "Write the unit price.",
-              "doEs": "Escribe el precio unitario.",
-              "math": "$0.14 per token",
-              "mathEs": "$0.14 por ficha"
+              "do": "Find the factor from 250 to 1.",
+              "doEs": "Halla el factor de 250 a 1.",
+              "math": "250 ÷ 250 = 1"
+            },
+            {
+              "do": "Divide the cost by the same number.",
+              "doEs": "Divide el costo entre el mismo número.",
+              "math": "$35 ÷ 250 = $0.14"
             }
           ]
         },
         {
           "problem": "Bag A has 12 ounces of chips for $3. Bag B has 20 ounces of chips for $4.40. Which bag costs less per ounce?",
           "problemEs": "La bolsa A tiene 12 onzas de papitas por $3. La bolsa B tiene 20 onzas de papitas por $4.40. ¿Qué bolsa cuesta menos por onza?",
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Bag A ounces",
+              "Bag A cost ($)",
+              "Bag B ounces",
+              "Bag B cost ($)"
+            ],
+            "rows": [
+              [
+                12,
+                "$3",
+                20,
+                "$4.40"
+              ],
+              [
+                1,
+                "?",
+                1,
+                "?"
+              ]
+            ],
+            "scales": [
+              "÷ ?"
+            ]
+          },
           "answer": "Bag B",
           "answerEs": "Bolsa B",
           "accept": [
@@ -712,18 +846,22 @@
           "hintEs": "Halla el costo de 1 onza en cada bolsa. Luego compara.",
           "steps": [
             {
-              "do": "Find Bag A's cost per ounce.",
-              "doEs": "Halla el costo por onza de la bolsa A.",
+              "do": "Write both deals in the table.",
+              "doEs": "Escribe las dos ofertas en la tabla."
+            },
+            {
+              "do": "Divide Bag A's numbers by 12.",
+              "doEs": "Divide los números de la bolsa A entre 12.",
               "math": "$3 ÷ 12 = $0.25"
             },
             {
-              "do": "Find Bag B's cost per ounce.",
-              "doEs": "Halla el costo por onza de la bolsa B.",
+              "do": "Divide Bag B's numbers by 20.",
+              "doEs": "Divide los números de la bolsa B entre 20.",
               "math": "$4.40 ÷ 20 = $0.22"
             },
             {
-              "do": "Compare the unit prices.",
-              "doEs": "Compara los precios unitarios.",
+              "do": "Compare the cost for 1 ounce.",
+              "doEs": "Compara el costo de 1 onza.",
               "math": "$0.22 < $0.25"
             }
           ]
@@ -731,6 +869,32 @@
         {
           "problem": "Jada says 3 shirts for $24 is a better buy than 5 shirts for $35, because $24 is less. Is she right? What is the lower cost for 1 shirt?",
           "problemEs": "Jada dice que 3 camisetas por $24 es mejor compra que 5 camisetas por $35, porque $24 es menos. ¿Tiene razón? ¿Cuál es el costo más bajo por 1 camiseta?",
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Deal 1 shirts",
+              "Deal 1 cost ($)",
+              "Deal 2 shirts",
+              "Deal 2 cost ($)"
+            ],
+            "rows": [
+              [
+                3,
+                "$24",
+                5,
+                "$35"
+              ],
+              [
+                1,
+                "?",
+                1,
+                "?"
+              ]
+            ],
+            "scales": [
+              "÷ ?"
+            ]
+          },
           "answer": "$7",
           "accept": [
             "7",
@@ -745,16 +909,22 @@
           "hintEs": "Halla el costo de 1 camiseta en cada oferta antes de comparar.",
           "steps": [
             {
-              "do": "Find the cost for 1 shirt in each deal.",
-              "doEs": "Halla el costo de 1 camiseta en cada oferta.",
-              "math": [
-                "$24 ÷ 3 = $8",
-                "$35 ÷ 5 = $7"
-              ]
+              "do": "Write both deals in the table.",
+              "doEs": "Escribe las dos ofertas en la tabla."
             },
             {
-              "do": "Compare the unit prices.",
-              "doEs": "Compara los precios unitarios.",
+              "do": "Divide the first deal's numbers by 3.",
+              "doEs": "Divide los números de la primera oferta entre 3.",
+              "math": "$24 ÷ 3 = $8"
+            },
+            {
+              "do": "Divide the second deal's numbers by 5.",
+              "doEs": "Divide los números de la segunda oferta entre 5.",
+              "math": "$35 ÷ 5 = $7"
+            },
+            {
+              "do": "Compare the cost for 1 shirt.",
+              "doEs": "Compara el costo de 1 camiseta.",
               "math": "$7 < $8"
             }
           ]
@@ -776,6 +946,26 @@
         {
           "problem": "A pack of 8 markers costs $6. What is the cost for 1 marker?",
           "problemEs": "Un paquete de 8 marcadores cuesta $6. ¿Cuánto cuesta 1 marcador?",
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Markers",
+              "Cost ($)"
+            ],
+            "rows": [
+              [
+                8,
+                "$6"
+              ],
+              [
+                1,
+                "?"
+              ]
+            ],
+            "scales": [
+              "÷ ?"
+            ]
+          },
           "answer": "$0.75",
           "accept": [
             "0.75",
@@ -787,21 +977,52 @@
           "hintEs": "Divide el precio entre el número de marcadores.",
           "steps": [
             {
-              "do": "Divide the price by the number of markers.",
-              "doEs": "Divide el precio entre el número de marcadores.",
-              "math": "$6 ÷ 8 = $0.75"
+              "do": "Write the deal in the table.",
+              "doEs": "Escribe la oferta en la tabla.",
+              "math": "8 markers : $6",
+              "mathEs": "8 marcadores : $6"
             },
             {
-              "do": "Write the unit price.",
-              "doEs": "Escribe el precio unitario.",
-              "math": "$0.75 per marker",
-              "mathEs": "$0.75 por marcador"
+              "do": "Find the factor from 8 to 1.",
+              "doEs": "Halla el factor de 8 a 1.",
+              "math": "8 ÷ 8 = 1"
+            },
+            {
+              "do": "Divide the cost by the same number.",
+              "doEs": "Divide el costo entre el mismo número.",
+              "math": "$6 ÷ 8 = $0.75"
             }
           ]
         },
         {
           "problem": "Car A goes 150 miles on 5 gallons of gas. Car B goes 168 miles on 6 gallons. Which car goes farther on 1 gallon?",
           "problemEs": "El carro A recorre 150 millas con 5 galones de gasolina. El carro B recorre 168 millas con 6 galones. ¿Qué carro llega más lejos con 1 galón?",
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Car A gallons",
+              "Car A miles",
+              "Car B gallons",
+              "Car B miles"
+            ],
+            "rows": [
+              [
+                5,
+                150,
+                6,
+                168
+              ],
+              [
+                1,
+                "?",
+                1,
+                "?"
+              ]
+            ],
+            "scales": [
+              "÷ ?"
+            ]
+          },
           "answer": "Car A",
           "answerEs": "Carro A",
           "accept": [
@@ -813,18 +1034,22 @@
           "hintEs": "Halla las millas por 1 galón de cada carro. Divide las millas entre los galones.",
           "steps": [
             {
-              "do": "Find Car A's miles per gallon.",
-              "doEs": "Halla las millas por galón del carro A.",
+              "do": "Write both deals in the table.",
+              "doEs": "Escribe las dos ofertas en la tabla."
+            },
+            {
+              "do": "Divide Car A's numbers by 5.",
+              "doEs": "Divide los números del carro A entre 5.",
               "math": "150 ÷ 5 = 30"
             },
             {
-              "do": "Find Car B's miles per gallon.",
-              "doEs": "Halla las millas por galón del carro B.",
+              "do": "Divide Car B's numbers by 6.",
+              "doEs": "Divide los números del carro B entre 6.",
               "math": "168 ÷ 6 = 28"
             },
             {
-              "do": "Compare the unit rates.",
-              "doEs": "Compara las tasas unitarias.",
+              "do": "Compare the miles for 1 gallon.",
+              "doEs": "Compara las millas con 1 galón.",
               "math": "30 > 28"
             }
           ]
@@ -833,6 +1058,39 @@
       "stretch": {
         "problem": "Pack A has 3 notebooks for $4.50. Pack B has 4 notebooks for $5.80. You need 12 notebooks. How much do you pay if you buy the better deal?",
         "problemEs": "El paquete A tiene 3 cuadernos por $4.50. El paquete B tiene 4 cuadernos por $5.80. Necesitas 12 cuadernos. ¿Cuánto pagas si compras la mejor oferta?",
+        "figure": {
+          "kind": "ratioTable",
+          "headers": [
+            "Pack A notebooks",
+            "Pack A cost ($)",
+            "Pack B notebooks",
+            "Pack B cost ($)"
+          ],
+          "rows": [
+            [
+              3,
+              "$4.50",
+              4,
+              "$5.80"
+            ],
+            [
+              1,
+              "?",
+              1,
+              "?"
+            ],
+            [
+              12,
+              "?",
+              12,
+              "?"
+            ]
+          ],
+          "scales": [
+            "÷ ?",
+            "× ?"
+          ]
+        },
         "answer": "$17.40",
         "accept": [
           "17.40",
@@ -844,8 +1102,12 @@
         "hintEs": "Halla el costo de 1 cuaderno en cada paquete. Luego multiplica el más bajo por 12.",
         "steps": [
           {
-            "do": "Find the cost for 1 notebook in each pack.",
-            "doEs": "Halla el costo de 1 cuaderno en cada paquete.",
+            "do": "Write both deals in the table.",
+            "doEs": "Escribe las dos ofertas en la tabla."
+          },
+          {
+            "do": "Scale each deal down to 1 notebook.",
+            "doEs": "Escala cada oferta hasta 1 cuaderno.",
             "math": [
               "$4.50 ÷ 3 = $1.50",
               "$5.80 ÷ 4 = $1.45"

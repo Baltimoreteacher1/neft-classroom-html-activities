@@ -81,13 +81,51 @@ function askStep(step, index, onChecked) {
   body.appendChild(el("p", "sgb-do", line(step.ask, step.askEs)));
   const answer = el("div", "sgb-math sgb-reveal", line(step.answer, step.answerEs));
   answer.hidden = true;
-  body.append(
-    revealButton("Check", () => {
-      answer.hidden = false;
-      onChecked();
-    }),
-    answer,
-  );
+  const reveal = () => {
+    answer.hidden = false;
+    onChecked();
+  };
+  if (!Array.isArray(step.accept)) {
+    body.append(revealButton("Check", reveal), answer);
+  } else {
+    // A step with an accept list is typed: the student writes the number,
+    // the same way Practice Together works.
+    const row = el("div", "sgp-step-row");
+    const input = el("input", "sgb-input sgp-step-input");
+    input.type = "text";
+    input.autocomplete = "off";
+    input.setAttribute("aria-label", `Step ${index + 1} answer`);
+    const check = el("button", "sgb-check", "Check");
+    check.type = "button";
+    const fb = el("span", "sgp-step-fb");
+    fb.setAttribute("aria-live", "polite");
+    let misses = 0;
+    const run = () => {
+      if (!input.value.trim()) return;
+      if (isAccepted(input.value, step.accept)) {
+        row.remove();
+        reveal();
+        return;
+      }
+      misses++;
+      fb.className = "sgp-step-fb is-wrong";
+      fb.textContent = misses >= 2 ? "Not yet — tap Show me." : "Not yet. Try again.";
+      if (misses >= 2 && !row.querySelector(".sgp-showme")) {
+        const show = revealButton("Show me", () => {
+          row.remove();
+          reveal();
+        });
+        show.classList.add("sgp-showme");
+        row.appendChild(show);
+      }
+    };
+    check.addEventListener("click", run);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") run();
+    });
+    row.append(input, check, fb);
+    body.append(row, answer);
+  }
   li.appendChild(body);
   return li;
 }

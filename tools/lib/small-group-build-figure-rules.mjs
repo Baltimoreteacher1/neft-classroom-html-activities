@@ -81,8 +81,19 @@ export const FIGURE_KINDS = {
   },
   ratioTable(f, e) {
     if (!arr(f.headers, 2)) e("headers needs ≥ 2");
-    if (!arr(f.rows, 2) || f.rows.some((r) => r.length !== f.headers?.length))
+    // One column is allowed: "write the ratio" sets the two counts up in the
+    // table before anything is scaled.
+    if (!arr(f.rows, 1) || f.rows.some((r) => r.length !== f.headers?.length))
       e("rows must match headers");
+    if (f.rows?.length > 6) e("at most 6 equivalent ratios (columns)");
+    if (f.scales !== undefined) {
+      if (!Array.isArray(f.scales) || f.scales.length !== (f.rows?.length || 0) - 1)
+        e("scales needs one entry per step between ratios (rows − 1); use null for no arrow");
+      else
+        for (const sc of f.scales)
+          if (sc !== null && !(str(sc) && /^[×÷]\s?\S+/.test(sc)))
+            e(`scale "${sc}" must read "× n" or "÷ n"`);
+    }
   },
   table(f, e) {
     if (!arr(f.headers)) e("headers missing");

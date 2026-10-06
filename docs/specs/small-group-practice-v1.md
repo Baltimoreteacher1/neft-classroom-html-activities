@@ -163,3 +163,37 @@ config on every generator run. The Reveal lessons in
 slide's problem. Set `"apply": { "use": false, "why": "…" }` only when the
 problem does not practise the lesson and no current deck carries it — the
 studio then ends on the Challenge.
+
+## Ratio, rate and conversion problems → ratio tables
+
+Joel, 2026-10-06: "for ratios (and all of ratio problems and conversions) i
+want them to set them up as ratio tables (equivalent ratio tables)."
+Recorded in `data/product-decisions.json`; enforced by `ratioTableModel` in
+the validator for every lesson whose practice file says `"model": "ratioTable"`
+(practice AND that lesson's Build examples).
+
+Figure (`kind: "ratioTable"`):
+
+```jsonc
+{
+  "kind": "ratioTable",
+  "headers": ["Feet", "Inches"],          // each quantity WITH its unit — one row each
+  "rows": [[1, 12], [3, "?"]],            // one array per equivalent ratio (a column on screen)
+  "scales": ["× 3"],                      // one per step between columns: "× n", "÷ n", "× ?" or null
+  "caption": "…", "captionEs": "…"
+}
+```
+
+- First column is what the problem gives: the ratio, the rate, or the
+  conversion fact (`1 ft | 12 in`, `1 kg | 2.2 lb`, `100% | 80`).
+- The value the student finds is `"?"`. In practice and checks, a scale factor
+  the student must find is `"× ?"`; worked examples in Build show it (`"× 3"`).
+- Use a unit-rate column (`1 | ?`, `÷ n` then `× m`) when the numbers do not
+  scale directly — "the bridge strategy".
+- Steps follow the table: write the known ratio → find the scale factor →
+  do the same to both quantities (→ check). Together steps ask for those
+  three things, each typed.
+- Multiple-choice "which is the better buy / is it equivalent" items still get
+  a table (both ratios scaled to a common amount, with `?` where the student
+  works). Only an item where a table truly does not apply may carry
+  `"modelException": "<why, 8+ words>"`.

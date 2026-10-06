@@ -261,14 +261,16 @@
         "titleEs": "Ejemplo · Planea la sopa para mucha gente",
         "lines": [
           "A chef expects 80 customers. 1 out of every 4 customers orders soup. Each bowl uses 2 cups of broth. How many cups of broth should the chef make?",
-          "Find how many customers order soup: 80 ÷ 4 = 20",
+          "Find the scale factor from 4 customers to 80: 80 ÷ 4 = 20",
+          "Multiply the soup orders by 20 too: 1 × 20 = 20",
           "Multiply the bowls by the cups per bowl: 20 × 2 = 40",
           "Check that the answer is reasonable: 80 × 2 = 160",
           "The chef should make 40 cups of broth."
         ],
         "linesEs": [
           "Un chef espera 80 clientes. 1 de cada 4 clientes pide sopa. Cada plato usa 2 tazas de caldo. ¿Cuántas tazas de caldo debe preparar el chef?",
-          "Halla cuántos clientes piden sopa: 80 ÷ 4 = 20",
+          "Halla el factor de escala de 4 clientes a 80: 80 ÷ 4 = 20",
+          "Multiplica también los pedidos de sopa por 20: 1 × 20 = 20",
           "Multiplica los platos por las tazas de cada plato: 20 × 2 = 40",
           "Comprueba que la respuesta sea razonable: 80 × 2 = 160",
           "El chef debe preparar 40 tazas de caldo."
@@ -324,26 +326,41 @@
           "problem": "A chef expects 80 customers. 1 out of every 4 customers orders soup. Each bowl uses 2 cups of broth. How many cups of broth should the chef make?",
           "problemEs": "Un chef espera 80 clientes. 1 de cada 4 clientes pide sopa. Cada plato usa 2 tazas de caldo. ¿Cuántas tazas de caldo debe preparar el chef?",
           "figure": {
-            "kind": "tape",
+            "kind": "ratioTable",
+            "headers": [
+              "Customers",
+              "Soup orders"
+            ],
             "rows": [
-              {
-                "label": "Customers",
-                "parts": 4,
-                "shaded": 1,
-                "partText": "20",
-                "total": "80 customers"
-              }
+              [
+                4,
+                1
+              ],
+              [
+                80,
+                "?"
+              ]
+            ],
+            "scales": [
+              "× 20"
             ],
             "caption": "1 out of every 4 customers orders soup.",
             "captionEs": "1 de cada 4 clientes pide sopa."
           },
           "steps": [
             {
-              "do": "Find how many customers order soup.",
-              "doEs": "Halla cuántos clientes piden sopa.",
+              "do": "Find the scale factor from 4 customers to 80.",
+              "doEs": "Halla el factor de escala de 4 clientes a 80.",
               "math": "80 ÷ 4 = 20",
-              "why": "1 out of every 4 is {1/4} of the customers.",
-              "whyEs": "1 de cada 4 es {1/4} de los clientes."
+              "why": "1 out of every 4 means 1 soup for each 4 customers.",
+              "whyEs": "1 de cada 4 significa 1 sopa por cada 4 clientes."
+            },
+            {
+              "do": "Multiply the soup orders by 20 too.",
+              "doEs": "Multiplica también los pedidos de sopa por 20.",
+              "math": "1 × 20 = 20",
+              "why": "Do the same to both quantities to keep the ratio equal.",
+              "whyEs": "Haz lo mismo con las dos cantidades para que la razón sea equivalente."
             },
             {
               "do": "Multiply the bowls by the cups per bowl.",
@@ -431,33 +448,49 @@
           "problem": "A chef expects 120 customers. 1 out of every 3 customers orders a salad. Each salad uses 2 tomatoes. How many tomatoes does the chef need?",
           "problemEs": "Un chef espera 120 clientes. 1 de cada 3 clientes pide una ensalada. Cada ensalada usa 2 tomates. ¿Cuántos tomates necesita el chef?",
           "figure": {
-            "kind": "tape",
+            "kind": "ratioTable",
+            "headers": [
+              "Customers",
+              "Salads"
+            ],
             "rows": [
-              {
-                "label": "Customers",
-                "parts": 3,
-                "shaded": 1,
-                "partText": "?",
-                "total": "120 customers"
-              }
+              [
+                3,
+                1
+              ],
+              [
+                120,
+                "?"
+              ]
+            ],
+            "scales": [
+              "× ?"
             ],
             "caption": "1 out of every 3 customers orders a salad.",
             "captionEs": "1 de cada 3 clientes pide una ensalada."
           },
           "steps": [
             {
-              "ask": "How many customers order a salad?",
-              "askEs": "¿Cuántos clientes piden una ensalada?",
-              "answer": "40 customers",
-              "answerEs": "40 clientes",
+              "ask": "What do you multiply 3 customers by to get 120 customers?",
+              "askEs": "¿Por cuánto multiplicas 3 clientes para obtener 120 clientes?",
+              "answer": "40",
               "accept": [
-                "40",
-                "40 customers"
+                "40"
               ]
             },
             {
-              "ask": "How many tomatoes do those salads use?",
-              "askEs": "¿Cuántos tomates usan esas ensaladas?",
+              "ask": "Multiply 1 salad by 40 too. How many salads?",
+              "askEs": "Multiplica también 1 ensalada por 40. ¿Cuántas ensaladas?",
+              "answer": "40 salads",
+              "answerEs": "40 ensaladas",
+              "accept": [
+                "40",
+                "40 salads"
+              ]
+            },
+            {
+              "ask": "Each salad uses 2 tomatoes. How many tomatoes?",
+              "askEs": "Cada ensalada usa 2 tomates. ¿Cuántos tomates?",
               "answer": "80 tomatoes",
               "answerEs": "80 tomates",
               "accept": [
@@ -537,6 +570,28 @@
         {
           "problem": "A cafe expects 90 customers. 1 out of every 5 customers orders soup. Each bowl uses 3 cups of broth. How many cups of broth are needed?",
           "problemEs": "Un café espera 90 clientes. 1 de cada 5 clientes pide sopa. Cada plato usa 3 tazas de caldo. ¿Cuántas tazas de caldo se necesitan?",
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Customers",
+              "Soup orders"
+            ],
+            "rows": [
+              [
+                5,
+                1
+              ],
+              [
+                90,
+                "?"
+              ]
+            ],
+            "scales": [
+              "× ?"
+            ],
+            "caption": "1 out of every 5 customers orders soup.",
+            "captionEs": "1 de cada 5 clientes pide sopa."
+          },
           "answer": "54 cups",
           "answerEs": "54 tazas",
           "accept": [
@@ -547,9 +602,14 @@
           "hintEs": "Primero halla la parte de la gente: ¿cuántos clientes piden sopa?",
           "steps": [
             {
-              "do": "Find how many customers order soup.",
-              "doEs": "Halla cuántos clientes piden sopa.",
+              "do": "Find the scale factor from 5 customers to 90.",
+              "doEs": "Halla el factor de escala de 5 clientes a 90.",
               "math": "90 ÷ 5 = 18"
+            },
+            {
+              "do": "Multiply the soup orders by 18 too.",
+              "doEs": "Multiplica también los pedidos de sopa por 18.",
+              "math": "1 × 18 = 18"
             },
             {
               "do": "Multiply the bowls by the cups per bowl.",
@@ -588,6 +648,31 @@
         {
           "problem": "A chef sells each pizza for $14. Each pizza costs $5 to make. The chef sells 30 pizzas. How much profit does the chef make?",
           "problemEs": "Un chef vende cada pizza a $14. Cada pizza cuesta $5 de hacer. El chef vende 30 pizzas. ¿Cuánta ganancia obtiene el chef?",
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Pizzas",
+              "Sales ($)",
+              "Costs ($)"
+            ],
+            "rows": [
+              [
+                1,
+                14,
+                5
+              ],
+              [
+                30,
+                "?",
+                "?"
+              ]
+            ],
+            "scales": [
+              "× ?"
+            ],
+            "caption": "One pizza sells for $14 and costs $5.",
+            "captionEs": "Una pizza se vende a $14 y cuesta $5."
+          },
           "answer": "$270",
           "accept": [
             "270",
@@ -602,8 +687,13 @@
               "math": "14 − 5 = 9"
             },
             {
-              "do": "Multiply by the pizzas sold.",
-              "doEs": "Multiplica por las pizzas vendidas.",
+              "do": "Find the scale factor from 1 pizza to 30.",
+              "doEs": "Halla el factor de escala de 1 pizza a 30.",
+              "math": "30 ÷ 1 = 30"
+            },
+            {
+              "do": "Multiply the profit by 30 too.",
+              "doEs": "Multiplica también la ganancia por 30.",
               "math": "9 × 30 = 270"
             }
           ],
@@ -680,6 +770,28 @@
         {
           "problem": "A diner expects 150 customers. 1 out of every 6 customers orders pancakes. Each order uses 3 eggs. How many eggs are needed?",
           "problemEs": "Un restaurante espera 150 clientes. 1 de cada 6 clientes pide panqueques. Cada orden usa 3 huevos. ¿Cuántos huevos se necesitan?",
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Customers",
+              "Pancake orders"
+            ],
+            "rows": [
+              [
+                6,
+                1
+              ],
+              [
+                150,
+                "?"
+              ]
+            ],
+            "scales": [
+              "× ?"
+            ],
+            "caption": "1 out of every 6 customers orders pancakes.",
+            "captionEs": "1 de cada 6 clientes pide panqueques."
+          },
           "answer": "75 eggs",
           "answerEs": "75 huevos",
           "accept": [
@@ -690,9 +802,14 @@
           "hintEs": "Primero halla cuántos clientes piden panqueques.",
           "steps": [
             {
-              "do": "Find how many customers order pancakes.",
-              "doEs": "Halla cuántos clientes piden panqueques.",
+              "do": "Find the scale factor from 6 customers to 150.",
+              "doEs": "Halla el factor de escala de 6 clientes a 150.",
               "math": "150 ÷ 6 = 25"
+            },
+            {
+              "do": "Multiply the pancake orders by 25 too.",
+              "doEs": "Multiplica también las órdenes de panqueques por 25.",
+              "math": "1 × 25 = 25"
             },
             {
               "do": "Multiply the orders by the eggs in each.",

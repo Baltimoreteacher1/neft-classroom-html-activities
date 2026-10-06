@@ -248,9 +248,47 @@ function studios(data, build) {
   return out;
 }
 
+/**
+ * ratioTableModel — Joel, 2026-10-06 (data/product-decisions.json): ratio,
+ * rate and conversion problems are set up as equivalent-ratio tables. A lesson
+ * whose practice says `"model": "ratioTable"` must draw one on every problem it
+ * shows — practice AND the Build examples — unless the item records why not
+ * (`modelException`, 8+ words).
+ */
+function ratioTableModel(err, data, build) {
+  if (data.model === undefined) return;
+  if (data.model !== "ratioTable") return err(`model must be "ratioTable" when present`);
+  const check = (path, it) => {
+    if (!it || typeof it !== "object") return;
+    if (it.figure?.kind === "ratioTable") return;
+    if (words(it.modelException) >= 8) return;
+    err(`${path} needs a ratioTable figure (lesson model is ratioTable) or a modelException`);
+  };
+  for (const g of ["group1", "group2"]) {
+    const p = data[g] || {};
+    (p.together || []).forEach((t, i) => check(`${g}.together[${i}]`, t));
+    (p.onMyOwn || []).forEach((t, i) => check(`${g}.onMyOwn[${i}]`, t));
+    (p.check || []).forEach((t, i) => check(`${g}.check[${i}]`, t));
+    check(`${g}.stretch`, p.stretch);
+    const b = build?.[g];
+    if (b) {
+      (b.examples || []).forEach((e, i) => check(`build ${g}.examples[${i}]`, e));
+      check(`build ${g}.together`, b.together);
+      check(`build ${g}.tryIt`, b.tryIt);
+    }
+  }
+  (data.catchup?.practice || []).forEach((t, i) => check(`catchup.practice[${i}]`, t));
+  check("catchup.check", data.catchup?.check);
+  if (build?.catchup) {
+    check("build catchup", build.catchup);
+    check("build catchup.check", build.catchup.check);
+  }
+}
+
 export function validatePractice(data, lesson, build = null) {
   const problems = [];
   const err = (m) => problems.push(m);
+  ratioTableModel(err, data, build);
   if (data.lesson !== lesson) err(`lesson is "${data.lesson}", file is ${lesson}`);
   // Optional: keep the base lesson's Reveal Apply problem out of the studio,
   // with the reason recorded where the next author will read it.

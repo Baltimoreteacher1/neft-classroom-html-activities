@@ -6,27 +6,26 @@
         "problem": "A bike rents for $8 per hour. Let h = hours and c = total cost. Write an equation for the total cost.",
         "problemEs": "Una bicicleta se alquila por $8 la hora. Sea h = horas y c = costo total. Escribe una ecuación para el costo total.",
         "figure": {
-          "kind": "table",
+          "kind": "ratioTable",
           "headers": [
-            "Hours (h)",
-            "Total cost (c)"
+            "Time (hours)",
+            "Total cost ($)"
           ],
           "rows": [
             [
-              "1",
-              "$8"
+              1,
+              8
             ],
             [
-              "2",
-              "$16"
-            ],
-            [
-              "3",
-              "$24"
+              "h",
+              "?"
             ]
           ],
-          "caption": "Each hour adds $8.",
-          "captionEs": "Cada hora suma $8."
+          "scales": [
+            "× h"
+          ],
+          "caption": "Scale the 1-unit column by the variable.",
+          "captionEs": "Multiplica la columna de 1 por la variable."
         },
         "steps": [
           {
@@ -36,8 +35,8 @@
             "answerEs": "El costo total depende de las horas."
           },
           {
-            "ask": "How much does each hour add to the cost?",
-            "askEs": "¿Cuánto suma cada hora al costo?",
+            "ask": "What is the cost in the 1-hour column?",
+            "askEs": "¿Cuál es el costo en la columna de 1 hora?",
             "answer": "$8",
             "accept": [
               "8",
@@ -45,8 +44,13 @@
             ]
           },
           {
-            "ask": "Complete the equation: c = ___h.",
-            "askEs": "Completa la ecuación: c = ___h.",
+            "ask": "What do you multiply 1 hour by to get h hours?",
+            "askEs": "¿Por cuánto multiplicas 1 hora para tener h horas?",
+            "answer": "h"
+          },
+          {
+            "ask": "Multiply the cost by h too. Complete: c = ___h.",
+            "askEs": "Multiplica también el costo por h. Completa: c = ___h.",
             "answer": "8",
             "accept": [
               "8",
@@ -131,25 +135,26 @@
         "problem": "A table shows 1 book costs $4, 2 books cost $8 and 3 books cost $12. Let b = books and c = total cost. Complete the equation: c = ___b.",
         "problemEs": "Una tabla muestra que 1 libro cuesta $4, 2 libros cuestan $8 y 3 libros cuestan $12. Sea b = libros y c = costo total. Completa la ecuación: c = ___b.",
         "figure": {
-          "kind": "table",
+          "kind": "ratioTable",
           "headers": [
-            "Books (b)",
-            "Total cost (c)"
+            "Books",
+            "Total cost ($)"
           ],
           "rows": [
             [
-              "1",
-              "$4"
+              1,
+              4
             ],
             [
-              "2",
-              "$8"
-            ],
-            [
-              "3",
-              "$12"
+              "b",
+              "?"
             ]
-          ]
+          ],
+          "scales": [
+            "× b"
+          ],
+          "caption": "Scale the 1-unit column by the variable.",
+          "captionEs": "Multiplica la columna de 1 por la variable."
         },
         "answer": "4",
         "accept": [
@@ -162,17 +167,19 @@
         "hintEs": "¿Cuánto cuesta 1 libro? Ese número va en el espacio en blanco.",
         "steps": [
           {
-            "do": "Find how much each book adds.",
-            "doEs": "Halla cuánto suma cada libro.",
-            "math": [
-              "8 − 4 = 4",
-              "12 − 8 = 4"
-            ]
+            "do": "Write the 1-book column in the table.",
+            "doEs": "Escribe la columna de 1 libro en la tabla.",
+            "math": "(1, 4)"
           },
           {
-            "do": "Write total = rate × amount.",
-            "doEs": "Escribe total = tasa × cantidad.",
-            "math": "c = 4b"
+            "do": "Scale 1 book by b.",
+            "doEs": "Multiplica 1 libro por b.",
+            "math": "1 × b = b"
+          },
+          {
+            "do": "Do the same to the cost.",
+            "doEs": "Haz lo mismo con el costo.",
+            "math": "c = 4 × b = 4b"
           }
         ]
       },
@@ -191,19 +198,43 @@
         "hintEs": "Resta el costo de una fila del costo de la fila siguiente. Eso es lo que suma cada mes.",
         "steps": [
           {
-            "do": "Find how much each month adds.",
-            "doEs": "Halla cuánto suma cada mes.",
-            "math": [
-              "25.98 − 12.99 = 12.99",
-              "38.97 − 25.98 = 12.99"
-            ]
+            "do": "Write the 1-month column in the table.",
+            "doEs": "Escribe la columna de 1 mes en la tabla.",
+            "math": "(1, 12.99)"
           },
           {
-            "do": "Write the equation.",
-            "doEs": "Escribe la ecuación.",
-            "math": "c = 12.99m"
+            "do": "Scale 1 month by m.",
+            "doEs": "Multiplica 1 mes por m.",
+            "math": "1 × m = m"
+          },
+          {
+            "do": "Do the same to the cost.",
+            "doEs": "Haz lo mismo con el costo.",
+            "math": "c = 12.99 × m = 12.99m"
           }
-        ]
+        ],
+        "figure": {
+          "kind": "ratioTable",
+          "headers": [
+            "Time (months)",
+            "Total cost ($)"
+          ],
+          "rows": [
+            [
+              1,
+              12.99
+            ],
+            [
+              "m",
+              "?"
+            ]
+          ],
+          "scales": [
+            "× m"
+          ],
+          "caption": "Scale the 1-unit column by the variable.",
+          "captionEs": "Multiplica la columna de 1 por la variable."
+        }
       },
       {
         "problem": "Ana earns $11 for each hour she babysits. Let h = hours and e = money earned. Write an equation. How much does she earn in 5 hours?",
@@ -217,16 +248,48 @@
         "hintEs": "Primero dilo con palabras: dinero ganado = $11 por las horas. Luego sustituye h por 5.",
         "steps": [
           {
-            "do": "Write money earned = rate × hours.",
-            "doEs": "Escribe dinero ganado = tasa × horas.",
+            "do": "Write the known ratio in the table.",
+            "doEs": "Escribe la razón conocida en la tabla.",
+            "math": "(1, 11)"
+          },
+          {
+            "do": "Scale 1 hour by h to write the equation.",
+            "doEs": "Multiplica 1 hora por h para la ecuación.",
             "math": "e = 11h"
           },
           {
-            "do": "Substitute 5 for h.",
-            "doEs": "Sustituye h por 5.",
-            "math": "e = 11 × 5 = 55"
+            "do": "Find the scale factor.",
+            "doEs": "Halla el factor de escala.",
+            "math": "5 ÷ 1 = 5"
+          },
+          {
+            "do": "Do the same to the dollars.",
+            "doEs": "Haz lo mismo con los dólares.",
+            "math": "11 × 5 = 55"
           }
-        ]
+        ],
+        "figure": {
+          "kind": "ratioTable",
+          "headers": [
+            "Time (hours)",
+            "Money earned ($)"
+          ],
+          "rows": [
+            [
+              1,
+              11
+            ],
+            [
+              5,
+              "?"
+            ]
+          ],
+          "scales": [
+            "× ?"
+          ],
+          "caption": "Use the same scale factor on both rows.",
+          "captionEs": "Usa el mismo factor de escala en las dos filas."
+        }
       },
       {
         "problem": "A table shows 1 hour costs $6, 2 hours cost $12 and 3 hours cost $18. Leo writes c = 6 + h. Which equation is correct?",
@@ -256,16 +319,53 @@
         "hintEs": "Prueba cada ecuación con 2 horas. ¿Cuál da $12?",
         "steps": [
           {
+            "do": "Write the 1-hour column in the table.",
+            "doEs": "Escribe la columna de 1 hora en la tabla.",
+            "math": "(1, 6)"
+          },
+          {
+            "do": "Scale by 2: do the same to the cost.",
+            "doEs": "Multiplica por 2: igual con el costo.",
+            "math": "6 × 2 = 12"
+          },
+          {
+            "do": "Scale by h instead.",
+            "doEs": "Ahora multiplica por h.",
+            "math": "6 × h = 6h"
+          },
+          {
             "do": "Test c = 6 + h with 2 hours.",
             "doEs": "Prueba c = 6 + h con 2 horas.",
             "math": "6 + 2 = 8"
-          },
-          {
-            "do": "Test c = 6h with 2 hours.",
-            "doEs": "Prueba c = 6h con 2 horas.",
-            "math": "6 × 2 = 12"
           }
-        ]
+        ],
+        "figure": {
+          "kind": "ratioTable",
+          "headers": [
+            "Time (hours)",
+            "Total cost ($)"
+          ],
+          "rows": [
+            [
+              1,
+              6
+            ],
+            [
+              2,
+              12
+            ],
+            [
+              "h",
+              "?"
+            ]
+          ],
+          "scales": [
+            "× 2",
+            null
+          ],
+          "caption": "Scaling multiplies; it does not add.",
+          "captionEs": "Escalar multiplica; no suma."
+        }
       }
     ],
     "talk": {
@@ -295,16 +395,43 @@
         "hintEs": "¿Cuánto cuesta 1 libra? Ese número va en el espacio en blanco.",
         "steps": [
           {
-            "do": "Find how much each pound adds.",
-            "doEs": "Halla cuánto suma cada libra.",
-            "math": "6 − 3 = 3"
+            "do": "Write the 1-pound column in the table.",
+            "doEs": "Escribe la columna de 1 libra en la tabla.",
+            "math": "(1, 3)"
           },
           {
-            "do": "Write the equation.",
-            "doEs": "Escribe la ecuación.",
-            "math": "c = 3p"
+            "do": "Scale 1 pound by p.",
+            "doEs": "Multiplica 1 libra por p.",
+            "math": "1 × p = p"
+          },
+          {
+            "do": "Do the same to the cost.",
+            "doEs": "Haz lo mismo con el costo.",
+            "math": "c = 3 × p = 3p"
           }
-        ]
+        ],
+        "figure": {
+          "kind": "ratioTable",
+          "headers": [
+            "Weight (pounds)",
+            "Total cost ($)"
+          ],
+          "rows": [
+            [
+              1,
+              3
+            ],
+            [
+              "p",
+              "?"
+            ]
+          ],
+          "scales": [
+            "× p"
+          ],
+          "caption": "Scale the 1-unit column by the variable.",
+          "captionEs": "Multiplica la columna de 1 por la variable."
+        }
       },
       {
         "problem": "A graph shows cups of dog food. It goes through (2, 14), (3, 21) and (5, 35). Let x = days and y = cups. Complete the equation: y = ___x.",
@@ -382,8 +509,13 @@
       "hintEs": "Ninguna fila muestra 1 hora. Divide un costo entre sus horas para hallar la tasa.",
       "steps": [
         {
-          "do": "Find the cost of 1 hour.",
-          "doEs": "Halla el costo de 1 hora.",
+          "do": "Write the known ratio in the table.",
+          "doEs": "Escribe la razón conocida en la tabla.",
+          "math": "(4, 26)"
+        },
+        {
+          "do": "Divide both by 4 to get 1 hour.",
+          "doEs": "Divide ambas entre 4 para tener 1 hora.",
           "math": "26 ÷ 4 = 6.5"
         },
         {
@@ -392,11 +524,38 @@
           "math": "c = 6.5h"
         },
         {
-          "do": "Substitute 12 for h.",
-          "doEs": "Sustituye h por 12.",
-          "math": "c = 6.5 × 12 = 78"
+          "do": "Multiply both by 12 for 12 hours.",
+          "doEs": "Multiplica ambas por 12 para 12 horas.",
+          "math": "6.5 × 12 = 78"
         }
-      ]
+      ],
+      "figure": {
+        "kind": "ratioTable",
+        "headers": [
+          "Time (hours)",
+          "Total cost ($)"
+        ],
+        "rows": [
+          [
+            4,
+            26
+          ],
+          [
+            1,
+            "?"
+          ],
+          [
+            12,
+            "?"
+          ]
+        ],
+        "scales": [
+          "÷ ?",
+          "× ?"
+        ],
+        "caption": "Go to 1 first, then scale up.",
+        "captionEs": "Primero ve a 1 y luego multiplica."
+      }
     }
   },
   "group2": {
@@ -547,13 +706,18 @@
         "hintEs": "Ninguna fila muestra 1 hora. Divide un costo entre sus horas. Luego prueba otra fila.",
         "steps": [
           {
-            "do": "Find the cost of 1 hour.",
-            "doEs": "Halla el costo de 1 hora.",
+            "do": "Write the known ratio in the table.",
+            "doEs": "Escribe la razón conocida en la tabla.",
+            "math": "(2, 34)"
+          },
+          {
+            "do": "Divide both by 2 to get 1 hour.",
+            "doEs": "Divide ambas entre 2 para tener 1 hora.",
             "math": "34 ÷ 2 = 17"
           },
           {
-            "do": "Test the rate on another row.",
-            "doEs": "Prueba la tasa en otra fila.",
+            "do": "Check: scale 1 hour by 7.",
+            "doEs": "Comprueba: multiplica 1 hora por 7.",
             "math": "17 × 7 = 119"
           },
           {
@@ -561,7 +725,34 @@
             "doEs": "Escribe la ecuación.",
             "math": "c = 17h"
           }
-        ]
+        ],
+        "figure": {
+          "kind": "ratioTable",
+          "headers": [
+            "Time (hours)",
+            "Total cost ($)"
+          ],
+          "rows": [
+            [
+              2,
+              34
+            ],
+            [
+              1,
+              "?"
+            ],
+            [
+              7,
+              119
+            ]
+          ],
+          "scales": [
+            "÷ ?",
+            "× ?"
+          ],
+          "caption": "Go to 1 first, then scale up.",
+          "captionEs": "Primero ve a 1 y luego multiplica."
+        }
       },
       {
         "problem": "A gym charges $35 for 1 month, $55 for 2 months and $75 for 3 months. Let m = months and c = total cost. Complete the equation: c = 20m + ___.",
@@ -793,17 +984,43 @@
         "hintEs": "¿Cuánto cuesta 1 hora? Ese número va en el espacio en blanco.",
         "steps": [
           {
-            "do": "Find the rate.",
-            "doEs": "Halla la tasa.",
-            "math": "$5 per hour",
-            "mathEs": "$5 por hora"
+            "do": "Write the 1-hour column in the table.",
+            "doEs": "Escribe la columna de 1 hora en la tabla.",
+            "math": "(1, 5)"
           },
           {
-            "do": "Write total = rate × amount.",
-            "doEs": "Escribe total = tasa × cantidad.",
-            "math": "c = 5h"
+            "do": "Scale 1 hour by h.",
+            "doEs": "Multiplica 1 hora por h.",
+            "math": "1 × h = h"
+          },
+          {
+            "do": "Do the same to the cost.",
+            "doEs": "Haz lo mismo con el costo.",
+            "math": "c = 5 × h = 5h"
           }
-        ]
+        ],
+        "figure": {
+          "kind": "ratioTable",
+          "headers": [
+            "Time (hours)",
+            "Total cost ($)"
+          ],
+          "rows": [
+            [
+              1,
+              5
+            ],
+            [
+              "h",
+              "?"
+            ]
+          ],
+          "scales": [
+            "× h"
+          ],
+          "caption": "Scale the 1-unit column by the variable.",
+          "captionEs": "Multiplica la columna de 1 por la variable."
+        }
       },
       {
         "problem": "Pens cost $2 each. Let p = pens and c = total cost. Write an equation. What do 8 pens cost?",
@@ -817,16 +1034,43 @@
         "hintEs": "Escribe c = 2p. Luego sustituye p por 8.",
         "steps": [
           {
-            "do": "Write the equation.",
-            "doEs": "Escribe la ecuación.",
+            "do": "Scale 1 pen by p to write the equation.",
+            "doEs": "Multiplica 1 pluma por p para la ecuación.",
             "math": "c = 2p"
           },
           {
-            "do": "Substitute 8 for p.",
-            "doEs": "Sustituye p por 8.",
-            "math": "c = 2 × 8 = 16"
+            "do": "Find the scale factor.",
+            "doEs": "Halla el factor de escala.",
+            "math": "8 ÷ 1 = 8"
+          },
+          {
+            "do": "Do the same to the cost.",
+            "doEs": "Haz lo mismo con el costo.",
+            "math": "2 × 8 = 16"
           }
-        ]
+        ],
+        "figure": {
+          "kind": "ratioTable",
+          "headers": [
+            "Pens",
+            "Total cost ($)"
+          ],
+          "rows": [
+            [
+              1,
+              2
+            ],
+            [
+              8,
+              "?"
+            ]
+          ],
+          "scales": [
+            "× ?"
+          ],
+          "caption": "Use the same scale factor on both rows.",
+          "captionEs": "Usa el mismo factor de escala en las dos filas."
+        }
       }
     ],
     "check": {
@@ -843,17 +1087,43 @@
       "hintEs": "¿Cuánto cuesta 1 boleto? Ese número va en el espacio en blanco.",
       "steps": [
         {
-          "do": "Find the cost of 1 ticket.",
-          "doEs": "Halla el costo de 1 boleto.",
-          "math": "$6 per ticket",
-          "mathEs": "$6 por boleto"
+          "do": "Write the 1-ticket column in the table.",
+          "doEs": "Escribe la columna de 1 boleto en la tabla.",
+          "math": "(1, 6)"
         },
         {
-          "do": "Write total = rate × amount.",
-          "doEs": "Escribe total = tasa × cantidad.",
-          "math": "c = 6t"
+          "do": "Scale 1 ticket by t.",
+          "doEs": "Multiplica 1 boleto por t.",
+          "math": "1 × t = t"
+        },
+        {
+          "do": "Do the same to the cost.",
+          "doEs": "Haz lo mismo con el costo.",
+          "math": "c = 6 × t = 6t"
         }
-      ]
+      ],
+      "figure": {
+        "kind": "ratioTable",
+        "headers": [
+          "Tickets",
+          "Total cost ($)"
+        ],
+        "rows": [
+          [
+            1,
+            6
+          ],
+          [
+            "t",
+            "?"
+          ]
+        ],
+        "scales": [
+          "× t"
+        ],
+        "caption": "Scale the 1-unit column by the variable.",
+        "captionEs": "Multiplica la columna de 1 por la variable."
+      }
     }
   }
 }

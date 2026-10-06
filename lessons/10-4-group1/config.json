@@ -253,23 +253,25 @@
       "heading": "Math is Ingenuity",
       "intro": "A gear ratio tells how many times the rear wheel turns for each turn of the pedals.",
       "introEs": "Una razón de engranajes dice cuántas veces gira la rueda trasera por cada vuelta de los pedales.",
-      "keyIdea": "Divide the pedal gear's teeth by the rear gear's teeth to find how many times the wheel turns for one pedal turn.",
-      "keyIdeaEs": "Divide los dientes del engranaje de los pedales entre los dientes del engranaje trasero para hallar cuántas veces gira la rueda por una vuelta del pedal.",
+      "keyIdea": "In a ratio table, the rear gear's teeth make 1 turn. Scale to the pedal gear's teeth to find the wheel turns for one pedal turn.",
+      "keyIdeaEs": "En una tabla de razones, los dientes del engranaje trasero dan 1 vuelta. Cambia la escala a los dientes del pedal para hallar las vueltas de la rueda por vuelta del pedal.",
       "iDo": {
         "title": "Example · The 32-tooth rear gear",
         "titleEs": "Ejemplo · El engranaje trasero de 32 dientes",
         "lines": [
           "A bike's pedal gear has 48 teeth. The chain is on a rear gear with 32 teeth. How many rotations (full turns) does the rear wheel make for each pedal rotation?",
-          "Count the teeth one pedal turn moves: 1 pedal turn → 48 teeth",
-          "Count the teeth for one rear turn: 1 rear turn → 32 teeth",
-          "Divide to find the rear wheel turns: 48 ÷ 32 = 1.5",
+          "Write the rear gear: 32 teeth make 1 turn: 32 : 1",
+          "Divide both by 2 to find 16 teeth: 1 ÷ 2 = 0.5",
+          "Multiply both by 3 to reach 48 teeth: 0.5 × 3 = 1.5",
+          "Check with division: 48 ÷ 32 = 1.5",
           "The rear wheel makes 1.5 rotations for each pedal rotation. This gear makes it easier to pedal slowly or uphill."
         ],
         "linesEs": [
           "El engranaje de los pedales de una bicicleta tiene 48 dientes. La cadena está en un engranaje trasero de 32 dientes. ¿Cuántas rotaciones (vueltas completas) da la rueda trasera por cada rotación de los pedales?",
-          "Cuenta los dientes que mueve una vuelta del pedal: 1 vuelta del pedal → 48 dientes",
-          "Cuenta los dientes de una vuelta trasera: 1 vuelta trasera → 32 dientes",
-          "Divide para hallar las vueltas de la rueda trasera: 48 ÷ 32 = 1.5",
+          "Escribe el engranaje trasero: 32 dientes dan 1 vuelta: 32 : 1",
+          "Divide los dos entre 2 para hallar 16 dientes: 1 ÷ 2 = 0.5",
+          "Multiplica los dos por 3 para llegar a 48 dientes: 0.5 × 3 = 1.5",
+          "Comprueba con una división: 48 ÷ 32 = 1.5",
           "La rueda trasera da 1.5 rotaciones por cada rotación de los pedales. Este engranaje facilita pedalear despacio o cuesta arriba."
         ]
       },
@@ -278,16 +280,16 @@
         "titleEs": "Hagamos uno juntos",
         "lines": [
           "The chain moves to the smallest rear gear, with 12 teeth. The pedal gear still has 48 teeth. How many rotations does the rear wheel make for each pedal rotation?",
-          "How many teeth does one pedal turn move? (48 teeth)",
-          "How many teeth make one full turn of the rear gear? (12 teeth)",
-          "How many rear wheel turns is that? (48 ÷ 12 = 4 rotations)",
+          "How many teeth make one wheel turn? (12)",
+          "One pedal turn moves 48 teeth. What scale factor takes 12 to 48? (× 4)",
+          "Do the same to the wheel turns. How many turns for one pedal turn? (4)",
           "Is this gear better for going fast or for climbing a hill? (For going fast or downhill. The wheel turns 4 times for each pedal turn.)"
         ],
         "linesEs": [
           "La cadena pasa al engranaje trasero más pequeño, de 12 dientes. El engranaje de los pedales todavía tiene 48 dientes. ¿Cuántas rotaciones da la rueda trasera por cada rotación de los pedales?",
-          "¿Cuántos dientes mueve una vuelta del pedal? (48 dientes)",
-          "¿Cuántos dientes forman una vuelta completa del engranaje trasero? (12 dientes)",
-          "¿Cuántas vueltas de la rueda trasera son? (48 ÷ 12 = 4 rotaciones)",
+          "¿Cuántos dientes dan una vuelta de la rueda? (12)",
+          "Una vuelta del pedal mueve 48 dientes. ¿Qué factor de escala lleva 12 a 48? (× 4)",
+          "Haz lo mismo con las vueltas de la rueda. ¿Cuántas vueltas por cada vuelta del pedal? (4)",
           "¿Este engranaje es mejor para ir rápido o para subir una cuesta? (Para ir rápido o cuesta abajo. La rueda gira 4 veces por cada vuelta del pedal.)"
         ]
       },
@@ -312,46 +314,53 @@
           "problem": "A bike's pedal gear has 48 teeth. The chain is on a rear gear with 32 teeth. How many rotations (full turns) does the rear wheel make for each pedal rotation?",
           "problemEs": "El engranaje de los pedales de una bicicleta tiene 48 dientes. La cadena está en un engranaje trasero de 32 dientes. ¿Cuántas rotaciones (vueltas completas) da la rueda trasera por cada rotación de los pedales?",
           "figure": {
-            "kind": "doubleNumberLine",
-            "top": {
-              "label": "Teeth turned",
-              "values": [
-                0,
-                16,
+            "kind": "ratioTable",
+            "headers": [
+              "Teeth turned",
+              "Wheel turns"
+            ],
+            "rows": [
+              [
                 32,
-                48
+                1
+              ],
+              [
+                16,
+                0.5
+              ],
+              [
+                48,
+                "?"
               ]
-            },
-            "bottom": {
-              "label": "Rear gear turns",
-              "values": [
-                0,
-                0.5,
-                1,
-                1.5
-              ]
-            },
-            "caption": "32 teeth make 1 turn. 48 teeth make 1.5 turns.",
-            "captionEs": "32 dientes dan 1 vuelta. 48 dientes dan 1.5 vueltas."
+            ],
+            "scales": [
+              "÷ 2",
+              "× 3"
+            ],
+            "caption": "32 teeth make 1 turn. 16 teeth make half a turn.",
+            "captionEs": "32 dientes dan 1 vuelta. 16 dientes dan media vuelta."
           },
           "steps": [
             {
-              "do": "Count the teeth one pedal turn moves.",
-              "doEs": "Cuenta los dientes que mueve una vuelta del pedal.",
-              "math": "1 pedal turn ⟶ 48 teeth",
-              "mathEs": "1 vuelta del pedal ⟶ 48 dientes",
-              "why": "The chain moves the rear gear the same 48 teeth.",
-              "whyEs": "La cadena mueve el engranaje trasero los mismos 48 dientes."
+              "do": "Write the rear gear: 32 teeth make 1 turn.",
+              "doEs": "Escribe el engranaje trasero: 32 dientes dan 1 vuelta.",
+              "math": "32 : 1",
+              "why": "The chain moves the rear gear the same number of teeth as the pedal gear.",
+              "whyEs": "La cadena mueve el engranaje trasero el mismo número de dientes que el del pedal."
             },
             {
-              "do": "Count the teeth for one rear turn.",
-              "doEs": "Cuenta los dientes de una vuelta trasera.",
-              "math": "1 rear turn ⟶ 32 teeth",
-              "mathEs": "1 vuelta trasera ⟶ 32 dientes"
+              "do": "Divide both by 2 to find 16 teeth.",
+              "doEs": "Divide los dos entre 2 para hallar 16 dientes.",
+              "math": "1 ÷ 2 = 0.5"
             },
             {
-              "do": "Divide to find the rear wheel turns.",
-              "doEs": "Divide para hallar las vueltas de la rueda trasera.",
+              "do": "Multiply both by 3 to reach 48 teeth.",
+              "doEs": "Multiplica los dos por 3 para llegar a 48 dientes.",
+              "math": "0.5 × 3 = 1.5"
+            },
+            {
+              "do": "Check with division.",
+              "doEs": "Comprueba con una división.",
               "math": "48 ÷ 32 = 1.5",
               "why": "48 teeth is one full 32 and half of another 32.",
               "whyEs": "48 dientes son un 32 completo y la mitad de otro 32."
@@ -367,48 +376,51 @@
         "problem": "The chain moves to the smallest rear gear, with 12 teeth. The pedal gear still has 48 teeth. How many rotations does the rear wheel make for each pedal rotation?",
         "problemEs": "La cadena pasa al engranaje trasero más pequeño, de 12 dientes. El engranaje de los pedales todavía tiene 48 dientes. ¿Cuántas rotaciones da la rueda trasera por cada rotación de los pedales?",
         "figure": {
-          "kind": "doubleNumberLine",
-          "top": {
-            "label": "Teeth turned",
-            "values": [
-              0,
+          "kind": "ratioTable",
+          "headers": [
+            "Teeth turned",
+            "Wheel turns"
+          ],
+          "rows": [
+            [
               12,
-              24,
-              36,
-              48
+              1
+            ],
+            [
+              48,
+              "?"
             ]
-          },
-          "bottom": {
-            "label": "Rear gear turns",
-            "values": [
-              0,
-              1,
-              2,
-              3,
-              4
-            ]
-          },
-          "caption": "Every 12 teeth make one more turn.",
-          "captionEs": "Cada 12 dientes dan una vuelta más."
+          ],
+          "scales": [
+            "× ?"
+          ],
+          "caption": "12 teeth make one wheel turn.",
+          "captionEs": "12 dientes dan una vuelta de la rueda."
         },
         "steps": [
           {
-            "ask": "How many teeth does one pedal turn move?",
-            "askEs": "¿Cuántos dientes mueve una vuelta del pedal?",
-            "answer": "48 teeth",
-            "answerEs": "48 dientes"
+            "ask": "How many teeth make one wheel turn?",
+            "askEs": "¿Cuántos dientes dan una vuelta de la rueda?",
+            "answer": "12",
+            "accept": [
+              "12"
+            ]
           },
           {
-            "ask": "How many teeth make one full turn of the rear gear?",
-            "askEs": "¿Cuántos dientes forman una vuelta completa del engranaje trasero?",
-            "answer": "12 teeth",
-            "answerEs": "12 dientes"
+            "ask": "One pedal turn moves 48 teeth. What scale factor takes 12 to 48?",
+            "askEs": "Una vuelta del pedal mueve 48 dientes. ¿Qué factor de escala lleva 12 a 48?",
+            "answer": "× 4",
+            "accept": [
+              "4"
+            ]
           },
           {
-            "ask": "How many rear wheel turns is that?",
-            "askEs": "¿Cuántas vueltas de la rueda trasera son?",
-            "answer": "48 ÷ 12 = 4 rotations",
-            "answerEs": "48 ÷ 12 = 4 rotaciones"
+            "ask": "Do the same to the wheel turns. How many turns for one pedal turn?",
+            "askEs": "Haz lo mismo con las vueltas de la rueda. ¿Cuántas vueltas por cada vuelta del pedal?",
+            "answer": "4",
+            "accept": [
+              "4"
+            ]
           },
           {
             "ask": "Is this gear better for going fast or for climbing a hill?",
@@ -430,11 +442,31 @@
           "3 rotations",
           "3 turns"
         ],
-        "hint": "Divide the pedal teeth by the rear teeth: 48 ÷ 16.",
-        "hintEs": "Divide los dientes de los pedales entre los dientes traseros: 48 ÷ 16."
+        "hint": "Put 16 teeth and 1 turn in the first column. What do you multiply 16 by to get 48?",
+        "hintEs": "Pon 16 dientes y 1 vuelta en la primera columna. ¿Por cuánto multiplicas 16 para obtener 48?",
+        "figure": {
+          "kind": "ratioTable",
+          "headers": [
+            "Teeth turned",
+            "Wheel turns"
+          ],
+          "rows": [
+            [
+              16,
+              1
+            ],
+            [
+              48,
+              "?"
+            ]
+          ],
+          "scales": [
+            "× ?"
+          ]
+        }
       },
-      "bigIdea": "Divide the pedal gear's teeth by the rear gear's teeth to find how many times the wheel turns for one pedal turn.",
-      "bigIdeaEs": "Divide los dientes del engranaje de los pedales entre los dientes del engranaje trasero para hallar cuántas veces gira la rueda por una vuelta del pedal."
+      "bigIdea": "In a ratio table, the rear gear's teeth make 1 turn. Scale to the pedal gear's teeth to find the wheel turns for one pedal turn.",
+      "bigIdeaEs": "En una tabla de razones, los dientes del engranaje trasero dan 1 vuelta. Cambia la escala a los dientes del pedal para hallar las vueltas de la rueda por vuelta del pedal."
     },
     "practice": {
       "together": [
@@ -442,50 +474,50 @@
           "problem": "A bike's pedal gear has 40 teeth. The rear gear has 20 teeth. How many times does the rear wheel turn for each pedal turn?",
           "problemEs": "El engranaje de los pedales de una bicicleta tiene 40 dientes. El engranaje trasero tiene 20 dientes. ¿Cuántas veces gira la rueda trasera por cada vuelta del pedal?",
           "figure": {
-            "kind": "doubleNumberLine",
-            "top": {
-              "label": "Teeth turned",
-              "values": [
-                0,
+            "kind": "ratioTable",
+            "headers": [
+              "Teeth turned",
+              "Wheel turns"
+            ],
+            "rows": [
+              [
                 20,
-                40
-              ]
-            },
-            "bottom": {
-              "label": "Rear gear turns",
-              "values": [
-                0,
-                1,
+                1
+              ],
+              [
+                40,
                 "?"
               ]
-            },
-            "caption": "Every 20 teeth make one rear turn.",
-            "captionEs": "Cada 20 dientes dan una vuelta trasera."
+            ],
+            "scales": [
+              "× ?"
+            ],
+            "caption": "20 teeth make one wheel turn.",
+            "captionEs": "20 dientes dan una vuelta de la rueda."
           },
           "steps": [
             {
-              "ask": "How many teeth does one pedal turn move?",
-              "askEs": "¿Cuántos dientes mueve una vuelta del pedal?",
-              "answer": "40",
+              "ask": "How many teeth make one wheel turn?",
+              "askEs": "¿Cuántos dientes dan una vuelta de la rueda?",
+              "answer": "20",
               "accept": [
-                "40",
-                "40 teeth"
+                "20"
               ]
             },
             {
-              "ask": "How many teeth make one full turn of the rear gear?",
-              "askEs": "¿Cuántos dientes forman una vuelta completa del engranaje trasero?",
-              "answer": "20 teeth",
-              "answerEs": "20 dientes"
+              "ask": "One pedal turn moves 40 teeth. What scale factor takes 20 to 40?",
+              "askEs": "Una vuelta del pedal mueve 40 dientes. ¿Qué factor de escala lleva 20 a 40?",
+              "answer": "× 2",
+              "accept": [
+                "2"
+              ]
             },
             {
-              "ask": "Divide 40 by 20. How many times does the rear wheel turn?",
-              "askEs": "Divide 40 entre 20. ¿Cuántas veces gira la rueda trasera?",
+              "ask": "Do the same to the wheel turns. How many turns for one pedal turn?",
+              "askEs": "Haz lo mismo con las vueltas de la rueda. ¿Cuántas vueltas por cada vuelta del pedal?",
               "answer": "2",
               "accept": [
-                "2",
-                "2 times",
-                "2 turns"
+                "2"
               ]
             }
           ],
@@ -496,62 +528,63 @@
           "problem": "The chain moves to a rear gear with 16 teeth. The pedal gear still has 40 teeth. How many times does the rear wheel turn for each pedal turn?",
           "problemEs": "La cadena pasa a un engranaje trasero de 16 dientes. El engranaje de los pedales todavía tiene 40 dientes. ¿Cuántas veces gira la rueda trasera por cada vuelta del pedal?",
           "figure": {
-            "kind": "doubleNumberLine",
-            "top": {
-              "label": "Teeth turned",
-              "values": [
-                0,
+            "kind": "ratioTable",
+            "headers": [
+              "Teeth turned",
+              "Wheel turns"
+            ],
+            "rows": [
+              [
                 16,
-                32,
-                40
-              ]
-            },
-            "bottom": {
-              "label": "Rear gear turns",
-              "values": [
-                0,
-                1,
-                "?",
+                1
+              ],
+              [
+                8,
+                "?"
+              ],
+              [
+                40,
                 "?"
               ]
-            },
-            "caption": "Every 16 teeth make one rear turn.",
-            "captionEs": "Cada 16 dientes dan una vuelta trasera."
+            ],
+            "scales": [
+              "÷ ?",
+              "× ?"
+            ],
+            "caption": "Use 8 teeth, half a turn, as a bridge.",
+            "captionEs": "Usa 8 dientes, media vuelta, como puente."
           },
           "steps": [
             {
-              "ask": "How many full 16-tooth turns fit in 40 teeth?",
-              "askEs": "¿Cuántas vueltas completas de 16 dientes caben en 40 dientes?",
-              "answer": "2",
+              "ask": "How many teeth make one wheel turn?",
+              "askEs": "¿Cuántos dientes dan una vuelta de la rueda?",
+              "answer": "16",
               "accept": [
-                "2"
+                "16"
               ]
             },
             {
-              "ask": "How many teeth are left over?",
-              "askEs": "¿Cuántos dientes sobran?",
-              "answer": "40 − 32 = 8"
-            },
-            {
-              "ask": "8 teeth is what part of a 16-tooth turn?",
-              "askEs": "¿Qué parte de una vuelta de 16 dientes son 8 dientes?",
-              "answer": "{1/2}",
+              "ask": "Divide both by 2. How many wheel turns go with 8 teeth?",
+              "askEs": "Divide los dos entre 2. ¿Cuántas vueltas de la rueda van con 8 dientes?",
+              "answer": "0.5",
               "accept": [
-                "1/2",
-                "0.5",
-                "half",
-                "one half"
+                "0.5"
               ]
             },
             {
-              "ask": "How many rear wheel turns in all? Check with 40 ÷ 16.",
-              "askEs": "¿Cuántas vueltas de la rueda trasera en total? Comprueba con 40 ÷ 16.",
+              "ask": "What do you multiply 8 teeth by to reach 40?",
+              "askEs": "¿Por cuánto multiplicas 8 dientes para llegar a 40?",
+              "answer": "× 5",
+              "accept": [
+                "5"
+              ]
+            },
+            {
+              "ask": "Do the same to the wheel turns. How many turns for one pedal turn?",
+              "askEs": "Haz lo mismo con las vueltas de la rueda. ¿Cuántas vueltas por cada vuelta del pedal?",
               "answer": "2.5",
               "accept": [
-                "2.5",
-                "2 1/2",
-                "2.5 times",
-                "2.5 turns"
+                "2.5"
               ]
             }
           ],
@@ -569,21 +602,45 @@
             "3 times",
             "3 turns"
           ],
-          "hint": "One pedal turn moves all the pedal teeth. How many rear turns fit in that many teeth?",
-          "hintEs": "Una vuelta del pedal mueve todos los dientes del pedal. ¿Cuántas vueltas traseras caben en esa cantidad de dientes?",
+          "hint": "Put 10 teeth and 1 turn in the first column. What do you multiply 10 by to get 30?",
+          "hintEs": "Pon 10 dientes y 1 vuelta en la primera columna. ¿Por cuánto multiplicas 10 para obtener 30?",
           "steps": [
             {
-              "do": "Find the teeth one pedal turn moves.",
-              "doEs": "Halla los dientes que mueve una vuelta del pedal.",
-              "math": "30 teeth",
-              "mathEs": "30 dientes"
+              "do": "Write the rear gear: 10 teeth make 1 turn.",
+              "doEs": "Escribe el engranaje trasero: 10 dientes dan 1 vuelta.",
+              "math": "10 : 1"
             },
             {
-              "do": "Divide by the rear teeth.",
-              "doEs": "Divide entre los dientes traseros.",
+              "do": "One pedal turn moves 30 teeth. Find the scale factor.",
+              "doEs": "Una vuelta del pedal mueve 30 dientes. Halla el factor de escala.",
               "math": "30 ÷ 10 = 3"
+            },
+            {
+              "do": "Multiply the wheel turns by 3 too.",
+              "doEs": "Multiplica las vueltas de la rueda por 3 también.",
+              "math": "1 × 3 = 3"
             }
-          ]
+          ],
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Teeth turned",
+              "Wheel turns"
+            ],
+            "rows": [
+              [
+                10,
+                1
+              ],
+              [
+                30,
+                "?"
+              ]
+            ],
+            "scales": [
+              "× ?"
+            ]
+          }
         },
         {
           "problem": "A racing bike has a 54-tooth pedal gear and a 36-tooth rear gear. How many times does the rear wheel turn for each pedal turn?",
@@ -595,20 +652,50 @@
             "1.5 times",
             "1.5 turns"
           ],
-          "hint": "36 teeth make one full rear turn. What part of another turn do the extra teeth make?",
-          "hintEs": "36 dientes dan una vuelta trasera completa. ¿Qué parte de otra vuelta dan los dientes de más?",
+          "hint": "Put 36 teeth and 1 turn in the first column. Find the turns for 18 teeth first. Then scale up to 54.",
+          "hintEs": "Pon 36 dientes y 1 vuelta en la primera columna. Halla primero las vueltas para 18 dientes. Luego multiplica hasta 54.",
           "steps": [
             {
-              "do": "Divide the pedal teeth by the rear teeth.",
-              "doEs": "Divide los dientes del pedal entre los dientes traseros.",
-              "math": "54 ÷ 36 = 1.5"
+              "do": "Write the rear gear: 36 teeth make 1 turn.",
+              "doEs": "Escribe el engranaje trasero: 36 dientes dan 1 vuelta.",
+              "math": "36 : 1"
             },
             {
-              "do": "Check by multiplying.",
-              "doEs": "Comprueba multiplicando.",
-              "math": "36 × 1.5 = 54"
+              "do": "Divide both by 2 to find 18 teeth.",
+              "doEs": "Divide los dos entre 2 para hallar 18 dientes.",
+              "math": "1 ÷ 2 = 0.5"
+            },
+            {
+              "do": "Multiply both by 3 to reach 54 teeth.",
+              "doEs": "Multiplica los dos por 3 para llegar a 54 dientes.",
+              "math": "0.5 × 3 = 1.5"
             }
-          ]
+          ],
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Teeth turned",
+              "Wheel turns"
+            ],
+            "rows": [
+              [
+                36,
+                1
+              ],
+              [
+                18,
+                "?"
+              ],
+              [
+                54,
+                "?"
+              ]
+            ],
+            "scales": [
+              "÷ ?",
+              "× ?"
+            ]
+          }
         },
         {
           "problem": "Leo's bike has a 42-tooth pedal gear and a 14-tooth rear gear. He pedals 5 full turns. How many times does the rear wheel turn?",
@@ -620,20 +707,57 @@
             "15 times",
             "15 turns"
           ],
-          "hint": "First find the rear wheel turns for 1 pedal turn. Then think about 5 pedal turns.",
-          "hintEs": "Primero halla las vueltas de la rueda trasera por 1 vuelta del pedal. Luego piensa en 5 vueltas del pedal.",
+          "hint": "Put 14 teeth and 1 turn in the first column. Scale to 42 teeth for one pedal turn. Then multiply by 5.",
+          "hintEs": "Pon 14 dientes y 1 vuelta en la primera columna. Cambia la escala a 42 dientes para una vuelta del pedal. Luego multiplica por 5.",
           "steps": [
             {
-              "do": "Find the rear turns for 1 pedal turn.",
-              "doEs": "Halla las vueltas traseras por 1 vuelta del pedal.",
+              "do": "Write the rear gear: 14 teeth make 1 turn.",
+              "doEs": "Escribe el engranaje trasero: 14 dientes dan 1 vuelta.",
+              "math": "14 : 1"
+            },
+            {
+              "do": "One pedal turn moves 42 teeth. Find the scale factor.",
+              "doEs": "Una vuelta del pedal mueve 42 dientes. Halla el factor de escala.",
               "math": "42 ÷ 14 = 3"
             },
             {
-              "do": "Multiply by 5 pedal turns.",
-              "doEs": "Multiplica por 5 vueltas del pedal.",
+              "do": "Multiply the wheel turns by 3 too.",
+              "doEs": "Multiplica las vueltas de la rueda por 3 también.",
+              "math": "1 × 3 = 3"
+            },
+            {
+              "do": "Multiply both by 5 for 5 pedal turns.",
+              "doEs": "Multiplica los dos por 5 para 5 vueltas del pedal.",
               "math": "3 × 5 = 15"
             }
-          ]
+          ],
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Teeth turned",
+              "Wheel turns"
+            ],
+            "rows": [
+              [
+                14,
+                1
+              ],
+              [
+                42,
+                "?"
+              ],
+              [
+                210,
+                "?"
+              ]
+            ],
+            "scales": [
+              "× ?",
+              "× 5"
+            ],
+            "caption": "Each pedal turn moves 42 teeth.",
+            "captionEs": "Cada vuelta del pedal mueve 42 dientes."
+          }
         },
         {
           "problem": "The pedal gear has 40 teeth. A rider must climb a steep hill. Which rear gear makes pedaling easier: one with 32 teeth or one with 10 teeth?",
@@ -659,23 +783,55 @@
             "40 ÷ 10 = 4 vueltas de la rueda por vuelta del pedal. Más vueltas por vuelta del pedal hacen más difícil la cuesta.",
             "40 ÷ 32 = 1.25 y 40 ÷ 10 = 4. Los engranajes dan cantidades distintas de vueltas."
           ],
-          "hint": "Find the wheel turns for each gear. Fewer wheel turns per pedal turn are easier on a hill.",
-          "hintEs": "Halla las vueltas de la rueda con cada engranaje. Menos vueltas por vuelta del pedal son más fáciles en una cuesta.",
+          "hint": "Make a ratio table for each gear. Scale to 40 teeth. Fewer wheel turns per pedal turn are easier on a hill.",
+          "hintEs": "Haz una tabla de razones para cada engranaje. Cambia la escala a 40 dientes. Menos vueltas de la rueda por vuelta del pedal es más fácil en una cuesta.",
           "steps": [
             {
-              "do": "Find the turns for each rear gear.",
-              "doEs": "Halla las vueltas con cada engranaje trasero.",
+              "do": "Scale 32 teeth : 1 turn to 40 teeth.",
+              "doEs": "Cambia la escala de 32 dientes : 1 vuelta a 40 dientes.",
               "math": [
-                "40 ÷ 32 = 1.25",
-                "40 ÷ 10 = 4"
+                "1 ÷ 4 = 0.25",
+                "0.25 × 5 = 1.25"
               ]
+            },
+            {
+              "do": "Scale 10 teeth : 1 turn to 40 teeth.",
+              "doEs": "Cambia la escala de 10 dientes : 1 vuelta a 40 dientes.",
+              "math": "1 × 4 = 4"
             },
             {
               "do": "Pick fewer turns for a hill.",
               "doEs": "Elige menos vueltas para una cuesta.",
               "math": "1.25 < 4"
             }
-          ]
+          ],
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Teeth turned",
+              "Wheel turns"
+            ],
+            "rows": [
+              [
+                32,
+                1
+              ],
+              [
+                8,
+                "?"
+              ],
+              [
+                40,
+                "?"
+              ]
+            ],
+            "scales": [
+              "÷ ?",
+              "× ?"
+            ],
+            "caption": "The 32-tooth gear. Make one for the 10-tooth gear too.",
+            "captionEs": "El engranaje de 32 dientes. Haz otra para el de 10 dientes."
+          }
         }
       ],
       "talk": {
@@ -683,11 +839,11 @@
         "promptEs": "¿Por qué dividimos los dientes del pedal entre los dientes traseros? Usa un engranaje de pedales de 40 dientes y uno trasero de 20 dientes.",
         "frames": [
           "One pedal turn moves ___ teeth on the rear gear.",
-          "The rear wheel turns ___ times because ___."
+          "The scale factor from ___ teeth to ___ teeth is the wheel turns."
         ],
         "framesEs": [
           "Una vuelta del pedal mueve ___ dientes en el engranaje trasero.",
-          "La rueda trasera gira ___ veces porque ___."
+          "El factor de escala de ___ dientes a ___ dientes son las vueltas de la rueda."
         ]
       },
       "check": [
@@ -700,21 +856,45 @@
             "4 times",
             "4 turns"
           ],
-          "hint": "One pedal turn moves all the pedal teeth. How many rear turns fit in that many teeth?",
-          "hintEs": "Una vuelta del pedal mueve todos los dientes del pedal. ¿Cuántas vueltas traseras caben en esa cantidad de dientes?",
+          "hint": "Put 14 teeth and 1 turn in the first column. What do you multiply 14 by to get 56?",
+          "hintEs": "Pon 14 dientes y 1 vuelta en la primera columna. ¿Por cuánto multiplicas 14 para obtener 56?",
           "steps": [
             {
-              "do": "Find the teeth one pedal turn moves.",
-              "doEs": "Halla los dientes que mueve una vuelta del pedal.",
-              "math": "56 teeth",
-              "mathEs": "56 dientes"
+              "do": "Write the rear gear: 14 teeth make 1 turn.",
+              "doEs": "Escribe el engranaje trasero: 14 dientes dan 1 vuelta.",
+              "math": "14 : 1"
             },
             {
-              "do": "Divide by the rear teeth.",
-              "doEs": "Divide entre los dientes traseros.",
+              "do": "One pedal turn moves 56 teeth. Find the scale factor.",
+              "doEs": "Una vuelta del pedal mueve 56 dientes. Halla el factor de escala.",
               "math": "56 ÷ 14 = 4"
+            },
+            {
+              "do": "Multiply the wheel turns by 4 too.",
+              "doEs": "Multiplica las vueltas de la rueda por 4 también.",
+              "math": "1 × 4 = 4"
             }
-          ]
+          ],
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Teeth turned",
+              "Wheel turns"
+            ],
+            "rows": [
+              [
+                14,
+                1
+              ],
+              [
+                56,
+                "?"
+              ]
+            ],
+            "scales": [
+              "× ?"
+            ]
+          }
         },
         {
           "problem": "An egg beater has a handle gear with 45 teeth. It turns a small gear with 9 teeth. How many times does the small gear spin for each turn of the handle?",
@@ -725,21 +905,45 @@
             "5 times",
             "5 turns"
           ],
-          "hint": "This works like a bike. Divide the big gear's teeth by the small gear's teeth.",
-          "hintEs": "Esto funciona como una bicicleta. Divide los dientes del engranaje grande entre los dientes del pequeño.",
+          "hint": "This works like a bike. Put 9 teeth and 1 spin in the first column. Scale to 45 teeth.",
+          "hintEs": "Funciona como una bicicleta. Pon 9 dientes y 1 giro en la primera columna. Cambia la escala a 45 dientes.",
           "steps": [
             {
-              "do": "Find the teeth one handle turn moves.",
-              "doEs": "Halla los dientes que mueve una vuelta de la manija.",
-              "math": "45 teeth",
-              "mathEs": "45 dientes"
+              "do": "Write the small gear: 9 teeth make 1 spin.",
+              "doEs": "Escribe el engranaje pequeño: 9 dientes dan 1 giro.",
+              "math": "9 : 1"
             },
             {
-              "do": "Divide by the small gear's teeth.",
-              "doEs": "Divide entre los dientes del engranaje pequeño.",
+              "do": "One handle turn moves 45 teeth. Find the scale factor.",
+              "doEs": "Una vuelta de la manija mueve 45 dientes. Halla el factor de escala.",
               "math": "45 ÷ 9 = 5"
+            },
+            {
+              "do": "Multiply the spins by 5 too.",
+              "doEs": "Multiplica los giros por 5 también.",
+              "math": "1 × 5 = 5"
             }
-          ]
+          ],
+          "figure": {
+            "kind": "ratioTable",
+            "headers": [
+              "Teeth turned",
+              "Small gear spins"
+            ],
+            "rows": [
+              [
+                9,
+                1
+              ],
+              [
+                45,
+                "?"
+              ]
+            ],
+            "scales": [
+              "× ?"
+            ]
+          }
         }
       ],
       "stretch": {
@@ -752,20 +956,52 @@
           "4 times",
           "4 turns"
         ],
-        "hint": "Find how many teeth 3 pedal turns move. Then see how many 36-tooth turns fit.",
-        "hintEs": "Halla cuántos dientes mueven 3 vueltas del pedal. Luego mira cuántas vueltas de 36 dientes caben.",
+        "hint": "Find how many teeth 3 pedal turns move. Put 36 teeth and 1 turn in the first column. Then scale up.",
+        "hintEs": "Halla cuántos dientes mueven 3 vueltas del pedal. Pon 36 dientes y 1 vuelta en la primera columna. Luego multiplica.",
         "steps": [
           {
             "do": "Find all the teeth moved.",
-            "doEs": "Halla todos los dientes movidos.",
+            "doEs": "Halla todos los dientes que se mueven.",
             "math": "48 × 3 = 144"
           },
           {
-            "do": "Divide by the rear teeth.",
-            "doEs": "Divide entre los dientes traseros.",
+            "do": "Write the rear gear: 36 teeth make 1 turn.",
+            "doEs": "Escribe el engranaje trasero: 36 dientes dan 1 vuelta.",
+            "math": "36 : 1"
+          },
+          {
+            "do": "Find the scale factor from 36 to 144.",
+            "doEs": "Halla el factor de escala de 36 a 144.",
             "math": "144 ÷ 36 = 4"
+          },
+          {
+            "do": "Multiply the wheel turns by 4 too.",
+            "doEs": "Multiplica las vueltas de la rueda por 4 también.",
+            "math": "1 × 4 = 4"
           }
-        ]
+        ],
+        "figure": {
+          "kind": "ratioTable",
+          "headers": [
+            "Teeth turned",
+            "Wheel turns"
+          ],
+          "rows": [
+            [
+              36,
+              1
+            ],
+            [
+              144,
+              "?"
+            ]
+          ],
+          "scales": [
+            "× ?"
+          ],
+          "caption": "3 pedal turns move 3 × 48 = 144 teeth.",
+          "captionEs": "3 vueltas del pedal mueven 3 × 48 = 144 dientes."
+        }
       }
     }
   },
