@@ -26,6 +26,7 @@ import { expect, test } from "@playwright/test";
 
 const G1 = "/lessons/1-1-group1/";
 const G2 = "/lessons/7-2-group2/";
+const CATCHUP = "/lessons/1-3-catchup/";
 
 async function openStudio(page, path: string) {
   await page.goto(path);
@@ -38,7 +39,15 @@ async function lessonConfig(page, path: string) {
   return res.json();
 }
 
-const tab = (page, key: string) => page.locator(`#sg-tab-sg-tab-${key}`);
+/** Top-level studio parts (merged 2026-10-04): Focus & Learn, Practice Studio, Check & Growth. */
+const mainTab = (page, partId: "sg-tab-learn" | "sg-tab-practice" | "sg-tab-more") =>
+  page.locator(`#sg-tab-${partId}`);
+
+async function openSubstep(page, label: RegExp | string) {
+  const chip = page.locator(".sg-substeps").getByRole("tab", { name: label });
+  await chip.click();
+  await expect(chip).toHaveAttribute("aria-selected", "true");
+}
 
 test.describe("small-group guided math studio", () => {
   test("Group 1 opens on a leveled vocabulary studio built from its own config", async ({
@@ -53,13 +62,11 @@ test.describe("small-group guided math studio", () => {
     await expect(page.getByLabel("Notice", { exact: true })).toHaveCount(0);
     await expect(page.getByLabel("Wonder", { exact: true })).toHaveCount(0);
 
-    // The five studio tabs, in teaching order.
-    for (const key of ["vocab", "learn", "guided", "practice", "more"]) {
-      await expect(tab(page, key)).toBeVisible();
+    for (const part of ["sg-tab-learn", "sg-tab-practice", "sg-tab-more"] as const) {
+      await expect(mainTab(page, part)).toBeVisible();
     }
 
-    // Vocabulary is the landing tab and the match game plays THIS lesson's
-    // words — read from the config, never hardcoded.
+    // Vocabulary is the landing sub-step under Focus & Learn; match game uses THIS lesson's words.
     const match = page.locator(".sg-match");
     await expect(match).toBeVisible();
     const terms = (cfg.vocabulary || [])
@@ -76,7 +83,8 @@ test.describe("small-group guided math studio", () => {
     page,
   }) => {
     await openStudio(page, G1);
-    await tab(page, "guided").click();
+    await mainTab(page, "sg-tab-practice").click();
+    await openSubstep(page, /Guided/i);
     const firstProblem = page.locator("#sg-guided-practice .prob").first();
     await firstProblem.scrollIntoViewIfNeeded();
 
@@ -101,15 +109,12 @@ test.describe("small-group guided math studio", () => {
     page,
   }) => {
     await openStudio(page, G1);
-    await tab(page, "practice").click();
+    await mainTab(page, "sg-tab-practice").click();
+    await openSubstep(page, /On My Own/i);
     const section = page.locator("#sg-independent-practice");
     await expect(section).toBeVisible();
 
-    // The section direction sets the norm — read inside the ACTIVE panel;
-    // the hidden Guided tab also says "notebook" and resolves first otherwise.
-    await expect(
-      page.locator(".sg-tabpanel:not([hidden])").getByText(/notebook/i).first(),
-    ).toBeVisible();
+    await expect(section.locator(".sg-directions, .sg-sec-h").first()).toBeVisible();
 
     // …and every problem card opens with the cue + folded guidance.
     const probs = section.locator(".prob");
@@ -137,7 +142,18 @@ test.describe("small-group guided math studio", () => {
     await openStudio(page, G2);
     await expect(page.locator(".sg-tagline")).toContainText(/like a mathematician/i);
     await expect(page.locator(".sg-tagline")).not.toContainText(/one step at a time/i);
-    await expect(tab(page, "prove")).toBeVisible();
+    await mainTab(page, "sg-tab-more").click();
+    // Substep chips render as "1 ✅ Check" (number + icon + label).
+    await openSubstep(page, /Check$/);
+    await expect(page.locator("#sg-prove")).toBeVisible();
+    await expect(page.locator("#sg-prove")).toContainText(/Check Lab/i);
+  });
+
+  test("catch-up variant loads the three-part studio", async ({ page }) => {
+    await openStudio(page, CATCHUP);
+    await expect(mainTab(page, "sg-tab-learn")).toBeVisible();
+    await expect(mainTab(page, "sg-tab-practice")).toBeVisible();
+    await expect(mainTab(page, "sg-tab-more")).toBeVisible();
   });
 
   test("no facilitation guidance leaks into the student studio", async ({ page }) => {
