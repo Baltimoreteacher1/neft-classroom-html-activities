@@ -7,10 +7,12 @@ const destinations = [
   ["labs", "/curriculum/learning-labs/", "Learning labs"],
   ["families", "/curriculum/family-connections/", "Homework"],
   ["help", "/curriculum/extra-help/", "Extra Help"],
+  ["fluency", "/curriculum/fluency/", "Fluency"],
 ];
 export const shellPages = new Map([
   ["curriculum/index.html", "home"],
   ["curriculum/extra-help/index.html", "help"],
+  ["curriculum/fluency/index.html", "fluency"],
   ["curriculum/units/index.html", "units"],
   ["curriculum/arcade/index.html", "games"],
   ["curriculum/projects/index.html", ""],
