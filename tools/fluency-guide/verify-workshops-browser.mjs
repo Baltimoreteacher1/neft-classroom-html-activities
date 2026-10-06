@@ -83,6 +83,11 @@ try {
             el.value = p.answer;
             el.dispatchEvent(new Event("input", { bubbles: true }));
           }
+          document.querySelectorAll("[data-ratio-cell]").forEach((el) => {
+            const [t, r, c] = el.dataset.ratioCell.split("-").map(Number);
+            el.value = String(p.ratioTables[t].rows[r][c]);
+            el.dispatchEvent(new Event("input", { bubbles: true }));
+          });
           document.getElementById("fl-answer-form").requestSubmit();
         },
         { i, p },
@@ -119,6 +124,30 @@ try {
   }
   report.interactions.push(
     "All 432 tasks: 324 objective DOM submissions checked; 108 reasoning tasks correctly request self-review.",
+  );
+  await page.selectOption("#studio-lesson", "3-3");
+  await page.locator('.fl-task-rail [data-task="2"]').click();
+  await page.fill("#fl-ratio-0-1-1", "999");
+  await page.locator("#fl-answer-form button[type=submit]").click();
+  assert.match(await page.locator("#fl-feedback").innerText(), /row 2/);
+  assert.equal(
+    await page.locator("#fl-ratio-0-1-1").evaluate((el) => el === document.activeElement),
+    true,
+  );
+  await page.reload();
+  assert.equal(await page.locator("#fl-ratio-0-1-1").inputValue(), "999");
+  await page.fill("#fl-ratio-0-1-1", "14");
+  await page.locator("#fl-answer-form button[type=submit]").click();
+  assert.match(await page.locator("#fl-feedback").innerText(), /Correct/);
+  const [ratioDownload] = await Promise.all([
+    page.waitForEvent("download"),
+    page.locator("[data-studio=download]").click(),
+  ]);
+  const ratioPath = resolve(exportsOut, "ratio-work.html");
+  await ratioDownload.saveAs(ratioPath);
+  assert.match(readFileSync(ratioPath, "utf8"), /Build and use a ratio table/);
+  report.interactions.push(
+    "Ratio tables: incorrect cell rejected and focused, saved on reload, corrected table accepted, table included in download.",
   );
   await page.selectOption("#studio-lesson", "5-3");
   await page.locator('.fl-task-rail [data-task="0"]').click();
@@ -159,6 +188,8 @@ try {
   );
   await page.selectOption("#studio-level", "workshop");
   for (const [id, width] of [
+    ["3-3", 1440],
+    ["3-5", 360],
     ["5-3", 1440],
     ["5-6", 768],
     ["2-9", 360],
@@ -181,6 +212,7 @@ try {
     report.accessibility.push({ lesson: id, width, violations });
     await page.screenshot({ path: resolve(out, `workshop-${id}-${width}.png`), fullPage: true });
   }
+  await page.selectOption("#studio-lesson", "3-5");
   await page.locator("#themeBtn").click();
   await page.screenshot({ path: resolve(out, "workshop-dark-mobile.png"), fullPage: true });
   const darkViolations = await page.evaluate(async () =>
@@ -195,7 +227,7 @@ try {
     })),
   );
   report.accessibility.push({
-    lesson: "7-7",
+    lesson: "3-5",
     width: 360,
     theme: "dark",
     violations: darkViolations,

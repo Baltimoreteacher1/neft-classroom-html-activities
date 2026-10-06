@@ -314,3 +314,31 @@ test("both editions embed the exact model source and preserve existing lesson ba
     );
   }
 });
+
+// Each table is independently checked for a constant multiplicative relationship.
+test("all 56 ratio tasks require complete, equivalent ratio tables", () => {
+  for (let n = 1; n <= 7; n++) {
+    const w = workshops[`3-${n}`];
+    assert.ok(w.ratioTables.length);
+    for (const [i, p] of w.tasks.entries()) {
+      assert.match(p.tableDirections, /Build each ratio table/);
+      assert.match(p.prompt, /ratio table/);
+      for (const t of p.ratioTables) {
+        assert.equal(t.headers.length, 2);
+        assert.equal(t.rows.length, 3);
+        assert.equal(t.givenRows, i < 2 ? 1 : 0);
+        const [x, y] = t.rows[0];
+        for (const [a, b] of t.rows) {
+          assert.ok([a, b].every(Number.isFinite));
+          assert.ok(Math.abs(a * y - b * x) < 1e-8, `${p.prompt}: non-equivalent row`);
+        }
+      }
+    }
+  }
+});
+test("reverse conversions give the known quantity, not the missing answer", () => {
+  for (const id of ["3-6", "3-7"])
+    for (const p of workshops[id].tasks.slice(0, 6))
+      if (p.model.rows[1][0] === "?")
+        assert.ok(p.tableDirections.includes(`${p.model.headers[1]} values`));
+});

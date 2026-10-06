@@ -60,6 +60,8 @@ window.FluencyStudio = (() => {
     return {
       text: "",
       reasoning: "",
+      ratioCells: {},
+      ratioVersion: 0,
       reflection: "",
       attempts: 0,
       hints: 0,
@@ -103,6 +105,11 @@ window.FluencyStudio = (() => {
           if (!x || typeof x !== "object") return a;
           for (const field of ["text", "reasoning", "reflection", "message"])
             a[field] = typeof x[field] === "string" ? x[field].slice(0, 1500) : "";
+          if (x.ratioCells && typeof x.ratioCells === "object")
+            for (const [cell, value] of Object.entries(x.ratioCells).slice(0, 24))
+              if (/^\d-\d-\d$/.test(cell) && typeof value === "string")
+                a.ratioCells[cell] = value.slice(0, 120);
+          a.ratioVersion = x.ratioVersion === 1 ? 1 : 0;
           a.attempts = Number.isInteger(x.attempts) ? Math.max(0, Math.min(x.attempts, 10000)) : 0;
           a.hints = [0, 1, 2].includes(x.hints) ? x.hints : 0;
           for (const field of ["exposed", "revealed", "scratchOpen"]) a[field] = x[field] === true;
@@ -223,6 +230,19 @@ window.FluencyStudio = (() => {
       set = { active: 0, answers: Array.from({ length: count }, blankAnswer) };
       session.set(currentKey(), set);
     }
+    problems(byId[lessonId]).forEach((p, i) => {
+      const a = set.answers[i];
+      if (
+        p.ratioTables &&
+        a.ratioVersion !== 1 &&
+        ["checked", "supported", "reviewed"].includes(a.status)
+      ) {
+        a.status = "draft";
+        a.message =
+          "Your previous answer is saved. Build the ratio table to complete this updated task.";
+        a.tone = "";
+      }
+    });
     set.active = Math.max(0, Math.min(set.active, count - 1));
     return set;
   }
@@ -263,10 +283,52 @@ window.FluencyStudio = (() => {
     return '<div class="work-lines" aria-label="Ruled lines for handwritten work"></div>';
   }
 
+  function ratioTablesMarkup(p, a = {}, display = "edit") {
+    if (!p.ratioTables) return "";
+    return `<section class="fl-ratio-work"><h3>${display === "key" ? "Completed ratio tables" : "Build and use a ratio table"}</h3>${p.tableDirections ? `<p>${e(p.tableDirections)}</p>` : ""}${p.ratioTables
+      .map(
+        (t, ti) =>
+          `<table><caption>${e(t.title)}</caption><thead><tr>${t.headers.map((h) => `<th scope="col">${e(h)}</th>`).join("")}</tr></thead><tbody>${t.rows
+            .map(
+              (row, ri) =>
+                `<tr>${row
+                  .map((value, ci) => {
+                    const cell = `${ti}-${ri}-${ci}`,
+                      given = ri < (t.givenRows || 0);
+                    const shown =
+                      display === "key" || given ? String(value) : a.ratioCells?.[cell] || "";
+                    return `<td>${display === "edit" && !given ? `<input type="text" inputmode="decimal" id="fl-ratio-${cell}" data-ratio-cell="${cell}" value="${e(shown)}" maxlength="120" aria-label="${e(t.title)}, row ${ri + 1}, ${e(t.headers[ci])}" aria-describedby="fl-ratio-help fl-feedback">` : e(shown) || "&nbsp;"}</td>`;
+                  })
+                  .join("")}</tr>`,
+            )
+            .join("")}</tbody></table>`,
+      )
+      .join(
+        "",
+      )}${display === "edit" ? '<p id="fl-ratio-help">Enter a number, decimal, or fraction in every blank cell. Use the same multiplier or divisor for both quantities in a row. Your table saves with your work.</p>' : ""}</section>`;
+  }
+  function checkRatioTables(p, a) {
+    for (const [ti, t] of (p.ratioTables || []).entries())
+      for (const [ri, row] of t.rows.entries()) {
+        if (ri < (t.givenRows || 0)) continue;
+        for (const [ci, value] of row.entries()) {
+          const cell = `${ti}-${ri}-${ci}`,
+            entered = a.ratioCells?.[cell] || "";
+          if (!entered.trim() || !close(parseMath(entered), value)) {
+            a.message = `${t.title}, row ${ri + 1}: ${!entered.trim() ? "enter" : "recheck"} ${t.headers[ci]}. Use the requested first-column value and scale BOTH quantities by the same factor.`;
+            a.tone = "retry";
+            a.status = "retry";
+            return `fl-ratio-${cell}`;
+          }
+        }
+      }
+    if (p.ratioTables) a.ratioVersion = 1;
+    return "";
+  }
   function workshopMarkup(l) {
     const w = l.workshop;
     if (!w) return "";
-    return `<section class="fl-workshop-intro"><div class="fl-workshop-goal"><h2>Lesson ${e(l.id)}: ${e(l.title)}</h2><p>${e(w.goal)}</p></div><ol class="fl-learning-sequence" aria-label="Learning sequence"><li>See an example</li><li>Try with guidance</li><li>Practice independently</li><li>Repair & apply</li></ol><details class="fl-model-lesson" ${level === "workshop" ? "open" : ""}><summary>Learn with a visual model and worked example</summary><div class="fl-model-lesson-grid">${window.FluencyModels.render(w.model, "Worked-example model · different from your practice tasks")}<div class="fl-example-lesson"><h3>A worked example</h3><p>${e(w.example.prompt)}</p><ol>${w.example.steps.map((step) => `<li>${e(step)}</li>`).join("")}</ol><p class="fl-worked-result"><strong>Result:</strong> ${e(w.example.answer)}</p><aside><strong>Watch for this mistake</strong><p>${e(w.misconception.claim)}</p><p>${e(w.misconception.repair)}</p></aside></div></div><div class="fl-model-lesson-footer"><p>Try the first two tasks with the steps. Then try four new problems, repair an error, and apply the idea.</p>${button("begin", "Start practicing")}</div></details>${level !== "workshop" ? button("workshop", "Open the complete lesson workshop") : ""}</section>`;
+    return `<section class="fl-workshop-intro"><div class="fl-workshop-goal"><h2>Lesson ${e(l.id)}: ${e(l.title)}</h2><p>${e(w.goal)}</p></div><ol class="fl-learning-sequence" aria-label="Learning sequence"><li>See an example</li><li>Try with guidance</li><li>Practice independently</li><li>Repair & apply</li></ol><details class="fl-model-lesson" ${level === "workshop" ? "open" : ""}><summary>Learn with a visual model and worked example</summary><div class="fl-model-lesson-grid">${w.ratioTables ? ratioTablesMarkup(w, {}, "key") : window.FluencyModels.render(w.model, "Worked-example model · different from your practice tasks")}<div class="fl-example-lesson"><h3>A worked example</h3><p>${e(w.example.prompt)}</p><ol>${w.example.steps.map((step) => `<li>${e(step)}</li>`).join("")}</ol><p class="fl-worked-result"><strong>Result:</strong> ${e(w.example.answer)}</p><aside><strong>Watch for this mistake</strong><p>${e(w.misconception.claim)}</p><p>${e(w.misconception.repair)}</p></aside></div></div><div class="fl-model-lesson-footer"><p>Try the first two tasks with the steps. Then try four new problems, repair an error, and apply the idea.</p>${button("begin", "Start practicing")}</div></details>${level !== "workshop" ? button("workshop", "Open the complete lesson workshop") : ""}</section>`;
   }
   function workshopSheet(l, key = false) {
     const w = l.workshop,
@@ -274,7 +336,7 @@ window.FluencyStudio = (() => {
     const header = (page, total) =>
       `<div class="sheet-meta"><span>EDUWONDERLAB · GRADE 6 LESSON WORKSHOP</span><span>${key ? "SEPARATE WORKED KEY" : "STUDENT PRACTICE"} · ${page}/${total}</span></div><h2>Lesson ${e(l.id)}: ${e(l.title)}</h2><p>${e(w.goal)}</p>`;
     const pages = [
-      `<section class="sheet fl-workshop-sheet fl-teaching-sheet">${header(1, 9)}<h3>Learn with a model</h3>${window.FluencyModels.render(w.model, "Model for the worked example")}<h3>Worked example: ${e(w.example.prompt)}</h3><ol>${w.example.steps.map((step) => `<li>${e(step)}</li>`).join("")}</ol><p><strong>Result:</strong> ${e(w.example.answer)}</p><div class="support-box"><strong>Useful words</strong><p>${l.vocabulary.map((v) => `${e(v.term)}: ${e(v.def)}`).join("<br>")}</p><strong>Explain:</strong><p>${e(l.frame)}</p></div><footer>This example is solved for learning. The following pages contain new practice.</footer></section>`,
+      `<section class="sheet fl-workshop-sheet fl-teaching-sheet">${header(1, 9)}<h3>Learn with a model</h3>${w.ratioTables ? ratioTablesMarkup(w, {}, "key") : window.FluencyModels.render(w.model, "Model for the worked example")}<h3>Worked example: ${e(w.example.prompt)}</h3><ol>${w.example.steps.map((step) => `<li>${e(step)}</li>`).join("")}</ol><p><strong>Result:</strong> ${e(w.example.answer)}</p><div class="support-box"><strong>Useful words</strong><p>${l.vocabulary.map((v) => `${e(v.term)}: ${e(v.def)}`).join("<br>")}</p><strong>Explain:</strong><p>${e(l.frame)}</p></div><footer>This example is solved for learning. The following pages contain new practice.</footer></section>`,
     ];
     for (let i = 0; i < items.length; i++) {
       pages.push(
@@ -282,7 +344,7 @@ window.FluencyStudio = (() => {
           .slice(i, i + 1)
           .map(
             (p, j) =>
-              `<article class="paper-task"><h3>${i + j + 1}. ${e(p.label)}</h3><p>${e(p.prompt)}</p>${p.options ? `<p>${p.options.map((o) => `□ ${e(o)}`).join(" &nbsp; ")}</p>` : ""}${i < 6 ? window.FluencyModels.render(p.model, "Model for this problem") : ""}${key ? `<div class="key-answer"><strong>${e(p.answer)}</strong><p>${e(p.explanation)}</p></div>` : `${p.guidance?.length ? `<ol class="fl-print-guidance">${p.guidance.map((step) => `<li>${e(step)}</li>`).join("")}</ol>` : ""}${workGrid()}`}</article>`,
+              `<article class="paper-task"><h3>${i + j + 1}. ${e(p.label)}</h3><p>${e(p.prompt)}</p>${p.options ? `<p>${p.options.map((o) => `□ ${e(o)}`).join(" &nbsp; ")}</p>` : ""}${p.ratioTables ? ratioTablesMarkup(p, {}, key ? "key" : "print") : i < 6 ? window.FluencyModels.render(p.model, "Model for this problem") : ""}${key ? `<div class="key-answer"><strong>${e(p.answer)}</strong><p>${e(p.explanation)}</p></div>` : `${p.guidance?.length ? `<ol class="fl-print-guidance">${p.guidance.map((step) => `<li>${e(step)}</li>`).join("")}</ol>` : ""}${p.ratioTables ? '<div class="fl-ratio-explain">Explain the scale factor and use a table row to justify your answer.<br><br><br></div>' : workGrid()}`}</article>`,
           )
           .join(
             "",
@@ -1956,6 +2018,7 @@ window.FluencyStudio = (() => {
       ${p.model ? `<div class="fl-task-model">${i < 2 ? window.FluencyModels.render(p.model, p.modelCaption) : `<details><summary>Open a visual model</summary>${window.FluencyModels.render(p.model, p.modelCaption)}</details>`}</div>` : ""}
       ${p.guidance?.length ? `<aside class="fl-guided-steps"><h3>Work through these steps</h3><ol>${p.guidance.map((step) => `<li>${e(step)}</li>`).join("")}</ol></aside>` : ""}
       <form id="fl-answer-form" data-item="${i}" novalidate>
+        ${ratioTablesMarkup(p, a)}
         ${kind !== "choice" ? `<label for="fl-response">${answerLabel}</label>` : ""}
         <p class="fl-field-help" id="fl-answer-help">${needsReview ? "Use words, numbers, an equation, or a description of your model. You will compare your reasoning with a worked example." : kind === "choice" ? "Choose one response, then explain why it fits the question." : kind === "number" ? "Enter just the value. Fractions use /, mixed numbers use a space, and percents use %. Follow any form requested in the question." : "Keep signs and order. Put extra explanation in the reasoning box below."}</p>
         ${kind === "choice" ? `<fieldset class="fl-choice-group" aria-describedby="fl-answer-help fl-feedback"><legend>Choose your answer</legend>${p.options.map((option, j) => `<label for="${j === 0 ? "fl-response" : "fl-choice-" + j}"><input type="radio" id="${j === 0 ? "fl-response" : "fl-choice-" + j}" name="response" value="${e(option)}" ${a.text === option ? "checked" : ""}>${e(option)}</label>`).join("")}</fieldset>` : `<textarea id="fl-response" name="response" rows="${needsReview ? 3 : 2}" maxlength="1500" aria-describedby="fl-answer-help fl-feedback" ${a.tone === "retry" ? 'aria-invalid="true"' : ""}>${e(a.text)}</textarea>`}
@@ -1983,7 +2046,7 @@ window.FluencyStudio = (() => {
       ${a.hints ? `<aside class="fl-hints" aria-label="Hints"><h3>Start here</h3><p>${e(hints[0])}</p>${a.hints > 1 ? `<h3>Set it up</h3><p>${e(hints[1])}</p>` : ""}</aside>` : ""}
       <div id="fl-sketch" class="fl-sketch" ${a.scratchOpen ? "" : "hidden"}><div class="fl-sketch-tools" role="group" aria-label="Sketch tools">${button("pen", "Pen", 'aria-pressed="true"')}${button("eraser", "Eraser", 'aria-pressed="false"')}${button("undo", "Undo stroke")}${button("clear-sketch", "Clear drawing")}</div><canvas id="fl-canvas" aria-label="Optional drawing area. You may type the same work in the answer or reasoning box."></canvas><p>Sketch with a mouse, touch, or pen. Typing your work above is an equivalent option. Drawings stay with this task.</p></div>
       <div class="fl-example-control">${button("example", a.revealed ? "Hide worked example" : "Show worked example", `aria-expanded="${a.revealed}" aria-controls="fl-example"`)}</div>
-      <section id="fl-example" class="fl-example" ${a.revealed ? "" : "hidden"} aria-label="Worked example"><h3>Compare the reasoning</h3><p class="fl-example-answer">${e(p.answer)}</p>${p.steps ? `<ol class="fl-solution-steps">${p.steps.map((step) => `<li>${e(step)}</li>`).join("")}</ol>` : `<p>${e(p.explanation)}</p>`}<label for="fl-reflection">What matches, or what would you change?</label><textarea id="fl-reflection" maxlength="1500" rows="3" placeholder="I checked… / I changed… because…">${e(a.reflection)}</textarea><p class="fl-field-help">Check the calculation or claim, the explanation, and any units. Different valid methods are welcome. A teacher or partner can help you review.</p>${button("reviewed", "Record my self-review")}</section>
+      <section id="fl-example" class="fl-example" ${a.revealed ? "" : "hidden"} aria-label="Worked example"><h3>Compare the reasoning</h3>${ratioTablesMarkup(p, {}, "key")}<p class="fl-example-answer">${e(p.answer)}</p>${p.steps ? `<ol class="fl-solution-steps">${p.steps.map((step) => `<li>${e(step)}</li>`).join("")}</ol>` : `<p>${e(p.explanation)}</p>`}<label for="fl-reflection">What matches, or what would you change?</label><textarea id="fl-reflection" maxlength="1500" rows="3" placeholder="I checked… / I changed… because…">${e(a.reflection)}</textarea><p class="fl-field-help">Check the calculation or claim, the explanation, and any units. Different valid methods are welcome. A teacher or partner can help you review.</p>${button("reviewed", "Record my self-review")}</section>
       ${p.frame ? `<p class="fl-language-frame"><strong>Explain your thinking:</strong> ${e(p.frame)}</p>` : ""}
       <fieldset class="fl-confidence"><legend>What do you need next?</legend>${[
         ["ready", "I can explain it"],
@@ -2205,10 +2268,10 @@ window.FluencyStudio = (() => {
       a.strokes.length
         ? `<svg viewBox="0 0 700 240" role="img" aria-label="Saved sketch" style="background:white;border:1px solid #abc;width:100%;max-height:240px">${a.strokes.map((st) => (st.points.length === 1 ? `<circle cx="${(st.points[0][0] * 700).toFixed(1)}" cy="${(st.points[0][1] * 240).toFixed(1)}" r="${st.tool === "eraser" ? 11 : 1.5}" fill="${st.tool === "eraser" ? "white" : "#075e60"}"/>` : `<polyline points="${st.points.map((pt) => `${(pt[0] * 700).toFixed(1)},${(pt[1] * 240).toFixed(1)}`).join(" ")}" fill="none" stroke="${st.tool === "eraser" ? "white" : "#075e60"}" stroke-width="${st.tool === "eraser" ? 22 : 3}" stroke-linecap="round" stroke-linejoin="round"/>`)).join("")}</svg>`
         : "";
-    const html = `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>My Grade 6 practice · ${e(lessonId)}</title><style>body{font:17px/1.6 system-ui,sans-serif;max-width:800px;margin:32px auto;padding:0 24px;color:#152c40}h1{font:32px Georgia,serif}article{border-top:1px solid #bbc;padding:20px 0;break-inside:avoid}p{white-space:pre-wrap}small{color:#46596b}@media print{body{margin:0}article{break-inside:avoid}}</style><h1>My Grade 6 practice</h1><p>Lesson ${e(l.id)}: ${e(l.title)}<br>${e(levels[level])}</p><p><small>This is a practice record. Checked answers, supported answers, and self-reviews are different kinds of evidence; this record is not a grade.</small></p>${items
+    const html = `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>My Grade 6 practice · ${e(lessonId)}</title><style>body{font:17px/1.6 system-ui,sans-serif;max-width:800px;margin:32px auto;padding:0 24px;color:#152c40}h1{font:32px Georgia,serif}article{border-top:1px solid #bbc;padding:20px 0;break-inside:avoid}p{white-space:pre-wrap}small{color:#46596b}table{border-collapse:collapse;width:100%;margin:1em 0}th,td{border:1px solid #789;padding:10px;text-align:left}caption{text-align:left;font-weight:bold}@media print{body{margin:0}article{break-inside:avoid}}</style><h1>My Grade 6 practice</h1><p>Lesson ${e(l.id)}: ${e(l.title)}<br>${e(levels[level])}</p><p><small>This is a practice record. Checked answers, supported answers, and self-reviews are different kinds of evidence; this record is not a grade.</small></p>${items
       .map((p, i) => {
         const a = set.answers[i];
-        return `<article><h2>${i + 1}. ${e(p.label)}</h2><p>${e(p.prompt)}</p><p><b>Status:</b> ${e(statusLabel[a.status])}</p><p><b>My response:</b> ${e(a.text || "Not entered")}</p>${a.reasoning ? `<p><b>My reasoning:</b> ${e(a.reasoning)}</p>` : ""}${a.reflection ? `<p><b>My reflection:</b> ${e(a.reflection)}</p>` : ""}${sketch(a)}</article>`;
+        return `<article><h2>${i + 1}. ${e(p.label)}</h2><p>${e(p.prompt)}</p><p><b>Status:</b> ${e(statusLabel[a.status])}</p>${ratioTablesMarkup(p, a, "saved")}<p><b>My response:</b> ${e(a.text || "Not entered")}</p>${a.reasoning ? `<p><b>My reasoning:</b> ${e(a.reasoning)}</p>` : ""}${a.reflection ? `<p><b>My reflection:</b> ${e(a.reflection)}</p>` : ""}${sketch(a)}</article>`;
       })
       .join("")}</html>`;
     const url = URL.createObjectURL(new Blob([html], { type: "text/html;charset=utf-8" }));
@@ -2368,6 +2431,11 @@ window.FluencyStudio = (() => {
       return;
     }
     if (act === "reviewed") {
+      const invalid = checkRatioTables(problems(byId[lessonId])[currentSet().active], a);
+      if (invalid) {
+        renderTask(invalid);
+        return;
+      }
       if (!a.text.trim() || a.reflection.trim().length < 12) {
         a.message =
           "Enter your own attempt and a reflection that says what you checked or changed.";
@@ -2408,11 +2476,20 @@ window.FluencyStudio = (() => {
       field =
         event.target.name === "response" && event.target.type === "radio"
           ? "text"
-          : fields[event.target.id];
+          : event.target.dataset.ratioCell
+            ? "ratioCells"
+            : fields[event.target.id];
     if (!field) return;
     const a = currentSet().answers[currentSet().active];
-    a[field] = event.target.value.slice(0, 1500);
-    if (field === "text" || (field === "reflection" && a.status === "reviewed")) {
+    if (field === "ratioCells") {
+      a.ratioCells[event.target.dataset.ratioCell] = event.target.value.slice(0, 120);
+      a.ratioVersion = 0;
+    } else a[field] = event.target.value.slice(0, 1500);
+    if (
+      field === "text" ||
+      field === "ratioCells" ||
+      (field === "reflection" && a.status === "reviewed")
+    ) {
       a.status = a.text.trim() ? "draft" : "unstarted";
       a.message = "";
       a.tone = "";
@@ -2468,6 +2545,11 @@ window.FluencyStudio = (() => {
       a.message = "Enter your answer or an initial idea first. A hint can help you start.";
       a.tone = "retry";
       renderTask("fl-response");
+      return;
+    }
+    const invalid = checkRatioTables(p, a);
+    if (invalid) {
+      renderTask(invalid);
       return;
     }
     const result = checkAnswerMatch(a.text, p.answer, p);

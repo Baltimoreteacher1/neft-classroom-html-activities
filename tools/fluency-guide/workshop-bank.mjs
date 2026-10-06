@@ -2145,6 +2145,204 @@ for (const [id, mixed] of [
   );
 }
 
+// Ratio tables are student work, not merely illustrations beside an answer box.
+const ratioTable = (title, headers, rows) => ({ title, headers, rows });
+function ratioTablesFor(id, p) {
+  const m = p.model;
+  if (id === "3-1") {
+    const b = p.prompt.includes("all counters") ? m.a + m.b : m.b;
+    return [
+      ratioTable(
+        "Counter collections",
+        ["Blue counters", p.prompt.includes("all counters") ? "All counters" : "Gold counters"],
+        [
+          [m.a, b],
+          [2 * m.a, 2 * b],
+          [3 * m.a, 3 * b],
+        ],
+      ),
+    ];
+  }
+  if (id === "3-4") {
+    const k = m.points[0][1],
+      x = Number(p.answer) / k;
+    return [
+      ratioTable(
+        "Points to plot",
+        ["x (horizontal)", "y (vertical)"],
+        [
+          [1, k],
+          [2, 2 * k],
+          [x, x * k],
+        ],
+      ),
+    ];
+  }
+  if (id === "3-5")
+    return m.rows.map(([pack, n, c]) =>
+      ratioTable(
+        `Pack ${pack}`,
+        ["Markers", "Cost ($)"],
+        [
+          [n, c],
+          [1, c / n],
+          [2, (2 * c) / n],
+        ],
+      ),
+    );
+  const rows = m.rows.map((row) => row.map((v) => (v === "?" ? Number(p.answer) : v)));
+  if (id === "3-2") rows.push([2, 2 * Number(p.answer)]);
+  else
+    rows.splice(
+      1,
+      0,
+      rows[0].map((v) => 2 * v),
+    );
+  return [ratioTable("Equivalent quantities", m.headers, rows)];
+}
+const ratioTransfers = {
+  "3-1": [
+    ratioTable(
+      "Shoe choices",
+      ["Sneakers", "Other shoes"],
+      [
+        [12, 8],
+        [24, 16],
+        [36, 24],
+      ],
+    ),
+    ratioTable(
+      "Part and whole",
+      ["Sneakers", "All students"],
+      [
+        [12, 20],
+        [24, 40],
+        [36, 60],
+      ],
+    ),
+  ],
+  "3-2": [
+    ratioTable(
+      "Cycling at a constant rate",
+      ["Time (hours)", "Distance (miles)"],
+      [
+        [3, 45],
+        [1, 15],
+        [5, 75],
+      ],
+    ),
+  ],
+  "3-3": [
+    ratioTable(
+      "Recipe batches",
+      ["Flour", "Sugar"],
+      [
+        [3, 2],
+        [6, 4],
+        [12, 8],
+      ],
+    ),
+  ],
+  "3-4": [
+    ratioTable(
+      "Graph coordinates",
+      ["x (horizontal)", "y (vertical)"],
+      [
+        [2, 6],
+        [4, 12],
+        [6, 18],
+      ],
+    ),
+  ],
+  "3-5": [
+    ratioTable(
+      "Store A",
+      ["Rice (kg)", "Cost ($)"],
+      [
+        [3, 12],
+        [1, 4],
+        [2, 8],
+      ],
+    ),
+    ratioTable(
+      "Store B",
+      ["Rice (kg)", "Cost ($)"],
+      [
+        [5, 17.5],
+        [1, 3.5],
+        [2, 7],
+      ],
+    ),
+  ],
+  "3-6": [
+    ratioTable(
+      "Feet to inches",
+      ["Feet", "Inches"],
+      [
+        [1, 12],
+        [2, 24],
+        [4, 48],
+      ],
+    ),
+  ],
+  "3-7": [
+    ratioTable(
+      "Screen width",
+      ["Inches", "Centimeters"],
+      [
+        [1, 2.54],
+        [2, 5.08],
+        [10, 25.4],
+      ],
+    ),
+  ],
+};
+for (const id of Object.keys(ratioTransfers)) {
+  const w = bank[id];
+  const exTables = ratioTablesFor(id, w.example);
+  w.ratioTables = exTables;
+  w.strategy = [
+    "Label the two quantities and their units. Record a known pair in the first row.",
+    "Build equivalent rows by multiplying or dividing BOTH quantities by the same factor.",
+    "Use a row of your table to answer. Explain the scale factor and check the units.",
+  ];
+  w.goal = w.goal.replace(/\.$/, " with a ratio table.");
+  w.example.steps = [
+    `Label the columns. Enter the known pair: ${exTables.map((t) => `${t.title}: ${t.rows[0][0]} ${t.headers[0]} and ${t.rows[0][1]} ${t.headers[1]}`).join("; ")}.`,
+    exTables
+      .map(
+        (t) =>
+          `${t.title}: from the first row, ${t.rows
+            .slice(1)
+            .map(
+              (row, i) =>
+                `${row[0] >= t.rows[0][0] ? `multiply both quantities by ${fmt(row[0] / t.rows[0][0])}` : `divide both quantities by ${fmt(t.rows[0][0] / row[0])}`} for row ${i + 2}`,
+            )
+            .join("; ")}.`,
+      )
+      .join(" "),
+    `Read the needed row and label your answer. ${w.example.steps.at(-1)}`,
+  ];
+  w.tasks.forEach((p, i) => {
+    p.ratioTables = i === 7 ? ratioTransfers[id] : i === 6 ? exTables : ratioTablesFor(id, p);
+    p.ratioTables = p.ratioTables.map((t) => ({ ...t, givenRows: i < 2 ? 1 : 0 }));
+    const anchor = ["3-6", "3-7"].includes(id) && i < 6 && p.model.rows[1][0] === "?" ? 1 : 0;
+    const directions = p.ratioTables
+      .map(
+        (t) =>
+          `${t.title}: use ${t.headers[anchor]} values ${t.rows.map((r) => fmt(r[anchor])).join(", ")}`,
+      )
+      .join(". ");
+    p.tableDirections = `Build each ratio table in the row order shown. ${directions}. Complete both columns; then use the table to answer the question.`;
+    p.prompt = `${p.prompt} Use your ratio table as evidence.`;
+    p.guidance = i < 2 ? w.strategy : [];
+    p.hints = [w.strategy[0], w.strategy[1]];
+    p.steps = [...w.strategy, p.explanation];
+    p.frame =
+      "My table shows ___ pairs with ___. I multiplied/divided both quantities by ___, so ___.";
+  });
+}
+
 export const workshops = bank;
 export function validateWorkshops(ids) {
   const errors = [];

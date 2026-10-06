@@ -94,3 +94,12 @@ for(const [label,url,studentPath,expected]of[
   const h=harness({url:url+'?unused=1#lesson=3-2&level=core&mode=labs',data:{...DATA,studentPath}});h.api.route();await h.api.copyLink(true);const copied=new URL(h.copied());
   assert.equal(copied.href.split('#')[0],expected);const hash=new URLSearchParams(copied.hash.slice(1));assert.equal(hash.get('lesson'),'3-2');assert.equal(hash.get('level'),'core');assert.equal(hash.get('activity'),'labs');assert.equal(hash.get('lab'),'selected-investigation');
 });
+
+test('ratio cell work survives save and restore with bounded fields',()=>{
+ const h=harness();h.api.putFirst({ratioCells:{'0-1-0':'3/2','0-1-1':'4.5'},ratioVersion:1});h.api.save();
+ const next=harness({raw:h.stored()});next.api.restore();assert.equal(next.api.first().ratioCells['0-1-0'],'3/2');assert.equal(next.api.first().ratioCells['0-1-1'],'4.5');assert.equal(next.api.first().ratioVersion,1);
+});
+test('old ratio task status is reopened while the previous answer is preserved',()=>{
+ const h=harness({url:'file:///tmp/guide/index.html#lesson=3-3&level=workshop'});h.api.route();h.api.putFirst({text:'12',status:'checked'});
+ assert.equal(h.api.first().status,'draft');assert.equal(h.api.first().text,'12');
+});
