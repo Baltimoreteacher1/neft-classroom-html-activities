@@ -10,6 +10,7 @@
  * This is the one translation, so a problem reads the same on screen, at the
  * Apply Day table and on paper.
  */
+import { canBuildRatioTable } from "@eduwonderlab/engine/core/small-group-ratio-builder.js";
 
 /** Studio notation → print text: {3/4} → 3/4, 2{1/2} → 2 1/2, ⟶ → →. */
 export const plainMath = (s) =>
@@ -37,7 +38,7 @@ export function stepText(steps, es = false) {
  * one-answer `guided-fill`. Its figure travels as `buildFigure`, a Build
  * figure spec the caller draws with engine/core/small-group-build-figures.js.
  */
-export function toPracticeItem(it) {
+export function toPracticeItem(it, { blankTable = false } = {}) {
   const common = {
     stem: plainMath(it.problem),
     stemEs: plainMath(it.problemEs),
@@ -45,7 +46,7 @@ export function toPracticeItem(it) {
     hintsEs: it.hintEs ? [plainMath(it.hintEs)] : [],
     explanation: stepText(it.steps, false),
     explanationEs: stepText(it.steps, true),
-    ...(it.figure ? { buildFigure: it.figure } : {}),
+    ...(it.figure ? { buildFigure: blankTable ? { ...it.figure, blank: true } : it.figure } : {}),
   };
   if (Array.isArray(it.choices))
     return {
@@ -57,6 +58,15 @@ export function toPracticeItem(it) {
       choiceFeedback: (it.choiceWhy || []).map(plainMath),
     };
   return { type: "guided-fill", ...common, answer: plainMath(it.answer) };
+}
+
+/**
+ * True when the studio hands this problem's ratio table to the student to
+ * build (ratio-model lessons, after Practice Together) — so the printed sheet
+ * gives them an empty frame instead of the drawn table.
+ */
+export function studentBuildsTable(it, model) {
+  return (it.model || model) === "ratioTable" && canBuildRatioTable(it.figure);
 }
 
 /**

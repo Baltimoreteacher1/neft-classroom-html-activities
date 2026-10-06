@@ -37,7 +37,7 @@
  * make the two packets print the same problems, and both would still build.
  */
 
-import { toPracticeItem } from "../../tools/lib/small-group-practice-items.mjs";
+import { studentBuildsTable, toPracticeItem } from "../../tools/lib/small-group-practice-items.mjs";
 
 /** An item is printable when it carries something to render. */
 export function printable(pool) {
@@ -180,7 +180,7 @@ export function smallGroupReserve(cfg, kind) {
           ...authored.check,
           ...(cfg.launch.build?.lessons || []).map((l) => ({ ...l.check, lesson: l.short })),
           ...(authored.review || []),
-        ].map(toPracticeItem),
+        ].map((it) => toPracticeItem(it, { blankTable: studentBuildsTable(it, authored.model) })),
         "practice",
       );
     return tag(
@@ -188,7 +188,7 @@ export function smallGroupReserve(cfg, kind) {
         ...(cfg.launch.build?.tryIt ? [cfg.launch.build.tryIt] : []),
         ...authored.check,
         ...(authored.stretch ? [authored.stretch] : []),
-      ].map(toPracticeItem),
+      ].map((it) => toPracticeItem(it, { blankTable: studentBuildsTable(it, authored.model) })),
       "practice",
     );
   }

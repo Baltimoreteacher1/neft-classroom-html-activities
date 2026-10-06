@@ -179,7 +179,9 @@ export function applyStudioBuild(config, { variant, data, baseTitle, applyProble
   const practiceData = loadPractice(config.lessonId.replace(/-group[12]$/, ""));
   const practice = practiceData[variant];
   if (!practice) throw new Error(`${config.lessonId}: practice data has no ${variant} block`);
-  config.launch.practice = practice;
+  config.launch.practice = practiceData.model
+    ? { ...practice, model: practiceData.model }
+    : practice;
   // The studio's Apply step is the base lesson's Reveal problem — unless the
   // practice data records why that problem does not fit the small group.
   if (applyProblem && practiceData.apply?.use !== false) config.revealWordProblem = applyProblem;
@@ -202,8 +204,12 @@ export function applyCatchupBuild(config, { sources, range }) {
   for (const l of lessons) l.example.titleEs = `Lección ${l.short} · ${l.example.titleEs}`;
   // Practice: each lesson in the band contributes its two catch-up problems and
   // its check, labelled with the lesson they practise.
-  const tagged = (s, item) => ({ ...item, lesson: s.dot });
-  const practiceData = sources.map((s) => ({ s, p: loadPractice(s.id).catchup }));
+  const tagged = (s, item) => ({ ...item, lesson: s.dot, ...(s.model ? { model: s.model } : {}) });
+  const practiceData = sources.map((s) => {
+    const data = loadPractice(s.id);
+    s.model = data.model;
+    return { s, p: data.catchup };
+  });
   const single = sources.length === 1;
   config.launch = config.launch || {};
   config.launch.practice = {

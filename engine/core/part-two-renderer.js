@@ -45,7 +45,7 @@ import { augmentVocabWithGlossary } from "./math-glossary.js";
 import { renderMathNotesStep } from "./notebook-checkpoint.js";
 import { resolveObjectiveVisuals } from "./objective-visuals.js";
 import { ensureCanvasBridge } from "./scorm-bridge.js";
-import { FIGURE_CSS, figureMarkup } from "./small-group-build-figures.js";
+import { ALL_FIGURE_CSS, figureMarkup } from "./small-group-build-figures.js";
 import { mountStuckSupport } from "./stuck-support.js";
 import { isTeacherMode } from "./teacher-mode.js";
 import { hasRealVocabImage, resolveVocabImage, vocabImageAlt } from "./vocab-images.js";
@@ -777,7 +777,7 @@ function appendBankFigure(slot, item) {
     figureCssMounted = true;
     const style = document.createElement("style");
     style.id = "part-two-figure-css";
-    style.textContent = FIGURE_CSS;
+    style.textContent = ALL_FIGURE_CSS;
     document.head.append(style);
   }
   const fig = el("div", "problem-item-figure");

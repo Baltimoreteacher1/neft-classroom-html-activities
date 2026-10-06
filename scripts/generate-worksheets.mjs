@@ -26,9 +26,10 @@
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { FIGURE_CSS } from "@eduwonderlab/engine/core/small-group-build-figures.js";
+import { ALL_FIGURE_CSS } from "@eduwonderlab/engine/core/small-group-build-figures.js";
 import { LESSONS_DIR as LESSONS, listLessonDirs } from "../tools/lib/curriculum-source.mjs";
 import {
+  studentBuildsTable,
   togetherToPracticeItem,
   toPracticeItem,
 } from "../tools/lib/small-group-practice-items.mjs";
@@ -95,7 +96,9 @@ function setAEditions(cfg) {
   if (authored && kind !== "core" && kind !== "partTwo") {
     const pool = [
       ...(authored.together || []).map(togetherToPracticeItem),
-      ...(authored.onMyOwn || []).map(toPracticeItem),
+      ...(authored.onMyOwn || []).map((it) =>
+        toPracticeItem(it, { blankTable: studentBuildsTable(it, authored.model) }),
+      ),
     ];
     const edition = {
       group1: { label: "Group 1", note: "Supported practice", supported: true },
@@ -250,7 +253,7 @@ export function buildWorksheet(cfg, { key = false, set = "A" } = {}) {
 <link href="/assets/fonts/worksheet-pages.css" rel="stylesheet" />
 <style>
 ${WORKSHEET_CSS}
-${EDITORIAL_OVERRIDES}${pages.some((p) => p.includes('class="sgf ')) ? `\n${FIGURE_CSS}` : ""}
+${EDITORIAL_OVERRIDES}${pages.some((p) => p.includes('class="sgf ')) ? `\n${ALL_FIGURE_CSS}` : ""}
 </style>
 </head>
 <body>

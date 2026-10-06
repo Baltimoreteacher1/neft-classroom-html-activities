@@ -243,7 +243,18 @@ function htmlTable(f) {
  * ratio, in header order); `scales[i]` labels the move from ratio i to i + 1
  * ("× 3", "÷ 2"); a "?" cell is the value the student finds.
  */
-function ratioTable(f) {
+function ratioTable(spec) {
+  // `blank` prints the frame a student fills in: row labels, empty cells, and
+  // a line on each arrow for the × or ÷ they choose.
+  const f = spec.blank
+    ? {
+        ...spec,
+        // One spare column, so there is room for a bridge step on paper.
+        rows: [...spec.rows, spec.rows[0]].slice(0, 5).map((col) => col.map(() => "")),
+        scales: spec.rows.slice(0, 4).map(() => "____"),
+        highlight: undefined,
+      }
+    : spec;
   const quantities = f.headers.length;
   const cols = f.rows.length;
   const labelW = Math.max(...f.headers.map((h) => textWidth(h, 15))) + 20;

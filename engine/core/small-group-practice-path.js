@@ -22,6 +22,7 @@ import {
   workedStep,
 } from "./small-group-build-section.js";
 import { makePulse } from "./small-group-engagement.js";
+import { canBuildRatioTable, ratioTableBuilder } from "./small-group-ratio-builder.js";
 import { celebrate, el, esc, esLane, framesRow, sectionHeading, speak } from "./small-group-ui.js";
 
 /** Plain text of a field in the student's language lane, for read-aloud. */
@@ -98,12 +99,16 @@ function scorer({ tally, events, standard }) {
  * mode "check"   — first try is recorded; hint after a miss; steps once answered.
  * mode "stretch" — like own, never counted toward progress.
  */
-function practiceCard(it, { n, key, store, score, mode, onAnswered }) {
+function practiceCard(it, { n, key, store, score, mode, onAnswered, model }) {
   const card = el("article", "sgb-ex sgp-card");
   card.dataset.mode = mode;
   card.appendChild(cardTitle(mode === "stretch" ? "Challenge" : `Problem ${n}`, it.lesson));
   card.appendChild(problemBox(it));
-  if (it.figure) card.appendChild(el("div", "sgb-figure sgp-figure", figure(it.figure)));
+  // Ratio lessons hand the table over once the group has worked two together:
+  // from here the student builds it (small-group-ratio-builder.js).
+  if ((it.model || model) === "ratioTable" && canBuildRatioTable(it.figure))
+    card.appendChild(ratioTableBuilder(it.figure, { key: `${key}-rt`, store }));
+  else if (it.figure) card.appendChild(el("div", "sgb-figure sgp-figure", figure(it.figure)));
 
   const feedback = el("p", "sgb-feedback");
   feedback.setAttribute("aria-live", "polite");
@@ -466,6 +471,7 @@ export function createOnMyOwnSection(config, ctx) {
         store: ctx.store,
         score,
         mode: "own",
+        model: p.model,
         onAnswered: () => {
           if (--left === 0) ctx.onDone?.();
         },
@@ -505,6 +511,7 @@ export function createExitCheckSection(config, state, ctx) {
         store,
         score,
         mode: "check",
+        model: p.model,
         onAnswered: () => {
           if (--left > 0) return;
           const firsts = p.check.map((_, j) => store?.get(`pc-${j}-first`));
@@ -557,7 +564,14 @@ export function createChallengeCard(config, ctx) {
     ),
   );
   section.appendChild(
-    practiceCard(it, { n: 1, key: "ps", store: ctx.store, score: scorer(ctx), mode: "stretch" }),
+    practiceCard(it, {
+      n: 1,
+      key: "ps",
+      store: ctx.store,
+      score: scorer(ctx),
+      mode: "stretch",
+      model: config.launch.practice.model,
+    }),
   );
   return section;
 }
