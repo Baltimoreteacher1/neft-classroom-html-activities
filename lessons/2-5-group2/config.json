@@ -663,6 +663,365 @@
       },
       "bigIdea": "The range depends on the two end values, so one extreme value can stretch it. The IQR uses the middle half, so it stays steady.",
       "bigIdeaEs": "El rango depende de los dos valores de los extremos, así que un valor extremo lo puede estirar. El RIC usa la mitad central, así que se mantiene estable."
+    },
+    "practice": {
+      "together": [
+        {
+          "problem": "Eight players scored 4, 5, 5, 6, 7, 8, 9 and 25 points. Find the range and the IQR. Which one better describes most of the data?",
+          "problemEs": "Ocho jugadores anotaron 4, 5, 5, 6, 7, 8, 9 y 25 puntos. Halla el rango y el RIC. ¿Cuál describe mejor la mayoría de los datos?",
+          "figure": {
+            "kind": "dotPlot",
+            "values": [
+              4,
+              5,
+              5,
+              6,
+              7,
+              8,
+              9,
+              25
+            ],
+            "min": 0,
+            "max": 26,
+            "label": "Points scored",
+            "caption": "Seven values are close. 25 is far away.",
+            "captionEs": "Siete valores están juntos. El 25 está lejos."
+          },
+          "steps": [
+            {
+              "ask": "Find the range.",
+              "askEs": "Halla el rango.",
+              "answer": "21",
+              "accept": [
+                "21"
+              ]
+            },
+            {
+              "ask": "Find Q1 from 4, 5, 5, 6 and Q3 from 7, 8, 9, 25.",
+              "askEs": "Halla Q1 con 4, 5, 5, 6 y Q3 con 7, 8, 9, 25.",
+              "answer": "Q1 = 5 and Q3 = 8.5",
+              "answerEs": "Q1 = 5 y Q3 = 8.5"
+            },
+            {
+              "ask": "Find the IQR.",
+              "askEs": "Halla el RIC.",
+              "answer": "3.5",
+              "accept": [
+                "3.5",
+                "3 1/2"
+              ]
+            },
+            {
+              "ask": "Which measure better describes most of the data?",
+              "askEs": "¿Qué medida describe mejor la mayoría de los datos?",
+              "answer": "The IQR, because 25 is an extreme value.",
+              "answerEs": "El RIC, porque 25 es un valor extremo."
+            }
+          ],
+          "answer": "The range is 21 and the IQR is 3.5. The IQR better describes most of the data.",
+          "answerEs": "El rango es 21 y el RIC es 3.5. El RIC describe mejor la mayoría de los datos."
+        },
+        {
+          "problem": "A data set has an IQR of 15 and a range of 40. Q1 is 22 and the least value is 10. Find Q3 and the greatest value.",
+          "problemEs": "Un conjunto de datos tiene un RIC de 15 y un rango de 40. Q1 es 22 y el valor menor es 10. Halla Q3 y el valor mayor.",
+          "figure": {
+            "kind": "numberLine",
+            "min": 10,
+            "max": 50,
+            "step": 1,
+            "labelEvery": 5,
+            "points": [
+              {
+                "value": 10,
+                "text": "least"
+              },
+              {
+                "value": 22,
+                "text": "Q1"
+              }
+            ],
+            "caption": "Count up from the least value and from Q1.",
+            "captionEs": "Cuenta hacia adelante desde el valor menor y desde Q1."
+          },
+          "steps": [
+            {
+              "ask": "Add the IQR to Q1. What is Q3?",
+              "askEs": "Suma el RIC a Q1. ¿Cuánto es Q3?",
+              "answer": "37",
+              "accept": [
+                "37"
+              ]
+            },
+            {
+              "ask": "Add the range to the least value. What is the greatest value?",
+              "askEs": "Suma el rango al valor menor. ¿Cuál es el valor mayor?",
+              "answer": "50",
+              "accept": [
+                "50"
+              ]
+            },
+            {
+              "ask": "Why do you add the IQR to Q1, and not to the least value?",
+              "askEs": "¿Por qué sumas el RIC a Q1, y no al valor menor?",
+              "answer": "The IQR is the distance from Q1 to Q3. The range is the distance from the least value to the greatest.",
+              "answerEs": "El RIC es la distancia de Q1 a Q3. El rango es la distancia del valor menor al mayor."
+            }
+          ],
+          "answer": "Q3 is 22 + 15 = 37. The greatest value is 10 + 40 = 50.",
+          "answerEs": "Q3 es 22 + 15 = 37. El valor mayor es 10 + 40 = 50."
+        }
+      ],
+      "onMyOwn": [
+        {
+          "problem": "Find the IQR of 2.5, 3, 4.5, 5, 6, 7.5, 8, 9.5.",
+          "problemEs": "Halla el RIC de 2.5, 3, 4.5, 5, 6, 7.5, 8, 9.5.",
+          "answer": "4",
+          "accept": [
+            "4"
+          ],
+          "hint": "There are 8 values, so each half has 4. Q1 and Q3 are each between two values.",
+          "hintEs": "Hay 8 valores, así que cada mitad tiene 4. Q1 y Q3 están cada uno entre dos valores.",
+          "steps": [
+            {
+              "do": "Find Q1 from the lower half.",
+              "doEs": "Halla Q1 con la mitad inferior.",
+              "math": "(3 + 4.5) ÷ 2 = 3.75"
+            },
+            {
+              "do": "Find Q3 from the upper half.",
+              "doEs": "Halla Q3 con la mitad superior.",
+              "math": "(7.5 + 8) ÷ 2 = 7.75"
+            },
+            {
+              "do": "Subtract Q1 from Q3.",
+              "doEs": "Resta Q1 de Q3.",
+              "math": "7.75 − 3.75 = 4"
+            }
+          ]
+        },
+        {
+          "problem": "A box plot has Q3 = 48 and an IQR of 17. What is Q1?",
+          "problemEs": "Un diagrama de caja tiene Q3 = 48 y un RIC de 17. ¿Cuánto es Q1?",
+          "answer": "31",
+          "accept": [
+            "31"
+          ],
+          "hint": "IQR = Q3 − Q1. Work backward from Q3.",
+          "hintEs": "RIC = Q3 − Q1. Trabaja hacia atrás desde Q3.",
+          "steps": [
+            {
+              "do": "Write the IQR equation.",
+              "doEs": "Escribe la ecuación del RIC.",
+              "math": "48 − Q1 = 17"
+            },
+            {
+              "do": "Work backward.",
+              "doEs": "Trabaja hacia atrás.",
+              "math": "48 − 17 = 31"
+            }
+          ],
+          "explain": "How did you use the IQR to find Q1?",
+          "explainEs": "¿Cómo usaste el RIC para hallar Q1?",
+          "modelExplanation": "The IQR is the distance from Q1 up to Q3. So Q1 is 17 less than Q3: 48 − 17 = 31. Check: 48 − 31 = 17.",
+          "modelExplanationEs": "El RIC es la distancia de Q1 hasta Q3. Así que Q1 es 17 menos que Q3: 48 − 17 = 31. Comprueba: 48 − 31 = 17."
+        },
+        {
+          "problem": "Two classes took a quiz. Class A: least 60, Q1 70, Q3 84, greatest 98. Class B: least 66, Q1 74, Q3 83, greatest 95. How much greater is Class A's IQR than Class B's?",
+          "problemEs": "Dos clases tomaron una prueba. Clase A: menor 60, Q1 70, Q3 84, mayor 98. Clase B: menor 66, Q1 74, Q3 83, mayor 95. ¿Cuánto mayor es el RIC de la clase A que el de la clase B?",
+          "answer": "5",
+          "accept": [
+            "5",
+            "5 points"
+          ],
+          "hint": "Find each class's IQR first. Ignore the least and greatest values.",
+          "hintEs": "Primero halla el RIC de cada clase. No uses el valor menor ni el mayor.",
+          "steps": [
+            {
+              "do": "Find Class A's IQR.",
+              "doEs": "Halla el RIC de la clase A.",
+              "math": "84 − 70 = 14"
+            },
+            {
+              "do": "Find Class B's IQR.",
+              "doEs": "Halla el RIC de la clase B.",
+              "math": "83 − 74 = 9"
+            },
+            {
+              "do": "Compare the two IQRs.",
+              "doEs": "Compara los dos RIC.",
+              "math": "14 − 9 = 5"
+            }
+          ]
+        },
+        {
+          "problem": "Data: 10, 11, 12, 13, 14, 15. A new value, 50, is added. Which measure changes more?",
+          "problemEs": "Datos: 10, 11, 12, 13, 14, 15. Se agrega un valor nuevo, 50. ¿Qué medida cambia más?",
+          "choices": [
+            "The range",
+            "The IQR",
+            "They change by the same amount."
+          ],
+          "choicesEs": [
+            "El rango",
+            "El RIC",
+            "Cambian en la misma cantidad."
+          ],
+          "correct": 0,
+          "choiceWhy": [
+            "",
+            "The IQR only goes from 3 to 4. The middle half barely moves.",
+            "The range grows by 35. The IQR grows by only 1."
+          ],
+          "choiceWhyEs": [
+            "",
+            "El RIC solo pasa de 3 a 4. La mitad central casi no se mueve.",
+            "El rango crece 35. El RIC crece solo 1."
+          ],
+          "hint": "Find the range and the IQR before and after you add 50.",
+          "hintEs": "Halla el rango y el RIC antes y después de agregar 50.",
+          "steps": [
+            {
+              "do": "Find the range before and after.",
+              "doEs": "Halla el rango antes y después.",
+              "math": [
+                "15 − 10 = 5",
+                "50 − 10 = 40"
+              ]
+            },
+            {
+              "do": "Find the IQR before and after.",
+              "doEs": "Halla el RIC antes y después.",
+              "math": [
+                "14 − 11 = 3",
+                "15 − 11 = 4"
+              ]
+            }
+          ],
+          "explain": "Why does 50 change the range so much but the IQR so little?",
+          "explainEs": "¿Por qué el 50 cambia tanto el rango pero tan poco el RIC?",
+          "modelExplanation": "The range uses the greatest value, so 50 makes it jump from 5 to 40. The IQR uses only the middle half, so it moves from 3 to 4.",
+          "modelExplanationEs": "El rango usa el valor mayor, así que el 50 lo hace saltar de 5 a 40. El RIC usa solo la mitad central, así que pasa de 3 a 4."
+        }
+      ],
+      "talk": {
+        "prompt": "A coach says the range shows how close together most players' scores are. Do you agree? Use the player who scored 25 to explain.",
+        "promptEs": "Un entrenador dice que el rango muestra qué tan juntos están los puntos de la mayoría de los jugadores. ¿Estás de acuerdo? Usa al jugador que anotó 25 para explicar.",
+        "frames": [
+          "I agree / disagree because the range ___.",
+          "The IQR is better for most of the data because ___."
+        ],
+        "framesEs": [
+          "Estoy / No estoy de acuerdo porque el rango ___.",
+          "El RIC es mejor para la mayoría de los datos porque ___."
+        ]
+      },
+      "check": [
+        {
+          "problem": "Find the IQR of 12, 14, 15, 17, 18, 20, 21, 45.",
+          "problemEs": "Halla el RIC de 12, 14, 15, 17, 18, 20, 21, 45.",
+          "answer": "6",
+          "accept": [
+            "6"
+          ],
+          "hint": "Each half has 4 values. The value 45 is in the upper half, but it is not a middle value.",
+          "hintEs": "Cada mitad tiene 4 valores. El 45 está en la mitad superior, pero no es un valor del medio.",
+          "steps": [
+            {
+              "do": "Find Q1 from the lower half.",
+              "doEs": "Halla Q1 con la mitad inferior.",
+              "math": "(14 + 15) ÷ 2 = 14.5"
+            },
+            {
+              "do": "Find Q3 from the upper half.",
+              "doEs": "Halla Q3 con la mitad superior.",
+              "math": "(20 + 21) ÷ 2 = 20.5"
+            },
+            {
+              "do": "Subtract Q1 from Q3.",
+              "doEs": "Resta Q1 de Q3.",
+              "math": "20.5 − 14.5 = 6"
+            }
+          ]
+        },
+        {
+          "problem": "Nina ran a race 7 times. Her times in seconds were 31, 33, 34, 35, 36, 38 and 52. Which measure best describes how spread out most of her times are?",
+          "problemEs": "Nina corrió una carrera 7 veces. Sus tiempos en segundos fueron 31, 33, 34, 35, 36, 38 y 52. ¿Qué medida describe mejor qué tan dispersos están la mayoría de sus tiempos?",
+          "choices": [
+            "The IQR, 5 seconds",
+            "The range, 21 seconds",
+            "The IQR, 21 seconds",
+            "The range, 5 seconds"
+          ],
+          "choicesEs": [
+            "El RIC, 5 segundos",
+            "El rango, 21 segundos",
+            "El RIC, 21 segundos",
+            "El rango, 5 segundos"
+          ],
+          "correct": 0,
+          "choiceWhy": [
+            "",
+            "The range is 21, but the slow time of 52 stretches it. Most times are close together.",
+            "21 is the range, 52 − 31. The IQR is 38 − 33 = 5.",
+            "5 is the IQR, not the range. The range is 52 − 31 = 21."
+          ],
+          "choiceWhyEs": [
+            "",
+            "El rango es 21, pero el tiempo lento de 52 lo estira. La mayoría de los tiempos están juntos.",
+            "21 es el rango, 52 − 31. El RIC es 38 − 33 = 5.",
+            "5 es el RIC, no el rango. El rango es 52 − 31 = 21."
+          ],
+          "hint": "One time is far from the rest. Which measure does it not stretch?",
+          "hintEs": "Un tiempo está lejos de los demás. ¿Qué medida no se estira por él?",
+          "steps": [
+            {
+              "do": "Find the range.",
+              "doEs": "Halla el rango.",
+              "math": "52 − 31 = 21"
+            },
+            {
+              "do": "Find the IQR.",
+              "doEs": "Halla el RIC.",
+              "math": [
+                "31, 33, 34 ⟶ 33",
+                "36, 38, 52 ⟶ 38",
+                "38 − 33 = 5"
+              ]
+            }
+          ]
+        }
+      ],
+      "stretch": {
+        "problem": "Eight values in order are 3, ?, 8, 10, 12, 15, 17, 20. The IQR is 10. Find the missing value.",
+        "problemEs": "Ocho valores en orden son 3, ?, 8, 10, 12, 15, 17, 20. El RIC es 10. Halla el valor que falta.",
+        "answer": "4",
+        "accept": [
+          "4"
+        ],
+        "hint": "Find Q3 first. Then use the IQR to find Q1.",
+        "hintEs": "Primero halla Q3. Luego usa el RIC para hallar Q1.",
+        "steps": [
+          {
+            "do": "Find Q3 from the upper half.",
+            "doEs": "Halla Q3 con la mitad superior.",
+            "math": "(15 + 17) ÷ 2 = 16"
+          },
+          {
+            "do": "Use the IQR to find Q1.",
+            "doEs": "Usa el RIC para hallar Q1.",
+            "math": "16 − 10 = 6"
+          },
+          {
+            "do": "Work backward to the missing value.",
+            "doEs": "Trabaja hacia atrás hasta el valor que falta.",
+            "math": [
+              "(? + 8) ÷ 2 = 6",
+              "6 × 2 = 12",
+              "12 − 8 = 4"
+            ]
+          }
+        ]
+      }
     }
   },
   "explore": {

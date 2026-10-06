@@ -232,33 +232,55 @@ const runtimeConfig = JSON.parse(
 );
 const { bootSmallGroup } = await import("@eduwonderlab/engine/core/small-group-renderer.js");
 bootSmallGroup(runtimeConfig);
-const firstGuided = document.querySelector("#sg-guided-practice .prob");
-assert.ok(
-  firstGuided?.querySelector(".sg-problem-visual, .sg-problem-model, .colmath"),
-  "guided problems need a model students can see or type into",
+// One path, six steps, in the taught order (docs/specs/small-group-practice-v1.md).
+const tabLabels = [...document.querySelectorAll("nav.sg-tabs [role=tab] .lbl")].map((n) =>
+  n.firstChild.textContent.trim(),
 );
-assert.ok(firstGuided?.querySelector(".sg-guided-steps"), "guided problems need fill-in steps");
-// 1-1 is a factor-tree lesson: its model must be typed-in, and a correct
-// model entry must auto-complete the matching guided step.
-const modelCells = firstGuided?.querySelectorAll(".sg-problem-model .sg-model-cell") || [];
-assert.ok(modelCells.length >= 2, "typed models need student input cells");
-const firstStepAnswer = runtimeConfig.parallelPractice[0].steps[0].answer;
-modelCells[0].value = String(firstStepAnswer);
-modelCells[0].dispatchEvent(new dom.window.Event("blur"));
-assert.ok(modelCells[0].classList.contains("ok"), "a correct model entry locks in");
-assert.ok(
-  firstGuided.querySelector(".sg-fill-step").classList.contains("complete"),
-  "a correct model entry completes the matching guided step",
+assert.deepEqual(
+  tabLabels,
+  ["Key Words", "Learn It", "Practice Together", "On My Own", "Check", "Apply"],
+  "the studio is one flat path: words → learn → together → own → check → apply",
 );
-// Layout contracts: mission caps More Practice; partner talk lives in Practice.
+assert.equal(document.querySelector(".sg-substeps"), null, "no second step strip inside a step");
+// Practice is the lesson's own authored practice, never the template bank.
+const practiceData = runtimeConfig.launch.practice;
+assert.ok(practiceData?.together?.length === 2, "the config carries authored practice");
+const togetherCards = document.querySelectorAll("#sg-together .sgp-together");
+assert.equal(togetherCards.length, 2, "Practice Together renders both authored problems");
 assert.ok(
-  document.querySelector("#sg-tab-more #sg-launch"),
-  "the mission briefing belongs at the end, in More Practice",
+  togetherCards[0].querySelector(".sgp-step-input"),
+  "every Together problem asks the student to type at least one step",
 );
-assert.ok(
-  document.querySelector("#sg-tab-practice #sg-talk"),
-  "partner talk belongs inside the Practice tab",
-);
+assert.ok(document.querySelector("#sg-own .sgp-talk .sg-frame"), "talk prompt with frames");
+const ownCards = document.querySelectorAll("#sg-own .sgp-card");
+assert.equal(ownCards.length, 4, "On My Own renders four authored problems");
+// A correct typed answer is accepted; a wrong one is not.
+const firstOwn = practiceData.onMyOwn.findIndex((it) => !it.choices);
+const ownCard = ownCards[firstOwn];
+const ownInput = ownCard.querySelector(".sgb-input");
+ownInput.value = "999999";
+ownCard.querySelector(".sgb-submit").click();
+assert.ok(!ownCard.classList.contains("is-right"), "a wrong answer is not accepted");
+assert.equal(ownCard.querySelector(".sgp-steps-btn").hidden, false, "a miss offers the steps");
+ownInput.value = practiceData.onMyOwn[firstOwn].accept[0];
+ownCard.querySelector(".sgb-submit").click();
+assert.ok(ownCard.classList.contains("is-right"), "the authored answer is accepted");
+// The check withholds hints until the student has tried.
+const checkCards = document.querySelectorAll("#sg-check .sgp-card");
+assert.equal(checkCards.length, 2, "Check renders two authored problems");
+assert.equal(checkCards[0].querySelector(".sgp-hint-btn").hidden, true, "no hint before a try");
+// The panels the audit removed stay removed.
+for (const gone of [
+  ".sg-pulse-card",
+  ".sg-another",
+  ".sg-consensus",
+  ".sg-coach",
+  "#sg-talk",
+  "#sg-launch",
+  ".sg-mastery",
+  "#sg-guided-practice",
+])
+  assert.equal(document.querySelector(gone), null, `${gone} is not part of the student path`);
 assert.equal(
   document.querySelector(".sg-design-lab"),
   null,

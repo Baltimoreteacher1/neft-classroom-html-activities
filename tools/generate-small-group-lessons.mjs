@@ -476,11 +476,9 @@ function buildGroup2(base, u, m) {
   out.themeEmoji = "\u{1F680}"; // 🚀
   out.timeEstimate = "~15–20 min";
   // NOT "in trickier cases". Harder numbers are more tedious, not more
-  // demanding, and this wording is load-bearing: successCriteria() in
-  // engine/core/small-group-mastery.js strips "I can" off this string and shows
-  // it to students as the "Do it" criterion, so "trickier cases" told every
-  // challenge group that the work ahead was bigger arithmetic. The real work
-  // this group does is the L4 "Prove it" band, and this now says so.
+  // demanding: this objective is shown to students, so "trickier cases" told
+  // every challenge group that the work ahead was bigger arithmetic. The real
+  // work this group does is proving and explaining, and this now says so.
   out.contentObjective = `I can ${lc1(skill)}, ${proveClause(skill)}`;
   out.languageObjective = `I can justify my answer to a skeptic and connect it to a second strategy or representation.`;
 
@@ -646,6 +644,7 @@ function reconcile(id, out, base) {
     variant: out.variant,
     data: loadBuild(base.lessonId),
     baseTitle: base.title,
+    applyProblem: base.revealWordProblem,
   });
 }
 
@@ -753,7 +752,12 @@ for (const baseId of bases) {
   const base = cfg(baseId);
   for (const build of [buildGroup1, buildGroup2]) {
     const { id, out } = build(base, u, m);
-    applyStudioBuild(out, { variant: out.variant, data: loadBuild(baseId), baseTitle: base.title });
+    applyStudioBuild(out, {
+      variant: out.variant,
+      data: loadBuild(baseId),
+      baseTitle: base.title,
+      applyProblem: base.revealWordProblem,
+    });
     assertValid(id, out);
     const facilitation = extractFacilitation(out);
     const generated = toStudentConfig(out);

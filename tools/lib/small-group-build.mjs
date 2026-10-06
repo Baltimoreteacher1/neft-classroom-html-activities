@@ -17,12 +17,30 @@
  *                             authored separately and is carried over.
  *   vocabulary                lesson-title "concept" entries dropped from Key
  *                             Words; unclear example chips replaced per term.
+ *   revealWordProblem         the base lesson's Reveal Apply problem, copied every
+ *                             run (the 2026-08-10 renumber stripped the old ones
+ *                             from 26 studios and nothing restored them), or
+ *                             removed when the practice data opts out (`apply`).
+ *   launch.practice           what Practice together / On my own / Talk / Check /
+ *                             Challenge render — from data/small-group-practice/
+ *                             <lesson>.json (docs/specs/small-group-practice-v1.md,
+ *                             gate tools/validate-small-group-practice.mjs).
  */
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { CORE_ID_RE, DATA_DIR, listLessonDirs, loadLessonConfig } from "./curriculum-source.mjs";
 
 const DIR = join(DATA_DIR, "small-group-build");
+const PRACTICE_DIR = join(DATA_DIR, "small-group-practice");
+
+export function loadPractice(lessonId) {
+  const file = join(PRACTICE_DIR, `${lessonId}.json`);
+  if (!existsSync(file))
+    throw new Error(
+      `${lessonId}: no data/small-group-practice/${lessonId}.json — every base lesson needs its practice content`,
+    );
+  return JSON.parse(readFileSync(file, "utf8"));
+}
 
 export function loadBuild(lessonId) {
   const file = join(DIR, `${lessonId}.json`);
@@ -146,7 +164,7 @@ function nameModelProblem(config, data) {
 }
 
 /** Set every Build-owned field on a group1/group2 studio config. */
-export function applyStudioBuild(config, { variant, data, baseTitle }) {
+export function applyStudioBuild(config, { variant, data, baseTitle, applyProblem }) {
   const build = data[variant];
   if (!build) throw new Error(`${config.lessonId}: build data has no ${variant} block`);
   config.topic = baseTitle;
@@ -158,6 +176,16 @@ export function applyStudioBuild(config, { variant, data, baseTitle }) {
   });
   config.vocabulary = studioVocabulary(config.vocabulary, data.vocab);
   nameModelProblem(config, data);
+  const practiceData = loadPractice(config.lessonId.replace(/-group[12]$/, ""));
+  const practice = practiceData[variant];
+  if (!practice) throw new Error(`${config.lessonId}: practice data has no ${variant} block`);
+  config.launch.practice = practiceData.model
+    ? { ...practice, model: practiceData.model }
+    : practice;
+  // The studio's Apply step is the base lesson's Reveal problem — unless the
+  // practice data records why that problem does not fit the small group.
+  if (applyProblem && practiceData.apply?.use !== false) config.revealWordProblem = applyProblem;
+  else delete config.revealWordProblem;
   return config;
 }
 
@@ -174,8 +202,23 @@ export function applyCatchupBuild(config, { sources, range }) {
     bigIdeaEs: s.data.group1.bigIdeaEs,
   }));
   for (const l of lessons) l.example.titleEs = `Lección ${l.short} · ${l.example.titleEs}`;
+  // Practice: each lesson in the band contributes its two catch-up problems and
+  // its check, labelled with the lesson they practise.
+  const tagged = (s, item) => ({ ...item, lesson: s.dot, ...(s.model ? { model: s.model } : {}) });
+  const practiceData = sources.map((s) => {
+    const data = loadPractice(s.id);
+    s.model = data.model;
+    return { s, p: data.catchup };
+  });
   const single = sources.length === 1;
   config.launch = config.launch || {};
+  config.launch.practice = {
+    onMyOwn: practiceData.flatMap(({ s, p }) => p.practice.map((item) => tagged(s, item))),
+    check: practiceData.map(({ s, p }) => tagged(s, p.check)),
+    // Print only: each lesson's Group 1 mirror check, so the second printed
+    // form (Set B) of a one-lesson catch-up still has enough problems.
+    review: sources.map((s) => tagged(s, loadPractice(s.id).group1.check[0])),
+  };
   config.launch.build = {
     todayIdea: single
       ? `Catch up on Lesson ${range}: one worked example and one quick check.`

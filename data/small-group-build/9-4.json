@@ -20,9 +20,20 @@
           "xLabel": "Hours (h)",
           "yLabel": "Cars made (c)",
           "points": [
-            { "x": 0, "y": 0 },
-            { "x": 8, "y": 20, "text": "(8, 20)" },
-            { "x": 400, "y": 1000, "text": "(400, 1000)" }
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 8,
+              "y": 20,
+              "text": "(8, 20)"
+            },
+            {
+              "x": 400,
+              "y": 1000,
+              "text": "(400, 1000)"
+            }
           ],
           "connect": true,
           "caption": "1,000 cars takes 400 hours.",
@@ -56,7 +67,10 @@
           {
             "do": "Compare with 3 weeks.",
             "doEs": "Compara con 3 semanas.",
-            "math": ["3 × 7 = 21", "17 < 21"],
+            "math": [
+              "3 × 7 = 21",
+              "17 < 21"
+            ],
             "why": "3 weeks is 21 days. About 17 days is less than 21 days.",
             "whyEs": "3 semanas son 21 días. Unos 17 días es menos que 21 días."
           }
@@ -71,32 +85,44 @@
       "problem": "Last year the student council washed 34 cars and raised $408. This year the goal is $500. At the same price, how many cars must they wash?",
       "problemEs": "El año pasado el consejo estudiantil lavó 34 autos y recaudó $408. Este año la meta es $500. Con el mismo precio, ¿cuántos autos deben lavar?",
       "figure": {
-        "kind": "table",
-        "headers": ["Cars washed (n)", "Money raised (t)"],
-        "rows": [
-          ["34", "$408"],
-          ["41", "$492"],
-          ["42", "$504"]
+        "kind": "ratioTable",
+        "headers": [
+          "Cars washed",
+          "Money raised"
         ],
-        "caption": "41 cars is not enough. 42 cars is enough.",
-        "captionEs": "41 autos no son suficientes. 42 autos sí son suficientes."
+        "rows": [
+          [
+            34,
+            "$408"
+          ],
+          [
+            1,
+            "?"
+          ],
+          [
+            "?",
+            "$500"
+          ]
+        ],
+        "scales": [
+          "÷ 34",
+          "× ?"
+        ],
+        "caption": "Find what 1 car raises first.",
+        "captionEs": "Halla primero lo que recauda 1 auto."
       },
       "steps": [
         {
-          "ask": "Find the price per car. Divide 408 by 34.",
-          "askEs": "Halla el precio por auto. Divide 408 entre 34.",
+          "ask": "Write 34 cars ⟶ $408. Divide both by 34. What does 1 car raise?",
+          "askEs": "Escribe 34 autos ⟶ $408. Divide los dos entre 34. ¿Cuánto recauda 1 auto?",
           "answer": "408 ÷ 34 = 12, so $12 per car.",
           "answerEs": "408 ÷ 34 = 12, así que $12 por auto."
         },
         {
-          "ask": "Let n = cars washed and t = total raised. Write an equation.",
-          "askEs": "Sea n = autos lavados y t = total recaudado. Escribe una ecuación.",
-          "answer": "t = 12n"
-        },
-        {
-          "ask": "The goal is $500. Solve 12n = 500.",
-          "askEs": "La meta es $500. Resuelve 12n = 500.",
-          "answer": "n = 500 ÷ 12 ≈ 41.7"
+          "ask": "Now scale $12 up to $500. Let n = cars. Write and solve the equation.",
+          "askEs": "Ahora lleva $12 hasta $500. Sea n = autos. Escribe y resuelve la ecuación.",
+          "answer": "12n = 500, so n = 500 ÷ 12 ≈ 41.7",
+          "answerEs": "12n = 500, así que n = 500 ÷ 12 ≈ 41.7"
         },
         {
           "ask": "They cannot wash 41.7 cars. Is 41 cars enough?",
@@ -118,9 +144,35 @@
       "problem": "A printer prints 4 pages every minute. Let m = minutes and p = pages. How many minutes does it take to print 60 pages?",
       "problemEs": "Una impresora imprime 4 páginas cada minuto. Sea m = minutos y p = páginas. ¿Cuántos minutos tarda en imprimir 60 páginas?",
       "answer": "15",
-      "accept": ["15", "15 minutes", "15 min"],
-      "hint": "The equation is p = 4m. Put in 60 for p: 4m = 60. Divide both sides by 4.",
-      "hintEs": "La ecuación es p = 4m. Sustituye p por 60: 4m = 60. Divide los dos lados entre 4."
+      "accept": [
+        "15",
+        "15 minutes",
+        "15 min"
+      ],
+      "hint": "Write 1 min ⟶ 4 pages. What times 4 makes 60? Do the same to 1 minute.",
+      "hintEs": "Escribe 1 min ⟶ 4 páginas. ¿Qué número por 4 da 60? Haz lo mismo con 1 minuto.",
+      "figure": {
+        "kind": "ratioTable",
+        "headers": [
+          "Minutes",
+          "Pages"
+        ],
+        "rows": [
+          [
+            1,
+            4
+          ],
+          [
+            "?",
+            60
+          ]
+        ],
+        "scales": [
+          "× ?"
+        ],
+        "caption": "The printer prints 4 pages each minute.",
+        "captionEs": "La impresora imprime 4 páginas cada minuto."
+      }
     },
     "bigIdea": "Use the equation to answer a real question: substitute what you know, solve for what you do not know, and check that the answer fits the situation.",
     "bigIdeaEs": "Usa la ecuación para responder una pregunta real: sustituye lo que conoces, resuelve lo que no conoces y comprueba que la respuesta tenga sentido en la situación."
@@ -145,8 +197,16 @@
           "xLabel": "More cars washed (n)",
           "yLabel": "Total raised ($)",
           "points": [
-            { "x": 0, "y": 140, "text": "start: $140" },
-            { "x": 30, "y": 500, "text": "goal: (30, 500)" }
+            {
+              "x": 0,
+              "y": 140,
+              "text": "start: $140"
+            },
+            {
+              "x": 30,
+              "y": 500,
+              "text": "goal: (30, 500)"
+            }
           ],
           "connect": true,
           "caption": "The line starts at $140 and rises $12 per car.",
@@ -168,7 +228,10 @@
           {
             "do": "Subtract 140 from both sides.",
             "doEs": "Resta 140 de los dos lados.",
-            "math": ["12n = 500 − 140", "12n = 360"],
+            "math": [
+              "12n = 500 − 140",
+              "12n = 360"
+            ],
             "why": "Subtracting undoes the $140 that was added.",
             "whyEs": "Restar deshace los $140 que se sumaron."
           },
@@ -193,25 +256,44 @@
       "problem": "Last year the student council washed 34 cars and raised $408. This year the goal is $500. At the same price, how many cars must they wash?",
       "problemEs": "El año pasado el consejo estudiantil lavó 34 autos y recaudó $408. Este año la meta es $500. Con el mismo precio, ¿cuántos autos deben lavar?",
       "figure": {
-        "kind": "table",
-        "headers": ["Cars washed (n)", "Money raised (t)"],
+        "kind": "ratioTable",
+        "headers": [
+          "Cars washed",
+          "Money raised"
+        ],
         "rows": [
-          ["34", "$408"],
-          ["41", "$492"],
-          ["42", "$504"]
-        ]
+          [
+            34,
+            "$408"
+          ],
+          [
+            1,
+            "?"
+          ],
+          [
+            "?",
+            "$500"
+          ]
+        ],
+        "scales": [
+          "÷ 34",
+          "× ?"
+        ],
+        "caption": "Find what 1 car raises first.",
+        "captionEs": "Halla primero lo que recauda 1 auto."
       },
       "steps": [
         {
-          "ask": "Find the price per car.",
-          "askEs": "Halla el precio por auto.",
+          "ask": "Divide both quantities by 34. What does 1 car raise?",
+          "askEs": "Divide las dos cantidades entre 34. ¿Cuánto recauda 1 auto?",
           "answer": "408 ÷ 34 = 12, so $12 per car.",
           "answerEs": "408 ÷ 34 = 12, así que $12 por auto."
         },
         {
-          "ask": "Write an equation and solve it for a $500 goal.",
-          "askEs": "Escribe una ecuación y resuélvela para una meta de $500.",
-          "answer": "12n = 500, so n = 500 ÷ 12 ≈ 41.7"
+          "ask": "Scale $12 up to $500. Write an equation and solve it.",
+          "askEs": "Lleva $12 hasta $500. Escribe una ecuación y resuélvela.",
+          "answer": "12n = 500, so n = 500 ÷ 12 ≈ 41.7",
+          "answerEs": "12n = 500, así que n = 500 ÷ 12 ≈ 41.7"
         },
         {
           "ask": "Why must they wash 42 cars, not 41?",
@@ -233,13 +315,38 @@
       "problem": "Movie tickets cost $12 each. Sam has $100. Let n = number of tickets. What is the greatest number of tickets Sam can buy?",
       "problemEs": "Los boletos de cine cuestan $12 cada uno. Sam tiene $100. Sea n = número de boletos. ¿Cuál es el mayor número de boletos que Sam puede comprar?",
       "answer": "8",
-      "accept": ["8", "8 tickets"],
-      "hint": "Solve 12n = 100. Then check: can Sam pay for that many tickets?",
-      "hintEs": "Resuelve 12n = 100. Luego comprueba: ¿puede Sam pagar esa cantidad de boletos?",
+      "accept": [
+        "8",
+        "8 tickets"
+      ],
+      "hint": "Find 100 ÷ 12 to scale the table. Then check: can Sam pay for that many tickets?",
+      "hintEs": "Halla 100 ÷ 12 para escalar la tabla. Luego comprueba: ¿puede Sam pagar esa cantidad de boletos?",
       "explain": "100 ÷ 12 is about 8.3. In the car wash, we rounded up. Why do we round down here?",
       "explainEs": "100 ÷ 12 es aproximadamente 8.3. En el lavado de autos redondeamos hacia arriba. ¿Por qué aquí redondeamos hacia abajo?",
       "modelExplanation": "9 tickets cost 9 × 12 = $108, but Sam has only $100. 8 tickets cost $96, which he can pay. Sam cannot spend more than he has, so we round down.",
-      "modelExplanationEs": "9 boletos cuestan 9 × 12 = $108, pero Sam solo tiene $100. 8 boletos cuestan $96, y eso sí lo puede pagar. Sam no puede gastar más de lo que tiene, así que redondeamos hacia abajo."
+      "modelExplanationEs": "9 boletos cuestan 9 × 12 = $108, pero Sam solo tiene $100. 8 boletos cuestan $96, y eso sí lo puede pagar. Sam no puede gastar más de lo que tiene, así que redondeamos hacia abajo.",
+      "figure": {
+        "kind": "ratioTable",
+        "headers": [
+          "Tickets",
+          "Cost"
+        ],
+        "rows": [
+          [
+            1,
+            "$12"
+          ],
+          [
+            "?",
+            "$100"
+          ]
+        ],
+        "scales": [
+          "× ?"
+        ],
+        "caption": "Each ticket costs $12. Sam has $100.",
+        "captionEs": "Cada boleto cuesta $12. Sam tiene $100."
+      }
     },
     "bigIdea": "Solving the equation is not the last step: decide what the answer means, and round up or down so it fits the situation.",
     "bigIdeaEs": "Resolver la ecuación no es el último paso: decide qué significa la respuesta, y redondea hacia arriba o hacia abajo para que tenga sentido en la situación."
@@ -260,8 +367,15 @@
       "xLabel": "Hours (h)",
       "yLabel": "Cars made (c)",
       "points": [
-        { "x": 0, "y": 0 },
-        { "x": 400, "y": 1000, "text": "(400, 1000)" }
+        {
+          "x": 0,
+          "y": 0
+        },
+        {
+          "x": 400,
+          "y": 1000,
+          "text": "(400, 1000)"
+        }
       ],
       "connect": true
     },
@@ -288,9 +402,35 @@
       "problem": "A machine fills 6 bottles every minute. How many minutes does it take to fill 84 bottles?",
       "problemEs": "Una máquina llena 6 botellas cada minuto. ¿Cuántos minutos tarda en llenar 84 botellas?",
       "answer": "14",
-      "accept": ["14", "14 minutes", "14 min"],
-      "hint": "Solve 6m = 84. Divide both sides by 6.",
-      "hintEs": "Resuelve 6m = 84. Divide los dos lados entre 6."
+      "accept": [
+        "14",
+        "14 minutes",
+        "14 min"
+      ],
+      "hint": "Write 1 min ⟶ 6 bottles. Find 84 ÷ 6. Then do the same to the minutes.",
+      "hintEs": "Escribe 1 min ⟶ 6 botellas. Halla 84 ÷ 6. Luego haz lo mismo con los minutos.",
+      "figure": {
+        "kind": "ratioTable",
+        "headers": [
+          "Minutes",
+          "Bottles"
+        ],
+        "rows": [
+          [
+            1,
+            6
+          ],
+          [
+            "?",
+            84
+          ]
+        ],
+        "scales": [
+          "× ?"
+        ],
+        "caption": "The machine fills 6 bottles each minute.",
+        "captionEs": "La máquina llena 6 botellas cada minuto."
+      }
     }
   },
   "vocab": {

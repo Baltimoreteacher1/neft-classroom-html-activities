@@ -3743,7 +3743,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/curriculum/fluency/",
-    title: "Fluency Practice Studio",
+    title: "Fluency Practice Studio & Lessons Index",
     category: "Hub",
     unit: null,
   },

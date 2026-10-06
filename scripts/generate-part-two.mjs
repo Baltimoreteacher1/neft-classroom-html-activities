@@ -34,6 +34,7 @@ import { fileURLToPath } from "node:url";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 import { LESSONS_DIR as LESSONS } from "../tools/lib/curriculum-source.mjs";
+import { toPracticeItem } from "../tools/lib/small-group-practice-items.mjs";
 
 const CORE = /^\d+-\d+$/;
 const CHECK = process.argv.includes("--check");
@@ -241,20 +242,14 @@ const INTERACTIVE_KINDS = interactiveKinds();
 const WARMUP_INSERTS = readWarmupInserts();
 
 /**
- * True when Part 2 can draw whatever figure the item declares.
- *
- * Two dispatchers, not one. `buildVisual` in lesson-renderer.js draws the 39
- * kinds `renderComponent` knows; the variant parallel banks were authored
- * against small-group-visual-practice.js, whose 43 kinds overlap those on five.
- * An item carrying `sgFigure` is drawn by the second one — the Part 2 renderer
- * calls it directly — so it renders even though `buildVisual` never heard of
- * `xy-table`. Judging every item by RENDERABLE_KINDS alone is what dropped the
- * whole scaffolded bank off the Apply Day tables.
+ * True when Part 2 can draw whatever figure the item declares. `visual` kinds
+ * are drawn by `buildVisual` in lesson-renderer.js; authored small-group items
+ * carry a Build figure spec (`buildFigure`) instead, which the Part 2 renderer
+ * draws itself, so they declare no `visual` and always pass.
  */
 function visualRenders(item) {
   const kind = item && item.visual && item.visual.kind;
   if (!kind) return true;
-  if (item.sgFigure) return true;
   return RENDERABLE_KINDS.has(String(kind));
 }
 
@@ -344,6 +339,14 @@ function buildHighlights(config) {
   return Object.keys(out).length ? out : null;
 }
 
+const PRACTICE_DIR = join(ROOT, "data", "small-group-practice");
+
+/** The lesson's authored small-group practice, or null when it has none. */
+function readAuthoredPractice(id) {
+  const file = join(PRACTICE_DIR, `${id}.json`);
+  return existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : null;
+}
+
 /**
  * The leveled problem sets Part 2's group work runs on (Joel: "Group work
  * should be leveled (with subcards) having different levels and different
@@ -351,8 +354,8 @@ function buildHighlights(config) {
  *
  * Every problem is AUTHORED — pulled from the core lesson and from its own
  * small-group variants, which between them already carry a large bank per
- * lesson (core practice, each group's practice, and each group's 12-item
- * parallel-practice set). Nothing here is generated, so nothing here can be
+ * lesson (core practice, each group's practice, and the authored small-group
+ * practice for Group 1, Group 2 and catch-up). Nothing here is generated, so nothing here can be
  * wrong in a way an author did not write.
  *
  *   🟢 Level 1  the scaffolded end — approaching items and Group 1's bank
@@ -365,23 +368,23 @@ function buildGroupLevels(id, config, readVariant, warmupStems = []) {
   const cu = readVariant(`${id}-catchup`);
   const tier = (cfg, name) =>
     cfg && Array.isArray((cfg.practice || {})[name]) ? cfg.practice[name] : [];
-  /* The variant parallel banks, tagged with the dispatcher that owns their
-   * figures. Every item in them declares a `visual.kind` — the small-group gate
-   * refuses one that does not — but those kinds belong to
-   * engine/core/small-group-visual-practice.js, not to `buildVisual`, which is
-   * what `renderComponent` draws an item figure with. The Part 2 renderer reads
-   * `sgFigure` and calls that dispatcher directly; without the flag it cannot
-   * tell a kind it must skip from a kind another module draws, and
-   * `visualRenders` below would go on dropping all 2,376 of them. */
-  const parallel = (cfg) =>
-    cfg && Array.isArray(cfg.parallelPractice)
-      ? cfg.parallelPractice.map((item) =>
-          item && typeof item === "object" && item.visual && item.visual.kind
-            ? { ...item, sgFigure: true }
-            : item,
-        )
+  /* The authored small-group practice banks (data/small-group-practice/<id>.json,
+   * docs/specs/small-group-practice-v1.md) — the same problems the studios
+   * teach, written for THIS lesson. They replaced the template-stamped
+   * `parallelPractice` banks on 2026-10-06, after an audit found those had
+   * drifted to other lessons' mathematics (a median lesson's Level 1 asked for
+   * the mean). Each group's bank is a ramp — On my own, then the Check, then
+   * the Challenge — so the halving below still lands easy items on the outer
+   * level and grade-level items in the middle. */
+  const authored = readAuthoredPractice(id);
+  const bank = (block) =>
+    block
+      ? [
+          ...(block.onMyOwn || []),
+          ...(block.check || []),
+          ...(block.stretch ? [block.stretch] : []),
+        ]
       : [];
-
   /* The lesson's own MSTAR item, flattened into an ordinary practice problem.
    *
    * These are state-assessment items — the most rigorous authored content the
@@ -430,23 +433,22 @@ function buildGroupLevels(id, config, readVariant, warmupStems = []) {
     return out;
   };
 
-  // Each group's 12-item parallel bank is a ramp of the same skill. Group 1's
+  // Each group's authored bank is a ramp of the same skill. Group 1's
   // runs scaffolded → on-level and Group 2's runs on-level → challenge, so each
   // is split at the middle: the easy half of Group 1's and the hard half of
   // Group 2's anchor the outer levels, and the two inner halves — which are
   // both plainly grade-level — thicken the middle, which is otherwise the
   // thinnest bank in the repo (every variant inherits the core's on-level set,
   // so those four configs hold about five distinct problems between them).
-  const p1 = parallel(g1);
-  const p2 = parallel(g2);
-  // The catch-up variant's bank was never read. It is the most scaffolded set
-  // the lesson owns and every item in it carries a figure (the small-group
-  // gate refuses a parallel item without `visual.kind`), which is exactly what
-  // Level 1 was short of on 68 of 76 Apply Days.
-  const pcu = parallel(cu);
+  const p1 = bank(authored?.group1).map(toPracticeItem);
+  const p2 = bank(authored?.group2).map(toPracticeItem);
+  // The catch-up bank is the most scaffolded set the lesson owns — what
+  // Level 1 needs most.
+  const pcu = authored?.catchup
+    ? [...authored.catchup.practice, authored.catchup.check].map(toPracticeItem)
+    : [];
   const h1 = Math.floor(p1.length / 2);
   const h2 = Math.floor(p2.length / 2);
-  const hcu = Math.floor(pcu.length / 2);
 
   /* Two ordered streams, taken in turn rather than end to end.
    *
@@ -474,34 +476,39 @@ function buildGroupLevels(id, config, readVariant, warmupStems = []) {
     return out;
   };
 
+  // Authored practice fills every level first: it is the set written for THIS
+  // lesson. The core and variant tiers were inherited and some drift to
+  // neighbouring lessons (2-3, a median lesson, carries "Find the mean of…"),
+  // so they only top a level up when the authored bank runs short of the
+  // five-item cap. Level 1 takes the whole catch-up bank plus Group 1's easy
+  // half; Level 2 the grade-level halves of both groups; Level 3 Group 2's hard
+  // half after the state item.
   const levels = {
-    level1: interleave(
-      [...tier(config, "approaching"), ...tier(g1, "approaching"), ...tier(cu, "approaching")],
-      [...pcu.slice(0, hcu), ...p1.slice(0, h1)],
-    ),
-    level2: interleave(
-      [
-        ...tier(config, "onLevel"),
-        ...tier(g1, "onLevel"),
-        ...tier(g2, "onLevel"),
-        ...tier(cu, "onLevel"),
-        ...tier(config, "optional"),
-      ],
-      [...p1.slice(h1), ...p2.slice(0, h2), ...pcu.slice(hcu)],
-    ),
+    level1: [
+      ...pcu,
+      ...p1.slice(0, h1),
+      ...interleave(
+        [...tier(config, "approaching"), ...tier(g1, "approaching")],
+        tier(cu, "approaching"),
+      ),
+    ],
+    level2: [
+      ...interleave(p1.slice(h1), p2.slice(0, h2)),
+      ...tier(config, "onLevel"),
+      ...tier(g1, "onLevel"),
+      ...tier(g2, "onLevel"),
+      ...tier(cu, "onLevel"),
+      ...tier(config, "optional"),
+    ],
     level3: [
       // FIRST, deliberately. Each level is capped at five and the pools are
       // ordered, so anything appended here is what the cap throws away — which
       // is precisely how Level 3 came to show five items it did not own.
-      // Leading with the state item also fixes the hollow levels WITHOUT
-      // touching the within-level dedupe this file documents above, and which
-      // measurement supports: cross-deduping in any claiming order simply moves
-      // the shortage onto Level 2, the grade-level table.
       ...mstarProblems(config),
-      ...interleave(
-        [...tier(config, "extending"), ...tier(g2, "extending"), ...tier(cu, "extending")],
-        [...p2.slice(h2)],
-      ),
+      ...p2.slice(h2),
+      ...tier(config, "extending"),
+      ...tier(g2, "extending"),
+      ...tier(cu, "extending"),
     ],
   };
 

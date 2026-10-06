@@ -37,6 +37,8 @@
  * make the two packets print the same problems, and both would still build.
  */
 
+import { studentBuildsTable, toPracticeItem } from "../../tools/lib/small-group-practice-items.mjs";
+
 /** An item is printable when it carries something to render. */
 export function printable(pool) {
   return (Array.isArray(pool) ? pool : []).filter((p) => p && (p.type || p.stem || p.prompt));
@@ -167,6 +169,29 @@ export function coreReserve(cfg) {
 
 /** Practice-pool leftovers for a small-group or catch-up lesson. */
 export function smallGroupReserve(cfg, kind) {
+  // Authored practice (launch.practice) is the studio's own set; Set B prints
+  // the part Set A does not: the Check, the Challenge and the Build "Your
+  // turn" for a group, the per-lesson checks for a catch-up.
+  const authored = cfg?.launch?.practice;
+  if (authored) {
+    if (kind === "catchup")
+      return tag(
+        [
+          ...authored.check,
+          ...(cfg.launch.build?.lessons || []).map((l) => ({ ...l.check, lesson: l.short })),
+          ...(authored.review || []),
+        ].map((it) => toPracticeItem(it, { blankTable: studentBuildsTable(it, authored.model) })),
+        "practice",
+      );
+    return tag(
+      [
+        ...(cfg.launch.build?.tryIt ? [cfg.launch.build.tryIt] : []),
+        ...authored.check,
+        ...(authored.stretch ? [authored.stretch] : []),
+      ].map((it) => toPracticeItem(it, { blankTable: studentBuildsTable(it, authored.model) })),
+      "practice",
+    );
+  }
   const app = printable(cfg?.practice?.approaching);
   const on = printable(cfg?.practice?.onLevel);
   const ext = printable(cfg?.practice?.extending);

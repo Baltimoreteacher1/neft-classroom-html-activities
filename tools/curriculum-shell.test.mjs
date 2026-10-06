@@ -9,11 +9,27 @@ for (const [file, active] of shellPages) {
   assert.equal(withCurriculumShell(html, active), html, `${file}: shared shell is deterministic`);
   const doc = new JSDOM(html).window.document;
   assert.equal(doc.querySelectorAll("nav.ewl-course-nav").length, 1);
-  assert.equal(doc.querySelectorAll(".ewl-course-nav li a").length, 7);
+  assert.equal(doc.querySelectorAll(".ewl-course-nav li a").length, 8);
+  const links = [...doc.querySelectorAll(".ewl-course-nav li a")];
+  const labels = links.map((a) => a.textContent.trim());
+  const helpIndex = labels.indexOf("Extra Help");
+  const fluencyIndex = labels.indexOf("Fluency");
+  assert.ok(helpIndex !== -1, `${file}: Extra Help navigation link exists`);
+  assert.ok(fluencyIndex !== -1, `${file}: Fluency navigation link exists`);
+  assert.equal(fluencyIndex, helpIndex + 1, `${file}: Fluency button is adjacent to Extra Help`);
+  const fluencyLink = doc.querySelector('.ewl-course-nav a[href="/curriculum/fluency/"]');
+  assert.ok(fluencyLink, `${file}: Fluency button points to /curriculum/fluency/`);
   assert.equal(
     doc.querySelectorAll('.ewl-course-nav [aria-current="page"]').length,
     active ? 1 : 0,
   );
+  if (active === "fluency") {
+    assert.equal(
+      fluencyLink.getAttribute("aria-current"),
+      "page",
+      `${file}: Fluency marked active`,
+    );
+  }
   assert.ok(doc.querySelector("main[id]"), `${file}: skip target exists`);
 }
 const manifest = loadCurriculumManifest();

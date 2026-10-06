@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Grade 6 fluency practice for 54 lessons: targeted hints, worked examples, sketches, and six guided math investigations.">
+<meta name="description" content="54 complete Grade 6 lesson workshops: visual models, step-by-step examples, guided and independent practice, error analysis, and math investigations.">
 <meta name="color-scheme" content="light dark">
-<title>Fluency Practice Studio · EduWonderLab</title>
+<title>Fluency Practice Studio &amp; Lessons Index · EduWonderLab</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2213%22 fill=%22%231a56c4%22/%3E%3Ctext x=%229%22 y=%2244%22 font-family=%22Georgia,serif%22 font-size=%2234%22 fill=%22white%22%3ER6%3C/text%3E%3C/svg%3E">
 <style>/*__STYLES__*/</style>
-
+<link rel="stylesheet" href="/assets/curriculum-fluency-index.css">
 </head>
 <body class="mode-student studio-mode">
-<a class="skip-link" href="#main">Skip to practice</a>
+<a class="skip-link" href="#main">Skip to main content</a>
 <noscript><p style="padding:20px;background:#fff3cd;color:#856404">Enable JavaScript to open interactive practice. Your teacher can also provide a printed worksheet.</p></noscript>
 
 <header class="site-header" role="banner">
@@ -20,14 +20,13 @@
       <span class="brand-badge" aria-hidden="true">R6</span>
       <span>
         <span class="brand-series">EduWonderLab · Grade 6</span>
-        <span class="brand-title">Student Practice Studio</span>
+        <span class="brand-title">Reveal Math Fluency &amp; Readiness</span>
       </span>
     </div>
     <div class="header-actions">
-      <a class="btn btn-sm" href="/curriculum/">Curriculum</a>
-      <button class="btn btn-sm" type="button" id="studentWorkbenchToggleBtn" title="Open six guided math investigations">
-        <span>Investigations</span>
-      </button>
+      <a class="btn btn-sm" href="/curriculum/">Curriculum Overview</a>
+      <a class="btn btn-sm" href="/curriculum/units/">All Units</a>
+      <a class="btn btn-sm" href="/curriculum/extra-help/">Extra Help</a>
       <button class="btn btn-sm" type="button" id="themeBtn" aria-pressed="false" aria-label="Toggle dark mode">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
         <span class="label">Dark</span>
@@ -36,24 +35,102 @@
   </div>
 </header>
 
-<main id="main" tabindex="-1"><div class="wrap section"><div id="view-studio"></div></div></main>
+<nav class="viewbar" aria-label="Guide sections" role="navigation">
+  <div class="wrap viewbar-inner" role="tablist" aria-orientation="horizontal" id="viewTablist">
+    <button class="viewtab active" role="tab" type="button" id="tab-lessons" aria-controls="view-lessons" data-act="view" data-view="lessons" aria-selected="true" tabindex="0">Lessons Index <span class="count">54</span></button>
+    <button class="viewtab" role="tab" type="button" id="tab-studio" aria-controls="view-studio" data-act="view" data-view="studio" aria-selected="false" tabindex="-1">Practice Studio <span class="count count-featured">PRACTICE</span></button>
+  </div>
+</nav>
+
+<main id="main" tabindex="-1">
+  <div class="wrap section">
+    <div data-panel="lessons" id="view-lessons" role="tabpanel" aria-labelledby="tab-lessons" tabindex="0">
+      <section class="fluency-hero" aria-labelledby="fluencyHeroHeading">
+        <div class="fluency-hero-badge">Reveal Math · McGraw Hill Alignment · Grade 6</div>
+        <h1 id="fluencyHeroHeading">Fluency &amp; Readiness Index</h1>
+        <p class="lead">
+          Master foundational fluency for Grade 6 mathematics. Explore 54 lessons across Units 2–9 with prerequisite skill progressions, 2-minute diagnostic quick checks, and interactive practice studios.
+        </p>
+        <div class="fluency-hero-stats">
+          <span class="fluency-stat-pill"><strong>54</strong> Lessons</span>
+          <span class="fluency-stat-pill"><strong>216</strong> Prerequisite Skills</span>
+          <span class="fluency-stat-pill"><strong>8</strong> Units (Units 2–9)</span>
+          <span class="fluency-stat-pill"><strong>432</strong> Interactive Tasks</span>
+        </div>
+      </section>
+
+      <div class="fluency-toolbar" role="search" aria-label="Lesson filters">
+        <div class="fluency-toolbar-row">
+          <div class="fluency-search-box">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" id="fluencySearchInput" placeholder="Search lesson (e.g. 2-6), skill (e.g. divide), or standard (e.g. 6.NS)…" autocomplete="off" aria-label="Search lessons by title, id, skill, or standard">
+            <button type="button" class="clear-btn" id="fluencySearchClear" aria-label="Clear search query" style="display:none">&times;</button>
+          </div>
+
+          <div class="fluency-filters-group">
+            <label class="sr-only" for="fluencyUnitSelect">Filter by unit</label>
+            <select id="fluencyUnitSelect" class="fluency-select">
+              <option value="all">All Units (Units 2–9)</option>
+              <option value="2">Unit 2: Statistics &amp; Data</option>
+              <option value="3">Unit 3: Ratios &amp; Rates</option>
+              <option value="4">Unit 4: Fractions &amp; Percents</option>
+              <option value="5">Unit 5: Area &amp; Volume</option>
+              <option value="6">Unit 6: Expressions &amp; Exponents</option>
+              <option value="7">Unit 7: Integers &amp; Coordinates</option>
+              <option value="8">Unit 8: Equations &amp; Inequalities</option>
+              <option value="9">Unit 9: Two-Variable Relationships</option>
+            </select>
+
+            <label class="sr-only" for="fluencyOriginSelect">Filter by prerequisite origin</label>
+            <select id="fluencyOriginSelect" class="fluency-select">
+              <option value="all">All Prerequisite Origins</option>
+              <option value="elementary">Elementary Origins (Gr 2–5)</option>
+              <option value="spiral">In-Year Spiral (Grade 6)</option>
+            </select>
+          </div>
+
+          <div class="fluency-results-count" id="fluencyResults" role="status" aria-live="polite">
+            Showing 54 of 54 lessons
+          </div>
+        </div>
+
+        <div class="fluency-domain-pills" role="group" aria-label="Filter by CCSS Domain">
+          <button type="button" class="domain-pill active" data-domain="all" aria-pressed="true">All Domains</button>
+          <button type="button" class="domain-pill" data-domain="6.RP" aria-pressed="false">6.RP (Ratios &amp; Rates)</button>
+          <button type="button" class="domain-pill" data-domain="6.NS" aria-pressed="false">6.NS (Number System)</button>
+          <button type="button" class="domain-pill" data-domain="6.EE" aria-pressed="false">6.EE (Expressions &amp; Equations)</button>
+          <button type="button" class="domain-pill" data-domain="6.G" aria-pressed="false">6.G (Geometry)</button>
+          <button type="button" class="domain-pill" data-domain="6.SP" aria-pressed="false">6.SP (Statistics)</button>
+        </div>
+      </div>
+
+      <div id="fluencyLessonsContainer">
+        <!--__LESSONS_INDEX__-->
+      </div>
+    </div>
+
+    <div data-panel="studio" id="view-studio" role="tabpanel" aria-labelledby="tab-studio" tabindex="0" hidden></div>
+  </div>
+</main>
 <div id="studio-print"></div>
 
 <footer class="site-footer" role="contentinfo">
   <div class="wrap">
     <div class="footer-grid">
       <div>
-        <p><strong>EduWonderLab · Grade 6 · Student Practice Edition.</strong> Try a strategy, check the result, and explain your thinking. Work is kept in this browser tab.</p>
+        <p><strong>EduWonderLab · Grade 6 · Reveal Math Fluency Edition.</strong> Diagnostic checks, prerequisite foundations, worked practice, and interactive workshops for Units 2–9 (54 lessons).</p>
       </div>
       <div class="footer-meta">
-        <span>Supplemental practice for Units 2–9</span>
+        <span>Reveal Math aligned supplemental fluency</span>
       </div>
     </div>
   </div>
 </footer>
 
 <script>window.FluencyData = /*__DATA__*/;</script>
+<script id="fluency-models">/*__MODELS__*/</script>
 <script id="fluency-studio">/*__STUDIO__*/</script>
+<script src="/assets/curriculum-fluency-index.js"></script>
 <script>
   // Theme management for student edition
   const themeBtn = document.getElementById('themeBtn');
@@ -75,8 +152,75 @@
     });
   }
 
-  FluencyStudio.render();
-  window.addEventListener('hashchange', () => FluencyStudio.render());
+  // Self-contained View Router and Studio Initializer (offline & standalone compatible)
+  (function () {
+    const tabLessons = document.getElementById('tab-lessons');
+    const tabStudio = document.getElementById('tab-studio');
+    const viewLessons = document.getElementById('view-lessons');
+    const viewStudio = document.getElementById('view-studio');
+
+    function routeView() {
+      const hash = window.location.hash || '';
+      const params = new URLSearchParams(hash.replace(/^#/, ''));
+      const isStudio =
+        params.get('view') === 'studio' ||
+        params.has('lesson') ||
+        params.has('level') ||
+        params.has('mode');
+
+      if (isStudio) {
+        if (viewLessons) viewLessons.hidden = true;
+        if (viewStudio) {
+          viewStudio.hidden = false;
+          if (!document.getElementById('studioBackNav')) {
+            const backNav = document.createElement('div');
+            backNav.id = 'studioBackNav';
+            backNav.className = 'studio-nav-bar';
+            backNav.innerHTML = `
+              <a href="#view=lessons" class="btn btn-sm btn-back" id="btnBackToLessons">
+                ← Back to Lessons Index (54 Lessons)
+              </a>
+              <span style="font-size:12.5px;color:var(--ink-3);font-weight:600">
+                Interactive Practice Studio · Reveal Math Grade 6
+              </span>
+            `;
+            viewStudio.prepend(backNav);
+          }
+        }
+        if (tabLessons) {
+          tabLessons.setAttribute('aria-selected', 'false');
+          tabLessons.classList.remove('active');
+        }
+        if (tabStudio) {
+          tabStudio.setAttribute('aria-selected', 'true');
+          tabStudio.classList.add('active');
+        }
+        if (window.FluencyStudio && typeof window.FluencyStudio.render === 'function') {
+          window.FluencyStudio.render();
+        }
+      } else {
+        if (viewLessons) viewLessons.hidden = false;
+        if (viewStudio) viewStudio.hidden = true;
+        if (tabLessons) {
+          tabLessons.setAttribute('aria-selected', 'true');
+          tabLessons.classList.add('active');
+        }
+        if (tabStudio) {
+          tabStudio.setAttribute('aria-selected', 'false');
+          tabStudio.classList.remove('active');
+        }
+        if (hash && hash !== '#view=lessons') {
+          const target = document.querySelector(hash);
+          if (target) {
+            setTimeout(() => target.scrollIntoView({ behavior: 'smooth' }), 50);
+          }
+        }
+      }
+    }
+
+    window.addEventListener('hashchange', routeView);
+    routeView();
+  })();
 </script>
 </body>
 </html>

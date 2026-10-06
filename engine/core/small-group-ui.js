@@ -2,6 +2,8 @@ import { getPreferredLang } from "./i18n.js";
 import { FIGURE_CSS } from "./small-group-build-figures.js";
 import { SHAPE_FIGURE_CSS } from "./small-group-build-figures-shapes.js";
 import { BUILD_CSS } from "./small-group-build-section.js";
+import { PRACTICE_CSS } from "./small-group-practice-path.js";
+import { RATIO_BUILDER_CSS } from "./small-group-ratio-builder.js";
 
 //
 // These are the SITE brand values, not a private small-group palette. Until
@@ -953,6 +955,8 @@ export function injectSmallGroupStyles(accent) {
     ${FIGURE_CSS}
     ${SHAPE_FIGURE_CSS}
     ${BUILD_CSS}
+    ${PRACTICE_CSS}
+    ${RATIO_BUILDER_CSS}
     .sg-checkstep-wrap{margin:0 0 9px}
     .sg-checkstep-wrap .sg-checkstep{margin:0}
     

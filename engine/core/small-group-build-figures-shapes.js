@@ -235,6 +235,76 @@ function htmlTable(f) {
   return `<table class="sgf-table"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table>`;
 }
 
+/**
+ * An equivalent-ratio table, set the way Reveal draws one: each quantity is a
+ * labelled ROW, each equivalent ratio a COLUMN, and the scale factor between
+ * two columns is the same arrow above the top row and below the bottom row —
+ * "do the same to both". `rows` keeps the authored shape (one array per
+ * ratio, in header order); `scales[i]` labels the move from ratio i to i + 1
+ * ("× 3", "÷ 2"); a "?" cell is the value the student finds.
+ */
+function ratioTable(spec) {
+  // `blank` prints the frame a student fills in: row labels, empty cells, and
+  // a line on each arrow for the × or ÷ they choose.
+  const f = spec.blank
+    ? {
+        ...spec,
+        // One spare column, so there is room for a bridge step on paper.
+        rows: [...spec.rows, spec.rows[0]].slice(0, 5).map((col) => col.map(() => "")),
+        scales: spec.rows.slice(0, 4).map(() => "____"),
+        highlight: undefined,
+      }
+    : spec;
+  const quantities = f.headers.length;
+  const cols = f.rows.length;
+  const labelW = Math.max(...f.headers.map((h) => textWidth(h, 15))) + 20;
+  const cellW = Math.max(64, ...f.rows.flat().map((v) => textWidth(show(v), 17) + 28));
+  const cellH = 46;
+  const scales = Array.isArray(f.scales) ? f.scales : [];
+  const arrowH = scales.some(Boolean) ? 44 : 8;
+  const x0 = 6 + labelW;
+  const y0 = arrowH;
+  let body = "";
+  f.headers.forEach((h, r) => {
+    const y = y0 + r * cellH;
+    body += `<rect class="sgf-rt-label" x="6" y="${y}" width="${labelW}" height="${cellH}"/>`;
+    body += text(6 + labelW / 2, y + cellH / 2 + 5, h, "sgf-t sgf-rt-head", "middle", 15);
+    f.rows.forEach((row, c) => {
+      const x = x0 + c * cellW;
+      const v = show(row[r]);
+      const unknown = v.trim() === "?";
+      const hl = c === f.highlight;
+      body += `<rect class="sgf-rt-cell${hl ? " sgf-on" : ""}" x="${x}" y="${y}" width="${cellW}" height="${cellH}"/>`;
+      body += text(
+        x + cellW / 2,
+        y + cellH / 2 + 6,
+        v,
+        unknown ? "sgf-t sgf-q sgf-rt-v" : "sgf-t sgf-rt-v",
+        "middle",
+        17,
+      );
+    });
+  });
+  const yBottom = y0 + quantities * cellH;
+  scales.forEach((label, i) => {
+    if (!label || i >= cols - 1) return;
+    const xa = x0 + i * cellW + cellW / 2;
+    const xb = xa + cellW;
+    const mid = (xa + xb) / 2;
+    // Top arrow arcs over the table; bottom arrow mirrors it under the table.
+    body += `<path class="sgf-jump" d="M${xa + 6},${y0 - 4} Q${mid},${y0 - 30} ${xb - 6},${y0 - 4}"/>`;
+    body += `<path class="sgf-jump-head" d="M${xb - 6},${y0 - 3} l-9,-5 l2,9 z"/>`;
+    body += text(mid, y0 - 24, label, "sgf-callout", "middle", 15);
+    body += `<path class="sgf-jump" d="M${xa + 6},${yBottom + 4} Q${mid},${yBottom + 30} ${xb - 6},${yBottom + 4}"/>`;
+    body += `<path class="sgf-jump-head" d="M${xb - 6},${yBottom + 3} l-9,5 l2,-9 z"/>`;
+    body += text(mid, yBottom + 38, label, "sgf-callout", "middle", 15);
+  });
+  const w = x0 + cols * cellW + 8;
+  const h = yBottom + arrowH + 2;
+  const said = f.rows.map((row) => row.map(show).join(" to ")).join("; ");
+  return svg(w, h, body, `Ratio table, ${f.headers.join(" and ")}: ${said}`);
+}
+
 function fractionBars(f) {
   const W = 420;
   const rowH = 40;
@@ -440,7 +510,7 @@ export const SHAPE_FIGURES = {
   shape,
   prism,
   tape,
-  ratioTable: htmlTable,
+  ratioTable,
   table: htmlTable,
   fractionBars,
   hundredGrid,
@@ -474,6 +544,11 @@ export const SHAPE_FIGURE_CSS = `
 .sgf-hang{stroke:var(--sg-text,#1d2a36);stroke-width:2}
 .sgf-pan{fill:color-mix(in srgb,var(--sg,#1f6fb2) 12%,#fff);stroke:var(--sg-text,#1d2a36);stroke-width:2}
 .sgf-eq{font-size:30px;font-weight:800}
+.sgf-rt-label{fill:color-mix(in srgb,var(--sg,#1f6fb2) 14%,#fff);stroke:var(--sg-text,#1d2a36);stroke-width:1.5}
+.sgf-rt-cell{fill:#fff;stroke:var(--sg-text,#1d2a36);stroke-width:1.5}
+.sgf-rt-cell.sgf-on{fill:color-mix(in srgb,var(--sg,#1f6fb2) 22%,#fff)}
+.sgf-rt-head{font-weight:700}
+.sgf-rt-v{font-weight:600}
 .sgf-table{border-collapse:collapse;font-variant-numeric:tabular-nums lining-nums;font-size:17px;min-width:240px}
 .sgf-table th,.sgf-table td{border:1.5px solid var(--sg-text,#1d2a36);padding:8px 18px;text-align:center}
 .sgf-table th{background:color-mix(in srgb,var(--sg,#1f6fb2) 14%,#fff);font-weight:700}

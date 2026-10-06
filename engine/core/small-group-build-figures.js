@@ -13,7 +13,7 @@
 // small-group-build-figures-shapes.js.
 
 import { esc, fmt, mathHtml, svg, text, textWidth } from "./small-group-build-figure-kit.js";
-import { SHAPE_FIGURES } from "./small-group-build-figures-shapes.js";
+import { SHAPE_FIGURE_CSS, SHAPE_FIGURES } from "./small-group-build-figures-shapes.js";
 
 /** Choose a label interval so at most ~12 tick labels print. */
 function labelInterval(min, max, step, requested) {
@@ -372,3 +372,6 @@ export const FIGURE_CSS = `
 .sgf-median{stroke:var(--sg,#1f6fb2);stroke-width:4}
 .sgf-bar{fill:color-mix(in srgb,var(--sg,#1f6fb2) 30%,#fff);stroke:var(--sg-text,#1d2a36);stroke-width:1.5}
 `;
+
+/** Everything a page outside the studio needs to draw any Build figure. */
+export const ALL_FIGURE_CSS = `${FIGURE_CSS}${SHAPE_FIGURE_CSS}`;

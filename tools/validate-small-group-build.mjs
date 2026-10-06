@@ -95,7 +95,7 @@ export function arithmeticErrors(text) {
   return errors;
 }
 
-function checkText(err, path, value, { limit, es = true, obj } = {}) {
+export function checkText(err, path, value, { limit, es = true, obj } = {}) {
   if (!isStr(value)) return err(`${path} missing`);
   if (limit && words(value) > limit) err(`${path} is ${words(value)} words (max ${limit})`);
   for (const [re, msg] of BANNED) if (re.test(value)) err(`${path} ${msg}`);
@@ -118,7 +118,7 @@ const UNITS = new Set(
 export const mathHasWords = (line) =>
   (String(line).match(/[A-Za-z]{2,}/g) || []).some((w) => !UNITS.has(w));
 
-function checkMathEs(err, path, math, mathEs) {
+export function checkMathEs(err, path, math, mathEs) {
   const lines = Array.isArray(math) ? math : [math];
   if (!lines.some(mathHasWords)) {
     if (mathEs !== undefined) err(`${path}Es is set but the math has no words to translate`);
@@ -133,7 +133,7 @@ function checkMathEs(err, path, math, mathEs) {
   });
 }
 
-function checkMath(err, path, math) {
+export function checkMath(err, path, math) {
   const lines = Array.isArray(math) ? math : [math];
   for (const line of lines) {
     if (!isStr(line)) return err(`${path} empty`);
@@ -163,6 +163,19 @@ function checkExample(err, path, ex, { together = false } = {}) {
       if (!isStr(s.answer)) err(`${p}.answer missing (every together step needs one)`);
       else for (const e of arithmeticErrors(s.answer)) err(`${p}.answer ${e}`);
       if (s.do) err(`${p} uses "do" — together steps use ask/answer`);
+      if (s.accept !== undefined) {
+        // A typed together step: its box must accept the step's own answer.
+        if (!Array.isArray(s.accept) || !s.accept.length || !s.accept.every(isStr))
+          err(`${p}.accept must be a non-empty string array`);
+        else {
+          // "100 × 3 = 300 centimeters" shows its work; the result follows the last "=".
+          const result = String(s.answer).split("=").pop();
+          const lead = result.match(/[−-]?\d[\d,]*(?:\.\d+)?/);
+          const want = lead ? numericValue(lead[0]) : null;
+          if (want !== null && !s.accept.some((x) => numericValue(x) === want))
+            err(`${p}.accept has no entry equal to the answer's number "${lead[0]}"`);
+        }
+      }
     } else {
       checkText(err, `${p}.do`, s.do, { limit: LIMITS.do, obj: s });
       if (s.math !== undefined) {

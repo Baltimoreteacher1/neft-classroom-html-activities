@@ -2231,6 +2231,7 @@
           extension: l.extension,
           vocabulary: l.vocabulary,
           frame: l.frame,
+          workshop: l.workshop,
         })),
       })),
     };
@@ -2244,6 +2245,11 @@
       return;
     }
     const studioScript = engine.textContent;
+    const modelScript = document.getElementById("fluency-models")?.textContent;
+    if (!modelScript) {
+      toast("Student download is unavailable: the model library could not be found.");
+      return;
+    }
 
     const htmlString = `<!doctype html>
 <html lang="en" data-student="true" data-theme="light">
@@ -2262,7 +2268,7 @@
     <div class="brand">
       <span class="brand-badge" aria-hidden="true">R6</span>
       <span>
-        <span class="brand-series">Reveal Math · McGraw Hill · Grade 6</span>
+        <span class="brand-series">EduWonderLab · Grade 6</span>
         <span class="brand-title">Student Practice Studio</span>
       </span>
     </div>
@@ -2282,6 +2288,7 @@
   <div class="wrap"><div class="footer-grid"><div><p><strong>Reveal Math · Grade 6 · Student Practice Edition.</strong> Try a strategy, check the result, and explain your thinking. Work stays in this browser tab.</p></div></div></div>
 </footer>
 <script>window.FluencyData = ${JSON.stringify(studentData).replace(/<\/script/gi, "<\\/script")};<\/script>
+<script id="fluency-models">${modelScript}<\/script>
 <script id="fluency-studio">${studioScript}<\/script>
 <script>
   const themeBtn = document.getElementById('themeBtn');

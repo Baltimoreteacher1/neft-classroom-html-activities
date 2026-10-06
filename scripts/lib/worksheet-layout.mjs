@@ -48,7 +48,15 @@ export function packetHeader(
 
 /** "Explain your thinking" — the lesson's own discourse prompt, with its sentence frame. */
 export function explainBlock(cfg, { supported = false } = {}) {
-  const d = cfg.explore?.discourse;
+  // A small group explains with its own authored talk prompt; the Explore
+  // discourse it inherited from the core lesson can name another measure.
+  const talk = cfg.launch?.practice?.talk;
+  const d = talk
+    ? {
+        prompt: talk.prompt.replace(/\{(\d+)\/(\d+)\}/g, "$1/$2"),
+        sentenceFrame: talk.frames.join("  ·  "),
+      }
+    : cfg.explore?.discourse;
   const prompt = d?.prompt || d?.question;
   if (!prompt) return "";
   const frame =
