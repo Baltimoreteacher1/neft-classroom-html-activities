@@ -20,6 +20,7 @@ window.FluencyStudio = (() => {
     Object.fromEntries(lessons.map((l) => [l.id, l])),
   );
   const levels = Object.assign(Object.create(null), {
+    workshop: "Lesson workshop · 8 tasks",
     foundation: "Build foundations · 4 tasks",
     core: "Connect & apply · 8 tasks",
     stretch: "Extend & explain · 4 tasks",
@@ -39,6 +40,7 @@ window.FluencyStudio = (() => {
   let isStudent =
     document.documentElement.dataset.student === "true" ||
     document.body.classList.contains("mode-student");
+  if (isStudent) level = "workshop";
   const session = new Map();
   const storageLimit = 3500000;
   let storageAvailable = true,
@@ -84,7 +86,7 @@ window.FluencyStudio = (() => {
       }
       const saved = JSON.parse(raw);
       if (saved.version !== 4 || !saved.sets || typeof saved.sets !== "object") return;
-      for (const [key, set] of Object.entries(saved.sets).slice(0, 162)) {
+      for (const [key, set] of Object.entries(saved.sets).slice(0, 216)) {
         const parts = key.split("-"),
           tier = parts.pop(),
           id = parts.join("-");
@@ -174,6 +176,7 @@ window.FluencyStudio = (() => {
     saveTimer = setTimeout(save, 200);
   }
   function problems(l) {
+    if (level === "workshop") return l.workshop.tasks;
     const base = (l.practice || []).map((p, i) => ({
       ...p,
       label: `Foundation ${i + 1}`,
@@ -260,8 +263,37 @@ window.FluencyStudio = (() => {
     return '<div class="work-lines" aria-label="Ruled lines for handwritten work"></div>';
   }
 
+  function workshopMarkup(l) {
+    const w = l.workshop;
+    if (!w) return "";
+    return `<section class="fl-workshop-intro"><div class="fl-workshop-goal"><h2>Lesson ${e(l.id)}: ${e(l.title)}</h2><p>${e(w.goal)}</p></div><ol class="fl-learning-sequence" aria-label="Learning sequence"><li>See an example</li><li>Try with guidance</li><li>Practice independently</li><li>Repair & apply</li></ol><details class="fl-model-lesson" ${level === "workshop" ? "open" : ""}><summary>Learn with a visual model and worked example</summary><div class="fl-model-lesson-grid">${window.FluencyModels.render(w.model, "Worked-example model · different from your practice tasks")}<div class="fl-example-lesson"><h3>A worked example</h3><p>${e(w.example.prompt)}</p><ol>${w.example.steps.map((step) => `<li>${e(step)}</li>`).join("")}</ol><p class="fl-worked-result"><strong>Result:</strong> ${e(w.example.answer)}</p><aside><strong>Watch for this mistake</strong><p>${e(w.misconception.claim)}</p><p>${e(w.misconception.repair)}</p></aside></div></div><div class="fl-model-lesson-footer"><p>Try the first two tasks with the steps. Then try four new problems, repair an error, and apply the idea.</p>${button("begin", "Start practicing")}</div></details>${level !== "workshop" ? button("workshop", "Open the complete lesson workshop") : ""}</section>`;
+  }
+  function workshopSheet(l, key = false) {
+    const w = l.workshop,
+      items = w.tasks;
+    const header = (page, total) =>
+      `<div class="sheet-meta"><span>EDUWONDERLAB · GRADE 6 LESSON WORKSHOP</span><span>${key ? "SEPARATE WORKED KEY" : "STUDENT PRACTICE"} · ${page}/${total}</span></div><h2>Lesson ${e(l.id)}: ${e(l.title)}</h2><p>${e(w.goal)}</p>`;
+    const pages = [
+      `<section class="sheet fl-workshop-sheet fl-teaching-sheet">${header(1, 9)}<h3>Learn with a model</h3>${window.FluencyModels.render(w.model, "Model for the worked example")}<h3>Worked example: ${e(w.example.prompt)}</h3><ol>${w.example.steps.map((step) => `<li>${e(step)}</li>`).join("")}</ol><p><strong>Result:</strong> ${e(w.example.answer)}</p><div class="support-box"><strong>Useful words</strong><p>${l.vocabulary.map((v) => `${e(v.term)}: ${e(v.def)}`).join("<br>")}</p><strong>Explain:</strong><p>${e(l.frame)}</p></div><footer>This example is solved for learning. The following pages contain new practice.</footer></section>`,
+    ];
+    for (let i = 0; i < items.length; i++) {
+      pages.push(
+        `<section class="sheet fl-workshop-sheet">${header(i + 2, 9)}${!key ? "<p>Show your work with words, equations, or a model. Put units in your explanation.</p>" : ""}<div class="fl-print-tasks">${items
+          .slice(i, i + 1)
+          .map(
+            (p, j) =>
+              `<article class="paper-task"><h3>${i + j + 1}. ${e(p.label)}</h3><p>${e(p.prompt)}</p>${p.options ? `<p>${p.options.map((o) => `□ ${e(o)}`).join(" &nbsp; ")}</p>` : ""}${i < 6 ? window.FluencyModels.render(p.model, "Model for this problem") : ""}${key ? `<div class="key-answer"><strong>${e(p.answer)}</strong><p>${e(p.explanation)}</p></div>` : `${p.guidance?.length ? `<ol class="fl-print-guidance">${p.guidance.map((step) => `<li>${e(step)}</li>`).join("")}</ol>` : ""}${workGrid()}`}</article>`,
+          )
+          .join(
+            "",
+          )}</div><footer>${key ? "Keep this worked key separate from student practice." : "Explain a key step: I used ___ because ___. I checked by ___."}</footer></section>`,
+      );
+    }
+    return pages.join("");
+  }
   function worksheet(l, key = false) {
     const items = problems(l);
+    if (level === "workshop") return workshopSheet(l, key);
     const chunks = [];
     for (let i = 0; i < items.length; i += 4) chunks.push(items.slice(i, i + 4));
 
@@ -476,6 +508,7 @@ window.FluencyStudio = (() => {
     return values.length > 1 && values.every(Number.isFinite) ? values : null;
   }
   function answerKind(p) {
+    if (p.mode === "choice") return "choice";
     if (p.mode === "number") return "number";
     if (/^\([^()]+,[^()]+\)$/.test(p.answer)) return "coordinate";
     if (/^[\d.]+\s*:\s*[\d.]+$/.test(p.answer)) return "ratio";
@@ -485,7 +518,7 @@ window.FluencyStudio = (() => {
       )
         ? "set"
         : "sequence";
-    if (/^[<>≤≥]$/.test(p.answer)) return "symbol";
+    if (/^[<>≤≥=]$/.test(p.answer)) return "symbol";
     if (/^\d+[–-]\d+$/.test(p.answer)) return "interval";
     // Explanations, algebra and answers with units need a human comparison.
     return "review";
@@ -507,6 +540,15 @@ window.FluencyStudio = (() => {
         message:
           "This task asks for reasoning. Compare your work with the example, then explain what you checked.",
       };
+    if (kind === "choice") {
+      const match = s.toLowerCase() === target.toLowerCase();
+      return {
+        match,
+        message: match
+          ? "Correct. Now explain the evidence for your choice."
+          : "Not yet. Revisit the definition and the model, then try again.",
+      };
+    }
     if (/[a-z°²³$]/i.test(s.replace(/\bto\b/gi, "")))
       return {
         match: false,
@@ -621,6 +663,7 @@ window.FluencyStudio = (() => {
     return null;
   }
   function hintsFor(p) {
+    if (Array.isArray(p.hints) && p.hints.length === 2) return p.hints;
     const q = p.prompt.toLowerCase();
     // Specific tasks precede broader topic words. Word boundaries keep, for
     // example, "means", "operation", and "tickets" out of mean/ratio/tick rules.
@@ -1881,7 +1924,7 @@ window.FluencyStudio = (() => {
   function practice(l) {
     const set = currentSet(),
       items = problems(l);
-    return `<div id="fl-progress-area">${progressMarkup(set)}</div>
+    return `${workshopMarkup(l)}<div id="fl-progress-area">${progressMarkup(set)}</div>
       <div class="fl-workspace">
         <nav class="fl-task-rail" aria-label="Tasks in this practice set"><h2>Your practice path</h2><ol>${items.map((p, i) => `<li><button type="button" data-studio="task" data-task="${i}" ${i === set.active ? 'aria-current="step"' : ""}><span class="fl-task-number">${i + 1}</span><span><b>${e(p.label)}</b><small>${e(statusLabel[set.answers[i].status])}</small></span></button></li>`).join("")}</ol><p>Take your time. A useful explanation matters more than speed.</p>${button("summary", "Review this set")}</nav>
         <div class="fl-task-area" id="fl-task-area">${taskMarkup(l, set.active)}</div>
@@ -1910,11 +1953,13 @@ window.FluencyStudio = (() => {
       <div class="fl-task-meta"><span>Task ${i + 1} of ${set.answers.length}</span><span class="fl-status fl-status-${a.status}">${e(statusLabel[a.status])}</span></div>
       <h2 id="fl-prompt" tabindex="-1">${e(p.prompt)}</h2>
       ${p.skillText ? `<p class="fl-skill">Practicing: ${e(p.skillText)}</p>` : ""}
+      ${p.model ? `<div class="fl-task-model">${i < 2 ? window.FluencyModels.render(p.model, p.modelCaption) : `<details><summary>Open a visual model</summary>${window.FluencyModels.render(p.model, p.modelCaption)}</details>`}</div>` : ""}
+      ${p.guidance?.length ? `<aside class="fl-guided-steps"><h3>Work through these steps</h3><ol>${p.guidance.map((step) => `<li>${e(step)}</li>`).join("")}</ol></aside>` : ""}
       <form id="fl-answer-form" data-item="${i}" novalidate>
-        <label for="fl-response">${answerLabel}</label>
-        <p class="fl-field-help" id="fl-answer-help">${needsReview ? "Use words, numbers, an equation, or a description of your model. You will compare your reasoning with a worked example." : kind === "number" ? "Enter just the value. Fractions use /, mixed numbers use a space, and percents use %. Follow any form requested in the question." : "Keep signs and order. Put extra explanation in the reasoning box below."}</p>
-        <textarea id="fl-response" name="response" rows="${needsReview ? 3 : 2}" maxlength="1500" aria-describedby="fl-answer-help fl-feedback" ${a.tone === "retry" ? 'aria-invalid="true"' : ""}>${e(a.text)}</textarea>
-        <div class="fl-math-keys" role="group" aria-label="Insert a math symbol">${[
+        ${kind !== "choice" ? `<label for="fl-response">${answerLabel}</label>` : ""}
+        <p class="fl-field-help" id="fl-answer-help">${needsReview ? "Use words, numbers, an equation, or a description of your model. You will compare your reasoning with a worked example." : kind === "choice" ? "Choose one response, then explain why it fits the question." : kind === "number" ? "Enter just the value. Fractions use /, mixed numbers use a space, and percents use %. Follow any form requested in the question." : "Keep signs and order. Put extra explanation in the reasoning box below."}</p>
+        ${kind === "choice" ? `<fieldset class="fl-choice-group" aria-describedby="fl-answer-help fl-feedback"><legend>Choose your answer</legend>${p.options.map((option, j) => `<label for="${j === 0 ? "fl-response" : "fl-choice-" + j}"><input type="radio" id="${j === 0 ? "fl-response" : "fl-choice-" + j}" name="response" value="${e(option)}" ${a.text === option ? "checked" : ""}>${e(option)}</label>`).join("")}</fieldset>` : `<textarea id="fl-response" name="response" rows="${needsReview ? 3 : 2}" maxlength="1500" aria-describedby="fl-answer-help fl-feedback" ${a.tone === "retry" ? 'aria-invalid="true"' : ""}>${e(a.text)}</textarea>`}
+        <div ${kind === "choice" ? "hidden" : ""} class="fl-math-keys" role="group" aria-label="Insert a math symbol">${[
           ["/", "Fraction slash"],
           ["−", "Minus"],
           ["×", "Multiply"],
@@ -1938,7 +1983,8 @@ window.FluencyStudio = (() => {
       ${a.hints ? `<aside class="fl-hints" aria-label="Hints"><h3>Start here</h3><p>${e(hints[0])}</p>${a.hints > 1 ? `<h3>Set it up</h3><p>${e(hints[1])}</p>` : ""}</aside>` : ""}
       <div id="fl-sketch" class="fl-sketch" ${a.scratchOpen ? "" : "hidden"}><div class="fl-sketch-tools" role="group" aria-label="Sketch tools">${button("pen", "Pen", 'aria-pressed="true"')}${button("eraser", "Eraser", 'aria-pressed="false"')}${button("undo", "Undo stroke")}${button("clear-sketch", "Clear drawing")}</div><canvas id="fl-canvas" aria-label="Optional drawing area. You may type the same work in the answer or reasoning box."></canvas><p>Sketch with a mouse, touch, or pen. Typing your work above is an equivalent option. Drawings stay with this task.</p></div>
       <div class="fl-example-control">${button("example", a.revealed ? "Hide worked example" : "Show worked example", `aria-expanded="${a.revealed}" aria-controls="fl-example"`)}</div>
-      <section id="fl-example" class="fl-example" ${a.revealed ? "" : "hidden"} aria-label="Worked example"><h3>Compare the reasoning</h3><p class="fl-example-answer">${e(p.answer)}</p><p>${e(p.explanation)}</p><label for="fl-reflection">What matches, or what would you change?</label><textarea id="fl-reflection" maxlength="1500" rows="3" placeholder="I checked… / I changed… because…">${e(a.reflection)}</textarea><p class="fl-field-help">Check the calculation or claim, the explanation, and any units. Different valid methods are welcome. A teacher or partner can help you review.</p>${button("reviewed", "Record my self-review")}</section>
+      <section id="fl-example" class="fl-example" ${a.revealed ? "" : "hidden"} aria-label="Worked example"><h3>Compare the reasoning</h3><p class="fl-example-answer">${e(p.answer)}</p>${p.steps ? `<ol class="fl-solution-steps">${p.steps.map((step) => `<li>${e(step)}</li>`).join("")}</ol>` : `<p>${e(p.explanation)}</p>`}<label for="fl-reflection">What matches, or what would you change?</label><textarea id="fl-reflection" maxlength="1500" rows="3" placeholder="I checked… / I changed… because…">${e(a.reflection)}</textarea><p class="fl-field-help">Check the calculation or claim, the explanation, and any units. Different valid methods are welcome. A teacher or partner can help you review.</p>${button("reviewed", "Record my self-review")}</section>
+      ${p.frame ? `<p class="fl-language-frame"><strong>Explain your thinking:</strong> ${e(p.frame)}</p>` : ""}
       <fieldset class="fl-confidence"><legend>What do you need next?</legend>${[
         ["ready", "I can explain it"],
         ["practice", "Another example"],
@@ -1982,7 +2028,7 @@ window.FluencyStudio = (() => {
       sketchCleanup = null;
     }
     document.getElementById("fl-task-area").innerHTML =
-      `<section class="fl-task fl-summary"><h2 id="fl-summary-title" tabindex="-1">Pause. Look at your thinking.</h2><p>Use this record to choose a useful next step. A checked answer is one piece of evidence; explaining and applying the idea matter too.</p>${progressMarkup(set)}<ul>${items.map((p, i) => `<li><button type="button" data-studio="task" data-task="${i}"><span>${i + 1}. ${e(p.label)}</span><b>${e(statusLabel[set.answers[i].status])}</b></button></li>`).join("")}</ul><div class="fl-next-step"><h3>A next step for you</h3><p>${set.answers.some((a) => ["retry", "draft", "unstarted"].includes(a.status)) ? "Revisit an unfinished task. Use a model or ask a partner to talk through the first step." : set.answers.some((a) => a.status === "supported" || a.status === "reviewed") ? "Try a different problem without the example open. Explain the key step to a partner." : "Choose a connect-and-apply task, then explain why your method works."}</p></div><div class="fl-actions">${button("download", "Download my work")}${button("continue-tier", level === "foundation" ? "Try connect & apply" : level === "core" ? "Try extend & explain" : "Return to foundations")}${button("mode", "Explore a math investigation", 'data-mode="labs"')}</div></section>`;
+      `<section class="fl-task fl-summary"><h2 id="fl-summary-title" tabindex="-1">Pause. Look at your thinking.</h2><p>Use this record to choose a useful next step. A checked answer is one piece of evidence; explaining and applying the idea matter too.</p>${progressMarkup(set)}<ul>${items.map((p, i) => `<li><button type="button" data-studio="task" data-task="${i}"><span>${i + 1}. ${e(p.label)}</span><b>${e(statusLabel[set.answers[i].status])}</b></button></li>`).join("")}</ul><div class="fl-next-step"><h3>A next step for you</h3><p>${set.answers.some((a) => ["retry", "draft", "unstarted"].includes(a.status)) ? "Revisit an unfinished task. Use a model or ask a partner to talk through the first step." : set.answers.some((a) => a.status === "supported" || a.status === "reviewed") ? "Try a different problem without the example open. Explain the key step to a partner." : "Choose a connect-and-apply task, then explain why your method works."}</p></div><div class="fl-actions">${button("download", "Download my work")}${button("continue-tier", level === "workshop" ? "Try foundations" : level === "foundation" ? "Try connect & apply" : level === "core" ? "Try extend & explain" : "Return to foundations")}${button("mode", "Explore a math investigation", 'data-mode="labs"')}</div></section>`;
     document.getElementById("fl-summary-title").focus({ preventScroll: true });
   }
   function render() {
@@ -2220,6 +2266,12 @@ window.FluencyStudio = (() => {
       document.getElementById("fl-prompt")?.scrollIntoView({ block: "start" });
       return;
     }
+    if (act === "workshop") {
+      level = "workshop";
+      mode = "practice";
+      update("fl-prompt");
+      return;
+    }
     if (act === "mode") {
       if (modes[b.dataset.mode]) mode = b.dataset.mode;
       update(`fl-mode-${mode}`);
@@ -2267,7 +2319,14 @@ window.FluencyStudio = (() => {
       return;
     }
     if (act === "continue-tier") {
-      level = level === "foundation" ? "core" : level === "core" ? "stretch" : "foundation";
+      level =
+        level === "workshop"
+          ? "foundation"
+          : level === "foundation"
+            ? "core"
+            : level === "core"
+              ? "stretch"
+              : "foundation";
       update("fl-prompt");
       return;
     }
@@ -2346,7 +2405,10 @@ window.FluencyStudio = (() => {
         "fl-reasoning": "reasoning",
         "fl-reflection": "reflection",
       },
-      field = fields[event.target.id];
+      field =
+        event.target.name === "response" && event.target.type === "radio"
+          ? "text"
+          : fields[event.target.id];
     if (!field) return;
     const a = currentSet().answers[currentSet().active];
     a[field] = event.target.value.slice(0, 1500);
@@ -2422,7 +2484,11 @@ window.FluencyStudio = (() => {
     a.message = result.message;
     if (result.match) {
       a.status =
-        a.status === "checked" ? "checked" : a.hints > 0 || a.exposed ? "supported" : "checked";
+        a.status === "checked"
+          ? "checked"
+          : a.hints > 0 || a.exposed || p.guidance?.length
+            ? "supported"
+            : "checked";
       a.tone = "success";
     } else {
       a.status = "retry";
@@ -2590,6 +2656,7 @@ window.FluencyStudio = (() => {
     audit() {
       return {
         lessons: lessons.length,
+        workshopTasks: lessons.reduce((n, l) => n + l.workshop.tasks.length, 0),
         foundationTasks: lessons.reduce((n, l) => n + l.practice.length, 0),
         automatic: lessons.flatMap((l) => l.practice).filter((p) => answerKind(p) !== "review")
           .length,

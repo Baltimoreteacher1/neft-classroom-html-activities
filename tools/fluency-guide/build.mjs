@@ -17,6 +17,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { validateWorkshops, workshops } from "./workshop-bank.mjs";
 
 const root = dirname(fileURLToPath(import.meta.url));
 const siteRoot = join(root, "../..");
@@ -40,6 +41,7 @@ const fail = (msg) => problems.push(msg);
 
 /* ------------------------------------------------------------------ merge */
 const core = readJSON("src/data/curriculum.core.json");
+validateWorkshops(core.units.flatMap((u) => u.lessons.map((l) => l.id))).forEach(fail);
 core.studentPath = "../";
 core.pdfPath = "printables/";
 const practice = readJSON("src/data/practice.json");
@@ -52,6 +54,7 @@ const lessonEnrich = Object.assign(
 core.units.forEach((unit) => {
   unit.lessons.forEach((lesson) => {
     lesson.practice = practice[lesson.id];
+    lesson.workshop = workshops[lesson.id];
     if (!Array.isArray(lesson.practice) || lesson.practice.length !== 4)
       fail(`lesson ${lesson.id}: expected 4 prerequisite practice tasks`);
     (lesson.practice || []).forEach((p, i) => {
@@ -150,6 +153,8 @@ const stats = {
   spineSkills: core.spine.length,
   practiceItems: lessons.reduce((n, l) => n + (l.practice || []).length, 0),
   drillItems: core.spine.reduce((n, s) => n + s.drill.items.length, 0),
+  workshops: lessons.filter((l) => l.workshop).length,
+  workshopTasks: lessons.reduce((n, l) => n + l.workshop.tasks.length, 0),
 };
 
 if (problems.length) {
@@ -166,7 +171,7 @@ if (process.argv.includes("--check")) process.exit(0);
 // Both editions use the same practice engine; the data allowlist below
 // controls which lesson fields are available in public practice.
 const studio = read("src/studio.js");
-const styles = ["styles.css", "studio.css", "labs.css"]
+const styles = ["styles.css", "studio.css", "labs.css", "workshop.css"]
   .map((file) => read(`src/${file}`))
   .join("\n");
 const html = read("src/template.html.template")
@@ -184,6 +189,7 @@ const html = read("src/template.html.template")
   .replace("/*__TEACHER_STYLES__*/", () => read("src/teacher.css"))
   .replace("/*__DATA__*/", () => JSON.stringify(core).replace(/<\/script/gi, "<\\/script"))
   .replace("/*__STUDIO__*/", () => studio)
+  .replace("/*__MODELS__*/", () => read("src/models.js"))
   .replace("/*__APP__*/", () => read("src/app.js"));
 
 mkdirSync(join(target, "teacher"), { recursive: true });
@@ -211,6 +217,7 @@ const studentData = {
           "extension",
           "vocabulary",
           "frame",
+          "workshop",
         ].map((k) => [k, l[k]]),
       ),
     ),
@@ -220,5 +227,6 @@ const studentHTML = read("src/student-template.html.template")
   .replace("/*__STYLES__*/", () => styles)
   .replace("/*__DATA__*/", () => JSON.stringify(studentData).replace(/<\/script/gi, "<\\/script"))
   .replace("/*__STUDIO__*/", () => studio);
-writeFileSync(join(target, "index.html"), studentHTML);
+const studentWithModels = studentHTML.replace("/*__MODELS__*/", () => read("src/models.js"));
+writeFileSync(join(target, "index.html"), studentWithModels);
 console.log("✓ student.html written — standalone student practice");

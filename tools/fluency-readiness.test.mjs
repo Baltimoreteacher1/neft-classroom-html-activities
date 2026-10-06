@@ -37,6 +37,7 @@ const publicLessonFields = [
   "extension",
   "vocabulary",
   "frame",
+  "workshop",
 ].sort();
 for (const l of lessons) {
   assert.deepEqual(l.practice, source[l.id], `stale practice bank: ${l.id}`);
@@ -108,7 +109,7 @@ for (const id of ["1-1", "10-1", "__proto__", "bad"])
 assert.ok(teacherHTML.includes(read("tools/fluency-guide/src/app.js")), "app.js not rebuilt");
 const studioSource = read("tools/fluency-guide/src/studio.js");
 new vm.Script(studioSource, { filename: "src/studio.js" });
-const commonStyles = ["styles.css", "studio.css", "labs.css"]
+const commonStyles = ["styles.css", "studio.css", "labs.css", "workshop.css"]
   .map((name) => read(`tools/fluency-guide/src/${name}`))
   .join("\n");
 for (const [edition, html] of [

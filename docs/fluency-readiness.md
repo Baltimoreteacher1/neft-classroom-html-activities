@@ -10,7 +10,9 @@ In Teacher view, use the Fluency & Readiness shortcut in Curriculum Hub. For a s
 
 The guide covers 54 district lessons in Units 2–9: 216 foundation tasks, 162 A/B/C checks, 54 extensions, 54 partner activities, and 12 core-skill drills. Units 1 and 10 and other unsupported lesson IDs do not receive a fluency link. Lesson 2-6 is whole-number division, matching the site's lesson manifest.
 
-Choose Build foundations (4 tasks), Connect & apply (8), or Extend & explain (4). Focused practice supports typed reasoning, optional sketches, two strategy hints, worked examples, reflection, a set summary and a local work download. Six investigations address statistics, ratios, fractions, perpendicular height, coordinates and equations through predictions, manipulable models and explanations.
+Student lesson launchers now open **Lesson workshop (8 tasks)**. Each of the 54 workshops includes a learning objective, a labeled model with equivalent text, a distinct three-step worked example, two guided tasks, four independent tasks, error analysis and contextual transfer: **432 additional tasks**. The first six tasks use objective numeric, choice, comparison, ratio or coordinate checking; the final two ask for self-reviewed reasoning. Guided responses are recorded as supported work. Models include data displays, ratio counters, fraction groups, percent grids, area diagrams, foldable prism and pyramid nets, signed number lines, coordinates, inequalities and balanced equations. Conversions include length, mass, capacity and supplied approximate rates.
+
+Build foundations (4 tasks), Connect & apply (8), and Extend & explain (4) remain available with all their original content. Existing foundation links still work. Focused practice supports typed reasoning, optional sketches, two strategy hints, worked examples, reflection, a set summary and a local work download. Six investigations address statistics, ratios, fractions, perpendicular height, coordinates and equations through predictions, manipulable models and explanations.
 
 The checker distinguishes correct answers entered independently, answers checked with support and self-reviewed reasoning. Viewing an example does not finish a task. The parser preserves signs, order, requested fraction/decimal/percent forms and the requested ratio scale; it does not execute expressions. These are practice records, not grades or evidence of mastery by themselves.
 
@@ -31,6 +33,8 @@ Maintain sources under `tools/fluency-guide/src/`; do not edit generated hosted 
 - `data/enrich-unit-*.json`: B/C checks, vocabulary, extensions and teacher supports.
 - `data/enrich-spine.json`: core-skill drills and progression notes.
 - `studio.js`, `studio.css`, `labs.css`: the shared studio, strict checker, hints, investigations, sketch/export and print behavior.
+- `workshop-bank.mjs`: deterministic authoring for all 54 additional workshops, with inspectable quantities and build-time validation.
+- `models.js`, `workshop.css`: local SVG/semantic-table models, text equivalents, instructional presentation and print layout.
 - `app.js`, both HTML templates, `styles.css`, `teacher.css`: teacher navigation and edition presentation.
 
 ```sh
@@ -38,7 +42,12 @@ node tools/fluency-guide/build.mjs --check
 node tools/fluency-guide/build.mjs
 node tools/fluency-readiness.test.mjs
 node --test tools/fluency-guide/math-audit.test.cjs tools/fluency-guide/state-audit.test.cjs
+node --test tools/fluency-guide/workshop-audit.test.mjs
 ```
+
+The public allowlist intentionally includes `workshop`, with its learner examples and comparison answers. Teacher diagnostics remain excluded. The teacher's standalone student HTML export embeds both the public workshop bank and the model library; it works without a server.
+
+Printing the workshop produces a nine-page booklet: one model/example/vocabulary page followed by one task per page with substantial workspace. A separate worked key contains the eight practice solutions. Existing core unit PDFs are unchanged. Run `npm run validate:fluency-workshops-browser` to verify the workshop browser flows. The audit starts and closes its own loopback-only server on an available port; `FLUENCY_PREVIEW_URL` can select an existing local preview instead. This command is wired into the full validation gate. The audit checks all 54 lessons at three viewport widths, submits all 432 tasks through DOM events, inspects SVG bounds, samples axe accessibility in both themes, verifies recovery/export, and renders every student booklet to check actual pagination. Screenshots, PDF packets and the JSON report remain local under `output/playwright/`; offline HTML export checks use a temporary directory outside the site tree.
 
 The generator writes the teacher and student pages. The Vite build copies the committed pages and PDFs to `dist`; no additional runtime dependency or deployment service is required. `assets/curriculum-fluency.js` and `data/fluency-resources.json` retain the 54 known lesson mappings. Run the repository's route/auth/link checks, `npm run validate` and `npm run build` before release. `npm run validate:fluency` checks the separate Grades 1–8 lab, so it does not replace these guide tests.
 
