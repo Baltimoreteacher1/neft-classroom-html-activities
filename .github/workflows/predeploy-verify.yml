@@ -120,6 +120,13 @@ jobs:
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: sudo apt-get update && sudo apt-get install -y ripgrep
 
+      # validate:fluency-workshops-browser shells out to pdfinfo (poppler) when
+      # it checks generated workshop PDFs. ubuntu-latest does not ship it, so the
+      # gate died with spawnSync pdfinfo ENOENT — unrelated to the PR under test.
+      - name: Install poppler (pdfinfo)
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: sudo apt-get install -y poppler-utils
+
       # ── Independent checks — each reports even if an earlier one failed ──────
       # `steps.install.outcome` guards them all: !cancelled() alone would run
       # them with no node_modules and bury the real error under module-not-found.

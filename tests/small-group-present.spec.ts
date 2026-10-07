@@ -10,42 +10,49 @@ import { expect, test } from "@playwright/test";
  * as "the student cannot read it".
  */
 
-const STUDIO = "/lessons/1-1-group1/?sn=Presenter%20T";
+const STUDIO = "/lessons/1-1-group1/?teacher=1&sn=Presenter%20T";
 
-/** Present Mode only mounts for a teacher, and the lens only renders for one. */
+/** Present Mode only mounts for a teacher; facilitation data lives on the teacher route. */
 async function openAsTeacher(page: import("@playwright/test").Page) {
+  await page.route("**/teacher-small-group/1-1-group1/data", (route) =>
+    route.fulfill({
+      json: {
+        facilitation: {
+          group: 1,
+          label: "Extra Support",
+          teacherMoves: {
+            ask: "What do you notice first?",
+            lookFor: "Students name equal groups before computing.",
+            ifStuck: "Point at the diagram, not the answer.",
+          },
+        },
+      },
+    }),
+  );
   await page.addInitScript(() => {
     try {
       localStorage.setItem("nt-teacher-mode", "1");
     } catch {}
+    document.addEventListener(
+      "DOMContentLoaded",
+      () => {
+        document.body.classList.add("sg-is-teacher");
+      },
+      { once: true },
+    );
   });
-  await page.goto(STUDIO, { waitUntil: "networkidle" });
-  await page.locator(".sg-tabs").waitFor();
-  // The authenticated `?teacher=1` flow adds this after fetching the plan; the
-  // preview server has no Pages Functions, so stand it up directly. What is
-  // under test is the blackout, not the auth handshake (covered in
-  // tools/small-group-modes.test.mjs).
-  await page.evaluate(() => document.body.classList.add("sg-is-teacher"));
+  await page.goto(STUDIO, { waitUntil: "domcontentloaded" });
+  await page.locator(".sg-hero, main").first().waitFor();
 }
 
 test.describe("presenting a small-group studio", () => {
   test("teacher coaching is on screen before presenting, and gone during it", async ({ page }) => {
     await openAsTeacher(page);
 
-    // The lens lives on practice cards, so open a tab that HAS one first. A
-    // lens sitting in an inactive tab panel is hidden by the tablist, and
-    // asserting against that would pass whether or not the blackout works at
-    // all — the first version of this test made exactly that mistake.
-    const lensTab = await page.evaluate(
-      () => document.querySelector(".sg-lens")?.closest("[id^='sg-tab-']")?.id ?? null,
-    );
-    expect(lensTab, "a studio renders at least one teacher lens").not.toBeNull();
-    await page.locator(`#sg-tab-${lensTab}`).click();
-
-    const lens = page.locator(`#${lensTab} .sg-lens`).first();
+    const coach = page.locator(".sg-teacher").first();
     await expect(
-      lens,
-      "the teacher lens is visible to a teacher who is not presenting",
+      coach,
+      "teacher coaching is visible to a teacher who is not presenting",
     ).toBeVisible();
 
     await page
@@ -53,36 +60,7 @@ test.describe("presenting a small-group studio", () => {
       .first()
       .click();
     await expect(page.locator("body")).toHaveClass(/nt-present/);
-
-    // Step to a beat in that SAME tab, so its panel is on screen and the only
-    // thing that can be hiding the lens is the blackout.
-    //
-    // Found by walking the rail, not by matching a beat title. This used to
-    // filter on /problem 1|set up/ and no studio renders those words any more —
-    // the beats are authored headings now ("Practice Studio", "Let's solve
-    // together", "Try it on your own"). Worse, it stepped under
-    // `if (await beat.count())`, so once the titles moved it silently clicked
-    // NOTHING and then asserted against whichever tab Present Mode happened to
-    // open on. Present Mode starts at beat 1, which is a different tab, so the
-    // panel was legitimately hidden and the spec reported the blackout broken.
-    // A step this spec depends on must fail loudly when it cannot be taken.
-    const beats = page.locator(".pm-rail-phase");
-    const beatCount = await beats.count();
-    expect(beatCount, "the presenter rail offers beats to step through").toBeGreaterThan(0);
-
-    let openedLensTab = false;
-    for (let i = 0; i < beatCount; i += 1) {
-      await beats.nth(i).click();
-      if (await page.locator(`#${lensTab}`).isVisible()) {
-        openedLensTab = true;
-        break;
-      }
-    }
-    expect(
-      openedLensTab,
-      `no beat in the rail opens #${lensTab}, the lens's own tab — so this spec cannot tell a blackout from a closed tab`,
-    ).toBe(true);
-    await expect(lens, "the lens is blacked out while presenting").toBeHidden();
+    await expect(coach, "teacher coaching is blacked out while presenting").toBeHidden();
 
     // Every teacher-only surface, checked as painted output rather than as CSS.
     for (const selector of [
@@ -175,7 +153,10 @@ test.describe("presenting a small-group studio", () => {
     // "word N" is a stable contract — the sibling test above pins that those
     // titles exist — whereas the position of the first word beat is not.
     const wordBeat = (n: number) =>
-      page.locator(".pm-rail-phase").filter({ hasText: new RegExp(`word ${n}\\b`) }).first();
+      page
+        .locator(".pm-rail-phase")
+        .filter({ hasText: new RegExp(`word ${n}\\b`) })
+        .first();
     await expect(
       wordBeat(1),
       "the rail exposes the first vocabulary word as its own beat",

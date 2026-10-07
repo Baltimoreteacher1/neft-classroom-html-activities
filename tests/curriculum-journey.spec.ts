@@ -163,20 +163,22 @@ test("the public curriculum landing is accessible", async ({ page }) => {
   expect(results.violations).toEqual([]);
 });
 
-
 test("weekly plan print keeps the selected view visible inside the library", async ({ page }) => {
   await enterTeacherMode(page);
   await page.locator("button[data-guide-teacher-view='week']").click();
   await expect(page.getByLabel("Monday lesson")).toBeVisible();
-  await page.evaluate(() => { window.print = () => {}; });
+  await page.evaluate(() => {
+    window.print = () => {};
+  });
   await page.getByRole("button", { name: "Print week", exact: true }).click();
   await page.emulateMedia({ media: "print" });
   await expect(page.locator("body")).toHaveClass(/ctw-printing/);
   await expect(page.locator("#curriculum-teacher-workflow .ctw-stage")).toBeVisible();
   await expect(page.getByLabel("Monday lesson")).toBeVisible();
-  await expect(page.locator("#curriculum-navigator")).toBeHidden();
+  await expect(page.locator(".curriculum-guide")).toBeHidden();
   await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
   await page.emulateMedia({ media: "screen" });
   await expect(page.locator("body")).not.toHaveClass(/ctw-printing/);
-  await expect(page.locator("#curriculum-navigator")).toBeVisible();
+  await expect(page.locator("#curriculum-teacher-workflow")).toBeVisible();
+  await expect(page.locator("#hub-library-collection")).toBeVisible();
 });
