@@ -1,6 +1,11 @@
 /* Native disclosures preserve the full library without dominating lesson discovery. */
 (() => {
-  if (!document.getElementById("curriculum-navigator")) return;
+  if (
+    !document.body.classList.contains("curriculum-home") &&
+    !document.getElementById("curriculum-navigator") &&
+    !document.getElementById("course-overview")
+  )
+    return;
 
   function reveal(target) {
     if (!target) return;
@@ -16,7 +21,16 @@
       const source = event.target instanceof Element ? event.target : null;
       if (!source) return;
       if (source.closest("[data-home-mode]")) {
-        document.getElementById("hub-mode-toggle")?.click();
+        const toggle = document.getElementById("hub-mode-toggle");
+        if (toggle) {
+          toggle.click();
+        } else {
+          document.body.classList.remove("teacher-mode");
+          try {
+            localStorage.setItem("nt-teacher-mode", "0");
+          } catch {}
+          document.dispatchEvent(new CustomEvent("nt:mode-change"));
+        }
       }
       if (source.closest("[data-guide-teacher-view], [data-audience='teacher']")) {
         reveal(
