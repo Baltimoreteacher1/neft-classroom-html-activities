@@ -1378,6 +1378,46 @@
     return writeStore(ownStore(from), to);
   }
 
+  /** Copy ONE lesson's configuration from one class to another, as an explicit
+   * override on the destination. This is the lesson-scoped sibling of
+   * copySectionSetup, and it is what a lesson-scoped surface should offer: on a
+   * page about lesson 3.4, "copy 601's supports to 602" that silently also
+   * moved 601's other eighty lessons would be the ambiguity the whole scope
+   * pass exists to remove.
+   *
+   * ISOLATION, which tools/lesson-supports.test.mjs pins: it writes the
+   * DESTINATION class only. The all-class lesson default, the source class and
+   * every unnamed class are left exactly as they were. */
+  function copyLessonToSection(lessonId, from, to) {
+    if (!parseLessonId(lessonId)) return false;
+    if (!isSection(from) || !isSection(to) || from === to) return false;
+    // The SOURCE's effective configuration — what a teacher sees on screen for
+    // that class — so copying an inherited setup produces the same result the
+    // teacher was looking at, now pinned as the destination's own override.
+    var profile = loadProfile(lessonId, from);
+    return saveProfile(lessonId, profile.keys, profile.preset, to);
+  }
+
+  /** Which classes own an override for this lesson. The supports surface needs
+   * this to tell a teacher that the lesson default they are editing will not
+   * reach 602, because 602 has its own. Returns [] when none do. */
+  function sectionsOverriding(lessonId) {
+    var parsed = readRaw();
+    if (!parsed || !parsed.sections) return [];
+    return sections().filter(function (sec) {
+      var map = normalizeMap(parsed.sections[sec]);
+      return Object.prototype.hasOwnProperty.call(map, lessonId);
+    });
+  }
+
+  /** Does this class carry its own configuration for this lesson, or is it
+   * reading the all-class default? The single question the scope UI is built
+   * around, answered from the store rather than inferred from the screen. */
+  function hasOwnOverride(lessonId, section) {
+    if (!isSection(section)) return false;
+    return Object.prototype.hasOwnProperty.call(ownStore(section), lessonId);
+  }
+
   return {
     SCHEMA_VERSION: SCHEMA_VERSION,
     STORAGE_KEY: STORAGE_KEY,
@@ -1419,6 +1459,9 @@
     setActiveSection: setActiveSection,
     ownStore: ownStore,
     copySectionSetup: copySectionSetup,
+    copyLessonToSection: copyLessonToSection,
+    sectionsOverriding: sectionsOverriding,
+    hasOwnOverride: hasOwnOverride,
     readStore: readStore,
     writeStore: writeStore,
     saveProfile: saveProfile,

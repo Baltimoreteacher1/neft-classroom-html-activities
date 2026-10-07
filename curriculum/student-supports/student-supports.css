@@ -429,14 +429,168 @@
   padding-left: 1.1rem;
 }
 
-/* Which class this configuration belongs to. A class is context: the canonical
+/* `.sup-class` — one sentence of prose naming the current class — lived here
+   until the scope pass below replaced it. A class is context: the canonical
    lesson is identical for 601, 602 and 603, and only the teacher's support
-   selection differs. Nothing about a student appears here. */
-.student-supports-wrap .sup-class {
-  margin: 0 0 0.5rem;
-  padding: 0.5rem 0.75rem;
-  border-left: 4px solid var(--accent);
-  background: #f4f8fd;
+   selection differs. Saying that in prose was not enough; the scope panel says
+   it and shows which class is selected and what that class inherits. */
+
+/* ---------------------------------------------------------------------------
+   SCOPE — the all-class default vs. a class override
+
+   The store has always been two-level: a lesson default that every class
+   follows and a per-class override that replaces it for one class. That model
+   was correct and invisible. A teacher could only learn it by pressing Apply
+   and watching what happened, which is the wrong place to learn that the
+   change they just made reached three classes instead of one.
+
+   These three blocks make the model readable: which scope is selected, what
+   that scope inherits or overrides, and — restated at the Apply button, where
+   the chooser above has usually scrolled out of view — what is about to
+   change.
+   --------------------------------------------------------------------------- */
+.student-supports-wrap .sup-scope {
+  margin: 0 0 0.75rem;
+}
+
+.student-supports-wrap .sup-scope-head {
+  margin: 0 0 0.35rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.student-supports-wrap .sup-scope-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.student-supports-wrap .sup-scope-tab {
+  display: flex;
+  min-height: 44px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0.35rem 0.85rem;
+  border: 1px solid #cfdaea;
+  border-radius: 10px;
+  background: #fff;
   color: var(--ink);
-  font-size: 0.98rem;
+  cursor: pointer;
+  font: inherit;
+  line-height: 1.25;
+  text-align: left;
+}
+
+.student-supports-wrap .sup-scope-tab:hover {
+  border-color: var(--accent);
+}
+
+/* Selected state is carried by fill, border weight AND the pressed state in
+   the accessible tree — never by colour alone. */
+.student-supports-wrap .sup-scope-tab[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+  box-shadow: inset 0 -3px 0 rgb(0 0 0 / 25%);
+}
+
+.student-supports-wrap .sup-scope-tab-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.student-supports-wrap .sup-scope-tab-note {
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+
+.student-supports-wrap .sup-inherit {
+  margin: 0 0 0.9rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid #d7e1ef;
+  border-left: 4px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  background: #f4f8fd;
+}
+
+/* A class reading the default and a class that has diverged from it are
+   different situations, and the left rule says which without relying on the
+   sentence being read. */
+.student-supports-wrap .sup-inherit.is-override {
+  border-left-color: #b06a12;
+  background: #fdf6ec;
+}
+
+.student-supports-wrap .sup-inherit-head {
+  margin: 0 0 0.2rem;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.student-supports-wrap .sup-inherit-body,
+.student-supports-wrap .sup-inherit-warn {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.student-supports-wrap .sup-inherit-warn {
+  margin-top: 0.35rem;
+  color: #7a4a06;
+  font-weight: 600;
+}
+
+.student-supports-wrap .sup-inherit .sup-actions {
+  margin: 0.55rem 0 0;
+}
+
+/* "Editing: Class 601 only". Small, but it is the sentence that stops a
+   teacher applying a class change to all three. */
+.student-supports-wrap .sup-editing {
+  margin: 0 0 0.6rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.student-supports-wrap .sup-editing strong {
+  color: var(--ink);
+}
+
+.student-supports-wrap .sup-reset-note {
+  margin: 0.4rem 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.student-supports-wrap .sup-copy {
+  margin: 0 0 1.4rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid #d7e1ef;
+  border-radius: 10px;
+  background: #fbfdff;
+}
+
+.student-supports-wrap .sup-copy-head {
+  margin: 0 0 0.45rem;
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.student-supports-wrap .sup-copy-targets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+}
+
+.student-supports-wrap .sup-copy-note {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--muted);
+  font-size: 0.84rem;
 }
