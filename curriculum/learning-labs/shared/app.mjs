@@ -7,6 +7,9 @@ const root = document.getElementById('lab-root');
 let lab, state, storeKey, memoryOnly = false;
 const fresh = () => ({ version: 1, level: 'core', tab: 'brief', practice: {}, notes: {}, steps: {}, games: {}, models: {}, created: '', checklist: [], investigated: [], lang: 'en' });
 function save() {
+  // The catalog cannot load every lab's content, so each save carries a small progress summary it can read.
+  const o = overview(lab, state);
+  state.summary = { done: o.done, total: o.total, started: o.done > 0 || o.items.some((i) => i.status === 'started'), next: o.next, savedAt: Date.now() };
   try { localStorage.setItem(storeKey, JSON.stringify(state)); memoryOnly = false; }
   catch { memoryOnly = true; }
   const el = document.getElementById('save-status');
