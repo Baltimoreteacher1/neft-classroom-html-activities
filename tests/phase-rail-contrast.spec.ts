@@ -81,6 +81,13 @@ test.describe("phase rail readability", () => {
     // Drive the rail into active+completed the way a student does: answer the
     // warmup and submit it. Correctness is irrelevant here — submitting is what
     // marks the phase complete, and the student stays on it afterwards.
+    //
+    // The warm-up is a paged card stack: exactly one .warmup-question-card is
+    // displayed and its siblings are display:none, so collecting every group
+    // name up front and checking each one's first radio waits forever on the
+    // second — the radio exists but is not visible. Reveal every card with the
+    // product's own control first, as tests/reading-flow.spec.ts already does.
+    await page.getByRole("button", { name: "Show all", exact: true }).click();
     const groups = page.locator("input[type=radio][name^=warmup_q]");
     const names = new Set(await groups.evaluateAll((els) => els.map((e) => e.name)));
     for (const name of names) {
@@ -164,6 +171,10 @@ test.describe("phase rail readability", () => {
 
     expect(await badges("on arrival"), "at least one badge measured").toBeGreaterThan(0);
 
+    // Same card stack as above: reveal every question before answering. Done
+    // AFTER the on-arrival measurement so that reading is of the page exactly
+    // as a student first meets it.
+    await page.getByRole("button", { name: "Show all", exact: true }).click();
     const groups = page.locator("input[type=radio][name^=warmup_q]");
     const names = new Set(await groups.evaluateAll((els) => els.map((e) => e.name)));
     for (const name of names) {

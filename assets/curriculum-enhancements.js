@@ -200,7 +200,8 @@
     onRole = onRole || function () {};
     var existing = document.getElementById("hub-teacher-unlock");
     if (existing) {
-      existing.remove();
+      var existingPin = existing.querySelector(".hub-teacher-pin");
+      if (existingPin) existingPin.focus();
       return;
     }
 
@@ -357,6 +358,7 @@
     }
     updateStudentHint();
     refreshHub();
+    wireModeBanner();
     document.dispatchEvent(new CustomEvent("nt:mode-change"));
   }
 
@@ -559,65 +561,7 @@
     return !!(hubApi && hubApi.unitsData && hubApi.unitsData.length);
   }
 
-  function buildControls() {
-    var controls = document.querySelector(".controls");
-    if (!controls || document.getElementById("hub-enhance-bar")) return;
-
-    var bar = document.createElement("div");
-    bar.id = "hub-enhance-bar";
-    bar.className = "hub-enhance-controls";
-
-    var modeBtn = document.createElement("button");
-    modeBtn.type = "button";
-    modeBtn.id = "hub-mode-toggle";
-    modeBtn.className = "hub-mode-toggle";
-    modeBtn.setAttribute("aria-pressed", "false");
-    modeBtn.textContent = "🎒 Student Mode";
-    modeBtn.addEventListener("click", function () {
-      // Switching INTO teacher requires the password; back to student is free.
-      if (!teacherMode) {
-        requestTeacher(modeBtn, function (role) {
-          teacherMode = true;
-          saveTeacherMode(true, role);
-          applyTeacherMode();
-          updateProgressSummary();
-        });
-        return;
-      }
-      teacherMode = false;
-      saveTeacherMode(false);
-      applyTeacherMode();
-      updateProgressSummary();
-    });
-    bar.appendChild(modeBtn);
-
-    var dashLink = document.createElement("a");
-    dashLink.href = "/teacher-tools/curriculum-dashboard/";
-    // Teacher-only: hidden in the public Student-Mode default via CSS
-    // (body:not(.teacher-mode) .hub-teacher-only { display:none }).
-    dashLink.className = "hub-mode-toggle hub-teacher-only";
-    dashLink.textContent = "📊 Teacher Dashboard";
-    dashLink.title = "Teacher only — class progress summary";
-    bar.appendChild(dashLink);
-
-    var hint = document.createElement("p");
-    hint.id = "hub-student-hint";
-    hint.className = "hub-student-hint";
-    hint.hidden = true;
-    hint.innerHTML =
-      "Student view hides teacher-only links (Google Slides, Forms, printable packets). " +
-      '<button type="button" class="hub-hint-link" id="hub-hint-teacher">Switch to Teacher Mode</button> ' +
-      "to restore them.";
-    hint.querySelector("#hub-hint-teacher").addEventListener("click", function () {
-      requestTeacher(function (role) {
-        teacherMode = true;
-        saveTeacherMode(true, role);
-        applyTeacherMode();
-        updateProgressSummary();
-      });
-    });
-    controls.parentNode.insertBefore(hint, controls);
-
+  function wireModeBanner() {
     // Top-of-page mode banner. The mode controls live ~1300px down the hub, so
     // a teacher in student view scrolls past a page where EVERY teacher panel
     // (district pacing console, Teacher Command Center) has rendered nothing —
@@ -656,13 +600,133 @@
       });
     }
 
-    controls.parentNode.insertBefore(bar, controls.nextSibling);
+    document.querySelectorAll("[data-home-mode]").forEach(function (btn) {
+      if (!btn.dataset.bound) {
+        btn.dataset.bound = "1";
+        btn.addEventListener("click", function () {
+          teacherMode = false;
+          saveTeacherMode(false);
+          applyTeacherMode();
+          updateProgressSummary();
+        });
+      }
+    });
+  }
+
+  // Delegated click handler catches banner and preview toggles immediately on
+  // any page, even before deferred scripts or async builders attach element listeners.
+  document.addEventListener("click", function (event) {
+    var source = event.target instanceof Element ? event.target : null;
+    if (!source) return;
+    if (source.closest("#hub-mode-banner-switch")) {
+      event.preventDefault();
+      requestTeacher(function (role) {
+        teacherMode = true;
+        saveTeacherMode(true, role);
+        applyTeacherMode();
+        updateProgressSummary();
+      });
+      return;
+    }
+    if (source.closest("[data-home-mode]")) {
+      event.preventDefault();
+      teacherMode = false;
+      saveTeacherMode(false);
+      applyTeacherMode();
+      updateProgressSummary();
+      return;
+    }
+  });
+
+  function buildControls() {
+    wireModeBanner();
+
+    if (document.getElementById("hub-enhance-bar")) return;
+
+    var controls = document.querySelector(".controls");
+
+    var bar = document.createElement("div");
+    bar.id = "hub-enhance-bar";
+    bar.className = "hub-enhance-controls";
+
+    var modeBtn = document.createElement("button");
+    modeBtn.type = "button";
+    modeBtn.id = "hub-mode-toggle";
+    modeBtn.className = "hub-mode-toggle";
+    modeBtn.setAttribute("aria-pressed", teacherMode ? "true" : "false");
+    modeBtn.textContent = teacherMode
+      ? "👩‍🏫 You're in Teacher view — switch to Student"
+      : "🎒 You're in Student view — switch to Teacher";
+    modeBtn.title = teacherMode
+      ? "Teacher view: pacing console and command center are visible. Click to switch to the student view."
+      : "Student view: teacher-only panels are hidden. Click to switch to the teacher view.";
+    modeBtn.addEventListener("click", function () {
+      // Switching INTO teacher requires the password; back to student is free.
+      if (!teacherMode) {
+        requestTeacher(modeBtn, function (role) {
+          teacherMode = true;
+          saveTeacherMode(true, role);
+          applyTeacherMode();
+          updateProgressSummary();
+        });
+        return;
+      }
+      teacherMode = false;
+      saveTeacherMode(false);
+      applyTeacherMode();
+      updateProgressSummary();
+    });
+    bar.appendChild(modeBtn);
+
+    var dashLink = document.createElement("a");
+    dashLink.href = "/teacher-tools/curriculum-dashboard/";
+    // Teacher-only: hidden in the public Student-Mode default via CSS
+    // (body:not(.teacher-mode) .hub-teacher-only { display:none }).
+    dashLink.className = "hub-mode-toggle hub-teacher-only";
+    dashLink.textContent = "📊 Teacher Dashboard";
+    dashLink.title = "Teacher only — class progress summary";
+    bar.appendChild(dashLink);
+
+    if (controls) {
+      var hint = document.createElement("p");
+      hint.id = "hub-student-hint";
+      hint.className = "hub-student-hint";
+      hint.hidden = teacherMode;
+      hint.innerHTML =
+        "Student view hides teacher-only links (Google Slides, Forms, printable packets). " +
+        '<button type="button" class="hub-hint-link" id="hub-hint-teacher">Switch to Teacher Mode</button> ' +
+        "to restore them.";
+      hint.querySelector("#hub-hint-teacher").addEventListener("click", function () {
+        requestTeacher(function (role) {
+          teacherMode = true;
+          saveTeacherMode(true, role);
+          applyTeacherMode();
+          updateProgressSummary();
+        });
+      });
+      controls.parentNode.insertBefore(hint, controls);
+      controls.parentNode.insertBefore(bar, controls.nextSibling);
+    } else {
+      var anchor =
+        document.getElementById("hub-toolbar-sticky") ||
+        document.querySelector(".curriculum-tools-bar") ||
+        document.querySelector(".wrap") ||
+        document.getElementById("curriculum-resources") ||
+        document.querySelector("main") ||
+        document.body;
+      if (anchor && anchor.parentNode) {
+        anchor.parentNode.insertBefore(bar, anchor);
+      }
+    }
 
     var chips = null;
     var summary = null;
     if (hubHasBrowser()) {
       chips = buildFilterChips();
-      controls.parentNode.insertBefore(chips, bar.nextSibling);
+      var insertPoint = controls || bar;
+      if (insertPoint && insertPoint.parentNode) {
+        insertPoint.parentNode.insertBefore(chips, insertPoint.nextSibling);
+      }
 
       summary = document.createElement("p");
       summary.id = "hub-progress-summary";
@@ -671,21 +735,23 @@
       chips.parentNode.insertBefore(summary, chips.nextSibling);
     }
 
-    var sticky = document.getElementById("hub-toolbar-sticky");
-    if (!sticky) {
-      sticky = document.createElement("div");
-      sticky.id = "hub-toolbar-sticky";
-      sticky.className = "hub-toolbar-sticky";
-      var anchor = document.getElementById("hub-student-hint") || controls;
-      anchor.parentNode.insertBefore(sticky, anchor);
+    if (controls) {
+      var sticky = document.getElementById("hub-toolbar-sticky");
+      if (!sticky) {
+        sticky = document.createElement("div");
+        sticky.id = "hub-toolbar-sticky";
+        sticky.className = "hub-toolbar-sticky";
+        var stickyAnchor = document.getElementById("hub-student-hint") || controls;
+        stickyAnchor.parentNode.insertBefore(sticky, stickyAnchor);
+      }
+      [document.getElementById("hub-student-hint"), controls, bar, chips, summary].forEach(
+        function (el) {
+          if (el && el.parentNode !== sticky) {
+            sticky.appendChild(el);
+          }
+        },
+      );
     }
-    [document.getElementById("hub-student-hint"), controls, bar, chips, summary].forEach(
-      function (el) {
-        if (el && el.parentNode !== sticky) {
-          sticky.appendChild(el);
-        }
-      },
-    );
   }
 
   function buildFilterChips() {
@@ -2477,6 +2543,7 @@
   }
 
   ready(function () {
+    wireModeBanner();
     waitForHubApi(0);
     loadJson("/assets/curriculum-real-world.json").then(function (data) {
       realWorldMap = data || {};
