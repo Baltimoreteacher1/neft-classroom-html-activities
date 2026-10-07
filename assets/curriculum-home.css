@@ -1,72 +1,327 @@
 /* Curriculum landing: a lesson desk first, optional collections below it. */
-body.curriculum-home { background: #f5f6f3; color: #14365b; }
-.curriculum-home .curriculum-guide { position: relative; padding: 28px 32px 22px; margin: 20px auto 0; border-radius: 20px 20px 0 0; box-shadow: none; border-bottom: 1px solid #d4e0ec; }
-.curriculum-home .curriculum-guide h1 { font-size: clamp(2rem, 4vw, 3rem); line-height: 1.12; margin: 6px 0 12px; }
-.curriculum-home .curriculum-guide__eyebrow { letter-spacing: .02em; text-transform: none; color: #11675d; font-size: 16px; margin: 0; }
-.curriculum-home .curriculum-guide__lede { font-size: 18px; line-height: 1.5; margin: 8px 0 16px; max-width: 76ch; }
-.curriculum-home #hub-mode-banner { background: none; border: 0; border-radius: 0; padding: 0; margin: 0 0 8px; font-size: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: #475569; }
-.curriculum-home.teacher-mode #hub-mode-banner { display: none; }
-.curriculum-home .hub-shortcuts { display: flex; gap: 8px; flex-wrap: wrap; align-items: stretch; }
-.curriculum-home .hub-shortcuts > :is(a,button), .curriculum-home .hub-reading-control > button { font: inherit; font-size: 16px; font-weight: 700; min-height: 44px; border: 1px solid #c4d3e2; background: #f7fafd; color: #15487f; border-radius: 8px; padding: 10px 14px; display: inline-flex; align-items: center; text-decoration: none; cursor: pointer; box-shadow: none; width: auto; }
-.curriculum-home .hub-shortcuts > :is(a,button):hover { background: #e7f0fa; border-color: #175da0; }
-.curriculum-home .hub-shortcuts .curriculum-guide__action span { display: none; }
-.curriculum-home .hub-shortcuts strong { font: inherit; color: inherit; }
-.curriculum-home .hub-shortcuts [data-guide-teacher-view="today"] { color: #fff; background: #175da0; border-color: #175da0; }
-.hub-page { max-width: 1180px; margin: 0 auto 32px; padding: 0 32px 28px; border-radius: 0 0 20px 20px; background: #fff; }
-.hub-collection { margin: 12px 0; border: 1px solid #cbd8e6; border-radius: 12px; color: #14365b; background: #fff; }
-.hub-collection > summary { min-height: 56px; padding: 16px 18px; font-size: 18px; font-weight: 700; cursor: pointer; line-height: 1.4; }
-.hub-collection > summary span { display: block; font-size: 16px; font-weight: 400; color: #475569; margin: 4px 0 0 20px; }
-.hub-collection[open] { padding: 0 16px 16px; }
-.hub-collection[open] > summary { margin: 0 -16px 16px; border-bottom: 1px solid #d4e0ec; background: #f4f8fc; border-radius: 12px 12px 0 0; }
-.curriculum-home :is(a,button,input,select,summary):focus-visible { outline: 3px solid #175da0; outline-offset: 3px; }
-.curriculum-home .hub-collection :is(button,select,.tt-link,.mf-btn,.ctw-btn) { min-height: 44px; }
-.curriculum-home #hub-student-hint { display: none; }
-.curriculum-home #curriculum-navigator #hub-toolbar-sticky { position: static; padding: 0; border: 0; background: none; box-shadow: none; margin: 0; }
-.curriculum-home #curriculum-navigator .controls { padding: 0; margin: 0; border: 0; box-shadow: none; background: none; }
-.curriculum-home .ctw-tools-drawer { display: block !important; }
-.curriculum-home .hub-collection .wrap { padding: 0; margin: 0; }
-.curriculum-home .hub-collection .tws-workspace { margin: 0; }
-.curriculum-home .hub-collection .curriculum-guide__actions { margin-top: 16px; }
-.curriculum-home .hub-collection .curriculum-guide__action :is(strong,span) { font-size: 16px; }
-.curriculum-home .hub-collection .mailbox-feature .mf-sub,
-.curriculum-home .hub-collection .mailbox-feature .mf-text { color: #334155 !important; }
-.curriculum-home #enterprise-standards-compliance strong { color: #15487f !important; }
-.curriculum-home #enterprise-standards-compliance li { color: #334155; font-size: 16px; }
-.curriculum-home .hub-collection .cpu-contract { margin: 12px 0; }
-.curriculum-home #hub-manipulatives .ewl-presets-bar { margin: 0; padding: 0; }
-.curriculum-home #awardShowcaseOverlay { padding: 0; border: 1px solid #cbd5e1; border-radius: 18px; width: min(780px, 92vw); max-width: 92vw; max-height: 88vh; overflow: auto; color: #14365b; }
-.curriculum-home #awardShowcaseOverlay::backdrop { background: rgb(15 23 42 / 65%); }
-@media (max-width: 700px) {
-  .curriculum-home .curriculum-guide { margin: 0; padding: 20px 16px; border-radius: 0; }
-  .curriculum-home .curriculum-guide__lede { font-size: 16px; }
-  .hub-page { padding: 0 16px 24px; border-radius: 0; }
-  .hub-collection > summary { padding: 14px; font-size: 17px; }
-  .hub-collection[open] { padding: 0 10px 10px; }
-  .hub-collection[open] > summary { margin: 0 -10px 12px; }
-  .curriculum-home .hub-shortcuts { gap: 6px; }
-  .curriculum-home .hub-shortcuts > :is(a,button) { padding: 9px 11px; }
-  .curriculum-home #udlFloatingLauncher { max-width: calc(100vw - 32px); }
+body.curriculum-home {
+  background: #f5f6f3;
+  color: #14365b;
 }
-@media (prefers-reduced-motion: reduce) { .curriculum-home { scroll-behavior: auto; } }
+.curriculum-home .curriculum-guide {
+  position: relative;
+  padding: 28px 32px 22px;
+  margin: 20px auto 0;
+  border-radius: 20px 20px 0 0;
+  box-shadow: none;
+  border-bottom: 1px solid #d4e0ec;
+}
+.curriculum-home .curriculum-guide h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.12;
+  margin: 6px 0 12px;
+}
+.curriculum-home .curriculum-guide__eyebrow {
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: #11675d;
+  font-size: 16px;
+  margin: 0;
+}
+.curriculum-home .curriculum-guide__lede {
+  font-size: 18px;
+  line-height: 1.5;
+  margin: 8px 0 16px;
+  max-width: 76ch;
+}
+.curriculum-home #hub-mode-banner {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  margin: 0 0 8px;
+  font-size: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+}
+.curriculum-home.teacher-mode #hub-mode-banner {
+  display: none;
+}
+.curriculum-home .hub-shortcuts {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+.curriculum-home .hub-shortcuts > :is(a, button),
+.curriculum-home .hub-reading-control > button {
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  min-height: 44px;
+  border: 1px solid #c4d3e2;
+  background: #f7fafd;
+  color: #15487f;
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: none;
+  width: auto;
+}
+.curriculum-home .hub-shortcuts > :is(a, button):hover {
+  background: #e7f0fa;
+  border-color: #175da0;
+}
+.curriculum-home .hub-shortcuts .curriculum-guide__action span {
+  display: none;
+}
+.curriculum-home .hub-shortcuts strong {
+  font: inherit;
+  color: inherit;
+}
+.curriculum-home .hub-shortcuts [data-guide-teacher-view="today"] {
+  color: #fff;
+  background: #175da0;
+  border-color: #175da0;
+}
+.hub-page {
+  max-width: 1180px;
+  margin: 0 auto 32px;
+  padding: 0 32px 28px;
+  border-radius: 0 0 20px 20px;
+  background: #fff;
+}
+.hub-collection {
+  margin: 12px 0;
+  border: 1px solid #cbd8e6;
+  border-radius: 12px;
+  color: #14365b;
+  background: #fff;
+}
+.hub-collection > summary {
+  min-height: 56px;
+  padding: 16px 18px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  line-height: 1.4;
+}
+.hub-collection > summary span {
+  display: block;
+  font-size: 16px;
+  font-weight: 400;
+  color: #475569;
+  margin: 4px 0 0 20px;
+}
+.hub-collection[open] {
+  padding: 0 16px 16px;
+}
+.hub-collection[open] > summary {
+  margin: 0 -16px 16px;
+  border-bottom: 1px solid #d4e0ec;
+  background: #f4f8fc;
+  border-radius: 12px 12px 0 0;
+}
+.curriculum-home :is(a, button, input, select, summary):focus-visible {
+  outline: 3px solid #175da0;
+  outline-offset: 3px;
+}
+.curriculum-home .hub-collection :is(button, select, .tt-link, .mf-btn, .ctw-btn) {
+  min-height: 44px;
+}
+.curriculum-home #hub-student-hint {
+  display: none;
+}
+.curriculum-home #curriculum-navigator #hub-toolbar-sticky {
+  position: static;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  margin: 0;
+}
+.curriculum-home #curriculum-navigator .controls {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  box-shadow: none;
+  background: none;
+}
+.curriculum-home .ctw-tools-drawer {
+  display: block !important;
+}
+.curriculum-home .hub-collection .wrap {
+  padding: 0;
+  margin: 0;
+}
+.curriculum-home .hub-collection .tws-workspace {
+  margin: 0;
+}
+.curriculum-home .hub-collection .curriculum-guide__actions {
+  margin-top: 16px;
+}
+.curriculum-home .hub-collection .curriculum-guide__action :is(strong, span) {
+  font-size: 16px;
+}
+.curriculum-home .hub-collection .mailbox-feature .mf-sub,
+.curriculum-home .hub-collection .mailbox-feature .mf-text {
+  color: #334155 !important;
+}
+.curriculum-home #enterprise-standards-compliance strong {
+  color: #15487f !important;
+}
+.curriculum-home #enterprise-standards-compliance li {
+  color: #334155;
+  font-size: 16px;
+}
+.curriculum-home .hub-collection .cpu-contract {
+  margin: 12px 0;
+}
+.curriculum-home #hub-manipulatives .ewl-presets-bar {
+  margin: 0;
+  padding: 0;
+}
+.curriculum-home #awardShowcaseOverlay {
+  padding: 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 18px;
+  width: min(780px, 92vw);
+  max-width: 92vw;
+  max-height: 88vh;
+  overflow: auto;
+  color: #14365b;
+}
+.curriculum-home #awardShowcaseOverlay::backdrop {
+  background: rgb(15 23 42 / 65%);
+}
+@media (max-width: 700px) {
+  .curriculum-home .curriculum-guide {
+    margin: 0;
+    padding: 20px 16px;
+    border-radius: 0;
+  }
+  .curriculum-home .curriculum-guide__lede {
+    font-size: 16px;
+  }
+  .hub-page {
+    padding: 0 16px 24px;
+    border-radius: 0;
+  }
+  .hub-collection > summary {
+    padding: 14px;
+    font-size: 17px;
+  }
+  .hub-collection[open] {
+    padding: 0 10px 10px;
+  }
+  .hub-collection[open] > summary {
+    margin: 0 -10px 12px;
+  }
+  .curriculum-home .hub-shortcuts {
+    gap: 6px;
+  }
+  .curriculum-home .hub-shortcuts > :is(a, button) {
+    padding: 9px 11px;
+  }
+  .curriculum-home #udlFloatingLauncher {
+    max-width: calc(100vw - 32px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .curriculum-home {
+    scroll-behavior: auto;
+  }
+}
 @media print {
-  .curriculum-home .hub-shortcuts, .curriculum-home .hub-reading-control, .curriculum-home #hub-mode-banner, .curriculum-home .hub-collection, .curriculum-home .hub-supports-dock { display: none !important; }
-  .curriculum-home, .hub-page, .curriculum-home .curriculum-guide { background: #fff; padding: 0; margin: 0; max-width: none; border: 0; }
+  .curriculum-home .hub-shortcuts,
+  .curriculum-home .hub-reading-control,
+  .curriculum-home #hub-mode-banner,
+  .curriculum-home .hub-collection,
+  .curriculum-home .hub-supports-dock {
+    display: none !important;
+  }
+  .curriculum-home,
+  .hub-page,
+  .curriculum-home .curriculum-guide {
+    background: #fff;
+    padding: 0;
+    margin: 0;
+    max-width: none;
+    border: 0;
+  }
 }
 
-.curriculum-home .hub-supports-panel[hidden] { display: none !important; }
-.curriculum-home .hub-reading-control { margin: 0; padding: 0; }
-.curriculum-home #udlFloatingLauncher { min-height: 44px; background: #f7fafd; }
-.curriculum-home #udlMenuPopover { position: absolute; right: 16px; z-index: 100; margin-top: 8px; width: min(340px, calc(100% - 32px)); max-height: 70vh; overflow-y: auto; padding: 18px; border: 1px solid #b3c7dc; border-radius: 12px; background: #fff; color: #14365b; box-shadow: 0 12px 30px rgb(15 23 42 / 18%); font-size: 16px; }
-.curriculum-home #udlMenuPopover :is(label,a) { min-height: 44px; display: flex; align-items: center; gap: 12px; font-size: 16px; }
-.curriculum-home #udlMenuPopover input[type="checkbox"] { width: 22px; height: 22px; flex-shrink: 0; }
-.curriculum-home #udlMenuPopover h2 { font-size: 18px !important; margin: 0 0 12px; }
-.curriculum-home #hub-teacher-banner { display: flex; gap: 8px; align-items: center; margin: 4px 0; color: #475569; }
-@media (min-width: 900px) {
-  .curriculum-home .curriculum-guide { position: relative; padding-top: 24px; }
-  .curriculum-home #hub-mode-banner, .curriculum-home #hub-teacher-banner { position: absolute; top: 16px; right: 32px; }
-  .curriculum-home .curriculum-guide h1 { font-size: 44px; }
+.curriculum-home .hub-supports-panel[hidden] {
+  display: none !important;
 }
-.curriculum-home #awardShowcaseOverlay button { min-height: 44px; min-width: 44px; flex-shrink: 0; }
+.curriculum-home .hub-reading-control {
+  margin: 0;
+  padding: 0;
+}
+.curriculum-home #udlFloatingLauncher {
+  min-height: 44px;
+  background: #f7fafd;
+}
+.curriculum-home #udlMenuPopover {
+  position: absolute;
+  right: 16px;
+  z-index: 100;
+  margin-top: 8px;
+  width: min(340px, calc(100% - 32px));
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 18px;
+  border: 1px solid #b3c7dc;
+  border-radius: 12px;
+  background: #fff;
+  color: #14365b;
+  box-shadow: 0 12px 30px rgb(15 23 42 / 18%);
+  font-size: 16px;
+}
+.curriculum-home #udlMenuPopover :is(label, a) {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+}
+.curriculum-home #udlMenuPopover input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+.curriculum-home #udlMenuPopover h2 {
+  font-size: 18px !important;
+  margin: 0 0 12px;
+}
+.curriculum-home #hub-teacher-banner {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 4px 0;
+  color: #475569;
+}
+@media (min-width: 900px) {
+  .curriculum-home .curriculum-guide {
+    position: relative;
+    padding-top: 24px;
+  }
+  .curriculum-home #hub-mode-banner,
+  .curriculum-home #hub-teacher-banner {
+    position: absolute;
+    top: 16px;
+    right: 32px;
+  }
+  .curriculum-home .curriculum-guide h1 {
+    font-size: 44px;
+  }
+}
+.curriculum-home #awardShowcaseOverlay button {
+  min-height: 44px;
+  min-width: 44px;
+  flex-shrink: 0;
+}
 
 /* The legacy print view is now inside the complete-library disclosure. Keep
    its ancestor chain visible while printing only the selected planning view. */
@@ -78,31 +333,78 @@ body.curriculum-home { background: #f5f6f3; color: #14365b; }
     padding: 0;
     border: 0;
   }
-  body.curriculum-home.ctw-printing main.hub-page > :not(#hub-library-collection),
+  /* Weekly Pacing "Print week" runs from #curriculum-teacher-workflow (sibling of
+     the library disclosure, inside .wrap). Hiding every main child except the
+     library used to erase the workflow during print and fail the journey spec. */
+  body.curriculum-home.ctw-printing main.hub-page > :not(#hub-library-collection):not(.wrap),
   body.curriculum-home.ctw-printing #hub-library-collection > :not(.ctw-panel) {
+    display: none !important;
+  }
+  body.curriculum-home.ctw-printing #curriculum-navigator {
     display: none !important;
   }
 }
 
 /* Header mode controls already expose this action; keep the legacy JS bridge. */
-.curriculum-home #hub-mode-toggle { display: none; }
+.curriculum-home #hub-mode-toggle {
+  display: none;
+}
 
 /* A compact course masthead; shortcuts read as supporting navigation. */
-.curriculum-product.curriculum-home .curriculum-guide { background: transparent; border: 0; max-width: 1180px; padding-block: 30px 22px; }
-.curriculum-product.curriculum-home .curriculum-guide h1 { font-size: clamp(2rem,4vw,3rem); font-weight: 650; letter-spacing: -.04em; margin-block: 6px 12px; }
-.curriculum-product.curriculum-home .curriculum-guide__eyebrow { font-weight: 600; }
-.curriculum-product.curriculum-home .curriculum-guide__lede { font-size: 18px; color: var(--course-muted); max-width: 64ch; margin-bottom: 16px; }
-.curriculum-product.curriculum-home .hub-page { background: transparent; }
-.curriculum-product.curriculum-home .hub-shortcuts { gap: 4px 20px; }
+.curriculum-product.curriculum-home .curriculum-guide {
+  background: transparent;
+  border: 0;
+  max-width: 1180px;
+  padding-block: 30px 22px;
+}
+.curriculum-product.curriculum-home .curriculum-guide h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 650;
+  letter-spacing: -0.04em;
+  margin-block: 6px 12px;
+}
+.curriculum-product.curriculum-home .curriculum-guide__eyebrow {
+  font-weight: 600;
+}
+.curriculum-product.curriculum-home .curriculum-guide__lede {
+  font-size: 18px;
+  color: var(--course-muted);
+  max-width: 64ch;
+  margin-bottom: 16px;
+}
+.curriculum-product.curriculum-home .hub-page {
+  background: transparent;
+}
+.curriculum-product.curriculum-home .hub-shortcuts {
+  gap: 4px 20px;
+}
 .curriculum-product.curriculum-home .hub-shortcuts > a,
-.curriculum-product.curriculum-home .hub-reading-control > button { padding: 8px 0; border: 0; border-radius: 0; background: transparent; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
-.curriculum-product.curriculum-home .hub-reading-control { margin-left: auto; }
+.curriculum-product.curriculum-home .hub-reading-control > button {
+  padding: 8px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.curriculum-product.curriculum-home .hub-reading-control {
+  margin-left: auto;
+}
 .curriculum-product.curriculum-home .hub-shortcuts > a:hover,
-.curriculum-product.curriculum-home .hub-reading-control > button:hover { color: #0d4941; }
+.curriculum-product.curriculum-home .hub-reading-control > button:hover {
+  color: #0d4941;
+}
 @media (max-width: 780px) {
-  .curriculum-product.curriculum-home .curriculum-guide { padding: 20px 16px 16px; }
-  .curriculum-product.curriculum-home .hub-reading-control { margin-left: 0; }
-  .curriculum-product.curriculum-home .curriculum-guide__lede { font-size: 17px; }
+  .curriculum-product.curriculum-home .curriculum-guide {
+    padding: 20px 16px 16px;
+  }
+  .curriculum-product.curriculum-home .hub-reading-control {
+    margin-left: 0;
+  }
+  .curriculum-product.curriculum-home .curriculum-guide__lede {
+    font-size: 17px;
+  }
 }
 
 /* Phones: the shortcuts are one scrollable row of same-shaped chips. Mixed
@@ -110,55 +412,184 @@ body.curriculum-home { background: #f5f6f3; color: #14365b; }
    at the right edge says there is more. */
 @media (max-width: 780px) {
   .curriculum-product.curriculum-home .hub-shortcuts {
-    display: flex; flex-wrap: nowrap; gap: 8px; align-items: stretch; overflow-x: auto; overscroll-behavior-x: contain;
-    scroll-snap-type: x proximity; scroll-padding-inline: 16px; scrollbar-width: none; margin: 0 -16px; padding: 4px 16px 8px;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    align-items: stretch;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: 16px;
+    scrollbar-width: none;
+    margin: 0 -16px;
+    padding: 4px 16px 8px;
     -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 36px), transparent);
     mask-image: linear-gradient(90deg, #000 calc(100% - 36px), transparent);
   }
-  .curriculum-product.curriculum-home .hub-shortcuts::-webkit-scrollbar { display: none; }
+  .curriculum-product.curriculum-home .hub-shortcuts::-webkit-scrollbar {
+    display: none;
+  }
   .curriculum-product.curriculum-home .hub-shortcuts > :is(a, button),
   .curriculum-product.curriculum-home .hub-shortcuts .hub-reading-control > button {
-    flex: none; scroll-snap-align: start; white-space: nowrap; min-height: 44px; padding: 9px 14px;
-    border: 1px solid #c4d3e2; border-radius: 999px; background: #fff; color: #15487f; font-weight: 700; text-decoration: none;
+    flex: none;
+    scroll-snap-align: start;
+    white-space: nowrap;
+    min-height: 44px;
+    padding: 9px 14px;
+    border: 1px solid #c4d3e2;
+    border-radius: 999px;
+    background: #fff;
+    color: #15487f;
+    font-weight: 700;
+    text-decoration: none;
   }
-  .curriculum-product.curriculum-home .hub-shortcuts [data-guide-teacher-view="today"] { color: #fff; background: #175da0; border-color: #175da0; }
-  .curriculum-product.curriculum-home .hub-reading-control { flex: none; margin-left: 0; }
-  .curriculum-product.curriculum-home .hub-shortcuts .hub-reading-control > button { max-width: none; }
-  .curriculum-home #udlMenuPopover { right: 16px; left: 16px; width: auto; }
+  .curriculum-product.curriculum-home .hub-shortcuts [data-guide-teacher-view="today"] {
+    color: #fff;
+    background: #175da0;
+    border-color: #175da0;
+  }
+  .curriculum-product.curriculum-home .hub-reading-control {
+    flex: none;
+    margin-left: 0;
+  }
+  .curriculum-product.curriculum-home .hub-shortcuts .hub-reading-control > button {
+    max-width: none;
+  }
+  .curriculum-home #udlMenuPopover {
+    right: 16px;
+    left: 16px;
+    width: auto;
+  }
 }
 /* The docked Prepare Supports bar is fixed to the bottom edge on phones;
    leave room so the last control on the page is never under it. */
 @media (max-width: 640px) {
-  body.curriculum-home.teacher-mode .hub-page { padding-bottom: 96px; }
+  body.curriculum-home.teacher-mode .hub-page {
+    padding-bottom: 96px;
+  }
 }
 
 /* Year at a glance: the ten units in teaching order, width by length, today
    marked. Decorative colour only — each segment names its unit in text. */
-.course-timeline { position: relative; margin: 0 0 18px; }
-.course-timeline__track { display: flex; gap: 3px; margin: 0; padding: 0; list-style: none; }
-.course-timeline__track li { flex: 1 1 0; min-width: 34px; }
+.course-timeline {
+  position: relative;
+  margin: 0 0 18px;
+}
+.course-timeline__track {
+  display: flex;
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.course-timeline__track li {
+  flex: 1 1 0;
+  min-width: 34px;
+}
 .course-timeline__track a {
-  display: flex; align-items: center; justify-content: center; min-height: 44px; border-radius: 6px;
-  background: var(--tl-accent, #5b6470); color: #fff; font-size: 15px; font-weight: 700; text-decoration: none;
-  opacity: .62; transition: opacity 140ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border-radius: 6px;
+  background: var(--tl-accent, #5b6470);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  opacity: 0.62;
+  transition: opacity 140ms ease;
 }
-.course-timeline__track a:hover, .course-timeline__track a:focus-visible { opacity: 1; }
-.course-timeline__track .is-current a { opacity: 1; box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--tl-accent, #5b6470); }
-.course-timeline__today { position: absolute; top: -12px; width: 2px; height: 12px; margin-left: -1px; background: #193e3b; border-radius: 1px; pointer-events: none; }
-.course-timeline__today::before { content: ""; position: absolute; top: -5px; left: -4px; width: 10px; height: 10px; border-radius: 50%; background: #193e3b; }
-.course-timeline__caption { margin: 10px 0 0; color: var(--course-muted, #506662); font-size: 15px; line-height: 1.5; }
-.curriculum-home .visually-hidden { position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
+.course-timeline__track a:hover,
+.course-timeline__track a:focus-visible {
+  opacity: 1;
+}
+.course-timeline__track .is-current a {
+  opacity: 1;
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px var(--tl-accent, #5b6470);
+}
+.course-timeline__today {
+  position: absolute;
+  top: -12px;
+  width: 2px;
+  height: 12px;
+  margin-left: -1px;
+  background: #193e3b;
+  border-radius: 1px;
+  pointer-events: none;
+}
+.course-timeline__today::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #193e3b;
+}
+.course-timeline__caption {
+  margin: 10px 0 0;
+  color: var(--course-muted, #506662);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.curriculum-home .visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
 @media (max-width: 780px) {
-  .course-timeline__track { gap: 2px; }
-  .course-timeline__track li { min-width: 30px; }
-  .course-timeline__track a { min-height: 40px; border-radius: 5px; font-size: 14px; }
+  .course-timeline__track {
+    gap: 2px;
+  }
+  .course-timeline__track li {
+    min-width: 30px;
+  }
+  .course-timeline__track a {
+    min-height: 40px;
+    border-radius: 5px;
+    font-size: 14px;
+  }
 }
-@media (prefers-reduced-motion: reduce) { .course-timeline__track a { transition: none; } }
-@media print { .course-timeline__today { display: none; } .course-timeline__track a { color: #000; background: transparent; border: 1px solid #999; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .course-timeline__track a {
+    transition: none;
+  }
+}
+@media print {
+  .course-timeline__today {
+    display: none;
+  }
+  .course-timeline__track a {
+    color: #000;
+    background: transparent;
+    border: 1px solid #999;
+    opacity: 1;
+  }
+}
 
 /* Footer link reaches the 44px target; the phone back-to-top button sits above
    the docked Prepare Supports bar instead of on top of it. */
-.curriculum-home footer.hub a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 2px; }
+.curriculum-home footer.hub a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 2px;
+}
 @media (max-width: 640px) {
-  body.curriculum-home.teacher-mode .hub-back-to-top { right: auto; left: 12px; bottom: 76px; }
+  body.curriculum-home.teacher-mode .hub-back-to-top {
+    right: auto;
+    left: 12px;
+    bottom: 76px;
+  }
 }
