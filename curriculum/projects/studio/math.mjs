@@ -990,3 +990,9 @@ export const WORKED_EXAMPLES = {
   synthesis:
     "A 3 m by 2 m floor has area 6 m². At $10 per m², materials cost $60. A 10% discount removes $6, leaving $54. If visitor supplies cost $2 each, the total rule is y = 54 + 2x. For 10 visitors, the total is $74.",
 };
+
+export function workedExampleFor(project) {
+  if (project.id === "unit-3-b")
+    return "A player scores 6 points in 2 games (6 : 2). In 4 equal game blocks, they project to 24 points in 8 games because BOTH quantities are multiplied by 4. If Player A scores 84 points in 6 games, their rate is 84 ÷ 6 = 14 points per game.";
+  return WORKED_EXAMPLES[project.family];
+}

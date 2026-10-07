@@ -1,5 +1,5 @@
 import { PROJECTS, UNIT_NAMES, getProject, studioURL } from "./projects.mjs";
-import { FAMILY, fieldsFor, model, matches, format, WORKED_EXAMPLES } from "./math.mjs";
+import { FAMILY, fieldsFor, model, matches, format, workedExampleFor } from "./math.mjs";
 import { fresh, clean, keyFor, progress } from "./state.mjs";
 import { visualMarkup } from "./visuals.mjs";
 const $ = (s) => document.querySelector(s);
@@ -86,7 +86,7 @@ function load() {
   }
 }
 function sidebar() {
-  return `<aside class="sidebar"><section class="card soft"><h2 style="font-size:1.15rem">Make it yours</h2><p>${esc(project.product)}</p><p><strong>Time plan</strong><br>Day 1: choose, build, test.<br>Day 2: revise, explain, share.<br>Add a day for a physical model.</p><p>Work solo or with a partner. Each person explains the math.</p></section><section class="card"><h2 style="font-size:1.15rem">Words that help</h2><details ${state.supports ? "open" : ""}><summary>See a worked example</summary><p>${esc(WORKED_EXAMPLES[project.family])}</p><p>Use this strategy with your own numbers. All six math checks still belong to your project.</p></details>${FAMILY[project.family].vocab.map(([en, es, definition]) => `<p><strong>${esc(en)}</strong> · <span lang="es">${esc(es)}</span><br>${esc(definition)}</p>`).join("")}<details><summary>Language supports</summary><p>You may rehearse, label a drawing, or draft in your strongest language before writing.</p><p lang="es">Elegí ___ porque ___. Mi evidencia es ___. Cambié ___; por eso ___.</p><p>I chose ___ because ___. My evidence is ___. I changed ___, so ___.</p></details></section></aside>`;
+  return `<aside class="sidebar"><section class="card soft"><h2 style="font-size:1.15rem">Make it yours</h2><p>${esc(project.product)}</p><p><strong>Time plan</strong><br>Day 1: choose, build, test.<br>Day 2: revise, explain, share.<br>Add a day for a physical model.</p><p>Work solo or with a partner. Each person explains the math.</p></section><section class="card"><h2 style="font-size:1.15rem">Words that help</h2><details ${state.supports ? "open" : ""}><summary>See a worked example</summary><p>${esc(workedExampleFor(project))}</p><p>Use this strategy with your own numbers. All six math checks still belong to your project.</p></details>${FAMILY[project.family].vocab.map(([en, es, definition]) => `<p><strong>${esc(en)}</strong> · <span lang="es">${esc(es)}</span><br>${esc(definition)}</p>`).join("")}<details><summary>Language supports</summary><p>You may rehearse, label a drawing, or draft in your strongest language before writing.</p><p lang="es">Elegí ___ porque ___. Mi evidencia es ___. Cambié ___; por eso ___.</p><p>I chose ___ because ___. My evidence is ___. I changed ___, so ___.</p></details></section></aside>`;
 }
 function render(focus = false) {
   const p = progress(project, state);

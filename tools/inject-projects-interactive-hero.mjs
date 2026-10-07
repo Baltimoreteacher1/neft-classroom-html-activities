@@ -71,12 +71,31 @@ const MAP = {
       "Spot the outlier that yanks the mean, then pick the measure — mean or median — that tells the truth.",
   },
   "math/unit-3/projects": {
-    kind: "mix-lab",
-    emoji: "🥤",
-    attrs: {},
-    title: "Mix the ratio",
-    es: "Mezcla la razón",
-    intro: "Build the recipe and scale it up — keep the ratio equivalent as the batch grows.",
+    "version-a": {
+      kind: "mix-lab",
+      emoji: "🥤",
+      attrs: {},
+      title: "Mix the ratio",
+      es: "Mezcla la razón",
+      intro: "Build the recipe and scale it up — keep the ratio equivalent as the batch grows.",
+    },
+    "version-b": {
+      kind: "ratio-build",
+      emoji: "🏀",
+      attrs: {
+        "label-a": "points scored",
+        "label-b": "minutes played",
+        "rate-name": "points",
+        "tile-a": "🏀",
+        "tile-b": "⏱️",
+        "default-a": "25",
+        "default-b": "10",
+      },
+      title: "Build the player ratio",
+      es: "Construye la razón del jugador",
+      intro:
+        "Build the points-to-minutes ratio and scale it up — keep the rate equivalent as the season grows.",
+    },
   },
   "math/unit-4/projects": {
     kind: "market-day",
@@ -268,7 +287,8 @@ let targets = 0;
 for (const [dir, cfg] of Object.entries(MAP)) {
   for (const v of versionsOf(dir)) {
     targets++;
-    process(`${dir}/${v}/index.html`, cfg);
+    const vCfg = cfg[v] || cfg;
+    process(`${dir}/${v}/index.html`, vCfg);
   }
 }
 
