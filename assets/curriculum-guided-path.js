@@ -15,6 +15,21 @@
       }, 120);
       return;
     }
+    // REVEAL THE PANEL, not just select a tab inside it. The workflow console
+    // now sits inside a collapsed <details> ("Teaching workflows & classroom
+    // activities"), so clicking the tab set the view on something the teacher
+    // could not see and scrollIntoView scrolled to a collapsed element — the
+    // exact regression this path exists to prevent, one layer further in: the
+    // guide flips into Teacher Mode and the requested workflow never opens.
+    // Walk every <details> between the panel and the document, not just the
+    // nearest one, because a nested disclosure leaves it closed again.
+    for (
+      var box = panel.closest ? panel.closest("details") : null;
+      box;
+      box = box.parentElement && box.parentElement.closest("details")
+    ) {
+      box.open = true;
+    }
     /** @type {HTMLElement} */ (tab).click();
     panel.scrollIntoView({ behavior: "smooth", block: "start" });
   }
