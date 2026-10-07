@@ -492,6 +492,14 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261007">
+<script src="/assets/game-studio.js?v=20261007" defer></script>
+<link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/legacy-adventure.css?v=20261007">
+<script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
+<script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+<script>window.LegacyAdventureConfig = {"id":"u3-ratio-rush","title":"The Sky Galley","chapters":["Seed Market","Water Gardens","The Banquet Oasis"],"brief":"Measure each decimal recipe precisely, then grow the ingredients for your next voyage.","scene":"sky","accent":"#ffd27a","icons":["🧺","💧","🍲"],"story":["The sky galley needs ingredients. Measure recipes to earn supplies.","The seed market is stocked. Next, fill the water gardens.","The gardens are growing. Now prepare the banquet at the oasis.","The banquet is ready. Every recipe was measured exactly."]};</script>
+<script src="/math/games/shared/legacy-adventure.js?v=20261007"></script>
 </head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
@@ -1168,6 +1176,7 @@
         $("serve-btn").disabled = true;
         SFX.good();
         S.exact++;
+        window.LegacyAdventure?.reward(r0());
         S.served++;
         const firstTry = S.attempts === 0 ? 50 : 0;
         const pts = (S.level === 1 ? 100 : 130) + firstTry;

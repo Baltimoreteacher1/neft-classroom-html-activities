@@ -216,7 +216,9 @@
     <script src="/math/games/shared/arcade-fx-engine.js"></script>
     <link rel="stylesheet" href="/assets/game-studio.css?v=20261002" />
     <link rel="stylesheet" href="/math/games/practice-arcade/studio.css" />
-  </head>
+  <link rel="stylesheet" href="/curriculum/review-expeditions/voyage.css?v=20261007">
+<script src="/curriculum/review-expeditions/voyage.js?v=20261007"></script>
+</head>
   <body>
     <header class="ewl-arcade-header-bar pa-head" aria-label="Current adventure">
       <span id="ewl-world-badge" style="font-size: 18px; font-weight: 800; color: #b9f3df"
@@ -1592,7 +1594,7 @@
             document.getElementById("pa-phone-directions").textContent =
               lang === "es"
                 ? "Trabaja a tu ritmo. Elige, clasifica o une tus respuestas. Usa las pistas cuando necesites ayuda."
-                : "Work at your own pace. Choose, sort, or match your answers. Use hints when you need help.";
+                : "Explore new sectors, recover lost artifacts, and restore each beacon with math. Choose your own route; hints and retries stay available.";
             document.getElementById("pa-phone-start").textContent =
               lang === "es" ? "Empezar práctica" : "Start practice";
             phoneLaunch.querySelector("label").textContent =
@@ -1600,6 +1602,7 @@
             phoneLaunch.querySelector("a").textContent =
               lang === "es" ? "Elegir otra unidad →" : "Choose another unit →";
             this.events.once("shutdown", () => {
+              document.getElementById("practice-voyage")?.replaceChildren();
               document.body.classList.remove("pa-title-screen");
               phoneLaunch.hidden = true;
               document.getElementById("pa-phone-start").onclick = null;
@@ -1895,9 +1898,10 @@
             this.power = 0;
             this.powerMax = 3;
             this.doubled = false;
+            this.voyage = window.ExpeditionVoyage?.createState(Date.now());
             const recovering = resumeRun;
             if (recovering) {
-              ["idx", "score", "streak", "correctCount", "helpedCount", "power", "doubled", "itemLog"].forEach(
+              ["idx", "score", "streak", "correctCount", "helpedCount", "power", "doubled", "itemLog", "voyage"].forEach(
                 (key) => {
                   if (recovering[key] !== undefined) this[key] = recovering[key];
                 },
@@ -2389,6 +2393,29 @@
           }
 
           startRound() {
+            if (this.idx < rounds.length && window.ExpeditionVoyage && this.voyage.entered !== this.idx) {
+              this.input.keyboard.removeAllListeners();
+              this.input.keyboard.enabled = false;
+              document.body.classList.add("voyage-active");
+              let host = document.getElementById("practice-voyage");
+              if (!host) {
+                host = document.createElement("div"); host.id = "practice-voyage";
+                document.getElementById("pa-stage").before(host);
+              }
+              updateSession(this);
+              this.voyageView = window.ExpeditionVoyage.mount({
+                host, unit: worldUnit || 1, stage: this.idx, total: rounds.length,
+                title: lessonTitle, state: this.voyage,
+                onSave: () => this.saveRun(),
+                onEnter: () => {
+                  document.body.classList.remove("voyage-active");
+                  this.input.keyboard.enabled = true;
+                  this.startRound();
+                  window.paFitStage?.();
+                },
+              });
+              return;
+            }
             this.layer.removeAll(true);
             // Clear stale per-round key handlers so they can't fire on the
             // destroyed tiles of a previous round.
@@ -2788,6 +2815,7 @@
               // Item-level telemetry: one record per solved round (attempts capture
               // struggle). Feeds the end-of-run EduPulse payload + a local log.
               this.logItem(r, this.tries);
+              window.ExpeditionVoyage?.completeStage(this.voyage, this.idx);
               paSignal(r, true, null);
               this.updateHUD();
               this.advanceJourney();
@@ -2869,6 +2897,7 @@
                   power: this.power,
                   doubled: this.doubled,
                   itemLog: this.itemLog,
+                  voyage: this.voyage,
                 }),
               );
             } catch (_) {
@@ -2887,6 +2916,7 @@
               correct: this.correctCount,
               total: rounds.length,
               items: this.itemLog || [],
+              voyage: this.voyage,
             });
           }
 
@@ -4328,6 +4358,17 @@
           create() {
             drawStars(this);
             const d = this.d;
+            document.body.classList.remove("voyage-active");
+            const voyageHost = document.getElementById("practice-voyage");
+            if (voyageHost) {
+              voyageHost.replaceChildren();
+              if (d.voyage && window.ExpeditionVoyage) {
+                const journal = document.createElement("div");
+                journal.className = "voyage-journal";
+                journal.textContent = "Expedition journal · " + window.ExpeditionVoyage.summary(d.voyage);
+                voyageHost.append(journal);
+              }
+            }
             const es = lang === "es";
             const ratio = d.total ? d.correct / d.total : 0;
             const stars = ratio >= 0.85 ? 3 : ratio >= 0.5 ? 2 : 1;

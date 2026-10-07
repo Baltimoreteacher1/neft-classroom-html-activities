@@ -20,6 +20,14 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261007">
+<script src="/assets/game-studio.js?v=20261007" defer></script>
+<link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/legacy-adventure.css?v=20261007">
+<script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
+<script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+<script>window.LegacyAdventureConfig = {"id":"u8-data-dash","title":"The Wildlife Case Files","chapters":["Marsh Evidence","Forest Signals","Migration Mystery"],"brief":"Use data evidence to close each case and plan a wildlife survey.","scene":"wild","accent":"#f4d58d","icons":["🦆","🦊","🦢"],"story":["Wildlife cases are open. Find clues to earn survey supplies.","The marsh case is closed. Next, the forest signals.","The forest case is closed. Now solve the migration mystery.","Every case is closed. The wildlife survey is complete."]};</script>
+<script src="/math/games/shared/legacy-adventure.js?v=20261007"></script>
 </head>
   <body>
 
@@ -1272,7 +1280,8 @@
           startCase() {
             this.phase = "investigate";
             this.responses = []; // bucket indices collected so far
-            this.activeClue = this.cases[this.activeCaseIx];
+            // Copy the shared clue so a replayed case is a new problem instance.
+            this.activeClue = { ...this.cases[this.activeCaseIx] };
             const theme = CASE_THEMES[this.caseIndex % CASE_THEMES.length];
             this.caseText.setText(
               theme.icon +
@@ -1586,6 +1595,7 @@
               const pts = 100 + bonus;
               this.score += pts;
               this.correct++;
+              window.LegacyAdventure?.reward(this.activeClue);
               this.filed++;
               this.correctEmitter.explode(
                 20,
@@ -1968,7 +1978,7 @@
         }
 
         // ═══════════════════════════════════════════════════
-        new Phaser.Game({
+        window.__legacyAdventureGame = new Phaser.Game({
           type: Phaser.AUTO,
           width: W,
           height: H,

@@ -61,6 +61,14 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261007">
+<script src="/assets/game-studio.js?v=20261007" defer></script>
+<link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/legacy-adventure.css?v=20261007">
+<script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
+<script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+<script>window.LegacyAdventureConfig = {"id":"u7-equation-quest","title":"Frostbridge Expedition","chapters":["Thawing Crossing","Icebound Span","Northern Citadel"],"brief":"Interpret temperatures to supply and rebalance the bridges across the frozen valley.","scene":"bridge","accent":"#9fe8ff","icons":["🧊","🌉","🏰"],"story":["The valley is frozen. Read temperatures to earn bridge supplies.","The first crossing has thawed. Next, the icebound span.","The span is balanced. Now reach the northern citadel.","The northern citadel is open. The valley is connected."]};</script>
+<script src="/math/games/shared/legacy-adventure.js?v=20261007"></script>
 </head>
   <body>
 
@@ -1483,6 +1491,11 @@
             qRange = 10;
             snapStep = 1;
           }
+          // Every answer choice must be reachable on the dial (e.g. -282 ft
+          // needs a step of 2, not 20).
+          const steps = [100, 50, 20, 10, 5, 2, 1];
+          while ([q.ans, ...q.opts].some((v) => v % snapStep !== 0))
+            snapStep = steps[steps.indexOf(snapStep) + 1] || 1;
 
           const tw = 480;
           const nlY = 175;
@@ -1537,7 +1550,24 @@
           selectorCont.setInteractive(hitArea, Phaser.Geom.Circle.Contains);
           this.input.setDraggable(selectorCont);
 
+          // The marker starts at 0; require one move so an answer of 0 is chosen, not defaulted.
+          let moved = false;
+          const moveHint = this.add
+            .text(W / 2, 400, "", {
+              fontSize: "15px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+              stroke: "#000000",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(601);
+          this.qElements.push(moveHint);
+
           const updateSelectorFromValue = (v) => {
+            moved = true;
+            moveHint.setText("");
             const currentVal = Phaser.Math.Clamp(v, -qRange, qRange);
             const snappedX = W / 2 + (currentVal / qRange) * (tw / 2 - 20);
             selectorCont.x = snappedX;
@@ -1616,6 +1646,10 @@
           this.input.keyboard.on("keydown", onKeyDown);
 
           const submitAnswer = () => {
+            if (!moved) {
+              moveHint.setText("Move the marker to your answer, then submit.");
+              return;
+            }
             this.input.keyboard.off("keydown", onKeyDown);
             if (selectorCont.input) selectorCont.disableInteractive();
             if (clickZone.input) clickZone.disableInteractive();
@@ -1635,6 +1669,7 @@
               pointer.strokeCircle(0, 0, 9);
 
               this.questionsCorrect++;
+              window.LegacyAdventure?.reward(q);
               this.combo++;
               if (this.combo > this.maxCombo) this.maxCombo = this.combo;
               const pts = 200 * this.combo;
@@ -2139,7 +2174,7 @@
         input: { activePointers: 3 },
       };
 
-      new Phaser.Game(config);
+      window.__legacyAdventureGame = new Phaser.Game(config);
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>

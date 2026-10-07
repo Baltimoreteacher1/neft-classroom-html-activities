@@ -587,6 +587,9 @@
     <script src="/assets/game-studio.js?v=20261003" defer></script>
     <link rel="stylesheet" href="/math/games/shared/cabinet-tools.css?v=20261002">
     <script src="/math/games/shared/cabinet-tools.js?v=20261002" defer></script>
+    <link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
+    <script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
+    <script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
 </head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
@@ -1383,6 +1386,7 @@
         const btn = $("btn-calibrate-vault");
         if (btn) {
           const unlock = (helped) => {
+            if (!helped) window.__cabinetAdventure?.reward();
             if (!helped) {
               S.correctActions++;
               S.score += S.calTries ? 25 : 50; // full bonus only when unaided
@@ -1549,6 +1553,12 @@
       });
 
       window.addEventListener("DOMContentLoaded", () => {
+        const factorBoard = document.querySelector('.play-layout-grid');
+        const factorHost = document.createElement('div'); factorHost.className = 'factor-adventure-host';
+        factorBoard.before(factorHost); factorHost.append(factorBoard);
+        window.__cabinetAdventure = window.CabinetAdventure.create({id: 'u1-factor-frenzy', host: factorHost, onView(open) { factorBoard.inert = open; }});
+        const factorArt = document.createElement('canvas'); window.CabinetWorlds.paint(factorArt, 'u1-factor-frenzy', 0, true);
+        factorHost.style.setProperty('--factor-world', 'url(' + factorArt.toDataURL() + ')');
         window.GameStudio && window.GameStudio.register({title: "Factor Frenzy", instructions: ["Goal: break each number into primes with a factor tree, then unlock the vault by writing the exponents. 5 numbers per run; no timer.", "Tap a blue number. If it can be split, choose a factor pair whose product equals it (multiply to check). If it is prime, choose \u201cIt\u2019s prime\u201d.", "When every branch ends in a gold prime, count each prime and set its exponent with + and \u2212. Example: 2 \u00d7 2 \u00d7 2 \u00d7 3 = 2\u00b3 \u00d7 3.", "Wrong move? Hint 1 tells you the method; hint 2 gives a concrete step. In the vault, after 3 tries the game shows the exponents so you can keep going.", "Use Tab and Enter to play with the keyboard. Undo restores your last branch before the vault."], pause() {factorPaused = true;}, resume() {factorPaused = false;}, setMuted(value) {window.NT_MUTED = value; if (SFX.ctx) {if(value) SFX.ctx.suspend().catch(()=>{}); else SFX.ctx.resume().catch(()=>{});}}});
         const undo = document.createElement("button"); undo.className = "btn"; undo.type = "button"; undo.textContent = "Undo last branch";
         $("hint").after(undo);

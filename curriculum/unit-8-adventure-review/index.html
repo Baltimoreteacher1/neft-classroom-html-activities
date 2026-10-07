@@ -479,6 +479,8 @@ a.btn { text-decoration: none; }
 </style>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231FA6A2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m2 21 7-14 4 7 3-5 6 12H2Z'/%3E%3C/svg%3E">
 <script>window.RX_CONFIG = { hubUrl: "/curriculum/review-expeditions/", pageUrl: "/curriculum/unit-8-adventure-review/", unitKey: "u8" };</script>
+<link rel="stylesheet" href="/curriculum/review-expeditions/voyage.css?v=20261007">
+<script src="/curriculum/review-expeditions/voyage.js?v=20261007"></script>
 </head>
 <body>
 <a class="skip" href="#screen">Skip to content</a>
@@ -6966,6 +6968,7 @@ a.btn { text-decoration: none; }
       'intro',
       `<section class="intro"><div class="intro-card"><p class="eyebrow">Mission Briefing</p><h2>${esc(st.briefingTitle)}</h2>${st.intro.map((p) => `<p>${p}</p>`).join('')}
       <div class="brief-grid"><div><span class="brief-k">Your role</span><span>${esc(st.role)}</span></div><div><span class="brief-k">Objective</span><span>${esc(st.objective)}</span></div><div><span class="brief-k">Tools</span><span>${esc(st.tools)}</span></div></div>
+      ${root.ExpeditionVoyage ? `<div class="voyage-banner"><strong>Explore, recover, restore</strong><p>${esc((root.ExpeditionVoyage.WORLDS[RX.UNIT.unit] || root.ExpeditionVoyage.WORLDS[1]).rule)}</p><p>Choose a route, recover optional finds, and rescue scouts between math challenges. Use Focus on math any time for direct practice.</p></div>` : ''}
       <h3 class="lvl-h">Choose how you want to play</h3><p class="muted">You can change this any time in Settings.</p>${Sup().levelPicker(levelNow(), 'intro-level')}
       <div class="title-actions"><button type="button" class="btn btn-primary btn-lg" id="btn-go" autofocus>Open the Map ${icon('arrow')}</button></div></div></section>`,
     );
@@ -6992,6 +6995,7 @@ a.btn { text-decoration: none; }
     UI.screen(
       'map',
       `<section class="map-screen"><div class="map-top"><div><p class="eyebrow">${esc(story().mapEyebrow)}</p><h2>Expedition Map</h2></div><div class="map-progress" aria-label="Overall progress ${prog.pct}%"><div class="bar"><div class="bar-fill" style="width:${prog.pct}%"></div></div><span>${prog.done} of ${prog.total} missions · ${prog.pct}%</span></div></div>
+      ${root.ExpeditionVoyage ? root.ExpeditionVoyage.archive(s) : ''}
       <div class="map-wrap"><div class="map-canvas">${UI.mapSvg(s)}${UI.mapNodes(s)}</div><div class="map-list">${UI.mapList(s)}</div></div>
       <div class="map-bottom"><div class="satchel"><span class="satchel-title">${icon('satchel')} ${esc(story().satchel || 'Satchel')}</span><div class="arts">${arts}</div></div>
         <div class="map-actions">${Rules.isZoneComplete(s, fin.id) ? `<button type="button" class="btn btn-primary" id="btn-results">${icon('chart')} View Mission Report</button>` : `<button type="button" class="btn btn-ghost" id="btn-results">${icon('chart')} Progress Report</button>`}<button type="button" class="btn btn-ghost" id="btn-ach">${icon('medal')} Achievements (${Object.keys(s.achievements).length}/${RX.ACHIEVEMENTS.length})</button></div></div></section>`,
@@ -7076,6 +7080,7 @@ a.btn { text-decoration: none; }
 
   // ---------- Mission flow ----------
   function startMission(zid, mid, extra) {
+    if (!s.startedAt) s.startedAt = Date.now();
     const seed = (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
     s.current = Object.assign({ zone: zid, mission: mid, seed, qIndex: 0, results: [], level: levelNow() }, extra || {});
     State.save();
@@ -7094,6 +7099,23 @@ a.btn { text-decoration: none; }
   }
   function renderQuestion() {
     const cur = s.current;
+    // The travel scene is part of the mission: routes, tools, salvage and rescues
+    // live in the same checkpoint as the authored math challenges.
+    if (root.ExpeditionVoyage) {
+      cur.voyage = cur.voyage || root.ExpeditionVoyage.createState(cur.seed);
+      if (cur.voyage.entered !== cur.qIndex) {
+        const destination = zoneById(cur.zone);
+        UI.hud({ xp: s.xp, streak: s.streak, title: destination.name, sub: 'Field expedition · choose your route' });
+        UI.screen('voyage', '<div id="expedition-voyage"></div>');
+        root.ExpeditionVoyage.mount({
+          host: document.getElementById('expedition-voyage'), unit: RX.UNIT.unit,
+          stage: cur.qIndex, total: specsOf(cur).length,
+          title: destination.name + ' · ' + missionName(cur), state: cur.voyage,
+          onSave: () => State.save(), onEnter: renderQuestion,
+        });
+        return;
+      }
+    }
     const z = zoneById(cur.zone),
       m = { name: missionName(cur) };
     const qs = buildQuestions(cur);
@@ -7243,6 +7265,7 @@ a.btn { text-decoration: none; }
   }
   function next() {
     const cur = s.current;
+    root.ExpeditionVoyage?.completeStage(cur.voyage, cur.qIndex);
     cur.qIndex++;
     if (cur.qIndex >= specsOf(cur).length) return cur.retry ? completeRetry() : completeMission();
     State.save();
@@ -7257,6 +7280,10 @@ a.btn { text-decoration: none; }
       first = cur.results.filter((r) => r.firstTry).length,
       correct = cur.results.filter((r) => r.correct).length;
     const md = State.mission(z.id, m.id);
+    if (cur.voyage) {
+      const record = { finds: cur.voyage.awards.length, rescues: cur.voyage.rescued.length, seals: (cur.voyage.seals || []).length, moves: cur.voyage.totalMoves };
+      if (!md.voyage || record.finds + record.rescues >= md.voyage.finds + md.voyage.rescues) md.voyage = record;
+    }
     md.plays++;
     md.completed = true;
     if (!md.best || first > md.best.first) md.best = { first, total };
@@ -7286,6 +7313,7 @@ a.btn { text-decoration: none; }
     UI.screen(
       'complete',
       `<section class="complete" style="--accent:${z.accent}"><div class="complete-card"><div class="confetti" aria-hidden="true">${Array.from({ length: 18 }, (_, i) => `<i style="--i:${i}"></i>`).join('')}</div>
+      ${cur.voyage ? `<div class="voyage-journal"><b>Expedition journal</b><br>${esc(root.ExpeditionVoyage.summary(cur.voyage))}</div>` : ''}
       <p class="eyebrow">${esc(z.name)} · ${esc(m.name)}</p><h2>${zoneNowDone && z.final ? esc(story().finalHeading) : zoneNowDone ? `${esc(z.name)} Cleared` : 'Mission Complete'}</h2>
       <div class="stat-row"><div class="stat"><b>${correct}/${total}</b><span>correct</span></div><div class="stat"><b>${first}/${total}</b><span>first try</span></div><div class="stat"><b>${s.xp}</b><span>total XP</span></div></div>
       ${newArtifact ? `<div class="artifact-reveal">${icon(newArtifact.icon)}<div><span class="ar-k">${esc(story().artifactWord || 'Instrument')} recovered</span><b>${esc(newArtifact.name)}</b></div></div>` : ''}

@@ -469,6 +469,14 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261007">
+<script src="/assets/game-studio.js?v=20261007" defer></script>
+<link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/legacy-adventure.css?v=20261007">
+<script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
+<script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+<script>window.LegacyAdventureConfig = {"id":"u9-coordinate-quest","title":"Red Planet Survey","chapters":["Dustfall Landing","Rift Relay","Mars Observatory"],"brief":"Calculate rover travel distances, then plan safe coordinate routes around craters.","scene":"rover","accent":"#ff8a5c","icons":["🛬","📡","🔭"],"story":["Your rover landed on Mars. Find distances to earn supplies.","The landing site is secure. Next, reach the rift relay.","The relay is sending signals. Now reach the observatory.","The Mars observatory is online. The survey is complete."]};</script>
+<script src="/math/games/shared/legacy-adventure.js?v=20261007"></script>
 </head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
@@ -895,13 +903,14 @@
       }
 
       function nudge(d) {
+        if (S.cur?.solved) return;
         SFX.click();
         setDial(S.dial + d);
         srSay("Drive distance " + S.dial);
       }
 
       function drive() {
-        if (!S.cur) return;
+        if (!S.cur || S.cur.solved) return;
         const p = S.cur;
         S.attempts++;
         const guess = S.dial;
@@ -909,7 +918,9 @@
           // CORRECT — the rover reaches the crater
           SFX.good();
           S.score += S.level === 1 ? 20 : 30;
+          p.solved = true; // one drive per crater; the next round loads shortly
           S.cleared++;
+          window.LegacyAdventure?.reward(S.cur);
           $("hud-score").textContent = S.score;
           $("crater").textContent = "✓";
           flash(

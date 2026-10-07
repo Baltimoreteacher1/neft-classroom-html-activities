@@ -73,7 +73,8 @@
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
   <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
 <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261002">
+<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261007">
 </head>
   <body>
 
@@ -1527,6 +1528,7 @@
           if (correct) {
             this.answered = true;
             this.totalCorrect++;
+            window.FlagshipAdventure?.record({ firstTry: this.wrongTries === 0 && !this.usedFifty, kind: q.skill || "expression" });
             const tries = this.wrongTries;
             if (tries === 0 && !this.usedFifty) this.firstTry++;
             let pts = q.tier * 10 * (1 + Math.min(this.streak, 5) * 0.1);
@@ -2242,6 +2244,8 @@
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
 <script src="/assets/game-studio.js?v=20261003" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261003" defer></script>
+<script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
+<script src="/math/games/shared/flagship-puzzles.js?v=20261007" defer></script>
+<script src="/math/games/shared/flagship-adventures.js?v=20261007" defer></script>
 </body>
 </html>

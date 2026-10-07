@@ -430,6 +430,14 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261007">
+<script src="/assets/game-studio.js?v=20261007" defer></script>
+<link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/legacy-adventure.css?v=20261007">
+<script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
+<script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+<script>window.LegacyAdventureConfig = {"id":"u4-percent-power","title":"Fortress of Light","chapters":["Outer Ward","Tram Defense","The Beacon Garden"],"brief":"Complete function tables to route power into the fortress.","scene":"forge","accent":"#ffe27a","icons":["🛡️","🚋","🌻"],"story":["The fortress is dark. Complete tables to earn light energy.","The outer ward is lit. Next, power the tram defense.","The tram defense is ready. Now light the beacon garden.","The beacon shines. The fortress of light is safe."]};</script>
+<script src="/math/games/shared/legacy-adventure.js?v=20261007"></script>
 </head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
@@ -838,6 +846,7 @@
           S.cur.bricks++;
           S.cur.idx++;
           S.powered++;
+          window.LegacyAdventure?.reward(S.cur, S.cur.idx);
           S.score += S.level === 1 ? 10 : 15;
           SFX.good();
           $("hud-score").textContent = S.score;

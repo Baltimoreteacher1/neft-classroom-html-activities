@@ -196,6 +196,7 @@
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->
     <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
+    <link rel="stylesheet" href="/curriculum/almost-right-lab/equations/adventure.css">
     <script src="/assets/game-studio.js?v=20261003" defer></script>
 </head>
   <body>
@@ -566,6 +567,8 @@
     </div><!-- /main-wrap -->
 
     <script src="/curriculum/almost-right-lab/equations/mission-coach.js"></script>
+    <script src="/curriculum/almost-right-lab/equations/adventure-worlds.js"></script>
+    <script src="/curriculum/almost-right-lab/equations/adventure.js"></script>
     <script>
       // ── Constants ──
       const MISSION_ID   = "mission-4";
@@ -656,6 +659,7 @@
             this.classList.add("correct");
             fb.textContent = "✓ Right! The creature divides instead of multiplying. Now let's teach it the correct rule.";
             fb.className = "diag-feedback correct";
+            window.ARLAdventure?.award("diagnose", { firstTry: score.diagFirst });
             continueAfter(fb, "teach");
             return;
           }
@@ -719,6 +723,7 @@
         fb.style.color = ok ? "var(--green)" : "var(--navy)";
         if (ok) {
           document.getElementById("main-check-btn").disabled = true;
+          window.ARLAdventure?.award("main|" + eqText, { firstTry: score.mainTries === 0, eq: eqText });
           continueAfter(fb, "practice");
         }
       }
@@ -754,6 +759,7 @@
             inputEl.disabled = true;
             checkArea.classList.remove("hidden");
             practiceState[idx] = true;
+            window.ARLAdventure?.award("practice|" + practiceEq(idx), { firstTry: score.practiceTries[idx] === 0, eq: practiceEq(idx) });
             const nextInput = document.querySelector(".practice-item .ans-input:not(:disabled)");
             if (nextInput) nextInput.focus();
           } else {
@@ -872,6 +878,7 @@
           document.querySelector("#step-complete .nav-buttons").prepend(again);
         }
         window.GameStudio?.emit("complete", { correct: r.first, total: r.counted, score: r.stars, message: "Mission complete: " + r.stars + " of 3 stars." });
+        window.ARLAdventure?.finish();
       }
       function practiceAgain() {
         score.round++;
@@ -909,6 +916,7 @@
       }
 
       // ── Init ──
+      window.ARLAdventure?.init({ missionId: MISSION_ID, totalPractice: TOTAL_PRACTICE });
       showStep("intro");
     </script>
   <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>

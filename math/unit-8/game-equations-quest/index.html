@@ -369,6 +369,14 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261007">
+<script src="/assets/game-studio.js?v=20261007" defer></script>
+<link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/legacy-adventure.css?v=20261007">
+<script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
+<script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+<script>window.LegacyAdventureConfig = {"id":"u7-equation-quest","title":"The Balance Citadel","chapters":["Outer Drawbridge","Suspended Passage","Citadel Gate"],"brief":"Solve equations with equal operations to rebuild the citadel bridges.","scene":"bridge","accent":"#ffcf6e","icons":["🚪","⛓️","🏰"],"story":["The citadel bridges are broken. Solve equations to earn supplies.","The drawbridge is down. Next, the suspended passage.","The passage is steady. Now open the citadel gate.","The citadel gate is open. Every bridge is balanced."]};</script>
+<script src="/math/games/shared/legacy-adventure.js?v=20261007"></script>
 </head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
@@ -776,6 +784,7 @@
         const c = S.cur;
         if (!(c.lx === 1 && c.lc === 0)) return;
         S.solved++;
+        window.LegacyAdventure?.reward(S.cur);
         S.score += 25;
         $("hud-score").textContent = S.score;
         SFX.win();

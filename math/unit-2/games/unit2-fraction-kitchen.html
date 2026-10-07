@@ -76,7 +76,8 @@
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
   <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
 <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261002">
+<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261007">
 </head>
   <body>
 
@@ -209,7 +210,7 @@
         let shownNum = targetNum,
           shownDen = jugDen,
           equiv = false;
-        if (tier !== 1 && round >= 3 && Math.random() < 0.4) {
+        if (tier !== 1 && (window.FlagshipAdventure?.route === 1 || (round >= 3 && Math.random() < 0.4))) {
           const mult = randInt(2, 3);
           if (sd * mult !== jugDen) {
             shownNum = sn * mult;
@@ -254,7 +255,7 @@
           this.cameras.main.setBackgroundColor("#1a1230");
           this.add
             .text(W / 2, 140, "FRACTION KITCHEN", {
-              fontFamily: "Segoe UI",
+              fontFamily: "Arial, sans-serif",
               fontSize: "62px",
               fontStyle: "900",
               color: "#ffd166",
@@ -262,7 +263,7 @@
             .setOrigin(0.5);
           this.add
             .text(W / 2, 208, "POUR MASTER", {
-              fontFamily: "Segoe UI",
+              fontFamily: "Arial, sans-serif",
               fontSize: "28px",
               fontStyle: "700",
               color: "#ff7eb6",
@@ -275,7 +276,7 @@
               320,
               "Each order needs a fraction of a jug, like 3/4.\nPour ONE mark at a time, then SERVE when the jug matches.\nNo timer, no rush — you can pour back if you go too far.",
               {
-                fontFamily: "Segoe UI",
+                fontFamily: "Arial, sans-serif",
                 fontSize: "21px",
                 color: "#f0e6ff",
                 align: "center",
@@ -289,7 +290,7 @@
               440,
               "↑ or Space = pour one mark   •   ↓ = pour back   •   Enter = serve",
               {
-                fontFamily: "Segoe UI",
+                fontFamily: "Arial, sans-serif",
                 fontSize: "18px",
                 color: "#b9a7d6",
               },
@@ -298,7 +299,7 @@
           const hi = parseInt(localStorage.getItem(LS_KEY) || "0");
           this.add
             .text(W / 2, 500, "Best service total: " + hi, {
-              fontFamily: "Segoe UI",
+              fontFamily: "Arial, sans-serif",
               fontSize: "18px",
               color: "#ffd43b",
             })
@@ -308,7 +309,7 @@
             .setInteractive({ useHandCursor: true });
           const t = this.add
             .text(W / 2, 600, "OPEN KITCHEN", {
-              fontFamily: "Segoe UI",
+              fontFamily: "Arial, sans-serif",
               fontSize: "28px",
               fontStyle: "800",
               color: "#1a1230",
@@ -367,7 +368,7 @@
           const cardPin = this.add.circle(0, -150, 9, 0xff7eb6, 0.85);
           const cardTitle = this.add
             .text(0, -118, "RECIPE", {
-              fontFamily: "Segoe UI",
+              fontFamily: "Arial, sans-serif",
               fontSize: "20px",
               fontStyle: "800",
               color: "#cdbce8",
@@ -447,7 +448,7 @@
           // HUD
           this.hud = this.add
             .text(20, 16, "", {
-              fontFamily: "Segoe UI",
+              fontFamily: "Arial, sans-serif",
               fontSize: "22px",
               fontStyle: "700",
               color: "#ffd166",
@@ -455,7 +456,7 @@
             .setDepth(20);
           this.orderText = this.add
             .text(W / 2, 56, "", {
-              fontFamily: "Segoe UI",
+              fontFamily: "Arial, sans-serif",
               fontSize: "28px",
               fontStyle: "800",
               color: "#ffffff",
@@ -465,7 +466,7 @@
             .setDepth(20);
           this.comboText = this.add
             .text(W - 20, 16, "", {
-              fontFamily: "Segoe UI",
+              fontFamily: "Arial, sans-serif",
               fontSize: "22px",
               color: "#ff7eb6",
             })
@@ -474,7 +475,7 @@
           // Equivalent-fraction hint (animated in nextOrder()).
           this.equivHint = this.add
             .text(W / 2, 98, "", {
-              fontFamily: "Segoe UI",
+              fontFamily: "Arial, sans-serif",
               fontSize: "19px",
               fontStyle: "700",
               color: "#ffe08a",
@@ -488,7 +489,7 @@
           //    No hold-and-release timing: the fraction reasoning decides.
           this.amountText = this.add
             .text(this.jugX + this.jugW / 2 + 24, this.jugBottom - 10, "", {
-              fontFamily: "Segoe UI",
+              fontFamily: "Arial, sans-serif",
               fontSize: "22px",
               fontStyle: "800",
               color: "#ffffff",
@@ -499,7 +500,7 @@
             .setDepth(20);
           this.coachText = this.add
             .text(24, 140, "", {
-              fontFamily: "Segoe UI",
+              fontFamily: "Arial, sans-serif",
               fontSize: "19px",
               color: "#f0e6ff",
               wordWrap: { width: 250 },
@@ -508,7 +509,7 @@
             .setDepth(20);
           this.feedbackText = this.add
             .text(W / 2, 664, "", {
-              fontFamily: "Segoe UI",
+              fontFamily: "Arial, sans-serif",
               fontSize: "20px",
               fontStyle: "700",
               color: "#ffe08a",
@@ -526,7 +527,7 @@
               .setDepth(22);
             this.add
               .text(x, 716, label, {
-                fontFamily: "Segoe UI",
+                fontFamily: "Arial, sans-serif",
                 fontSize: "24px",
                 fontStyle: "800",
                 color: txtColor,
@@ -861,6 +862,7 @@
             );
             this.score += pts;
             this.served++;
+            window.FlagshipAdventure?.record({ firstTry: this.attempts === 1, kind: o.equiv ? "equivalent" : "fraction" });
             this.flashLabel(label, "#51cf66", pts);
             this.updateHUD();
             this.time.delayedCall(1900, () => {
@@ -917,7 +919,7 @@
         flashLabel(text, color, pts) {
           const t = this.add
             .text(W / 2, 180, text + (pts ? "  +" + pts : ""), {
-              fontFamily: "Segoe UI",
+              fontFamily: "Arial, sans-serif",
               fontSize: "34px",
               fontStyle: "900",
               color,
@@ -1036,7 +1038,7 @@
           const won = this.r.won;
           this.add
             .text(W / 2, 210, won ? "KITCHEN STAR! ⭐" : "SHIFT OVER", {
-              fontFamily: "Segoe UI",
+              fontFamily: "Arial, sans-serif",
               fontSize: "56px",
               fontStyle: "900",
               color: won ? "#51cf66" : "#ff8787",
@@ -1044,14 +1046,14 @@
             .setOrigin(0.5);
           this.add
             .text(W / 2, 300, "Score: " + (this.r.score || 0), {
-              fontFamily: "Segoe UI",
+              fontFamily: "Arial, sans-serif",
               fontSize: "34px",
               color: "#ffd166",
             })
             .setOrigin(0.5);
           this.add
             .text(W / 2, 360, "Best: " + localStorage.getItem(LS_KEY), {
-              fontFamily: "Segoe UI",
+              fontFamily: "Arial, sans-serif",
               fontSize: "22px",
               color: "#ff7eb6",
             })
@@ -1068,7 +1070,7 @@
                   ? "Next: try the Challenge level with equivalent fractions."
                   : "Next: practice writing a fraction with a new denominator, like 1/2 = 2/4 = 3/6."),
               {
-                fontFamily: "Segoe UI",
+                fontFamily: "Arial, sans-serif",
                 fontSize: "18px",
                 color: "#b9a7d6",
                 align: "center",
@@ -1081,7 +1083,7 @@
             .setInteractive({ useHandCursor: true });
           this.add
             .text(W / 2, 580, "COOK AGAIN", {
-              fontFamily: "Segoe UI",
+              fontFamily: "Arial, sans-serif",
               fontSize: "26px",
               fontStyle: "800",
               color: "#1a1230",
@@ -1164,6 +1166,8 @@
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
 <script src="/assets/game-studio.js?v=20261003" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261003" defer></script>
+<script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
+<script src="/math/games/shared/flagship-puzzles.js?v=20261007" defer></script>
+<script src="/math/games/shared/flagship-adventures.js?v=20261007" defer></script>
 </body>
 </html>

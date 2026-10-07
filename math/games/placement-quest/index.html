@@ -196,6 +196,9 @@
     <script src="/assets/game-studio.js?v=20261003" defer></script>
     <link rel="stylesheet" href="/math/games/shared/cabinet-tools.css?v=20261002">
     <script src="/math/games/shared/cabinet-tools.js?v=20261002" defer></script>
+<link rel="stylesheet" href="/curriculum/review-expeditions/voyage.css?v=20261007">
+<script src="/curriculum/review-expeditions/voyage.js?v=20261007"></script>
+<link rel="stylesheet" href="./expedition.css?v=20261007">
 </head>
   <body>
     <main class="container" id="pq-main">
@@ -209,7 +212,9 @@
 
       <!-- Intro: what this is, how long, one Start button -->
       <section id="intro-screen" class="intro" aria-labelledby="intro-title">
-        <h2 id="intro-title">Find your starting level</h2>
+        <div class="pq-compass-art" aria-hidden="true"><svg viewBox="0 0 480 230"><circle cx="240" cy="115" r="96" fill="none" stroke="#edcf88" stroke-width="1" opacity=".35"/><circle cx="240" cy="115" r="72" fill="none" stroke="#a0d6e8" stroke-dasharray="2 8"/><path d="m240 30 19 65 65 20-65 19-19 66-19-66-66-19 66-20Z" fill="#e7d19c"/><path d="m240 45 0 70 69 0-50 16-19 55 0-71-65 0 48-17Z" fill="#6ea8bf"/><circle cx="240" cy="115" r="15" fill="#102c44" stroke="#fff0be" stroke-width="3"/><path d="M40 169Q145 30 240 115T438 48" fill="none" stroke="#79b6c3" stroke-dasharray="4 9"/><circle cx="40" cy="169" r="6" fill="#8fe2cf"/><circle cx="438" cy="48" r="6" fill="#f5d08a"/></svg><span>EXPEDITION 00 / READINESS SURVEY</span></div>
+        <h2 id="intro-title">The Lost Compass</h2>
+        <p class="pq-story">Eleven stations. One scattered compass. Pilot your survey ship across reefs, frozen outposts, and floating cities to chart a route home.</p>
         <p class="intro-lead">
           Answer <strong>11 questions</strong>, one from each Grade 6 math topic. There is
           <strong>no timer</strong>. It takes about 10 minutes.
@@ -220,7 +225,8 @@
           <li>At the end you get your <strong>Level</strong> and the topics to practice next.</li>
         </ul>
         <p id="intro-last" class="intro-last" hidden></p>
-        <button type="button" id="pq-start" class="start-btn">Start the quest ▶</button>
+        <p class="pq-route-note">Explore for compass fragments and rescue stranded scouts. Each station opens one math challenge. Exploration rewards are separate from your placement result.</p>
+        <div class="pq-launch-actions"><button type="button" id="pq-start" class="start-btn">Launch expedition →</button><button type="button" id="pq-resume" class="start-btn pq-resume" hidden>Resume saved expedition</button></div>
       </section>
 
       <!-- Stepping stones quest map (stones are built by script, one per topic) -->
@@ -238,6 +244,7 @@
         </svg>
       </div>
 
+      <div id="placement-voyage"></div>
       <!-- Play Screen -->
       <section id="play-screen" class="question-box" hidden aria-label="Question">
         <p id="q-domain" class="q-domain"></p>
@@ -255,6 +262,7 @@
         </svg>
         <h2 id="result-title">Quest complete!</h2>
         <p id="feedback-text"></p>
+        <p id="placement-journal" class="voyage-journal"></p>
         <table class="topic-table" aria-label="Your answer for each topic">
           <thead>
             <tr><th scope="col">Topic</th><th scope="col">Result</th><th scope="col">Practice game</th></tr>
@@ -283,6 +291,7 @@
       const gcd = (a, b) => (b ? gcd(b, a % b) : a);
       const num = (v) => String(Number(v.toFixed(2))); // 2.50 -> "2.5"
       const LAST_KEY = "pq-last-result-v1";
+      const QUEST_KEY = "pq-expedition-v1";
 
       // Build an item: choices = [{t: text, why: misconception or null}].
       // The first entry is the correct one; duplicates are dropped and the
@@ -541,6 +550,24 @@
       let questPaused = false;
       let answered = false; // one graded answer per question (real diagnostic)
       let results = []; // per question: true / false
+      let selections = [];
+      let voyage = null;
+      function saveQuest() {
+        if (!questions.length || currentIdx >= questions.length) return;
+        try { localStorage.setItem(QUEST_KEY, JSON.stringify({ questions, currentIdx, results, selections, voyage })); }
+        catch (_) { /* blocked storage leaves the playable session in memory */ }
+      }
+      function savedQuest() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(QUEST_KEY) || 'null');
+          if (!saved || !Array.isArray(saved.questions) || saved.questions.length !== GEN.length ||
+            !Number.isInteger(saved.currentIdx) || saved.currentIdx < 0 || saved.currentIdx >= GEN.length ||
+            !Array.isArray(saved.results) || !saved.results.every(v => typeof v === 'boolean') ||
+            !Array.isArray(saved.selections) || !saved.selections.every(v => Number.isInteger(v) && v >= 0 && v < 4) ||
+            !saved.questions.every(q => typeof q.q === 'string' && Array.isArray(q.c) && q.c.length === 4)) return null;
+          return saved;
+        } catch (_) { return null; }
+      }
 
       function $(id) {
         return document.getElementById(id);
@@ -565,19 +592,25 @@
         player.setAttribute("cy", 40);
       }
 
-      function startQuest() {
-        questions = GEN.map((g) => g());
-        currentIdx = 0;
-        correctCount = 0;
-        results = [];
+      function startQuest(checkpoint) {
+        const saved = checkpoint && checkpoint.questions ? checkpoint : null;
+        questions = saved ? saved.questions : GEN.map((g) => g());
+        currentIdx = saved ? saved.currentIdx : 0;
+        results = saved ? saved.results : [];
+        selections = saved ? saved.selections : [];
+        correctCount = results.filter(Boolean).length;
+        voyage = saved?.voyage || window.ExpeditionVoyage?.createState(Date.now());
+        document.body.classList.remove('won');
         $("q-total").textContent = questions.length;
-        $("q-score").textContent = "0";
+        $("q-score").textContent = correctCount;
         $("intro-screen").hidden = true;
         $("results-screen").style.display = "none";
         $("pq-stats").hidden = false;
         $("pq-map").hidden = false;
         $("play-screen").hidden = false;
         buildStones();
+        results.forEach((ok, index) => $("stone-" + (index + 1))?.setAttribute("fill", ok ? "#10b981" : "#f59e0b"));
+        saveQuest();
         loadQuestion();
       }
 
@@ -586,6 +619,17 @@
           showResults();
           return;
         }
+        if (window.ExpeditionVoyage && voyage.entered !== currentIdx) {
+          $("play-screen").hidden = true;
+          $("q-num").textContent = currentIdx + 1;
+          window.ExpeditionVoyage.mount({
+            host: $("placement-voyage"), unit: 'placement', stage: currentIdx, total: questions.length,
+            title: 'Compass station ' + (currentIdx + 1) + ' · ' + questions[currentIdx].domain,
+            state: voyage, onSave: saveQuest, onEnter: loadQuestion,
+          });
+          return;
+        }
+        $("play-screen").hidden = false;
         answered = false;
         $("quest-next").hidden = true;
         $("q-num").textContent = currentIdx + 1;
@@ -614,6 +658,23 @@
           btn.onclick = () => selectChoice(index, btn);
           container.appendChild(btn);
         });
+        // Restore a checked diagnostic answer without grading it a second time.
+        if (typeof results[currentIdx] === 'boolean') {
+          answered = true;
+          const correct = results[currentIdx];
+          container.querySelectorAll('button').forEach(button => {
+            button.disabled = true;
+            const option = Number(button.dataset.option);
+            if (option === 0) button.classList.add('is-right');
+            else if (option === selections[currentIdx]) button.classList.add('is-wrong');
+          });
+          feedback.textContent = (correct ? '✓ Correct! ' : 'The answer is ' + q.c[0].t + ': ') + q.why;
+          feedback.className = 'feedback-line ' + (correct ? 'good' : 'bad');
+          $("quest-next").textContent = currentIdx + 1 >= questions.length ? "See my results →" : "Chart the next station →";
+          $("quest-next").hidden = false;
+          $("quest-next").focus({ preventScroll: true });
+          return;
+        }
         // Move keyboard focus to the first option so the question is announced.
         const first = container.querySelector("button");
         if (first) first.focus({ preventScroll: true });
@@ -628,6 +689,8 @@
         const q = questions[currentIdx];
         const correct = index === 0;
         results[currentIdx] = correct;
+        selections[currentIdx] = index;
+        saveQuest();
         document.querySelectorAll("#choices-container .choice-btn").forEach((b) => {
           b.disabled = true;
           if (Number(b.dataset.option) === 0) b.classList.add("is-right");
@@ -660,7 +723,7 @@
           new CustomEvent("game:feedback", { detail: { correct, message: feedback.textContent } }),
         );
         const next = $("quest-next");
-        next.textContent = currentIdx + 1 >= questions.length ? "See my results →" : "Next question →";
+        next.textContent = currentIdx + 1 >= questions.length ? "See my results →" : "Chart the next station →";
         next.hidden = false;
         next.focus({ preventScroll: true });
         next.scrollIntoView({ block: "nearest" });
@@ -674,6 +737,9 @@
 
       function showResults() {
         $("play-screen").hidden = true;
+        $("placement-voyage").replaceChildren();
+        $("placement-journal").textContent = window.ExpeditionVoyage?.summary(voyage) || '';
+        try { localStorage.removeItem(QUEST_KEY); } catch (_) {}
         $("results-screen").style.display = "flex";
         const total = questions.length;
         const rate = correctCount / total;
@@ -752,10 +818,15 @@
         $("choices-container").after(next);
         next.addEventListener("click", () => {
           if (!answered || questPaused) return;
+          window.ExpeditionVoyage?.completeStage(voyage, currentIdx);
           currentIdx++;
+          saveQuest();
           loadQuestion();
         });
-        $("pq-start").addEventListener("click", startQuest);
+        $("pq-start").addEventListener("click", () => startQuest());
+        const resume = savedQuest();
+        $("pq-resume").hidden = !resume;
+        if (resume) $("pq-resume").addEventListener("click", () => startQuest(resume));
         $("pq-again").addEventListener("click", () => {
           $("results-screen").style.display = "none";
           startQuest();
@@ -772,9 +843,10 @@
           window.GameStudio.register({
             title: "Placement Quest",
             instructions: [
-              "Answer one question for each Grade 6 math topic (11 in all). There is no timer.",
+              "Pilot the survey ship through eleven stations. Choose map tiles or arrow controls to explore, collect compass fragments, and rescue scouts.",
+              "Each station opens one question for a Grade 6 math topic. There is no timer. Focus on math skips travel whenever you prefer.",
               "Tap a choice, or press keys 1–4. Each answer is checked one time.",
-              "Read why the answer works, then choose Next question (or press Enter).",
+              "Read why the answer works, then chart the next station. Your route and checked answers save after every move.",
               "At the end you see your Level and which practice games to play next.",
             ],
             pause() {

@@ -59,7 +59,8 @@
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
   <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
 <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261002">
+<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261007">
 </head>
   <body>
 
@@ -1318,6 +1319,7 @@
             this.helped++;
           }
           this.checkpointsHit++;
+          window.FlagshipAdventure?.record({ firstTry: this.tries === 0, kind: q.type });
           SFX.correct();
           entry.rect.setFillStyle(0x1f9d55);
           this.answerBtns.forEach((b) => b.rect.disableInteractive());
@@ -1589,6 +1591,8 @@
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
 <script src="/assets/game-studio.js?v=20261003" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261003" defer></script>
+<script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
+<script src="/math/games/shared/flagship-puzzles.js?v=20261007" defer></script>
+<script src="/math/games/shared/flagship-adventures.js?v=20261007" defer></script>
 </body>
 </html>

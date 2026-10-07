@@ -6,7 +6,7 @@
    only. Content updates flow through automatically (network-first); bump CACHE only when this worker itself changes.
    Modeled on math/intervention/sw.js.
    ========================================================================== */
-const CACHE = "pa-off-v3";
+const CACHE = "pa-off-v4";
 const SCOPE = "/math/games/practice-arcade/";
 // Shared multi-day Save/Resume widget injected on the arcade page. It lives
 // outside SCOPE (at /shared/), so it must be explicitly precached +
@@ -29,6 +29,8 @@ const CORE = [
   SCOPE + "map.html",
   SCOPE + "studio.js",
   SCOPE + "studio.css",
+  "/curriculum/review-expeditions/voyage.js?v=20261007",
+  "/curriculum/review-expeditions/voyage.css?v=20261007",
   "/assets/game-studio.js?v=20261003",
   "/assets/game-studio.css?v=20261002",
   "/data/curriculum-manifest.json",
@@ -76,6 +78,7 @@ self.addEventListener("fetch", (e) => {
   // Only manage our own scope plus the shared assets the arcade loads.
   if (
     !url.pathname.startsWith(SCOPE) &&
+    !url.pathname.startsWith("/curriculum/review-expeditions/voyage.") &&
     !url.pathname.startsWith(SR_PREFIX) &&
     !url.pathname.startsWith(ASSETS_PREFIX) &&
     !url.pathname.startsWith(VENDOR_PREFIX) &&

@@ -54,7 +54,8 @@
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
   <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
 <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261002">
+<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261007">
 </head>
   <body>
 
@@ -240,7 +241,7 @@
           this.cameras.main.setBackgroundColor("#10243f");
           this.add
             .text(W / 2, 140, "DISCOUNT DASH", {
-              fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+              fontFamily: "Arial, Inter, system-ui, sans-serif",
               fontSize: "66px",
               fontStyle: "900",
               color: "#ffe066",
@@ -248,7 +249,7 @@
             .setOrigin(0.5);
           this.add
             .text(W / 2, 208, "BEST DEAL SHOPPER", {
-              fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+              fontFamily: "Arial, Inter, system-ui, sans-serif",
               fontSize: "28px",
               fontStyle: "700",
               color: "#74c0fc",
@@ -261,7 +262,7 @@
               320,
               "12 deals. Each lane shows the same kind of item\nat its own price and % off. Nothing moves until you choose —\ntake your time, then pick the lane with the LOWEST sale price!",
               {
-                fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+                fontFamily: "Arial, Inter, system-ui, sans-serif",
                 fontSize: "21px",
                 color: "#dbe4ff",
                 align: "center",
@@ -275,7 +276,7 @@
               440,
               "Tap a deal card, or ← → / 1 2 3 + Enter    •    sale price = price × (100 − % off) ÷ 100",
               {
-                fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+                fontFamily: "Arial, Inter, system-ui, sans-serif",
                 fontSize: "18px",
                 color: "#94a3b8",
               },
@@ -284,7 +285,7 @@
           const hi = parseInt(localStorage.getItem(LS_KEY) || "0");
           this.add
             .text(W / 2, 500, "Best savings total: " + hi, {
-              fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+              fontFamily: "Arial, Inter, system-ui, sans-serif",
               fontSize: "18px",
               color: "#ffd43b",
             })
@@ -294,7 +295,7 @@
             .setInteractive({ useHandCursor: true });
           const t = this.add
             .text(W / 2, 600, "START SPREE", {
-              fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+              fontFamily: "Arial, Inter, system-ui, sans-serif",
               fontSize: "28px",
               fontStyle: "800",
               color: "#10243f",
@@ -371,7 +372,7 @@
 
           // HUD
           const hudStyle = (c, s = "22px") => ({
-            fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+            fontFamily: "Arial, Inter, system-ui, sans-serif",
             fontSize: s,
             fontStyle: "700",
             color: c,
@@ -385,7 +386,7 @@
           // Coach line (persistent — feedback never fades before it is read).
           this.coach = this.add
             .text(W / 2, COACH_Y, "", {
-              fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+              fontFamily: "Arial, Inter, system-ui, sans-serif",
               fontSize: "24px",
               fontStyle: "700",
               color: "#dbe4ff",
@@ -399,7 +400,7 @@
             .setDepth(25);
           this.prompt = this.add
             .text(W / 2, H - 26, "", {
-              fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+              fontFamily: "Arial, Inter, system-ui, sans-serif",
               fontSize: "18px",
               color: "#a5d8ff",
             })
@@ -601,7 +602,7 @@
             });
             const lane = this.add
               .text(0, -66, "LANE " + (i + 1), {
-                fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+                fontFamily: "Arial, Inter, system-ui, sans-serif",
                 fontSize: "15px",
                 fontStyle: "700",
                 color: "#a5d8ff",
@@ -610,7 +611,7 @@
             const emo = this.add.text(0, -32, data.emoji, { fontSize: "38px" }).setOrigin(0.5);
             const wasT = this.add
               .text(0, 10, "Price " + money(cell.base), {
-                fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+                fontFamily: "Arial, Inter, system-ui, sans-serif",
                 fontSize: "24px",
                 fontStyle: "700",
                 color: "#e9ecef",
@@ -618,7 +619,7 @@
               .setOrigin(0.5);
             const pctT = this.add
               .text(0, 40, cell.pct + "% OFF", {
-                fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+                fontFamily: "Arial, Inter, system-ui, sans-serif",
                 fontSize: "30px",
                 fontStyle: "900",
                 color: "#ffe066",
@@ -628,7 +629,7 @@
             // Tier-2 hint for a lane the student already ruled out).
             const saleT = this.add
               .text(0, 112, "", {
-                fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+                fontFamily: "Arial, Inter, system-ui, sans-serif",
                 fontSize: "18px",
                 fontStyle: "700",
                 color: "#ffffff",
@@ -705,6 +706,7 @@
               pts = tries === 1 ? 50 : 25;
             }
             this.score += pts;
+            window.FlagshipAdventure?.record({ firstTry: tries === 0, kind: "discount" });
             const prevSav = this.savings;
             this.savings = Math.round((this.savings + saved) * 100) / 100;
             sfx.grab();
@@ -802,7 +804,7 @@
             .setInteractive({ useHandCursor: true });
           const t = this.add
             .text(W / 2, NEXT_Y, label, {
-              fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+              fontFamily: "Arial, Inter, system-ui, sans-serif",
               fontSize: "24px",
               fontStyle: "800",
               color: "#10243f",
@@ -981,7 +983,7 @@
           const txt = (y, s, size, color, bold) =>
             this.add
               .text(W / 2, y, s, {
-                fontFamily: "Segoe UI, Inter, system-ui, sans-serif",
+                fontFamily: "Arial, Inter, system-ui, sans-serif",
                 fontSize: size,
                 fontStyle: bold ? "800" : "400",
                 color,
@@ -1110,6 +1112,8 @@
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
 <script src="/assets/game-studio.js?v=20261003" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261003" defer></script>
+<script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
+<script src="/math/games/shared/flagship-puzzles.js?v=20261007" defer></script>
+<script src="/math/games/shared/flagship-adventures.js?v=20261007" defer></script>
 </body>
 </html>

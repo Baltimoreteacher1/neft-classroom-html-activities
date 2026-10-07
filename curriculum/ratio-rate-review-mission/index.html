@@ -396,6 +396,9 @@
     .card{box-shadow:none;border:1px solid #bbb}.wrap{max-width:100%;padding:0}
   }
 </style>
+<link rel="stylesheet" href="/curriculum/review-expeditions/campaign.css?v=20261007">
+<script src="/curriculum/review-expeditions/basecamp.js?v=20261007"></script>
+<script src="./harbor-world.js?v=20261007"></script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to the review</a>
@@ -464,6 +467,8 @@
       </button>
     </div>
   </section>
+
+  <section id="review-basecamp" aria-label="Harbor expedition"></section>
 
   <nav class="tabs" aria-label="Review sections">
     <button class="tab-btn active" data-tab="family">👪 Family Note</button>
@@ -1003,6 +1008,7 @@ function updateFamilyMission(){
 }
 
 function updateHUD(){
+  refreshHarbor();
   const pct = percent();
   document.getElementById('hudProgress').textContent = pct+'%';
   document.getElementById('coinCount').textContent = routeScore();
@@ -1047,6 +1053,23 @@ function updateHUD(){
   });
   updateRouteChrome();
   updateFamilyMission();
+}
+
+/* Harbor expedition: one supply crate per route question solved without the answer being shown.
+   (Saves from before per-question points count a finished question as solved, like routeScore.) */
+let harbor=null;
+function routeQuestions(){return activeSections().flatMap(s=>routeBank(s.tab,s.bank))}
+function nextOpenTab(){const s=activeSections().find(sec=>routeBank(sec.tab,sec.bank).some(q=>!done(q.id)));return s?s.tab:'results'}
+function refreshHarbor(){
+  const host=document.getElementById('review-basecamp');
+  if(!host || !window.ExpeditionCampaign) return;
+  if(harbor){harbor.refresh();return;}
+  harbor=ExpeditionCampaign.mount({
+    host, world:'harbor', storageKey:'ratioRateReviewMission.harbor.v1',
+    pool:()=>routeQuestions().filter(q=>done(q.id)&&(!(q.id in state.points)||Number(state.points[q.id])>0)).length,
+    total:()=>routeQuestions().length,
+    onPractice:()=>goTab(nextOpenTab())
+  });
 }
 
 function scrollToPanel(id){

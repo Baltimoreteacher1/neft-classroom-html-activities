@@ -397,7 +397,8 @@
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
   <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
 <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261002">
+<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261007">
 </head>
   <body>
     <!-- nt-game-topbar-injected:begin (tools/inject-game-topbar.js) -->
@@ -912,6 +913,7 @@
         S.round = i;
         S.cur = S.targets[i];
         S.roundMisses = 0;
+        S.roundLocked = false;
         S.l = 1;
         S.w = 1;
         S.h = 1;
@@ -945,11 +947,14 @@
       }
 
       function seal() {
+        if (!S.cur || S.roundLocked) return;
         S.totalActions++;
         const v = S.l * S.w * S.h;
         if (v === S.cur.target) {
+          S.roundLocked = true;
           S.sealed++;
           S.correctActions++;
+          window.FlagshipAdventure?.record({ firstTry: S.roundMisses === 0, kind: "volume" });
           // Full points unaided; fewer after a miss (help was shown).
           S.score += S.roundMisses ? 15 : 25;
           $("hud-score").textContent = S.score;
@@ -1094,6 +1099,8 @@
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
 <script src="/assets/game-studio.js?v=20261003" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261003" defer></script>
+<script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
+<script src="/math/games/shared/flagship-puzzles.js?v=20261007" defer></script>
+<script src="/math/games/shared/flagship-adventures.js?v=20261007" defer></script>
 </body>
 </html>

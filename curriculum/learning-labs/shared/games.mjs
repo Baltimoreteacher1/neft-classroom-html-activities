@@ -1,5 +1,5 @@
-import { puzzle, fmt } from './math.mjs';
-import { esc, mountModel } from './model.mjs';
+import { mountExpedition } from './expedition.mjs?v=20261007';
+import { esc } from './model.mjs';
 
 function shuffled(items, seed) {
   const out = [...items]; let x = seed || 17;
@@ -15,49 +15,7 @@ export function mountGames(host, lab, state, save, level) {
   host.innerHTML = `<div class="game-menu"><button type="button" data-game="mission" aria-pressed="true">${esc(lab.finale)}</button><button type="button" data-game="match" aria-pressed="false">Connection Quest</button></div><div class="game-stage"></div>`;
   let active = 'mission';
   const stage = host.querySelector('.game-stage');
-  const mission = () => {
-    const round = Math.min(progress.rounds, 3);
-    if (round === 3) {
-      stage.innerHTML = `<div class="game-win"><span class="win-icon" aria-hidden="true">🏁</span><h3>${esc(lab.finale)} complete</h3><p>You solved three construction puzzles in ${progress.checks} checks with ${progress.hints} hints. Pick one and explain why your settings worked.</p><button type="button" data-replay>Replay these puzzles</button><button type="button" class="quiet" data-other>Play Connection Quest</button></div>`;
-      stage.querySelector('[data-replay]').onclick = () => { progress.rounds = 0; progress.checks = 0; progress.hints = 0; progress.solutions = []; delete progress.puzzleValues; save(); mission(); };
-      stage.querySelector('[data-other]').onclick = () => choose('match'); return;
-    }
-    const challenge = puzzle(lab.model, round, tier);
-    const isBalance = lab.model.kind === 'balance';
-    const isMirror = lab.model.kind === 'coordinates' && ['reflect', 'symmetry'].includes(lab.model.mode);
-    const isInequality = lab.model.kind === 'inequality';
-    const approximate = Math.abs(challenge.target - Number(challenge.target.toFixed(4))) > 1e-8;
-    const goal = isMirror ? `Move A to the reflection of B across the ${round % 2 ? 'x' : 'y'}-axis.` : isInequality ? `Find a test value that ${round % 2 ? 'does not satisfy' : 'satisfies'} the rule. The boundary itself ${round % 2 ? 'may help you find a counterexample' : 'is worth checking'}.` : isBalance ? 'Make both sides equal. Only the candidate value of x can change.' : `Make ${challenge.metric.toLowerCase()} ${approximate ? 'approximately' : 'equal'} ${fmt(challenge.target)}.${approximate ? ' The target is rounded to four decimal places.' : ''} Only one control is unlocked.`;
-    const showGap = !isMirror && !isInequality && !isBalance;
-    stage.innerHTML = `<div class="round-heading"><h3>${esc(lab.finale)}</h3><p>Puzzle ${round + 1} of 3</p></div><div class="mission-track" aria-label="${round} of 3 puzzles solved">${[0,1,2].map(i => `<span class="${i < round ? 'earned' : ''}">${i < round ? '✓' : i + 1}</span>`).join('')}</div><p class="target">${esc(goal)}</p><p class="goal-gap" aria-live="polite"></p><p>Plan a move, change the unlocked control, then submit your solution. You can retry without losing progress.</p><div class="puzzle-model"></div><div class="actions"><button type="button" data-check>Submit solution</button><button type="button" class="quiet" data-hint>Get a strategy hint</button></div><p class="game-feedback" role="status"></p>`;
-    const saved = progress.puzzleValues;
-    const initial = saved?.round === round ? saved.values : challenge.start;
-    const gap = stage.querySelector('.goal-gap');
-    const describe = (result) => {
-      if (isBalance) { gap.textContent = `Left side ${fmt(result.lhs)} · right side ${fmt(result.rhs)} · ${Math.abs(result.value) < 1e-9 ? 'balanced' : 'not balanced yet'}`; return; }
-      if (!showGap) { gap.textContent = ''; return; }
-      const diff = result.value - challenge.target;
-      gap.textContent = `Current ${challenge.metric.toLowerCase()}: ${fmt(result.value)} · goal: ${fmt(challenge.target)} · ${Math.abs(diff) <= challenge.tolerance ? 'on target' : diff > 0 ? 'too high' : 'too low'}`;
-    };
-    const model = mountModel(stage.querySelector('.puzzle-model'), lab.model, { initial, free: challenge.free, prefix: 'game', level,
-      onChange: (values, result) => { progress.puzzleValues = { round, values }; describe(result); save(); } });
-    const status = stage.querySelector('.game-feedback');
-    stage.querySelector('[data-hint]').onclick = () => { progress.hints++; save(); status.textContent = isMirror ? 'A reflection changes the sign of the coordinate perpendicular to the mirror. The other coordinate stays the same.' : isInequality ? 'Read the direction and test the boundary. Think about whether equality is allowed.' : isBalance ? 'Use the inverse operation, then substitute your candidate into the original equation.' : 'Look at the relationship in the model. Predict whether the unlocked value needs to increase or decrease. Use the worked examples in Learn if you need a starting point.'; };
-    stage.querySelector('[data-check]').onclick = () => {
-      if (!model.valid) { status.textContent = 'Fix the highlighted model input before submitting your solution.'; return; }
-      progress.checks++;
-      let correct = Math.abs(model.result().value - challenge.target) <= challenge.tolerance;
-      if (isMirror) correct = model.values.every((n, i) => Math.abs(n - challenge.goal[i]) < 1e-8);
-      if (isInequality) correct = model.result().pass === (round % 2 === 0);
-      window.GameStudio?.emit('feedback', { correct });
-      if (!correct) { save(); status.textContent = isMirror || isInequality ? 'Keep investigating. Check the axis or boundary, adjust one value, and submit again.' : `Your ${challenge.metric.toLowerCase()} is ${fmt(model.result().value)}; the goal is ${fmt(challenge.target)}. Predict a change, adjust the unlocked control, and try again.`; return; }
-      progress.solutions.push({ round, values: [...model.values] });
-      progress.rounds++; delete progress.puzzleValues; save();
-      if (progress.rounds === 3) window.GameStudio?.emit('complete', { correct: 3, total: 3, message: `${lab.finale} complete. Three constructions solved.` });
-      status.textContent = 'Goal reached. Your model is evidence that the settings work.';
-      const next = stage.querySelector('[data-check]'); next.textContent = round === 2 ? 'See your finish' : 'Next puzzle'; next.onclick = mission;
-    };
-  };
+  const mission = () => mountExpedition(stage, lab, progress, save, level, choose);
 
   const match = () => {
     const vocab = lab.vocabulary.slice(0, tier === 2 ? 6 : 4);

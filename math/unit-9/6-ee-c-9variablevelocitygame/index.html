@@ -476,6 +476,14 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261007">
+<script src="/assets/game-studio.js?v=20261007" defer></script>
+<link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/legacy-adventure.css?v=20261007">
+<script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
+<script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+<script>window.LegacyAdventureConfig = {"id":"u6-expression-express","title":"The Starlight Rally","chapters":["Pit-Lane Junction","Canyon Circuit","Starlight Finish"],"brief":"Choose the lane that matches the rule, then program the supply railway.","scene":"rail","accent":"#ff6b8b","icons":["🏁","🏜️","⭐"],"story":["The rally is starting. Pick the right lanes to earn supplies.","The pit lane is ready. Next, race the canyon circuit.","The canyon is behind you. Now race to the starlight finish.","You crossed the starlight finish line."]};</script>
+<script src="/math/games/shared/legacy-adventure.js?v=20261007"></script>
 </head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
@@ -942,6 +950,7 @@
           S.locked = true;
           S.score += S.level === 1 ? 10 : 15;
           S.hits++;
+          window.LegacyAdventure?.reward(S.cur);
           $("hud-score").textContent = S.score;
           SFX.good();
           if (window.GameFX && GameFX.successBurst)

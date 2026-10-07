@@ -461,6 +461,14 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261007">
+<script src="/assets/game-studio.js?v=20261007" defer></script>
+<link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/legacy-adventure.css?v=20261007">
+<script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
+<script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+<script>window.LegacyAdventureConfig = {"id":"u2-fraction-frenzy","title":"The Sunken Dungeon","chapters":["Flooded Passage","Coral Stair","The Tidal Vault"],"brief":"Tile each corridor with fractional boards, then control the ballast of your rescue sub.","scene":"forge","accent":"#5fd0ff","icons":["🌊","🪸","🗝️"],"story":["The dungeon is flooded. Tile corridors to reach the rescue sub.","The flooded passage is clear. Next, climb the coral stair.","The coral stair holds. Now open the tidal vault.","The tidal vault is open. Everyone escaped the dungeon."]};</script>
+<script src="/math/games/shared/legacy-adventure.js?v=20261007"></script>
 </head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
@@ -936,7 +944,7 @@
 
       function placeBoard() {
         const p = S.cur;
-        if (!p) return;
+        if (!p || p.solved) return;
         // Allow placing past the target so the player can SEE the overhang,
         // but cap so it cannot run off screen forever.
         if (p.placed >= p.target + 2) {
@@ -966,7 +974,7 @@
 
       function removeBoard() {
         const p = S.cur;
-        if (!p) return;
+        if (!p || p.solved) return;
         if (p.placed <= 0) {
           flash("No boards to pull back yet.", "bad");
           return;
@@ -979,14 +987,16 @@
 
       function openDoor() {
         const p = S.cur;
-        if (!p) return;
+        if (!p || p.solved) return;
         const filled = p.placed * p.boardVal;
         const diff = filled - p.lenVal;
         const m = DATA.misconceptions || [];
         if (Math.abs(diff) < 1e-9 && p.placed === p.target) {
           // EXACT tiling — door opens. The board count IS the quotient.
           $("corridor").classList.add("open");
+          p.solved = true; // one success per door; the next round loads in 1.5s
           S.doorsOpened++;
+          window.LegacyAdventure?.reward(S.cur);
           S.score += S.level === 1 ? 100 : 150;
           SFX.win();
           if (window.GameFX && GameFX.successBurst)

@@ -445,6 +445,14 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261007">
+<script src="/assets/game-studio.js?v=20261007" defer></script>
+<link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/legacy-adventure.css?v=20261007">
+<script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
+<script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+<script>window.LegacyAdventureConfig = {"id":"u4-percent-power","title":"Midnight Market","chapters":["Market Clinic","Electric Tramway","Festival Gardens"],"brief":"Compare prices and discounts to power the city district by district.","scene":"city","accent":"#ff8fd0","icons":["🏥","🚋","🎆"],"story":["The market is dark tonight. Make smart deals to earn power.","The clinic lights are on. Next, power the tramway.","The trams are running. Now light up the festival gardens.","The midnight market glows. The festival can begin."]};</script>
+<script src="/math/games/shared/legacy-adventure.js?v=20261007"></script>
 </head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
@@ -1112,6 +1120,7 @@
           SFX.good();
           S.score += S.level === 1 ? 10 : 15;
           S.correct++;
+          window.LegacyAdventure?.reward(S.cur);
           $("hud-score").textContent = S.score;
           SFX.win();
           if (window.GameFX && GameFX.successBurst)
@@ -1200,6 +1209,7 @@
           SFX.win();
           S.score += S.level === 1 ? 15 : 20;
           S.correct++;
+          window.LegacyAdventure?.reward(S.cur);
           $("hud-score").textContent = S.score;
           if (window.GameFX && GameFX.successBurst)
             try {

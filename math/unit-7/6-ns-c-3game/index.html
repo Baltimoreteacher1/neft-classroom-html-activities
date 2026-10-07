@@ -62,6 +62,14 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261007">
+<script src="/assets/game-studio.js?v=20261007" defer></script>
+<link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/legacy-adventure.css?v=20261007">
+<script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
+<script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+<script>window.LegacyAdventureConfig = {"id":"u1-decimal-dash","title":"The Windward Trail","chapters":["Cloud Camp","Storm Crossing","Aurora Summit"],"brief":"Solve number-line challenges to navigate exact skyship distances.","scene":"sky","accent":"#b7a6ff","icons":["⛺","⛈️","🌌"],"story":["Your skyship waits at cloud camp. Earn supplies to fly the trail.","Cloud camp is behind you. Next, cross the storm.","The storm is behind you. Now climb to the aurora summit.","You reached the aurora summit. Every distance was exact."]};</script>
+<script src="/math/games/shared/legacy-adventure.js?v=20261007"></script>
 </head>
   <body>
 
@@ -1175,7 +1183,24 @@
           selectorCont.setInteractive(hitArea, Phaser.Geom.Rectangle.Contains);
           this.input.setDraggable(selectorCont);
 
+          // The marker starts at 0; require one move so an answer of 0 is chosen, not defaulted.
+          let moved = false;
+          const moveHint = this.add
+            .text(W / 2, 410, "", {
+              fontSize: "15px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+              stroke: "#000000",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(601);
+          container.push(moveHint);
+
           const updateSelectorFromValue = (v) => {
+            moved = true;
+            moveHint.setText("");
             const currentVal = Phaser.Math.Clamp(v, -qRange, qRange);
             const snappedX = W / 2 + (currentVal / qRange) * (nlWidth / 2);
             selectorCont.x = snappedX;
@@ -1255,6 +1280,10 @@
           this.input.keyboard.on("keydown", onKeyDown);
 
           const submitAnswer = () => {
+            if (!moved) {
+              moveHint.setText("Move the marker to your answer, then submit.");
+              return;
+            }
             // Unbind listeners
             this.input.keyboard.off("keydown", onKeyDown);
             if (selectorCont.input) selectorCont.disableInteractive();
@@ -1273,6 +1302,7 @@
 
               this.qCorrect++;
               this.questionsCorrect++;
+              window.LegacyAdventure?.reward(q);
               this.combo++;
               if (this.combo > this.maxCombo) this.maxCombo = this.combo;
               this.score += 200 * this.combo;
@@ -1856,6 +1886,7 @@
       };
 
       const game = new Phaser.Game(config);
+      window.__legacyAdventureGame = game;
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>

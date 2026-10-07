@@ -46,6 +46,8 @@ const version = createHash("sha256")
       "math.mjs",
       "model.mjs",
       "games.mjs",
+      "expedition.mjs",
+      "expedition-worlds.mjs",
       "catalog.mjs",
       "lab.css",
     ]

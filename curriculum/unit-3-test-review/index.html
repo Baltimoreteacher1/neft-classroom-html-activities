@@ -1816,6 +1816,9 @@
         text-align: center;
       }
     </style>
+    <link rel="stylesheet" href="/curriculum/review-expeditions/campaign.css?v=20261007" />
+    <script src="/curriculum/review-expeditions/basecamp.js?v=20261007"></script>
+    <script src="./summit-world.js?v=20261007"></script>
   </head>
   <body class="lang-mode-en">
     <a class="skip-link" href="#main">Skip to review / Ir al repaso</a>
@@ -1963,6 +1966,8 @@
           </div>
         </div>
       </section>
+
+      <section id="review-basecamp" aria-label="Summit expedition / Expedición a la cumbre"></section>
 
       <nav class="tabs" aria-label="Review sections" role="tablist">
         <button class="tab-btn active" data-tab="family" role="tab" aria-selected="true">
@@ -3577,8 +3582,29 @@
         return Math.round((ALL_QS.filter((q) => done(q.id)).length / ALL_QS.length) * 100);
       }
 
+      /* Summit expedition: one power cell per question solved without the answer being shown. */
+      let summit = null;
+      function refreshSummit() {
+        const host = document.getElementById("review-basecamp");
+        if (!host || !window.ExpeditionCampaign) return;
+        if (summit) return summit.refresh();
+        summit = ExpeditionCampaign.mount({
+          host,
+          world: "summit",
+          storageKey: "ewl-unit3-test-review-summit-v1",
+          pool: () => ALL_QS.filter((q) => done(q.id) && Number(state.points[q.id]) > 0).length,
+          total: () => ALL_QS.length,
+          lang: () => currentLang,
+          onPractice: () => {
+            const open = SECTIONS.find((s) => s.qs.some((q) => !done(q.id)));
+            goTab(open ? open.tab : "results");
+          },
+        });
+      }
+
       /* Shared HUD */
       function updateHUD() {
+        refreshSummit();
         const pct = percent();
         document.getElementById("hudProgress").textContent = pct + "%";
         document.getElementById("coinCount").textContent = score();

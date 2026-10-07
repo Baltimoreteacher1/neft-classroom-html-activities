@@ -474,6 +474,14 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261007">
+<script src="/assets/game-studio.js?v=20261007" defer></script>
+<link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/legacy-adventure.css?v=20261007">
+<script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
+<script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+<script>window.LegacyAdventureConfig = {"id":"u5-area-attack","title":"Gardens Above the Clouds","chapters":["First Terrace","Rain Courtyard","Sky Garden"],"brief":"Use base and perpendicular height to build a terrace city.","scene":"garden","accent":"#f7c2ff","icons":["🌱","🌧️","🌸"],"story":["A garden city floats above the clouds. Build plots to earn supplies.","The first terrace is planted. Next, the rain courtyard.","Rain fills the courtyard. Now build the sky garden.","The sky garden blooms above the clouds."]};</script>
+<script src="/math/games/shared/legacy-adventure.js?v=20261007"></script>
 </head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
@@ -1085,6 +1093,7 @@
           S.solved = true;
           SFX.good();
           S.built++;
+          window.LegacyAdventure?.reward(S.cur);
           S.score += S.level === 1 ? 20 : 30;
           $("hud-score").textContent = S.score;
           flash(

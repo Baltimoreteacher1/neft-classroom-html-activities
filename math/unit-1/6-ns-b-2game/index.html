@@ -492,7 +492,15 @@
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />
-  </head>
+  <link rel="stylesheet" href="/assets/game-studio.css?v=20261007">
+<script src="/assets/game-studio.js?v=20261007" defer></script>
+<link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/legacy-adventure.css?v=20261007">
+<script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
+<script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+<script>window.LegacyAdventureConfig = {"id":"u10-volume-blast","title":"Asteroid Outpost","chapters":["Ore Dock","Crew Habitat","Deep-Space Refinery"],"brief":"Divide the ore into equal crews to supply an orbital outpost.","scene":"orbit","accent":"#ffb070","icons":["⛏️","🏠","🏭"],"story":["The outpost is out of power. Mine ore to fill the supply bay.","The ore dock is open. Next, build homes for the crews.","The crews have homes. Now restart the deep-space refinery.","The outpost shines again. Every crew got a fair share."]};</script>
+<script src="/math/games/shared/legacy-adventure.js?v=20261007"></script>
+</head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
     <div id="ff-sr" role="status" aria-live="polite"></div>
@@ -945,6 +953,7 @@
       }
 
       function selectGroups(n) {
+        if (S.cur?.solved) return;
         S.selectedGroups = n;
         document
           .querySelectorAll(".grp")
@@ -959,6 +968,7 @@
 
       function blast() {
         const r = S.cur;
+        if (!r || r.solved) return;
         if (S.selectedGroups == null) {
           flash("Pick how many crews to load first.", "bad");
           return;
@@ -1058,6 +1068,8 @@
         const bonus = Math.max(5, 30 - r.parts.length * 3 - r.jams * 5);
         S.score += bonus;
         S.roundsCleared++;
+        r.solved = true; // rock is mined out; ignore input until the next rock
+        window.LegacyAdventure?.reward(S.cur);
         $("hud-score").textContent = S.score;
         SFX.win();
         flash(

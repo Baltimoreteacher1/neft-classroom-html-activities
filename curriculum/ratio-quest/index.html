@@ -394,6 +394,49 @@
         stroke: #2a2350;
         stroke-width: 5px;
       }
+      /* ---------- caravan road ---------- */
+      .caravan-gate {
+        position: absolute;
+        left: 16px;
+        bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 48px;
+        max-width: calc(100% - 32px);
+        padding: 10px 18px;
+        border: 3px solid #2a2350;
+        border-radius: 18px;
+        background: #fff4dc;
+        color: #2a2350;
+        font-weight: 900;
+        box-shadow: var(--shadow);
+      }
+      .caravan-gate small {
+        display: block;
+        font-weight: 700;
+        font-size: 0.8rem;
+        opacity: 0.8;
+      }
+      .caravan-gate:focus-visible {
+        outline: 4px solid #ffd54a;
+        outline-offset: 3px;
+      }
+      .caravan-body {
+        flex: 1;
+        overflow: auto;
+        /* Clear the floating HUD chips. */
+        padding: 76px 14px 30px;
+      }
+      .caravan-gain {
+        margin: 10px auto 0;
+        max-width: 520px;
+        padding: 10px 14px;
+        border-radius: 14px;
+        background: #fff4dc;
+        border: 2px solid #e2b04a;
+        font-weight: 800;
+      }
       .map-toast {
         position: absolute;
         top: 72px;
@@ -1680,6 +1723,9 @@
         }
       }
     </style>
+    <link rel="stylesheet" href="/curriculum/review-expeditions/campaign.css?v=20261007" />
+    <script src="/curriculum/review-expeditions/basecamp.js?v=20261007"></script>
+    <script src="./caravan-road.js?v=20261007"></script>
   </head>
   <body>
     <div id="app"></div>
@@ -5285,6 +5331,15 @@
     </svg>
     <div class="map-toast" id="toast"></div></div>`);
         wireHud(s);
+        const gate = document.createElement("button");
+        gate.type = "button";
+        gate.className = "caravan-gate";
+        gate.innerHTML = `<span aria-hidden="true">🐪</span><span>The Caravan Road<small>${caravanCrates()} crates from your shop stars</small></span>`;
+        gate.onclick = () => {
+          SFX.click();
+          showCaravan();
+        };
+        $(".map-wrap", s).appendChild(gate);
         SHOP_IDS.forEach((id) => {
           const t = $(`[data-stars="${id}"]`, s);
           const st = shopStars(id);
@@ -5350,6 +5405,7 @@
         let n = 0,
           earned = [],
           skills = [];
+        const cratesBefore = isShop ? caravanCrates() : 0;
         const s = screen(`${hud()}<div class="scene" style="--c:${npc.color}">
       <div class="scene-art">${ART.sceneBanner(id)}</div>
       <div class="scene-body"><div class="scene-inner">
@@ -5454,9 +5510,11 @@
       <p class="coins">🪙 ${S.coins} coins in your purse</p>
       ${id === "finale" ? `<p>The <b>Golden Trophy</b> now sits on your stall.</p>` : allDone && !P().finale ? `<p>🎪 All four shops done — <b>Grand Market Day</b> is open on the map!</p>` : S.merchant && isShop ? `<p>🎒 A <b>Traveling Merchant</b> just rolled into town — look for the cart on the map!</p>` : ""}
       ${visitReport(earned, skills)}
+      ${isShop ? caravanGainHTML(id, caravanCrates() - cratesBefore) : ""}
       ${isShop ? `<div class="chest" id="chest"><p style="margin:0 0 8px;font-weight:900">🎁 Treasure chest! Pick one card.</p><div class="tcards">${[0, 1, 2].map((i) => `<button class="tcard" data-i="${i}">?</button>`).join("")}</div><div id="chestResult" class="feedback"></div></div>` : ""}
-      <div class="actions" style="justify-content:center"><button class="big-btn" id="toMap">🗺️ Back to town</button><button class="big-btn quiet" id="again">Play again</button></div></div>`;
+      <div class="actions" style="justify-content:center"><button class="big-btn" id="toMap">🗺️ Back to town</button><button class="big-btn quiet" id="again">Play again</button>${isShop ? `<button class="big-btn quiet" id="toCaravan">🐪 Caravan Road</button>` : ""}</div></div>`;
           $("#toMap", board).onclick = () => showMap();
+          if (isShop) $("#toCaravan", board).onclick = () => showCaravan();
           $("#again", board).onclick = () => showShop(id);
           if (isShop) treasureChest(board);
         }
@@ -5503,6 +5561,36 @@
           $("#chestResult", board).textContent = r.t === "coins" ? `+${r.v} coins!` : `A free ${r.item.nm} for your stall!`;
           checkBadges();
         }));
+      }
+
+      /* ---------- caravan road ----------
+         Crates are each shop's best stars, summed over Regular and Challenge. Stars only
+         rise when a replay beats the old best, so a crate is earned exactly once. */
+      const CARAVAN_RES = { potion: "🧪 potion crates", bakery: "🥐 bread baskets", post: "✉️ mail sacks", market: "🍎 fruit crates" };
+      function caravanPool() {
+        const out = {};
+        SHOP_IDS.forEach((id) => {
+          out[id] = MODES.reduce((sum, m) => sum + (S.modes[m]?.shops[id]?.best || []).reduce((a, b) => a + (Number(b) || 0), 0), 0);
+        });
+        return out;
+      }
+      const caravanCrates = () => Object.values(caravanPool()).reduce((a, b) => a + b, 0);
+      function caravanGainHTML(id, gained) {
+        return gained > 0
+          ? `<p class="caravan-gain">🐪 +${gained} ${CARAVAN_RES[id]} for the Caravan Road</p>`
+          : `<p class="caravan-gain">🐪 Beat your best stars here to add more ${CARAVAN_RES[id]} to the Caravan Road.</p>`;
+      }
+      function showCaravan() {
+        const s = screen(`${hud()}<div class="caravan-body"><section id="caravanHost" aria-label="The Caravan Road"></section></div>`);
+        wireHud(s);
+        s.style.background = "#2e1a10";
+        ExpeditionCampaign.mount({
+          host: $("#caravanHost", s),
+          world: "caravan",
+          storageKey: "ratioQuest.caravan.v1",
+          pool: caravanPool,
+          onPractice: () => showMap(),
+        });
       }
 
       /* ---------- upgrades ---------- */

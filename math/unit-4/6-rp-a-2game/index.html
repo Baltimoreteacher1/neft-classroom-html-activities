@@ -355,6 +355,14 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261007">
+<script src="/assets/game-studio.js?v=20261007" defer></script>
+<link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/legacy-adventure.css?v=20261007">
+<script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
+<script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+<script>window.LegacyAdventureConfig = {"id":"u3-ratio-rush","title":"The Oasis Supply Line","chapters":["Trade Depot","Irrigation Works","The Desert Greenhouse"],"brief":"Find unit rates to earn supplies for a precise oasis mixture.","scene":"oasis","accent":"#f2c46b","icons":["🐪","💧","🌿"],"story":["The desert oasis is dry. Ship boxes to fund the supply line.","The trade depot is open. Next, rebuild the irrigation works.","Water is flowing. Now grow the desert greenhouse.","The greenhouse is green. The supply line is complete."]};</script>
+<script src="/math/games/shared/legacy-adventure.js?v=20261007"></script>
 </head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
@@ -660,8 +668,11 @@
       function ship() {
         const c = S.cur,
           v = S.dial;
+        if (!c || c.solved) return;
         if (v === c.rate) {
+          c.solved = true; // one shipment per box; the next box loads shortly
           S.shipped++;
+          window.LegacyAdventure?.reward(S.cur);
           S.score += S.level === 1 ? 10 : 15;
           SFX.good();
           $("hud-score").textContent = S.score;
@@ -771,10 +782,12 @@
         show("level");
       });
       $("dial-up").addEventListener("click", () => {
+        if (S.cur?.solved) return;
         S.dial = Math.min(40, S.dial + 1);
         renderDial();
       });
       $("dial-down").addEventListener("click", () => {
+        if (S.cur?.solved) return;
         S.dial = Math.max(0, S.dial - 1);
         renderDial();
       });

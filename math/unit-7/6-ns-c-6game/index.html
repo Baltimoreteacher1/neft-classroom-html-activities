@@ -64,7 +64,15 @@
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />
-  </head>
+  <link rel="stylesheet" href="/assets/game-studio.css?v=20261007">
+<script src="/assets/game-studio.js?v=20261007" defer></script>
+<link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/legacy-adventure.css?v=20261007">
+<script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
+<script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+<script>window.LegacyAdventureConfig = {"id":"u9-coordinate-quest","title":"The Atlas Archipelago","chapters":["Survey Landing","Crater Crossing","Island Observatory"],"brief":"Complete coordinate missions to equip an expedition rover.","scene":"oasis","accent":"#ffd166","icons":["🏝️","🌋","🔭"],"story":["The islands are unmapped. Finish coordinate missions to earn supplies.","The landing is surveyed. Next, cross the crater field.","The crater crossing is safe. Now reach the observatory.","The observatory is open. The whole archipelago is mapped."]};</script>
+<script src="/math/games/shared/legacy-adventure.js?v=20261007"></script>
+</head>
   <body>
     <!-- EWL Universal Arcade Enhancements Header -->
     <div class="ewl-arcade-header-bar" style="position: relative; z-index: 100">
@@ -1035,6 +1043,7 @@
           if (ok) {
             this.qCorrect++;
             this.missionsDone++;
+            window.LegacyAdventure?.reward(this.activeMission);
             this.combo++;
             if (this.combo > this.maxCombo) this.maxCombo = this.combo;
             const pts = 200 * this.combo;
@@ -1692,7 +1701,7 @@
         input: { activePointers: 3 },
       };
 
-      new Phaser.Game(config);
+      window.__legacyAdventureGame = new Phaser.Game(config);
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/game-score.js"></script>

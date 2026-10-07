@@ -1,5 +1,5 @@
 import { esc } from './model.mjs';
-import { mountGames } from './games.mjs';
+import { mountGames } from './games.mjs?v=20261007';
 import { create, investigate, learn, practice } from './activities.mjs';
 import { levels, noteLabels, overview, tabs, timing } from './progress.mjs';
 
@@ -88,7 +88,7 @@ function brief(host) {
   host.querySelector('[data-start]').onclick = () => showTab(started && o.next !== 'brief' ? o.next : 'learn'); bindNotes(host);
 }
 function games(host) {
-  host.innerHTML = `<div class="section-intro"><h2>Finish with a game</h2><p>Use the same mathematics in two different ways: construct a solution, then connect ideas. Neither game uses a countdown, and retries never cost progress.</p></div><details class="how-to-play"><summary>How to play</summary><ol><li>Choose a level, then select ${esc(lab.finale)} or Connection Quest.</li><li>In ${esc(lab.finale)}, read the goal, change the unlocked control, and submit your solution. The readout shows your current value next to the goal.</li><li>In Connection Quest, match each term with its meaning. Arrow keys move between cards; Enter selects. Completed puzzles and pairs are saved on this device.</li></ol></details><div class="games-root"></div>`;
+  host.innerHTML = `<div class="section-intro"><h2>Finish with a game</h2><p>Choose your expedition route, restore three locations with mathematical constructions, then decode the field guide. Your world and discoveries stay saved on this device.</p></div><details class="how-to-play"><summary>How to play</summary><ol><li>Choose a level, then select ${esc(lab.finale)} or Connection Quest.</li><li>In ${esc(lab.finale)}, choose a destination, read its target, adjust the unlocked model control, and restore the location. Each destination has a different construction.</li><li>In Connection Quest, match each term with its meaning. Arrow keys move between cards; Enter selects. Completed puzzles and pairs are saved on this device.</li></ol></details><div class="games-root"></div>`;
   mountGames(host.querySelector('.games-root'), lab, state, () => { save(); refreshProgress(); }, state.level);
 }
 function reportText() {

@@ -56,6 +56,14 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261007">
+<script src="/assets/game-studio.js?v=20261007" defer></script>
+<link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/legacy-adventure.css?v=20261007">
+<script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
+<script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+<script>window.LegacyAdventureConfig = {"id":"u1-factor-frenzy","title":"Prime Relic Expedition","chapters":["Buried Door","Prismatic Chamber","The Relic Vault"],"brief":"Build correct factor diagrams to forge the keys to three ancient vaults.","scene":"forge","accent":"#e8c46a","icons":["🚪","💎","🏺"],"story":["Three vaults are sealed. Each key is a product of prime crystals.","The buried door is open. Next, the prismatic chamber.","The chamber glows. One vault is left: the relic vault.","The relic is found. Prime factors opened every lock."]};</script>
+<script src="/math/games/shared/legacy-adventure.js?v=20261007"></script>
 </head>
   <body>
 
@@ -1644,6 +1652,7 @@
               this.combo++;
               this.bestCombo = Math.max(this.bestCombo, this.combo);
               this.questionsCorrect++;
+              window.LegacyAdventure?.reward(this.currentQ);
               this.questionsTotal++;
 
               const pts = 150 + this.combo * 20 + this.level * 30;
@@ -2181,7 +2190,7 @@
         }
 
         config.scene = [BootScene, TitleScene, GameScene, ResultsScene];
-        new Phaser.Game(config);
+        window.__legacyAdventureGame = new Phaser.Game(config);
       })();
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>

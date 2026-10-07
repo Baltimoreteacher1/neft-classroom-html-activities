@@ -21,6 +21,7 @@
     const game = options.game;
     let root, prompt, feedback, progress, controls, nextButton, pending = null;
     let pausedScenes = [];
+    let adventure, missionPaused = [];
     function scene() { return game.scene.getScenes(true)[0]; }
     function muted(value) {
       window.NT_MUTED = value;
@@ -32,6 +33,7 @@
       if (window.GameJuice) window.GameJuice.audio.setMuted(value);
     }
     function send(key) {
+      if (adventure?.open) adventure.show(false);
       const current = scene();
       if (!current || (window.GameStudio && window.GameStudio.paused)) return;
       if (pending && (key === 'Enter' || key === 'Space')) { advance(); return; }
@@ -65,6 +67,10 @@
     function update() {
       const current = scene();
       if (!root || !current) return;
+      if (adventure && !current.cabinetWorldReady && current.children.list.length) {
+        adventure.decorate(current); current.cabinetWorldReady = true;
+      }
+      if (adventure && current.sys.settings.key === 'Game') adventure.observeSolved(current.solved);
       refreshControls(current);
       const field = current.bannerText || current.promptText || current.targetText;
       const problem = current.problem;
@@ -106,11 +112,16 @@
       });
     };
     const originalInit = proto.init;
-    proto.init = function () { pending = null; this.studioEnded = false; const result = originalInit.apply(this, arguments); if (window.GameStudio) this.reduceMotion = window.GameStudio.settings.reducedMotion; return result; };
+    proto.init = function () { pending = null; this.studioEnded = false; this.cabinetWorldReady = false; if (adventure) adventure.resetCounter(); const result = originalInit.apply(this, arguments); if (window.GameStudio) this.reduceMotion = window.GameStudio.settings.reducedMotion; return result; };
+    const originalHUD = proto.updateHUD;
+    if (originalHUD) proto.updateHUD = function () {
+      if (adventure) adventure.observeSolved(this.solved);
+      return originalHUD.apply(this, arguments);
+    };
     const originalEnd = proto.endGame;
     proto.endGame = function () {
       if (this.studioEnded) return;
-      this.studioEnded = true; pending = null;
+      this.studioEnded = true; pending = null; if (adventure) adventure.observeSolved(this.solved);
       if (nextButton) nextButton.hidden = true;
       return originalEnd.apply(this, arguments);
     };
@@ -134,11 +145,12 @@
     };
     window.ewlSetLevel = function (level) {
       if (window.GameStudio?.paused) window.GameStudio.resume();
+      if (adventure?.open) adventure.show(false);
       options.setLevel(level);
     };
     window.addEventListener('keydown', event => {
       if (!event.target.closest || !(keyNames[event.key] || /^[1-4FWASDUC]$/i.test(event.key))) return;
-      if (event.target.closest('button, a, input, select, textarea, summary, dialog')) event.stopPropagation();
+      if (event.target !== game.canvas || adventure?.open) event.stopPropagation();
     }, true);
     function ready() {
       const canvas = game.canvas;
@@ -147,6 +159,17 @@
       const toolbar = document.querySelector('.studio-toolbar');
       if (toolbar) toolbar.after(host); else document.body.prepend(host);
       host.append(canvas);
+      adventure = window.CabinetAdventure?.create({id: options.id, host, onView(open) {
+        if (open) {
+          missionPaused = game.scene.getScenes(true).map(s => s.sys.settings.key);
+          missionPaused.forEach(key => game.scene.pause(key));
+        } else {
+          if (!(window.GameStudio && window.GameStudio.paused)) missionPaused.forEach(key => game.scene.resume(key));
+          missionPaused = [];
+        }
+      }});
+      window.__cabinetAdventure = adventure;
+      canvas.addEventListener('pointerdown', () => canvas.focus({preventScroll:true}));
       game.scale.parent = host;
       game.scale.parentIsWindow = false;
       function resize() {

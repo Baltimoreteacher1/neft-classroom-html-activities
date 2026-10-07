@@ -55,6 +55,14 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261007">
+<script src="/assets/game-studio.js?v=20261007" defer></script>
+<link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/legacy-adventure.css?v=20261007">
+<script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
+<script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+<script>window.LegacyAdventureConfig = {"id":"u10-volume-blast","title":"Starfall Shipyard","chapters":["Cargo Recovery","Orbital Greenhouse","Station Core"],"brief":"Blast correct variable values and spend supplies building space-station modules.","scene":"orbit","accent":"#c9a6ff","icons":["📦","🌱","🛰️"],"story":["The shipyard is empty. Blast correct values to recover cargo.","The cargo is safe. Next, build the orbital greenhouse.","Plants grow in orbit. Now build the station core.","The station core is online. The shipyard is complete."]};</script>
+<script src="/math/games/shared/legacy-adventure.js?v=20261007"></script>
 </head>
   <body>
 
@@ -761,6 +769,8 @@
 
           const q = this.shuffledQs[this.qIndex];
           this.currentQuestion = q;
+          // Questions come from a shared pool; reward each wave, not the pool entry.
+          this.questionWave = { q };
           this.questionActive = true;
           this.locked = false;
 
@@ -816,6 +826,7 @@
           if (correct) {
             this.questionActive = false; // lock this question, advance
             this.totalCorrect++;
+            window.LegacyAdventure?.reward(this.questionWave);
             this.streak++;
             if (this.streak > this.bestStreak) this.bestStreak = this.streak;
             this.combo = Math.min(4, 1 + Math.floor(this.streak / 3));
@@ -1256,6 +1267,7 @@
       };
 
       const game = new Phaser.Game(config);
+      window.__legacyAdventureGame = game;
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>

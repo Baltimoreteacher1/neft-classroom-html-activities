@@ -128,8 +128,17 @@ try {
       for (const gameLevel of full ? ["support", "core", "stretch"] : ["core"]) {
         await page.selectOption("#level", gameLevel);
         await page.locator("#tab-games").click();
-        for (let r = 0; r < 3; r++) {
-          const p = puzzle(lab.model, r, ["support", "core", "stretch"].indexOf(gameLevel));
+        // The finale is a route-map expedition: start a fresh one if a previous
+        // level already restored all three destinations, then restore them out
+        // of order to exercise route choice.
+        if (await page.locator("[data-replay]").isVisible())
+          await page.locator("[data-replay]").click();
+        const kicker = await page.locator(".lab-expedition-kicker").innerText();
+        const cycle = Number(/expedition (\d+)/i.exec(kicker)[1]) - 1;
+        const tier = (["support", "core", "stretch"].indexOf(gameLevel) + cycle) % 3;
+        for (const r of [2, 0, 1]) {
+          await page.locator(`[data-site="${r}"]`).click();
+          const p = puzzle(lab.model, r, tier);
           if (lab.model.kind === "inequality") {
             // The default includes equality; choose an interior solution or counterexample.
             const threshold = p.start[0],
@@ -143,13 +152,16 @@ try {
           await page.locator("[data-check]").click();
           assert.match(
             await page.locator(".game-feedback").innerText(),
-            /Goal reached/,
-            `${item.id} game round ${r}`,
+            /restored\./,
+            `${item.id} game destination ${r}`,
           );
           await page.locator("[data-check]").click();
           report.puzzleRounds++;
         }
-        assert.match(await page.locator(".game-win").innerText(), /complete/);
+        assert.match(
+          await page.locator(".lab-expedition-status").innerText(),
+          /Expedition complete/,
+        );
         await page.locator('[data-game="match"]').click();
         const first = await page.locator("[data-card]").count();
         assert.ok(first >= 8);

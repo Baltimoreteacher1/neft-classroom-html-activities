@@ -61,6 +61,14 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261007">
+<script src="/assets/game-studio.js?v=20261007" defer></script>
+<link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/legacy-adventure.css?v=20261007">
+<script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
+<script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+<script>window.LegacyAdventureConfig = {"id":"u4-percent-power","title":"The Future City","chapters":["Health District","Transit District","Garden District"],"brief":"Place buildings at correct coordinates and route the city’s energy.","scene":"city","accent":"#7cf0a8","icons":["🏥","🚇","🌳"],"story":["The future city needs power. Place buildings to earn energy.","The health district is running. Next, the transit district.","Trains are moving. Now power the garden district.","The whole future city has power."]};</script>
+<script src="/math/games/shared/legacy-adventure.js?v=20261007"></script>
 </head>
   <body>
 
@@ -1185,6 +1193,7 @@
             gx === t.question.targetX && gy === t.question.targetY;
 
           if (correct) {
+            if (t.placed) return; // already built; the next task loads shortly
             sndPlace();
             this.placeBuilding(gx, gy, t.building);
             t.placed = true;
@@ -1192,6 +1201,8 @@
             this.combo++;
             if (this.combo > this.maxCombo) this.maxCombo = this.combo;
             this.qCorrect++;
+            // A miss highlights the right cell, so only an unrevealed task earns supplies.
+            if (!t.revealed) window.LegacyAdventure?.reward(t);
             this.qTotal++;
             const pts = t.building.points * this.combo;
             this.score += pts;
@@ -1261,6 +1272,7 @@
             });
 
             // Highlight correct cell briefly
+            t.revealed = true;
             const tx = t.question.targetX,
               ty = t.question.targetY;
             const cx = this.ox + tx * this.cs;
@@ -1492,6 +1504,10 @@
           };
 
           const submitAnswer = () => {
+            // One answer per distance question (Enter stays hooked until the
+            // overlay closes, so a second press must not score again).
+            if (q.answered) return;
+            q.answered = true;
             if (submitBtn) submitBtn.disableInteractive();
             this.qElements.forEach((e) => {
               if (e.input) e.disableInteractive();
@@ -1503,6 +1519,7 @@
             if (isCorrect) {
               sndCorrect();
               this.qCorrect++;
+              window.LegacyAdventure?.reward(q);
               this.combo++;
               if (this.combo > this.maxCombo) this.maxCombo = this.combo;
               const pts = 250 * this.combo;
@@ -2114,7 +2131,7 @@
         input: { activePointers: 3 },
       };
 
-      new Phaser.Game(config);
+      window.__legacyAdventureGame = new Phaser.Game(config);
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>

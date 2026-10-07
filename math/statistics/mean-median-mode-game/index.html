@@ -433,6 +433,14 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261007">
+<script src="/assets/game-studio.js?v=20261007" defer></script>
+<link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/legacy-adventure.css?v=20261007">
+<script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
+<script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+<script>window.LegacyAdventureConfig = {"id":"u8-data-dash","title":"The Field Research League","chapters":["Team Fieldwork","Forest Trials","Migration Finals"],"brief":"Build datasets that match each target, then distribute wildlife observations.","scene":"garden","accent":"#8ff0c8","icons":["⚽","🌲","🏆"],"story":["The research league needs data. Analyze stats to earn supplies.","Team fieldwork is done. Next, the forest trials.","The trials are done. Now go to the migration finals.","Your league won the finals with strong data."]};</script>
+<script src="/math/games/shared/legacy-adventure.js?v=20261007"></script>
 </head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
@@ -816,7 +824,8 @@
 
       function loadRound(i) {
         S.round = i;
-        S.cur = S.configs[i];
+        // Copy the shared pool entry so a replayed round is a new problem instance.
+        S.cur = { ...S.configs[i] };
         S.bars = S.cur.start.slice();
         $("hud-round").textContent = i + 1;
         $("hud-score").textContent = S.score;
@@ -902,6 +911,7 @@
       }
 
       function adjust(idx, dir) {
+        if (S.cur?.solved) return;
         const next = S.bars[idx] + dir;
         if (next < 0 || next > maxVal()) {
           SFX.bad();
@@ -914,12 +924,14 @@
           return;
         }
         S.bars[idx] = next;
+        S.cur.adjusted = true;
         SFX.tick();
         renderChart();
         updateReadout();
       }
 
       function removeBar(idx) {
+        if (S.cur?.solved) return;
         if (S.bars.length <= MIN_BARS) return;
         S.bars.splice(idx, 1);
         SFX.tick();
@@ -929,6 +941,7 @@
       }
 
       function addBar() {
+        if (S.cur?.solved) return;
         if (S.bars.length >= MAX_BARS) return;
         S.bars.push(S.cur.target); // sensible neutral starting point
         SFX.tick();
@@ -959,12 +972,16 @@
       }
 
       function lockIn() {
+        if (!S.cur || S.cur.solved) return;
         const m = meanOf(S.bars),
           md = medianOf(S.bars);
         const cur = S.cur.stat === "mean" ? m : md;
         const hit = Math.abs(cur - S.cur.target) < 1e-9;
         if (hit) {
+          S.cur.solved = true; // one lock-in per round; the next round loads shortly
           S.targetsHit++;
+          // Supplies need the student's own change: some rounds start on target.
+          if (S.cur.adjusted) window.LegacyAdventure?.reward(S.cur);
           S.score += S.level === 1 ? 25 : 35;
           SFX.win();
           flash(

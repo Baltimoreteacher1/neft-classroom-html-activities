@@ -501,6 +501,9 @@
     .card{box-shadow:none;border:1px solid #bbb}.wrap{max-width:100%;padding:0}
   }
 </style>
+<link rel="stylesheet" href="/curriculum/review-expeditions/campaign.css?v=20261007">
+<script src="/curriculum/review-expeditions/basecamp.js?v=20261007"></script>
+<script src="./case-files.js?v=20261007"></script>
 </head>
 <body>
 <div class="topbar">
@@ -535,6 +538,8 @@
       <div class="formula-note">For unit price: cost ÷ number of items = cost per 1 item</div>
     </div>
   </section>
+
+  <section id="case-files" aria-label="Night Market case"></section>
 
   <nav class="tabs" aria-label="Activity tabs">
     <button class="tab-btn active" data-tab="start">1. Start Here</button>
@@ -820,10 +825,26 @@ function updateHUD(){
   setBadge('badgeChallenge', gameRounds.every(q=>done(q.id)));
   setBadge('badgeMaster', percent()===100);
   renderSkillRows();
+  refreshCaseFiles();
   document.querySelectorAll('.tab-btn').forEach(btn=>{
     const t=btn.dataset.tab;
     const map={sort:sortQs,build:buildQs,battle:battleQs,cart:cartQs,challenge:gameRounds};
     if(map[t] && map[t].every(q=>done(q.id))) btn.classList.add('done'); else btn.classList.remove('done');
+  });
+}
+/* Night Market case: one clue per question solved without the answer being shown (any tab). */
+const TAB_BANKS=()=>[['sort',sortQs],['build',buildQs],['battle',battleQs],['cart',cartQs],['challenge',gameRounds]];
+let caseFiles=null;
+function solvedFairly(id){return done(id) && (!(id in state.pts) || Number(state.pts[id])>0)}
+function refreshCaseFiles(){
+  const host=document.getElementById('case-files');
+  if(!host || !window.ExpeditionCampaign) return;
+  if(caseFiles){caseFiles.refresh();return;}
+  caseFiles=ExpeditionCampaign.mount({
+    host, world:'casefiles', storageKey:'unitRateMarketMission.caseFiles.v1',
+    pool:()=>TAB_BANKS().reduce((n,[,bank])=>n+bank.filter(q=>solvedFairly(q.id)).length,0),
+    total:()=>totalQuestions(),
+    onPractice:()=>{const open=TAB_BANKS().find(([,bank])=>bank.some(q=>!done(q.id)));goTab(open?open[0]:'results');}
   });
 }
 function setBadge(id,on){document.getElementById(id)?.classList.toggle('earned',on)}
@@ -1497,7 +1518,7 @@ let game=null;
 
 function newRun(startAt){
   return {i:startAt||0, coins:0, combo:0, bestCombo:0, marks:[], tries:{},
-          answered:false, peeks:0, hintShown:false, picks:[], bossStep:0, aisleStart:startAt||0, rack:null};
+          answered:false, peeks:0, hintShown:false, picks:[], bossStep:0, aisleStart:startAt||0, rack:null, expeditionPlan:null, contractHits:0};
 }
 function startGame(reset){
   const firstOpen=gameRounds.findIndex(r=>!done(r.id));
@@ -1578,13 +1599,29 @@ function breakCombo(){
 }
 
 /* ---------- render ---------- */
+/* Each aisle starts with a role choice. Roles change coin strategy inside the run only;
+   points, progress, and the case clues always come from the answer itself. */
+const ROLES={
+  magnifier:{icon:'🔍',name:'Magnifier kit',text:'The first hint in each case is free.',note:'First hint in each case is free.'},
+  courier:{icon:'⚡',name:'Speed courier',text:'Cases solved on the first try, with no help, earn 10 extra coins.',note:'First-try cases with no help earn +10 coins.'},
+  patrol:{icon:'🌙',name:'Night patrol',text:'Solve 3 cases in this aisle to earn a 30-coin patrol bonus.',note:'Solve 3 cases in this aisle for +30 coins.'}
+};
+function chooseAisleContract(body, round) {
+  const aisle = AISLES[round.aisle];
+  body.innerHTML = '<section class="xc-roles" aria-labelledby="roleTitle"><h4 id="roleTitle">'+aisle.icon+' '+aisle.name+': pick your role</h4><p>Each role helps in a different way. You can pick a new role at the next aisle. Hints are always available.</p><div class="xc-options">'+
+    Object.entries(ROLES).map(([key,role])=>'<button type="button" class="xc-option" data-role="'+key+'"><span class="xc-option-icon" aria-hidden="true">'+role.icon+'</span><strong>'+role.name+'</strong><span class="xc-option-text">'+role.text+'</span></button>').join('')+
+    '</div></section>';
+  body.querySelectorAll('[data-role]').forEach(button=>button.onclick=()=>{game.expeditionPlan=button.dataset.role;game.contractHits=0;renderGame();body.querySelector('button')?.focus();});
+}
 function renderGame(){
   drawGameHUD();
   const body=document.getElementById('gBody'); if(!body) return;
   if(game.i>=gameRounds.length){body.innerHTML=finaleHTML();wireFinale();return;}
   const r=gameRounds[game.i];
+  if(!game.expeditionPlan) {chooseAisleContract(body,r);return;}
   game.answered=false;game.peeks=0;game.hintShown=false;game.helped=false;game.picks=[];game.bossStep=0;
-  body.innerHTML = caseHTML(r);
+  const role=ROLES[game.expeditionPlan];
+  body.innerHTML = '<div class="xc-strip"><span class="xc-strip-label">'+role.icon+' '+role.name+'</span><span class="xc-strip-note">'+role.note+' · '+game.contractHits+' solved in this aisle</span></div>'+caseHTML(r);
   wireRound(r);
   drawGameHUD();
 }
@@ -1728,15 +1765,16 @@ function refreshPowers(r){
       const free=game.peeks<PEEK_FREE;
       b.querySelector('.cost').textContent = free?'free':POWERS.scan.cost;
       b.disabled = !free && game.coins<POWERS.scan.cost;
-    } else if(k==='hint'){ b.disabled=game.hintShown || game.coins<POWERS.hint.cost; }
+    } else if(k==='hint'){ const cost=game.expeditionPlan==='magnifier'?0:POWERS.hint.cost; b.querySelector('.cost').textContent=cost||'free'; b.disabled=game.hintShown || game.coins<cost; }
   });
 }
 function usePower(r,kind,btn){
   if(game.answered) return;
   const body=document.getElementById('gBody');
   if(kind==='hint'){
-    if(game.coins<POWERS.hint.cost) return;
-    game.coins-=POWERS.hint.cost;game.hintShown=true;
+    const cost=game.expeditionPlan==='magnifier'?0:POWERS.hint.cost;
+    if(game.hintShown || game.coins<cost) return;
+    game.coins-=cost;game.hintShown=true;
     feedback(body.querySelector('.gfb'),'hint','💡 '+r.hint);
     drawGameHUD();refreshPowers(r);return;
   }
@@ -1783,8 +1821,11 @@ function usePower(r,kind,btn){
 function bumpTries(r){game.tries[r.id]=(game.tries[r.id]||0)+1;return game.tries[r.id]}
 
 function win(r,extra){
-  const gained=caseValue();
+  let gained=caseValue();
   const firstTry=!game.tries[r.id] && !game.hintShown && !game.helped;
+  if(game.expeditionPlan==='courier' && firstTry) gained+=10;
+  game.contractHits++;
+  if(game.expeditionPlan==='patrol' && game.contractHits===3) gained+=30;
   game.coins+=gained;game.combo++;game.bestCombo=Math.max(game.bestCombo,game.combo);
   game.marks[game.i]='hit';game.answered=true;
   award(r.id,firstTry?10:5);
@@ -1936,7 +1977,7 @@ function showNext(r){
     if(aisleEnds){
       const bonus=25;game.coins+=bonus;
       banner('✅ '+AISLES[r.aisle].name+' cleared!','+'+bonus+' coins',1400);
-      game.i++;game.aisleStart=game.i;
+      game.i++;game.aisleStart=game.i;game.expeditionPlan=null;
       setTimeout(()=>renderGame(),700);
     }else{game.i++;renderGame();}
   };

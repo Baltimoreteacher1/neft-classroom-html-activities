@@ -79,3 +79,28 @@ button.small{min-height:40px;padding:6px 12px;font-size:.88rem}
 @media(max-width:900px){.method-strip{grid-template-columns:1fr}.ewl-course-nav__inner{flex-direction:column;align-items:flex-start;gap:8px;padding:10px 16px}.tabs button{grid-template-columns:auto 1fr;gap:6px}.tab-mark{display:none}.save-tools{justify-items:start;text-align:left}}
 @media(max-width:600px){.tabs{grid-template-columns:repeat(3,1fr)}.tabs button{grid-template-columns:1fr;text-align:center;justify-items:center;gap:2px;padding:6px 4px}.tab-step{width:22px;height:22px;font-size:.72rem}.tab-title{font-size:.82rem}.learn-toolbar .lesson-switch{flex-basis:100%}.lang-switch{width:100%}.lang-switch button{flex:1}.route-list li{grid-template-columns:26px 1fr}.lesson-chips{gap:6px}.lesson-chip{font-size:.82rem}}
 @media print{.ewl-course-nav{display:none}}
+/* Finale expeditions: art and controls share one play surface. */
+.lab-expedition { overflow: hidden; border: 1px solid #365364; border-radius: 22px; background: #122b3b; color: #f3f7f5; box-shadow: 0 16px 40px #12334320; }
+.lab-expedition-banner { padding: 24px 28px 12px; }
+.lab-expedition-banner h3 { color: #fff; font-size: clamp(1.4rem,3vw,2rem); line-height: 1.2; margin: 8px 0 12px; }
+.lab-expedition-banner p { color: #d7e6e5; max-width: 65ch; }
+.lab-expedition-kicker { font-size: .85rem; text-transform: uppercase; letter-spacing: .1em; font-weight: 800; color: #c6edbc !important; }
+.lab-expedition-world { aspect-ratio: 720/270; overflow: hidden; background: #192c42; }
+.lab-expedition-world svg { display: block; width: 100%; height: 100%; object-fit: cover; }
+.lab-expedition-deck { background: #f4f4ec; color: #173745; padding: 24px; }
+.lab-expedition-deck h3 { color: #173745; }
+.lab-expedition-status { font-weight: 700; }
+.lab-expedition-sites { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin: 18px 0; }
+.lab-expedition-sites button { display: grid; gap: 8px; padding: 20px 14px; min-height: 132px; text-align: left; border: 2px solid #bdcbbd; border-radius: 12px; background: #fff; color: #173745; box-shadow: 0 4px 0 #c9d2c5; }
+.lab-expedition-sites button:not(:disabled):hover { border-color: #39715c; transform: translateY(-2px); }
+.lab-expedition-sites button:disabled { opacity: 1; color: #23573d; background: #e3f0da; border-color: #96bba0; }
+.lab-expedition-sites span { font-size: .75rem; font-weight: 800; letter-spacing: .08em; }
+.lab-expedition-sites strong { font-size: 1.12rem; line-height: 1.25; }
+.lab-expedition-sites small { font-size: .9rem; line-height: 1.4; }
+.lab-expedition button:focus-visible { outline: 3px solid #d3751d; outline-offset: 4px; }
+.lab-expedition details { border-top: 1px solid #c6d0c4; padding-top: 16px; margin-top: 18px; }
+.lab-expedition .game-feedback:not(:empty) { padding: 16px; background: #deebd7; border-radius: 10px; border-left: 4px solid #42734f; }
+.lab-site-lit { animation: lab-restored 550ms ease-out; transform-box: fill-box; transform-origin: center; }
+@keyframes lab-restored { from { opacity: .6; } to { opacity: 1; } }
+@media (max-width: 600px) { .lab-expedition-banner,.lab-expedition-deck { padding: 18px; } .lab-expedition-sites { grid-template-columns: 1fr; } .lab-expedition-sites button { min-height: 100px; } .lab-expedition-world { aspect-ratio: 720/320; } }
+@media (prefers-reduced-motion: reduce) { .lab-site-lit { animation: none; } .lab-expedition-sites button:not(:disabled):hover { transform: none; } }

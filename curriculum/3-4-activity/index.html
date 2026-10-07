@@ -1404,6 +1404,10 @@
         }
       }
     </style>
+    <link rel="stylesheet" href="/curriculum/review-expeditions/campaign.css?v=20261007" />
+    <link rel="stylesheet" href="./expeditions.css?v=20261007" />
+    <script src="/curriculum/review-expeditions/basecamp.js?v=20261007"></script>
+    <script src="./frontier-worlds.js?v=20261007"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to activities</a>
@@ -4851,6 +4855,51 @@
             hintTier,
             cleared;
           const strip = $("lzLevels");
+          /* Crystal Frontier: best sector stars fund the expedition; unlocked ship equipment
+             changes how sectors play. Stars themselves still come only from this game. */
+          const LASER_KITS = {
+            standard: { name: "Standard optics", note: "The original beam supply." },
+            capacitor: { name: "Reserve capacitor", note: "+2 beams in every sector." },
+            scope: { name: "Pathfinder scope", note: "Shows every crystal's coordinates." },
+          };
+          let laserKit = LASER_KITS[S.best.laserKit] ? S.best.laserKit : "standard";
+          const frontierHost = document.createElement("section");
+          frontierHost.setAttribute("aria-label", "Crystal Frontier expedition");
+          // The game comes first; the expedition map follows it.
+          $("panel-laser").append(frontierHost);
+          const kitBar = document.createElement("div");
+          kitBar.className = "xc-strip";
+          kitBar.setAttribute("role", "group");
+          kitBar.setAttribute("aria-label", "Ship equipment");
+          strip.before(kitBar);
+          let frontier = null;
+          const kitOwned = (k) => k === "standard" || !!frontier?.hasPerk(k);
+          function paintKits() {
+            if (!kitOwned(laserKit)) laserKit = "standard";
+            const owned = Object.keys(LASER_KITS).filter(kitOwned);
+            kitBar.innerHTML =
+              '<span class="xc-strip-label">🛠️ Ship equipment</span>' +
+              owned
+                .map(
+                  (k) =>
+                    `<button type="button" data-kit="${k}" aria-pressed="${k === laserKit}">${LASER_KITS[k].name}</button>`,
+                )
+                .join("") +
+              `<span class="xc-strip-note">${owned.length > 1 ? `${LASER_KITS[laserKit].note} Switching restarts this sector; earned stars stay saved.` : "Unlock more equipment on the Crystal Frontier map above."}</span>`;
+            kitBar.querySelectorAll("[data-kit]").forEach(
+              (b) =>
+                (b.onclick = () => {
+                  if (b.dataset.kit === laserKit) return;
+                  laserKit = b.dataset.kit;
+                  S.best.laserKit = laserKit;
+                  save();
+                  paintKits();
+                  load(li);
+                  kitBar.querySelector(`[data-kit="${laserKit}"]`)?.focus();
+                }),
+            );
+          }
+          const showCoords = () => L.labels || laserKit === "scope";
           function levelStars(i) {
             return S.best.laser[i] || 0;
           }
@@ -4889,7 +4938,7 @@
               const pos = sv("g", { transform: `translate(${plane.X(x)},${plane.Y(y)})` }, plane.pts);
               const g = sv("g", { class: "crystal" + (hit.has(i) ? " on" : "") + (fresh && fresh.includes(i) ? " pop" : "") }, pos);
               sv("polygon", { points: "0,-11 8,0 0,11 -8,0" }, g);
-              if (L.labels || hit.has(i)) {
+              if (showCoords() || hit.has(i)) {
                 const t = sv("text", edgeLabel(x, y, 11), g);
                 t.textContent = `(${x}, ${y})`;
               }
@@ -4905,7 +4954,7 @@
             li = i;
             L = LASER_LEVELS[i];
             hit = new Set();
-            shots = L.shots;
+            shots = L.shots + (laserKit === "capacitor" ? 2 : 0);
             misses = 0;
             beams = [];
             hintTier = 0;
@@ -4920,10 +4969,10 @@
             });
             sv("circle", { class: "emitter", cx: plane.X(0), cy: plane.Y(0), r: 8 }, plane.top);
             drawCrystals();
-            $("lzTitle").textContent = `Level ${i + 1}`;
+            $("lzTitle").textContent = `${["Arrival Belt", "Prism Expanse", "Echo Nebula", "Beacon Citadel"][Math.min(3, Math.floor(i / 3))]} · Sector ${i + 1}`;
             $("lzBrief").innerHTML =
               L.brief +
-              ` <span class="pill plum">${L.shots} ${plural(L.shots, "beam", "beams")} · best is ${L.lines}</span>`;
+              ` <span class="pill plum">${shots} ${plural(shots, "beam", "beams")} · best is ${L.lines}</span>`;
             $("lzLog").innerHTML = "";
             $("lzNext").hidden = true;
             $("lzDx").value = "";
@@ -4983,7 +5032,7 @@
                 }
               });
               const above = (best[0] * dy) / dx > best[1];
-              const at = L.labels
+              const at = showCoords()
                 ? `the crystal at (${best[0]}, ${best[1]})`
                 : "the nearest crystal";
               coach(
@@ -5022,6 +5071,7 @@
               if (prev === 0) markDone("laser", "L" + li);
               save();
               paintStrip();
+              frontier?.refresh();
               if (li < LASER_LEVELS.length - 1) {
                 $("lzNext").hidden = false;
               } else coach($("lzCoach"), "good", "🏆 You cleared every level of the Laser Lab!");
@@ -5088,6 +5138,17 @@
           $("lzHint").onclick = hint;
           $("lzRetry").onclick = () => load(li);
           $("lzNext").onclick = () => load(Math.min(li + 1, LASER_LEVELS.length - 1));
+          frontier = ExpeditionCampaign.mount({
+            host: frontierHost,
+            world: "frontier",
+            storageKey: "ewl-3-4-frontier-v1",
+            pool: () => Object.values(S.best.laser).reduce((a, b) => a + (Number(b) || 0), 0),
+            onPractice: () => $("lzDx").focus(),
+            onChange: (api) => {
+              frontier = api;
+              paintKits();
+            },
+          });
           let start = 0;
           while (start < LASER_LEVELS.length - 1 && levelStars(start) > 0) start++;
           load(start);
@@ -5113,6 +5174,58 @@
         INITS.sonar = function () {
           S.best.sonar = S.best.sonar || { idx: 0, score: 0, best: 0 };
           const B = S.best.sonar;
+          /* Abyssal Rescue: sonar stars fund the rescue; unlocked rigs change each round. */
+          const RIGS = {
+            standard: { name: "Standard sonar", note: "8 pings each round.", pings: 8 },
+            survey: { name: "Survey hydrophones", note: "10 pings each round.", pings: 10 },
+            sweep: { name: "Rescue scanner", note: "8 pings and one wide sweep.", pings: 8 },
+            deep: { name: "Deep-range rig", note: "6 pings, +100 points when you find the fleet.", pings: 6 },
+          };
+          let sonarKit = RIGS[B.kit] ? B.kit : "standard",
+            sweepUsed = false;
+          const abyssHost = document.createElement("section");
+          abyssHost.setAttribute("aria-label", "Abyssal Rescue expedition");
+          $("panel-sonar").append(abyssHost);
+          const rigBar = document.createElement("div");
+          rigBar.className = "xc-strip";
+          rigBar.setAttribute("role", "group");
+          rigBar.setAttribute("aria-label", "Sonar rig");
+          $("panel-sonar").querySelector(".hero").after(rigBar);
+          let abyss = null;
+          const rigOwned = (k) => k === "standard" || !!abyss?.hasPerk(k);
+          function paintRigs() {
+            if (!rigOwned(sonarKit)) sonarKit = "standard";
+            const owned = Object.keys(RIGS).filter(rigOwned);
+            rigBar.innerHTML =
+              '<span class="xc-strip-label">📡 Sonar rig</span>' +
+              owned
+                .map((k) => `<button type="button" data-rig="${k}" aria-pressed="${k === sonarKit}">${RIGS[k].name}</button>`)
+                .join("") +
+              (sonarKit === "sweep"
+                ? `<button type="button" id="sonarSweep" ${sweepUsed || over ? "disabled" : ""}>${sweepUsed ? "Sweep used" : "Sweep the upper ocean"}</button>`
+                : "") +
+              `<span class="xc-strip-note">${owned.length > 1 ? `${RIGS[sonarKit].note} Switching starts a new round.` : "Unlock more rigs on the Abyssal Rescue map above."}</span>`;
+            rigBar.querySelectorAll("[data-rig]").forEach(
+              (b) =>
+                (b.onclick = () => {
+                  if (b.dataset.rig === sonarKit) return;
+                  sonarKit = b.dataset.rig;
+                  B.kit = sonarKit;
+                  save();
+                  newRound();
+                  rigBar.querySelector(`[data-rig="${sonarKit}"]`)?.focus();
+                }),
+            );
+            const sweepBtn = rigBar.querySelector("#sonarSweep");
+            if (sweepBtn)
+              sweepBtn.onclick = () => {
+                if (over || sweepUsed) return;
+                sweepUsed = true;
+                const count = R.subs.filter((point) => point[1] >= 6).length;
+                log(`Wide sweep: ${count} ${plural(count, "sub", "subs")} at y ≥ 6; ${R.subs.length - count} below y = 6.`, "good");
+                paintRigs();
+              };
+          }
           let R,
             plane,
             pingsLeft,
@@ -5165,7 +5278,8 @@
             const idx = B.idx < SONAR_RATIOS.length ? Math.max(B.idx, levelOf() === 2 ? 3 : 0) : ri(3, SONAR_RATIOS.length - 1);
             const [a, b] = SONAR_RATIOS[idx];
             R = { a, b, subs: subsFor(a, b), n: (B.rounds || 0) + 1, idx };
-            pingsLeft = 8;
+            pingsLeft = RIGS[sonarKit].pings;
+            sweepUsed = false;
             pinged = new Set();
             found = new Set();
             over = false;
@@ -5190,9 +5304,10 @@
             coach(
               $("snCoach"),
               "info",
-              `🌊 A fleet of <b>${R.subs.length} subs</b> hides on a secret ratio line from the origin. You have 8 pings. Start anywhere — the sonar will point you toward the fleet.`,
+              `🌊 A fleet of <b>${R.subs.length} subs</b> hides on a secret ratio line from the origin. You have ${pingsLeft} pings. Start anywhere — the sonar will point you toward the fleet.`,
             );
             log(`Round ${R.n} begins. ${R.subs.length} subs detected on one ratio line.`);
+            paintRigs();
             hud();
           }
           function ping(x, y) {
@@ -5290,13 +5405,19 @@
             $("snCallBtn").disabled = true;
             plane.ray(R.a, R.b, "fleet", true);
             B.rounds = (B.rounds || 0) + 1;
+            paintRigs();
           }
           function win(msg) {
+            if (sonarKit === "deep") {
+              score += 100;
+              msg += " Deep-range recovery bonus: +100.";
+            }
             finishRound();
             B.idx = Math.min(B.idx + 1, SONAR_RATIOS.length);
             B.best = Math.max(B.best, score);
             let stars = 1 + (pingsLeft >= 3 ? 1 : 0);
             addStars("sonar", stars);
+            abyss?.refresh();
             markDone("sonar");
             hud();
             coach(
@@ -5309,6 +5430,7 @@
                 score += 100;
                 B.best = Math.max(B.best, score);
                 addStars("sonar", 1);
+                abyss?.refresh();
                 save();
                 hud();
                 coach($("snCoach"), "good", "📓 Captain's log correct! +100 points and ⭐ +1.");
@@ -5348,6 +5470,17 @@
             call(parseNum($("snA").value), parseNum($("snB").value));
           });
           $("snNew").onclick = newRound;
+          abyss = ExpeditionCampaign.mount({
+            host: abyssHost,
+            world: "abyss",
+            storageKey: "ewl-3-4-abyss-v1",
+            pool: () => Number(S.stars.sonar) || 0,
+            onPractice: () => $("snX").focus(),
+            onChange: (api) => {
+              abyss = api;
+              paintRigs();
+            },
+          });
           newRound();
         };
 

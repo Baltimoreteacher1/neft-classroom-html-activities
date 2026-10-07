@@ -8,7 +8,7 @@
   const isFactor = slug.includes('factor-frenzy');
   const isVolume = slug.includes('volume-vault');
   const config = {
-    'unit2-fraction-foundry': {levels:['Whole ÷ unit fraction','Fraction ÷ unit fraction','Fraction ÷ fraction','Mixed numbers','Master forge'],data:n=>({level:n-1,score:0,lives:3})},
+    'unit2-fraction-foundry': {levels:['Whole ÷ unit fraction','Whole ÷ unit fraction in context','Whole ÷ fraction','Fraction ÷ fraction','Mixed number ÷ fraction'],data:n=>({level:n-1,score:0,lives:3})},
     'unit9-variable-velocity': {levels:['Proportional rules','Tables and equations','Predict the next point','Rules with a starting value','Master rover'],data:n=>({level:n-1,score:0,lives:3})},
     'unit6-expression-engine': {levels:['Guided: exponents','Standard: mixed expressions','Challenge: mixed expressions'],data:n=>({difficulty:n-1})},
     'unit5-area-architect': {levels:['Guided construction','Composite city'],data:n=>({level:n})},
@@ -74,7 +74,7 @@
     if(s.__studioInstalled)return;
     s.__studioInstalled=true;
     wrap(s,'submitAnswer',function(i){
-      if(this.answered || this.answerBtns?.[i]?.eliminated)return;
+      if(this.answered || this.answerBtns?.[i]?.eliminated || this.removedChoices?.includes(i))return;
       const q=currentQuestion(this);
       const choice=this.answerBoxes?.[i]?.optText ?? this.answerBtns?.[i]?.optText ?? q?.options?.[i];
       if(q && choice!=null)track(choice===q.correct,choice===q.correct?'Correct. '+(q.explain||''): 'Not yet — check your work and try another choice.');
@@ -84,8 +84,8 @@
     wrap(s,'grabCell',function(row,i){if(!row.scored)track(row.data.bestIdxs.includes(i),'Compare each original price × (1 − discount ÷ 100).');});
     wrap(s,'resolveCorrect',()=>track(true,'Construction complete. Building added to your city.'));
     wrap(s,'resolveWrong',message=>track(false,message));
-    wrap(s,'serve',function(){if(!this.round)return;const r=this.round,[a,b]=this.counts;track(a>0&&b>0&&a*r.b===b*r.a&&(!r.capacity||a+b===r.capacity),'Compare both ingredient amounts using the same scale factor.');});
-    wrap(s,'release',function(){if(!this.locked && this.order)track(Math.abs(this.fill-this.order.fraction)<=0.95/this.order.jugDen,'Check the fraction against the jug divisions.');});
+    wrap(s,'serve',function(){if(!this.round || this.roundLocked)return;const r=this.round,[a,b]=this.counts;track(a>0&&b>0&&a*r.b===b*r.a&&(!r.capacity||a+b===r.capacity),'Compare both ingredient amounts using the same scale factor.');});
+    wrap(s,'release',function(){if(!this.locked && this.order)track(Math.round(this.fill*this.order.jugDen)===this.order.targetNum,'Check the fraction against the jug divisions.');});
     wrap(s,'completeLevel',function(){this.__studioLevelDone=true;});
     ['endGame','gameOver'].forEach(name=>wrap(s,name,function(){complete(Number(this.score)||0);}));
     s.events.on('create',()=>{lastSignature='';s.__studioLevelDone=false;if(['Game','GameScene'].includes(s.scene.key) && !s.score){sessionDone=false;session={correct:0,total:0,streak:0,bestStreak:0};}});
@@ -135,7 +135,8 @@
     }else if(s.addScoop && q){
       [0,1].forEach(i=>{button('+ '+(q[i===0?'ia':'ib']?.name||'Ingredient '+(i+1)),()=>s.addScoop(i),s.roundLocked);button('− Ingredient '+(i+1),()=>s.removeScoop(i),s.roundLocked);});button('Clear mix',()=>s.clearTubes(),s.roundLocked);button('Serve recipe',()=>s.serve(),s.roundLocked);button('Recipe hint',()=>s.showHint(),s.roundLocked);
     }else if(s.confirmGrab){
-      s.waitingRow?.data.cells.forEach((cell,i)=>button(`Lane ${i+1}: $${cell.base.toFixed(2)} · ${cell.pct}% off`,()=>{s.setLane(i);s.confirmGrab();}));
+      s.row?.data.cells.forEach((cell,i)=>button(`Lane ${i+1}: $${cell.base.toFixed(2)} · ${cell.pct}% off`,()=>{s.setLane(i);s.confirmGrab();},s.row.scored||s.row.wrong.includes(i)));
+      if(s.row?.scored)button(s.round>=12?'See results':'Next deal',()=>s.nextDeal());
     }else if(s.adjustDim && q){
       if(q.type==='composite'){button(q.phase==='slice'?'Change slice':'− Total area',()=>q.phase==='slice'?s.toggleSlice():s.adjustTotal(-1),s.lockBusy);if(q.phase==='total')button('+ Total area',()=>s.adjustTotal(1),s.lockBusy);}
       else (s.rowKeys||[]).forEach(key=>{button(`− ${key}: ${q.dims[key]}`,()=>s.adjustDim(key,-1),s.lockBusy);button(`+ ${key}: ${q.dims[key]}`,()=>s.adjustDim(key,1),s.lockBusy);});
@@ -168,11 +169,11 @@
     if(scene?.qText?.text && !text)text=scene.qText.text;
     if(scene?.order)text=`Order ${scene.orderIndex??''}: fill ${scene.order.shownNum}/${scene.order.shownDen} of the jug. Divisions: ${scene.order.jugDen}.`;
     if(scene?.orderRatio?.text)text=scene.orderRatio.text+' · '+(scene.orderTask?.text||'')+' · Current mix '+scene.counts.join(' : ');
-    if(scene?.waitingRow)text='Which lane offers the lowest sale price? Compare all three discounts.';
+    if(scene?.row?.data)text='Which lane offers the lowest sale price? Compare all three discounts.';
     if(!scene && (isFactor||isVolume))text='Use the model below to build and check your answer. Choose any mission level above.';
     if(!scene&&!isFactor&&!isVolume)text='Choose your level and launch a mission. Controls are available here and in the game.';
     question.textContent=text;
-    const signature=JSON.stringify([scene?.scene.key,scene?.qIndex,scene?.currentQ,q?.prompt,q?.text,q?.dims,q?.phase,q?.total,scene?.cuts,scene?.sel,scene?.groups,scene?.counts,scene?.waitingRow?.roundNum,scene?.locked,scene?.answered,scene?.roundLocked,scene?.lockBusy,scene?.__studioLevelDone,scene?.answerBtns?.map(b=>b.eliminated),window.GameStudio?.paused]);
+    const signature=JSON.stringify([scene?.scene.key,scene?.qIndex,scene?.currentQ,q?.prompt,q?.text,q?.dims,q?.phase,q?.total,scene?.cuts,scene?.sel,scene?.groups,scene?.counts,scene?.row?.scored,scene?.row?.wrong,typeof scene?.round === "number" ? scene.round : null,scene?.locked,scene?.answered,scene?.roundLocked,scene?.lockBusy,scene?.__studioLevelDone,scene?.answerBtns?.map(b=>b.eliminated),window.GameStudio?.paused]);
     if(signature!==lastSignature){const focusIndex=[...actions.children].indexOf(document.activeElement);lastSignature=signature;actions.replaceChildren();if(scene)nativeActions(scene,q);if(focusIndex>=0)actions.children[focusIndex]?.focus({preventScroll:true});}
     const completed=scene?.qIndex??scene?.shapesPlaced??scene?.served??window.__flagshipState?.completed??window.__flagshipState?.sealed??0;
     const total=scene?.totalQ??scene?.maxRounds??scene?.queue?.length??10;

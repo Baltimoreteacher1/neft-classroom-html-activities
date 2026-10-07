@@ -445,6 +445,14 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261007">
+<script src="/assets/game-studio.js?v=20261007" defer></script>
+<link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/legacy-adventure.css?v=20261007">
+<script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
+<script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+<script>window.LegacyAdventureConfig = {"id":"u2-fraction-frenzy","title":"The Coral Expedition","chapters":["Diver’s Anchorage","Reef Passage","Ocean Sanctuary"],"brief":"Construct fraction jumps to equip a submarine and restore the reef.","scene":"reef","accent":"#ff9fb2","icons":["⚓","🐠","🐢"],"story":["The reef is fading. Earn supplies to send the submarine down.","The anchorage is ready. Next, open the reef passage.","The fish are back in the passage. Now restore the sanctuary.","The ocean sanctuary is alive again."]};</script>
+<script src="/math/games/shared/legacy-adventure.js?v=20261007"></script>
 </head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
@@ -899,6 +907,7 @@
       }
 
       function changeJumps(delta) {
+        if (S.cur?.solved) return;
         const next = S.jumps + delta;
         if (next < 0) return;
         // cap so the model stays sane (twice the true quotient + 2)
@@ -923,11 +932,14 @@
       // Player commits their constructed model → check the quotient.
       function dive() {
         const p = S.cur;
+        if (!p || p.solved) return;
         const reach = S.jumps * p.step;
         if (Math.abs(reach - p.goal) < 1e-9 && S.jumps === p.quotient) {
           // EXACT — quotient constructed correctly
           S.score += S.level === 1 ? 30 : 45;
+          p.solved = true; // one success per dive; the next round loads shortly
           S.built++;
+          window.LegacyAdventure?.reward(S.cur);
           SFX.win();
           $("hud-score").textContent = S.score;
           flash(

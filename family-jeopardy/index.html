@@ -1534,7 +1534,434 @@
         }
       }
 
-    </style>
+      /* ---------- Expedition layer: trail map, power-ups, passport ---------- */
+      .exp-map {
+        margin: 16px 0 0;
+        border-radius: 20px;
+        background:
+          radial-gradient(ellipse 40% 60% at 90% 20%, rgba(143, 227, 255, 0.18), transparent 70%),
+          radial-gradient(ellipse 50% 70% at 12% 90%, rgba(53, 224, 161, 0.16), transparent 70%),
+          linear-gradient(180deg, #10275f, #0a1a45);
+        border: 2px solid rgba(255, 255, 255, 0.14);
+        padding: 8px 10px 4px;
+        position: relative;
+        overflow: hidden;
+      }
+      .exp-map-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        font-size: 0.92rem;
+        color: var(--muted);
+        padding: 0 4px;
+      }
+      .exp-map-head b {
+        font-family: var(--display);
+        font-weight: 400;
+        color: var(--gold);
+        font-size: 1.1rem;
+        letter-spacing: 0.3px;
+      }
+      .exp-map svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .exp-map .map-sm {
+        display: none;
+      }
+      .toast .es,
+      .btn-gold .es,
+      .val-chip .es,
+      .boost-on .es {
+        color: #0b3a66;
+      }
+      .exp-map .trail {
+        fill: none;
+        stroke: #ffe9a3;
+        stroke-width: 6;
+        stroke-dasharray: 2 16;
+        stroke-linecap: round;
+        opacity: 0.7;
+      }
+      .exp-map .stop-ring {
+        fill: #0b1a52;
+        stroke: var(--gold);
+        stroke-width: 3;
+      }
+      .exp-map .stop-ring.summit {
+        stroke: #fff;
+        stroke-width: 4;
+      }
+      .exp-map .stop-icon {
+        text-anchor: middle;
+        dominant-baseline: central;
+      }
+      .exp-map .stop-label {
+        fill: #dfe7ff;
+        font-weight: 800;
+        text-anchor: middle;
+        font-family: var(--body);
+      }
+      .exp-map .stop-label.es-l {
+        fill: var(--es);
+      }
+      .exp-map .tok {
+        transition: transform 0.9s cubic-bezier(0.3, 1.3, 0.5, 1);
+      }
+      .exp-map .tok circle {
+        stroke: #04102a;
+        stroke-width: 3;
+      }
+      .exp-map .tok text {
+        font-weight: 900;
+        fill: #04102a;
+        text-anchor: middle;
+        dominant-baseline: central;
+        font-family: var(--body);
+      }
+      .exp-map .tok.turn circle {
+        stroke: #fff;
+        stroke-width: 4;
+      }
+      .score .trail-mini {
+        display: flex;
+        justify-content: space-between;
+        gap: 6px;
+        font-size: 0.82rem;
+        color: var(--muted);
+        margin: 2px 0 4px;
+      }
+      .score .trail-bar {
+        height: 8px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+        margin-bottom: 8px;
+      }
+      .score .trail-bar i {
+        display: block;
+        height: 100%;
+        background: var(--c);
+        border-radius: inherit;
+        transition: width 0.6s ease;
+      }
+      .powers {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 8px;
+        min-height: 30px;
+      }
+      .pw {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 0.82rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+      }
+      button.pw {
+        border-color: var(--gold);
+        color: var(--gold);
+        min-height: 30px;
+      }
+      button.pw:hover {
+        background: rgba(255, 200, 61, 0.18);
+      }
+      .pw-empty {
+        font-size: 0.78rem;
+        color: var(--muted);
+        opacity: 0.8;
+        align-self: center;
+      }
+      .boost-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        align-items: center;
+        margin: 6px auto 4px;
+        max-width: 780px;
+      }
+      .boost-btn {
+        border-radius: 999px;
+        padding: 7px 14px;
+        font-size: 0.92rem;
+        background: rgba(255, 200, 61, 0.14);
+        border: 2px solid var(--c, var(--gold));
+        color: #fff;
+      }
+      .boost-on {
+        display: inline-block;
+        border-radius: 999px;
+        padding: 7px 16px;
+        background: linear-gradient(90deg, #ffc83d, #ff9f1c);
+        color: #1a1200;
+        font-weight: 900;
+        animation: pop 0.25s ease-out;
+      }
+      .mode-seg {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .mode-btn {
+        text-align: left;
+        padding: 12px 14px;
+        border-radius: 16px;
+        background: rgba(7, 15, 43, 0.65);
+        border: 3px solid rgba(255, 255, 255, 0.12);
+        line-height: 1.35;
+      }
+      .mode-btn b {
+        display: block;
+        font-family: var(--display);
+        font-weight: 400;
+        font-size: 1.1rem;
+      }
+      .mode-btn small {
+        color: var(--muted);
+        font-size: 0.86rem;
+        font-weight: 700;
+      }
+      .mode-btn[aria-pressed="true"] {
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(255, 200, 61, 0.22);
+      }
+      .stamp-badge {
+        display: inline-block;
+        margin-top: 6px;
+        font-size: 0.8rem;
+        background: rgba(53, 224, 161, 0.16);
+        border: 1px solid var(--mint);
+        color: var(--mint);
+        padding: 2px 8px;
+        border-radius: 999px;
+      }
+      .passport {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+        gap: 8px;
+      }
+      .stamp {
+        border-radius: 14px;
+        padding: 8px;
+        text-align: center;
+        border: 2px dashed rgba(255, 255, 255, 0.2);
+        color: var(--muted);
+        font-size: 0.8rem;
+        line-height: 1.25;
+      }
+      .stamp .em {
+        font-size: 1.6rem;
+        display: block;
+        filter: grayscale(1);
+        opacity: 0.45;
+      }
+      .stamp.got {
+        border: 2px solid var(--mint);
+        background: rgba(53, 224, 161, 0.1);
+        color: #e6fff5;
+        transform: rotate(-2deg);
+      }
+      .stamp.got .em {
+        filter: none;
+        opacity: 1;
+      }
+      .passport-sum {
+        margin: 10px 0 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+      .chest-art {
+        font-size: 4rem;
+        line-height: 1;
+        display: inline-block;
+        animation: chestHop 0.9s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+      }
+      @keyframes chestHop {
+        0% {
+          transform: translateY(30px) scale(0.6);
+          opacity: 0;
+        }
+        60% {
+          transform: translateY(-10px) scale(1.12);
+          opacity: 1;
+        }
+        100% {
+          transform: none;
+        }
+      }
+      .chest-choices {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+        margin: 16px 0 6px;
+      }
+      .chest-pick {
+        text-align: left;
+        border-radius: 18px;
+        padding: 14px 16px;
+        background: rgba(7, 15, 43, 0.75);
+        border: 3px solid var(--gold);
+        line-height: 1.4;
+        min-height: 44px;
+        transition: transform 0.12s;
+      }
+      .chest-pick:hover {
+        transform: translateY(-2px);
+      }
+      .chest-pick .pi {
+        font-size: 2rem;
+        display: block;
+      }
+      .chest-pick b {
+        font-family: var(--display);
+        font-weight: 400;
+        font-size: 1.25rem;
+        color: var(--gold);
+      }
+      .chest-pick span.d {
+        display: block;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #e3eaff;
+      }
+      .chest-pick span.d.es {
+        color: var(--es);
+        margin-top: 4px;
+      }
+      .ft .shield-opt {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 6px;
+        font-size: 0.88rem;
+        cursor: pointer;
+      }
+      .ft .shield-opt input {
+        width: 20px;
+        height: 20px;
+        accent-color: var(--mint);
+      }
+      .ft .shield-on {
+        margin-top: 6px;
+        font-size: 0.85rem;
+        color: var(--mint);
+      }
+      .cell .who {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--w);
+        box-shadow: 0 0 0 2px #04102a;
+      }
+      .podium .badges {
+        font-size: 1.1rem;
+      }
+
+      @media (max-width: 640px) {
+        .board-wrap {
+          overflow-x: visible;
+        }
+        .grid {
+          grid-template-columns: repeat(5, minmax(0, 1fr));
+          min-width: 0;
+        }
+        .grid .cat {
+          grid-row: var(--pr);
+          grid-column: 1 / -1;
+          flex-direction: row;
+          justify-content: flex-start;
+          min-height: 0;
+          padding: 6px 12px;
+          gap: 8px;
+          text-align: left;
+        }
+        .grid .cat .nm span {
+          display: inline;
+        }
+        .grid .cat .nm .es::before {
+          content: " · ";
+        }
+        .grid .cell {
+          grid-row: var(--pr);
+          grid-column: var(--pc);
+          min-height: 50px;
+          border-width: 2px;
+        }
+        .grid .cell .v {
+          font-size: 1.3rem;
+        }
+        .scores {
+          grid-template-columns: 1fr 1fr;
+        }
+        .score input {
+          width: 100%;
+        }
+        .turn-bar {
+          flex-wrap: wrap;
+          padding: 8px 12px;
+        }
+        .turn-actions {
+          flex-wrap: wrap;
+        }
+        .setup-grid,
+        .boards {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .timer-select-wrap {
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+        .timer-select-wrap select {
+          max-width: 100%;
+        }
+        .score {
+          padding: 8px 10px;
+        }
+        .exp-map .map-xy {
+          display: none;
+        }
+        .exp-map .map-sm {
+          display: block;
+        }
+        .gamebar .actions {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          width: 100%;
+        }
+        .gamebar .actions .btn-sm {
+          padding: 7px 10px;
+          font-size: 0.82rem;
+          flex-wrap: wrap;
+          row-gap: 0;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+          animation-delay: 0s !important;
+        }
+        .board-wrap::before {
+          animation: none;
+        }
+      }
+        </style>
   </head>
   <body>
     <canvas id="confetti" aria-hidden="true"></canvas>
@@ -1581,6 +2008,7 @@
     <div id="winner" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="winTitle"></div>
     <div id="shortcutsModal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="scTitle"></div>
     <div id="certificateModal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="certTitle"></div>
+    <div id="expModal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="expTitle"></div>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
     <script>
@@ -2286,6 +2714,46 @@
         certPrincipal: { en: "Principal / Coordinator", es: "Director(a) / Coordinador(a)" },
         certTeacher: { en: "Teacher / Host", es: "Maestro(a) / Anfitrión" },
         printNow: { en: "🖨️ Print Now (Landscape)", es: "🖨️ Imprimir ahora (Horizontal)" },
+        howTo6: {
+          en: "Every right answer moves your family one step up the Expedition Trail. Reach a landmark to open a treasure chest and pick a power-up. The first family to reach the Summit gets +300 points!",
+          es: "Cada respuesta correcta mueve a su familia un paso por el Sendero de la expedición. Al llegar a un lugar especial, abran un cofre y elijan un poder. ¡La primera familia en llegar a la cumbre gana +300 puntos!",
+        },
+        modeTitle: { en: "Board style", es: "Tipo de tablero" },
+        modeClassic: { en: "📋 Classic board", es: "📋 Tablero clásico" },
+        modeClassicD: {
+          en: "The board you picked, in a new order with new ⭐ spots every game.",
+          es: "El tablero que eligieron, en un orden nuevo y con ⭐ nuevas cada juego.",
+        },
+        modeRemix: { en: "🎲 Remix", es: "🎲 Mezcla" },
+        modeRemixD: {
+          en: "6 categories mixed from every board. A fresh board every time!",
+          es: "6 categorías mezcladas de todos los tableros. ¡Un tablero nuevo cada vez!",
+        },
+        passport: { en: "🛂 Expedition Passport", es: "🛂 Pasaporte de expedición" },
+        gamesDone: { en: "Games finished", es: "Juegos terminados" },
+        summitsTotal: { en: "Families at the Summit", es: "Familias en la cumbre" },
+        trail: { en: "Expedition Trail", es: "Sendero de la expedición" },
+        trailHelp: { en: "1 right answer = 1 step", es: "1 respuesta correcta = 1 paso" },
+        steps: { en: "steps to the Summit", es: "pasos a la cumbre" },
+        firstBonus: { en: "First to the top: +300", es: "Primera familia arriba: +300" },
+        noPowers: { en: "No power-ups yet", es: "Sin poderes todavía" },
+        chestTitle: { en: "Treasure chest!", es: "¡Cofre del tesoro!" },
+        reached: { en: "reached", es: "llegó a" },
+        pickOne: { en: "Pick ONE power-up for your family:", es: "Elijan UN poder para su familia:" },
+        bagFull: {
+          en: "Your bag is full (3 power-ups). Use one, then you can collect more!",
+          es: "Su mochila está llena (3 poderes). ¡Usen uno y podrán juntar más!",
+        },
+        continue: { en: "Continue", es: "Continuar" },
+        summitTitle: { en: "Summit reached!", es: "¡Llegaron a la cumbre!" },
+        summitFirst: { en: "First family to the Summit: +300 points!", es: "¡Primera familia en la cumbre: +300 puntos!" },
+        summitLater: { en: "You made it to the top! 🏔️", es: "¡Llegaron a la cima! 🏔️" },
+        boostArm: { en: "Double Up", es: "Doble poder" },
+        boostOn: { en: "Double Up is on: a right answer earns 2×", es: "Doble poder activo: acertar gana 2×" },
+        compassUsed: { en: "picks the next clue!", es: "¡elige la próxima pista!" },
+        useShield: { en: "Use 🛡️ Safety Net", es: "Usar 🛡️ Red de seguridad" },
+        shieldOn: { en: "🛡️ Safety Net: no points lost if wrong", es: "🛡️ Red de seguridad: no pierden puntos si fallan" },
+        stampEarned: { en: "Passport stamp earned:", es: "Sello ganado en el pasaporte:" },
         zoom: { en: "Text Size", es: "Tamaño" },
         volume: { en: "Volume", es: "Volumen" },
       };
@@ -2300,6 +2768,62 @@
         "#7cf29a",
         "#ff8fd8",
       ];
+
+      /* ============================== EXPEDITION DATA ============================== */
+      const POWERS = {
+        double: {
+          icon: "⚡",
+          name: { en: "Double Up", es: "Doble poder" },
+          desc: {
+            en: "Use inside a clue, before the answer is shown. If your family gets it right, you earn 2× points.",
+            es: "Úsenlo dentro de una pista, antes de ver la respuesta. Si su familia acierta, gana el doble de puntos.",
+          },
+        },
+        compass: {
+          icon: "🧭",
+          name: { en: "Compass", es: "Brújula" },
+          desc: {
+            en: "Use on the board. Your family picks the next clue.",
+            es: "Úsenla en el tablero. Su familia elige la próxima pista.",
+          },
+        },
+        shield: {
+          icon: "🛡️",
+          name: { en: "Safety Net", es: "Red de seguridad" },
+          desc: {
+            en: "Use in the Final Challenge. If your family misses, you lose no points.",
+            es: "Úsenla en el Desafío final. Si su familia falla, no pierde puntos.",
+          },
+        },
+      };
+      const POWER_IDS = Object.keys(POWERS);
+      const MAX_POWERS = 3;
+      const SUMMIT_BONUS = 300;
+      const STOPS = [
+        { icon: "🏕️", name: { en: "Base Camp", es: "Campamento" }, xy: [90, 104], sm: [40, 96] },
+        { icon: "🌉", name: { en: "Rope Bridge", es: "Puente colgante" }, xy: [420, 62], sm: [120, 56] },
+        { icon: "🌴", name: { en: "Jungle Trail", es: "Sendero de la selva" }, xy: [720, 100], sm: [200, 96] },
+        { icon: "🧊", name: { en: "Ice Cave", es: "Cueva de hielo" }, xy: [1030, 58], sm: [280, 56] },
+        { icon: "🏔️", name: { en: "Summit", es: "La cumbre" }, xy: [1310, 84], sm: [360, 96] },
+      ];
+      const REMIX = { id: "remix", emoji: "🎲", name: { en: "Remix Expedition", es: "Expedición mezclada" } };
+      const PASSPORT_KEY = "familyJeopardy.passport.v1";
+
+      function newTeam(n) {
+        return { name: "Familia " + n, score: 0, correct: 0, powers: [], summit: false };
+      }
+
+      function shuffle(list) {
+        const a = [...list];
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      const reduceMotion = () =>
+        !!window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
       /* ============================== STATE ============================== */
       const KEY = "familyJeopardy.v4";
@@ -2324,14 +2848,21 @@
         volume: 0.8,
         zoom: 1.0,
         penalty: false,
-        timerSec: 30,
+        timerSec: 0,
         autoSpeech: false,
         currentTurn: 0,
         boardId: "mix",
-        teams: [1, 2, 3, 4].map((n) => ({ name: "Familia " + n, score: 0 })),
+        mode: "classic",
+        layout: null,
+        gameId: "",
+        teams: [1, 2, 3, 4].map(newTeam),
         used: {},
+        wonBy: {},
         doubles: [],
         finalDone: false,
+        final: null,
+        summitFirst: null,
+        events: [],
       });
 
       let S = (() => {
@@ -2343,13 +2874,37 @@
         }
       })();
 
+      /* Older saves predate the expedition layer: give every team its trail fields. */
+      S.teams = (Array.isArray(S.teams) && S.teams.length ? S.teams : fresh().teams).map((tm, i) => ({
+        ...newTeam(i + 1),
+        ...tm,
+        score: Number.isFinite(+tm.score) ? +tm.score : 0,
+        correct: Math.max(0, Math.floor(+tm.correct || 0)),
+        powers: Array.isArray(tm.powers) ? tm.powers.filter((p) => POWERS[p]).slice(0, MAX_POWERS) : [],
+      }));
+      if (!Array.isArray(S.events)) S.events = [];
+      if (!S.wonBy || typeof S.wonBy !== "object") S.wonBy = {};
+      if (S.inGame && !S.gameId) S.gameId = "g" + Date.now().toString(36);
+
       const save = () => {
         try {
           localStorage.setItem(KEY, JSON.stringify(S));
         } catch (e) {}
       };
 
-      const board = () => BOARDS.find((b) => b.id === S.boardId) || BOARDS[0];
+      const findBoard = (id) => BOARDS.find((b) => b.id === id);
+      const baseBoard = () => findBoard(S.boardId) || BOARDS[0];
+      /* The board in play: the picked board (classic, shuffled order) or a remix of categories from every board. */
+      const board = () => {
+        const base = baseBoard();
+        const lay = S.layout;
+        if (!lay || !Array.isArray(lay.cats) || lay.cats.length !== 6) return base;
+        if (!lay.remix && !lay.cats.every((x) => x.b === base.id)) return base;
+        const cats = lay.cats.map((x) => findBoard(x.b)?.cats[x.c]).filter(Boolean);
+        if (cats.length !== 6) return base;
+        const final = (findBoard(lay.finalB) || base).final;
+        return lay.remix ? { ...REMIX, cats, final } : { ...base, cats, final };
+      };
       const t = (k) => {
         const item = UI[k];
         if (!item) return "";
@@ -2376,26 +2931,29 @@
 
       /* ============================== UNDO SYSTEM & AUDIO ============================== */
       const undoStack = [];
+      const snapshot = () =>
+        JSON.parse(
+          JSON.stringify({
+            teams: S.teams,
+            used: S.used,
+            wonBy: S.wonBy,
+            currentTurn: S.currentTurn,
+            finalDone: S.finalDone,
+            final: S.final,
+            summitFirst: S.summitFirst,
+            events: S.events,
+          }),
+        );
+
       function pushUndoState() {
-        undoStack.push({
-          teams: S.teams.map((t) => ({ name: t.name, score: t.score })),
-          used: { ...S.used },
-          currentTurn: S.currentTurn,
-          boardId: S.boardId,
-          finalDone: S.finalDone,
-        });
+        undoStack.push(snapshot());
         if (undoStack.length > 35) undoStack.shift();
         updateUndoUI();
       }
 
       function undo() {
         if (!undoStack.length) return;
-        const prev = undoStack.pop();
-        S.teams = prev.teams;
-        S.used = prev.used;
-        S.currentTurn = prev.currentTurn;
-        S.boardId = prev.boardId;
-        S.finalDone = prev.finalDone;
+        Object.assign(S, undoStack.pop());
         save();
         updateUndoUI();
         SFX.open();
@@ -2529,6 +3087,7 @@
         raf = null;
 
       function confetti(n = 160) {
+        if (reduceMotion()) return;
         cv.width = innerWidth;
         cv.height = innerHeight;
         const cols = [
@@ -2621,7 +3180,7 @@
 
       /* ============================== RENDER: SETUP ============================== */
       function renderSetup() {
-        const b = board();
+        const P = loadPassport();
         $("#setup").innerHTML = `
   <div class="hero">
     <h2>${t("title")}</h2>
@@ -2636,10 +3195,15 @@
           <div class="em">${x.emoji}</div>
           <div class="nm">${L(x.name)}</div>
           <div class="bl">${L(x.blurb)}</div>
+          ${P.stamps[x.id] ? `<span class="stamp-badge">🛂 ×${P.stamps[x.id]}</span>` : ""}
         </div>
         <ul>${x.cats.map((c) => `<li>${c.emoji} ${esc(S.lang === "es" ? c.name.es : c.name.en)}</li>`).join("")}</ul>
       </button>`,
       ).join("")}
+    </div>
+    <div class="mode-seg" role="group" aria-label="${esc(UI.modeTitle.en)} / ${esc(UI.modeTitle.es)}">
+      <button class="mode-btn" data-mode="classic" aria-pressed="${S.mode !== "remix"}"><b>${t("modeClassic")}</b><small>${t("modeClassicD")}</small></button>
+      <button class="mode-btn" data-mode="remix" aria-pressed="${S.mode === "remix"}"><b>${t("modeRemix")}</b><small>${t("modeRemixD")}</small></button>
     </div>
   </div>
   <div class="setup-grid">
@@ -2674,12 +3238,22 @@
     </div>
     <div class="panel howto">
       <h3>${t("howTo")}</h3>
-      <ol>${[1, 2, 3, 4, 5].map((n) => `<li>${t("howTo" + n)}</li>`).join("")}</ol>
+      <ol>${[1, 2, 3, 4, 5, 6].map((n) => `<li>${t("howTo" + n)}</li>`).join("")}</ol>
     </div>
   </div>
   <div class="cta-row">
     ${S.inGame ? `<button class="btn btn-mint" id="resumeBtn">▶ ${t("resume")}</button>` : ""}
     <button class="btn btn-gold" id="startBtn">🎉 ${t("start")}</button>
+  </div>
+  <div class="panel">
+    <h3>${t("passport")}</h3>
+    <div class="passport">${[...BOARDS, REMIX]
+      .map((x) => {
+        const n = P.stamps[x.id] || 0;
+        return `<div class="stamp ${n ? "got" : ""}"><span class="em" aria-hidden="true">${x.emoji}</span>${L(x.name)}${n ? `<br><b>🛂 ×${n}</b>` : ""}</div>`;
+      })
+      .join("")}</div>
+    <p class="passport-sum">${t("gamesDone")}: <b>${P.games}</b> · ${t("summitsTotal")}: <b>${P.summits}</b></p>
   </div>`;
 
         document.querySelectorAll(".board-card").forEach(
@@ -2691,13 +3265,22 @@
               SFX.open();
             }),
         );
+        document.querySelectorAll("[data-mode]").forEach(
+          (el) =>
+            (el.onclick = () => {
+              S.mode = el.dataset.mode === "remix" ? "remix" : "classic";
+              save();
+              renderSetup();
+              SFX.open();
+            }),
+        );
         $("#teamMinus").onclick = () => {
           S.teams.pop();
           save();
           renderSetup();
         };
         $("#teamPlus").onclick = () => {
-          S.teams.push({ name: "Familia " + (S.teams.length + 1), score: 0 });
+          S.teams.push(newTeam(S.teams.length + 1));
           save();
           renderSetup();
         };
@@ -2736,12 +3319,18 @@
       function startGame() {
         S.inGame = true;
         S.used = {};
+        S.wonBy = {};
         S.finalDone = false;
+        S.final = null;
+        S.events = [];
+        S.summitFirst = null;
         S.currentTurn = 0;
-        S.teams.forEach((tm) => (tm.score = 0));
-        const cats = [...Array(6).keys()]
-          .sort(() => Math.random() - 0.5)
-          .slice(0, 2);
+        S.gameId = "g" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+        S.teams = S.teams.map((tm, i) => ({ ...newTeam(i + 1), name: tm.name }));
+        S.layout = makeLayout();
+        undoStack.length = 0;
+        updateUndoUI();
+        const cats = shuffle([...Array(6).keys()]).slice(0, 2);
         S.doubles = cats.map((c) =>
           cellKey(c, 2 + Math.floor(Math.random() * 3)),
         );
@@ -2749,6 +3338,26 @@
         SFX.fanfare();
         confetti(140);
         showScreen("game");
+      }
+
+      /* A fresh board every game: classic shuffles the picked board; remix draws 6 categories from all boards. */
+      function makeLayout() {
+        if (S.mode === "remix") {
+          const seen = new Set();
+          const perBoard = {};
+          const cats = [];
+          const pool = shuffle(BOARDS.flatMap((b) => b.cats.map((c, i) => ({ b: b.id, c: i, nm: c.name.en }))));
+          for (const x of pool) {
+            if (seen.has(x.nm) || (perBoard[x.b] || 0) >= 2) continue;
+            seen.add(x.nm);
+            perBoard[x.b] = (perBoard[x.b] || 0) + 1;
+            cats.push({ b: x.b, c: x.c });
+            if (cats.length === 6) break;
+          }
+          return { remix: true, cats, finalB: shuffle(BOARDS)[0].id };
+        }
+        const base = baseBoard();
+        return { remix: false, cats: shuffle(base.cats.map((_, c) => ({ b: base.id, c }))), finalB: base.id };
       }
 
       function showScreen(name) {
@@ -2767,10 +3376,13 @@
         ROWS.forEach((row, r) =>
           b.cats.forEach((c, ci) => {
             const k = cellKey(ci, r),
-              u = S.used[k];
-            cells.push(`<button class="cell ${u ? "used " + u : ""}" data-c="${ci}" data-r="${r}" style="--i:${r * 6 + ci + 6}" aria-label="${esc(c.name.en)} ${row.v}${u ? " (played)" : ""}">
+              u = S.used[k],
+              w = S.wonBy[k];
+            const who = u === "won" && S.teams[w] ? S.teams[w] : null;
+            cells.push(`<button class="cell ${u ? "used " + u : ""}" data-c="${ci}" data-r="${r}" style="--i:${r * 6 + ci + 6};--pr:${ci * 2 + 2};--pc:${r + 1}" aria-label="${esc(c.name.en)} ${row.v}${u ? " (played)" : ""}${who ? " – " + esc(who.name) : ""}">
               <span class="v">${u === "won" ? "✓" : u ? "—" : row.v}</span>
               <span class="g">${esc(S.lang === "es" ? row.g.es : row.g.en)}</span>
+              ${who ? `<span class="who" style="--w:${TEAM_COLORS[w]}" aria-hidden="true"></span>` : ""}
             </button>`);
           }),
         );
@@ -2784,7 +3396,7 @@
     <div class="actions">
       <button class="btn btn-ghost btn-sm" id="gameUndoBtn" title="${esc(t("undo"))} (Ctrl+Z)">↩️ ${t("undo")}</button>
       <button class="btn btn-ghost btn-sm" id="randomBtn">🎲 ${t("random")}</button>
-      <button class="btn btn-mint btn-sm" id="finalBtn">🏆 ${t("finalBtn")}</button>
+      <button class="btn btn-mint btn-sm" id="finalBtn">${S.finalDone ? "🏆 " + t("results") : "🏔️ " + t("finalBtn")}</button>
       <button class="btn btn-ghost btn-sm" id="setupBtn">⚙️ ${t("setup")}</button>
       <button class="btn btn-coral btn-sm" id="newBtn">${t("newGame")}</button>
     </div>
@@ -2802,14 +3414,18 @@
 
   <div class="board-wrap">
     <div class="grid" role="grid">
-      ${b.cats.map((c, i) => `<div class="cat" style="--i:${i}"><span class="em">${c.emoji}</span><span class="nm">${LStack(c.name)}</span></div>`).join("")}
+      ${b.cats.map((c, i) => `<div class="cat" style="--i:${i};--pr:${i * 2 + 1}"><span class="em">${c.emoji}</span><span class="nm">${LStack(c.name)}</span></div>`).join("")}
       ${cells.join("")}
     </div>
   </div>
+
+  ${renderMap()}
+
   <h3 class="sr">${t("scoreboard")}</h3>
   <div class="scores" id="scores"></div>`;
 
         renderScores();
+        animateTokens();
 
         document.querySelectorAll(".cell").forEach(
           (el) => (el.onclick = () => openClue(+el.dataset.c, +el.dataset.r)),
@@ -2862,20 +3478,133 @@
         };
       }
 
+      /* ============================== EXPEDITION TRAIL ============================== */
+      function summitSteps() {
+        return Math.max(4, Math.min(10, Math.ceil((30 / Math.max(1, S.teams.length)) * 0.6)));
+      }
+
+      function stopNeed(i) {
+        const n = summitSteps();
+        if (i <= 0) return 0;
+        if (i >= 4) return n;
+        return Math.max(1, Math.round((n * i) / 4));
+      }
+
+      function stopFor(steps) {
+        let s = 0;
+        for (let i = 1; i <= 4; i++) if (steps >= stopNeed(i)) s = i;
+        return s;
+      }
+
+      function trailPoint(steps, key) {
+        const s = stopFor(steps);
+        if (s >= 4) return STOPS[4][key];
+        const from = stopNeed(s),
+          to = stopNeed(s + 1);
+        const f = Math.min(1, (steps - from) / Math.max(1, to - from));
+        const [x1, y1] = STOPS[s][key],
+          [x2, y2] = STOPS[s + 1][key];
+        return [x1 + (x2 - x1) * f, y1 + (y2 - y1) * f];
+      }
+
+      /* Two drawings of one trail: a wide one for projectors/laptops and a compact one for phones. */
+      const MAPS = {
+        xy: { view: "0 0 1400 172", r: 26, icon: 30, label: 19, es: 16, tok: 15, gap: 30, up: 40 },
+        sm: { view: "0 0 400 150", r: 17, icon: 19, label: 11.5, es: 10, tok: 10, gap: 21, up: 27 },
+      };
+      const lastTok = {};
+      function mapSvg(key, summary) {
+        const m = MAPS[key];
+        const turn = S.currentTurn % S.teams.length;
+        const stops = STOPS.map((s, i) => {
+          const [x, y] = s[key];
+          const main = esc(S.lang === "es" ? s.name.es : s.name.en);
+          const es =
+            S.lang === "both"
+              ? `<text class="stop-label es-l" x="${x}" y="${y + m.r + m.label + m.es + 2}" font-size="${m.es}">${esc(s.name.es)}</text>`
+              : "";
+          return `<g><circle class="stop-ring ${i === 4 ? "summit" : ""}" cx="${x}" cy="${y}" r="${m.r}"/><text class="stop-icon" x="${x}" y="${y + 1}" font-size="${m.icon}">${s.icon}</text><text class="stop-label" x="${x}" y="${y + m.r + m.label}" font-size="${m.label}">${main}</text>${es}</g>`;
+        }).join("");
+        const groups = {};
+        const toks = S.teams
+          .map((tm, i) => {
+            const [x, y] = trailPoint(tm.correct || 0, key);
+            const at = `${Math.round(x)},${Math.round(y)}`;
+            const slot = (groups[at] = (groups[at] || 0) + 1) - 1;
+            const here = S.teams.filter((o) => {
+              const [ox, oy] = trailPoint(o.correct || 0, key);
+              return `${Math.round(ox)},${Math.round(oy)}` === at;
+            }).length;
+            const tx = Math.round(x + (slot - (here - 1) / 2) * m.gap),
+              ty = Math.round(y - m.up);
+            const id = key + i;
+            const prev = lastTok[id];
+            lastTok[id] = [tx, ty];
+            const [sx, sy] = prev && !reduceMotion() ? prev : [tx, ty];
+            return `<g class="tok ${i === turn ? "turn" : ""}" data-x="${tx}" data-y="${ty}" style="transform:translate(${sx}px,${sy}px)"><circle r="${m.tok}" fill="${TEAM_COLORS[i]}"/><text font-size="${m.tok}">${i + 1}</text></g>`;
+          })
+          .join("");
+        const pts = STOPS.map((s) => s[key].join(",")).join(" ");
+        return `<svg class="map-${key}" viewBox="${m.view}" role="img" aria-label="${esc(summary)}"><polyline class="trail" points="${pts}"/>${stops}${toks}</svg>`;
+      }
+
+      function renderMap() {
+        const n = summitSteps();
+        const summary = S.teams
+          .map((tm) => `${tm.name}: ${STOPS[stopFor(tm.correct || 0)].name.en} (${Math.min(tm.correct || 0, n)}/${n})`)
+          .join("; ");
+        return `<section class="exp-map" aria-label="${esc(UI.trail.en)}">
+    <div class="exp-map-head"><b>🧭 ${t("trail")}</b><span>${t("trailHelp")} · 🏔️ ${n} ${t("steps")}${S.summitFirst == null ? " · 🚩 " + t("firstBonus") : ""}</span></div>
+    ${mapSvg("xy", summary)}
+    ${mapSvg("sm", summary)}
+  </section>`;
+      }
+
+      function animateTokens() {
+        document.querySelectorAll(".exp-map .tok").forEach((g) => {
+          g.getBoundingClientRect();
+          requestAnimationFrame(() => {
+            g.style.transform = `translate(${g.dataset.x}px,${g.dataset.y}px)`;
+          });
+        });
+      }
+
       function renderScores() {
         const max = Math.max(...S.teams.map((x) => x.score));
+        const n = summitSteps();
+        const lk = S.lang === "es" ? "es" : "en";
         $("#scores").innerHTML = S.teams
-          .map(
-            (tm, i) => `
+          .map((tm, i) => {
+            const steps = Math.min(tm.correct || 0, n);
+            const st = STOPS[stopFor(tm.correct || 0)];
+            const counts = POWER_IDS.map((id) => [id, tm.powers.filter((p) => p === id).length]).filter(
+              ([, c]) => c,
+            );
+            const powers = counts.length
+              ? counts
+                  .map(([id, c]) => {
+                    const p = POWERS[id];
+                    const label = `${p.icon} ${esc(p.name[lk])}${c > 1 ? " ×" + c : ""}`;
+                    const tip = esc(`${p.desc.en} / ${p.desc.es}`);
+                    return id === "compass"
+                      ? `<button class="pw" data-compass="${i}" title="${tip}" aria-label="${esc(`${p.name.en} / ${p.name.es}: ${tm.name}`)}">${label} ▶</button>`
+                      : `<span class="pw" title="${tip}">${label}</span>`;
+                  })
+                  .join("")
+              : `<span class="pw-empty">${t("noPowers")}</span>`;
+            return `
     <div class="score ${tm.score === max && max > 0 ? "leader" : ""}" style="--c:${TEAM_COLORS[i]}">
       <input data-score-team="${i}" value="${esc(tm.name)}" maxlength="24" aria-label="Team ${i + 1} name">
       <div class="pts" id="pts${i}">${tm.score}</div>
+      <div class="trail-mini"><span>${st.icon} ${L(st.name)}</span><span>${steps}/${n}${tm.summit ? " 🏔️" : ""}</span></div>
+      <div class="trail-bar" aria-hidden="true"><i style="width:${Math.round((steps / n) * 100)}%"></i></div>
+      <div class="powers">${powers}</div>
       <div class="adj">
         <button data-adj="${i}" data-d="-100" aria-label="minus 100">−100</button>
         <button data-adj="${i}" data-d="100" aria-label="plus 100">+100</button>
       </div>
-    </div>`,
-          )
+    </div>`;
+          })
           .join("");
 
         document.querySelectorAll("[data-score-team]").forEach(
@@ -2893,6 +3622,21 @@
             (bt) =>
               (bt.onclick = () => addScore(+bt.dataset.adj, +bt.dataset.d)),
           );
+        document
+          .querySelectorAll("[data-compass]")
+          .forEach((bt) => (bt.onclick = () => useCompass(+bt.dataset.compass)));
+      }
+
+      function useCompass(i) {
+        const tm = S.teams[i];
+        if (!tm || open || !tm.powers.includes("compass")) return;
+        pushUndoState();
+        tm.powers.splice(tm.powers.indexOf("compass"), 1);
+        S.currentTurn = i;
+        save();
+        SFX.dbl();
+        toast(`🧭 <b>${esc(tm.name)}</b> ${t("compassUsed")}`);
+        renderGame();
       }
 
       function addScore(i, d) {
@@ -3104,6 +3848,8 @@
       }
     </div>
 
+    ${boostBar()}
+
     ${
       !open.revealed
         ? `<div class="buzzer-box">
@@ -3172,7 +3918,7 @@
         ? `<div class="award">
         <div class="award-label">${t("whoGotIt")}</div>
         <div class="teams-award-row">
-          ${S.teams.map((tm, i) => `<button class="tbtn" style="--c:${TEAM_COLORS[i]}" data-win="${i}">${esc(tm.name)} <b>+${val}</b>${S.penalty ? `<span class="neg" data-lose="${i}" role="button" aria-label="minus ${val}">−${val}</span>` : ""}</button>`).join("")}
+          ${S.teams.map((tm, i) => `<button class="tbtn" style="--c:${TEAM_COLORS[i]}" data-win="${i}">${esc(tm.name)} <b>+${open.boost === i ? val * 2 : val}${open.boost === i ? " ⚡" : ""}</b>${S.penalty ? `<span class="neg" data-lose="${i}" role="button" aria-label="minus ${val}">${(open.penalized || []).includes(i) ? "✗ " : ""}−${val}</span>` : ""}</button>`).join("")}
         </div>
         <div class="cta-row" style="margin-top:14px">
           <button class="btn btn-ghost btn-sm" id="nobodyBtn">${t("nobody")}</button>
@@ -3267,33 +4013,178 @@
             (bt.onclick = (e) => {
               const lose = e.target.closest("[data-lose]");
               if (lose) {
-                addScore(+lose.dataset.lose, -val);
-                SFX.lose();
+                penalize(+lose.dataset.lose);
                 return;
               }
-              const winnerIdx = +bt.dataset.win;
-              pushUndoState();
-              S.teams[winnerIdx].score += val;
-              S.used[open.k] = "won";
-              S.currentTurn = (winnerIdx + 1) % S.teams.length;
-              save();
-              SFX.win();
-              confetti(140);
-              closeClue();
+              awardCorrect(+bt.dataset.win);
             }),
         );
 
+        document
+          .querySelectorAll("[data-boost]")
+          .forEach((bt) => (bt.onclick = () => armBoost(+bt.dataset.boost)));
+
         const nb = $("#nobodyBtn");
-        if (nb) {
-          nb.onclick = () => {
-            pushUndoState();
-            S.used[open.k] = "miss";
-            S.currentTurn = (S.currentTurn + 1) % S.teams.length;
-            save();
-            SFX.lose();
-            closeClue();
-          };
+        if (nb) nb.onclick = markNobody;
+      }
+
+      /* ============================== AWARDS & EXPEDITION EVENTS ============================== */
+      /* Points, trail steps and chests only come from a host-confirmed right answer, once per clue. */
+      function boostBar() {
+        if (!open || open.revealed || open.played || open.dbl) return "";
+        if (open.boost != null && S.teams[open.boost]) {
+          return `<div class="boost-bar"><span class="boost-on">⚡ ${esc(S.teams[open.boost].name)} · ${t("boostOn")}</span></div>`;
         }
+        const holders = S.teams.map((tm, i) => [tm, i]).filter(([tm]) => tm.powers.includes("double"));
+        if (!holders.length) return "";
+        return `<div class="boost-bar">${holders
+          .map(
+            ([tm, i]) =>
+              `<button class="boost-btn" style="--c:${TEAM_COLORS[i]}" data-boost="${i}" title="${esc(POWERS.double.desc.en)}">⚡ ${esc(tm.name)}: ${t("boostArm")}</button>`,
+          )
+          .join("")}</div>`;
+      }
+
+      function armBoost(i) {
+        const tm = S.teams[i];
+        if (!open || !tm || open.revealed || open.played || open.dbl || open.boost != null) return;
+        if (!tm.powers.includes("double")) return;
+        open.boost = i;
+        SFX.dbl();
+        renderClue();
+      }
+
+      function spendBoost() {
+        if (!open || open.boost == null || !S.teams[open.boost]) return;
+        const p = S.teams[open.boost].powers;
+        const at = p.indexOf("double");
+        if (at >= 0) p.splice(at, 1);
+      }
+
+      function awardCorrect(i) {
+        const tm = S.teams[i];
+        if (!open || !tm || !open.revealed || open.played || S.used[open.k]) return;
+        pushUndoState();
+        const boosted = open.boost === i;
+        const pts = open.wager * (boosted ? 2 : 1);
+        spendBoost();
+        tm.score += pts;
+        tm.correct = (tm.correct || 0) + 1;
+        S.used[open.k] = "won";
+        S.wonBy[open.k] = i;
+        S.currentTurn = (i + 1) % S.teams.length;
+        advanceTrail(i);
+        save();
+        SFX.win();
+        confetti(boosted ? 220 : 140);
+        if (boosted) toast(`⚡ <b>${esc(tm.name)}</b> +${pts}!`);
+        closeClue();
+      }
+
+      function markNobody() {
+        if (!open || !open.revealed || open.played || S.used[open.k]) return;
+        pushUndoState();
+        spendBoost();
+        S.used[open.k] = "miss";
+        S.currentTurn = (S.currentTurn + 1) % S.teams.length;
+        save();
+        SFX.lose();
+        closeClue();
+      }
+
+      function penalize(i) {
+        if (!open || !S.teams[i] || !open.revealed || open.played || S.used[open.k]) return;
+        open.penalized = open.penalized || [];
+        if (open.penalized.includes(i)) return;
+        pushUndoState();
+        open.penalized.push(i);
+        addScore(i, -open.wager);
+        SFX.lose();
+        renderClue();
+      }
+
+      function advanceTrail(i) {
+        const tm = S.teams[i];
+        const before = stopFor(tm.correct - 1),
+          after = stopFor(tm.correct);
+        for (let s = before + 1; s <= after; s++) {
+          if (s < 4) {
+            S.events.push({ type: "chest", team: i, stop: s, offer: shuffle(POWER_IDS).slice(0, 2) });
+          } else if (!tm.summit) {
+            tm.summit = true;
+            const first = S.summitFirst == null;
+            if (first) {
+              S.summitFirst = i;
+              tm.score += SUMMIT_BONUS;
+            }
+            S.events.push({ type: "summit", team: i, first });
+          }
+        }
+      }
+
+      function showNextEvent(quiet) {
+        const m = $("#expModal");
+        const ev = S.events[0];
+        if (!ev) {
+          m.hidden = true;
+          return;
+        }
+        const tm = S.teams[ev.team];
+        if (!tm) {
+          S.events.shift();
+          save();
+          showNextEvent(quiet);
+          return;
+        }
+        const stop = STOPS[ev.type === "summit" ? 4 : ev.stop] || STOPS[1];
+        const color = TEAM_COLORS[ev.team];
+        let body;
+        if (ev.type === "chest" && tm.powers.length < MAX_POWERS) {
+          body = `<p class="award-label">${t("pickOne")}</p><div class="chest-choices">${ev.offer
+            .map((id) => {
+              const p = POWERS[id];
+              const en = S.lang !== "es" ? `<span class="d">${esc(p.desc.en)}</span>` : "";
+              const es = S.lang !== "en" ? `<span class="d es">${esc(p.desc.es)}</span>` : "";
+              return `<button class="chest-pick" data-pick="${id}"><span class="pi" aria-hidden="true">${p.icon}</span><b>${L(p.name)}</b>${en}${es}</button>`;
+            })
+            .join("")}</div>`;
+        } else if (ev.type === "chest") {
+          body = `<p class="award-label">${t("bagFull")}</p><div class="cta-row"><button class="btn btn-gold" id="expOk">${t("continue")}</button></div>`;
+        } else {
+          body = `<p style="font-size:1.25rem;margin:10px 0">${ev.first ? t("summitFirst") : t("summitLater")}</p><div class="cta-row"><button class="btn btn-gold" id="expOk">🎉 ${t("continue")}</button></div>`;
+        }
+        m.innerHTML = `<div class="card" style="max-width:720px">
+          <div class="chest-art" aria-hidden="true">${ev.type === "chest" ? "🎁" : "🏔️"}</div>
+          <h2 id="expTitle" class="clue" style="color:var(--gold);margin:8px auto 4px">${ev.type === "chest" ? t("chestTitle") : t("summitTitle")}</h2>
+          <p style="font-size:1.15rem;margin:0"><b style="color:${color}">${esc(tm.name)}</b> ${t("reached")} ${stop.icon} ${L(stop.name)}</p>
+          ${body}
+        </div>`;
+        m.hidden = false;
+        if (!quiet) {
+          if (ev.type === "summit") {
+            SFX.fanfare();
+            confetti(260);
+          } else SFX.dbl();
+        }
+        m.querySelectorAll("[data-pick]").forEach((bt) => (bt.onclick = () => resolveEvent(ev, bt.dataset.pick)));
+        const ok = $("#expOk");
+        if (ok) ok.onclick = () => resolveEvent(ev, null);
+        const first = m.querySelector("button");
+        if (first) first.focus();
+      }
+
+      function resolveEvent(ev, pick) {
+        if (S.events[0] !== ev) return;
+        const tm = S.teams[ev.team];
+        if (ev.type === "chest" && pick && ev.offer.includes(pick) && tm && tm.powers.length < MAX_POWERS) {
+          tm.powers.push(pick);
+          toast(`${POWERS[pick].icon} <b>${esc(tm.name)}</b>: ${L(POWERS[pick].name)}`);
+        }
+        S.events.shift();
+        save();
+        $("#expModal").hidden = true;
+        if (!$("#game").hidden) renderGame();
+        showNextEvent();
       }
 
       function closeClue() {
@@ -3307,32 +4198,57 @@
         if (Object.keys(S.used).length >= total && !S.finalDone) {
           toast(t("allDone"));
         }
+        if (S.events.length) showNextEvent();
       }
 
       /* ============================== FINAL CHALLENGE ============================== */
-      let fin = null;
+      /* Final state lives in S so closing, reloading or reopening can never re-award a verdict. */
       function openFinal() {
-        fin = {
-          step: "wager",
-          wagers: S.teams.map((tm) =>
-            Math.min(tm.score, Math.max(0, Math.round(tm.score / 2 / 100) * 100)),
-          ),
-          decided: S.teams.map(() => null),
-        };
+        if (S.finalDone) {
+          showWinner();
+          return;
+        }
+        const isNew = !S.final;
+        if (isNew) {
+          S.final = {
+            step: "wager",
+            wagers: S.teams.map((tm) => Math.max(0, Math.min(tm.score, Math.round(tm.score / 2 / 100) * 100))),
+            decided: S.teams.map(() => null),
+            shield: S.teams.map(() => false),
+          };
+          save();
+        }
         renderFinal();
         $("#final").hidden = false;
-        SFX.fanfare();
+        if (isNew) SFX.fanfare();
       }
 
       function renderFinal() {
+        const fin = S.final;
+        if (!fin) {
+          $("#final").hidden = true;
+          return;
+        }
+        S.teams.forEach((tm, i) => {
+          if (fin.wagers[i] == null) fin.wagers[i] = 0;
+          if (fin.decided[i] === undefined) fin.decided[i] = null;
+          if (fin.shield[i] == null) fin.shield[i] = false;
+        });
         const b = board(),
           f = b.final;
         const teamCards = S.teams
-          .map(
-            (tm, i) => `<div class="ft ${fin.decided[i] !== null ? "decided" : ""}" style="--c:${TEAM_COLORS[i]}">
-    <div class="nm">${esc(tm.name)}</div>
+          .map((tm, i) => {
+            const shieldUI =
+              fin.step === "wager" && tm.powers.includes("shield")
+                ? `<label class="shield-opt"><input type="checkbox" data-shield="${i}" ${fin.shield[i] ? "checked" : ""}> ${t("useShield")}</label>`
+                : fin.shield[i]
+                  ? `<div class="shield-on">${t("shieldOn")}</div>`
+                  : "";
+            return `<div class="ft ${fin.decided[i] !== null ? "decided" : ""}" style="--c:${TEAM_COLORS[i]}">
+    <div class="nm">${esc(tm.name)}${tm.summit ? " 🏔️" : ""}</div>
     <div class="have">${t("youHave")}: <b>${tm.score}</b> · ${t("wager")}: <b>${fin.wagers[i]}</b></div>
     ${fin.step === "wager" ? `<input type="number" min="0" max="${Math.max(0, tm.score)}" step="100" value="${fin.wagers[i]}" data-wager="${i}" aria-label="${esc(tm.name)} wager">` : ""}
+    ${shieldUI}
     ${
       fin.step === "answer"
         ? `<div class="verdict">
@@ -3341,14 +4257,14 @@
     </div>`
         : ""
     }
-  </div>`,
-          )
+  </div>`;
+          })
           .join("");
 
         $("#final").innerHTML = `<div class="card">
     <div class="card-bar">
       <div class="card-meta">
-        <span class="chip val-chip">🏆 ${t("final")}</span>
+        <span class="chip val-chip">🏔️ ${t("final")}</span>
       </div>
       <div class="card-actions">
         <button class="close-x" id="finalClose" aria-label="${esc(UI.close.en)}">✕</button>
@@ -3375,10 +4291,17 @@
             (inp.oninput = () => {
               const i = +inp.dataset.wager,
                 max = Math.max(0, S.teams[i].score);
-              fin.wagers[i] = Math.max(
-                0,
-                Math.min(max, Math.round(+inp.value || 0)),
-              );
+              S.final.wagers[i] = Math.max(0, Math.min(max, Math.round(+inp.value || 0)));
+              save();
+            }),
+        );
+
+        document.querySelectorAll("[data-shield]").forEach(
+          (box) =>
+            (box.onchange = () => {
+              const i = +box.dataset.shield;
+              S.final.shield[i] = box.checked && S.teams[i].powers.includes("shield");
+              save();
             }),
         );
 
@@ -3387,9 +4310,12 @@
             (bt.onclick = () => {
               const i = +bt.dataset.fin,
                 ok = bt.dataset.ok === "1";
-              if (fin.decided[i] !== null) return;
-              fin.decided[i] = ok;
-              addScore(i, ok ? fin.wagers[i] : -fin.wagers[i]);
+              if (!S.final || S.final.step !== "answer" || S.final.decided[i] !== null) return;
+              pushUndoState();
+              const fn = S.final;
+              fn.decided[i] = ok;
+              const loss = fn.shield[i] ? 0 : fn.wagers[i];
+              addScore(i, ok ? fn.wagers[i] : -loss);
               ok ? SFX.win() : SFX.lose();
               renderFinal();
             }),
@@ -3398,24 +4324,70 @@
         const nx = $("#finNext");
         if (nx)
           nx.onclick = () => {
-            if (fin.step === "wager") {
-              fin.step = "question";
+            const fn = S.final;
+            if (fn.step === "wager") {
+              S.teams.forEach((tm, i) => {
+                fn.wagers[i] = Math.max(0, Math.min(Math.max(0, tm.score), fn.wagers[i]));
+                const at = tm.powers.indexOf("shield");
+                if (fn.shield[i] && at >= 0) tm.powers.splice(at, 1);
+                else fn.shield[i] = false;
+              });
+              fn.step = "question";
               SFX.open();
-            } else if (fin.step === "question") {
-              fin.step = "answer";
+            } else if (fn.step === "question") {
+              fn.step = "answer";
               SFX.reveal();
             } else {
+              if (fn.decided.some((d) => d === null)) return;
               S.finalDone = true;
+              stampPassport();
               save();
               $("#final").hidden = true;
+              renderGame();
               showWinner();
               return;
             }
+            save();
             renderFinal();
           };
       }
 
-      
+      /* ============================== EXPEDITION PASSPORT ============================== */
+      function loadPassport() {
+        const blank = { stamps: {}, games: 0, summits: 0, best: 0, ids: [] };
+        try {
+          const p = JSON.parse(localStorage.getItem(PASSPORT_KEY));
+          if (p && typeof p === "object") {
+            return {
+              ...blank,
+              ...p,
+              stamps: p.stamps && typeof p.stamps === "object" ? p.stamps : {},
+              ids: Array.isArray(p.ids) ? p.ids : [],
+            };
+          }
+        } catch (e) {}
+        return blank;
+      }
+
+      function stampKey() {
+        return S.layout?.remix ? "remix" : S.boardId;
+      }
+
+      function stampPassport() {
+        const p = loadPassport();
+        if (!S.gameId || p.ids.includes(S.gameId)) return;
+        const key = stampKey();
+        p.stamps[key] = (p.stamps[key] || 0) + 1;
+        p.games += 1;
+        p.summits += S.teams.filter((tm) => tm.summit).length;
+        p.best = Math.max(p.best, ...S.teams.map((tm) => tm.score));
+        p.ids = [...p.ids, S.gameId].slice(-30);
+        try {
+          localStorage.setItem(PASSPORT_KEY, JSON.stringify(p));
+        } catch (e) {}
+      }
+
+
       /* ============================== CERTIFICATE PRINT SYSTEM ============================== */
       function openCertificateModal(champion, allTeams) {
         const teamsToPrint = allTeams || (champion ? [champion] : S.teams);
@@ -3491,8 +4463,9 @@
     <h2 id="winTitle" class="clue" style="color:var(--gold);margin:8px auto">${tie ? "🤝" : esc(sorted[0].name)}</h2>
     <p style="font-size:1.15rem;color:var(--muted);margin:8px 0 16px">${t("everyone")}</p>
     <div class="podium">
-      ${sorted.map((tm, r) => `<div class="row" style="--c:${TEAM_COLORS[tm.i]}"><span class="rank">${["🥇", "🥈", "🥉"][r] || r + 1}</span><span class="nm">${esc(tm.name)}</span><span class="pts">${tm.score}</span></div>`).join("")}
+      ${sorted.map((tm, r) => `<div class="row" style="--c:${TEAM_COLORS[tm.i]}"><span class="rank">${["🥇", "🥈", "🥉"][r] || r + 1}</span><span class="nm">${esc(tm.name)}</span><span class="badges">${S.summitFirst === tm.i ? "🚩" : ""}${tm.summit ? "🏔️" : ""}</span><span class="pts">${tm.score}</span></div>`).join("")}
     </div>
+    ${S.finalDone ? `<p class="passport-sum">🛂 ${t("stampEarned")} ${S.layout?.remix ? REMIX.emoji : baseBoard().emoji} ${L(S.layout?.remix ? REMIX.name : baseBoard().name)}</p>` : ""}
     <div class="cta-row">
       <button class="btn btn-ghost" id="winBack">${t("backToBoard")}</button>
       <button class="btn btn-mint" id="winCertBtn">${t("printCert")}</button>
@@ -3632,6 +4605,7 @@
       document.addEventListener("keydown", (e) => {
         const tag = (e.target.tagName || "").toLowerCase();
         if (tag === "input" || tag === "select" || tag === "textarea") return;
+        if (!$("#expModal").hidden) return;
 
         if (e.key === "Escape") {
           if (!$("#certificateModal").hidden) {
@@ -3719,24 +4693,13 @@
               SFX.buzz();
               renderClue();
             } else if (open.revealed && !open.played) {
-              pushUndoState();
-              S.teams[teamIdx].score += open.wager;
-              S.used[open.k] = "won";
-              S.currentTurn = (teamIdx + 1) % S.teams.length;
-              save();
-              SFX.win();
-              confetti(140);
-              closeClue();
+              awardCorrect(teamIdx);
             }
             return;
           }
 
           if ((e.key === "0" || e.key === "n" || e.key === "N") && open.revealed && !open.played) {
-            S.used[open.k] = "miss";
-            S.currentTurn = (S.currentTurn + 1) % S.teams.length;
-            save();
-            SFX.lose();
-            closeClue();
+            markNobody();
             return;
           }
         }
@@ -3752,11 +4715,14 @@
         if (!$("#setup").hidden) renderSetup();
         else renderGame();
         if (open) renderClue();
-        if (fin && !$("#final").hidden) renderFinal();
+        if (!$("#final").hidden) renderFinal();
+        if (S.inGame && S.events.length) showNextEvent(true);
+        else $("#expModal").hidden = true;
       }
 
       renderShell();
       showScreen(S.inGame ? "game" : "setup");
+      if (S.inGame && S.events.length) showNextEvent(true);
     </script>
   </body>
 </html>

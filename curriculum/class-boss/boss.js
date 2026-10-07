@@ -19,6 +19,8 @@
 
 import { choiceLabelEs, STUDENT_COACH } from "./coach.js";
 import { BOSS_TAGS, buildQuestion, hashSeed, makeRng } from "./questions.js";
+import { mountRaidCampaign } from "./raid-campaign.js?v=20261007";
+let raidCampaign;
 
 /* --- tuning -------------------------------------------------------------- */
 const BASE_HP = 60; // per student in the class
@@ -956,6 +958,7 @@ function answer(choice) {
 
   if (correct) {
     const tries = state.wrongPicks.length;
+    raidCampaign?.solved(q.tag);
     state.outcome = "solved";
     state.round.points += POINTS_BY_TRIES[Math.min(tries, POINTS_BY_TRIES.length - 1)];
     if (tries === 0) state.round.first += 1;
@@ -1101,6 +1104,7 @@ function renderFocusOptions() {
 
 function setLang(lang) {
   state.lang = lang;
+  raidCampaign?.refresh();
   safeStorage(() => localStorage.setItem(KEY_LANG, lang), null);
   applyStaticCopy();
   renderBoss();
@@ -1178,6 +1182,17 @@ async function init() {
   renderFeed();
   renderFocusOptions();
   nextQuestion({ initial: true });
+  raidCampaign = mountRaidCampaign({
+    host: el.bossStage,
+    week: state.weekKey,
+    attacks: state.boss.attacks,
+    language: () => state.lang,
+    focus(tag) {
+      state.focusTag = tag;
+      el.raidFocus.value = tag;
+      if (!state.outcome && !state.wrongPicks.length) nextQuestion();
+    },
+  });
   el.raidFocus.addEventListener("change", () => {
     state.focusTag = el.raidFocus.value;
     // A focus change keeps the round's score; it only changes what the next

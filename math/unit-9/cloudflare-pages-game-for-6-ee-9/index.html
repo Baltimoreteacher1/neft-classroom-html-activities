@@ -367,6 +367,11 @@
         gap: 10px;
         padding: 12px;
       }
+      /* The leap buttons sit in the card's flow; absolute positioning made this
+         row cover the x input and Lock in button for mouse and touch. */
+      #plats-buttons {
+        position: static;
+      }
       .plat {
         flex: 1;
         min-width: 0;
@@ -475,6 +480,14 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+<link rel="stylesheet" href="/assets/game-studio.css?v=20261007">
+<script src="/assets/game-studio.js?v=20261007" defer></script>
+<link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/legacy-adventure.css?v=20261007">
+<script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
+<script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+<script>window.LegacyAdventureConfig = {"id":"u7-equation-quest","title":"Leap to the Citadel","chapters":["Mosslight Landing","Floating Causeway","The High Citadel"],"brief":"Solve for x before you leap, then use balance operations to open the route ahead.","scene":"wild","accent":"#b6f28a","icons":["🍄","🌉","🏯"],"story":["The path to the citadel is broken. Solve for x to earn supplies.","You landed safely. Next, the floating causeway.","The causeway holds. Now climb to the high citadel.","You reached the high citadel. Every leap was balanced."]};</script>
+<script src="/math/games/shared/legacy-adventure.js?v=20261007"></script>
 </head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
@@ -1023,6 +1036,7 @@
           SFX.leap();
           S.score += S.level === 1 ? 50 : 70;
           S.solved++;
+          window.LegacyAdventure?.reward(S.cur);
           $("hud-score").textContent = S.score;
           [...$("plats-buttons").children].forEach((b) => (b.disabled = true));
           flash("Stuck the landing! x = " + val, "good");
