@@ -15,7 +15,7 @@
       description:
         "Explore multi-digit whole number division and decimal budgeting (1.5 × 2.4) with hundredths area models.",
       unit: "Unit 1",
-      url: "/neft-math-lab-studio/?tool=decimal-product&preset=1.5x2.4",
+      url: "/curriculum/division-foundry/",
       icon: "✖️",
       tags: ["decimals", "division", "multiplication", "unit1"],
     },
@@ -25,7 +25,7 @@
       description:
         "Split supplies evenly into goodie bags using Venn factor trees and common multiples.",
       unit: "Unit 1",
-      url: "/neft-math-lab-studio/?tool=gcf-lcm&preset=goodie-bags",
+      url: "/math/games/u1-factor-frenzy/",
       icon: "🏷️",
       tags: ["gcf", "lcm", "factors", "unit1"],
     },
@@ -35,7 +35,7 @@
       description:
         "Mix primary paint buckets in fixed ratios to explore equivalent ratio tables and scaling.",
       unit: "Unit 3",
-      url: "/neft-math-lab-studio/?tool=ratio-mixer&preset=3-2",
+      url: "/ratio-color-mixer/",
       icon: "🎨",
       tags: ["ratios", "rates", "mixing", "unit3"],
     },
@@ -45,7 +45,7 @@
       description:
         "Calculate miles per hour and unit costs with interactive double number lines and unit conversions.",
       unit: "Unit 3",
-      url: "/neft-math-lab-studio/?tool=unit-rate&preset=transit-fleet",
+      url: "/double-line-racer/",
       icon: "⚡",
       tags: ["unit-rate", "conversions", "unit3"],
     },
@@ -55,7 +55,7 @@
       description:
         "Shade 100-grid squares to relate fractions, decimals, and percentages with benchmark discounts.",
       unit: "Unit 4",
-      url: "/neft-math-lab-studio/?tool=percent-grid&preset=popup-shop",
+      url: "/curriculum/arcade/",
       icon: "💯",
       tags: ["percents", "discounts", "grid", "unit4"],
     },
@@ -65,7 +65,7 @@
       description:
         "Expand 3(2x + 4) with visual algebra tiles, fraction division bars, and exponent engines.",
       unit: "Unit 6",
-      url: "/neft-math-lab-studio/?tool=expressions&preset=distributive-3x",
+      url: "/lessons/6-1/",
       icon: "🧪",
       tags: ["expressions", "distributive", "exponents", "unit6"],
     },
@@ -75,7 +75,7 @@
       description:
         "Plot ordered pairs (x, y) across all 4 quadrants with distance radar and thermal elevation lines.",
       unit: "Unit 7",
-      url: "/neft-math-lab-studio/?tool=coordinate-grid&preset=quadrants-1-4",
+      url: "/starfield-coordinate-defender/",
       icon: "📍",
       tags: ["coordinate-plane", "quadrants", "integers", "unit7"],
     },
@@ -85,7 +85,7 @@
       description:
         "Model 2x + 3 = 11 by balancing weights and graph open number line inequality safety limits.",
       unit: "Unit 8",
-      url: "/neft-math-lab-studio/?tool=balance&preset=2x3-11",
+      url: "/mad-balance-sandbox/",
       icon: "⚖️",
       tags: ["equations", "inequalities", "balance", "unit8"],
     },
@@ -95,7 +95,7 @@
       description:
         "Analyze independent (x) vs dependent (y) variable growth with real-time data tables and linear graphs.",
       unit: "Unit 9",
-      url: "/neft-math-lab-studio/?tool=two-variables&preset=streaming-growth",
+      url: "/lessons/9-1/",
       icon: "📈",
       tags: ["two-variables", "graphing", "tables", "unit9"],
     },
@@ -115,7 +115,7 @@
       description:
         "Compute 5-number summaries, median, IQR, mean, and MAD with interactive dot plots and histograms.",
       unit: "Unit 2",
-      url: "/neft-math-lab-studio/?tool=box-plot&preset=grade6-heights",
+      url: "/math/statistics/data-studio/",
       icon: "📊",
       tags: ["statistics", "median", "box-plot", "mad", "unit2"],
     },
@@ -125,7 +125,7 @@
       description:
         "Create geometric tessellation art, solve logic mechanics, and curate your EOY Math Growth Portfolio.",
       unit: "Unit 10",
-      url: "/neft-math-lab-studio/?tool=tessellation&preset=portfolio-showcase",
+      url: "/netfold-pro/",
       icon: "🎨",
       tags: ["tessellation", "portfolio", "reflection", "unit10"],
     },

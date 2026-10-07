@@ -213,7 +213,7 @@ function headingOf(href) {
     byHref.get(item.href).add(item.unit);
   }
   // A site-wide tile legitimately repeats on every card; a unit resource does not.
-  const SITE_WIDE = new Set(["/neft-math-lab-studio/"]);
+  const SITE_WIDE = new Set();
   for (const [href, where] of byHref) {
     if (where.size <= 1 || SITE_WIDE.has(href)) continue;
     fail(

@@ -60,7 +60,7 @@
       ],
       lessonRoute: "/lessons/7-4/",
       catchupRoute: "/lessons/7-4-group1/",
-      presetRoute: "/neft-math-lab-studio/?tool=coordinate-grid",
+      presetRoute: "/starfield-coordinate-defender/",
     },
     "ratio-lab": {
       title: "Ratio & Rate Lab (Unit 3)",
@@ -86,7 +86,7 @@
       ],
       lessonRoute: "/lessons/3-4/",
       catchupRoute: "/lessons/3-4-group1/",
-      presetRoute: "/neft-math-lab-studio/?tool=ratio-mixer",
+      presetRoute: "/ratio-color-mixer/",
     },
     "netfold-3d": {
       title: "NetFold 3D Surface Area & Volume (Unit 5)",
@@ -140,7 +140,7 @@
       ],
       lessonRoute: "/lessons/2-3/",
       catchupRoute: "/lessons/2-3-group1/",
-      presetRoute: "/neft-math-lab-studio/?tool=box-plot",
+      presetRoute: "/math/statistics/data-studio/",
     },
   };
 

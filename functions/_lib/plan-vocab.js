@@ -4235,13 +4235,6 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
-    path: "/neft-math-lab-studio/",
-    title:
-      "EduWonderLab - Grade 6 Interactive Small-Group Curriculum Studio (Google Publisher Edition)",
-    category: "Tool",
-    unit: null,
-  },
-  {
     path: "/noam-bar-mitzvah/",
     title: "Noam Bar Mitzvah — Ki Teitzei Study Tools",
     category: "Tool",

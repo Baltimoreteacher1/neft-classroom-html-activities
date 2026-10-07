@@ -544,7 +544,7 @@
     } else if (actionType === "unit_map") {
       window.open("/curriculum/map/?seq=" + seq + "&unit=" + unitTitle, "_blank");
     } else if (actionType === "groups") {
-      goToTool("/neft-math-lab-studio/?seq=" + seq + "&unit=" + unitTitle);
+      goToTool("/teacher-tools/small-group-rotation/?seq=" + seq + "&unit=" + unitTitle);
     } else if (actionType === "scorm") {
       downloadUnitScorm(item);
     } else if (actionType === "lesson_work") {

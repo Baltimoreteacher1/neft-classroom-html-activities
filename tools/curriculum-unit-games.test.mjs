@@ -53,8 +53,6 @@ const units = [...dom.window.document.querySelectorAll("details.unit")].map((el)
     blurb: el.querySelector(".unit-blurb")?.textContent.trim() ?? "",
     badge: el.querySelector(".badge-cluster")?.textContent.trim() ?? "",
     count: el.querySelector(".unit-count")?.textContent.trim() ?? "",
-    studioInSummary: !!summaryEl?.querySelector('a[href*="neft-math-lab-studio"]'),
-    studioInBody: res.some((a) => a.getAttribute("href")?.includes("neft-math-lab-studio")),
     href: game?.getAttribute("href"),
     label: game?.querySelector(".res-sub")?.textContent.trim(),
   };
@@ -82,11 +80,6 @@ for (const unit of units) {
   // practice-standard units, so a badge of MPP is correct, not a missing cluster.
   assert.match(unit.badge, /^(6\.[A-Z]+|MPP)$/, `${where}: missing cluster badge`);
   assert.match(unit.count, /^\d+ lessons$/, `${where}: missing lesson count`);
-  assert.ok(
-    !unit.studioInSummary,
-    `${where}: the Small-Group Studio link belongs in the unit body, not the summary bar`,
-  );
-  assert.ok(unit.studioInBody, `${where}: missing the Small-Group Studio link in its resource row`);
 
   // The Unit Game must exist… except where the curriculum legitimately has none.
   // Units 1 and 10 are the book's "Math Is..." mindset units — Joel's call is

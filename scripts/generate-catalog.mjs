@@ -911,7 +911,6 @@ const TOP_META = {
   "misconception-museum": { s: "labs", c: "Tool", a: "student" },
   "mstar-practice": { s: "test-prep", c: "Practice", a: "student" },
   "neft-data-studio": { s: "data", c: "Tool", a: "teacher" },
-  "neft-math-lab-studio": { s: "labs", c: "Tool", a: "student" },
   "neft-school-hub": { s: "about", c: "Hub", a: "teacher" },
   "netfold-3d": { s: "labs", c: "Game", a: "student" },
   "netfold-pro": { s: "labs", c: "Game", a: "student" },

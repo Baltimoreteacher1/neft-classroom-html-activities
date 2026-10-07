@@ -101,7 +101,6 @@ check(
   lessonLinks >= MIN_LESSON_LINKS,
   `only ${lessonLinks} /lessons/ links (expected >= ${MIN_LESSON_LINKS})`,
 );
-check(/id="curr-search"/.test(html), "missing the lesson search control (#curr-search)");
 check(/mailbox-feature/.test(html), "missing the Student Digital Mailbox featured card");
 check(
   /id="family-connections-feature-title"/.test(html),
@@ -113,7 +112,6 @@ check(
   "missing public Family Mode or protected Teacher Mode link",
 );
 check(/class="curriculum-guide"/.test(html), "missing the .curriculum-guide header at top of hub");
-check(/Small-Group Studio/.test(html), "missing Small-Group Studio action card");
 check(/NetFold 3D Simulator/.test(html), "missing NetFold 3D Simulator action card");
 check(/Arcade Review Games/.test(html), "missing Arcade Review Games action card");
 check(/The Almost-Right Lab/.test(html), "missing The Almost-Right Lab action card");

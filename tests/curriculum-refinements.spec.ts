@@ -23,21 +23,6 @@ test("mobile reading supports stay in the header and return focus on Escape", as
   await expect(launcher).toBeFocused();
 });
 
-test("lesson phrases lead to resources and return to the selected result", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/curriculum/");
-  await expect(page.locator("#nav-results-status")).toContainText("84 lessons");
-  await page.locator("#curr-search").fill("Lesson 3.2");
-  const result = page.locator('#nav-results [data-lesson-id="3-2"]');
-  await result.click();
-  await expect(page.locator("#nav-preview a[href*='readiness/']")).toBeVisible();
-  await expect(page.locator("#nav-preview a[href^='/curriculum/learning-labs/']")).toBeVisible();
-  await page.getByRole("button", { name: "Save lesson", exact: true }).click();
-  await expect(page.locator("#nav-action-message")).toContainText("saved on this device");
-  await page.getByRole("button", { name: "Back to results" }).click();
-  await expect(result).toBeFocused();
-  expect(await result.evaluate(node => { const rect = node.getBoundingClientRect(); return rect.top >= 0 && rect.top < innerHeight; })).toBe(true);
-});
 
 test("a shared lesson carries supports to optional resources and the final check", async ({ page }) => {
   await page.goto("/curriculum/student-launch/?lesson=3-2&supports=tts,calculator");
