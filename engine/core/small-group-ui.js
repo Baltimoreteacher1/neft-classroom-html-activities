@@ -841,9 +841,9 @@ export function injectSmallGroupStyles(accent) {
     .sg-lens-row b{color:var(--sg-ink, #232831)}
     .sg-lens-row span{color:var(--sg-muted, #5a6170)}
     /* Table check: the notebooks-up group rhythm inside a just-solved card. */
-    .sg-tablecheck{display:flex;align-items:flex-start;gap:10px;margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--sg-warn-bg, #fff7e8);border:1px solid var(--sg-warn, #e8b64c);font-size:15px}
+    .sg-tablecheck{display:flex;align-items:flex-start;gap:10px;margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--sg-warn-bg, #fff7e8);border:1px solid var(--sg-warn, #e8b64c);font-size:16px}
     .sg-tablecheck-icon{font-size:22px;line-height:1}
-    .sg-tablecheck-done{margin-left:auto;flex-shrink:0;padding:7px 12px;border-radius:999px;border:1px solid var(--sg-warn, #e8b64c);background:var(--sg-card, #fff);font-weight:700;font-size:13px;cursor:pointer}
+    .sg-tablecheck-done{margin-left:auto;flex-shrink:0;min-height:44px;padding:10px 16px;border-radius:999px;border:1px solid var(--sg-warn, #e8b64c);background:var(--sg-card, #fff);font-weight:700;font-size:16px;cursor:pointer}
     .sg-tablecheck-ok{background:var(--sg-good-bg, #eef8ef);border-color:var(--sg-good, #58a869)}
     .sg-tablecheck-ok .sg-tablecheck-done{border-color:var(--sg-good, #58a869);cursor:default}
     .sg-donechip{display:inline-flex;align-items:center;gap:7px;margin-bottom:12px;padding:7px 12px;border-radius:999px;background:var(--sg-good-bg);border:1px solid var(--sg-good);color:var(--sg-good-ink);font-weight:700;font-size:14px}

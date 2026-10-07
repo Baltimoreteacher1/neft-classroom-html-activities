@@ -232,4 +232,85 @@ const ok = (cond, what) => {
   ok(/correctLead\(\)/.test(src), "the correct path uses a rotating lead");
 }
 
+// ── the quoted choice is formatted and translated, not escaped raw ────────────
+// Review finding on PR #220, confirmed against the authored data: the lens used
+// esc() for the choice while using line() for the explanation, so a teacher read
+// `If they pick "{5/12}"` on 4-2 and `Change 2{3/4} to {11/4}` on 6-10 while the
+// student saw real fractions — and `choicesEs` was dropped on all 74
+// lens-bearing items, every one of which has it.
+{
+  const lens = teacherLens({
+    choices: ["0.42", "{5/12}", "41.5%"],
+    choicesEs: ["0,42", "{5/12}", "41,5 %"],
+    correct: 0,
+    choiceWhy: ["", "That is the part-to-whole, not the decimal.", ""],
+    choiceWhyEs: ["", "Esa es la parte del total, no el decimal.", ""],
+  });
+  ok(lens, "a lens renders for the math-token case");
+  const html = lens.innerHTML;
+  ok(!html.includes("{5/12}"), "the raw authored fraction token never reaches the teacher");
+  ok(!/&#123;|&#x7b;/i.test(html), "nor an escaped form of the brace");
+  ok(
+    lens.textContent.includes("5") && lens.textContent.includes("12"),
+    "the formatted fraction still carries its numbers",
+  );
+  // `biHtml` stacks the Spanish lane only when the student's lane IS Spanish, so
+  // the Spanish half is asserted there rather than in the English lane. Before
+  // the fix the lens had no path to it at all: `esc(p.choice)` ignored
+  // `choicesEs` outright, so a Spanish-lane teacher read an English-only choice.
+  localStorage.setItem("nt-lang", "es");
+  try {
+    const esLens = teacherLens({
+      choices: ["0.42", "{5/12}", "41.5%"],
+      choicesEs: ["0,42", "{5/12}", "41,5 %"],
+      correct: 0,
+      choiceWhy: ["", "That is the part-to-whole, not the decimal.", ""],
+      choiceWhyEs: ["", "Esa es la parte del total, no el decimal.", ""],
+    });
+    ok(
+      /Esa es la parte del total/.test(esLens.textContent),
+      "the Spanish explanation reaches the Spanish lane",
+    );
+    ok(
+      esLens.querySelector(".sg-es[lang='es']"),
+      "the Spanish choice reaches the Spanish lane rather than being discarded",
+    );
+    ok(!esLens.innerHTML.includes("{5/12}"), "the Spanish choice is formatted too");
+  } finally {
+    localStorage.removeItem("nt-lang");
+  }
+
+  // A mixed number must not lose its whole part.
+  const mixed = teacherLens({
+    choices: ["Change 2{3/4} to {11/4}", "Flip 2{3/4}"],
+    choicesEs: ["Convertir 2{3/4} en {11/4}", "Invertir 2{3/4}"],
+    correct: 0,
+    choiceWhy: ["", "Flipping is for the divisor, not the dividend."],
+  });
+  ok(mixed, "a lens renders for the mixed-number case");
+  ok(!mixed.innerHTML.includes("{3/4}"), "the mixed-number token is formatted too");
+  ok(/2/.test(mixed.textContent), "the whole part survives formatting");
+}
+
+// ── the restored show-me meets the classroom type and control floors ──────────
+// AGENTS.md: body text at least 16px; avoid tiny controls. These rules were not
+// being broken while nothing rendered .sg-tablecheck — mounting it is what put
+// 15px prompt text and a 13px / ~27px-tall button in front of a student.
+{
+  const ui = readFileSync(new URL("./small-group-ui.js", import.meta.url), "utf8");
+  const rule = (sel) => {
+    const m = ui.match(new RegExp(sel.replace(/[.\-]/g, "\\$&") + "\\{([^}]*)\\}"));
+    return m ? m[1] : "";
+  };
+  const px = (decls, prop) => {
+    const m = decls.match(new RegExp(prop + ":\\s*(\\d+)px"));
+    return m ? Number(m[1]) : null;
+  };
+  const block = rule(".sg-tablecheck");
+  const button = rule(".sg-tablecheck-done");
+  ok(px(block, "font-size") >= 16, `the show-me prompt is at least 16px (got ${px(block, "font-size")})`);
+  ok(px(button, "font-size") >= 16, `its action is at least 16px (got ${px(button, "font-size")})`);
+  ok(px(button, "min-height") >= 44, `its action is at least 44px tall (got ${px(button, "min-height")})`);
+}
+
 console.log(`small-group-practice-path: ${checks} checks passed.`);
