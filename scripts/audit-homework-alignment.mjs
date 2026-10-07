@@ -105,8 +105,8 @@ const REQUIRED_MARKERS = [
     id: "family-route",
     test: (h) =>
       h.includes('class="hw-route-chooser"') &&
-      ["core", "full"].every((mode) => h.includes(`data-route-mode="${mode}"`)) &&
-      !h.includes('data-route-mode="quick"') &&
+      // Decision "family-homework-three-routes" in data/product-decisions.json.
+      ["quick", "core", "full"].every((mode) => h.includes(`data-route-mode="${mode}"`)) &&
       h.includes("setHomeworkRoute") &&
       h.includes("goNextHomeworkStop"),
   },
@@ -120,8 +120,7 @@ const REQUIRED_MARKERS = [
   {
     id: "hands-on-mission",
     test: (h) =>
-      h.includes('class="family-mission-picker"') &&
-      h.includes("pickFamilyMission") &&
+      h.includes('class="family-mission-status"') &&
       h.includes("completeFamilyMission") &&
       h.includes('id="badge_achieve_mission"'),
   },

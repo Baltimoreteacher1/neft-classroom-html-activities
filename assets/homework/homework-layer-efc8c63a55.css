@@ -7245,6 +7245,45 @@ body[data-homework-route]:not([data-homework-route="full"]) .homework-tab-extra-
 @media(max-width:600px) { .homework-tab-chrome { position:static; } .hw-tab-meta-row { flex-wrap:wrap; gap:8px; } .hw-hero-share-bar { gap:8px; } }
 @media print { .hw-tools-menu, .hw-utility-controls, .homework-message-action, .homework-optional-extras { display:none !important; } }
 
+/* Family plans: one explicit contract at every viewport and on paper. */
+.hw-route-options { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.hw-route-option { align-items:flex-start; min-height:48px; }
+.hw-route-copy strong, .hw-route-copy small, .hw-route-note { font-size:16px; line-height:1.45; }
+.hw-route-time { min-width:60px; width:60px; height:auto; border-radius:12px; white-space:nowrap; font-size:20px; padding:8px 4px; }
+.hw-route-time small { font-size:12px; }
+.hw-hero { padding:20px !important; }
+.hw-hero-stats { display:none; }
+.family-reasoning-support, .family-extra-ladder { margin:16px 0; padding:14px; border:1px solid #cbd5e1; border-radius:12px; }
+.family-reasoning-support summary, .family-extra-ladder summary { min-height:44px; cursor:pointer; font-weight:700; }
+body[data-homework-route="quick"] .learn-extended-block,
+body:not([data-homework-route="full"]) .fam-act-corner { display:none; }
+@media(max-width:700px) {
+  .hw-route-options { grid-template-columns:1fr; }
+  .hw-hero { padding:14px !important; }
+  .hw-hero-head { margin:0; }
+  .hw-hero-emoji, .hw-hero-kicker { display:none; }
+  .hw-hero-titles h1 { font-size:24px; }
+  .hw-hero-lesson { margin:8px 0; }
+  .lang-selector-buttons { gap:6px; }
+  .lang-toggle-btn { min-height:44px; }
+}
+@media print {
+  body[data-homework-route="quick"] .practice-tier-challenge,
+  body[data-homework-route="quick"] .practice-tier-warmup .problem-section:nth-child(n+3),
+  body[data-homework-route="quick"] .hw-answer-sheet > ol > li:nth-child(n+3),
+  body.print-problems-only .hw-answer-key,
+  body.print-problems-only .feedback,
+  body.print-problems-only .problem-check-result,
+  body.print-problems-only .solution-explanation,
+  body.print-problems-only .problem-feedback { display:none !important; }
+  /* A whole card can be taller than the page left on it; avoiding a break
+     there pushed slivers and empty pages into the packet. Keep the header and
+     question together and let the work space flow. */
+  body.print-problems-only .problem-header-row,
+  body.print-problems-only .problem-stem { break-after:avoid; break-inside:avoid; }
+  body.print-problems-only .problem-section::after { content:""; display:block; min-height:26mm; }
+}
+
 
 /* ============================================================
    MATH KEYPAD — symbol entry for answer fields

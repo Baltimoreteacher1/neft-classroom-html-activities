@@ -44,7 +44,7 @@ test("camera permission is scoped to homework HTML without changing other policy
   }
 });
 
-async function homework(id = "3-2") {
+async function homework(id = "3-2", savedState = null) {
   const errors = [];
   const draws = [];
   const console = new VirtualConsole();
@@ -63,6 +63,7 @@ async function homework(id = "3-2") {
     pretendToBeVisual: true,
     virtualConsole: console,
     beforeParse(w) {
+      if (savedState) w.localStorage.setItem("hw_state_lesson_" + id, JSON.stringify(savedState));
       w.HTMLElement.prototype.scrollIntoView = () => {};
       w.scrollTo = () => {};
       w.HTMLMediaElement.prototype.play = () => Promise.resolve();
@@ -133,6 +134,8 @@ test("drawing uses the displayed canvas size and stops after pointer cancellatio
     const canvas = d.querySelector("[data-draw-canvas]");
     canvas.getBoundingClientRect = () => ({ left: 10, top: 20, width: 600, height: 300 });
     canvas.closest("[data-draw-frame]").getBoundingClientRect = () => ({ width: 600, height: 300 });
+    // Not measurable at boot (jsdom has no layout), so it starts on first touch.
+    assert.equal(canvas.dataset.ready, undefined);
     const pointer = (type, x, y) =>
       canvas.dispatchEvent(new w.MouseEvent(type, { clientX: x, clientY: y, bubbles: true }));
     pointer("pointerdown", 310, 170);
@@ -324,4 +327,32 @@ test("photobooth initializes independently of drawing-grid setup", () => {
   assert.equal(typeof dom.window.startPhotoboothCamera, "function");
   assert.equal(typeof dom.window.uploadPhotoboothImage, "function");
   dom.window.close();
+});
+
+test("saved answers survive reload and route changes, including hidden longer-route work", async () => {
+  const { dom, w, d } = await homework("3-6", {
+    inputs: {
+      q_0: "0",
+      table_1_1_1: "2000",
+      open_response_3: "I converted the measurements to the same unit.",
+    },
+  });
+  try {
+    assert.equal(d.querySelector('input[name="q_0"]:checked')?.value, "0");
+    assert.match(d.getElementById("open_response_3").value, /same unit/);
+    w.setHomeworkRoute("quick");
+    w.switchHomeworkTab("check");
+    assert.equal(w.activeCoreProblems().length, 2);
+    assert.equal(d.querySelector(".practice-tier-challenge").hidden, true);
+    w.saveState();
+    assert.match(
+      JSON.parse(w.localStorage.getItem("hw_state_lesson_3-6")).inputs.open_response_3,
+      /same unit/,
+    );
+    w.setHomeworkRoute("core");
+    assert.equal(w.activeCoreProblems().length, 6);
+    assert.match(d.getElementById("open_response_3").value, /same unit/);
+  } finally {
+    dom.window.close();
+  }
 });

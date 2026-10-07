@@ -1032,7 +1032,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     "error-analysis",
     "open-response",
   ].includes(type);
-  const guide = questionGuide(it);
+  const guide = questionGuide(it, topic);
   const scaffold = computational ? renderWorkspace(pIdx, guide, topic) : "";
   const coachLadder = {
     strategyEn: guide.coach,
@@ -6353,7 +6353,7 @@ var NeftGraph = (function () {
 })();
 
 // Initial configuration
-window.onload = function() {
+function initializeHomeworkState() {
   const hadSavedState = !!localStorage.getItem(STORAGE_KEY);
   loadState();
   if (!hadSavedState) {
@@ -6432,7 +6432,13 @@ window.onload = function() {
       row.addEventListener("dragend", () => row.classList.remove("dragging"));
     });
   });
-};
+}
+// Restore before images and optional resources finish loading.
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeHomeworkState, { once: true });
+} else {
+  initializeHomeworkState();
+}
 </script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

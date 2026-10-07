@@ -159,13 +159,14 @@ const REQUIRED_MARKERS = [
   // be graduated without revealing answers, and the no-device activity must
   // be pickable and trackable on every generated page.
   'class="hw-route-chooser"',
+  'data-route-mode="quick"',
   'data-route-mode="core"',
   'data-route-mode="full"',
   "setHomeworkRoute",
   "goNextHomeworkStop",
   'class="problem-coach-ladder"',
   "revealCoachStep",
-  'class="family-mission-picker"',
+  'data-family-activity="0"',
   "pickFamilyMission",
   "completeFamilyMission",
   'id="badge_achieve_mission"',
@@ -304,6 +305,18 @@ for (const id of lessonIds) {
     };
   }
 
+  const paperModelIds = new Set([
+    "1-2",
+    "4-5",
+    "7-6",
+    "7-6-part2",
+    "9-3-part2",
+    "10-6",
+    "10-6-part2",
+  ]);
+  const paperModel = paperModelIds.has(id);
+  if (paperModel && !html.includes('data-family-paper-model="'))
+    issues.push({ id, level: "CRITICAL", msg: "Missing lesson-specific paper model" });
   const ratioComparison = id === "3-5" || id === "3-5-part2";
   const sharedModelMarkers = new Set([
     'class="family-visual-lab"',
@@ -315,7 +328,8 @@ for (const id of lessonIds) {
     'class="visual-representation-grid"',
   ]);
   for (const marker of REQUIRED_MARKERS) {
-    if (ratioComparison && sharedModelMarkers.has(marker)) continue;
+    if ((ratioComparison || paperModel) && sharedModelMarkers.has(marker)) continue;
+    if (paperModel && ["TOUCH &amp; TRY", "TOCA Y PRUEBA"].includes(marker)) continue;
     if (!html.includes(marker)) {
       issues.push({ id, level: "CRITICAL", msg: `Missing marker: ${marker}` });
     }
@@ -330,9 +344,6 @@ for (const id of lessonIds) {
       if (!html.includes(marker))
         issues.push({ id, level: "CRITICAL", msg: `Missing ratio comparison control: ${marker}` });
     }
-  }
-  if (html.includes('data-route-mode="quick"')) {
-    issues.push({ id, level: "CRITICAL", msg: "Retired 10-minute route is still offered" });
   }
 
   const wantedWorkbench = homeworkWorkbenchTool(config);
@@ -414,14 +425,14 @@ for (const id of lessonIds) {
       msg: `Expected one visual math lab, found ${visualLabs}`,
     });
   }
-  if (lessonModels !== (ratioComparison ? 0 : 1)) {
+  if (lessonModels !== (ratioComparison || paperModel ? 0 : 1)) {
     issues.push({
       id,
       level: "CRITICAL",
       msg: `Expected one shared lesson model, found ${lessonModels}`,
     });
   }
-  if (representationCards !== (ratioComparison ? 0 : 3)) {
+  if (representationCards !== (ratioComparison || paperModel ? 0 : 3)) {
     issues.push({
       id,
       level: "HIGH",

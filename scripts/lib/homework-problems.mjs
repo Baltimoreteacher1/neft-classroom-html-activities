@@ -95,14 +95,82 @@ export function tableModel(item) {
   };
 }
 
-export function questionGuide(item) {
+const TOPIC_NUDGES = {
+  ratios: [
+    "Label both quantities and their units. Make a table with one known pair.",
+    "Indica ambas cantidades y sus unidades. Haz una tabla con un par conocido.",
+  ],
+  percent: [
+    "Label the whole as 100%. Mark the known part or percentage before calculating.",
+    "Indica que el total es 100%. Marca la parte o el porcentaje conocido antes de calcular.",
+  ],
+  fractions: [
+    "Draw the total in equal-sized parts. Decide whether you are finding a portion or counting groups.",
+    "Dibuja el total en partes iguales. Decide si buscas una porción o cuentas grupos.",
+  ],
+  decimals: [
+    "Estimate using nearby whole numbers, then track each place value.",
+    "Estima con enteros cercanos y luego sigue cada valor posicional.",
+  ],
+  area: [
+    "Sketch the shape. Mark a base and its perpendicular height; decide whether to split it.",
+    "Dibuja la figura. Marca una base y su altura perpendicular; decide si debes dividirla.",
+  ],
+  "surface-area": [
+    "Draw the net and label each face. Find each face area, counting every face once.",
+    "Dibuja el desarrollo y nombra cada cara. Halla cada área contando cada cara una vez.",
+  ],
+  volume: [
+    "Label length, width, and height. Count one layer, then the number of layers.",
+    "Indica largo, ancho y alto. Cuenta una capa y luego el número de capas.",
+  ],
+  statistics: [
+    "Put the data in order. Identify the measure the question asks for before calculating.",
+    "Ordena los datos. Identifica la medida que pide la pregunta antes de calcular.",
+  ],
+  equations: [
+    "Name the unknown. Write what each side means, then check by substitution.",
+    "Nombra la incógnita. Escribe qué significa cada lado y comprueba sustituyendo.",
+  ],
+  inequalities: [
+    "Mark the boundary. Test that value and a value on each side; decide whether the endpoint belongs.",
+    "Marca el límite. Prueba ese valor y uno a cada lado; decide si incluyes el extremo.",
+  ],
+  "coordinate-plane": [
+    "Read x first, then y. For distance, find the coordinate that stays the same.",
+    "Lee primero x y luego y. Para la distancia, busca la coordenada que no cambia.",
+  ],
+  integers: [
+    "Mark zero and locate each number. Distinguish its sign from its distance to zero.",
+    "Marca el cero y ubica cada número. Distingue su signo de su distancia al cero.",
+  ],
+  expressions: [
+    "Name each quantity. Translate one operation at a time, keeping parentheses where needed.",
+    "Nombra cada cantidad. Traduce una operación a la vez usando paréntesis cuando haga falta.",
+  ],
+  exponents: [
+    "Write the repeated factors before calculating; the exponent counts factors.",
+    "Escribe los factores repetidos antes de calcular; el exponente cuenta los factores.",
+  ],
+  factors: [
+    "List factor pairs systematically, or list multiples until the requested match appears.",
+    "Enumera pares de factores en orden o múltiplos hasta encontrar la coincidencia pedida.",
+  ],
+};
+export function questionGuide(item, topic = "") {
   const hints = item.hints || (item.hint ? [item.hint] : []);
   const hintsEs = item.hintsEs || (item.hintEs ? [item.hintEs] : []);
   return {
-    en: hints[0] || "Name what is given and what you need to find.",
-    es: hintsEs[0] || "Nombra los datos y lo que necesitas encontrar.",
-    draw: "Use this space for a sketch, labels, or calculations that explain your answer.",
-    drawEs: "Usa este espacio para un dibujo, etiquetas o cálculos que expliquen tu respuesta.",
+    en: hints[0] || TOPIC_NUDGES[topic]?.[0] || "Name what is given and what you need to find.",
+    es: hintsEs[0] || TOPIC_NUDGES[topic]?.[1] || "Nombra los datos y lo que necesitas encontrar.",
+    draw:
+      hints[0] ||
+      TOPIC_NUDGES[topic]?.[0] ||
+      "Use this space for a sketch, labels, or calculations that explain your answer.",
+    drawEs:
+      hintsEs[0] ||
+      TOPIC_NUDGES[topic]?.[1] ||
+      "Usa este espacio para un dibujo, etiquetas o cálculos que expliquen tu respuesta.",
     coach: hints[1] || "What makes your answer reasonable? Use the question to check it.",
     coachEs: hintsEs[1] || "¿Por qué es razonable tu respuesta? Usa la pregunta para comprobarla.",
   };

@@ -287,6 +287,33 @@ export function baseLessonId(lessonId) {
 }
 
 export function getExternalResources(config, _lessonId) {
+  const id = String(_lessonId || config.lessonId || config.id || "").replace(/-part2$/, "");
+  if (["3-6", "3-7", "3-10"].includes(id))
+    return [
+      {
+        titleEn: "Convert measurement units: examples and practice",
+        titleEs: "Convertir unidades: ejemplos y práctica",
+        source: "Khan Academy",
+        url: KA + "/standards/CCSS.Math/5.MD",
+      },
+      {
+        titleEn: "Customary and metric units",
+        titleEs: "Unidades usuales y métricas",
+        source: "Khan Academy",
+        url: "https://en.khanacademy.org/math/basic-geo/x7fa91416%3Aunits-of-measurement/x7fa91416%3Aconverting-to-larger-or-smaller/v/u-s-customary-and-metric-units",
+      },
+    ];
+  if (id === "4-5")
+    return [
+      {
+        titleEn: "Find the whole with a tape diagram",
+        titleEs: "Hallar el total con un diagrama de cinta",
+        source: "Khan Academy",
+        url:
+          KA +
+          "/math/6th-engage-ny/engage-6th-module-1/6th-module-1-topic-d/v/finding-the-whole-with-a-tape-diagram",
+      },
+    ];
   const topic = detectVisualTopic(config);
   const fromTopic = TOPIC_RESOURCES[topic] || TOPIC_RESOURCES.fallback;
   const override = STANDARD_OVERRIDES[String(config?.standard || "").trim()] || [];

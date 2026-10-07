@@ -1,3 +1,4 @@
+import { familyGuidance, householdMission } from "./homework-family-guidance.mjs";
 /**
  * Guided family notes content + HTML sections for interactive homework.
  * Derives bilingual EN/ES content from lesson config.json fields.
@@ -327,7 +328,26 @@ function tryTogetherActivity(config) {
       titleEs: exact.titleEs,
       scenarioEn: story?.en || "",
       scenarioEs: story?.es || "",
-      steps: exact.steps.map((step) => ({ ...step, hint: exact.capEn, hintEs: exact.capEs })),
+      steps: [
+        {
+          en: story?.taskEn || familyGuidance(config).question.en,
+          es: story?.taskEs || familyGuidance(config).question.es,
+          hint: exact.steps[0].en,
+          hintEs: exact.steps[0].es,
+        },
+        {
+          en: "Solve using a drawing, table, or equation. Keep the units visible.",
+          es: "Resuelve usando un dibujo, tabla o ecuación. Mantén visibles las unidades.",
+          hint: exact.steps[1].en,
+          hintEs: exact.steps[1].es,
+        },
+        {
+          en: "Check your result another way and explain why it makes sense.",
+          es: "Comprueba tu resultado de otra manera y explica por qué tiene sentido.",
+          hint: exact.steps[2].en,
+          hintEs: exact.steps[2].es,
+        },
+      ],
     };
   const custom = config.familyNotes?.tryTogether;
   if (custom) return custom;
@@ -511,21 +531,21 @@ export function buildTogetherLadder(config = {}) {
   // the lesson's own checks, 3★ extending (stretch).
   const tiers = [
     {
-      pools: [p.approaching, family.approaching],
+      pools: [family.approaching, p.approaching],
       stars: "★",
       labelEn: "Start easy",
       labelEs: "Empieza fácil",
       take: 2,
     },
     {
-      pools: [p.onLevel, p.optional, extra, family.onLevel],
+      pools: [family.onLevel, p.onLevel, p.optional, extra],
       stars: "★★",
       labelEn: "Keep going",
       labelEs: "Sigan",
       take: 2,
     },
     {
-      pools: [p.extending, family.extending],
+      pools: [family.extending, p.extending],
       stars: "★★★",
       labelEn: "Challenge",
       labelEs: "Reto",
@@ -2373,7 +2393,7 @@ export function renderWelcomeBanner(config, lessonId) {
   const theme = getUnitTheme(unit);
   const unitTitle = revealUnitTitle(unit);
   const themeEmoji = config.themeEmoji || theme.emoji || "🏠";
-  const title = config.title || "Tonight's Lesson";
+  const title = config.familyNotes?.sessionTitle || config.title || "Tonight's Lesson";
   const standard = config.standard || "";
 
   return `
@@ -2398,42 +2418,6 @@ export function renderWelcomeBanner(config, lessonId) {
           <span class="hw-hero-lesson-meta">${esc(homeworkPageLabel(lessonId))}</span>
         </p>
 
-        ${
-          standard
-            ? `
-        <details class="hw-standard-details">
-          <summary class="hw-standard-summary">📚 <span><span class="lang-en">Standard:</span><span class="lang-es" lang="es">Estándar:</span> <code>${esc(standard)}</code></span> ▾</summary>
-          <p class="hw-standard-desc"><span class="lang-en">This lesson builds proficiency in Grade 6 mathematical standard ${esc(standard)}.</span><span class="lang-es" lang="es">Esta lección desarrolla destrezas en el estándar matemático de 6.º grado ${esc(standard)}.</span></p>
-        </details>`
-            : ""
-        }
-
-        <p class="hw-hero-lead">
-          <span class="lang-en">Choose a 20- or 30-minute route. Learn, practice, and explain your thinking with a partner or on your own.</span>
-          <span class="lang-es" lang="es">Elige una ruta de 20 o 30 minutos. Aprende, practica y explica tu razonamiento con alguien o por tu cuenta.</span>
-        </p>
-
-        <ul class="hw-hero-stats" aria-label="What tonight looks like">
-          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en"><span id="hw_hero_stop_count">4</span> stops</span><span class="lang-es" lang="es"><span id="hw_hero_stop_count_es">4</span> paradas</span></li>
-          <li class="hw-stat"><span aria-hidden="true">⏱️</span><span class="lang-en">About <span id="hw_hero_minutes">20</span> minutes</span><span class="lang-es" lang="es">Unos <span id="hw_hero_minutes_es">20</span> minutos</span></li>
-          <li class="hw-stat"><span aria-hidden="true">👪</span><span class="lang-en">Better together</span><span class="lang-es" lang="es">Mejor en familia</span></li>
-        </ul>
-
-        ${renderQuickPlan()}
-
-        <details class="hw-tools-menu"><summary><span class="lang-en">Share, print &amp; paper practice</span><span class="lang-es" lang="es">Compartir, imprimir y practicar en papel</span></summary>
-        <div class="hw-hero-share-bar">
-          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="copyHomeworkLink()">📋 <span class="lang-en">Copy Link</span><span class="lang-es" lang="es">Copiar enlace</span></button>
-          <a class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_text_link" href="#" target="_blank" rel="noopener">💬 <span class="lang-en">Text</span><span class="lang-es" lang="es">Mensaje</span></a>
-          <a class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_email_link" href="#" target="_blank" rel="noopener">✉️ <span class="lang-en">Email</span><span class="lang-es" lang="es">Correo</span></a>
-          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="printProblemsOnly()">🖨️ <span class="lang-en">Print Problems</span><span class="lang-es" lang="es">Imprimir preguntas</span></button>
-          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="printRefrigeratorSheet()">📄 <span class="lang-en">1-Page Sheet</span><span class="lang-es" lang="es">Hoja de 1 pág.</span></button>
-          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="printAnswerSheet()">🔑 <span class="lang-en">Print answer sheet</span><span class="lang-es" lang="es">Imprimir respuestas</span></button>
-          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_offline_btn" onclick="preparePaperPractice()">📄 <span class="lang-en">Prepare paper practice</span><span class="lang-es" lang="es">Preparar práctica en papel</span></button>
-        </div>
-
-        </details>
-
         <div class="hw-hero-controls">
           <div class="lang-selector-card">
             <span class="lang-selector-title">Language / Idioma</span>
@@ -2451,6 +2435,44 @@ export function renderWelcomeBanner(config, lessonId) {
           </div>
         </div>
 
+        ${
+          standard
+            ? `
+        <details class="hw-standard-details">
+          <summary class="hw-standard-summary">📚 <span><span class="lang-en">Standard:</span><span class="lang-es" lang="es">Estándar:</span> <code>${esc(standard)}</code></span> ▾</summary>
+          <p class="hw-standard-desc"><span class="lang-en">This lesson builds proficiency in Grade 6 mathematical standard ${esc(standard)}.</span><span class="lang-es" lang="es">Esta lección desarrolla destrezas en el estándar matemático de 6.º grado ${esc(standard)}.</span></p>
+        </details>`
+            : ""
+        }
+
+        <p class="hw-hero-lead">
+          <span class="lang-en">Optional, ungraded practice. Choose ONE plan below. Work with someone or on your own; no adult signature is needed.</span>
+          <span class="lang-es" lang="es">Práctica opcional, sin calificación. Elige UN plan abajo. Trabaja con alguien o a solas; no necesitas la firma de un adulto.</span>
+        </p>
+
+        <ul class="hw-hero-stats" aria-label="What tonight looks like">
+          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en"><span id="hw_hero_stop_count">4</span> stops</span><span class="lang-es" lang="es"><span id="hw_hero_stop_count_es">4</span> paradas</span></li>
+          <li class="hw-stat"><span aria-hidden="true">⏱️</span><span class="lang-en">About <span id="hw_hero_minutes">20</span> minutes</span><span class="lang-es" lang="es">Unos <span id="hw_hero_minutes_es">20</span> minutos</span></li>
+          <li class="hw-stat"><span aria-hidden="true">👪</span><span class="lang-en">Better together</span><span class="lang-es" lang="es">Mejor en familia</span></li>
+        </ul>
+
+        ${renderQuickPlan()}
+
+        <details class="hw-tools-menu"><summary><span class="lang-en">Share, print &amp; paper practice</span><span class="lang-es" lang="es">Compartir, imprimir y practicar en papel</span></summary>
+        <div class="hw-hero-share-bar">
+          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="copyHomeworkLink()">📋 <span class="lang-en">Copy Link</span><span class="lang-es" lang="es">Copiar enlace</span></button>
+          <a class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_text_link" href="#" target="_blank" rel="noopener">💬 <span class="lang-en">Text</span><span class="lang-es" lang="es">Mensaje</span></a>
+          <a class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_email_link" href="#" target="_blank" rel="noopener">✉️ <span class="lang-en">Email</span><span class="lang-es" lang="es">Correo</span></a>
+          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="printProblemsOnly()">🖨️ <span class="lang-en">Print Problems</span><span class="lang-es" lang="es">Imprimir preguntas</span></button>
+          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="printRefrigeratorSheet()">📄 <span class="lang-en">Print this plan’s problems</span><span class="lang-es" lang="es">Imprimir los problemas de este plan</span></button>
+          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="printAnswerSheet()">🔑 <span class="lang-en">Print answer sheet</span><span class="lang-es" lang="es">Imprimir respuestas</span></button>
+          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_offline_btn" onclick="preparePaperPractice()">📄 <span class="lang-en">Prepare paper practice</span><span class="lang-es" lang="es">Preparar práctica en papel</span></button>
+        </div>
+
+        </details>
+
+
+
       </div>
     </header>`;
 }
@@ -2464,30 +2486,35 @@ export function renderQuickPlan() {
           <span class="hw-route-icon" aria-hidden="true">🧭</span>
           <div>
             <h2 id="hw_route_title"><span class="lang-en">Choose tonight's homework</span><span class="lang-es" lang="es">Elige la tarea de hoy</span></h2>
-            <p><span class="lang-en">Pick the time your family has. You can switch routes anytime.</span><span class="lang-es" lang="es">Elijan el tiempo que tienen. Pueden cambiar de ruta cuando quieran.</span></p>
+            <p><span class="lang-en">Choose one plan, not all three. Each plan tells you what to do and when to stop. Switching keeps your answers.</span><span class="lang-es" lang="es">Elige un plan, no los tres. Cada plan indica qué hacer y cuándo terminar. Al cambiar, conservas tus respuestas.</span></p>
           </div>
         </div>
         <div class="hw-route-options" role="group" aria-label="Choose homework time" data-aria-en="Choose homework time" data-aria-es="Elegir el tiempo de práctica">
+          <button type="button" class="hw-route-option" data-route-mode="quick" aria-pressed="false" onclick="setHomeworkRoute('quick')">
+            <span class="hw-route-time">5–10 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Quick practice</span><span class="lang-es" lang="es">Práctica breve</span></strong><small><span class="lang-en">Read one example → try 2 problems → explain one answer. Then stop.</span><span class="lang-es" lang="es">Lee un ejemplo → intenta 2 problemas → explica una respuesta. Luego termina.</span></small></span>
+          </button>
           <button type="button" class="hw-route-option is-active" data-route-mode="core" aria-pressed="true" onclick="setHomeworkRoute('core')">
             <span class="hw-route-time">20 <small>min</small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Full lesson help · all 6 core problems</span><span class="lang-es" lang="es">Ayuda completa · los 6 problemas</span></small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Read the example → try one together → complete 6 problems → explain. Then stop.</span><span class="lang-es" lang="es">Lee el ejemplo → intenta uno acompañado → completa 6 problemas → explica. Luego termina.</span></small></span>
           </button>
           <button type="button" class="hw-route-option" data-route-mode="full" aria-pressed="false" onclick="setHomeworkRoute('full')">
             <span class="hw-route-time">30 <small>min</small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Full family night</span><span class="lang-es" lang="es">Noche familiar completa</span></strong><small><span class="lang-en">Words · hands-on mission · practice · games</span><span class="lang-es" lang="es">Palabras · misión práctica · ejercicios · juegos</span></small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Family math night</span><span class="lang-es" lang="es">Noche de matemáticas en familia</span></strong><small><span class="lang-en">Do the 20-minute plan, plus key words, ONE home activity, and ONE game.</span><span class="lang-es" lang="es">Haz el plan de 20 minutos, más palabras clave, UNA actividad en casa y UN juego.</span></small></span>
           </button>
         </div>
         <p class="hw-route-note" id="hw_route_note" aria-live="polite">
           <span class="lang-en">Learn &amp; practice selected: 4 focused stops and all 6 core problems, about 20 minutes.</span>
           <span class="lang-es" lang="es">Ruta de aprendizaje: 4 paradas y los 6 problemas, unos 20 minutos.</span>
         </p>
+        <p id="hw_resume_note" role="status" aria-live="polite"></p>
         <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start homework</span><span class="lang-es" lang="es">Empezar la tarea</span></button>
       </section>`;
 }
 
 export function renderLearningTonight(config) {
   const { en, es } = learningTonight(config);
-  const vocab = (config.vocabulary || []).slice(0, 5);
+  const vocab = (config.vocabulary || []).slice(0, 3);
   const wordsEn = vocab
     .map((v) => v.term)
     .filter(Boolean)
@@ -2501,7 +2528,7 @@ export function renderLearningTonight(config) {
     <section class="guided-section card section-learn" aria-label="What we are learning tonight">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
         <h2 class="section-title" style="margin:0;">📖 <span class="lang-en">What we're learning tonight</span><span class="lang-es" lang="es">Qué aprendemos hoy</span></h2>
-        <button type="button" class="btn-read-aloud" onclick="speakHomeworkText('${escAttr(en)}', '${escAttr(es)}')" title="Listen / Escuchar" aria-label="Listen to summary">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+        <button type="button" class="btn-read-aloud" onclick="speakHomeworkText(${escAttr(JSON.stringify(en))}, ${escAttr(JSON.stringify(es))})" title="Listen / Escuchar" aria-label="Listen to summary">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
       </div>
       <div class="bilingual-grid">
         <div class="bilingual-col lang-en">
@@ -2524,7 +2551,7 @@ export function renderLearningTonight(config) {
    gets stuck", a collapsed panel near the bottom of the Learn stop. */
 function renderParentQuickCard(config) {
   const tips = stuckTips(config) || {};
-  const ask = tips.say?.[0];
+  const ask = familyGuidance(config).question;
   const avoid = tips.dontSay?.[0];
   if (!ask && !avoid) return "";
   const row = (icon, labelEn, labelEs, tip) =>
@@ -2567,7 +2594,7 @@ export function renderConceptExplainer(config) {
             <p class="lang-en"><strong>In one sentence:</strong> ${esc(completeSentence(keyEn))}</p>
             <p class="lang-es" lang="es"><strong>En una frase:</strong> ${esc(completeSentence(keyEs))}</p>
           </div>
-          <button type="button" class="btn-read-aloud" onclick="speakHomeworkText('${escAttr(keyEn)}', '${escAttr(keyEs)}')" title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+          <button type="button" class="btn-read-aloud" onclick="speakHomeworkText(${escAttr(JSON.stringify(keyEn))}, ${escAttr(JSON.stringify(keyEs))})" title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         </div>
       </div>
       <figure class="concept-visual-wrap">${visual.svg}${caption}</figure>
@@ -2717,7 +2744,7 @@ export function renderTryTogether(config, lessonId = "") {
           })
           .join("")}
       </ol>
-      ${renderTogetherLadder(config)}
+      <details class="family-extra-ladder"><summary><span class="lang-en">Optional: try another together</span><span class="lang-es" lang="es">Opcional: intenta otro acompañado</span></summary>${renderTogetherLadder(config)}</details>
     </section>`;
 }
 
@@ -2861,29 +2888,17 @@ export function resolveKitchenTableActivity(config) {
 }
 
 export function renderCelebration(config = null, _lessonId = "") {
-  const kt = resolveKitchenTableActivity(config);
   const tiers = selectTieredQuickCheckProblems(config?.practice || {}, config || {});
   const hasMorePractice =
     selectMorePracticeProblems(config?.practice || {}, config || {}, [
       ...tiers.warmup,
       ...tiers.challenge,
     ]).length > 0;
-  const ktHtml = kt
-    ? `
-    <div class="kitchen-table-card card-ish">
-      <div class="kt-badge">🍽️ <span class="lang-en">5-MINUTE KITCHEN TABLE MATH</span><span class="lang-es" lang="es">MATEMÁTICAS EN LA MESA · 5 MINUTOS</span></div>
-      <h3 class="kt-title"><span class="lang-en">${esc(kt.title)}</span><span class="lang-es" lang="es">${esc(kt.titleEs || kt.title)}</span></h3>
-      <p class="kt-materials">📦 <strong><span class="lang-en">Materials:</span><span class="lang-es" lang="es">Materiales:</span></strong> <span class="lang-en">${esc(kt.materials)}</span><span class="lang-es" lang="es">${esc(kt.materialsEs || kt.materials)}</span></p>
-      <ol class="kt-steps">
-        ${(kt.steps || []).map((st, i) => `<li><span class="lang-en">${esc(st)}</span><span class="lang-es" lang="es">${esc(kt.stepsEs?.[i] || st)}</span></li>`).join("")}
-      </ol>
-      <p class="kt-why">💡 <strong><span class="lang-en">Why it works:</span><span class="lang-es" lang="es">Por qué funciona:</span></strong> <span class="lang-en">${esc(kt.why)}</span><span class="lang-es" lang="es">${esc(kt.whyEs || kt.why)}</span></p>
-    </div>`
-    : "";
 
   return `
     <section class="guided-section card section-celebrate" aria-label="Celebration">
       <h2 class="section-title">🎉 <span class="lang-en">Finished for today</span><span class="lang-es" lang="es">Terminaste por hoy</span></h2>
+      <p class="family-explain-finish"><span class="lang-en">Explain one answer aloud or on paper: “I got ___ because ___. I checked by ___.” Include your strategy and units. Then you are done.</span><span class="lang-es" lang="es">Explica una respuesta en voz alta o en papel: “Obtuve ___ porque ___. Comprobé usando ___.” Incluye tu estrategia y las unidades. Después termina.</span></p>
       <div class="done-summary" id="hw_done_summary" role="status" aria-live="polite"></div>
       <p class="celebrate-text lang-en">Name one strategy that helped, or one question to ask next time. You can stop here; no adult signature is needed.</p>
       <p class="celebrate-text lang-es" lang="es">Di una estrategia que te ayudó o una pregunta para la próxima vez. Puedes terminar aquí; no necesitas la firma de un adulto.</p>
@@ -2908,7 +2923,7 @@ export function renderCelebration(config = null, _lessonId = "") {
            options"); the long form, badges and extra activity they lead to
            fold here, so the Done stop opens on how much is finished. -->
       <details class="homework-extras-more" id="homework_extras_more">
-      <summary><span class="lang-en">Reflection, voice memo, badges and a 5-minute table activity</span><span class="lang-es" lang="es">Reflexión, nota de voz, insignias y una actividad de 5 minutos</span></summary>
+      <summary><span class="lang-en">Reflection, voice memo and badges</span><span class="lang-es" lang="es">Reflexión, nota de voz e insignias</span></summary>
       <div class="parent-signoff-container card-ish">
         <h3 class="signoff-title">✍️ <span class="lang-en">Optional reflection on this device</span><span class="lang-es" lang="es">Reflexión opcional en este dispositivo</span></h3>
         
@@ -3093,7 +3108,7 @@ export function renderCelebration(config = null, _lessonId = "") {
         </div>
       </div>
 
-      ${ktHtml}
+
 
       </details>
       </section>
@@ -3302,8 +3317,8 @@ export function getTopicMisconception(topic, config) {
     return {
       trapEn: "Using a familiar rule before identifying what this question asks.",
       trapEs: "Usar una regla conocida sin identificar qué pide esta pregunta.",
-      coachEn: exact.capEn,
-      coachEs: exact.capEs,
+      coachEn: familyGuidance(config).question.en,
+      coachEs: familyGuidance(config).question.es,
     };
   if (topic === "ratios") {
     const strand = RATIO_STRAND_MISCONCEPTIONS[ratioFocus(config)];
@@ -4753,53 +4768,8 @@ const FAMILY_ACTIVITIES = {
 
 export function getFamilyActivities(topicOrConfig) {
   const config = typeof topicOrConfig === "object" ? topicOrConfig : null;
-  if (["3-5", "3-5-part2"].includes(String(config?.lessonId || config?.id || "")))
-    return FAMILY_ACTIVITIES.ratioComparison;
-  const exact = config && exactFamilyMission(config);
-  if (exact)
-    return [
-      exact,
-      {
-        ...exact,
-        titleEn: "Try your own numbers",
-        titleEs: "Prueba tus propios números",
-        steps: [
-          {
-            en: "Use the recommended activity above as your model. Choose a new set of sensible numbers for the same situation.",
-            es: "Usa la actividad recomendada como modelo. Elige otros números razonables para la misma situación.",
-          },
-          {
-            en: "Solve with the same representation. Keep labels, units, and the meaning of each number clear.",
-            es: "Resuelve con la misma representación. Mantén claras las etiquetas, unidades y el significado de cada número.",
-          },
-          {
-            en: "Partner: ask how the answer changes. Working solo: write one sentence comparing the two examples.",
-            es: "Acompañante: pregunta cómo cambia la respuesta. A solas: escribe una oración que compare los dos ejemplos.",
-          },
-        ],
-      },
-    ];
-  const together = config?.familyNotes?.tryTogether;
-  if (together?.scenarioEn && Array.isArray(together.steps) && together.steps.length) {
-    return [
-      {
-        icon: "✏️",
-        titleEn: `Practice: ${config.familyNotes.sessionTitle || config.title}`,
-        titleEs: together.titleEs || "Practiquen juntos",
-        materialsEn: "Paper and pencil",
-        materialsEs: "Papel y lápiz",
-        minutes: 5,
-        steps: [
-          { en: together.scenarioEn, es: together.scenarioEs || together.scenarioEn },
-          ...together.steps.map((step) => ({ en: step.en, es: step.es || step.en })),
-        ],
-        talkEn: "How do your numbers support your answer?",
-        talkEs: "¿Cómo apoyan los números tu respuesta?",
-      },
-    ];
-  }
-  const topic = config ? detectVisualTopic(config) : topicOrConfig;
-  return FAMILY_ACTIVITIES[topic] || FAMILY_ACTIVITIES.fallback;
+  if (config) return [householdMission(config)];
+  return FAMILY_ACTIVITIES[topicOrConfig] || FAMILY_ACTIVITIES.fallback;
 }
 
 /** One activity card: a friendly accordion with steps and a talk prompt. */
@@ -4861,18 +4831,26 @@ export function renderFamilyActivityCorner(topic) {
             <span class="lang-es" lang="es">Prueba la misión recomendada. Estudiante: explica; acompañante: haz una pregunta, luego cambien. Puedes dibujar los objetos en papel.</span>
           </p>
         </div>
-        <button type="button" class="family-mission-picker" onclick="pickFamilyMission()">
+        ${
+          acts.length > 1
+            ? `<button type="button" class="family-mission-picker" onclick="pickFamilyMission()">
           🎲 <span class="lang-en">Pick an alternative</span><span class="lang-es" lang="es">Elegir una alternativa</span>
-        </button>
+        </button>`
+            : ""
+        }
       </div>
       <p class="family-mission-status" id="family_mission_status" aria-live="polite">
         <span class="lang-en">One mission is enough. You can also work solo and explain in writing.</span><span class="lang-es" lang="es">Una misión es suficiente. También puedes trabajar a solas y explicar por escrito.</span>
       </p>
       ${renderFamilyActivityCard(acts[0], 0)}
-      <details class="family-mission-alternatives"><summary><span class="lang-en">Optional alternatives</span><span class="lang-es" lang="es">Alternativas opcionales</span></summary>${acts
-        .slice(1)
-        .map((a, i) => renderFamilyActivityCard(a, i + 1))
-        .join("")}</details>
+      ${
+        acts.length > 1
+          ? `<details class="family-mission-alternatives"><summary><span class="lang-en">Optional alternatives</span><span class="lang-es" lang="es">Alternativas opcionales</span></summary>${acts
+              .slice(1)
+              .map((a, i) => renderFamilyActivityCard(a, i + 1))
+              .join("")}</details>`
+          : ""
+      }
     </div>`;
 }
 
@@ -6914,7 +6892,7 @@ const FAMILY_GAME_STANDARD_KEYS = {
 export function familyGameKey(config) {
   const id = String(config.lessonId || config.id || "");
   if (id === "1-2") return "fraction-multiply";
-  if (/^9-[1-4]$/.test(id)) return "two-variables";
+  if (/^9-[1-4](?:-part2)?$/.test(id)) return "two-variables";
   const topic = detectVisualTopic(config);
   if (topic !== "ratios") return topic;
   return FAMILY_GAME_STANDARD_KEYS[String(config.standard || "")] || topic;
@@ -7007,8 +6985,8 @@ export function renderFamilyGameBreak(key, extras = {}, topic = key) {
       <div class="fam-game-head">
         <span class="fam-game-badge">🎮 FAMILY ARCADE / SALA DE JUEGOS EN FAMILIA</span>
         <p class="fam-game-lead">
-          <span class="lang-en">Quick games about tonight's math. One game is plenty: pick one, play as a team, no timer.</span>
-          <span class="lang-es" lang="es">Juegos rápidos sobre las matemáticas de hoy. Con un juego basta: escojan uno y jueguen en equipo, sin cronómetro.</span>
+          <span class="lang-en">Choose ONE game. Quick Quiz practices this lesson; the other games review related skills. Play together or solo, without a timer.</span>
+          <span class="lang-es" lang="es">Elige UN juego. Reto rápido practica esta lección; los demás repasan temas relacionados. Juega acompañado o a solas, sin cronómetro.</span>
         </p>
         <div class="fam-arcade-picker" role="group" aria-label="Choose a game">${picker}</div>
       </div>
@@ -7701,7 +7679,7 @@ export function renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt) {
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
                   <div class="vocab-card-top-bar">
-                    <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord('${escAttr(term)}', '${escAttr(termEs)}')" title="Listen / Escuchar" aria-label="Pronounce ${esc(term)}">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
+                    <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(${escAttr(JSON.stringify(term))}, ${escAttr(JSON.stringify(termEs))})" title="Listen / Escuchar" aria-label="Pronounce ${esc(term)}">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                     <button type="button" class="vocab-master-toggle" data-term-idx="${vIdx}" onclick="event.stopPropagation(); toggleVocabCardMastery(${vIdx})" title="Mark Mastered / Marcar Dominado" aria-label="Mark ${esc(term)} mastered">★ <span class="vocab-btn-label lang-en">Mastered</span><span class="vocab-btn-label lang-es" lang="es">Dominada</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
@@ -7723,7 +7701,7 @@ export function renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt) {
                 </div>
                 <div class="vocab-card-back">
                   <div class="vocab-back-header">
-                    <span class="vocab-back-badge">DEFINITION / DEFINICIÓN</span>
+                    <span class="vocab-back-badge"><span class="lang-en">DEFINITION</span><span class="lang-es" lang="es">DEFINICIÓN</span></span>
                     <h4 class="vocab-back-term">
                       <span class="lang-en">${esc(term)}</span>
                       <span class="lang-es" lang="es">${esc(termEs || term)}</span>
@@ -7819,13 +7797,13 @@ export function renderLearnTab(config, visualLabHtml = "") {
   const mis = getTopicMisconception(topic, config);
 
   // Add Listen button to the Big Idea title
-  const listenBtn = ` <button type="button" class="btn-listen-concept" onclick="speakBigIdea('${escAttr(keyEn)}', '${escAttr(keyEs)}')" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>`;
+  const listenBtn = ` <button type="button" class="btn-listen-concept" onclick="speakBigIdea(${escAttr(JSON.stringify(keyEn))}, ${escAttr(JSON.stringify(keyEs))})" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>`;
   // Inside the heading, not after it: as a sibling it landed in a band of dead
   // space under the title, and the Learn tab strips the <section> wrapper, so
   // there is no container left to position it against.
   concept = concept.replace(
     /(<h2[^>]*class="section-title"[^>]*>[\s\S]*?)(<\/h2>)/i,
-    `$1${listenBtn}$2`,
+    (_match, heading, close) => heading + listenBtn + close,
   );
 
   const spotlightHtml = `
@@ -7942,6 +7920,11 @@ export function renderTogetherTab(config, lessonId = "", workbenchHtml = "") {
   return `
     <div ${tabPanelAttrs("together", true)}>
       ${inner}
+      <details class="family-reasoning-support"><summary><span class="lang-en">Help me explain</span><span class="lang-es" lang="es">Ayúdame a explicar</span></summary>
+        <p><span class="lang-en">Point and name → finish the sentence → explain in your own words.</span><span class="lang-es" lang="es">Señala y nombra → completa la oración → explica con tus propias palabras.</span></p>
+        <p><span class="lang-en">${esc(familyGuidance(config).frame.en)}</span><span class="lang-es" lang="es">${esc(familyGuidance(config).frame.es)}</span></p>
+        <p><span class="lang-en">Check: I answered the question, showed my thinking, labeled units, and explained why.</span><span class="lang-es" lang="es">Reviso: respondí la pregunta, mostré mi razonamiento, indiqué las unidades y expliqué por qué.</span></p>
+      </details>
       ${mathTalkHtml}
       ${renderFamilyActivityCorner(config)}
       <div class="scratchpad-inline-toggle">
@@ -8518,8 +8501,8 @@ export function renderPhotoboothTab(config = null, lessonId = "") {
           <span class="lang-es" lang="es">¡Celebra y toma foto de tu trabajo matemático!</span>
         </h2>
         <p class="photobooth-sub bilingual-block">
-          <span class="lang-en">Use this as a photobooth for the work itself: point the camera at tonight's notebook page, the scratchpad or the whiteboard and take the picture — or pose holding it up. Choose a frame, add stickers, then download it, print it, or attach it to the parent sign-off. The photo is never uploaded; it stays on this device.</span>
-          <span class="lang-es" lang="es">Úsenla como cabina de fotos del trabajo: apunten la cámara a la página del cuaderno, al borrador o a la pizarra y tomen la foto, o posen sosteniéndola. Elijan un marco, agreguen calcomanías y luego descárguenla, imprímanla o adjúntenla a la firma del adulto. La foto nunca se sube a internet; se queda en este dispositivo.</span>
+          <span class="lang-en">Use this as a photobooth for the work itself: point the camera at tonight's notebook page, the scratchpad or the whiteboard and take the picture — or pose holding it up. Choose a frame, add stickers, then download it, print it, or add it to your optional reflection. The photo is never uploaded; it stays on this device.</span>
+          <span class="lang-es" lang="es">Úsenla como cabina de fotos del trabajo: apunten la cámara a la página del cuaderno, al borrador o a la pizarra y tomen la foto, o posen sosteniéndola. Elijan un marco, agreguen calcomanías y luego descárguenla, imprímanla o agréguenla a la reflexión opcional. La foto nunca se sube a internet; se queda en este dispositivo.</span>
         </p>
       </div>
 
@@ -8597,7 +8580,7 @@ export function renderPhotoboothTab(config = null, lessonId = "") {
                 🖨️ <span class="lang-en">Print Photo</span><span class="lang-es" lang="es">Imprimir Foto</span>
               </button>
               <button type="button" class="btn btn-warning" id="pb_attach_btn" onclick="attachPhotoboothToSignoff()">
-                📎 <span class="lang-en">Attach to Parent Sign-off</span><span class="lang-es" lang="es">Adjuntar a la Firma</span>
+                📎 <span class="lang-en">Add to optional reflection</span><span class="lang-es" lang="es">Añadir a la reflexión opcional</span>
               </button>
             </div>
           </div>
@@ -8727,11 +8710,11 @@ export function renderRefrigeratorSheet(config = {}, lessonId = "") {
       <div class="rf-slip">
         <div class="rf-slip-head">
           <span>✂️ <em><span class="lang-en">Tear off or keep on refrigerator</span><span class="lang-es" lang="es">Desprende o cuelga en el refrigerador</span></em></span>
-          <strong><span class="lang-en">Family Sign-Off Slip</span><span class="lang-es" lang="es">Tira de confirmación familiar</span></strong>
+          <strong><span class="lang-en">Optional practice record</span><span class="lang-es" lang="es">Registro opcional de práctica</span></strong>
         </div>
         <div class="rf-slip-fields">
           <span><span class="lang-en">Student:</span><span class="lang-es" lang="es">Estudiante:</span> ______________________</span>
-          <span><span class="lang-en">Parent/Guardian:</span><span class="lang-es" lang="es">Firma:</span> ______________________</span>
+          <span><span class="lang-en">Practice partner (optional):</span><span class="lang-es" lang="es">Firma:</span> ______________________</span>
           <span><span class="lang-en">Date:</span><span class="lang-es" lang="es">Fecha:</span> __________</span>
         </div>
         <div class="rf-slip-mood">
@@ -9324,6 +9307,7 @@ function initFamilyGames() {
    are in the path, how many practice problems count, the remaining-time
    display, and every Continue button. */
 var HOMEWORK_ROUTES = {
+  quick: { tabs: ['learn', 'check', 'done'], total: 10, problemLimit: 2, minutes: { learn: 3, check: 5, done: 2 } },
   core: { tabs: ['learn', 'together', 'check', 'done'], total: 20, problemLimit: 6, minutes: { learn: 5, together: 6, check: 7, done: 2 } },
   full: { tabs: ['learn', 'words', 'together', 'check', 'play', 'done'], total: 30, problemLimit: 6, minutes: { learn: 5, words: 3, together: 6, check: 8, play: 5, done: 3 } }
 };
@@ -9390,9 +9374,9 @@ function setHomeworkRoute(mode, options) {
   var warmups = document.querySelectorAll('.practice-tier-warmup .problem-section');
   warmups.forEach(function (problem, index) { problem.hidden = index >= route.problemLimit; });
   var challenge = document.querySelector('.practice-tier-challenge');
-  if (challenge) challenge.hidden = false;
+  if (challenge) challenge.hidden = mode === 'quick';
   var more = document.querySelector('.more-practice');
-  if (more) more.hidden = false;
+  if (more) more.hidden = mode === 'quick';
   ['hw_goal_count', 'hw_goal_count_es'].forEach(function (id) {
     var el = document.getElementById(id);
     if (el) el.textContent = String(route.problemLimit);
@@ -9417,8 +9401,9 @@ function setHomeworkRoute(mode, options) {
   var note = document.getElementById('hw_route_note');
   if (note) {
     var copy = {
-      core: ['Learn & practice selected: 4 focused stops and all 6 core problems, about 20 minutes.', 'Ruta de aprendizaje: 4 paradas y los 6 problemas, unos 20 minutos.'],
-      full: ['Full route selected: all 6 stops, about 30 minutes.', 'Ruta completa: 6 paradas, unos 30 minutos.']
+      quick: ['Quick practice: read one example, try 2 problems, explain one answer, and stop. About 5–10 minutes; no Together or Play stop.', 'Práctica breve: lee un ejemplo, intenta 2 problemas, explica una respuesta y termina. Unos 5–10 minutos; sin las paradas Juntos ni Jugar.'],
+      core: ['Learn & practice: read, try one together, complete 6 problems, and explain. Then stop. About 20 minutes.', 'Ruta de aprendizaje: 4 paradas y los 6 problemas, unos 20 minutos.'],
+      full: ['Family math night: 6 problems, key words, one home activity, and one game. Explain and stop. About 30 minutes.', 'Noche familiar: 6 problemas, palabras clave, una actividad en casa y un juego. Explica y termina. Unos 30 minutos.']
     }[mode];
     setBiText(note, copy[0], copy[1]);
   }
@@ -9712,6 +9697,7 @@ function switchHomeworkTab(tabId) {
   if (tabId === 'done' && typeof updateCelebrationTab === 'function') {
     updateCelebrationTab();
   }
+  if (tabId === 'play' && !window.hwFamilyGamesReady) { initFamilyGames(); window.hwFamilyGamesReady = true; }
   if (tabId === 'photobooth' && typeof initPhotobooth === 'function') {
     initPhotobooth();
   } else if (typeof stopPhotoboothStream === 'function') {
@@ -9966,11 +9952,7 @@ function printAnswerSheet() {
 window.printAnswerSheet = printAnswerSheet;
 
 function printRefrigeratorSheet() {
-  document.body.classList.add('print-refrigerator-sheet');
-  window.print();
-  setTimeout(function() {
-    document.body.classList.remove('print-refrigerator-sheet');
-  }, 1000);
+  printProblemsOnly();
 }
 window.printRefrigeratorSheet = printRefrigeratorSheet;
 
@@ -10315,7 +10297,10 @@ function initHomeworkPage() {
     localStorage.removeItem('hw_last_tab');
     const last = localStorage.getItem(lastTabStorageKey());
     const lastBtn = last ? document.getElementById('hw_tab_' + last) : null;
-    if (lastBtn && !lastBtn.hidden) switchHomeworkTab(last);
+    if (lastBtn && !lastBtn.hidden) {
+      switchHomeworkTab(last);
+      setBiText(document.getElementById('hw_resume_note'), 'Welcome back. Your saved plan and answers are on this device. Continue at ' + lastBtn.querySelector('.tab-en').textContent + '.', 'Bienvenido de nuevo. Tu plan y tus respuestas están guardados en este dispositivo. Continúa en ' + lastBtn.querySelector('.tab-es').textContent + '.');
+    }
     else switchHomeworkTab('learn');
   } catch(e) {}
   setTimeout(function () { hwTabsBooted = true; }, 0);
@@ -10326,7 +10311,7 @@ function initHomeworkPage() {
   restoreFamilyMission();
   initDrawCanvases();
   initHomeworkVocabPopups();
-  initFamilyGames();
+  // Family games initialize when Play is opened.
   // Entrance motion is opt-in and only after boot: its start state is
   // opacity:0, so gating it on this class means a page whose script failed
   // still shows every word instead of an empty cream rectangle.
@@ -10536,54 +10521,68 @@ function initHomeworkVocabPopups() {
 }
 
 // Make every "Draw your model" grid an actual drawable surface (mouse + touch + stylus).
+/* Canvases set up lazily: a page carries up to 14 drawing frames, mostly in
+   closed <details> or inactive tabs. Visible frames start at boot; any other
+   frame starts on its first touch, through the capture-phase listener below,
+   which runs before the canvas's own pointerdown listener is consulted. */
 function initDrawCanvases() {
   document.querySelectorAll('[data-draw-frame]').forEach(function(frame) {
-    const canvas = frame.querySelector('[data-draw-canvas]');
-    if (!canvas || canvas.dataset.ready) return;
-    canvas.dataset.ready = '1';
-    const ctx = canvas.getContext('2d');
-    let drawing = false, last = null;
-    function resize() {
-      const r = frame.getBoundingClientRect();
-      if (!r.width) return;
-      const width = Math.round(r.width), height = Math.round(r.height);
-      if (!width || !height || (canvas.width === width && canvas.height === height)) return;
-      const prev = document.createElement('canvas');
-      prev.width = canvas.width; prev.height = canvas.height;
-      prev.getContext('2d').drawImage(canvas, 0, 0);
-      canvas.width = width; canvas.height = height;
-      ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = 2.5; ctx.strokeStyle = '#12355b';
-      ctx.drawImage(prev, 0, 0, width, height);
-    }
-    function pos(e) {
-      const r = canvas.getBoundingClientRect();
-      const t = e.touches ? e.touches[0] : e;
-      return { x: (t.clientX - r.left) * canvas.width / r.width,
-        y: (t.clientY - r.top) * canvas.height / r.height };
-    }
-    function start(e) {
-      resize();
-      drawing = true; last = pos(e); e.preventDefault();
-      if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
-    }
-    function move(e) {
-      if (!drawing) return;
-      const p = pos(e);
-      ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke();
-      last = p; e.preventDefault();
-    }
-    function end() { drawing = false; }
-    canvas.addEventListener('pointerdown', start);
-    canvas.addEventListener('pointermove', move);
-    window.addEventListener('pointerup', end);
-    canvas.addEventListener('pointercancel', end);
-    canvas.addEventListener('lostpointercapture', end);
-    const clearBtn = frame.querySelector('[data-draw-clear]');
-    if (clearBtn) clearBtn.addEventListener('click', function(){ ctx.clearRect(0,0,canvas.width,canvas.height); });
-    resize();
-    window.addEventListener('resize', resize);
-    if (window.ResizeObserver) new ResizeObserver(resize).observe(frame);
+    const r = frame.getBoundingClientRect();
+    if (r.width && r.height) initDrawFrame(frame);
   });
+}
+document.addEventListener('pointerdown', function(event) {
+  const canvas = event.target.closest && event.target.closest('[data-draw-canvas]');
+  const frame = canvas && canvas.closest('[data-draw-frame]');
+  if (frame) initDrawFrame(frame);
+}, true);
+
+function initDrawFrame(frame) {
+  const canvas = frame.querySelector('[data-draw-canvas]');
+  if (!canvas || canvas.dataset.ready) return;
+  canvas.dataset.ready = '1';
+  const ctx = canvas.getContext('2d');
+  let drawing = false, last = null;
+  function resize() {
+    const r = frame.getBoundingClientRect();
+    if (!r.width) return;
+    const width = Math.round(r.width), height = Math.round(r.height);
+    if (!width || !height || (canvas.width === width && canvas.height === height)) return;
+    const prev = document.createElement('canvas');
+    prev.width = canvas.width; prev.height = canvas.height;
+    prev.getContext('2d').drawImage(canvas, 0, 0);
+    canvas.width = width; canvas.height = height;
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = 2.5; ctx.strokeStyle = '#12355b';
+    ctx.drawImage(prev, 0, 0, width, height);
+  }
+  function pos(e) {
+    const r = canvas.getBoundingClientRect();
+    const t = e.touches ? e.touches[0] : e;
+    return { x: (t.clientX - r.left) * canvas.width / r.width,
+      y: (t.clientY - r.top) * canvas.height / r.height };
+  }
+  function start(e) {
+    resize();
+    drawing = true; last = pos(e); e.preventDefault();
+    if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
+  }
+  function move(e) {
+    if (!drawing) return;
+    const p = pos(e);
+    ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+    last = p; e.preventDefault();
+  }
+  function end() { drawing = false; }
+  canvas.addEventListener('pointerdown', start);
+  canvas.addEventListener('pointermove', move);
+  window.addEventListener('pointerup', end);
+  canvas.addEventListener('pointercancel', end);
+  canvas.addEventListener('lostpointercapture', end);
+  const clearBtn = frame.querySelector('[data-draw-clear]');
+  if (clearBtn) clearBtn.addEventListener('click', function(){ ctx.clearRect(0,0,canvas.width,canvas.height); });
+  resize();
+  window.addEventListener('resize', resize);
+  if (window.ResizeObserver) new ResizeObserver(resize).observe(frame);
 }
 
 /* ── Photobooth Studio with Math Work ─────────────────────────────────── */
@@ -11132,8 +11131,8 @@ function renderPhotoboothComposite() {
     preparePhotoboothDownload(canvas, compositeUrl);
     renderPhotoboothStage('captured');
     setPhotoboothStatus(
-      'Looking good! Download it, print it, or attach it to the parent sign-off.',
-      '¡Se ve muy bien! Descárguenla, imprímanla o adjúntenla a la firma del adulto.',
+      'Looking good! Download it, print it, or add it to your optional reflection.',
+      '¡Se ve muy bien! Descárguenla, imprímanla o agréguenla a la reflexión opcional.',
       'ok');
   };
   img.onerror = function() {
@@ -11157,7 +11156,7 @@ function retakePhotobooth() {
   if (resImg) resImg.removeAttribute('src');
   var attachBtn = pbEl('pb_attach_btn');
   if (attachBtn) {
-    attachBtn.innerHTML = '📎 <span class="lang-en">Attach to Parent Sign-off</span><span class="lang-es" lang="es">Adjuntar a la Firma</span>';
+    attachBtn.innerHTML = '📎 <span class="lang-en">Add to optional reflection</span><span class="lang-es" lang="es">Añadir a la reflexión opcional</span>';
     attachBtn.disabled = false;
   }
   setPhotoboothStatus('', '', '');
@@ -11279,8 +11278,8 @@ window.printPhotoboothPhoto = printPhotoboothPhoto;
 function attachPhotoboothToSignoff() {
   if (!currentWorkPhotoData) {
     setPhotoboothStatus(
-      'Take or upload a photo first, then attach it to the sign-off.',
-      'Primero tomen o suban una foto, y luego adjúntenla a la firma.',
+      'Take or upload a photo first, then add it to the optional reflection.',
+      'Primero tomen o suban una foto, y luego agréguenla a la reflexión opcional.',
       'warn');
     return;
   }
@@ -15927,4 +15926,43 @@ body[data-homework-route]:not([data-homework-route="full"]) .homework-tab-extra-
 .hw-utility-controls #nsr-panel { position:fixed; top:16px; bottom:auto; right:16px; max-height:calc(100dvh - 32px); }
 @media(max-width:600px) { .homework-tab-chrome { position:static; } .hw-tab-meta-row { flex-wrap:wrap; gap:8px; } .hw-hero-share-bar { gap:8px; } }
 @media print { .hw-tools-menu, .hw-utility-controls, .homework-message-action, .homework-optional-extras { display:none !important; } }
+
+/* Family plans: one explicit contract at every viewport and on paper. */
+.hw-route-options { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.hw-route-option { align-items:flex-start; min-height:48px; }
+.hw-route-copy strong, .hw-route-copy small, .hw-route-note { font-size:16px; line-height:1.45; }
+.hw-route-time { min-width:60px; width:60px; height:auto; border-radius:12px; white-space:nowrap; font-size:20px; padding:8px 4px; }
+.hw-route-time small { font-size:12px; }
+.hw-hero { padding:20px !important; }
+.hw-hero-stats { display:none; }
+.family-reasoning-support, .family-extra-ladder { margin:16px 0; padding:14px; border:1px solid #cbd5e1; border-radius:12px; }
+.family-reasoning-support summary, .family-extra-ladder summary { min-height:44px; cursor:pointer; font-weight:700; }
+body[data-homework-route="quick"] .learn-extended-block,
+body:not([data-homework-route="full"]) .fam-act-corner { display:none; }
+@media(max-width:700px) {
+  .hw-route-options { grid-template-columns:1fr; }
+  .hw-hero { padding:14px !important; }
+  .hw-hero-head { margin:0; }
+  .hw-hero-emoji, .hw-hero-kicker { display:none; }
+  .hw-hero-titles h1 { font-size:24px; }
+  .hw-hero-lesson { margin:8px 0; }
+  .lang-selector-buttons { gap:6px; }
+  .lang-toggle-btn { min-height:44px; }
+}
+@media print {
+  body[data-homework-route="quick"] .practice-tier-challenge,
+  body[data-homework-route="quick"] .practice-tier-warmup .problem-section:nth-child(n+3),
+  body[data-homework-route="quick"] .hw-answer-sheet > ol > li:nth-child(n+3),
+  body.print-problems-only .hw-answer-key,
+  body.print-problems-only .feedback,
+  body.print-problems-only .problem-check-result,
+  body.print-problems-only .solution-explanation,
+  body.print-problems-only .problem-feedback { display:none !important; }
+  /* A whole card can be taller than the page left on it; avoiding a break
+     there pushed slivers and empty pages into the packet. Keep the header and
+     question together and let the work space flow. */
+  body.print-problems-only .problem-header-row,
+  body.print-problems-only .problem-stem { break-after:avoid; break-inside:avoid; }
+  body.print-problems-only .problem-section::after { content:""; display:block; min-height:26mm; }
+}
 `;

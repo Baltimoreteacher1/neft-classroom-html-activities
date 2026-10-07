@@ -385,6 +385,7 @@ function initFamilyGames() {
    are in the path, how many practice problems count, the remaining-time
    display, and every Continue button. */
 var HOMEWORK_ROUTES = {
+  quick: { tabs: ['learn', 'check', 'done'], total: 10, problemLimit: 2, minutes: { learn: 3, check: 5, done: 2 } },
   core: { tabs: ['learn', 'together', 'check', 'done'], total: 20, problemLimit: 6, minutes: { learn: 5, together: 6, check: 7, done: 2 } },
   full: { tabs: ['learn', 'words', 'together', 'check', 'play', 'done'], total: 30, problemLimit: 6, minutes: { learn: 5, words: 3, together: 6, check: 8, play: 5, done: 3 } }
 };
@@ -451,9 +452,9 @@ function setHomeworkRoute(mode, options) {
   var warmups = document.querySelectorAll('.practice-tier-warmup .problem-section');
   warmups.forEach(function (problem, index) { problem.hidden = index >= route.problemLimit; });
   var challenge = document.querySelector('.practice-tier-challenge');
-  if (challenge) challenge.hidden = false;
+  if (challenge) challenge.hidden = mode === 'quick';
   var more = document.querySelector('.more-practice');
-  if (more) more.hidden = false;
+  if (more) more.hidden = mode === 'quick';
   ['hw_goal_count', 'hw_goal_count_es'].forEach(function (id) {
     var el = document.getElementById(id);
     if (el) el.textContent = String(route.problemLimit);
@@ -478,8 +479,9 @@ function setHomeworkRoute(mode, options) {
   var note = document.getElementById('hw_route_note');
   if (note) {
     var copy = {
-      core: ['Learn & practice selected: 4 focused stops and all 6 core problems, about 20 minutes.', 'Ruta de aprendizaje: 4 paradas y los 6 problemas, unos 20 minutos.'],
-      full: ['Full route selected: all 6 stops, about 30 minutes.', 'Ruta completa: 6 paradas, unos 30 minutos.']
+      quick: ['Quick practice: read one example, try 2 problems, explain one answer, and stop. About 5–10 minutes; no Together or Play stop.', 'Práctica breve: lee un ejemplo, intenta 2 problemas, explica una respuesta y termina. Unos 5–10 minutos; sin las paradas Juntos ni Jugar.'],
+      core: ['Learn & practice: read, try one together, complete 6 problems, and explain. Then stop. About 20 minutes.', 'Ruta de aprendizaje: 4 paradas y los 6 problemas, unos 20 minutos.'],
+      full: ['Family math night: 6 problems, key words, one home activity, and one game. Explain and stop. About 30 minutes.', 'Noche familiar: 6 problemas, palabras clave, una actividad en casa y un juego. Explica y termina. Unos 30 minutos.']
     }[mode];
     setBiText(note, copy[0], copy[1]);
   }
@@ -773,6 +775,7 @@ function switchHomeworkTab(tabId) {
   if (tabId === 'done' && typeof updateCelebrationTab === 'function') {
     updateCelebrationTab();
   }
+  if (tabId === 'play' && !window.hwFamilyGamesReady) { initFamilyGames(); window.hwFamilyGamesReady = true; }
   if (tabId === 'photobooth' && typeof initPhotobooth === 'function') {
     initPhotobooth();
   } else if (typeof stopPhotoboothStream === 'function') {
@@ -1027,11 +1030,7 @@ function printAnswerSheet() {
 window.printAnswerSheet = printAnswerSheet;
 
 function printRefrigeratorSheet() {
-  document.body.classList.add('print-refrigerator-sheet');
-  window.print();
-  setTimeout(function() {
-    document.body.classList.remove('print-refrigerator-sheet');
-  }, 1000);
+  printProblemsOnly();
 }
 window.printRefrigeratorSheet = printRefrigeratorSheet;
 
@@ -1376,7 +1375,10 @@ function initHomeworkPage() {
     localStorage.removeItem('hw_last_tab');
     const last = localStorage.getItem(lastTabStorageKey());
     const lastBtn = last ? document.getElementById('hw_tab_' + last) : null;
-    if (lastBtn && !lastBtn.hidden) switchHomeworkTab(last);
+    if (lastBtn && !lastBtn.hidden) {
+      switchHomeworkTab(last);
+      setBiText(document.getElementById('hw_resume_note'), 'Welcome back. Your saved plan and answers are on this device. Continue at ' + lastBtn.querySelector('.tab-en').textContent + '.', 'Bienvenido de nuevo. Tu plan y tus respuestas están guardados en este dispositivo. Continúa en ' + lastBtn.querySelector('.tab-es').textContent + '.');
+    }
     else switchHomeworkTab('learn');
   } catch(e) {}
   setTimeout(function () { hwTabsBooted = true; }, 0);
@@ -1387,7 +1389,7 @@ function initHomeworkPage() {
   restoreFamilyMission();
   initDrawCanvases();
   initHomeworkVocabPopups();
-  initFamilyGames();
+  // Family games initialize when Play is opened.
   // Entrance motion is opt-in and only after boot: its start state is
   // opacity:0, so gating it on this class means a page whose script failed
   // still shows every word instead of an empty cream rectangle.
@@ -1597,54 +1599,68 @@ function initHomeworkVocabPopups() {
 }
 
 // Make every "Draw your model" grid an actual drawable surface (mouse + touch + stylus).
+/* Canvases set up lazily: a page carries up to 14 drawing frames, mostly in
+   closed <details> or inactive tabs. Visible frames start at boot; any other
+   frame starts on its first touch, through the capture-phase listener below,
+   which runs before the canvas's own pointerdown listener is consulted. */
 function initDrawCanvases() {
   document.querySelectorAll('[data-draw-frame]').forEach(function(frame) {
-    const canvas = frame.querySelector('[data-draw-canvas]');
-    if (!canvas || canvas.dataset.ready) return;
-    canvas.dataset.ready = '1';
-    const ctx = canvas.getContext('2d');
-    let drawing = false, last = null;
-    function resize() {
-      const r = frame.getBoundingClientRect();
-      if (!r.width) return;
-      const width = Math.round(r.width), height = Math.round(r.height);
-      if (!width || !height || (canvas.width === width && canvas.height === height)) return;
-      const prev = document.createElement('canvas');
-      prev.width = canvas.width; prev.height = canvas.height;
-      prev.getContext('2d').drawImage(canvas, 0, 0);
-      canvas.width = width; canvas.height = height;
-      ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = 2.5; ctx.strokeStyle = '#12355b';
-      ctx.drawImage(prev, 0, 0, width, height);
-    }
-    function pos(e) {
-      const r = canvas.getBoundingClientRect();
-      const t = e.touches ? e.touches[0] : e;
-      return { x: (t.clientX - r.left) * canvas.width / r.width,
-        y: (t.clientY - r.top) * canvas.height / r.height };
-    }
-    function start(e) {
-      resize();
-      drawing = true; last = pos(e); e.preventDefault();
-      if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
-    }
-    function move(e) {
-      if (!drawing) return;
-      const p = pos(e);
-      ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke();
-      last = p; e.preventDefault();
-    }
-    function end() { drawing = false; }
-    canvas.addEventListener('pointerdown', start);
-    canvas.addEventListener('pointermove', move);
-    window.addEventListener('pointerup', end);
-    canvas.addEventListener('pointercancel', end);
-    canvas.addEventListener('lostpointercapture', end);
-    const clearBtn = frame.querySelector('[data-draw-clear]');
-    if (clearBtn) clearBtn.addEventListener('click', function(){ ctx.clearRect(0,0,canvas.width,canvas.height); });
-    resize();
-    window.addEventListener('resize', resize);
-    if (window.ResizeObserver) new ResizeObserver(resize).observe(frame);
+    const r = frame.getBoundingClientRect();
+    if (r.width && r.height) initDrawFrame(frame);
   });
+}
+document.addEventListener('pointerdown', function(event) {
+  const canvas = event.target.closest && event.target.closest('[data-draw-canvas]');
+  const frame = canvas && canvas.closest('[data-draw-frame]');
+  if (frame) initDrawFrame(frame);
+}, true);
+
+function initDrawFrame(frame) {
+  const canvas = frame.querySelector('[data-draw-canvas]');
+  if (!canvas || canvas.dataset.ready) return;
+  canvas.dataset.ready = '1';
+  const ctx = canvas.getContext('2d');
+  let drawing = false, last = null;
+  function resize() {
+    const r = frame.getBoundingClientRect();
+    if (!r.width) return;
+    const width = Math.round(r.width), height = Math.round(r.height);
+    if (!width || !height || (canvas.width === width && canvas.height === height)) return;
+    const prev = document.createElement('canvas');
+    prev.width = canvas.width; prev.height = canvas.height;
+    prev.getContext('2d').drawImage(canvas, 0, 0);
+    canvas.width = width; canvas.height = height;
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = 2.5; ctx.strokeStyle = '#12355b';
+    ctx.drawImage(prev, 0, 0, width, height);
+  }
+  function pos(e) {
+    const r = canvas.getBoundingClientRect();
+    const t = e.touches ? e.touches[0] : e;
+    return { x: (t.clientX - r.left) * canvas.width / r.width,
+      y: (t.clientY - r.top) * canvas.height / r.height };
+  }
+  function start(e) {
+    resize();
+    drawing = true; last = pos(e); e.preventDefault();
+    if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
+  }
+  function move(e) {
+    if (!drawing) return;
+    const p = pos(e);
+    ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+    last = p; e.preventDefault();
+  }
+  function end() { drawing = false; }
+  canvas.addEventListener('pointerdown', start);
+  canvas.addEventListener('pointermove', move);
+  window.addEventListener('pointerup', end);
+  canvas.addEventListener('pointercancel', end);
+  canvas.addEventListener('lostpointercapture', end);
+  const clearBtn = frame.querySelector('[data-draw-clear]');
+  if (clearBtn) clearBtn.addEventListener('click', function(){ ctx.clearRect(0,0,canvas.width,canvas.height); });
+  resize();
+  window.addEventListener('resize', resize);
+  if (window.ResizeObserver) new ResizeObserver(resize).observe(frame);
 }
 
 /* ── Photobooth Studio with Math Work ─────────────────────────────────── */
@@ -2193,8 +2209,8 @@ function renderPhotoboothComposite() {
     preparePhotoboothDownload(canvas, compositeUrl);
     renderPhotoboothStage('captured');
     setPhotoboothStatus(
-      'Looking good! Download it, print it, or attach it to the parent sign-off.',
-      '¡Se ve muy bien! Descárguenla, imprímanla o adjúntenla a la firma del adulto.',
+      'Looking good! Download it, print it, or add it to your optional reflection.',
+      '¡Se ve muy bien! Descárguenla, imprímanla o agréguenla a la reflexión opcional.',
       'ok');
   };
   img.onerror = function() {
@@ -2218,7 +2234,7 @@ function retakePhotobooth() {
   if (resImg) resImg.removeAttribute('src');
   var attachBtn = pbEl('pb_attach_btn');
   if (attachBtn) {
-    attachBtn.innerHTML = '📎 <span class="lang-en">Attach to Parent Sign-off</span><span class="lang-es" lang="es">Adjuntar a la Firma</span>';
+    attachBtn.innerHTML = '📎 <span class="lang-en">Add to optional reflection</span><span class="lang-es" lang="es">Añadir a la reflexión opcional</span>';
     attachBtn.disabled = false;
   }
   setPhotoboothStatus('', '', '');
@@ -2340,8 +2356,8 @@ window.printPhotoboothPhoto = printPhotoboothPhoto;
 function attachPhotoboothToSignoff() {
   if (!currentWorkPhotoData) {
     setPhotoboothStatus(
-      'Take or upload a photo first, then attach it to the sign-off.',
-      'Primero tomen o suban una foto, y luego adjúntenla a la firma.',
+      'Take or upload a photo first, then add it to the optional reflection.',
+      'Primero tomen o suban una foto, y luego agréguenla a la reflexión opcional.',
       'warn');
     return;
   }
@@ -5446,7 +5462,7 @@ var NeftGraph = (function () {
 })();
 
 // Initial configuration
-window.onload = function() {
+function initializeHomeworkState() {
   const hadSavedState = !!localStorage.getItem(STORAGE_KEY);
   loadState();
   if (!hadSavedState) {
@@ -5525,4 +5541,10 @@ window.onload = function() {
       row.addEventListener("dragend", () => row.classList.remove("dragging"));
     });
   });
-};
+}
+// Restore before images and optional resources finish loading.
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeHomeworkState, { once: true });
+} else {
+  initializeHomeworkState();
+}

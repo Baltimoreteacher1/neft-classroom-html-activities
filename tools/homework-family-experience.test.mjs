@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { JSDOM } from "jsdom";
+import { familyGuidance } from "../scripts/homework-family-guidance.mjs";
 import { exactFamilyMission, exactFamilySupport } from "../scripts/homework-family-support.mjs";
 import { buildHomeworkGame } from "../scripts/homework-games.mjs";
 import {
@@ -45,7 +46,7 @@ function runtime(query = "") {
   return dom;
 }
 
-test("new family starts on 20 minutes, keeps saved choice, and retired links use 20 minutes", () => {
+test("new family starts on 20 minutes, keeps saved choice, and explicit quick links select two problems", () => {
   const dom = runtime();
   const w = dom.window;
   w.restoreHomeworkRoute();
@@ -62,16 +63,16 @@ test("new family starts on 20 minutes, keeps saved choice, and retired links use
   w.localStorage.setItem("hw_lang_mode", "en");
   w.restoreHomeworkRoute();
   w.setLanguageMode(w.preferredLanguageMode());
-  assert.equal(w.document.body.dataset.homeworkRoute, "full");
+  assert.equal(w.document.body.dataset.homeworkRoute, "quick");
   assert.equal(w.document.documentElement.lang, "es");
   assert.match(w.document.getElementById("hw_tab_check").getAttribute("aria-label"), /parada/);
   const shared = new URL(w.homeworkShareUrl());
-  assert.equal(shared.searchParams.get("route"), "full");
+  assert.equal(shared.searchParams.get("route"), "quick");
   assert.equal(shared.searchParams.get("lang"), "es");
   assert.equal(shared.searchParams.get("section"), "class-1");
   assert.match(
     decodeURIComponent(w.document.getElementById("hw_text_link").href),
-    /route=full&lang=es/,
+    /route=quick&lang=es/,
   );
   w.history.replaceState(null, "", "?route=__proto__&lang=bad");
   w.localStorage.setItem("hw_route_3-2", "broken");
@@ -82,7 +83,7 @@ test("new family starts on 20 minutes, keeps saved choice, and retired links use
 
 test("20-minute Together route keeps the problem situation and all guided steps", () => {
   const page = readFileSync(lessonPath("3-3", "homework.html"), "utf8");
-  assert.doesNotMatch(page, /data-route-mode="quick"|The 10-minute route/);
+  assert.match(page, /data-route-mode="quick"/);
   const dom = new JSDOM(page);
   const together = dom.window.document.querySelector("#hw_panel_together");
   assert.match(together.querySelector(".try-scenario.lang-en").textContent, /drink uses 1 cup/);
@@ -94,7 +95,7 @@ test("statistical-question homework shows a concrete model and keeps reasons for
   const page = readFileSync(lessonPath("2-1", "homework.html"), "utf8");
   const dom = new JSDOM(page);
   const d = dom.window.document;
-  assert.equal(d.querySelectorAll("[data-route-mode]").length, 2);
+  assert.equal(d.querySelectorAll("[data-route-mode]").length, 3);
   assert.match(d.querySelector(".concept-visual-caption").textContent, /One shelf has one count/);
   // The authored wording affects the deterministic problem order. Identify
   // the warm-up table by its task and content, not its displayed number.
@@ -120,7 +121,6 @@ test("Done shows every optional activity without a disclosure", () => {
   for (const selector of [
     "#parent_name_input",
     "#parent_note_input",
-    ".kitchen-table-card",
     "#student_work_photo_input",
     "#btn_record_voice",
   ]) {
@@ -178,7 +178,7 @@ test("the optional table activity uses the lesson's own math", () => {
     ),
   });
   const compare = resolveKitchenTableActivity(withNotes("3-5"));
-  assert.match(compare.steps.join(" "), /35 ounces.*Compare 21 and 20/);
+  assert.match(compare.steps.join(" "), /Compare two drink recipes/);
   const polygon = resolveKitchenTableActivity(withNotes("7-7"));
   assert.match(polygon.steps.join(" "), /coordinate|polygon|vertex|rectangle/i);
 });
@@ -249,12 +249,17 @@ test("exact skills replace broad standard matches, keep one visible mission, and
     const mission = exactFamilyMission(c);
     assert.ok(mission.steps.every((step) => step.en && step.es));
     const kitchen = resolveKitchenTableActivity(c);
-    assert.equal(kitchen.title, mission.titleEn, id);
+    assert.equal(kitchen.title, "Use the math at home", id);
+    assert.notDeepEqual(
+      kitchen.steps,
+      mission.steps.map((step) => step.en),
+      id,
+    );
     const dom = new JSDOM(renderTogetherTab(c, id));
     const cards = [...dom.window.document.querySelectorAll("[data-family-activity]")];
-    assert.equal(cards.length, 2);
+    assert.equal(cards.length, 1);
     assert.equal(cards[0].open, true);
-    assert.equal(cards[1].closest(".family-mission-alternatives").open, false);
+    assert.equal(dom.window.document.querySelector(".family-mission-alternatives"), null);
     assert.doesNotMatch(
       dom.window.document.body.textContent,
       /A student solved a problem and made a common slip|Choose a side with your student/,
@@ -266,10 +271,7 @@ test("exact skills replace broad standard matches, keep one visible mission, and
     if (id === "5-8") assert.match(getTopicPowerUp("surface-area", c).qEn, /pyramid/);
   }
   assert.equal(exactFamilySupport({ ...config("5-2"), lessonId: "5-2-part2" }), null);
-  assert.match(
-    resolveKitchenTableActivity(config("4-3")).steps.join(" "),
-    /10% and 50% do not bound every percent/,
-  );
+  assert.match(resolveKitchenTableActivity(config("4-3")).steps.join(" "), /25% discount/);
 });
 
 test("multiplication and two-variable quiz/game banks stay on their actual skills", () => {
@@ -288,4 +290,24 @@ test("multiplication and two-variable quiz/game banks stay on their actual skill
     else assert.ok(rounds.every((r) => /x/.test(r.q) && /y/.test(r.q)));
     dom.window.close();
   }
+});
+
+test("dollar amounts in family prose survive rendering instead of becoming regex captures", () => {
+  const page = readFileSync(lessonPath("9-3-part2", "homework.html"), "utf8");
+  assert.match(page, /\$16 an hour/);
+  assert.match(page, /\$5 plus \$2 per hour/);
+});
+
+test("the 1-2 practice ladder stays on fractions of a whole number", () => {
+  const page = readFileSync(lessonPath("1-2", "homework.html"), "utf8");
+  const ladder = new JSDOM(page).window.document.querySelector(".family-extra-ladder").textContent;
+  assert.match(ladder, /Find ¼ of 20\./);
+  assert.doesNotMatch(ladder, /decompose 105\.76/);
+});
+
+test("plotting lessons get a plotting home task, distance lessons a distance task", () => {
+  for (const id of ["7-5", "7-8", "7-8-part2"]) {
+    assert.match(familyGuidance({ lessonId: id }).mission.en, /Plot a park at \(3, 2\)/);
+  }
+  assert.match(familyGuidance({ lessonId: "7-6" }).mission.en, /distance cannot be negative/);
 });
