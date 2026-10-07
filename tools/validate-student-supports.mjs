@@ -85,6 +85,69 @@ for (const line of css.split("\n")) {
   }
 }
 
+/* --- 6. SCOPE IS STATED, NOT INFERRED --------------------------------------
+ *
+ * The store is two-level — an all-class lesson default, and a per-class
+ * override that replaces it — and it always behaved correctly. What it did not
+ * do was SAY so, and a teacher could only learn the model by pressing Apply
+ * and watching which classes changed.
+ *
+ * tools/lesson-supports.test.mjs pins the STORE. This pins the SENTENCES: that
+ * the surface still renders a scope per class, still names the scope beside
+ * Apply, and still labels reset with the scope it resets. None of that is
+ * visible to a lint pass, a type check or a render probe — a page with a bare
+ * "Reset" button parses, lints and renders perfectly, and is exactly the
+ * ambiguity this section exists to prevent coming back.
+ * ------------------------------------------------------------------------ */
+const scopeChecks = [
+  [
+    /data-scope=/,
+    "no scope selector — a teacher cannot see or switch which class they are editing",
+  ],
+  [
+    /Applies to all class sections/,
+    "the all-class default no longer says it applies to all classes",
+  ],
+  [/Using the lesson default/, "a class with no override no longer says it is inheriting"],
+  [/instead of the lesson default/, "a class override no longer says it replaces the default"],
+  [/ override</, "the class-override state is no longer headed as an override"],
+  [/Customize for /, "no way to turn an inherited class into its own override"],
+  [/to lesson default/, "reset is not labelled with the class it resets"],
+  [/Editing: /, "the scope being edited is not stated before Apply"],
+  [/Apply to class |Apply to all classes/, "the Apply button does not name its scope"],
+  [/copyLessonToSection/, "copy-between-classes is gone from the surface"],
+];
+for (const [re, why] of scopeChecks) check(re.test(js), why);
+
+/* A GENERIC RESET IS THE BUG. "Reset to original" on a page that can be
+ * editing one class or all three does not say which it resets, and the two
+ * outcomes are not recoverable from each other. */
+check(
+  !/>\s*Reset to original\s*</.test(js),
+  'the generic "Reset to original" label is back — reset must name its scope',
+);
+
+/* PRIVACY, restated at the surface. The scope pass added a per-class UI, which
+ * is exactly the moment someone reaches for a student field to go with it.
+ *
+ * Comments are stripped first, deliberately. This file's own header documents
+ * the boundary — "no student name, no initials, no disability category" — and
+ * a scan that cannot tell an assertion from a field flags the sentence that
+ * promises the field does not exist. Code is what is checked. */
+const code = js.replace(/\/\*[\s\S]*?\*\//g, " ").replace(/(^|[^:])\/\/.*$/gm, "$1");
+for (const banned of [
+  /\bIEP\b/,
+  /\bstudentName\b/,
+  /disabilit/i,
+  /\bwidaLevel\b/,
+  /\binitials\b/,
+]) {
+  check(
+    !banned.test(code),
+    `student-supports.js code matches ${banned} — this surface is lesson + class only`,
+  );
+}
+
 /* --- 4 & 5. Light-only, and the label ------------------------------------- */
 for (const [rel, body] of files) {
   check(
