@@ -1,3 +1,43 @@
+// ⚠ NOT SHIPPED. Nothing a student or teacher loads imports this file.
+//
+// `small-group-renderer.js` builds the practice path from
+// `small-group-practice-path.js`, which reads the authored
+// `data/small-group-practice/<lesson>.json`. This module is the renderer that
+// replaced — it stamped practice from topic templates, and by the 2026-10-06
+// audit that content had drifted to other lessons' mathematics fleet-wide.
+//
+// It is still on disk, and still imported by SEVEN test files
+// (small-group-table-experience, small-group-format-variety,
+// small-group-sentence-frames, correct-leads, small-group-modes,
+// small-group-practice-depth, small-group-adaptive-practice). They all pass, so
+// `npm test` reports this module perfectly healthy while it reaches nobody —
+// which is exactly how three capabilities were lost in the handover without a
+// single check going red:
+//
+//   · teacherLens()    — the per-item probing questions. `.sg-lens` rendered on
+//                        ZERO studios; the browser assertion that would have
+//                        said so was deleted to get CI green.
+//   · CORRECT_LEADS    — rotating praise. The new path had regressed to one
+//                        fixed "Correct." for every right answer in a session.
+//   · tableCheck()     — the every-third-solve show-me. `.sg-tablecheck*` was
+//                        still in the shipped stylesheet with nothing creating
+//                        the element.
+//
+// All three now live in `small-group-practice-path.js` and are covered by
+// `small-group-practice-path.test.mjs`, which mutation-proves each one.
+//
+// The remaining exports are retired BY DESIGN, not lost: `collectPracticeItems`,
+// `orderItemsForAdaptivePath`, `interleaveByFormat`, `practiceDisplayOrder` and
+// `bringInExtendingItems` all operate on the generated item pool that authored
+// order replaced; `explanationSteps` derived steps that the authored data now
+// states outright and `solution()` renders; `createPracticeSection` and
+// `createCheckSection` are superseded by `createTogetherSection`,
+// `createOnMyOwnSection` and `createExitCheckSection`.
+//
+// DELETING THIS FILE AND ITS SEVEN TEST FILES IS JOEL'S CALL, not an agent's.
+// Until then this header is here so the next reader does not mistake green
+// tests for a live module.
+
 import { attachRegenPractice } from "../components/regen-practice.js";
 import { isRight, numberOf } from "./answer-match.js";
 import { detectConceptTool } from "./concept-tool.js";
