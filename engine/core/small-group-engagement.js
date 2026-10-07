@@ -363,7 +363,7 @@ function createWritingBonus(config, words, store, langRef) {
   // unwritable — so prefer real terms and only fall back if a lesson has none.
   const usable = words.filter((word) => word.definition || word.visual);
   const short = usable.filter((word) => word.term.trim().split(/\s+/).length <= 3);
-  const picks = (short.length ? short : usable).slice(0, 4);
+  const picks = (short.length ? short : usable).slice(0, 1);
   if (!picks.length) return null;
   const saved = store?.get("vocabWriting") || {};
   const wrap = el("div", "sg-cloze sg-write");
@@ -372,7 +372,7 @@ function createWritingBonus(config, words, store, langRef) {
     el(
       "p",
       "sg-write-intro",
-      "No word bank this time — these are your sentences. Write one for each word, check it, then compare it with a model. You can keep your own version either way.",
+      "No word bank this time — this is your sentence. Write one sentence using the word, check it, then compare it with a model. You can keep your own version either way.",
     ),
   );
   const spanishLines = [];
@@ -494,7 +494,7 @@ export function createVocabularySection(config, variant, onDone, store = null) {
       "p",
       null,
       variant === "group2"
-        ? "Read each word and its meaning. Use the speaker to hear the word, finish the quick match, then write the words into sentences of your own."
+        ? "Read each word and its meaning. Use the speaker to hear the word, finish the quick match, then write the word into a sentence of your own."
         : "Read each word and its meaning. Use the speaker to hear the word, then finish the quick match.",
     ),
   );
