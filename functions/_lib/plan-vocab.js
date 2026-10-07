@@ -1870,6 +1870,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/projects/studio/",
+    title: "Project Studio",
+    category: "Activity",
+    unit: null,
+  },
+  {
     path: "/curriculum/student-digital-mailbox/teacher/",
     title: "Teacher Setup: Student Digital Mailbox",
     category: "Activity",
@@ -3809,7 +3815,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/curriculum/projects/",
-    title: "Culminating Projects — Curriculum Hub",
+    title: "Unit Projects — Project Studio · Curriculum projects",
     category: "Hub",
     unit: null,
   },
@@ -3978,7 +3984,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/math/projects/",
-    title: "Culminating Projects Gallery",
+    title: "Unit Projects — Project Studio · Math projects",
     category: "Hub",
     unit: null,
   },

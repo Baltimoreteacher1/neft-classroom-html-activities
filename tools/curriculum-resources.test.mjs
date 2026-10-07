@@ -96,10 +96,11 @@ await test("teacher discovery, search synonyms, category counts, and clear filte
   query("publisher");
   assert.deepEqual(
     cards().map((c) => c.dataset.resource),
-    ["fluency-guide", "notes-studio", "small-group-studio"],
+    ["fluency-guide", "notes-studio"],
   );
   query("small groups");
-  assert.ok(cards().some((c) => c.dataset.resource === "small-group-studio"));
+  // The retired standalone studio was removed from the course in 5e1daf0be4.
+  assert.ok(!cards().some((c) => c.dataset.resource === "small-group-studio"));
   assert.ok(cards().some((c) => c.dataset.resource === "rotations"));
   query("worksheets");
   assert.ok(cards().length >= 2);

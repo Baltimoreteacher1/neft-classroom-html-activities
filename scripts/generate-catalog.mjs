@@ -705,6 +705,7 @@ const CURRICULUM_STUDENT = new Set([
   "showcase",
   "class-boss",
   "study-pack",
+  "projects",
 ]);
 const CURRICULUM_FAMILY = new Set(["family-connections", "family-letter"]);
 

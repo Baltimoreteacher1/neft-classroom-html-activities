@@ -137,6 +137,7 @@ const needsOf = (c) => (c === "build" ? [] : ["build"]);
  * time. Both read as real page defects. Both vanish when the check runs on its
  * own against the same dist/. A third Chromium was the difference. */
 const EXCLUSIVE = new Set([
+  "validate:project-studio-browser",
   "validate:lesson-boot",
   "validate:learning-labs-browser",
   "smoke:injection",
