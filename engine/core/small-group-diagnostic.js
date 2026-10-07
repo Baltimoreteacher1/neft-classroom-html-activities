@@ -15,7 +15,7 @@
 //
 // Where the items come from matters. It takes them from the END of the practice
 // pool — the overflow set that, in a fifteen-minute rotation, most students never
-// reach (see the note in small-group-practice.js). Those items were authored,
+// reach. Those items were authored,
 // validated, and then effectively unreachable. Spending them here costs the
 // practice sequence nothing it was reliably delivering, and buys the highest
 // leverage two minutes in the rotation. The items are removed from the pool, so

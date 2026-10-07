@@ -53,7 +53,7 @@ export const AUTO_SUPPORT_DISTINCT_MISSES = 2;
  *
  * Two separate rules were already in place and neither covered this case. A
  * single card opens its bank and step guide on the second try of THAT card
- * (small-group-practice.js), which handles one tricky problem. The coach's
+ * (the practice path), which handles one tricky problem. The coach's
  * "stabilize" move opens supports across the whole set — but only when a
  * student taps "Find our next move", which most never do. So a student missing
  * problem after problem worked an unscaffolded set the entire time.
