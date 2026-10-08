@@ -17,42 +17,5 @@
     "blocking advisories that had a reviewed, in-date decision while reporting",
     "those same entries as dead weight to delete."
   ],
-  "accepted": [
-    {
-      "package": "image-size",
-      "advisory": "GHSA-w3rx-r6r6-pgpr",
-      "title": "ICNS parser allows denial of service through an infinite loop",
-      "severity": "high",
-      "reviewBy": "2026-11-09",
-      "reason": [
-        "No fixed version exists. The advisory covers image-size <=2.0.2, which is",
-        "every published release; npm reports fixAvailable as a DOWNGRADE of the",
-        "parent to pptxgenjs@1.1.5 — three majors below the pinned ^4.0.1, and",
-        "'clean' only because pptxgenjs v1 predates the image-size dependency",
-        "entirely. Taking it would break scripts/generate-pptx.mjs to satisfy a",
-        "scanner.",
-        "",
-        "Exposure: image-size is reached only through pptxgenjs, and only via the",
-        "single slide.addImage() in scripts/integrate-reveal-slides.mjs, whose data",
-        "comes from imageDataUri() reading a committed file off disk. That script",
-        "is not in the build chain — it is run by hand. The vulnerability is a DoS",
-        "on malformed ICNS/JXL/HEIF input, and no untrusted image reaches it.",
-        "",
-        "Worst case if wrong: a hand-run script hangs, on a machine belonging to",
-        "the person who ran it. No student-facing or deployed surface."
-      ]
-    },
-    {
-      "package": "image-size",
-      "advisory": "GHSA-5p2g-fcmc-qvqq",
-      "title": "JXL and HEIF parsers allow denial of service through infinite loops",
-      "severity": "high",
-      "reviewBy": "2026-11-09",
-      "reason": [
-        "Same package, same reachability, same absence of a fix as GHSA-w3rx-r6r6-pgpr",
-        "above. Listed separately so that if one is fixed and the other is not, the",
-        "gate says so instead of treating them as one decision."
-      ]
-    }
-  ]
+  "accepted": []
 }
