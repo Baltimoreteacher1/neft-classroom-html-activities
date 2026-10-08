@@ -1,7 +1,7 @@
 /* Original Reveal files beside the lesson desk's practice links. */
 (function () {
   "use strict";
-  /** @typedef {{targetLesson: string|null, unit: number|null, teacherOnly: boolean, url: string, filename: string, title: string}} RevealDocument */
+  /** @typedef {{targetLesson: string|null, unit: number|null, teacherOnly: boolean, url: string, filename: string, title: string, category: string}} RevealDocument */
   const preview = document.getElementById("nav-preview");
   /** @type {RevealDocument[]} */
   let documents = [];
@@ -35,11 +35,15 @@
       fallback.textContent = "Browse the lesson’s original documents in the unit directory";
       group.appendChild(fallback);
     } else {
-      for (const [teacher, label] of [
-        [false, "Practice, warm-ups & homework"],
-        [true, "Teacher keys & guides"],
+      for (const [teacher, label, language] of [
+        [false, "Language support · Word & PDF", true],
+        [false, "Practice, warm-ups & homework", false],
+        [true, "Teacher keys & guides", false],
       ]) {
-        const selection = docs.filter((doc) => doc.teacherOnly === teacher);
+        const selection = docs.filter(
+          (doc) =>
+            doc.teacherOnly === teacher && (doc.category === "language-support") === language,
+        );
         if (!selection.length) continue;
         const details = document.createElement("details");
         if (teacher) details.className = "hub-teacher-only";
@@ -113,7 +117,9 @@
     attributes: true,
     attributeFilter: ["href"],
   });
-  fetch("/data/reveal-document-downloads.json?v=1", { credentials: "same-origin" })
+  fetch("/data/reveal-document-downloads.json?v=language-support-20261008", {
+    credentials: "same-origin",
+  })
     .then((response) => {
       if (!response.ok) throw new Error("Reveal downloads unavailable");
       return response.json();
