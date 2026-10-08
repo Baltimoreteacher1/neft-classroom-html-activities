@@ -1123,7 +1123,9 @@ function selectLessonInteractiveModel(config) {
         kind: candidate.kind,
         manip: candidate.manip,
         title: candidateTitle,
-        titleEs: !candidate.title && meta.catalogued ? meta.nameEs : "",
+        titleEs:
+          candidate.titleEs ||
+          (!candidate.title && meta.catalogued ? meta.nameEs : meta.nameEs || ""),
         purposeEs: meta.purposeEs,
         html,
       };

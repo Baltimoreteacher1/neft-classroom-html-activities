@@ -1649,7 +1649,7 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Right digits, wrong magnitude. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "Estimate to the nearest whole first — then check where the point lands on the tape diagram.",
+      ask: "Estimate to the nearest whole first — then check where the point lands on the percent grid.",
       lookFor:
         "Watch for the “Right digits, wrong magnitude” error — that is the one this lesson's check diagnoses.",
       ifStuck: "Estimate to the nearest whole first, then count decimal places out loud.",

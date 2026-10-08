@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Preserve the original Reveal Word/PDF files and attach them to their lessons.
-// Usage: node scripts/import-reveal-document-downloads.mjs [source-directory]
+// Usage: node scripts/import-reveal-document-downloads.mjs [source-directory] [--language-support]
+// --language-support imports only that folder and preserves every other download.
 import { createHash } from "node:crypto";
 import {
   copyFileSync,
@@ -17,8 +18,9 @@ import { UNMAPPED_REVEAL_LESSONS } from "./lib/worksheet-reveal.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const desktop = join(homedir(), "Desktop");
+const languageOnly = process.argv.includes("--language-support");
 const source =
-  process.argv[2] ||
+  process.argv.slice(2).find((arg) => !arg.startsWith("--")) ||
   join(
     desktop,
     readdirSync(desktop).find((name) => name.trim() === "Reveal Math by Unit and Lesson") ||
@@ -53,10 +55,18 @@ function walk(dir) {
       return entry.isDirectory() ? walk(file) : /\.(docx|pdf)$/i.test(entry.name) ? [file] : [];
     });
 }
-const documents = [];
-const byIdentity = new Map();
-const destinations = new Set();
-const files = walk(source);
+const manifestPath = join(root, "data/reveal-document-downloads.json");
+const documents = languageOnly
+  ? JSON.parse(readFileSync(manifestPath, "utf8")).documents.filter(
+      (doc) => !doc.sources.some((path) => path.includes("/Language Support/")),
+    )
+  : [];
+const byIdentity = new Map(documents.map((doc) => [`${doc.filename}|${doc.sha256}`, doc]));
+const destinations = new Set(documents.map((doc) => doc.url.slice(1)));
+const files = walk(source).filter(
+  (file) => !languageOnly || relative(source, file).includes("/Language Support/"),
+);
+if (languageOnly && !files.length) throw new Error("No language-support files found");
 for (const file of files) {
   const rel = relative(source, file);
   const filename = basename(file);
@@ -76,17 +86,19 @@ for (const file of files) {
   const targetLesson = sourceLesson ? supplemental[sourceLesson] || sourceLesson : null;
   if (targetLesson && !lessonIds.has(targetLesson))
     throw new Error(`No curriculum lesson for ${rel}`);
-  const category = /Answer Key|Warm-Up Key/i.test(rel)
-    ? "answer-key"
-    : /test\.pdf$/i.test(filename)
-      ? "assessment"
-      : /Homework Packets|\/HW\/|HW_Packet/.test(rel)
-        ? "homework"
-        : /\/Warm-Up\//.test(rel)
-          ? "warm-up"
-          : /\/Practice\//.test(rel)
-            ? "practice"
-            : "guide";
+  const category = /\/Language Support\//.test(rel)
+    ? "language-support"
+    : /Answer Key|Warm-Up Key/i.test(rel)
+      ? "answer-key"
+      : /test\.pdf$/i.test(filename)
+        ? "assessment"
+        : /Homework Packets|\/HW\/|HW_Packet/.test(rel)
+          ? "homework"
+          : /\/Warm-Up\//.test(rel)
+            ? "warm-up"
+            : /\/Practice\//.test(rel)
+              ? "practice"
+              : "guide";
   const teacherOnly = ["answer-key", "assessment", "guide"].includes(category);
   const folder = targetLesson
     ? `lessons/${targetLesson}/downloads/reveal`
@@ -115,7 +127,11 @@ for (const file of files) {
   documents.push(doc);
   byIdentity.set(identity, doc);
 }
-const manifest = { version: 1, sourceFileCount: files.length, documents };
+const manifest = {
+  version: 1,
+  sourceFileCount: documents.reduce((sum, doc) => sum + doc.sources.length, 0),
+  documents,
+};
 writeFileSync(
   join(root, "data/reveal-document-downloads.json"),
   `${JSON.stringify(manifest, null, 2)}\n`,
@@ -132,7 +148,9 @@ function links(docs) {
 }
 let html = readFileSync(join(root, "curriculum/units/index.html"), "utf8");
 html = html.replace(
-  /\n[ \t]*<!-- REVEAL-DOCUMENTS:[^>]+ -->[\s\S]*?<!-- \/REVEAL-DOCUMENTS -->/g,
+  languageOnly
+    ? /\n[ \t]*<!-- REVEAL-DOCUMENTS:lesson-[^>]+ -->[\s\S]*?<!-- \/REVEAL-DOCUMENTS -->/g
+    : /\n[ \t]*<!-- REVEAL-DOCUMENTS:[^>]+ -->[\s\S]*?<!-- \/REVEAL-DOCUMENTS -->/g,
   "",
 );
 for (const id of new Set(documents.map((doc) => doc.targetLesson).filter(Boolean))) {
@@ -141,12 +159,15 @@ for (const id of new Set(documents.map((doc) => doc.targetLesson).filter(Boolean
     `(data-search="${id} [\\s\\S]*?<div class="lesson-body">[\\s\\S]*?<div class="res-row">[\\s\\S]*?<\\/div>)`,
   );
   if (!anchor.test(html)) throw new Error(`Units browser has no row for ${id}`);
-  const publicDocs = docs.filter((doc) => !doc.teacherOnly);
+  const languageDocs = docs.filter((doc) => doc.category === "language-support");
+  const publicDocs = docs.filter((doc) => !doc.teacherOnly && doc.category !== "language-support");
   const teacherDocs = docs.filter((doc) => doc.teacherOnly);
-  const markup = `\n              <!-- REVEAL-DOCUMENTS:lesson-${id} -->\n              <details class="reveal-document-downloads">\n                <summary>Reveal documents · Word &amp; PDF (${publicDocs.length})</summary>\n                <div class="res-row">\n${links(publicDocs)}\n                </div>\n              </details>${teacherDocs.length ? `\n              <details class="reveal-document-downloads hub-teacher-only">\n                <summary>Teacher answer keys (${teacherDocs.length})</summary>\n                <div class="res-row">\n${links(teacherDocs)}\n                </div>\n              </details>` : ""}\n              <!-- /REVEAL-DOCUMENTS -->`;
+  const markup = `\n              <!-- REVEAL-DOCUMENTS:lesson-${id} -->\n              <details class="reveal-document-downloads">\n                <summary>Reveal documents · Word &amp; PDF (${publicDocs.length})</summary>\n                <div class="res-row">\n${links(publicDocs)}\n                </div>\n              </details>${languageDocs.length ? `\n              <details class="reveal-document-downloads">\n                <summary>Language support · Word &amp; PDF (${languageDocs.length})</summary>\n                <div class="res-row">\n${links(languageDocs)}\n                </div>\n              </details>` : ""}${teacherDocs.length ? `\n              <details class="reveal-document-downloads hub-teacher-only">\n                <summary>Teacher answer keys (${teacherDocs.length})</summary>\n                <div class="res-row">\n${links(teacherDocs)}\n                </div>\n              </details>` : ""}\n              <!-- /REVEAL-DOCUMENTS -->`;
   html = html.replace(anchor, (match) => match + markup);
 }
-for (const unit of new Set([1, ...documents.map((doc) => doc.unit).filter(Boolean)])) {
+for (const unit of languageOnly
+  ? []
+  : new Set([1, ...documents.map((doc) => doc.unit).filter(Boolean)])) {
   const docs = documents.filter(
     (doc) => !doc.targetLesson && (doc.unit === unit || (unit === 1 && doc.unit === null)),
   );
@@ -159,5 +180,5 @@ for (const unit of new Set([1, ...documents.map((doc) => doc.unit).filter(Boolea
 }
 writeFileSync(join(root, "curriculum/units/index.html"), html);
 console.log(
-  `Imported ${documents.length} original documents from ${files.length} source files; ${new Set(documents.map((doc) => doc.sourceLesson).filter(Boolean)).size} Reveal lessons. Exact duplicate copies share one download.`,
+  `Imported ${documents.length} original documents from ${manifest.sourceFileCount} source files; ${new Set(documents.map((doc) => doc.sourceLesson).filter(Boolean)).size} Reveal lessons. Exact duplicate copies share one download.`,
 );

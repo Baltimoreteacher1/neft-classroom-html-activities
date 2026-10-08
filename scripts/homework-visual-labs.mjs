@@ -663,6 +663,10 @@ function renderSharedLessonModel(topic, config, lessonModel) {
       modelName = "Factor Tree Builder";
       modelNameEs = "Constructor de árboles de factores";
       icon = "🌳";
+    } else if (kind === "percent-grid") {
+      modelName = "Hundred Grid";
+      modelNameEs = "Cuadrícula de cien";
+      icon = "💯";
     } else {
       modelName = config.title ? `${config.title} Model` : "Interactive Lesson Model";
       modelNameEs = "Modelo interactivo de la lección";
@@ -733,7 +737,7 @@ function renderSharedLessonModel(topic, config, lessonModel) {
         <p><span class="lang-en">${esc(touch.explainEn)}</span><span class="lang-es" lang="es">${esc(touch.explainEs)}</span></p>
         <div class="visual-coach-box">
           <strong>💬 <span class="lang-en">Family conversation:</span><span class="lang-es" lang="es">Conversación familiar:</span></strong>
-          <p class="visual-coach-q"><span class="lang-en">Ask: "Where do you see the numbers from tonight&#039;s math in this model?"</span><span class="lang-es" lang="es">Pregunta: "¿Dónde ves los números de la tarea de hoy en este modelo?"</span></p>
+          <p class="visual-coach-q"><span class="lang-en">${esc(authored.coachEn || 'Ask: "Where do you see the numbers from tonight\'s math in this model?"')}</span><span class="lang-es" lang="es">${esc(authored.coachEs || 'Pregunta: "¿Dónde ves los números de la tarea de hoy en este modelo?"')}</span></p>
         </div>
       </article>
     </div>
