@@ -31,7 +31,9 @@ globalThis.requestAnimationFrame = (fn) => setTimeout(fn, 0);
 globalThis.localStorage = dom.window.localStorage;
 globalThis.sessionStorage = dom.window.sessionStorage;
 
-const { teacherLens } = await import("./small-group-practice-path.js");
+const { CORRECT_LEADS, correctLead, resetCorrectLeads, tableCheck, teacherLens } = await import(
+  "./small-group-practice-path.js"
+);
 
 let checks = 0;
 const ok = (cond, what) => {
@@ -140,6 +142,94 @@ const ok = (cond, what) => {
     `small-group practice path: ${fed} of ${items} authored items feed a teacher lens ` +
       `across ${new Set(studios).size} studio(s).`,
   );
+}
+
+// ── correct-answer praise rotates ─────────────────────────────────────────────
+// Carried back from the renderer this path replaced, whose own comment is the
+// reason: a student working a long set read the identical sentence every time,
+// and praise that never varies "starts reading as machinery". This path had
+// regressed to one fixed "Correct." for every right answer in a session.
+{
+  ok(CORRECT_LEADS.length >= 4, `enough leads to not repeat soon (${CORRECT_LEADS.length})`);
+  ok(
+    CORRECT_LEADS.every(([en, es]) => en && es),
+    "every lead has a Spanish sibling",
+  );
+  // The voice rule: name the method, never rate the child. These are the shapes
+  // that rate a person rather than describe the mathematics.
+  const ratesTheChild = /\b(smart|clever|genius|good (boy|girl)|brilliant)\b/i;
+  ok(
+    CORRECT_LEADS.every(([en]) => !ratesTheChild.test(en)),
+    "no lead rates the student instead of the method",
+  );
+
+  // Deterministic rotation, not Math.random — successive corrects walk the list
+  // in order, so no two in a row repeat and a replayed session reads the same.
+  const first = CORRECT_LEADS.map(([en]) => en);
+  ok(new Set(first).size === first.length, "the leads are distinct, so rotation can vary the text");
+
+  resetCorrectLeads();
+  const walk = Array.from({ length: CORRECT_LEADS.length * 2 }, () => correctLead());
+  ok(
+    walk.slice(0, CORRECT_LEADS.length).every((html, i) => html.includes(first[i])),
+    "the first pass walks the list in order",
+  );
+  ok(
+    walk.every((html, i) => i === 0 || html !== walk[i - 1]),
+    "no two consecutive corrects print the same lead",
+  );
+  ok(
+    walk[CORRECT_LEADS.length] === walk[0],
+    "the cursor wraps rather than running off the end",
+  );
+  resetCorrectLeads();
+  ok(correctLead() === walk[0], "resetting replays the same sequence — deterministic, not random");
+}
+
+// ── the table check is the show-me rhythm, not a lock ─────────────────────────
+{
+  const block = tableCheck(3);
+  ok(block.classList.contains("sg-tablecheck"), "the show-me block carries its own class");
+  ok(block.getAttribute("role") === "status", "it is announced, not silent");
+  ok(/#3/.test(block.textContent), "it names the problem number it belongs to");
+  ok(/notebook/i.test(block.textContent), "it asks for the paper notebook");
+  const button = block.querySelector(".sg-tablecheck-done");
+  ok(button, "it is dismissible");
+  ok(!button.disabled, "the dismiss button starts live");
+  button.onclick();
+  ok(block.classList.contains("sg-tablecheck-ok"), "dismissing marks it done");
+  ok(button.disabled, "it cannot be double-dismissed");
+  // Honor-system by design: the software cannot see a notebook, so nothing here
+  // may gate progress on the dismissal.
+  ok(
+    !/disabled|required|must/i.test(block.innerHTML.replace(/<button[^>]*>/, "")),
+    "the show-me never blocks the student",
+  );
+}
+
+// ── the styles for both still ship, and now something renders them ────────────
+// .sg-tablecheck* sat in the shipped stylesheet with nothing creating the
+// element, which is how this read as a loss rather than a decision.
+{
+  const ui = readFileSync(new URL("./small-group-ui.js", import.meta.url), "utf8");
+  for (const cls of [".sg-tablecheck", ".sg-tablecheck-done", ".sg-tablecheck-icon"]) {
+    ok(ui.includes(cls), `${cls} is styled by the shipped sheet`);
+  }
+  const src = readFileSync(new URL("./small-group-practice-path.js", import.meta.url), "utf8");
+  ok(/card\.appendChild\(tableCheck\(/.test(src), "a card actually mounts the show-me");
+  ok(
+    /\+\+solvedLive % 3 === 0/.test(src),
+    "it lands on every third live solve, counted per section",
+  );
+  ok(
+    /if \(!restoring && tick\?\.\(\)/.test(src),
+    "a restored solve does not fire the ritual for last session's work",
+  );
+  ok(
+    !/"\u2713 Correct\."/.test(src),
+    "the fixed one-sentence praise is gone from the correct path",
+  );
+  ok(/correctLead\(\)/.test(src), "the correct path uses a rotating lead");
 }
 
 console.log(`small-group-practice-path: ${checks} checks passed.`);
