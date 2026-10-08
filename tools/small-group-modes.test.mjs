@@ -22,12 +22,33 @@ assert.match(
 );
 assert.doesNotMatch(renderer, /localStorage\.getItem\("nt-teacher-mode"\)/);
 
+// Re-pointed at the SHIPPED practice path. This used to read
+// small-group-practice.js and assert `paginateProblems` there, and it kept
+// passing after small-group-practice-path.js took over — reporting on a file no
+// student loads.
+//
+// The assertion itself is retired rather than moved, with a reason. One problem
+// at a time existed because the generated pool ran 12-18 items and opening on
+// all of them buried the variety authored further down. The authored sets are
+// uniformly small — 2 Practice Together, 4 On My Own, 2 Check across all 168
+// group variants — and a teacher working a table wants the set in view, so
+// paginating four short problems would cost a tap per problem and hide nothing
+// worth hiding. What still matters is that the path does not silently truncate
+// an authored set, which is what the old slice(0, 6) guard was for.
 const practice = readFileSync(
-  new URL("../engine/core/small-group-practice.js", import.meta.url),
+  new URL("../engine/core/small-group-practice-path.js", import.meta.url),
   "utf8",
 );
-assert.match(practice, /paginateProblems/, "practice sets must show one problem at a time");
-assert.doesNotMatch(practice, /return items\.slice\(0, 6\)/);
+assert.doesNotMatch(
+  practice,
+  /\.slice\(0,\s*\d+\)/,
+  "the practice path must render every authored problem, never a truncated slice",
+);
+assert.match(
+  practice,
+  /p\.onMyOwn\.forEach/,
+  "On My Own iterates the authored set rather than a capped subset",
+);
 const smallGroupUi = readFileSync(
   new URL("../engine/core/small-group-ui.js", import.meta.url),
   "utf8",

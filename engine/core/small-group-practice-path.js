@@ -329,7 +329,7 @@ export function teacherLens(it) {
   it.choices.forEach((choice, i) => {
     if (i === it.correct) return;
     const why = String(it.choiceWhy[i] || "").trim();
-    if (why) probes.push({ choice, why, whyEs: it.choiceWhyEs?.[i] });
+    if (why) probes.push({ choice, choiceEs: it.choicesEs?.[i], why, whyEs: it.choiceWhyEs?.[i] });
   });
   if (!probes.length) return null;
   // Two probes carry the discussion; a row per distractor turns the card into a
@@ -342,7 +342,13 @@ export function teacherLens(it) {
     probes
       .map(
         (p) =>
-          `<div class="sg-lens-row"><b>If they pick \u201C${esc(p.choice)}\u201D</b>` +
+          // The quoted choice goes through the same bilingual math formatter the
+          // student's own button uses. `esc()` printed the authored tokens raw,
+          // so the teacher read `If they pick "{5/12}"` on 4-2 and
+          // `Change 2{3/4} to {11/4}` on 6-10 while the student saw real
+          // fractions — and the Spanish choice was dropped on all 74
+          // lens-bearing items, every one of which carries `choicesEs`.
+          `<div class="sg-lens-row"><b>If they pick \u201C${line(p.choice, p.choiceEs)}\u201D</b>` +
           `<span>${line(p.why, p.whyEs)}</span></div>`,
       )
       .join("");
@@ -531,14 +537,23 @@ function talkCard(talk, { store }) {
   );
   prompt.append(head, el("p", null, line(talk.prompt, talk.promptEs)));
   card.appendChild(prompt);
-  card.appendChild(el("p", "sgp-frames-lab", "Start your sentence like this:"));
+  const framesLab = el("p", "sgp-frames-lab", "Start your sentence like this:");
+  framesLab.id = "sgp-talk-frames-lab";
+  card.appendChild(framesLab);
   const frames = framesRow(talk.frames, talk.framesEs, 2);
-  if (frames) card.appendChild(frames);
+  if (frames) {
+    frames.id = "sgp-talk-frames";
+    card.appendChild(frames);
+  }
   const id = "sgp-talk-note";
   const lab = el("label", "sgb-input-label", "Write your best sentence (optional)");
   lab.htmlFor = id;
   const area = el("textarea", "sgb-why-box");
   area.id = id;
+  // The frames are the scaffold for THIS box, so they are announced with it.
+  // Sitting next to it is enough for a sighted student and nothing at all for a
+  // screen-reader user, who otherwise hears the label and none of the frames.
+  if (frames) area.setAttribute("aria-describedby", `${framesLab.id} ${frames.id}`);
   area.rows = 2;
   area.value = store?.get("talkNote") || "";
   area.addEventListener("input", () => store?.set("talkNote", area.value));
