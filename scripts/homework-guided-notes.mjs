@@ -172,13 +172,27 @@ function splitExplanation(value) {
 }
 
 const STEP_CUES = [
-  { icon: "👀", en: "Start", es: "Empieza" },
-  { icon: "🧩", en: "Show it", es: "Muéstralo" },
+  { icon: "🎯", en: "Set up", es: "Plantea" },
+  { icon: "🧩", en: "Model", es: "Modela" },
   { icon: "✏️", en: "Solve", es: "Resuelve" },
   { icon: "✅", en: "Check", es: "Revisa" },
 ];
 
-function stepCue(index) {
+function stepCue(index, step) {
+  if (step?.cue && typeof step.cue === "object") {
+    return {
+      icon: step.cue.icon || "📌",
+      en: step.cue.en || "Step",
+      es: step.cue.es || step.cue.en || "Paso",
+    };
+  }
+  if (step?.cueEn) {
+    return {
+      icon: step.cueIcon || step.icon || "📌",
+      en: step.cueEn,
+      es: step.cueEs || step.cueEn,
+    };
+  }
   return STEP_CUES[Math.min(index, STEP_CUES.length - 1)];
 }
 
@@ -202,11 +216,16 @@ function _languageTonightEs(config) {
 }
 
 function buildConceptSteps(config) {
+  const custom = config.familyNotes?.conceptSteps;
+  if (Array.isArray(custom) && custom.length) {
+    return custom.map((step, i) => ({
+      ...step,
+      stepNum: step.stepNum ?? i + 1,
+    }));
+  }
   const exact = exactFamilySupport(config || {});
   if (exact) return exact.steps.map((step, i) => ({ ...step, stepNum: i + 1 }));
   const intro = conceptIntro(config);
-  const custom = config.familyNotes?.conceptSteps;
-  if (Array.isArray(custom) && custom.length) return custom;
 
   const vocab = config.vocabulary || [];
   const lines = [];
@@ -1736,6 +1755,517 @@ function conceptVisual(config) {
     };
   }
 
+  if (baseLesson === "4-1") {
+    const isPart2 = lessonId.endsWith("-part2");
+    if (isPart2) {
+      return {
+        svg: `<div class="family-specific-model">${conceptFrame({
+          label:
+            "Percents Greater Than 100%: 100% is one whole, and a puppy at 2.5 times kitten weight is 250%",
+          tone: "amber",
+          height: 420,
+          title: "Percents Greater Than 100% / Porcentajes mayores que 100%",
+          body: `
+          <!-- Reference Whole Card -->
+          ${conceptCard(34, 68, 572, 104)}
+          <rect x="52" y="82" width="220" height="24" rx="6" fill="#10b981"/>
+          <text x="162" y="99" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">REFERENCE WHOLE = 100%</text>
+          <rect x="52" y="118" width="180" height="38" rx="6" fill="#10b981" stroke="#059669" stroke-width="2"/>
+          <text x="142" y="142" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">Kitten = 1 whole (100%)</text>
+          <text x="250" y="142" font-size="14" font-weight="700" fill="#12355b">← The base amount compared TO is always 100%</text>
+
+          <!-- Puppy: 2.5 Times Whole Card -->
+          ${conceptCard(34, 184, 572, 126)}
+          <rect x="52" y="196" width="230" height="24" rx="6" fill="#3b82f6"/>
+          <text x="167" y="213" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">PUPPY = 2.5 TIMES KITTEN</text>
+          <g transform="translate(52, 230)">
+            <rect x="0" y="0" width="180" height="38" rx="6" fill="#3b82f6" stroke="#2563eb" stroke-width="2"/>
+            <text x="90" y="24" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">1st Whole (100%)</text>
+            <rect x="186" y="0" width="180" height="38" rx="6" fill="#3b82f6" stroke="#2563eb" stroke-width="2"/>
+            <text x="276" y="24" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">2nd Whole (100%)</text>
+            <rect x="372" y="0" width="90" height="38" rx="6" fill="#93c5fd" stroke="#3b82f6" stroke-width="2"/>
+            <text x="417" y="24" text-anchor="middle" font-size="13" font-weight="800" fill="#1e3a8a">+50%</text>
+          </g>
+          <text x="52" y="296" font-size="15" font-weight="800" fill="#1e3a8a">100% + 100% + 50% = 250% of the kitten's weight</text>
+
+          <!-- Key takeaway callout -->
+          <rect x="34" y="322" width="572" height="80" rx="14" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
+          <text x="54" y="348" font-size="14" font-weight="800" fill="#b45309">💡 MORE THAN ONE WHOLE:</text>
+          <text x="54" y="370" font-size="13.5" font-weight="700" fill="#12355b">Percents greater than 100% mean more than 1 whole: 2.5 × 100% = 250%.</text>
+          <text x="54" y="390" font-size="13.5" font-weight="700" fill="#12355b">Check: Is the puppy heavier than the kitten? Yes → percent must exceed 100%.</text>`,
+        })}</div>`,
+        capEn: "100% is one whole. A percent greater than 100% means more than one whole.",
+        capEs: "100% es un entero. Un porcentaje mayor que 100% significa más de un entero.",
+      };
+    }
+
+    const gridSquares = Array.from({ length: 100 }, (_, i) => {
+      const col = i % 10;
+      const row = Math.floor(i / 10);
+      const isShaded = i < 40;
+      const fill = isShaded ? "#0f766e" : "#f8fafc";
+      const stroke = isShaded ? "#0d5f58" : "#cbd5e1";
+      return `<rect x="${393 + col * 15}" y="${108 + row * 10}" width="14" height="9" rx="1" fill="${fill}" stroke="${stroke}" stroke-width="1"/>`;
+    }).join("");
+
+    return {
+      svg: `<div class="family-specific-model">${conceptFrame({
+        label:
+          "Understand Percent: scaling ratio 4 out of 10 to 40 out of 100 and showing 40 shaded squares on a hundredths grid",
+        tone: "teal",
+        height: 420,
+        title: "Understand Percent / ¿Qué es un porcentaje?",
+        body: `
+        <!-- Scaling Ratio Card -->
+        ${conceptCard(34, 68, 276, 222)}
+        <rect x="52" y="82" width="168" height="24" rx="6" fill="#0f766e"/>
+        <text x="136" y="99" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">SCALE RATIO TO 100</text>
+        <text x="172" y="126" text-anchor="middle" font-size="15" font-weight="700" fill="#12355b">4 out of 10 students</text>
+        <g transform="translate(102, 138)">
+          <text x="70" y="20" text-anchor="middle" font-size="16" font-weight="800" fill="#0f766e">4 × 10</text>
+          <line x1="20" y1="28" x2="120" y2="28" stroke="#0f766e" stroke-width="2.5"/>
+          <text x="70" y="48" text-anchor="middle" font-size="16" font-weight="800" fill="#0f766e">10 × 10</text>
+        </g>
+        <text x="172" y="214" text-anchor="middle" font-size="20" font-weight="800" fill="#12355b">= 40 / 100</text>
+        <rect x="72" y="232" width="200" height="38" rx="8" fill="#0f766e"/>
+        <text x="172" y="257" text-anchor="middle" font-size="18" font-weight="800" fill="#ffffff">= 40% (per hundred)</text>
+
+        <!-- 100-Square Grid Card -->
+        ${conceptCard(330, 68, 276, 222)}
+        <rect x="348" y="82" width="160" height="24" rx="6" fill="#0f766e"/>
+        <text x="428" y="99" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">100-SQUARE GRID</text>
+        <g>${gridSquares}</g>
+        <text x="468" y="228" text-anchor="middle" font-size="13" font-weight="800" fill="#0f766e">40 shaded squares = 40%</text>
+        <text x="468" y="248" text-anchor="middle" font-size="12" font-weight="700" fill="#64748b">60 unshaded squares = 60%</text>
+        <text x="468" y="268" text-anchor="middle" font-size="12" font-weight="700" fill="#12355b">Total: 100 squares = 100%</text>
+
+        <!-- Key Rule Callout -->
+        <rect x="34" y="304" width="572" height="98" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
+        <text x="54" y="328" font-size="15" font-weight="800" fill="#0f766e">✔ KEY PERCENT RULE:</text>
+        <text x="54" y="352" font-size="14" font-weight="700" fill="#12355b">Percent literally means "per hundred". Scale any ratio until the bottom number is 100.</text>
+        <text x="54" y="374" font-size="14" font-weight="700" fill="#12355b">100% stands for 1 whole. Percents can also exceed 100%: 150% = 1.5 wholes.</text>
+        <text x="54" y="394" font-size="13" font-weight="700" fill="#0f766e">Equivalent ratio: 4/10 = 40/100 = 40%</text>`,
+      })}</div>`,
+      capEn:
+        "Percent means per hundred. Multiply both parts of a ratio so the second number is 100.",
+      capEs:
+        "Porcentaje significa por cada cien. Multipliquen ambas partes de la razón para que el segundo número sea 100.",
+    };
+  }
+
+  if (baseLesson === "4-2") {
+    const isPart2 = lessonId.endsWith("-part2");
+    if (isPart2) {
+      return {
+        svg: `<div class="family-specific-model">${conceptFrame({
+          label:
+            "Comparing and Ordering Mixed Forms: Convert 0.68, 3/4, and 71% to percents to order them accurately",
+          tone: "navy",
+          height: 420,
+          title: "Compare & Order Mixed Forms / Compara y ordena formas mixtas",
+          body: `
+          <!-- Convert All to Percents Card -->
+          ${conceptCard(34, 68, 572, 134)}
+          <rect x="52" y="82" width="260" height="24" rx="6" fill="#1e40af"/>
+          <text x="182" y="99" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">CONVERT ALL VALUES TO PERCENTS</text>
+          <g transform="translate(52, 118)">
+            <!-- Item 1: Decimal -->
+            <rect x="0" y="0" width="168" height="68" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+            <text x="84" y="24" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">0.68</text>
+            <text x="84" y="44" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">68 hundredths</text>
+            <text x="84" y="60" text-anchor="middle" font-size="15" font-weight="800" fill="#0f766e">= 68%</text>
+
+            <!-- Item 2: Percent -->
+            <rect x="184" y="0" width="168" height="68" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+            <text x="268" y="24" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">71%</text>
+            <text x="268" y="44" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">already percent</text>
+            <text x="268" y="60" text-anchor="middle" font-size="15" font-weight="800" fill="#0f766e">= 71%</text>
+
+            <!-- Item 3: Fraction -->
+            <rect x="368" y="0" width="168" height="68" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+            <text x="452" y="24" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">3/4</text>
+            <text x="452" y="44" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">scale × 25/25 = 75/100</text>
+            <text x="452" y="60" text-anchor="middle" font-size="15" font-weight="800" fill="#0f766e">= 75%</text>
+          </g>
+
+          <!-- Compare Percents Scale -->
+          ${conceptCard(34, 214, 572, 88)}
+          <rect x="52" y="226" width="200" height="24" rx="6" fill="#1e40af"/>
+          <text x="152" y="243" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">ORDER THE PERCENTS</text>
+          <text x="320" y="284" text-anchor="middle" font-size="20" font-weight="800" fill="#0f766e">68%   &lt;   71%   &lt;   75%</text>
+
+          <!-- Final Answer Card -->
+          <rect x="34" y="314" width="572" height="88" rx="14" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+          <text x="54" y="338" font-size="14" font-weight="800" fill="#1d4ed8">✔ FINAL ORDER (IN ORIGINAL FORMS, LEAST TO GREATEST):</text>
+          <text x="320" y="376" text-anchor="middle" font-size="24" font-weight="800" fill="#12355b">0.68   &lt;   71%   &lt;   3/4</text>`,
+        })}</div>`,
+        capEn: "Convert every value to a percent first, order them, then write the original forms.",
+        capEs:
+          "Conviertan cada valor a porcentaje primero, ordénenlos y luego escriban las formas originales.",
+      };
+    }
+
+    // Part 1: Three forms of one amount
+    return {
+      svg: `<div class="family-specific-model">${conceptFrame({
+        label: "Three forms of one amount: 1/4 equals 25/100 equals 0.25 equals 25%",
+        tone: "teal",
+        height: 420,
+        title: "Three Forms of One Amount / Tres formas de una misma cantidad",
+        body: `
+        <!-- 4 Equivalence Cards -->
+        <!-- Fraction Card -->
+        ${conceptCard(34, 68, 134, 212)}
+        <rect x="46" y="80" width="110" height="24" rx="6" fill="#0f766e"/>
+        <text x="101" y="97" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">FRACTION</text>
+        <text x="101" y="146" text-anchor="middle" font-size="34" font-weight="800" fill="#12355b">1/4</text>
+        <g transform="translate(61, 168)">
+          <rect x="0" y="0" width="80" height="20" rx="3" fill="#f8fafc" stroke="#0f766e" stroke-width="1.5"/>
+          <rect x="0" y="0" width="20" height="20" rx="3" fill="#0f766e"/>
+        </g>
+        <text x="101" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">1 part of 4</text>
+        <text x="101" y="260" text-anchor="middle" font-size="12" font-weight="800" fill="#0f766e">1 ÷ 4 = 0.25</text>
+
+        <!-- Hundredths Card -->
+        ${conceptCard(180, 68, 134, 212)}
+        <rect x="192" y="80" width="110" height="24" rx="6" fill="#0f766e"/>
+        <text x="247" y="97" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">OUT OF 100</text>
+        <text x="247" y="146" text-anchor="middle" font-size="28" font-weight="800" fill="#12355b">25/100</text>
+        <text x="247" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#0f766e">scale × 25</text>
+        <text x="247" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">25 hundredths</text>
+        <text x="247" y="260" text-anchor="middle" font-size="12" font-weight="800" fill="#0f766e">scale denominator</text>
+
+        <!-- Decimal Card -->
+        ${conceptCard(326, 68, 134, 212)}
+        <rect x="338" y="80" width="110" height="24" rx="6" fill="#0f766e"/>
+        <text x="393" y="97" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">DECIMAL</text>
+        <text x="393" y="146" text-anchor="middle" font-size="34" font-weight="800" fill="#12355b">0.25</text>
+        <text x="393" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#0f766e">2 tenths</text>
+        <text x="393" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">5 hundredths</text>
+        <text x="393" y="260" text-anchor="middle" font-size="12" font-weight="800" fill="#0f766e">0.25 × 100 = 25%</text>
+
+        <!-- Percent Card -->
+        ${conceptCard(472, 68, 134, 212)}
+        <rect x="484" y="80" width="110" height="24" rx="6" fill="#0f766e"/>
+        <text x="539" y="97" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">PERCENT</text>
+        <text x="539" y="146" text-anchor="middle" font-size="34" font-weight="800" fill="#12355b">25%</text>
+        <text x="539" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#0f766e">per hundred</text>
+        <text x="539" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">25 for each 100</text>
+        <text x="539" y="260" text-anchor="middle" font-size="12" font-weight="800" fill="#0f766e">same amount!</text>
+
+        <!-- Conversion Pathways Callout -->
+        <rect x="34" y="294" width="572" height="108" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
+        <text x="54" y="318" font-size="15" font-weight="800" fill="#0f766e">✔ HOW TO CONVERT BETWEEN FORMS:</text>
+        <text x="54" y="342" font-size="14" font-weight="700" fill="#12355b">1. Fraction to Decimal: Divide top ÷ bottom (1 ÷ 4 = 0.25, or 3 ÷ 4 = 0.75).</text>
+        <text x="54" y="364" font-size="14" font-weight="700" fill="#12355b">2. Decimal to Percent: Multiply by 100 (0.25 × 100 = 25%, or 0.75 × 100 = 75%).</text>
+        <text x="54" y="386" font-size="13.5" font-weight="700" fill="#0f766e">Equivalent ratio &amp; value: 1/4 = 25/100 = 0.25 = 25%</text>`,
+      })}</div>`,
+      capEn: "Fraction, decimal, and percent can all name the same part of one whole.",
+      capEs: "La fracción, el decimal y el porcentaje pueden nombrar la misma parte de un entero.",
+    };
+  }
+
+  if (baseLesson === "4-3") {
+    const isPart2 = lessonId.endsWith("-part2");
+    if (isPart2) {
+      return {
+        svg: `<div class="family-specific-model">${conceptFrame({
+          label:
+            "Estimating a Percent of a Number: Round 18.5% of 412 cans to 20% of 400 = 80 cans, and track rounding direction",
+          tone: "amber",
+          height: 420,
+          title: "Compatible Numbers & Rounding / Números compatibles y redondeo",
+          body: `
+          <!-- Card 1: Round to Friendly Numbers -->
+          ${conceptCard(34, 68, 276, 218)}
+          <rect x="52" y="82" width="230" height="24" rx="6" fill="#b45309"/>
+          <text x="167" y="99" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">ROUND BOTH NUMBERS</text>
+          <text x="172" y="128" text-anchor="middle" font-size="15" font-weight="800" fill="#12355b">18.5% of 412 cans</text>
+          <text x="172" y="152" text-anchor="middle" font-size="13" font-weight="700" fill="#b45309">18.5% rounds to 20%</text>
+          <text x="172" y="172" text-anchor="middle" font-size="13" font-weight="700" fill="#b45309">412 rounds to 400</text>
+          <rect x="52" y="190" width="240" height="82" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+          <text x="172" y="212" text-anchor="middle" font-size="13" font-weight="800" fill="#92400e">10% of 400 = 40</text>
+          <text x="172" y="234" text-anchor="middle" font-size="13" font-weight="800" fill="#92400e">20% of 400 = 40 × 2 = 80</text>
+          <text x="172" y="258" text-anchor="middle" font-size="14" font-weight="800" fill="#12355b">Estimate ≈ 80 cans</text>
+
+          <!-- Card 2: Direction Tracking -->
+          ${conceptCard(330, 68, 276, 218)}
+          <rect x="348" y="82" width="220" height="24" rx="6" fill="#b45309"/>
+          <text x="458" y="99" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">ROUNDING DIRECTION</text>
+          <text x="468" y="130" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Percent rounded UP:</text>
+          <text x="468" y="150" text-anchor="middle" font-size="13" font-weight="800" fill="#16a34a">18.5% ↑ 20% (makes estimate larger)</text>
+          <text x="468" y="180" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Total rounded DOWN:</text>
+          <text x="468" y="200" text-anchor="middle" font-size="13" font-weight="800" fill="#dc2626">412 ↓ 400 (makes estimate smaller)</text>
+          <rect x="348" y="222" width="240" height="50" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+          <text x="468" y="244" text-anchor="middle" font-size="12" font-weight="800" fill="#12355b">Net effect: close estimate</text>
+          <text x="468" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#b45309">runs slightly high</text>
+
+          <!-- Bottom Summary -->
+          <rect x="34" y="300" width="572" height="102" rx="14" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
+          <text x="54" y="326" font-size="15" font-weight="800" fill="#b45309">✔ THE 10% WORKHORSE STRATEGY:</text>
+          <text x="54" y="350" font-size="14" font-weight="700" fill="#12355b">10% of any number is easy: move the decimal 1 place left (10% of 400 = 40).</text>
+          <text x="54" y="372" font-size="14" font-weight="700" fill="#12355b">Double it for 20% (40 × 2 = 80). Half it for 5% (40 ÷ 2 = 20).</text>
+          <text x="54" y="392" font-size="13" font-weight="700" fill="#b45309">Estimating is not guessing — it is smart mental arithmetic with friendly numbers.</text>`,
+        })}</div>`,
+        capEn:
+          "Round to friendly benchmark percents and compatible numbers, then track if the estimate runs high or low.",
+        capEs:
+          "Redondeen a porcentajes de referencia fáciles y números compatibles, y razonen si la estimación queda alta o baja.",
+      };
+    }
+
+    // Part 1: Estimate with Benchmarks
+    return {
+      svg: `<div class="family-specific-model">${conceptFrame({
+        label: "Benchmark Estimation: 48% of $61 is close to 50% of $60 = $30",
+        tone: "coral",
+        height: 420,
+        title: "Estimate with Benchmarks / Estima con referentes",
+        body: `
+        <!-- Benchmark Number Line Card -->
+        ${conceptCard(34, 68, 572, 206)}
+        <rect x="52" y="80" width="240" height="24" rx="6" fill="#ea580c"/>
+        <text x="172" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">BENCHMARK LINE FOR $60 WHOLE</text>
+
+        <!-- The line -->
+        <line x1="64" y1="160" x2="576" y2="160" stroke="#12355b" stroke-width="4"/>
+
+        <!-- Ticks -->
+        <!-- 0% -->
+        <line x1="64" y1="148" x2="64" y2="172" stroke="#12355b" stroke-width="3"/>
+        <text x="64" y="142" text-anchor="middle" font-size="13" font-weight="800" fill="#12355b">0%</text>
+        <text x="64" y="190" text-anchor="middle" font-size="14" font-weight="700" fill="#5f6f80">$0</text>
+
+        <!-- 10% -->
+        <line x1="115" y1="152" x2="115" y2="168" stroke="#12355b" stroke-width="2"/>
+        <text x="115" y="142" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">10%</text>
+        <text x="115" y="190" text-anchor="middle" font-size="13" font-weight="700" fill="#5f6f80">$6</text>
+
+        <!-- 25% -->
+        <line x1="192" y1="150" x2="192" y2="170" stroke="#12355b" stroke-width="2.5"/>
+        <text x="192" y="142" text-anchor="middle" font-size="13" font-weight="800" fill="#0f766e">25% (1/4)</text>
+        <text x="192" y="190" text-anchor="middle" font-size="14" font-weight="800" fill="#0f766e">$15</text>
+
+        <!-- 50% -->
+        <line x1="320" y1="146" x2="320" y2="174" stroke="#ea580c" stroke-width="4"/>
+        <text x="320" y="140" text-anchor="middle" font-size="14" font-weight="800" fill="#ea580c">50% (half)</text>
+        <text x="320" y="190" text-anchor="middle" font-size="16" font-weight="800" fill="#ea580c">$30</text>
+
+        <!-- 75% -->
+        <line x1="448" y1="150" x2="448" y2="170" stroke="#12355b" stroke-width="2.5"/>
+        <text x="448" y="142" text-anchor="middle" font-size="13" font-weight="800" fill="#0f766e">75% (3/4)</text>
+        <text x="448" y="190" text-anchor="middle" font-size="14" font-weight="800" fill="#0f766e">$45</text>
+
+        <!-- 100% -->
+        <line x1="576" y1="148" x2="576" y2="172" stroke="#12355b" stroke-width="3"/>
+        <text x="576" y="142" text-anchor="middle" font-size="13" font-weight="800" fill="#12355b">100%</text>
+        <text x="576" y="190" text-anchor="middle" font-size="14" font-weight="700" fill="#5f6f80">$60</text>
+
+        <!-- Target pin at 48% (around x: 310) -->
+        <polygon points="310,154 304,142 316,142" fill="#ea580c"/>
+        <rect x="220" y="210" width="200" height="52" rx="8" fill="#ffedd5" stroke="#ea580c" stroke-width="2"/>
+        <text x="320" y="230" text-anchor="middle" font-size="13" font-weight="800" fill="#c2410c">48% of $61 ≈ 50% of $60</text>
+        <text x="320" y="250" text-anchor="middle" font-size="15" font-weight="800" fill="#12355b">Estimate ≈ $30</text>
+
+        <!-- Toolkit Callout -->
+        <rect x="34" y="286" width="572" height="116" rx="14" fill="#fff7ed" stroke="#ea580c" stroke-width="2"/>
+        <text x="54" y="312" font-size="15" font-weight="800" fill="#ea580c">💡 BENCHMARK ESTIMATION TOOLKIT:</text>
+        <text x="54" y="336" font-size="14" font-weight="700" fill="#12355b">10%: Move decimal 1 place left ($60 → $6).</text>
+        <text x="54" y="358" font-size="14" font-weight="700" fill="#12355b">50%: Half of whole ($60 ÷ 2 = $30).   25%: Half of 50% ($30 ÷ 2 = $15).</text>
+        <text x="54" y="380" font-size="14" font-weight="700" fill="#12355b">48% of $61 is close to 50% of $60 = $30 (just under $30 because 48% &lt; 50%).</text>
+        <text x="54" y="396" font-size="13" font-weight="700" fill="#ea580c">Quick mental ratio estimate: no long division needed!</text>`,
+      })}</div>`,
+      capEn: "Use benchmark percents like 10%, 25%, and 50% to make quick mental estimates.",
+      capEs:
+        "Usen porcentajes de referencia como 10%, 25% y 50% para hacer estimaciones mentales rápidas.",
+    };
+  }
+
+  if (baseLesson === "4-4") {
+    const isPart2 = lessonId.endsWith("-part2");
+    if (isPart2) {
+      return {
+        svg: `<div class="family-specific-model">${conceptFrame({
+          label:
+            "Comparing with Percents: Comparing Quiz 1 (21 out of 25 = 84%) with Quiz 2 (16 out of 20 = 80%)",
+          tone: "navy",
+          height: 420,
+          title: "Fair Comparison with Percents / Comparación justa con porcentajes",
+          body: `
+          <!-- Quiz 1 Card -->
+          ${conceptCard(34, 68, 276, 218)}
+          <rect x="52" y="80" width="140" height="24" rx="6" fill="#1e40af"/>
+          <text x="122" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">QUIZ 1 (OUT OF 25)</text>
+          <text x="172" y="130" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">21 out of 25 correct</text>
+          <text x="172" y="156" text-anchor="middle" font-size="15" font-weight="700" fill="#1e40af">Scale denominator to 100:</text>
+          <text x="172" y="180" text-anchor="middle" font-size="16" font-weight="800" fill="#1e40af">21 × 4 / 25 × 4 = 84 / 100</text>
+          <rect x="62" y="196" width="220" height="42" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+          <text x="172" y="222" text-anchor="middle" font-size="20" font-weight="800" fill="#15803d">= 84% ★ HIGHER SCORE</text>
+
+          <!-- Quiz 2 Card -->
+          ${conceptCard(330, 68, 276, 218)}
+          <rect x="348" y="80" width="140" height="24" rx="6" fill="#1e40af"/>
+          <text x="418" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">QUIZ 2 (OUT OF 20)</text>
+          <text x="468" y="130" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">16 out of 20 correct</text>
+          <text x="468" y="156" text-anchor="middle" font-size="15" font-weight="700" fill="#1e40af">Scale denominator to 100:</text>
+          <text x="468" y="180" text-anchor="middle" font-size="16" font-weight="800" fill="#1e40af">16 × 5 / 20 × 5 = 80 / 100</text>
+          <rect x="358" y="196" width="220" height="42" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+          <text x="468" y="222" text-anchor="middle" font-size="20" font-weight="800" fill="#64748b">= 80%</text>
+
+          <!-- Takeaway Callout -->
+          <rect x="34" y="300" width="572" height="104" rx="14" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+          <text x="54" y="326" font-size="15" font-weight="800" fill="#1d4ed8">✔ WHY PERCENTS MAKE COMPARISON FAIR:</text>
+          <text x="54" y="350" font-size="14" font-weight="700" fill="#12355b">You cannot compare 21 and 16 directly because they come from different totals (25 vs 20).</text>
+          <text x="54" y="372" font-size="14" font-weight="700" fill="#12355b">Percents put both scores on the same 100-point scale: 84% beats 80%.</text>
+          <text x="54" y="392" font-size="13" font-weight="700" fill="#1d4ed8">Equivalent ratio scaling: 21/25 = 84/100 and 16/20 = 80/100</text>`,
+        })}</div>`,
+        capEn:
+          "Scale both ratios to 100 so different totals can be compared on the same fair scale.",
+        capEs:
+          "Escalen ambas razones a 100 para comparar totales distintos en una misma escala justa.",
+      };
+    }
+
+    // Part 1: Find Percent of a Number (Discounts)
+    return {
+      svg: `<div class="family-specific-model">${conceptFrame({
+        label:
+          "Find Percent of a Number: $40 backpack with 25% discount gives $10 discount and $30 sale price",
+        tone: "teal",
+        height: 420,
+        title: "Find Percent of a Number / Halla el porcentaje de un número",
+        body: `
+        <!-- Tape Diagram Card -->
+        ${conceptCard(34, 68, 572, 136)}
+        <rect x="52" y="80" width="220" height="24" rx="6" fill="#0f766e"/>
+        <text x="162" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">TAPE DIAGRAM: $40 BACKPACK</text>
+
+        <!-- 4 Blocks of $10 each -->
+        <g transform="translate(52, 116)">
+          <!-- Block 1: Discount -->
+          <rect x="0" y="0" width="130" height="42" rx="6" fill="#fee2e2" stroke="#ef4444" stroke-width="2"/>
+          <text x="65" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#b91c1c">25% OFF = $10</text>
+
+          <!-- Blocks 2, 3, 4: Sale Price -->
+          <rect x="138" y="0" width="125" height="42" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+          <text x="200" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#15803d">$10 (25%)</text>
+          <rect x="271" y="0" width="125" height="42" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+          <text x="333" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#15803d">$10 (25%)</text>
+          <rect x="404" y="0" width="125" height="42" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+          <text x="466" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#15803d">$10 (25%)</text>
+        </g>
+        <text x="117" y="180" text-anchor="middle" font-size="12" font-weight="800" fill="#b91c1c">Discount Part</text>
+        <text x="390" y="180" text-anchor="middle" font-size="12" font-weight="800" fill="#15803d">Sale Price Part = $30 (75%)</text>
+
+        <!-- Calculation Card -->
+        <rect x="34" y="216" width="572" height="188" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
+        <text x="54" y="242" font-size="15" font-weight="800" fill="#0f766e">✔ TWO-STEP DISCOUNT FORMULA:</text>
+        <g transform="translate(54, 258)">
+          <text x="0" y="18" font-size="14" font-weight="700" fill="#12355b">Step 1: Find the discount (Part = Percent × Whole)</text>
+          <text x="0" y="40" font-size="15" font-weight="800" fill="#0f766e">25% of $40 = 0.25 × 40 = $10 discount</text>
+          <text x="0" y="68" font-size="14" font-weight="700" fill="#12355b">Step 2: Subtract discount from original price</text>
+          <text x="0" y="90" font-size="15" font-weight="800" fill="#0f766e">Sale Price = $40 − $10 = $30</text>
+          <text x="0" y="118" font-size="13" font-weight="700" fill="#5f6f80">The word "of" means multiply: 25% OF $40 → 0.25 × 40 = $10</text>
+        </g>`,
+      })}</div>`,
+      capEn:
+        "Part = Percent × Whole. Multiply decimal percent by the whole to find discount, then subtract for sale price.",
+      capEs:
+        "Parte = Porcentaje × Total. Multipliquen el porcentaje decimal por el total para hallar el descuento y resten.",
+    };
+  }
+
+  if (baseLesson === "4-5") {
+    const isPart2 = lessonId.endsWith("-part2");
+    if (isPart2) {
+      return {
+        svg: `<div class="family-specific-model">${conceptFrame({
+          label: "Solving for the Whole with an Equation: 0.15 × b = 6 leads to b = 6 ÷ 0.15 = 40",
+          tone: "amber",
+          height: 420,
+          title: "Solve for the Whole with an Equation / Halla el entero con una ecuación",
+          body: `
+          <!-- Equation Solving Card -->
+          ${conceptCard(34, 68, 572, 224)}
+          <rect x="52" y="80" width="250" height="24" rx="6" fill="#b45309"/>
+          <text x="177" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">EQUATION: PERCENT × WHOLE = PART</text>
+
+          <text x="54" y="132" font-size="15" font-weight="700" fill="#12355b">Problem: A $6 tip is 15% of the total restaurant bill (b).</text>
+
+          <!-- Worked Steps -->
+          <g transform="translate(54, 150)">
+            <text x="0" y="20" font-size="15" font-weight="800" fill="#b45309">1. Write the equation:</text>
+            <text x="260" y="20" font-size="17" font-weight="800" fill="#12355b">0.15 × b = 6</text>
+
+            <text x="0" y="52" font-size="15" font-weight="800" fill="#b45309">2. Divide to undo multiplication:</text>
+            <text x="260" y="52" font-size="17" font-weight="800" fill="#12355b">b = 6 ÷ 0.15</text>
+
+            <text x="0" y="84" font-size="15" font-weight="800" fill="#b45309">3. Calculate the missing whole:</text>
+            <text x="260" y="84" font-size="18" font-weight="800" fill="#0f766e">b = $40 total bill</text>
+          </g>
+
+          <!-- Check & Reason Card -->
+          <rect x="34" y="304" width="572" height="98" rx="14" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+          <text x="54" y="328" font-size="15" font-weight="800" fill="#047857">✔ CHECK YOUR WORK (INVERSE OPERATION):</text>
+          <text x="54" y="352" font-size="14" font-weight="700" fill="#12355b">Multiply back: 15% of $40 = 0.15 × 40 = $6. ✓ Matches the tip!</text>
+          <text x="54" y="374" font-size="14" font-weight="700" fill="#12355b">Sanity check: Since 15% is less than 100%, the whole MUST be greater than the part ($40 &gt; $6).</text>
+          <text x="54" y="392" font-size="13" font-weight="700" fill="#047857">Multiplying by 0.15 would give $0.90 — an obvious red flag for a total bill!</text>`,
+        })}</div>`,
+        capEn:
+          "Percent times whole equals part. Divide both sides by the decimal percent to isolate the whole.",
+        capEs:
+          "Porcentaje por entero es igual a parte. Dividan ambos lados entre el porcentaje decimal para despejar el entero.",
+      };
+    }
+
+    // Part 1: Find the Missing Whole
+    return {
+      svg: `<div class="family-specific-model">${conceptFrame({
+        label:
+          "Find the Missing Whole: 6 beads is 25% of a bag, so the whole bag is 6 divided by 0.25 equals 24 beads",
+        tone: "teal",
+        height: 420,
+        title: "Find the Missing Whole / Halla el entero que falta",
+        body: `
+        <!-- Tape Diagram Card -->
+        ${conceptCard(34, 68, 572, 142)}
+        <rect x="52" y="80" width="220" height="24" rx="6" fill="#0f766e"/>
+        <text x="162" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">TAPE DIAGRAM: 4 EQUAL 25% BLOCKS</text>
+
+        <!-- 4 Blocks of 6 beads -->
+        <g transform="translate(52, 116)">
+          <rect x="0" y="0" width="130" height="42" rx="6" fill="#0f766e"/>
+          <text x="65" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">PART: 6 (25%)</text>
+
+          <rect x="138" y="0" width="125" height="42" rx="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
+          <text x="200" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#0369a1">6 (25%)</text>
+
+          <rect x="271" y="0" width="125" height="42" rx="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
+          <text x="333" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#0369a1">6 (25%)</text>
+
+          <rect x="404" y="0" width="125" height="42" rx="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
+          <text x="466" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#0369a1">6 (25%)</text>
+        </g>
+        <text x="320" y="184" text-anchor="middle" font-size="14" font-weight="800" fill="#0f766e">WHOLE BAG = 4 blocks × 6 beads = 24 beads (100%)</text>
+
+        <!-- Division Formula Card -->
+        <rect x="34" y="222" width="572" height="182" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
+        <text x="54" y="246" font-size="15" font-weight="800" fill="#0f766e">✔ DIVISION FINDS THE WHOLE:</text>
+        <g transform="translate(54, 262)">
+          <text x="0" y="18" font-size="15" font-weight="700" fill="#12355b">Formula: Whole = Part ÷ Percent (as decimal)</text>
+          <text x="0" y="44" font-size="17" font-weight="800" fill="#0f766e">Whole = 6 ÷ 0.25 = 24 beads</text>
+          <text x="0" y="72" font-size="14" font-weight="700" fill="#12355b">Check: 25% of 24 = 0.25 × 24 = 6 beads ✓</text>
+          <text x="0" y="98" font-size="13.5" font-weight="700" fill="#0f766e">whole / entero = 6 ÷ 0.25 = 24</text>
+          <text x="0" y="120" font-size="13" font-weight="700" fill="#5f6f80">Dividing by a decimal smaller than 1 makes the answer LARGER than the part.</text>
+        </g>`,
+      })}</div>`,
+      capEn:
+        "When the part and percent are known, divide the part by the percent written as a decimal.",
+      capEs:
+        "Cuando conoces la parte y el porcentaje, divide la parte entre el porcentaje escrito como decimal.",
+    };
+  }
+
   if (topic === "ratios") {
     const cols = ["Batches", "Cups A", "Cups B"];
     const rows = [
@@ -2601,7 +3131,7 @@ export function renderConceptExplainer(config) {
       <ol class="guided-steps">
         ${steps
           .map((s, index) => {
-            const cue = stepCue(index);
+            const cue = stepCue(index, s);
             const en = splitExplanation(s.en);
             const es = splitExplanation(s.es);
             const moreDetail =

@@ -1,6 +1,6 @@
 /** Lesson-specific family examples. A unit/standard is too broad to choose a
  * sibling lesson's operation, statistic, or shape. IDs also cover later sessions. */
-const pair = (en, es) => ({ en, es });
+const pair = (en, es, cue) => ({ en, es, ...(cue ? { cue } : {}) });
 const profile = (titleEn, titleEs, steps, equation, graphic, capEn, capEs) => ({
   titleEn,
   titleEs,
@@ -299,113 +299,128 @@ const SUPPORT = {
     "Una tasa unitaria compara una cantidad con una unidad de otra. Mantén visibles las unidades.",
   ),
   "4-1": profile(
-    "Show percent out of 100",
-    "Muestra el porcentaje de 100",
+    "Scale a ratio to percent",
+    "Escala una razón a porcentaje",
     [
       pair(
-        "Draw a 10 by 10 grid. Shade 25 squares.",
-        "Dibuja una cuadrícula de 10 por 10. Sombrea 25 cuadros.",
+        "Identify the comparison: 4 out of 10 students chose the tiger mascot.",
+        "Identifica la comparación: 4 de cada 10 estudiantes eligieron al tigre.",
+        { icon: "🔍", en: "Find the ratio", es: "Halla la razón" },
       ),
       pair(
-        "Describe the shaded part as 25 out of 100, or 25%. Describe the unshaded 75%.",
-        "Describe la parte sombreada como 25 de 100, o 25%. Describe el 75% sin sombrear.",
+        "Scale to 100 by multiplying both numbers by 10: 4 × 10 = 40 and 10 × 10 = 100.",
+        "Escala a 100 multiplicando ambos números por 10: 4 × 10 = 40 y 10 × 10 = 100.",
+        { icon: "✖️", en: "Scale to 100", es: "Escala a 100" },
       ),
       pair(
-        "Show 150% using one full grid plus half of another grid. Explain why it exceeds one whole.",
-        "Muestra 150% con una cuadrícula completa y la mitad de otra. Explica por qué supera un entero.",
+        "Write as a percent: 40 out of 100 is 40%.",
+        "Escribe como porcentaje: 40 de cada 100 es 40%.",
+        { icon: "🏷️", en: "Write percent", es: "Escribe el porcentaje" },
       ),
     ],
-    "25/100 = 25%; 150/100 = 150%",
+    "4/10 = 40/100 = 40%",
     "percent",
-    "Percent means per hundred; percentages can be below or above 100%.",
-    "Porcentaje significa por cada cien; puede ser menor o mayor que 100%.",
+    "Percent means per hundred; scale the ratio so the denominator is 100.",
+    "Porcentaje significa por cada cien; escala la razón para que el denominador sea 100.",
   ),
   "4-2": profile(
-    "Three names for one amount",
-    "Tres nombres para una cantidad",
+    "Three forms of one amount",
+    "Tres formas de una misma cantidad",
     [
       pair(
-        "Shade one quarter of a 100-square grid.",
-        "Sombrea un cuarto de una cuadrícula de 100 cuadros.",
+        "Start with the fraction: 1/4 of the total.",
+        "Empieza con la fracción: 1/4 del total.",
+        { icon: "🧩", en: "Start with fraction", es: "Empieza con la fracción" },
       ),
       pair(
-        "Count 25 squares and write 1/4 = 25/100 = 0.25 = 25%.",
-        "Cuenta 25 cuadros y escribe 1/4 = 25/100 = 0.25 = 25%.",
+        "Divide numerator by denominator to get the decimal: 1 ÷ 4 = 0.25.",
+        "Divide numerador entre denominador para obtener el decimal: 1 ÷ 4 = 0.25.",
+        { icon: "➗", en: "Divide for decimal", es: "Divide para el decimal" },
       ),
       pair(
-        "Try a new amount: one half. Show its fraction, decimal, and percent.",
-        "Prueba otra cantidad: un medio. Muestra su fracción, decimal y porcentaje.",
+        "Multiply the decimal by 100 to get the percent: 0.25 × 100 = 25%.",
+        "Multiplica el decimal por 100 para obtener el porcentaje: 0.25 × 100 = 25%.",
+        { icon: "✖️", en: "Multiply by 100", es: "Multiplica por 100" },
       ),
     ],
     "1/4 = 0.25 = 25%",
     "percent",
-    "Fraction, decimal, and percent can name the same part of one whole.",
-    "La fracción, el decimal y el porcentaje pueden nombrar la misma parte de un entero.",
+    "Fraction, decimal, and percent name the exact same part of one whole.",
+    "La fracción, el decimal y el porcentaje nombran exactamente la misma parte de un entero.",
   ),
   "4-3": profile(
-    "Choose nearby benchmarks",
-    "Elige referentes cercanos",
+    "Estimate with benchmarks",
+    "Estima con referentes",
     [
       pair(
-        "Estimate 48% of 60 using the nearby benchmark 50%: about 30.",
-        "Estima 48% de 60 usando el referente cercano 50%: aproximadamente 30.",
+        "Find a nearby benchmark percent: 48% is close to 50% (half).",
+        "Busca un porcentaje de referencia cercano: 48% está cerca de 50% (la mitad).",
+        { icon: "📌", en: "Pick nearby benchmark", es: "Elige un referente cercano" },
       ),
       pair(
-        "Bracket 48% between 40% and 50%: the answer is between 24 and 30.",
-        "Sitúa 48% entre 40% y 50%: la respuesta está entre 24 y 30.",
+        "Round the whole to a compatible number: $61 rounds to $60.",
+        "Redondea el total a un número compatible: $61 se redondea a $60.",
+        { icon: "🎯", en: "Round the whole", es: "Redondea el total" },
       ),
       pair(
-        "Try 5%, 75%, or 150%. Choose benchmarks around that percent; 10% and 50% do not bound every percent.",
-        "Prueba 5%, 75% o 150%. Elige referentes que rodeen ese porcentaje; 10% y 50% no rodean todos los porcentajes.",
+        "Calculate mentally: 50% of $60 = half of $60 = $30. 48% is just under $30.",
+        "Calcula mentalmente: 50% de $60 = la mitad de $60 = $30. 48% está justo debajo de $30.",
+        { icon: "💡", en: "Calculate benchmark", es: "Calcula el referente" },
       ),
     ],
-    "40% < 48% < 50% → 24 < 28.8 < 30",
+    "48% of $61 ≈ 50% of $60 = $30",
     "percent",
-    "Choose bounds that actually surround the chosen percentage, then apply them to the same whole.",
-    "Elige límites que rodeen el porcentaje elegido y aplícalos al mismo entero.",
+    "Use friendly benchmark percents (10%, 25%, 50%) to make quick, sensible estimates.",
+    "Usa porcentajes de referencia fáciles (10%, 25%, 50%) para hacer estimaciones rápidas y razonables.",
   ),
   "4-4": profile(
-    "Compare two discounts",
-    "Compara dos descuentos",
+    "Find percent of a number",
+    "Halla el porcentaje de un número",
     [
       pair(
-        "Imagine a $40 backpack. Compare 25% off with $8 off.",
-        "Imagina una mochila de $40. Compara un descuento de 25% con uno de $8.",
+        "Identify the whole and percent: $40 backpack with 25% discount.",
+        "Identifica el total y el porcentaje: mochila de $40 con 25% de descuento.",
+        { icon: "🏷️", en: "Identify whole and %", es: "Identifica el total y %" },
       ),
       pair(
-        "Find 25% of $40: $10. Compare final prices $30 and $32.",
-        "Halla 25% de $40: $10. Compara los precios finales de $30 y $32.",
+        "Convert percent to decimal and multiply: 0.25 × 40 = $10 discount.",
+        "Convierte el porcentaje a decimal y multiplica: 0.25 × 40 = $10 de descuento.",
+        { icon: "✖️", en: "Multiply for part", es: "Multiplica para la parte" },
       ),
       pair(
-        "Choose a discount and support your choice using the same original price.",
-        "Elige un descuento y justifica tu elección usando el mismo precio original.",
+        "Subtract discount from original price: $40 − $10 = $30 sale price.",
+        "Resta el descuento del precio original: $40 − $10 = $30 precio final.",
+        { icon: "➖", en: "Subtract for sale price", es: "Resta para el precio final" },
       ),
     ],
     "25% × $40 = $10; $40 − $10 = $30",
     "percent",
-    "Find the percent of the stated whole before comparing amounts.",
-    "Halla el porcentaje del entero indicado antes de comparar cantidades.",
+    "Convert the percent to a decimal, multiply by the whole to find the part, then subtract for discounts.",
+    "Convierte el porcentaje a decimal, multiplica por el total para hallar la parte, y luego resta para descuentos.",
   ),
   "4-5": profile(
     "Find the missing whole",
     "Encuentra el entero que falta",
     [
       pair(
-        "Imagine 6 red beads are 25% of a bag. Draw 4 equal groups for the whole bag.",
-        "Imagina que 6 cuentas rojas son 25% de una bolsa. Dibuja 4 grupos iguales para la bolsa entera.",
+        "Identify the part and percent: 6 beads is 25% of the bag.",
+        "Identifica la parte y el porcentaje: 6 cuentas son el 25% de la bolsa.",
+        { icon: "🔍", en: "Identify known part", es: "Identifica la parte conocida" },
       ),
       pair(
-        "Put 6 in each group: the whole is 24. Or divide 6 by 0.25.",
-        "Coloca 6 en cada grupo: el entero es 24. O divide 6 entre 0.25.",
+        "Model the whole: 25% is 1 of 4 equal blocks, so 4 × 6 = 24 beads.",
+        "Modela el entero: 25% es 1 de 4 bloques iguales, así que 4 × 6 = 24 cuentas.",
+        { icon: "🧩", en: "Model with tape diagram", es: "Modela con diagrama de cinta" },
       ),
       pair(
-        "Check: 25% of 24 is 6. Explain why multiplying 6 by 0.25 would answer a different question.",
-        "Comprueba: 25% de 24 es 6. Explica por qué multiplicar 6 por 0.25 respondería otra pregunta.",
+        "Divide part by percent as decimal: whole = 6 ÷ 0.25 = 24.",
+        "Divide la parte entre el porcentaje en decimal: entero = 6 ÷ 0.25 = 24.",
+        { icon: "➗", en: "Divide by decimal", es: "Divide entre el decimal" },
       ),
     ],
     "whole / entero = 6 ÷ 0.25 = 24",
     "percent",
-    "When the part and percent are known, divide the part by the percent written as a decimal.",
+    "When you know the part and percent, divide the part by the decimal percent to find the whole.",
     "Cuando conoces la parte y el porcentaje, divide la parte entre el porcentaje escrito como decimal.",
   ),
   "5-2": profile(
@@ -813,6 +828,8 @@ function graphic(kind, equation) {
 }
 
 export function exactConceptVisual(config) {
+  const rawId = String(config?.lessonId || config?.id || "").replace(/^lesson-/, "");
+  if (/^4-/.test(rawId)) return null;
   const content = exactFamilySupport(config);
   if (!content) return null;
   const visual = graphic(content.graphic, content.equation);

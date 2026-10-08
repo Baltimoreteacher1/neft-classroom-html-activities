@@ -311,3 +311,32 @@ test("plotting lessons get a plotting home task, distance lessons a distance tas
   }
   assert.match(familyGuidance({ lessonId: "7-6" }).mission.en, /distance cannot be negative/);
 });
+
+test("Unit 4 conceptSteps cues, family-specific SVG models, and no vague start/show/solve labels", () => {
+  for (const id of [
+    "4-1",
+    "4-1-part2",
+    "4-2",
+    "4-2-part2",
+    "4-3",
+    "4-3-part2",
+    "4-4",
+    "4-4-part2",
+    "4-5",
+    "4-5-part2",
+  ]) {
+    const notes = JSON.parse(readFileSync(`data/family-homework-notes/${id}.json`, "utf8"));
+    const c = { ...config(id.replace("-part2", "")), lessonId: id, familyNotes: notes };
+    const explainer = renderConceptExplainer(c);
+    assert.ok(
+      explainer.includes("family-specific-model"),
+      `${id} must have a family-specific visual model`,
+    );
+    assert.doesNotMatch(
+      explainer,
+      /Start \/ Comienza|Show it \/ Muéstralo/,
+      `${id} must not use vague start/show labels`,
+    );
+    assert.ok(explainer.includes("step-cue-label"), `${id} must render step-cue-label`);
+  }
+});
