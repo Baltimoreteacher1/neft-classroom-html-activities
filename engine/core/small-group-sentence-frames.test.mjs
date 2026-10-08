@@ -118,13 +118,25 @@ check("stem text is escaped, never injected as markup", () => {
 
 // --- the practice card wires the frames to the response box ------------------
 check("the open-response card labels the frames and ties them to the textarea", () => {
-  const src = readFileSync(new URL("./small-group-practice.js", import.meta.url), "utf8");
+  // Re-pointed at the SHIPPED renderer. This used to read
+  // small-group-practice.js and assert `framesRow(item.sentenceStems, …)` there
+  // — and it kept passing after `small-group-practice-path.js` took over, so it
+  // was reporting on a file no student loads. The invariant is unchanged (the
+  // frames reach the student AND are announced with the box they scaffold); only
+  // the field and the file moved. Frames now come from the authored
+  // `talk.frames` / `talk.framesEs` in data/small-group-practice/<lesson>.json,
+  // which 168 of the 168 group variants carry.
+  const src = readFileSync(new URL("./small-group-practice-path.js", import.meta.url), "utf8");
   assert.match(
     src,
-    /framesRow\(item\.sentenceStems, item\.sentenceStemsEs\)/,
-    "the practice renderer stopped reading sentenceStems / its Spanish parallel",
+    /framesRow\(talk\.frames, talk\.framesEs/,
+    "the practice path stopped reading the authored frames / their Spanish parallel",
   );
-  assert.match(src, /aria-describedby/, "the frames are no longer announced with the response box");
+  assert.match(
+    src,
+    /area\.setAttribute\("aria-describedby"/,
+    "the frames are no longer announced with the response box",
+  );
 });
 
 // --- one implementation, not two --------------------------------------------

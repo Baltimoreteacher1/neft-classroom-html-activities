@@ -241,7 +241,8 @@ export function notebookPromptFor(def, number, model = null) {
  *
  * WHY THIS IS A REFRAME AND NOT A NEW FEATURE. The engine already shows the
  * item's `explanation` once a student answers — whole-group in
- * `multiple-choice.js`, small-group in `small-group-practice.js`. The data was
+ * `multiple-choice.js`, small-group in `small-group-practice-path.js` (this was
+ * written when it was the retired `small-group-practice.js`). The data was
  * never missing and neither was the moment. What was missing is what the moment
  * is FOR: "Correct! Great work." closes the item, and a student who wrote
  * nothing gets exactly the same screen as one who worked it out on paper.

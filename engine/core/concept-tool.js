@@ -2,7 +2,8 @@
 //
 // One detector, two callers: the full lesson renderer's problem card
 // (problem-shell.js) and the small-group studio's question card
-// (small-group-practice.js). They used to carry two hand-maintained copies of
+// (now small-group-practice-path.js; this rule was written when it was
+// small-group-practice.js, since retired). They used to carry two hand-maintained copies of
 // these rules, and the copies had already drifted: the lesson version learned
 // that "base 12 and height 8" is geometry, not exponents, while the small-group
 // version still offered the Powers & Exponents lab on every area problem.

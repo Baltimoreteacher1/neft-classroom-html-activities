@@ -12,9 +12,20 @@ import { expect, test } from "@playwright/test";
 
 const STUDIO = "/lessons/1-1-group1/?teacher=1&sn=Presenter%20T";
 
+/**
+ * The lens checks need a studio whose practice has a distractor to probe.
+ * `teacherLens()` is built from per-distractor `choiceWhy` and deliberately not
+ * from `hint` (1,428 of the 1,764 authored items carry a hint, 74 carry
+ * `choiceWhy`), so "every studio renders a lens" is not a fact about the code —
+ * 1-1-group1 has none. 1-5-group1's On My Own set does. Which studios feed a
+ * lens is swept in engine/core/small-group-practice-path.test.mjs, which fails
+ * if this one ever stops.
+ */
+const LENS_LESSON = "1-5-group1";
+
 /** Present Mode only mounts for a teacher; facilitation data lives on the teacher route. */
-async function openAsTeacher(page: import("@playwright/test").Page) {
-  await page.route("**/teacher-small-group/1-1-group1/data", (route) =>
+async function openAsTeacher(page: import("@playwright/test").Page, lesson = "1-1-group1") {
+  await page.route(`**/teacher-small-group/${lesson}/data`, (route) =>
     route.fulfill({
       json: {
         facilitation: {
@@ -41,7 +52,9 @@ async function openAsTeacher(page: import("@playwright/test").Page) {
       { once: true },
     );
   });
-  await page.goto(STUDIO, { waitUntil: "domcontentloaded" });
+  await page.goto(`/lessons/${lesson}/?teacher=1&sn=Presenter%20T`, {
+    waitUntil: "domcontentloaded",
+  });
   await page.locator(".sg-hero, main").first().waitFor();
 }
 
@@ -75,6 +88,46 @@ test.describe("presenting a small-group studio", () => {
         await expect(nodes.nth(i), `${selector} must not reach the projector`).toBeHidden();
       }
     }
+  });
+
+  /**
+   * The per-item teacher lens, asserted as painted output.
+   *
+   * The blackout loop above includes `.sg-lens`, but a loop over zero nodes
+   * passes — which is exactly how the lens going missing stayed invisible. When
+   * `small-group-practice-path.js` replaced `small-group-practice.js`,
+   * `teacherLens()` did not come across and `.sg-lens` rendered on NO studio;
+   * the assertion that would have said so was removed to get CI green. This
+   * asks a studio that can actually answer, so the blackout is proved against a
+   * lens that exists.
+   */
+  test("the per-item teacher lens is on screen for a teacher, and blacked out while presenting", async ({
+    page,
+  }) => {
+    await openAsTeacher(page, LENS_LESSON);
+
+    // A lens in an inactive tab panel is hidden by the tablist, and asserting
+    // against that would pass whether or not the blackout works at all. Open
+    // the panel the lens is actually in first.
+    const panelId = await page.evaluate(
+      () => document.querySelector(".sg-lens")?.closest("[id^='sg-tab-']")?.id ?? null,
+    );
+    expect(
+      panelId,
+      `${LENS_LESSON} renders no .sg-lens — the practice path has stopped building it`,
+    ).not.toBeNull();
+    await page.locator(`#sg-tab-${panelId}`).click();
+
+    const lens = page.locator(`#${panelId} .sg-lens`).first();
+    await expect(lens, "the lens is visible to a teacher who is not presenting").toBeVisible();
+    await expect(lens, "the lens asks rather than tells").toContainText(/If they pick/);
+
+    await page
+      .getByRole("button", { name: /Present/ })
+      .first()
+      .click();
+    await expect(page.locator("body")).toHaveClass(/nt-present/);
+    await expect(lens, "the lens is blacked out while presenting").toBeHidden();
   });
 
   test("nothing floats on top of the presenter rail", async ({ page }) => {

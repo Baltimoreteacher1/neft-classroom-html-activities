@@ -23,7 +23,16 @@ import {
 } from "./small-group-build-section.js";
 import { makePulse } from "./small-group-engagement.js";
 import { canBuildRatioTable, ratioTableBuilder } from "./small-group-ratio-builder.js";
-import { celebrate, el, esc, esLane, framesRow, sectionHeading, speak } from "./small-group-ui.js";
+import {
+  biHtml,
+  celebrate,
+  el,
+  esc,
+  esLane,
+  framesRow,
+  sectionHeading,
+  speak,
+} from "./small-group-ui.js";
 
 /** Plain text of a field in the student's language lane, for read-aloud. */
 const spoken = (en, es) => (es && esLane() ? es : en).replace(/\{(\d+)\/(\d+)\}/g, "$1/$2");
@@ -99,7 +108,71 @@ function scorer({ tally, events, standard }) {
  * mode "check"   — first try is recorded; hint after a miss; steps once answered.
  * mode "stretch" — like own, never counted toward progress.
  */
-function practiceCard(it, { n, key, store, score, mode, onAnswered, model }) {
+/**
+ * Rotating leads for a correct answer, carried over from the practice renderer
+ * this path replaced. The reason is in that file's own words: a student working
+ * a long set read the identical sentence every time, and "praise that never
+ * varies stops reading as a response to what the student did and starts reading
+ * as machinery". This path had regressed to one fixed "Correct." for every
+ * right answer in the session.
+ *
+ * The voice rule is unchanged: name the METHOD working, never rate the child.
+ * Rotation is a plain counter rather than Math.random, so successive corrects
+ * walk the list in order — no two in a row repeat, and the sequence is
+ * deterministic for tests and for a replayed session.
+ */
+export const CORRECT_LEADS = [
+  ["Your reasoning landed.", "\u00A1Tu razonamiento dio en el blanco!"],
+  ["That's your method working.", "As\u00ED funciona tu m\u00E9todo."],
+  ["Clean thinking \u2014 it held up.", "Pensamiento claro: se sostuvo."],
+  ["You checked it, and it checks out.", "Lo comprobaste, y cuadra."],
+  ["Right \u2014 and you could explain why.", "Correcto, y podr\u00EDas explicar por qu\u00E9."],
+  ["Solid step. Keep that strategy.", "Paso s\u00F3lido. Conserva esa estrategia."],
+];
+let correctLeadCursor = 0;
+/** Exported as a test seam: a deterministic rotation can only be proved by walking it. */
+export const correctLead = () => {
+  const [en, es] = CORRECT_LEADS[correctLeadCursor % CORRECT_LEADS.length];
+  correctLeadCursor += 1;
+  return `\u2705 <b>${biHtml(en, es)}</b>`;
+};
+/** Test seam: a deterministic sequence is only deterministic from a known start. */
+export const resetCorrectLeads = () => {
+  correctLeadCursor = 0;
+};
+
+/**
+ * Table check — the show-me rhythm for a teacher-led table, also carried over
+ * from the replaced renderer. Every third live solve in a section, the
+ * just-finished card grows a group prompt: notebooks up, first steps visible.
+ *
+ * It rides INSIDE the solved card (never between cards) so pagination and
+ * Save/Resume indexes are untouched, and it is dismissible honor-system — the
+ * software cannot see a notebook, and pretending otherwise trains dismissal.
+ *
+ * `.sg-tablecheck`, `-icon`, `-done` and `-ok` were still in the shipped
+ * stylesheet (small-group-ui.js) with nothing left to create the element, which
+ * is how this showed up as a loss rather than a decision.
+ */
+export function tableCheck(problemNumber) {
+  const block = el("div", "sg-tablecheck");
+  block.setAttribute("role", "status");
+  block.innerHTML = `<span class="sg-tablecheck-icon" aria-hidden="true">\u{1F4D3}</span><div>${biHtml(
+    `<b>Table check.</b> Everyone hold up your notebook \u2014 show your first step for #${problemNumber}.`,
+    `<b>Chequeo de mesa.</b> Todos levanten su cuaderno y muestren su primer paso del n.\u00BA ${problemNumber}.`,
+  )}</div>`;
+  const done = el("button", "sg-tablecheck-done", "We showed our work \u2713");
+  done.type = "button";
+  done.onclick = () => {
+    block.classList.add("sg-tablecheck-ok");
+    done.disabled = true;
+    done.textContent = "Nice \u2014 keep going";
+  };
+  block.appendChild(done);
+  return block;
+}
+
+function practiceCard(it, { n, key, store, score, mode, onAnswered, model, tick }) {
   const card = el("article", "sgb-ex sgp-card");
   card.dataset.mode = mode;
   card.appendChild(cardTitle(mode === "stretch" ? "Challenge" : `Problem ${n}`, it.lesson));
@@ -161,7 +234,7 @@ function practiceCard(it, { n, key, store, score, mode, onAnswered, model }) {
   if (counted) score.add();
   let misses = 0;
   let done = false;
-  const finish = (correct) => {
+  const finish = (correct, restoring) => {
     if (done) return;
     done = true;
     store?.set(`${key}-done`, correct ? "right" : "shown");
@@ -176,6 +249,10 @@ function practiceCard(it, { n, key, store, score, mode, onAnswered, model }) {
       stepsBtn.textContent = "See the solution";
     }
     if (correct && explain) explain.hidden = false;
+    // Show-me rhythm on every third LIVE solve. A restored solve bypasses this
+    // on purpose — no ritual for last session's work.
+    if (!restoring && tick?.() && !card.querySelector(".sg-tablecheck"))
+      card.appendChild(tableCheck(n));
     onAnswered?.(correct);
   };
 
@@ -185,15 +262,17 @@ function practiceCard(it, { n, key, store, score, mode, onAnswered, model }) {
       store?.set(`${key}-first`, correct);
     if (correct) {
       feedback.className = "sgb-feedback is-right";
-      feedback.innerHTML = it.choices ? "✓ Correct." : `✓ Correct — ${mathHtml(it.answer)}.`;
-      finish(true);
+      feedback.innerHTML = it.choices
+        ? correctLead()
+        : `${correctLead()} ${mathHtml(it.answer)} is right.`;
+      finish(true, restoring);
       return;
     }
     misses++;
     feedback.className = "sgb-feedback is-wrong";
     if (mode === "check" && misses >= 2) {
       feedback.textContent = "Not yet. Look at the solution, then try the next one.";
-      finish(false);
+      finish(false, restoring);
       return;
     }
     feedback.textContent =
@@ -208,14 +287,72 @@ function practiceCard(it, { n, key, store, score, mode, onAnswered, model }) {
     : boxControl(it, key, store, grade);
   card.append(answerArea, feedback, tools, hintText, steps);
   if (explain) card.appendChild(explain);
+  const lens = teacherLens(it);
+  if (lens) card.appendChild(lens);
   // A check closed by "See the solution" has no correct answer to replay.
   if (store?.get(`${key}-done`) === "shown")
     queueMicrotask(() => {
       feedback.className = "sgb-feedback is-wrong";
       feedback.textContent = "You looked at the solution for this one.";
-      finish(false);
+      finish(false, true);
     });
   return card;
+}
+
+/**
+ * Per-item teacher lens — what to ASK about THIS problem while six students
+ * wait. Hidden from students and revealed by `body.sg-is-teacher` (`.sg-lens`
+ * in small-group-ui.js), and already named in `TEACHER_ONLY`
+ * (small-group-present.js) so Present Mode blacks it out on the screen turned
+ * toward the table.
+ *
+ * It came over from the practice renderer this path replaced
+ * (`small-group-practice.js`, now imported only by its own test files). The
+ * lens is a teacher capability, not one of the student-facing panels this path
+ * was written to remove — its header names those: "strategy pickers, a
+ * readiness pulse, a level ladder, a consensus protocol, a coach". Losing it
+ * left `.sg-lens` rendering on ZERO studios, and the test that would have said
+ * so ("a studio renders at least one teacher lens") was deleted to get CI green
+ * rather than as a decision about the lens, so nothing reported the gap.
+ *
+ * Built ONLY from per-distractor `choiceWhy`, which the student already sees on
+ * a wrong pick, so it discloses nothing new — and deliberately NOT from `hint`.
+ * Measured across data/small-group-practice/*.json: 1,764 items, of which
+ * 1,428 carry a hint and 74 carry `choiceWhy`. A lens that fell back to the
+ * hint would reprint the student's own hint button in a teacher-coloured box on
+ * four cards in five. An item with no distractor to probe gets NO lens, which
+ * is the honest answer and the reason most cards still show none.
+ */
+export function teacherLens(it) {
+  if (!it || !Array.isArray(it.choices) || !Array.isArray(it.choiceWhy)) return null;
+  const probes = [];
+  it.choices.forEach((choice, i) => {
+    if (i === it.correct) return;
+    const why = String(it.choiceWhy[i] || "").trim();
+    if (why) probes.push({ choice, choiceEs: it.choicesEs?.[i], why, whyEs: it.choiceWhyEs?.[i] });
+  });
+  if (!probes.length) return null;
+  // Two probes carry the discussion; a row per distractor turns the card into a
+  // study guide. Longest lines first — they hold the richest questions.
+  probes.sort((x, y) => y.why.length - x.why.length);
+  probes.length = Math.min(probes.length, 2);
+  const lens = el("div", "sg-lens");
+  lens.innerHTML =
+    '<div class="sg-lens-tag">\u{1F469}\u200D\u{1F3EB} Teacher lens \u00B7 ask before telling</div>' +
+    probes
+      .map(
+        (p) =>
+          // The quoted choice goes through the same bilingual math formatter the
+          // student's own button uses. `esc()` printed the authored tokens raw,
+          // so the teacher read `If they pick "{5/12}"` on 4-2 and
+          // `Change 2{3/4} to {11/4}` on 6-10 while the student saw real
+          // fractions — and the Spanish choice was dropped on all 74
+          // lens-bearing items, every one of which carries `choicesEs`.
+          `<div class="sg-lens-row"><b>If they pick \u201C${line(p.choice, p.choiceEs)}\u201D</b>` +
+          `<span>${line(p.why, p.whyEs)}</span></div>`,
+      )
+      .join("");
+  return lens;
 }
 
 function boxControl(it, key, store, grade) {
@@ -400,14 +537,23 @@ function talkCard(talk, { store }) {
   );
   prompt.append(head, el("p", null, line(talk.prompt, talk.promptEs)));
   card.appendChild(prompt);
-  card.appendChild(el("p", "sgp-frames-lab", "Start your sentence like this:"));
+  const framesLab = el("p", "sgp-frames-lab", "Start your sentence like this:");
+  framesLab.id = "sgp-talk-frames-lab";
+  card.appendChild(framesLab);
   const frames = framesRow(talk.frames, talk.framesEs, 2);
-  if (frames) card.appendChild(frames);
+  if (frames) {
+    frames.id = "sgp-talk-frames";
+    card.appendChild(frames);
+  }
   const id = "sgp-talk-note";
   const lab = el("label", "sgb-input-label", "Write your best sentence (optional)");
   lab.htmlFor = id;
   const area = el("textarea", "sgb-why-box");
   area.id = id;
+  // The frames are the scaffold for THIS box, so they are announced with it.
+  // Sitting next to it is enough for a sighted student and nothing at all for a
+  // screen-reader user, who otherwise hears the label and none of the frames.
+  if (frames) area.setAttribute("aria-describedby", `${framesLab.id} ${frames.id}`);
   area.rows = 2;
   area.value = store?.get("talkNote") || "";
   area.addEventListener("input", () => store?.set("talkNote", area.value));
@@ -463,6 +609,11 @@ export function createOnMyOwnSection(config, ctx) {
   );
   const score = scorer(ctx);
   let left = p.onMyOwn.length;
+  // One counter for the whole section, so the show-me lands on every third
+  // solve at the table rather than every third card. The exit check gets none:
+  // it is the assessment, and a group show-me there would answer it.
+  let solvedLive = 0;
+  const tick = () => ++solvedLive % 3 === 0;
   p.onMyOwn.forEach((it, i) =>
     section.appendChild(
       practiceCard(it, {
@@ -472,6 +623,7 @@ export function createOnMyOwnSection(config, ctx) {
         score,
         mode: "own",
         model: p.model,
+        tick,
         onAnswered: () => {
           if (--left === 0) ctx.onDone?.();
         },
