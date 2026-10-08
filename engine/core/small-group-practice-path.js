@@ -208,6 +208,8 @@ function practiceCard(it, { n, key, store, score, mode, onAnswered, model }) {
     : boxControl(it, key, store, grade);
   card.append(answerArea, feedback, tools, hintText, steps);
   if (explain) card.appendChild(explain);
+  const lens = teacherLens(it);
+  if (lens) card.appendChild(lens);
   // A check closed by "See the solution" has no correct answer to replay.
   if (store?.get(`${key}-done`) === "shown")
     queueMicrotask(() => {
@@ -216,6 +218,56 @@ function practiceCard(it, { n, key, store, score, mode, onAnswered, model }) {
       finish(false);
     });
   return card;
+}
+
+/**
+ * Per-item teacher lens — what to ASK about THIS problem while six students
+ * wait. Hidden from students and revealed by `body.sg-is-teacher` (`.sg-lens`
+ * in small-group-ui.js), and already named in `TEACHER_ONLY`
+ * (small-group-present.js) so Present Mode blacks it out on the screen turned
+ * toward the table.
+ *
+ * It came over from the practice renderer this path replaced
+ * (`small-group-practice.js`, now imported only by its own test files). The
+ * lens is a teacher capability, not one of the student-facing panels this path
+ * was written to remove — its header names those: "strategy pickers, a
+ * readiness pulse, a level ladder, a consensus protocol, a coach". Losing it
+ * left `.sg-lens` rendering on ZERO studios, and the test that would have said
+ * so ("a studio renders at least one teacher lens") was deleted to get CI green
+ * rather than as a decision about the lens, so nothing reported the gap.
+ *
+ * Built ONLY from per-distractor `choiceWhy`, which the student already sees on
+ * a wrong pick, so it discloses nothing new — and deliberately NOT from `hint`.
+ * Measured across data/small-group-practice/*.json: 1,764 items, of which
+ * 1,428 carry a hint and 74 carry `choiceWhy`. A lens that fell back to the
+ * hint would reprint the student's own hint button in a teacher-coloured box on
+ * four cards in five. An item with no distractor to probe gets NO lens, which
+ * is the honest answer and the reason most cards still show none.
+ */
+export function teacherLens(it) {
+  if (!it || !Array.isArray(it.choices) || !Array.isArray(it.choiceWhy)) return null;
+  const probes = [];
+  it.choices.forEach((choice, i) => {
+    if (i === it.correct) return;
+    const why = String(it.choiceWhy[i] || "").trim();
+    if (why) probes.push({ choice, why, whyEs: it.choiceWhyEs?.[i] });
+  });
+  if (!probes.length) return null;
+  // Two probes carry the discussion; a row per distractor turns the card into a
+  // study guide. Longest lines first — they hold the richest questions.
+  probes.sort((x, y) => y.why.length - x.why.length);
+  probes.length = Math.min(probes.length, 2);
+  const lens = el("div", "sg-lens");
+  lens.innerHTML =
+    '<div class="sg-lens-tag">\u{1F469}\u200D\u{1F3EB} Teacher lens \u00B7 ask before telling</div>' +
+    probes
+      .map(
+        (p) =>
+          `<div class="sg-lens-row"><b>If they pick \u201C${esc(p.choice)}\u201D</b>` +
+          `<span>${line(p.why, p.whyEs)}</span></div>`,
+      )
+      .join("");
+  return lens;
 }
 
 function boxControl(it, key, store, grade) {
