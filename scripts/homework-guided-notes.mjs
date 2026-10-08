@@ -339,6 +339,9 @@ function togetherStepHints(config, isLast) {
 }
 
 function tryTogetherActivity(config) {
+  const custom = config.familyNotes?.tryTogether;
+  if (custom) return custom;
+
   const exact = exactFamilySupport(config || {});
   const story = FAMILY_SCENARIOS[config?.lessonId];
   if (exact)
@@ -355,8 +358,8 @@ function tryTogetherActivity(config) {
           hintEs: exact.steps[0].es,
         },
         {
-          en: "Solve using a drawing, table, or equation. Keep the units visible.",
-          es: "Resuelve usando un dibujo, tabla o ecuación. Mantén visibles las unidades.",
+          en: "Write an equation, proportion, or explanation to find the solution. Keep the units visible.",
+          es: "Escribe una ecuación, proporción o explicación para hallar la solución. Mantén visibles las unidades.",
           hint: exact.steps[1].en,
           hintEs: exact.steps[1].es,
         },
@@ -368,8 +371,6 @@ function tryTogetherActivity(config) {
         },
       ],
     };
-  const custom = config.familyNotes?.tryTogether;
-  if (custom) return custom;
 
   const intro = conceptIntro(config);
   const weDo = intro?.weDo;
