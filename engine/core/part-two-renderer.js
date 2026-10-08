@@ -12,7 +12,7 @@
 // notes and the objectives, the scenario, and then students break into groups.
 //
 //   Phase 0  🔁 Review          objectives + vocabulary + one quick check
-//   Phase 1  📋 Today's Problem  the Apply scenario, its figure, know/need
+//   Phase 1  📋 Today's Problem  the Apply scenario, its figure, worked steps
 //   Phase 2  👥 Group Work       four roles, a shared solve, a share-out
 //
 // It rides the SAME engine as Part 1 (createApp), so save/resume, teacher mode,
@@ -44,6 +44,7 @@ import {
 import { augmentVocabWithGlossary } from "./math-glossary.js";
 import { renderMathNotesStep } from "./notebook-checkpoint.js";
 import { resolveObjectiveVisuals } from "./objective-visuals.js";
+import { workedStepsHtml } from "./part-two-steps.js";
 import { ensureCanvasBridge } from "./scorm-bridge.js";
 import { ALL_FIGURE_CSS, figureMarkup } from "./small-group-build-figures.js";
 import { mountStuckSupport } from "./stuck-support.js";
@@ -517,7 +518,7 @@ function renderProblem(host, state, ctx, config) {
     2,
     "📋",
     "Today's Problem",
-    "Read it twice. Then write what you know and what the problem is asking — before any arithmetic.",
+    "Read it together. Then walk through the solving steps below as a class.",
   );
 
   host.append(problemCard(config));
@@ -551,57 +552,27 @@ function renderProblem(host, state, ctx, config) {
     queueMicrotask(() => mountInteractiveVisuals(mount));
   }
 
-  // THE PROBLEM HAS TO BE SOLVABLE HERE (Joel, 2026-08-26: "either guided steps
-  // or space to solve it and work on it"). Reading it and then being sent to a
-  // group left the one problem the day is built around with nowhere to do it.
-  // These are the same guided moves Part 1's Show Your Work uses — know, need,
-  // plan, work, answer, how-I-know — persisted on this phase.
-  const think = el("section", "card");
-  think.append(
-    el(
-      "div",
-      null,
-      `<h3 style="margin:0 0 4px; font-size:1.25rem; color:#0f172a;">🧭 Solve it</h3>
-       <p style="margin:0 0 12px; font-size:1rem; color:#475569;">Work through it on your own first. You will compare with your group next.</p>`,
-    ),
-  );
-  // The same "I'm stuck" bar the rest of the engine offers, on the problem that
-  // is on this screen — `config.revealWordProblem` IS what is being solved here.
-  mountStuckSupport(think, { config, state });
-  // Laid out ACROSS, not down (Joel, 2026-09-01: "the steps should line up next
-  // to each other horizontally"). Stacked, the six moves read as six separate
-  // assignments and the student meets them one screen-height apart; side by
-  // side they read as one method, and KNOW sits next to NEED — which is exactly
-  // what the phase heading tells them to do first. `auto-fit` + a 16rem floor
-  // means the row count follows the screen instead of a guess, collapsing to a
-  // single column on a phone with no separate mobile rule.
-  const steps = el("div", "p2-solve-steps");
-  steps.append(
-    field(
-      state,
-      1,
-      "know",
-      "1 · What I know & need",
-      "Key numbers, what the question asks, and my plan…",
-      3,
-    ),
-  );
-  // My work is where the arithmetic actually goes, so it spans the full row
-  const work = field(state, 1, "work", "2 · My work", "Show every step.", 5);
-  work.classList.add("p2-solve-wide");
-  steps.append(work);
-  steps.append(
-    field(
-      state,
-      1,
-      "answer",
-      "3 · My answer & check",
-      "Final answer with units, and why it makes sense.",
-      3,
-    ),
-  );
-  think.append(steps);
-  host.append(think);
+  // THE STEPS, ALREADY ON SCREEN (Joel, 2026-10-08: "I would rather just have
+  // the steps/procedures for solving listed horizontally and already
+  // accessible for them. It would just show the step (visually and
+  // mathematically) and we would go through it together"). This replaced three
+  // blank know/work/answer boxes and an "I'm stuck" bar. The steps are authored
+  // in data/part-two-worked-steps.json and carried here as `workedSteps`;
+  // part-two-steps.js draws them as one row, left to right, nothing hidden.
+  const stepsHtml = workedStepsHtml(config.workedSteps);
+  if (stepsHtml) {
+    const solve = el("section", "card ws-card");
+    solve.append(
+      el(
+        "div",
+        null,
+        `<h3 style="margin:0 0 4px; font-size:1.25rem; color:#0f172a;">🧭 Solve it together</h3>
+         <p style="margin:0 0 12px; font-size:1rem; color:#475569;">Go through each step as a class — the picture shows the idea, the math line shows the work.</p>`,
+      ),
+    );
+    solve.append(el("div", "ws-body", stepsHtml));
+    host.append(solve);
+  }
 
   host.append(advanceButton("Break into groups 👥 →", state, ctx, 1));
 }

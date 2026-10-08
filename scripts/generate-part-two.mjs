@@ -33,6 +33,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
+import { validateWorkedSteps } from "@eduwonderlab/engine/core/part-two-steps.js";
 import { LESSONS_DIR as LESSONS } from "../tools/lib/curriculum-source.mjs";
 import { toPracticeItem } from "../tools/lib/small-group-practice-items.mjs";
 
@@ -236,6 +237,33 @@ function validateInsert(id, item) {
   return true;
 }
 
+/**
+ * The worked solution the class walks through on Today's Problem (Joel,
+ * 2026-10-08: "just have the steps/procedures for solving listed horizontally
+ * and already accessible … it would just show the step (visually and
+ * mathematically) and we would go through it together").
+ *
+ * Like the warm-up inserts, these are AUTHORED in data and carried verbatim;
+ * an entry that fails validateWorkedSteps() stops the build rather than
+ * shipping half a solution.
+ */
+function readWorkedSteps() {
+  const path = join(ROOT, "data/part-two-worked-steps.json");
+  if (!existsSync(path)) return {};
+  const raw = JSON.parse(readFileSync(path, "utf8"));
+  const out = {};
+  for (const [id, spec] of Object.entries(raw)) {
+    if (id.startsWith("_")) continue;
+    const errs = validateWorkedSteps(spec);
+    if (errs.length) {
+      throw new Error(`data/part-two-worked-steps.json — ${id}: ${errs.join("; ")}`);
+    }
+    out[id] = spec;
+  }
+  return out;
+}
+
+const WORKED_STEPS = readWorkedSteps();
 const RENDERABLE_KINDS = renderableVisualKinds();
 const INTERACTIVE_KINDS = interactiveKinds();
 // Initialised after RENDERABLE_KINDS: validateInsert() reads it.
@@ -590,6 +618,7 @@ function buildConfig(id, core, readVariant) {
   if (levels) out.groupLevels = levels;
   const tool = selectTool(core);
   if (tool) out.tool = tool;
+  if (WORKED_STEPS[id]) out.workedSteps = WORKED_STEPS[id];
   return out;
 }
 

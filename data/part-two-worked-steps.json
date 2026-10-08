@@ -1,0 +1,6909 @@
+{
+  "_note": "AUTHORED worked solutions for each Part II 'Today's Problem', keyed by CORE lesson id. scripts/generate-part-two.mjs copies each entry onto lessons/<id>-part2/config.json as `workedSteps`; engine/core/part-two-steps.js draws it as a row of steps the class walks through together (Joel, 2026-10-08). Each entry restates the lesson's own revealWordProblem.sampleAnswer step by step — same method, same numbers, same final answer. Schema: { label?, steps: [2-6 × { title, math, say?, picture? }], answer }. picture kinds: chips | tape | table | number-line | rect | groups | bars | coords — see validateWorkedSteps().",
+  "1-3": {
+    "steps": [
+      {
+        "title": "Divide minutes by 60",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Hours",
+            "Minutes"
+          ],
+          "rows": [
+            [
+              "1",
+              "60"
+            ],
+            [
+              "33",
+              "1,980"
+            ],
+            [
+              "remainder",
+              "42"
+            ]
+          ],
+          "highlight": [
+            [
+              1,
+              0
+            ],
+            [
+              2,
+              1
+            ]
+          ]
+        },
+        "math": "2,022 ÷ 60 = 33 R 42",
+        "say": "There are 60 minutes in every hour."
+      },
+      {
+        "title": "Write it as hours and minutes",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "33 R 42",
+            "33 hours",
+            "42 minutes"
+          ],
+          "focus": 0
+        },
+        "math": "2,022 minutes = 33 hours 42 minutes"
+      },
+      {
+        "title": "Take out one full day",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "33 h",
+              "parts": [
+                {
+                  "text": "24 h (1 day)",
+                  "size": 24,
+                  "tone": "known"
+                },
+                {
+                  "text": "9 h",
+                  "size": 9,
+                  "tone": "focus"
+                }
+              ]
+            }
+          ]
+        },
+        "math": "33 hours = 24 hours + 9 hours"
+      },
+      {
+        "title": "Count past the next midnight",
+        "picture": {
+          "kind": "number-line",
+          "min": 0,
+          "max": 12,
+          "step": 1,
+          "points": [
+            {
+              "value": 0,
+              "label": "12:00 a.m."
+            },
+            {
+              "value": 9.7,
+              "label": "9:42",
+              "tone": "unknown"
+            }
+          ],
+          "jumps": [
+            {
+              "from": 0,
+              "to": 9,
+              "label": "9 h"
+            },
+            {
+              "from": 9,
+              "to": 9.7,
+              "label": "42 min"
+            }
+          ],
+          "alt": "Hours after midnight on January 2"
+        },
+        "math": "midnight + 9 h 42 min → 9:42 a.m.",
+        "say": "The time lands 9 hours 42 minutes after the next midnight."
+      }
+    ],
+    "answer": "It will be 9:42 a.m. on January 2."
+  },
+  "1-4": {
+    "steps": [
+      {
+        "title": "Break each design into boxes",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "Design 1",
+              "parts": [
+                {
+                  "text": "box A"
+                },
+                {
+                  "text": "box B"
+                }
+              ]
+            },
+            {
+              "label": "Design 2",
+              "parts": [
+                {
+                  "text": "box C"
+                },
+                {
+                  "text": "box D"
+                }
+              ]
+            }
+          ]
+        },
+        "math": "design = box + box",
+        "say": "Split each design into rectangular boxes."
+      },
+      {
+        "title": "Find each box's measure",
+        "picture": {
+          "kind": "rect",
+          "width": "length",
+          "height": "width",
+          "label": "same depth"
+        },
+        "math": "V = length × width × depth (or area = l × w)",
+        "say": "Use the labeled side lengths for each box."
+      },
+      {
+        "title": "Add the parts for each design",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "Design 1 = A + B",
+            "Design 2 = C + D"
+          ]
+        },
+        "math": "total = sum of the boxes",
+        "say": "Add the boxes to get one total per design."
+      },
+      {
+        "title": "Compare and recommend",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "Design 1 total",
+            "vs.",
+            "Design 2 total"
+          ]
+        },
+        "math": "greater total → more planting space",
+        "say": "Name the numbers you compared in your recommendation."
+      }
+    ],
+    "answer": "Recommend the design with the greater total planting space, backed by the totals you compared."
+  },
+  "1-5": {
+    "steps": [
+      {
+        "title": "Find how much more to grow",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "adult",
+              "parts": [
+                {
+                  "text": "4.5 m at birth",
+                  "size": 4.5,
+                  "tone": "known"
+                },
+                {
+                  "text": "10.5 m to grow",
+                  "size": 10.5,
+                  "tone": "unknown"
+                }
+              ]
+            }
+          ],
+          "total": "15 m"
+        },
+        "math": "15 − 4.5 = 10.5 m"
+      },
+      {
+        "title": "Change meters to centimeters",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "1 m = 100 cm",
+            "10.5 m = 1,050 cm"
+          ],
+          "focus": 1
+        },
+        "math": "10.5 × 100 = 1,050 cm",
+        "say": "The growth rate is in centimeters, so match the units."
+      },
+      {
+        "title": "Divide by growth per day",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Days",
+            "Growth (cm)"
+          ],
+          "rows": [
+            [
+              "1",
+              "2.5"
+            ],
+            [
+              "10",
+              "25"
+            ],
+            [
+              "100",
+              "250"
+            ],
+            [
+              "420",
+              "1,050"
+            ]
+          ],
+          "highlight": [
+            [
+              3,
+              0
+            ]
+          ]
+        },
+        "math": "1,050 ÷ 2.5 = 420 days"
+      },
+      {
+        "title": "Change days to years",
+        "picture": {
+          "kind": "number-line",
+          "min": 0,
+          "max": 450,
+          "step": 30,
+          "points": [
+            {
+              "value": 365,
+              "label": "1 yr"
+            },
+            {
+              "value": 420,
+              "label": "420 d",
+              "tone": "unknown"
+            }
+          ],
+          "alt": "Days since birth"
+        },
+        "math": "420 days ≈ 1 year 2 months",
+        "say": "420 days is a little over one year."
+      }
+    ],
+    "answer": "At 420 days old — about 1 year 2 months."
+  },
+  "2-1": {
+    "steps": [
+      {
+        "title": "Check: does it anticipate variability?",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "different answers → statistical",
+            "one answer → not statistical"
+          ]
+        },
+        "math": "statistical question = answers vary",
+        "say": "Different students should give different answers."
+      },
+      {
+        "title": "Write strong survey questions",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "Rate the food 1 to 5",
+            "Pick a new item: pizza, tacos, salad bar, stir-fry"
+          ]
+        },
+        "math": "answers vary and can be tallied"
+      },
+      {
+        "title": "Tally and find the percent",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "80 students",
+              "parts": [
+                {
+                  "text": "45 tacos",
+                  "size": 45,
+                  "tone": "focus"
+                },
+                {
+                  "text": "35 other",
+                  "size": 35
+                }
+              ]
+            }
+          ]
+        },
+        "math": "45 ÷ 80 = 0.5625 = 56.25%",
+        "say": "Tacos are the clear favorite."
+      },
+      {
+        "title": "Leave out non-statistical questions",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "How many days a week is lunch served?",
+            "same answer for everyone → leave out"
+          ]
+        },
+        "math": "one fixed answer → not on the survey"
+      }
+    ],
+    "answer": "Ask questions with varied answers, like a 1–5 rating or a choice of new item (e.g., 45 ÷ 80 = 56.25% pick tacos); leave out one-answer questions."
+  },
+  "2-2": {
+    "steps": [
+      {
+        "title": "Add the frequencies",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "71–85",
+              "value": 7
+            },
+            {
+              "label": "86–100",
+              "value": 30
+            },
+            {
+              "label": "101–115",
+              "value": 39
+            },
+            {
+              "label": "116–130",
+              "value": 22
+            },
+            {
+              "label": "131–145",
+              "value": 12
+            },
+            {
+              "label": "146–160",
+              "value": 2
+            },
+            {
+              "label": "161–175",
+              "value": 1
+            },
+            {
+              "label": "176–190",
+              "value": 1
+            }
+          ]
+        },
+        "math": "7 + 30 + 39 + 22 + 12 + 2 + 1 + 1 = 114 movies"
+      },
+      {
+        "title": "Find the tallest bar",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "86–100",
+              "value": 30
+            },
+            {
+              "label": "101–115",
+              "value": 39,
+              "tone": "focus"
+            },
+            {
+              "label": "116–130",
+              "value": 22
+            }
+          ]
+        },
+        "math": "modal interval: 101–115 min (39 movies)",
+        "say": "A histogram shows the modal interval, not the exact mode."
+      },
+      {
+        "title": "Combine with the next interval",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "114 movies",
+              "parts": [
+                {
+                  "text": "30",
+                  "size": 30,
+                  "tone": "known"
+                },
+                {
+                  "text": "39",
+                  "size": 39,
+                  "tone": "focus"
+                },
+                {
+                  "text": "45 other",
+                  "size": 45
+                }
+              ]
+            }
+          ]
+        },
+        "math": "30 + 39 = 69;  69 ÷ 114 ≈ 0.605 = 60.5%",
+        "say": "About 60% of movies run 86 to 115 minutes."
+      },
+      {
+        "title": "Check the very long movies",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "146–160: 2",
+            "161–175: 1",
+            "176–190: 1"
+          ]
+        },
+        "math": "2 + 1 + 1 = 4 movies ≈ 3.5%"
+      },
+      {
+        "title": "Make the recommendation",
+        "picture": {
+          "kind": "number-line",
+          "min": 85,
+          "max": 120,
+          "step": 5,
+          "points": [
+            {
+              "value": 101,
+              "label": "101"
+            },
+            {
+              "value": 115,
+              "label": "115",
+              "tone": "unknown"
+            }
+          ],
+          "jumps": [
+            {
+              "from": 101,
+              "to": 115,
+              "label": "aim here"
+            }
+          ],
+          "alt": "Running time in minutes"
+        },
+        "math": "aim for 101–115 minutes"
+      }
+    ],
+    "answer": "Aim for a running time of 101–115 minutes, the most common length."
+  },
+  "2-3": {
+    "steps": [
+      {
+        "title": "Order the 16 prices",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "$160,000",
+            "$199,900",
+            "$239,900",
+            "$269,900",
+            "$307,000",
+            "$382,900",
+            "$385,400",
+            "$401,785",
+            "$402,400",
+            "$405,400",
+            "$423,400",
+            "$426,400",
+            "$454,400",
+            "$457,400",
+            "$460,400",
+            "$485,250"
+          ]
+        },
+        "math": "least → greatest, 16 values"
+      },
+      {
+        "title": "Find the middle two values",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "8th: $401,785",
+            "9th: $402,400"
+          ]
+        },
+        "math": "16 is even → average the 8th and 9th",
+        "say": "There are 7 prices below and 7 above them."
+      },
+      {
+        "title": "Average them for the median",
+        "picture": {
+          "kind": "number-line",
+          "min": 401500,
+          "max": 402500,
+          "step": 100,
+          "points": [
+            {
+              "value": 401785,
+              "label": "8th"
+            },
+            {
+              "value": 402400,
+              "label": "9th"
+            },
+            {
+              "value": 402092.5,
+              "label": "median",
+              "tone": "unknown"
+            }
+          ],
+          "alt": "Prices in dollars"
+        },
+        "math": "(401,785 + 402,400) ÷ 2 = 804,185 ÷ 2 = 402,092.50"
+      },
+      {
+        "title": "Choose a fair price",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "lowest",
+              "value": 160000,
+              "text": "$160,000"
+            },
+            {
+              "label": "median",
+              "value": 402092.5,
+              "text": "$402,092.50",
+              "tone": "focus"
+            },
+            {
+              "label": "highest",
+              "value": 485250,
+              "text": "$485,250"
+            }
+          ]
+        },
+        "math": "fair price ≈ $402,000",
+        "say": "The median isn't pulled by the lowest or highest sale."
+      }
+    ],
+    "answer": "About $402,000 — the median is $402,092.50."
+  },
+  "2-4": {
+    "steps": [
+      {
+        "title": "Read Chicago's five-number summary",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "min ≈ 26",
+            "Q1 ≈ 35",
+            "median ≈ 57",
+            "Q3 ≈ 73",
+            "max ≈ 82"
+          ],
+          "focus": 2
+        },
+        "math": "read plotted points, not the axis ends"
+      },
+      {
+        "title": "Find Chicago's range and IQR",
+        "picture": {
+          "kind": "number-line",
+          "min": 20,
+          "max": 90,
+          "step": 5,
+          "points": [
+            {
+              "value": 26,
+              "label": "26"
+            },
+            {
+              "value": 35,
+              "label": "Q1"
+            },
+            {
+              "value": 57,
+              "label": "57"
+            },
+            {
+              "value": 73,
+              "label": "Q3"
+            },
+            {
+              "value": 82,
+              "label": "82"
+            }
+          ],
+          "jumps": [
+            {
+              "from": 35,
+              "to": 73,
+              "label": "IQR 38"
+            }
+          ],
+          "alt": "Chicago temperatures in °F"
+        },
+        "math": "range ≈ 82 − 26 = 56°F;  IQR ≈ 73 − 35 = 38°F"
+      },
+      {
+        "title": "Find Honolulu's range and IQR",
+        "picture": {
+          "kind": "number-line",
+          "min": 78,
+          "max": 90,
+          "step": 1,
+          "points": [
+            {
+              "value": 80,
+              "label": "80"
+            },
+            {
+              "value": 81,
+              "label": "Q1"
+            },
+            {
+              "value": 84.5,
+              "label": "84–85"
+            },
+            {
+              "value": 87,
+              "label": "Q3"
+            },
+            {
+              "value": 88,
+              "label": "88"
+            }
+          ],
+          "jumps": [
+            {
+              "from": 81,
+              "to": 87,
+              "label": "IQR 6"
+            }
+          ],
+          "alt": "Honolulu temperatures in °F"
+        },
+        "math": "range ≈ 88 − 80 = 8°F;  IQR ≈ 87 − 81 = 6°F"
+      },
+      {
+        "title": "Compare the two cities",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "Chicago range",
+              "value": 56,
+              "text": "56°F"
+            },
+            {
+              "label": "Honolulu range",
+              "value": 8,
+              "text": "8°F",
+              "tone": "focus"
+            },
+            {
+              "label": "Chicago IQR",
+              "value": 38,
+              "text": "38°F"
+            },
+            {
+              "label": "Honolulu IQR",
+              "value": 6,
+              "text": "6°F",
+              "tone": "focus"
+            }
+          ]
+        },
+        "math": "Honolulu: higher median, much less variability",
+        "say": "These are approximate readings from the graph."
+      }
+    ],
+    "answer": "Honolulu has the higher median (about 84–85°F vs. 57°F) and much less variability (range 8 vs. 56°F, IQR 6 vs. 38°F)."
+  },
+  "2-5": {
+    "steps": [
+      {
+        "title": "Find each team's range",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "Team A",
+              "parts": [
+                {
+                  "text": "$1M to $20M",
+                  "size": 19,
+                  "tone": "known"
+                }
+              ]
+            },
+            {
+              "label": "Team B",
+              "parts": [
+                {
+                  "text": "$1M to $40M",
+                  "size": 39,
+                  "tone": "focus"
+                }
+              ]
+            }
+          ]
+        },
+        "math": "A: 20 − 1 = 19;  B: 40 − 1 = 39 (millions)"
+      },
+      {
+        "title": "Find each team's IQR",
+        "picture": {
+          "kind": "number-line",
+          "min": 0,
+          "max": 12,
+          "step": 1,
+          "points": [
+            {
+              "value": 2,
+              "label": "A Q1"
+            },
+            {
+              "value": 10.5,
+              "label": "A Q3"
+            },
+            {
+              "value": 9,
+              "label": "B Q3"
+            }
+          ],
+          "jumps": [
+            {
+              "from": 2,
+              "to": 10.5,
+              "label": "A ≈ 8.5"
+            },
+            {
+              "from": 2,
+              "to": 9,
+              "label": "B ≈ 7"
+            }
+          ],
+          "alt": "Salary in millions of dollars"
+        },
+        "math": "A: 10.5 − 2 = 8.5;  B: 9 − (just over 2) ≈ 7 (millions)"
+      },
+      {
+        "title": "Compare range and IQR",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "A range",
+              "value": 19,
+              "text": "$19M"
+            },
+            {
+              "label": "B range",
+              "value": 39,
+              "text": "$39M"
+            },
+            {
+              "label": "A IQR",
+              "value": 8.5,
+              "text": "$8.5M"
+            },
+            {
+              "label": "B IQR",
+              "value": 7,
+              "text": "$7M"
+            }
+          ]
+        },
+        "math": "B: larger range, slightly smaller IQR",
+        "say": "Team B's middle half is not more spread out."
+      },
+      {
+        "title": "Make a reasoned recommendation",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "highest salary seen → Team B",
+            "max is not a typical salary"
+          ]
+        },
+        "math": "tie the choice to range and IQR"
+      }
+    ],
+    "answer": "Team B for the chance at the highest observed salary (range ≈ $39M vs. $19M), but its IQR (≈ $7M vs. $8.5M) shows its middle half is not more spread out; the plots cannot predict a new player's salary."
+  },
+  "2-6": {
+    "steps": [
+      {
+        "title": "Find the teachers now",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Teachers",
+            "Students"
+          ],
+          "rows": [
+            [
+              "1",
+              "20"
+            ],
+            [
+              "31,050",
+              "621,000"
+            ]
+          ],
+          "highlight": [
+            [
+              1,
+              0
+            ]
+          ]
+        },
+        "math": "621,000 ÷ 20 = 31,050 teachers"
+      },
+      {
+        "title": "Find the teachers needed",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Teachers",
+            "Students"
+          ],
+          "rows": [
+            [
+              "1",
+              "15"
+            ],
+            [
+              "41,400",
+              "621,000"
+            ]
+          ],
+          "highlight": [
+            [
+              1,
+              0
+            ]
+          ]
+        },
+        "math": "621,000 ÷ 15 = 41,400 teachers"
+      },
+      {
+        "title": "Subtract to find new hires",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "needed",
+              "parts": [
+                {
+                  "text": "31,050 now",
+                  "size": 31050,
+                  "tone": "known"
+                },
+                {
+                  "text": "10,350 hire",
+                  "size": 10350,
+                  "tone": "unknown"
+                }
+              ]
+            }
+          ],
+          "total": "41,400"
+        },
+        "math": "41,400 − 31,050 = 10,350 teachers"
+      }
+    ],
+    "answer": "The district needs to hire 10,350 teachers."
+  },
+  "2-7": {
+    "steps": [
+      {
+        "title": "Divide distance by 5 hours",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "26.2 mi",
+              "parts": [
+                {
+                  "text": "5.24"
+                },
+                {
+                  "text": "5.24"
+                },
+                {
+                  "text": "5.24"
+                },
+                {
+                  "text": "5.24"
+                },
+                {
+                  "text": "5.24"
+                }
+              ]
+            }
+          ]
+        },
+        "math": "26.2 ÷ 5 = 5.24 miles per hour"
+      },
+      {
+        "title": "Divide distance by 4 hours",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "26.2 mi",
+              "parts": [
+                {
+                  "text": "6.55"
+                },
+                {
+                  "text": "6.55"
+                },
+                {
+                  "text": "6.55"
+                },
+                {
+                  "text": "6.55"
+                }
+              ]
+            }
+          ]
+        },
+        "math": "26.2 ÷ 4 = 6.55 miles per hour"
+      },
+      {
+        "title": "Write the speed range",
+        "picture": {
+          "kind": "number-line",
+          "min": 5,
+          "max": 7,
+          "step": 0.1,
+          "points": [
+            {
+              "value": 5.24,
+              "label": "5.24 (not incl.)"
+            },
+            {
+              "value": 6.55,
+              "label": "6.55"
+            }
+          ],
+          "jumps": [
+            {
+              "from": 5.24,
+              "to": 6.55,
+              "label": "goal speeds"
+            }
+          ],
+          "alt": "Miles per hour"
+        },
+        "math": "5.24 < speed ≤ 6.55",
+        "say": "Exactly 5.24 mph takes exactly 5 hours, so it is left out."
+      },
+      {
+        "title": "Check one speed",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "6 mph",
+            "26.2 ÷ 6 ≈ 4.37 h",
+            "between 4 and 5 h ✓"
+          ],
+          "focus": 2
+        },
+        "math": "26.2 ÷ 6 ≈ 4.37 hours"
+      }
+    ],
+    "answer": "Evelyn should average more than 5.24 mph and no more than 6.55 mph (for example, 6 mph)."
+  },
+  "2-8": {
+    "label": "Math and science",
+    "steps": [
+      {
+        "title": "Find the math mean so far",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "Test 1",
+              "value": 88
+            },
+            {
+              "label": "Test 2",
+              "value": 82
+            },
+            {
+              "label": "Test 3",
+              "value": 92
+            },
+            {
+              "label": "Test 4",
+              "value": 95
+            }
+          ]
+        },
+        "math": "88 + 82 + 92 + 95 = 357;  357 ÷ 4 = 89.25"
+      },
+      {
+        "title": "Find the math score needed",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "5 tests",
+              "parts": [
+                {
+                  "text": "357 so far",
+                  "size": 357,
+                  "tone": "known"
+                },
+                {
+                  "text": "x",
+                  "size": 93,
+                  "tone": "unknown"
+                }
+              ]
+            }
+          ],
+          "total": "at least 5 × 90 = 450"
+        },
+        "math": "357 + x ≥ 450 → x ≥ 93"
+      },
+      {
+        "title": "Find the science mean so far",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "Test 1",
+              "value": 95
+            },
+            {
+              "label": "Test 2",
+              "value": 85
+            },
+            {
+              "label": "Test 3",
+              "value": 88
+            }
+          ]
+        },
+        "math": "95 + 85 + 88 = 268;  268 ÷ 3 ≈ 89.3"
+      },
+      {
+        "title": "Find the science score needed",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "4 tests",
+              "parts": [
+                {
+                  "text": "268 so far",
+                  "size": 268,
+                  "tone": "known"
+                },
+                {
+                  "text": "x",
+                  "size": 92,
+                  "tone": "unknown"
+                }
+              ]
+            }
+          ],
+          "total": "at least 4 × 90 = 360"
+        },
+        "math": "268 + x ≥ 360 → x ≥ 92"
+      },
+      {
+        "title": "Decide how likely it is",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "math: 93 or more",
+            "science: 92 or more",
+            "she has scored 95 before"
+          ]
+        },
+        "math": "possible, but no room to slip"
+      }
+    ],
+    "answer": "Shanice needs at least 93 on her next math test and 92 on her next science test — possible, but she has no room to slip."
+  },
+  "2-9": {
+    "steps": [
+      {
+        "title": "Check Splash Lagoon's slides",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "135",
+              "value": 135
+            },
+            {
+              "label": "105",
+              "value": 105
+            },
+            {
+              "label": "100",
+              "value": 100
+            },
+            {
+              "label": "80",
+              "value": 80,
+              "tone": "focus"
+            },
+            {
+              "label": "75",
+              "value": 75,
+              "tone": "focus"
+            }
+          ]
+        },
+        "math": "less than 100 ft: 80, 75 → 2 of 5 slides",
+        "say": "100 ft is not less than 100 ft."
+      },
+      {
+        "title": "Check Wild Bay's slides",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "128",
+              "value": 128
+            },
+            {
+              "label": "120",
+              "value": 120
+            },
+            {
+              "label": "108",
+              "value": 108
+            },
+            {
+              "label": "68",
+              "value": 68,
+              "tone": "focus"
+            }
+          ]
+        },
+        "math": "less than 100 ft: 68 → 1 of 4 slides"
+      },
+      {
+        "title": "Compare and choose",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "Splash Lagoon",
+              "value": 2,
+              "text": "2 slides",
+              "tone": "focus"
+            },
+            {
+              "label": "Wild Bay",
+              "value": 1,
+              "text": "1 slide"
+            }
+          ]
+        },
+        "math": "2 > 1 → Splash Lagoon"
+      }
+    ],
+    "answer": "Visit Splash Lagoon: 2 of its slides (80 ft, 75 ft) are under 100 ft, versus 1 (68 ft) at Wild Bay."
+  },
+  "2-10": {
+    "steps": [
+      {
+        "title": "Read the bar graph",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "< 1 term",
+              "value": 7
+            },
+            {
+              "label": "1 term",
+              "value": 18
+            },
+            {
+              "label": "1–2 terms",
+              "value": 3
+            },
+            {
+              "label": "2 terms",
+              "value": 15
+            },
+            {
+              "label": "> 2 terms",
+              "value": 1
+            }
+          ]
+        },
+        "math": "7 + 18 + 3 + 15 + 1 = 44 presidents"
+      },
+      {
+        "title": "Find the modal category",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "44",
+              "parts": [
+                {
+                  "text": "18: 1 term",
+                  "size": 18,
+                  "tone": "focus"
+                },
+                {
+                  "text": "26 other",
+                  "size": 26
+                }
+              ]
+            }
+          ]
+        },
+        "math": "18 ÷ 44 ≈ 0.409 ≈ 40.9%",
+        "say": "1 term is the most frequent category."
+      },
+      {
+        "title": "Make a careful prediction",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "prediction: 1 term",
+            "not a guarantee"
+          ],
+          "focus": 0
+        },
+        "math": "most frequent → predict 1 term",
+        "say": "Past data cannot account for a future election."
+      }
+    ],
+    "answer": "One possible prediction is 1 term (the mode, 18 of 44 ≈ 40.9%), but it is not a guarantee."
+  },
+  "2-11": {
+    "steps": [
+      {
+        "title": "Subtract the unloaded food",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "342.60 kg",
+              "parts": [
+                {
+                  "text": "128.75 out",
+                  "size": 128.75,
+                  "tone": "known"
+                },
+                {
+                  "text": "213.85 left",
+                  "size": 213.85,
+                  "tone": "focus"
+                }
+              ]
+            }
+          ]
+        },
+        "math": "342.60 − 128.75 = 213.85 kg",
+        "say": "Line up the decimal points."
+      },
+      {
+        "title": "Annex a zero to line up",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "56.4",
+            "56.40"
+          ],
+          "focus": 1
+        },
+        "math": "56.4 = 56.40"
+      },
+      {
+        "title": "Add the water samples",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "final",
+              "parts": [
+                {
+                  "text": "213.85",
+                  "size": 213.85,
+                  "tone": "known"
+                },
+                {
+                  "text": "56.40 in",
+                  "size": 56.4,
+                  "tone": "focus"
+                }
+              ]
+            }
+          ],
+          "total": "270.25 kg"
+        },
+        "math": "213.85 + 56.40 = 270.25 kg"
+      }
+    ],
+    "answer": "The final cargo weight is 270.25 kilograms."
+  },
+  "2-12": {
+    "steps": [
+      {
+        "title": "Multiply as whole numbers",
+        "picture": {
+          "kind": "rect",
+          "width": "925",
+          "height": "38",
+          "label": "35,150"
+        },
+        "math": "38 × 925 = 35,150"
+      },
+      {
+        "title": "Count the decimal places",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "3.8 → 1 place",
+            "9.25 → 2 places",
+            "total: 3 places"
+          ],
+          "focus": 2
+        },
+        "math": "1 + 2 = 3 decimal places"
+      },
+      {
+        "title": "Place the decimal point",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "35150",
+            "35.150",
+            "$35.15"
+          ],
+          "focus": 2
+        },
+        "math": "35,150 → 35.150 = $35.15"
+      },
+      {
+        "title": "Check with an estimate",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "estimate 4 × $9",
+              "value": 36,
+              "text": "$36"
+            },
+            {
+              "label": "answer",
+              "value": 35.15,
+              "text": "$35.15",
+              "tone": "focus"
+            }
+          ]
+        },
+        "math": "4 × $9 = $36 ≈ $35.15 ✓",
+        "say": "The estimate is close, so the answer is reasonable."
+      }
+    ],
+    "answer": "The foam costs $35.15, which is reasonable because 4 × $9 = $36."
+  },
+  "3-1": {
+    "label": "Question 1 — cups of rolled oats",
+    "steps": [
+      {
+        "title": "Write the recipe ratio",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "Oats",
+              "parts": [
+                {
+                  "text": "1",
+                  "tone": "known"
+                },
+                {
+                  "text": "1",
+                  "tone": "known"
+                },
+                {
+                  "text": "1",
+                  "tone": "known"
+                },
+                {
+                  "text": "1",
+                  "tone": "known"
+                }
+              ]
+            },
+            {
+              "label": "Granola",
+              "parts": [
+                {
+                  "text": "1"
+                },
+                {
+                  "text": "1"
+                },
+                {
+                  "text": "1"
+                },
+                {
+                  "text": "1"
+                },
+                {
+                  "text": "1"
+                },
+                {
+                  "text": "1"
+                }
+              ]
+            }
+          ],
+          "caption": "4 cups oats make 6 cups granola"
+        },
+        "math": "rolled oats : granola = 4 : 6",
+        "say": "The recipe uses 4 cups of oats for 6 cups of granola."
+      },
+      {
+        "title": "Find the total granola needed",
+        "picture": {
+          "kind": "groups",
+          "groups": 10,
+          "each": 2,
+          "icon": "🥣",
+          "label": "50 bags × 2 cups (10 of 50 shown)"
+        },
+        "math": "50 bags × 2 cups = 100 cups of granola",
+        "say": "Each of the 50 bags holds 2 cups."
+      },
+      {
+        "title": "Scale the ratio to 100 cups",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Granola (cups)",
+            "Rolled oats (cups)"
+          ],
+          "rows": [
+            [
+              "6",
+              "4"
+            ],
+            [
+              "1",
+              "4 ÷ 6 = ⅔"
+            ],
+            [
+              "100",
+              "100 ÷ 6 × 4"
+            ]
+          ],
+          "highlight": [
+            [
+              2,
+              1
+            ]
+          ]
+        },
+        "math": "100 ÷ 6 × 4 = 66⅔",
+        "say": "Divide by 6, then multiply by 4."
+      },
+      {
+        "title": "State the answer",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "100 cups granola",
+            "66⅔ cups oats"
+          ],
+          "focus": 1
+        },
+        "math": "about 66⅔ cups of rolled oats"
+      }
+    ],
+    "answer": "The students need to buy about 66⅔ cups of rolled oats."
+  },
+  "3-2": {
+    "steps": [
+      {
+        "title": "Find the weekly driving cost",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Item",
+            "Cost"
+          ],
+          "rows": [
+            [
+              "Gasoline",
+              "$9.25"
+            ],
+            [
+              "Parking",
+              "$25.00"
+            ],
+            [
+              "Tolls",
+              "$3.50"
+            ],
+            [
+              "Total",
+              "$37.75"
+            ]
+          ],
+          "highlight": [
+            [
+              3,
+              1
+            ]
+          ]
+        },
+        "math": "driving = $37.75 per week"
+      },
+      {
+        "title": "Find the cost for 4 weeks",
+        "picture": {
+          "kind": "groups",
+          "groups": 4,
+          "each": 1,
+          "icon": "$37.75",
+          "label": "4 weeks of driving"
+        },
+        "math": "4 × $37.75 = $151",
+        "say": "A month is about four weeks."
+      },
+      {
+        "title": "Use the yearly rate per month",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "52 weeks × $37.75 = $1,963",
+            "$1,963 ÷ 12 months",
+            "≈ $163.58 per month"
+          ],
+          "focus": 2
+        },
+        "math": "52 × $37.75 ÷ 12 ≈ $163.58 per month",
+        "say": "A year has a little more than 4 weeks per month."
+      },
+      {
+        "title": "Compare with the $145 pass",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "Pass",
+              "value": 145,
+              "text": "$145.00",
+              "tone": "focus"
+            },
+            {
+              "label": "Drive (4 wk)",
+              "value": 151,
+              "text": "$151.00"
+            },
+            {
+              "label": "Drive (yr ÷ 12)",
+              "value": 163.58,
+              "text": "$163.58"
+            }
+          ]
+        },
+        "math": "$151 − $145 = $6;  $163.58 − $145 ≈ $19",
+        "say": "The pass costs less, saving about $6 to $19 a month."
+      },
+      {
+        "title": "Weigh the trade-off",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "Pass saves $6–$19/month",
+            "Costs a 25-min walk"
+          ]
+        },
+        "math": "save money ↔ 25-minute walk",
+        "say": "Pick the pass if the saving is worth the walking time."
+      }
+    ],
+    "answer": "Recommend the monthly pass ($145 vs. about $151–$163.58 for driving), saving about $6 to $19 a month — if she is willing to make the 25-minute walk."
+  },
+  "3-3": {
+    "steps": [
+      {
+        "title": "Make a ratio table for Shine",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Boxes",
+            "Loads",
+            "Cost"
+          ],
+          "rows": [
+            [
+              "1",
+              "18",
+              "$5.40"
+            ],
+            [
+              "7",
+              "126",
+              "$37.80"
+            ]
+          ],
+          "highlight": [
+            [
+              1,
+              2
+            ]
+          ]
+        },
+        "math": "7 × 18 = 126 loads;  7 × $5.40 = $37.80"
+      },
+      {
+        "title": "Make a ratio table for Pure",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Boxes",
+            "Loads",
+            "Cost"
+          ],
+          "rows": [
+            [
+              "1",
+              "21",
+              "$6.30"
+            ],
+            [
+              "6",
+              "126",
+              "$37.80"
+            ]
+          ],
+          "highlight": [
+            [
+              1,
+              2
+            ]
+          ]
+        },
+        "math": "6 × 21 = 126 loads;  6 × $6.30 = $37.80",
+        "say": "126 loads is a number both tables reach."
+      },
+      {
+        "title": "Compare the same number of loads",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "Shine, 126 loads",
+              "value": 37.8,
+              "text": "$37.80"
+            },
+            {
+              "label": "Pure, 126 loads",
+              "value": 37.8,
+              "text": "$37.80"
+            }
+          ]
+        },
+        "math": "$37.80 = $37.80",
+        "say": "Same loads, same cost."
+      },
+      {
+        "title": "Check with unit rates",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "$5.40 ÷ 18 = $0.30/load",
+            "$6.30 ÷ 21 = $0.30/load"
+          ]
+        },
+        "math": "$0.30 per load = $0.30 per load"
+      }
+    ],
+    "answer": "Both brands cost $37.80 for 126 loads ($0.30 per load), so they are equally good buys — Deon can choose either one."
+  },
+  "3-4": {
+    "steps": [
+      {
+        "title": "Find the scale factor",
+        "picture": {
+          "kind": "groups",
+          "groups": 5,
+          "each": 6,
+          "icon": "🌽",
+          "label": "30 ears = 5 groups of 6"
+        },
+        "math": "30 ÷ 6 = 5",
+        "say": "The recipe serves 6 ears; Eduardo needs 30."
+      },
+      {
+        "title": "Scale the cheese",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Ears of corn",
+            "Cotija (cups)"
+          ],
+          "rows": [
+            [
+              "6",
+              "½"
+            ],
+            [
+              "30",
+              "2½"
+            ]
+          ],
+          "highlight": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "math": "5 × ½ cup = 2½ cups"
+      },
+      {
+        "title": "Find what he plans to buy",
+        "picture": {
+          "kind": "groups",
+          "groups": 4,
+          "each": 2,
+          "icon": "🧀",
+          "label": "4 packages × 2 cups"
+        },
+        "math": "4 × 2 = 8 cups"
+      },
+      {
+        "title": "Compare need and purchase",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "Needs",
+              "value": 2.5,
+              "text": "2½ cups",
+              "tone": "focus"
+            },
+            {
+              "label": "2 packages",
+              "value": 4,
+              "text": "4 cups"
+            },
+            {
+              "label": "4 packages",
+              "value": 8,
+              "text": "8 cups"
+            }
+          ]
+        },
+        "math": "8 cups > 3 × 2½ cups;  2 packages = 4 cups ≥ 2½",
+        "say": "Two packages already cover what he needs."
+      }
+    ],
+    "answer": "Tell Eduardo he is buying way too much: he needs only 2½ cups of cheese, so 2 packages (4 cups) are enough, not 4 packages (8 cups)."
+  },
+  "3-5": {
+    "steps": [
+      {
+        "title": "Find Claire's unit rate",
+        "picture": {
+          "kind": "groups",
+          "groups": 3,
+          "each": 1,
+          "icon": "$10.50",
+          "label": "3 hours, $31.50"
+        },
+        "math": "$31.50 ÷ 3 = $10.50 per hour"
+      },
+      {
+        "title": "Find Yuzuki's unit rate",
+        "picture": {
+          "kind": "groups",
+          "groups": 8,
+          "each": 1,
+          "icon": "$7.88",
+          "label": "8 hours, $63"
+        },
+        "math": "$63 ÷ 8 = $7.875 ≈ $7.88 per hour"
+      },
+      {
+        "title": "Find Nakai's unit rate",
+        "picture": {
+          "kind": "groups",
+          "groups": 4,
+          "each": 1,
+          "icon": "$12.50",
+          "label": "4 hours, $50"
+        },
+        "math": "$50 ÷ 4 = $12.50 per hour"
+      },
+      {
+        "title": "Compare with the $10.75 offer",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "Yuzuki",
+              "value": 7.875,
+              "text": "$7.88"
+            },
+            {
+              "label": "Claire",
+              "value": 10.5,
+              "text": "$10.50"
+            },
+            {
+              "label": "Offer",
+              "value": 10.75,
+              "text": "$10.75",
+              "tone": "focus"
+            },
+            {
+              "label": "Nakai",
+              "value": 12.5,
+              "text": "$12.50"
+            }
+          ]
+        },
+        "math": "$7.88 < $10.50 < $10.75 < $12.50",
+        "say": "Claire and Yuzuki earn more with the offer; Nakai earns less."
+      }
+    ],
+    "answer": "Claire ($10.50/h) and Yuzuki ($7.88/h) would want the offer; Nakai ($12.50/h) would not, since it is a pay cut for him."
+  },
+  "3-6": {
+    "steps": [
+      {
+        "title": "Find the total mix needed",
+        "picture": {
+          "kind": "groups",
+          "groups": 4,
+          "each": 1,
+          "icon": "250 oz",
+          "label": "4 posts"
+        },
+        "math": "4 × 250 = 1,000 ounces"
+      },
+      {
+        "title": "Convert one bag to ounces",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "1 lb = 16 oz",
+            "60 lb × 16 = 960 oz"
+          ],
+          "focus": 1
+        },
+        "math": "60 × 16 = 960 ounces per bag"
+      },
+      {
+        "title": "Find how many bags",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "Bags",
+              "parts": [
+                {
+                  "text": "960 oz",
+                  "size": 960,
+                  "tone": "known"
+                },
+                {
+                  "text": "960 oz",
+                  "size": 960,
+                  "tone": "known"
+                }
+              ]
+            },
+            {
+              "label": "Needed",
+              "parts": [
+                {
+                  "text": "1,000 oz",
+                  "size": 1000,
+                  "tone": "focus"
+                },
+                {
+                  "text": "extra",
+                  "size": 920
+                }
+              ]
+            }
+          ]
+        },
+        "math": "1,000 > 960 → buy 2 bags",
+        "say": "One bag is not quite enough, so she buys 2."
+      },
+      {
+        "title": "Convert the water to quarts",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "1 gal = 4 qt",
+            "1½ gal = 6 qt per bag",
+            "2 bags → 12 qt"
+          ]
+        },
+        "math": "1½ × 4 = 6 qt per bag;  2 × 6 = 12 qt"
+      },
+      {
+        "title": "Scale water to 1,000 ounces",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Mix (oz)",
+            "Water (qt)"
+          ],
+          "rows": [
+            [
+              "960",
+              "6"
+            ],
+            [
+              "1,000",
+              "(1,000 ÷ 960) × 6"
+            ],
+            [
+              "1,000",
+              "6.25"
+            ]
+          ],
+          "highlight": [
+            [
+              2,
+              1
+            ]
+          ]
+        },
+        "math": "(1,000 ÷ 960) × 6 = 6.25 quarts"
+      }
+    ],
+    "answer": "Buy 2 bags. Use 6.25 quarts of water for exactly the 1,000 ounces needed, or 12 quarts to mix both full bags."
+  },
+  "3-7": {
+    "steps": [
+      {
+        "title": "Convert one car to pounds",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Kilograms",
+            "Pounds"
+          ],
+          "rows": [
+            [
+              "1",
+              "2.2"
+            ],
+            [
+              "1,524",
+              "≈ 3,353"
+            ]
+          ],
+          "highlight": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "math": "1,524 × 2.2 ≈ 3,353 pounds per car",
+        "say": "Put both amounts in the same unit first."
+      },
+      {
+        "title": "Divide capacity by one car",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "Bridge",
+              "parts": [
+                {
+                  "text": "3,353 lb",
+                  "size": 1,
+                  "tone": "known"
+                },
+                {
+                  "text": "3,353 lb",
+                  "size": 1,
+                  "tone": "known"
+                },
+                {
+                  "text": "…",
+                  "size": 2
+                },
+                {
+                  "text": "? cars",
+                  "size": 2,
+                  "tone": "unknown"
+                }
+              ]
+            }
+          ],
+          "total": "35,924,000 lb"
+        },
+        "math": "35,924,000 ÷ 3,353 ≈ 10,700 cars"
+      },
+      {
+        "title": "Explain why it is an estimate",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "2.2 is rounded",
+            "1,524 kg is an average",
+            "≈ 10,700, not 10,714.6"
+          ]
+        },
+        "math": "1 kg ≈ 2.2 lb;  average mass → about 10,700",
+        "say": "Rounded inputs give an estimate, not an exact count."
+      }
+    ],
+    "answer": "About 10,700 cars. It is an estimate because 2.2 lb per kg is rounded and 1,524 kg is only an average car mass."
+  },
+  "3-8": {
+    "steps": [
+      {
+        "title": "Find Pizza Palace's unit rate",
+        "picture": {
+          "kind": "groups",
+          "groups": 3,
+          "each": 1,
+          "icon": "🍕",
+          "label": "3 pizzas for $27.00"
+        },
+        "math": "$27.00 ÷ 3 = $9.00 per pizza"
+      },
+      {
+        "title": "Find Pizza Town's unit rate",
+        "picture": {
+          "kind": "groups",
+          "groups": 5,
+          "each": 1,
+          "icon": "🍕",
+          "label": "5 pizzas for $42.50"
+        },
+        "math": "$42.50 ÷ 5 = $8.50 per pizza"
+      },
+      {
+        "title": "Compare the unit rates",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "Pizza Palace",
+              "value": 9,
+              "text": "$9.00"
+            },
+            {
+              "label": "Pizza Town",
+              "value": 8.5,
+              "text": "$8.50",
+              "tone": "focus"
+            }
+          ]
+        },
+        "math": "$8.50 < $9.00 → Pizza Town",
+        "say": "The lower price per pizza is the better buy."
+      },
+      {
+        "title": "Find the cost of 15 pizzas",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Pizzas",
+            "Cost"
+          ],
+          "rows": [
+            [
+              "1",
+              "$8.50"
+            ],
+            [
+              "15",
+              "$127.50"
+            ]
+          ],
+          "highlight": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "math": "15 × $8.50 = $127.50"
+      }
+    ],
+    "answer": "Pizza Town is the better buy at $8.50 per pizza (vs. $9.00); 15 pizzas cost $127.50."
+  },
+  "3-9": {
+    "steps": [
+      {
+        "title": "Write the original ratio",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "Flour",
+              "parts": [
+                {
+                  "text": "1"
+                },
+                {
+                  "text": "1"
+                }
+              ]
+            },
+            {
+              "label": "Milk",
+              "parts": [
+                {
+                  "text": "1"
+                },
+                {
+                  "text": "1"
+                },
+                {
+                  "text": "1"
+                }
+              ]
+            }
+          ]
+        },
+        "math": "flour : milk = 2 : 3"
+      },
+      {
+        "title": "Find the scale factor",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "",
+            "Flour (cups)",
+            "Milk (cups)"
+          ],
+          "rows": [
+            [
+              "Recipe",
+              "2",
+              "3"
+            ],
+            [
+              "Catering",
+              "14",
+              "?"
+            ]
+          ],
+          "highlight": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "math": "14 ÷ 2 = 7",
+        "say": "Flour went from 2 cups to 14 cups."
+      },
+      {
+        "title": "Multiply the milk by 7",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "",
+            "Flour (cups)",
+            "Milk (cups)"
+          ],
+          "rows": [
+            [
+              "Recipe",
+              "2",
+              "3"
+            ],
+            [
+              "Catering (× 7)",
+              "14",
+              "21"
+            ]
+          ],
+          "highlight": [
+            [
+              1,
+              2
+            ]
+          ]
+        },
+        "math": "3 × 7 = 21 cups of milk"
+      },
+      {
+        "title": "Check the ratio is equivalent",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "14 : 21",
+            "14 ÷ 7 = 2",
+            "21 ÷ 7 = 3",
+            "2 : 3"
+          ]
+        },
+        "math": "14 : 21 = 2 : 3"
+      }
+    ],
+    "answer": "She needs 21 cups of milk (scale factor 7; 14 : 21 is equivalent to 2 : 3)."
+  },
+  "3-10": {
+    "steps": [
+      {
+        "title": "Write the conversion factor",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "Feet",
+              "parts": [
+                {
+                  "text": "1 ft"
+                },
+                {
+                  "text": "1 ft"
+                },
+                {
+                  "text": "1 ft"
+                }
+              ]
+            },
+            {
+              "label": "Yards",
+              "parts": [
+                {
+                  "text": "1 yd",
+                  "tone": "known"
+                }
+              ]
+            }
+          ]
+        },
+        "math": "1 yard = 3 feet",
+        "say": "Yards are larger, so divide by 3."
+      },
+      {
+        "title": "Divide feet by 3",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Feet",
+            "Yards"
+          ],
+          "rows": [
+            [
+              "3",
+              "1"
+            ],
+            [
+              "7,650",
+              "2,550"
+            ]
+          ],
+          "highlight": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "math": "7,650 ÷ 3 = 2,550 yards"
+      }
+    ],
+    "answer": "One cable needs 2,550 yards of protective wrap."
+  },
+  "4-1": {
+    "steps": [
+      {
+        "title": "Read the counts as percents",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "Hybrid",
+              "value": 8,
+              "text": "8 of 100 = 8%"
+            },
+            {
+              "label": "All-electric",
+              "value": 18,
+              "text": "18 of 100 = 18%"
+            },
+            {
+              "label": "Gas-powered",
+              "value": 74,
+              "text": "74 of 100 = 74%"
+            }
+          ]
+        },
+        "math": "8% hybrid, 18% all-electric, 74% gas",
+        "say": "Out of 100, each count is already a percent."
+      },
+      {
+        "title": "Find each percent of 50",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Type",
+            "Percent",
+            "Of 50 cars"
+          ],
+          "rows": [
+            [
+              "Hybrid",
+              "8%",
+              "4"
+            ],
+            [
+              "All-electric",
+              "18%",
+              "9"
+            ],
+            [
+              "Gas-powered",
+              "74%",
+              "37"
+            ]
+          ]
+        },
+        "math": "0.08 × 50 = 4;  0.18 × 50 = 9;  0.74 × 50 = 37"
+      },
+      {
+        "title": "Check the total",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "parts": [
+                {
+                  "text": "4",
+                  "size": 4
+                },
+                {
+                  "text": "9",
+                  "size": 9
+                },
+                {
+                  "text": "37",
+                  "size": 37
+                }
+              ]
+            }
+          ],
+          "total": "50 cars"
+        },
+        "math": "4 + 9 + 37 = 50"
+      }
+    ],
+    "answer": "Order 4 hybrid, 9 all-electric, and 37 gas-powered cars."
+  },
+  "4-2": {
+    "steps": [
+      {
+        "title": "Rewrite every value as a decimal",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "Python ¾ = 0.75",
+            "Chimp ⅖ = 0.4",
+            "Human 33% = 0.33",
+            "Cow 16.5% = 0.165",
+            "Giraffe 8/100 = 0.08"
+          ]
+        },
+        "math": "¾ = 0.75, ⅖ = 0.4, 33% = 0.33, 16.5% = 0.165, 8/100 = 0.08",
+        "say": "Tiger 0.65, cheetah 0.5, and duck 0.45 are already decimals."
+      },
+      {
+        "title": "Order from most to least",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "Python",
+              "value": 0.75,
+              "text": "0.75"
+            },
+            {
+              "label": "Tiger",
+              "value": 0.65,
+              "text": "0.65"
+            },
+            {
+              "label": "Cheetah",
+              "value": 0.5,
+              "text": "0.5"
+            },
+            {
+              "label": "Duck",
+              "value": 0.45,
+              "text": "0.45"
+            },
+            {
+              "label": "Chimpanzee",
+              "value": 0.4,
+              "text": "0.4"
+            },
+            {
+              "label": "Human",
+              "value": 0.33,
+              "text": "0.33"
+            },
+            {
+              "label": "Cow",
+              "value": 0.165,
+              "text": "0.165"
+            },
+            {
+              "label": "Giraffe",
+              "value": 0.08,
+              "text": "0.08",
+              "tone": "focus"
+            }
+          ]
+        },
+        "math": "0.75 > 0.65 > 0.5 > 0.45 > 0.4 > 0.33 > 0.165 > 0.08"
+      },
+      {
+        "title": "Change the surprise to hours",
+        "picture": {
+          "kind": "number-line",
+          "min": 0,
+          "max": 24,
+          "step": 2,
+          "points": [
+            {
+              "value": 2,
+              "label": "giraffe ≈ 2 h",
+              "tone": "unknown"
+            },
+            {
+              "value": 18,
+              "label": "python 18 h"
+            }
+          ],
+          "alt": "Hours of sleep in a 24-hour day: giraffe about 2, python 18"
+        },
+        "math": "0.08 × 24 ≈ 2 hours;  0.75 × 24 = 18 hours",
+        "say": "The giraffe sleeps only about 2 hours a day."
+      }
+    ],
+    "answer": "Most to least: python, tiger, cheetah, duck, chimpanzee, human, cow, giraffe. The giraffe is the surprise — only about 2 hours of sleep, while the python sleeps about 18."
+  },
+  "4-3": {
+    "steps": [
+      {
+        "title": "Round to a friendly number",
+        "picture": {
+          "kind": "number-line",
+          "min": 140,
+          "max": 150,
+          "step": 1,
+          "points": [
+            {
+              "value": 145,
+              "label": "145"
+            },
+            {
+              "value": 150,
+              "label": "150",
+              "tone": "unknown"
+            }
+          ]
+        },
+        "math": "145 → 150"
+      },
+      {
+        "title": "Break 140% into benchmarks",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "parts": [
+                {
+                  "text": "100%",
+                  "size": 100,
+                  "tone": "known"
+                },
+                {
+                  "text": "40%",
+                  "size": 40,
+                  "tone": "focus"
+                }
+              ]
+            }
+          ],
+          "total": "140%"
+        },
+        "math": "140% = 100% + 40%"
+      },
+      {
+        "title": "Find each part of 150",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "parts": [
+                {
+                  "text": "150",
+                  "size": 100,
+                  "tone": "known"
+                },
+                {
+                  "text": "60",
+                  "size": 40,
+                  "tone": "focus"
+                }
+              ]
+            }
+          ],
+          "total": "210 cans"
+        },
+        "math": "100% of 150 = 150;  40% of 150 = 60;  150 + 60 = 210",
+        "say": "That's about 200 cans."
+      },
+      {
+        "title": "Check with the exact amount",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "Estimate",
+              "value": 210,
+              "text": "210"
+            },
+            {
+              "label": "Exact",
+              "value": 203,
+              "text": "203",
+              "tone": "focus"
+            }
+          ]
+        },
+        "math": "1.4 × 145 = 203 ≈ 200"
+      }
+    ],
+    "answer": "About 200 cans (estimate 210; exact 1.4 × 145 = 203)."
+  },
+  "4-4": {
+    "steps": [
+      {
+        "title": "Find 20% of Wednesday",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "Wed 70",
+              "parts": [
+                {
+                  "text": "14",
+                  "tone": "focus"
+                },
+                {
+                  "text": "14"
+                },
+                {
+                  "text": "14"
+                },
+                {
+                  "text": "14"
+                },
+                {
+                  "text": "14"
+                }
+              ]
+            }
+          ],
+          "caption": "20% = 1 of 5 equal parts"
+        },
+        "math": "0.2 × 70 = 14 → Thursday: 112 + 14 = 126"
+      },
+      {
+        "title": "Find 25% of Thursday's plan",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "Thu 112",
+              "parts": [
+                {
+                  "text": "28",
+                  "tone": "focus"
+                },
+                {
+                  "text": "28"
+                },
+                {
+                  "text": "28"
+                },
+                {
+                  "text": "28"
+                }
+              ]
+            }
+          ],
+          "caption": "25% = 1 of 4 equal parts"
+        },
+        "math": "0.25 × 112 = 28 move to Friday"
+      },
+      {
+        "title": "Find actual attendance",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Day",
+            "Work",
+            "Actual"
+          ],
+          "rows": [
+            [
+              "Thursday",
+              "126 − 28",
+              "98"
+            ],
+            [
+              "Friday",
+              "65 + 28",
+              "93"
+            ]
+          ],
+          "highlight": [
+            [
+              0,
+              2
+            ],
+            [
+              1,
+              2
+            ]
+          ]
+        },
+        "math": "Thursday 126 − 28 = 98;  Friday 65 + 28 = 93"
+      },
+      {
+        "title": "Compare the two days",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "Thursday",
+              "value": 98,
+              "text": "98",
+              "tone": "focus"
+            },
+            {
+              "label": "Friday",
+              "value": 93,
+              "text": "93"
+            }
+          ]
+        },
+        "math": "98 − 93 = 5"
+      }
+    ],
+    "answer": "Thursday had the greater actual attendance, by 5 students (98 vs. 93)."
+  },
+  "4-5": {
+    "steps": [
+      {
+        "title": "Add the percents that sold",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "parts": [
+                {
+                  "text": "300-pc 40%",
+                  "size": 40,
+                  "tone": "focus"
+                },
+                {
+                  "text": "500-pc 35%",
+                  "size": 35,
+                  "tone": "focus"
+                },
+                {
+                  "text": "15%",
+                  "size": 15
+                },
+                {
+                  "text": "10%",
+                  "size": 10
+                }
+              ]
+            }
+          ],
+          "total": "100%"
+        },
+        "math": "40% + 35% = 75% sold"
+      },
+      {
+        "title": "Find the whole",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "Sold",
+              "parts": [
+                {
+                  "text": "120 = 75%",
+                  "size": 75,
+                  "tone": "known"
+                },
+                {
+                  "text": "25%",
+                  "size": 25
+                }
+              ]
+            }
+          ],
+          "total": "t = ?"
+        },
+        "math": "0.75t = 120 → t = 120 ÷ 0.75 = 160",
+        "say": "There were 160 puzzles before the sale."
+      },
+      {
+        "title": "Find each percent of 160",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Puzzle",
+            "Percent",
+            "Count"
+          ],
+          "rows": [
+            [
+              "300-piece",
+              "40%",
+              "64"
+            ],
+            [
+              "500-piece",
+              "35%",
+              "56"
+            ],
+            [
+              "750-piece",
+              "15%",
+              "24"
+            ],
+            [
+              "1,000-piece",
+              "10%",
+              "16"
+            ]
+          ]
+        },
+        "math": "0.4 × 160 = 64;  0.35 × 160 = 56;  0.15 × 160 = 24;  0.1 × 160 = 16"
+      },
+      {
+        "title": "Check the totals",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "64 + 56 = 120 sold",
+            "64 + 56 + 24 + 16 = 160"
+          ]
+        },
+        "math": "64 + 56 = 120;  64 + 56 + 24 + 16 = 160"
+      }
+    ],
+    "answer": "Before the sale: 64 300-piece, 56 500-piece, 24 750-piece, and 16 1,000-piece puzzles (160 in all)."
+  },
+  "5-1": {
+    "label": "Question 1 and Question 2",
+    "steps": [
+      {
+        "title": "Find the park's area",
+        "picture": {
+          "kind": "rect",
+          "width": "150 ft",
+          "height": "108 ft",
+          "label": "16,200 ft²",
+          "caption": "parallelogram: base × height"
+        },
+        "math": "A = b × h = 150 × 108 = 16,200 ft²",
+        "say": "A parallelogram's area is base times height."
+      },
+      {
+        "title": "Take out the pond",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "parts": [
+                {
+                  "text": "pond 1,245",
+                  "size": 1245,
+                  "tone": "known"
+                },
+                {
+                  "text": "14,955 left",
+                  "size": 14955,
+                  "tone": "focus"
+                }
+              ]
+            }
+          ],
+          "total": "16,200 ft²"
+        },
+        "math": "16,200 − 1,245 = 14,955 ft²"
+      },
+      {
+        "title": "Find 85% for grass seed",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "parts": [
+                {
+                  "text": "85% → 12,711.75",
+                  "size": 85,
+                  "tone": "focus"
+                },
+                {
+                  "text": "15%",
+                  "size": 15
+                }
+              ]
+            }
+          ],
+          "total": "14,955 ft²"
+        },
+        "math": "0.85 × 14,955 = 12,711.75 ft²"
+      },
+      {
+        "title": "Q1: Find bags of seed",
+        "picture": {
+          "kind": "groups",
+          "groups": 2,
+          "each": 1,
+          "icon": "🛍️",
+          "label": "2 bags, 7,500 ft² each"
+        },
+        "math": "12,711.75 ÷ 7,500 ≈ 1.7 → round up to 2 bags",
+        "say": "Seed comes in whole bags, so round up."
+      },
+      {
+        "title": "Q2: Find bales of straw",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "1 bale = 500 ft²",
+            "12,711.75 ÷ 500 ≈ 25.4",
+            "round up → 26"
+          ],
+          "focus": 2
+        },
+        "math": "12,711.75 ÷ 500 ≈ 25.4 → round up to 26 bales"
+      }
+    ],
+    "answer": "Question 1: 2 bags of grass seed. Question 2: 26 bales of straw."
+  },
+  "5-2": {
+    "steps": [
+      {
+        "title": "Write the triangle formula",
+        "picture": {
+          "kind": "rect",
+          "width": "34 ft",
+          "height": "23¾ ft",
+          "label": "triangle = ½ of this"
+        },
+        "math": "A = ½ × b × h = ½ × 34 × 23¾",
+        "say": "A triangle is half of a rectangle with the same base and height."
+      },
+      {
+        "title": "Change the mixed number",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "23¾",
+            "23.75"
+          ],
+          "focus": 1
+        },
+        "math": "23¾ = 23.75"
+      },
+      {
+        "title": "Multiply base × height",
+        "picture": {
+          "kind": "rect",
+          "width": "34 ft",
+          "height": "23.75 ft",
+          "label": "807.5 ft²"
+        },
+        "math": "34 × 23.75 = 807.5"
+      },
+      {
+        "title": "Take half",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "parts": [
+                {
+                  "text": "403.75",
+                  "tone": "focus"
+                },
+                {
+                  "text": "403.75"
+                }
+              ]
+            }
+          ],
+          "total": "807.5"
+        },
+        "math": "807.5 ÷ 2 = 403.75 ft²"
+      }
+    ],
+    "answer": "The triangular front has an area of 403.75 square feet."
+  },
+  "5-3": {
+    "steps": [
+      {
+        "title": "Find the rectangle's area",
+        "picture": {
+          "kind": "rect",
+          "width": "25 ft",
+          "height": "30 ft",
+          "label": "750 ft²"
+        },
+        "math": "height 70 − 40 = 30 ft; 25 × 30 = 750 ft²",
+        "say": "Split the lot at the top of the 40-foot section."
+      },
+      {
+        "title": "Find the trapezoid's bases",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "base 1",
+              "parts": [
+                {
+                  "text": "25",
+                  "size": 25
+                },
+                {
+                  "text": "57",
+                  "size": 57
+                }
+              ]
+            },
+            {
+              "label": "base 2",
+              "parts": [
+                {
+                  "text": "54",
+                  "size": 54,
+                  "tone": "known"
+                }
+              ]
+            }
+          ],
+          "total": "base 1 = 25 + 57 = 82 ft"
+        },
+        "math": "bases: 25 + 57 = 82 ft and 54 ft; height 40 ft"
+      },
+      {
+        "title": "Find the trapezoid's area",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "82 + 54 = 136",
+            "½ × 136 = 68",
+            "68 × 40 = 2,720"
+          ],
+          "focus": 2
+        },
+        "math": "½ × (82 + 54) × 40 = 2,720 ft²"
+      },
+      {
+        "title": "Add the two areas",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "rectangle",
+              "value": 750,
+              "text": "750"
+            },
+            {
+              "label": "trapezoid",
+              "value": 2720,
+              "text": "2,720"
+            },
+            {
+              "label": "total",
+              "value": 3470,
+              "text": "3,470",
+              "tone": "focus"
+            }
+          ]
+        },
+        "math": "750 + 2,720 = 3,470 ft²"
+      },
+      {
+        "title": "Find the cost per square foot",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "asphalt $3.95",
+            "labor $3.00",
+            "$6.95 per ft²"
+          ],
+          "focus": 2
+        },
+        "math": "$3.95 + $3.00 = $6.95 per ft²"
+      },
+      {
+        "title": "Multiply to find the budget",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Area (ft²)",
+            "Cost ($)"
+          ],
+          "rows": [
+            [
+              "1",
+              "6.95"
+            ],
+            [
+              "3,470",
+              "24,116.50"
+            ]
+          ],
+          "highlight": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "math": "3,470 × $6.95 = $24,116.50 → budget about $24,200"
+      }
+    ],
+    "answer": "The lot is 3,470 ft² and costs about $24,116.50, so budget about $24,200."
+  },
+  "5-4": {
+    "steps": [
+      {
+        "title": "Split into 10 triangles",
+        "picture": {
+          "kind": "groups",
+          "groups": 10,
+          "each": 1,
+          "icon": "🔺",
+          "label": "10 identical triangles"
+        },
+        "math": "decagon = 10 triangles meeting at the center"
+      },
+      {
+        "title": "Change to decimals",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "base 3¾ = 3.75 ft",
+            "height 5¾ = 5.75 ft"
+          ]
+        },
+        "math": "3¾ = 3.75 and 5¾ = 5.75"
+      },
+      {
+        "title": "Find one triangle's area",
+        "picture": {
+          "kind": "rect",
+          "width": "3.75 ft",
+          "height": "5.75 ft",
+          "label": "½ → 10.78125 ft²"
+        },
+        "math": "½ × 3.75 × 5.75 = 10.78125 ft²"
+      },
+      {
+        "title": "Multiply by 10",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "10 × 10.78125",
+            "107.8125 ft²"
+          ],
+          "focus": 1
+        },
+        "math": "10 × 10.78125 = 107.8125 ft²"
+      },
+      {
+        "title": "Find the tile cost",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Area (ft²)",
+            "Cost ($)"
+          ],
+          "rows": [
+            [
+              "1",
+              "2.89"
+            ],
+            [
+              "107.8125",
+              "≈ 311.58"
+            ]
+          ],
+          "highlight": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "math": "107.8125 × $2.89 ≈ $311.58 → budget about $320",
+        "say": "Round up a little for extra tiles for cuts and breakage."
+      }
+    ],
+    "answer": "The tiles cost about $311.58, so budget about $320."
+  },
+  "5-5": {
+    "steps": [
+      {
+        "title": "List what we know",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Box",
+            "Width",
+            "Price"
+          ],
+          "rows": [
+            [
+              "Small",
+              "4 in.",
+              "$4.50"
+            ],
+            [
+              "Medium",
+              "5 in.",
+              "$5.75"
+            ],
+            [
+              "Large",
+              "6 in.",
+              "$7.00"
+            ]
+          ]
+        },
+        "math": "width and price only — no length or height"
+      },
+      {
+        "title": "Name the missing measurements",
+        "picture": {
+          "kind": "rect",
+          "width": "width ✓",
+          "height": "height ?",
+          "label": "length ?"
+        },
+        "math": "need each box's length and height (or an exact rule)",
+        "say": "\"The dimensions grow\" is not an exact rule."
+      },
+      {
+        "title": "Find each box's volume",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "V = l × w × h",
+            "in cubic inches"
+          ]
+        },
+        "math": "V = length × width × height"
+      },
+      {
+        "title": "Compare price per cubic inch",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "price ÷ volume",
+            "$ per in³",
+            "lowest = best buy"
+          ],
+          "focus": 2
+        },
+        "math": "unit rate = price ÷ V (dollars per in³)"
+      },
+      {
+        "title": "Decide how many boxes",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "how much popcorn the family wants"
+          ]
+        },
+        "math": "number of boxes depends on how much they want",
+        "say": "Do not invent dimensions or name a best buy yet."
+      }
+    ],
+    "answer": "No. We need each box's length and height; then compare price ÷ volume. How many boxes depends on how much popcorn the family wants."
+  },
+  "5-6": {
+    "steps": [
+      {
+        "title": "House A → kit 3",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "1 square base",
+            "4 triangles",
+            "square pyramid"
+          ],
+          "focus": 2
+        },
+        "math": "square + 4 triangles → square pyramid → A = 3"
+      },
+      {
+        "title": "House B → kit 1",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "2 triangle ends",
+            "3 rectangles",
+            "triangular prism"
+          ],
+          "focus": 2
+        },
+        "math": "2 triangles + 3 rectangles → triangular prism → B = 1"
+      },
+      {
+        "title": "House C → kit 2",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "6 rectangles",
+            "rectangular prism"
+          ],
+          "focus": 1
+        },
+        "math": "6 rectangles → rectangular prism → C = 2"
+      },
+      {
+        "title": "Check how the edges meet",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "House",
+            "Kit",
+            "Solid"
+          ],
+          "rows": [
+            [
+              "A",
+              "3",
+              "square pyramid"
+            ],
+            [
+              "B",
+              "1",
+              "triangular prism"
+            ],
+            [
+              "C",
+              "2",
+              "rectangular prism"
+            ]
+          ]
+        },
+        "math": "check face shapes AND how edges meet when folded",
+        "say": "Counting faces alone is not enough to check a net."
+      }
+    ],
+    "answer": "A matches kit 3, B matches kit 1, and C matches kit 2."
+  },
+  "5-7": {
+    "steps": [
+      {
+        "title": "Find the perimeter of the floor",
+        "picture": {
+          "kind": "rect",
+          "width": "12 ft",
+          "height": "10 ft",
+          "label": "P = 44 ft"
+        },
+        "math": "2(12 + 10) = 2 × 22 = 44 ft"
+      },
+      {
+        "title": "Find the total wall area",
+        "picture": {
+          "kind": "rect",
+          "width": "44 ft",
+          "height": "8 ft",
+          "label": "352 ft²",
+          "caption": "the four walls unrolled"
+        },
+        "math": "perimeter × height = 44 × 8 = 352 ft²"
+      },
+      {
+        "title": "Find the window and door areas",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "window 3 × 4 = 12",
+            "door 3 × 7 = 21",
+            "2 doors = 42"
+          ]
+        },
+        "math": "window 3 × 4 = 12 ft²; doors 2 × (3 × 7) = 42 ft²"
+      },
+      {
+        "title": "Subtract the openings",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "parts": [
+                {
+                  "text": "paint 298",
+                  "size": 298,
+                  "tone": "focus"
+                },
+                {
+                  "text": "window 12",
+                  "size": 12,
+                  "tone": "known"
+                },
+                {
+                  "text": "doors 42",
+                  "size": 42,
+                  "tone": "known"
+                }
+              ]
+            }
+          ],
+          "total": "352 ft²"
+        },
+        "math": "352 − 12 − 42 = 298 ft²"
+      }
+    ],
+    "answer": "Tahira needs to paint 298 square feet of wall."
+  },
+  "5-8": {
+    "steps": [
+      {
+        "title": "Unfold the pyramid into a net",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "1 square base",
+            "4 triangular faces"
+          ],
+          "focus": 1
+        },
+        "math": "net = square base + 4 triangles"
+      },
+      {
+        "title": "Keep only the glass faces",
+        "picture": {
+          "kind": "groups",
+          "groups": 4,
+          "each": 1,
+          "icon": "🔺",
+          "label": "4 glass triangles (no base)"
+        },
+        "math": "glass = 4 triangular faces, not the base"
+      },
+      {
+        "title": "Find one triangle's area",
+        "picture": {
+          "kind": "rect",
+          "width": "6 ft",
+          "height": "8 ft",
+          "label": "½ → 24 ft²",
+          "caption": "example: base edge 6, slant height 8"
+        },
+        "math": "½ × base edge × slant height = ½ × 6 × 8 = 24 ft²"
+      },
+      {
+        "title": "Multiply by 4",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "parts": [
+                {
+                  "text": "24"
+                },
+                {
+                  "text": "24"
+                },
+                {
+                  "text": "24"
+                },
+                {
+                  "text": "24"
+                }
+              ]
+            }
+          ],
+          "total": "96 ft²"
+        },
+        "math": "4 × 24 = 96 ft²"
+      }
+    ],
+    "answer": "Use 4 × (½ × base edge × slant height). Example: 4 × 24 = 96 ft² of glass."
+  },
+  "5-9": {
+    "steps": [
+      {
+        "title": "Find one section's area",
+        "picture": {
+          "kind": "rect",
+          "width": "3 ft",
+          "height": "4 ft",
+          "label": "½ → 6 ft²"
+        },
+        "math": "A = ½ × 3 × 4 = 6 ft²"
+      },
+      {
+        "title": "Multiply by 10 sections",
+        "picture": {
+          "kind": "groups",
+          "groups": 10,
+          "each": 6,
+          "icon": "■",
+          "label": "10 sections × 6 ft²"
+        },
+        "math": "10 × 6 = 60 ft²"
+      },
+      {
+        "title": "Find the total cost",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Area (ft²)",
+            "Cost ($)"
+          ],
+          "rows": [
+            [
+              "1",
+              "5"
+            ],
+            [
+              "60",
+              "300"
+            ]
+          ],
+          "highlight": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "math": "60 × $5 = $300"
+      }
+    ],
+    "answer": "The total cost to fill the garden bed is $300."
+  },
+  "5-10": {
+    "steps": [
+      {
+        "title": "Find the Small box's volume",
+        "picture": {
+          "kind": "groups",
+          "groups": 1,
+          "each": 2,
+          "icon": "🧊",
+          "label": "2 ft³"
+        },
+        "math": "V = 2 × 1 × 1 = 2 ft³"
+      },
+      {
+        "title": "Find the Medium box's volume",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "2 × 1.5 = 3",
+            "3 × 1 = 3"
+          ],
+          "focus": 1
+        },
+        "math": "V = 2 × 1.5 × 1 = 3 ft³"
+      },
+      {
+        "title": "Find the Large box's volume",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "2 × 2 = 4",
+            "4 × 1.5 = 6"
+          ],
+          "focus": 1
+        },
+        "math": "V = 2 × 2 × 1.5 = 6 ft³"
+      },
+      {
+        "title": "Compare with 5 ft³",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "Small",
+              "value": 2,
+              "text": "2 ft³"
+            },
+            {
+              "label": "Medium",
+              "value": 3,
+              "text": "3 ft³"
+            },
+            {
+              "label": "Large",
+              "value": 6,
+              "text": "6 ft³",
+              "tone": "focus"
+            },
+            {
+              "label": "need",
+              "value": 5,
+              "text": "≥ 5 ft³",
+              "tone": "known"
+            }
+          ]
+        },
+        "math": "2 < 5, 3 < 5, 6 ≥ 5 → Large"
+      }
+    ],
+    "answer": "Buy the Large box — only its 6 ft³ is at least 5 ft³."
+  },
+  "6-1": {
+    "steps": [
+      {
+        "title": "Share each amount among 4",
+        "picture": {
+          "kind": "groups",
+          "groups": 4,
+          "each": 1,
+          "icon": "🛍️",
+          "label": "4 equal bags"
+        },
+        "math": "weight per bag = amount ÷ 4"
+      },
+      {
+        "title": "Almonds ÷ 4",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "½ lb",
+              "parts": [
+                {
+                  "text": "⅛",
+                  "tone": "focus"
+                },
+                {
+                  "text": "⅛"
+                },
+                {
+                  "text": "⅛"
+                },
+                {
+                  "text": "⅛"
+                }
+              ]
+            }
+          ]
+        },
+        "math": "½ ÷ 4 = ½ × ¼ = ⅛ lb"
+      },
+      {
+        "title": "Cashews ÷ 4",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "¼ lb",
+              "parts": [
+                {
+                  "text": "1/16",
+                  "tone": "focus"
+                },
+                {
+                  "text": "1/16"
+                },
+                {
+                  "text": "1/16"
+                },
+                {
+                  "text": "1/16"
+                }
+              ]
+            }
+          ]
+        },
+        "math": "¼ ÷ 4 = ¼ × ¼ = 1/16 lb"
+      },
+      {
+        "title": "Peanuts ÷ 4",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "⅖ lb",
+              "parts": [
+                {
+                  "text": "1/10",
+                  "tone": "focus"
+                },
+                {
+                  "text": "1/10"
+                },
+                {
+                  "text": "1/10"
+                },
+                {
+                  "text": "1/10"
+                }
+              ]
+            }
+          ]
+        },
+        "math": "⅖ ÷ 4 = ⅖ × ¼ = 2/20 = 1/10 lb"
+      },
+      {
+        "title": "Walnuts ÷ 4",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "¾ lb",
+              "parts": [
+                {
+                  "text": "3/16",
+                  "tone": "focus"
+                },
+                {
+                  "text": "3/16"
+                },
+                {
+                  "text": "3/16"
+                },
+                {
+                  "text": "3/16"
+                }
+              ]
+            }
+          ]
+        },
+        "math": "¾ ÷ 4 = ¾ × ¼ = 3/16 lb",
+        "say": "Dividing by 4 means multiplying by ¼, so each answer is smaller."
+      }
+    ],
+    "answer": "Almonds ⅛ lb, cashews 1/16 lb, peanuts 1/10 lb, walnuts 3/16 lb per bag."
+  },
+  "6-2": {
+    "steps": [
+      {
+        "title": "Find Mirror A's area",
+        "picture": {
+          "kind": "rect",
+          "width": "2½ ft",
+          "height": "2½ ft",
+          "label": "6¼ ft²"
+        },
+        "math": "5/2 × 5/2 = 25/4 = 6¼ ft²"
+      },
+      {
+        "title": "Find Mirror B's area",
+        "picture": {
+          "kind": "rect",
+          "width": "1¾ ft",
+          "height": "1¾ ft",
+          "label": "3 1/16 ft²"
+        },
+        "math": "7/4 × 7/4 = 49/16 = 3 1/16 ft²"
+      },
+      {
+        "title": "Divide — keep, change, flip",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "25/4 ÷ 49/16",
+            "25/4 × 16/49",
+            "400/196"
+          ],
+          "focus": 1
+        },
+        "math": "25/4 ÷ 49/16 = 25/4 × 16/49 = 400/196"
+      },
+      {
+        "title": "Compare the areas",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "Mirror A",
+              "value": 6.25,
+              "text": "6¼ ft²",
+              "tone": "focus"
+            },
+            {
+              "label": "Mirror B",
+              "value": 3.0625,
+              "text": "3 1/16 ft²"
+            }
+          ]
+        },
+        "math": "400/196 ≈ 2.04"
+      }
+    ],
+    "answer": "Mirror A's area is about 2.04 times as large as Mirror B's."
+  },
+  "6-3": {
+    "label": "Question 2 — after 25 hours",
+    "steps": [
+      {
+        "title": "Read the table",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Hours",
+            "Bacteria"
+          ],
+          "rows": [
+            [
+              "0",
+              "3"
+            ],
+            [
+              "5",
+              "9"
+            ],
+            [
+              "10",
+              "27"
+            ],
+            [
+              "15",
+              "81"
+            ]
+          ]
+        },
+        "math": "3 → 9 → 27 → 81",
+        "say": "Each count is 3 times the one before."
+      },
+      {
+        "title": "Write each count as a power of 3",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "3 = 3¹",
+            "9 = 3²",
+            "27 = 3³",
+            "81 = 3⁴"
+          ]
+        },
+        "math": "base 3, exponent goes up by 1",
+        "say": "Every 5-hour reading raises the exponent by 1."
+      },
+      {
+        "title": "Count the readings to 25 hours",
+        "picture": {
+          "kind": "number-line",
+          "min": 0,
+          "max": 25,
+          "step": 5,
+          "points": [
+            {
+              "value": 0,
+              "label": "3¹"
+            },
+            {
+              "value": 5,
+              "label": "3²"
+            },
+            {
+              "value": 10,
+              "label": "3³"
+            },
+            {
+              "value": 15,
+              "label": "3⁴"
+            },
+            {
+              "value": 20,
+              "label": "3⁵"
+            },
+            {
+              "value": 25,
+              "label": "3⁶",
+              "tone": "unknown"
+            }
+          ]
+        },
+        "math": "25 hours = 6th reading → 3⁶",
+        "say": "Hours on the line; the power at each reading."
+      },
+      {
+        "title": "Evaluate the power",
+        "picture": {
+          "kind": "groups",
+          "groups": 6,
+          "each": 1,
+          "icon": "3",
+          "label": "six factors of 3"
+        },
+        "math": "3⁶ = 3 × 3 × 3 × 3 × 3 × 3 = 729",
+        "say": "Multiply 3 by itself 6 times."
+      }
+    ],
+    "answer": "After 25 hours there are 3⁶ = 729 bacteria."
+  },
+  "6-4": {
+    "steps": [
+      {
+        "title": "Evaluate the original",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "2³ = 8",
+            "48 ÷ 8 = 6",
+            "6 × ½ = 3",
+            "3 + 1.7 = 4.7"
+          ],
+          "focus": 3
+        },
+        "math": "48 ÷ 2³ × ½ + 1.7 = 4.7",
+        "say": "Exponents, then divide and multiply left to right, then add."
+      },
+      {
+        "title": "Group 48 ÷ 2³ first",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "(48 ÷ 8) = 6",
+            "6 × ½ = 3",
+            "3 + 1.7 = 4.7"
+          ],
+          "focus": 2
+        },
+        "math": "(48 ÷ 2³) × ½ + 1.7 = 4.7 — no change",
+        "say": "These parentheses repeat the order we already used."
+      },
+      {
+        "title": "Group 2³ × ½ first",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "(8 × ½) = 4",
+            "48 ÷ 4 = 12",
+            "12 + 1.7 = 13.7"
+          ],
+          "focus": 2
+        },
+        "math": "48 ÷ (2³ × ½) + 1.7 = 48 ÷ 4 + 1.7 = 13.7"
+      },
+      {
+        "title": "Group ½ + 1.7 first",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "(½ + 1.7) = 2.2",
+            "48 ÷ 8 = 6",
+            "6 × 2.2 = 13.2"
+          ],
+          "focus": 2
+        },
+        "math": "48 ÷ 2³ × (½ + 1.7) = 6 × 2.2 = 13.2"
+      },
+      {
+        "title": "Record the different values",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "original",
+              "value": 4.7,
+              "text": "4.7"
+            },
+            {
+              "label": "48 ÷ (2³ × ½)",
+              "value": 13.7,
+              "text": "13.7",
+              "tone": "focus"
+            },
+            {
+              "label": "× (½ + 1.7)",
+              "value": 13.2,
+              "text": "13.2",
+              "tone": "focus"
+            }
+          ]
+        },
+        "math": "distinct values so far: 4.7, 13.7, 13.2"
+      }
+    ],
+    "answer": "These placements give 3 different values: 4.7, 13.7, and 13.2. Keep trying placements and count every new result."
+  },
+  "6-5": {
+    "steps": [
+      {
+        "title": "Check critical defects",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "0 ÷ 1,500 = 0%",
+            "limit 0%",
+            "meets ✓"
+          ],
+          "focus": 2
+        },
+        "math": "0 ÷ 1,500 = 0% → meets 0% limit"
+      },
+      {
+        "title": "Check major defects",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "25 ÷ 1,500 ≈ 0.0167",
+            "≈ 1.7%",
+            "under 2% ✓"
+          ],
+          "focus": 2
+        },
+        "math": "25 ÷ 1,500 ≈ 0.0167 ≈ 1.7% < 2%"
+      },
+      {
+        "title": "Check minor defects",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "143 ÷ 1,500 ≈ 0.0953",
+            "≈ 9.5%",
+            "over 5% ✗"
+          ],
+          "focus": 2
+        },
+        "math": "143 ÷ 1,500 ≈ 0.0953 ≈ 9.5% > 5%"
+      },
+      {
+        "title": "Compare with the limits",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Level",
+            "Rate",
+            "Limit",
+            "Within limit?"
+          ],
+          "rows": [
+            [
+              "Critical",
+              "0%",
+              "0%",
+              "yes"
+            ],
+            [
+              "Major",
+              "≈ 1.7%",
+              "2%",
+              "yes"
+            ],
+            [
+              "Minor",
+              "≈ 9.5%",
+              "5%",
+              "no"
+            ]
+          ],
+          "highlight": [
+            [
+              2,
+              3
+            ]
+          ]
+        },
+        "math": "two pass, minor fails (≈ 9.5% is nearly double 5%)"
+      },
+      {
+        "title": "Decide what to do",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "minor rate",
+              "value": 9.5,
+              "text": "≈ 9.5%",
+              "tone": "focus"
+            },
+            {
+              "label": "minor limit",
+              "value": 5,
+              "text": "5%",
+              "tone": "known"
+            }
+          ]
+        },
+        "math": "pause production → find the source of minor defects"
+      }
+    ],
+    "answer": "Pause production and investigate the minor defects — about 9.5% is over the 5% limit."
+  },
+  "6-6": {
+    "steps": [
+      {
+        "title": "Way 1: Simplify both expressions",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "3x + 2x + 10",
+            "5x + 10"
+          ],
+          "focus": 1
+        },
+        "math": "3x + 2x + 10 = 5x + 10",
+        "say": "Combine like terms and use the distributive property."
+      },
+      {
+        "title": "Check they match",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Expression",
+            "Simplified"
+          ],
+          "rows": [
+            [
+              "3x + 2x + 10",
+              "5x + 10"
+            ],
+            [
+              "5x + 10",
+              "5x + 10"
+            ]
+          ],
+          "highlight": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "math": "same simplified form → equivalent"
+      },
+      {
+        "title": "Way 2: Substitute the same value",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "x",
+            "3x + 2x + 10",
+            "5x + 10"
+          ],
+          "rows": [
+            [
+              "1",
+              "15",
+              "15"
+            ],
+            [
+              "2",
+              "20",
+              "20"
+            ],
+            [
+              "3",
+              "25",
+              "25"
+            ]
+          ]
+        },
+        "math": "x = 2: 6 + 4 + 10 = 20 and 10 + 10 = 20",
+        "say": "Testing several values makes the check stronger."
+      },
+      {
+        "title": "Explain why they agree",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "same value for EVERY x",
+            "substitution suggests",
+            "simplifying proves"
+          ],
+          "focus": 2
+        },
+        "math": "equivalent → same value for every value of x"
+      }
+    ],
+    "answer": "Simplify both expressions to see if they match, and substitute the same values to check; only simplifying proves they are equivalent."
+  },
+  "6-7": {
+    "steps": [
+      {
+        "title": "List multiples of 10",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "10",
+            "20",
+            "30",
+            "40",
+            "50"
+          ],
+          "focus": 3,
+          "caption": "hot dogs (packs of 10)"
+        },
+        "math": "10, 20, 30, 40, …",
+        "say": "Count hot dogs by packs of 10."
+      },
+      {
+        "title": "List multiples of 8",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "8",
+            "16",
+            "24",
+            "32",
+            "40"
+          ],
+          "focus": 4,
+          "caption": "buns (packs of 8)"
+        },
+        "math": "8, 16, 24, 32, 40, …",
+        "say": "Count buns by packs of 8."
+      },
+      {
+        "title": "Find the least common multiple",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Packs",
+            "Hot dogs",
+            "Buns"
+          ],
+          "rows": [
+            [
+              "1",
+              "10",
+              "8"
+            ],
+            [
+              "2",
+              "20",
+              "16"
+            ],
+            [
+              "3",
+              "30",
+              "24"
+            ],
+            [
+              "4",
+              "40",
+              "32"
+            ],
+            [
+              "5",
+              "50",
+              "40"
+            ]
+          ],
+          "highlight": [
+            [
+              3,
+              1
+            ],
+            [
+              4,
+              2
+            ]
+          ]
+        },
+        "math": "LCM(10, 8) = 40",
+        "say": "40 is the first number on both lists."
+      },
+      {
+        "title": "Find the packs of each",
+        "picture": {
+          "kind": "groups",
+          "groups": 4,
+          "each": 10,
+          "icon": "🌭",
+          "label": "4 packs of 10 = 40 hot dogs"
+        },
+        "math": "40 ÷ 10 = 4 packs · 40 ÷ 8 = 5 packs",
+        "say": "4 packs of hot dogs and 5 packs of buns."
+      },
+      {
+        "title": "Compare with 24 guests",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "40 servings",
+              "parts": [
+                {
+                  "text": "24 guests",
+                  "size": 24,
+                  "tone": "known"
+                },
+                {
+                  "text": "16 extra",
+                  "size": 16,
+                  "tone": "focus"
+                }
+              ]
+            }
+          ],
+          "total": "40"
+        },
+        "math": "40 − 24 = 16 matched servings left",
+        "say": "Every guest gets one, with 16 matched extras."
+      }
+    ],
+    "answer": "Buy 4 packs of hot dogs and 5 packs of buns: 40 hot dogs and 40 buns, with no unmatched ones (16 matched servings extra)."
+  },
+  "6-8": {
+    "label": "Write the expression and compare all three combinations",
+    "steps": [
+      {
+        "title": "Name the variables and prices",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "g = good: $5.50",
+            "n = near mint: $20.00",
+            "cover: $0.50 each",
+            "shipping: $9.99"
+          ]
+        },
+        "math": "g = good books, n = near mint books"
+      },
+      {
+        "title": "Write the cost expression",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "parts": [
+                {
+                  "text": "5.50g",
+                  "size": 3
+                },
+                {
+                  "text": "20n",
+                  "size": 4
+                },
+                {
+                  "text": "0.50(g + n)",
+                  "size": 3
+                },
+                {
+                  "text": "9.99",
+                  "size": 2
+                }
+              ]
+            }
+          ],
+          "total": "total cost"
+        },
+        "math": "5.50g + 20n + 0.50(g + n) + 9.99",
+        "say": "Books, plus covers for every book, plus shipping once."
+      },
+      {
+        "title": "Combine like terms",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "5.50g + 0.50g = 6g",
+            "20n + 0.50n = 20.50n",
+            "+ 9.99"
+          ]
+        },
+        "math": "6g + 20.50n + 9.99",
+        "say": "Each good book really costs $6; each near mint $20.50."
+      },
+      {
+        "title": "Substitute each combination",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Near mint",
+            "Good",
+            "Books",
+            "Cost"
+          ],
+          "rows": [
+            [
+              "3",
+              "2",
+              "5",
+              "$83.49"
+            ],
+            [
+              "2",
+              "6",
+              "8",
+              "$86.99"
+            ],
+            [
+              "1",
+              "10",
+              "11",
+              "$90.49"
+            ]
+          ]
+        },
+        "math": "6(2) + 20.50(3) + 9.99 = 83.49, and so on",
+        "say": "Put each g and n into the expression."
+      },
+      {
+        "title": "Compare cost per book",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "3 near mint, 2 good",
+              "value": 16.7,
+              "text": "≈ $16.70/book"
+            },
+            {
+              "label": "2 near mint, 6 good",
+              "value": 10.87,
+              "text": "≈ $10.87/book"
+            },
+            {
+              "label": "1 near mint, 10 good",
+              "value": 8.23,
+              "text": "≈ $8.23/book",
+              "tone": "focus"
+            }
+          ]
+        },
+        "math": "$90.49 ÷ 11 ≈ $8.23 per book — the least",
+        "say": "Most total, but cheapest for each book."
+      }
+    ],
+    "answer": "Cost = 6g + 20.50n + 9.99. The costs are $83.49, $86.99, and $90.49; recommend 1 near mint and 10 good — the most comics for her money."
+  },
+  "6-9": {
+    "steps": [
+      {
+        "title": "Write the division",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "total: 6 lb",
+            "each bag: ⅔ lb",
+            "bags: ?"
+          ]
+        },
+        "math": "6 ÷ ⅔ = ?",
+        "say": "How many ⅔-pound bags fit in 6 pounds?"
+      },
+      {
+        "title": "Divide — keep, change, flip",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "keep 6",
+            "change ÷ to ×",
+            "flip ⅔ to 3/2"
+          ],
+          "focus": 2
+        },
+        "math": "6 ÷ ⅔ = 6 × 3/2",
+        "say": "Multiply by the reciprocal of ⅔."
+      },
+      {
+        "title": "Multiply and simplify",
+        "picture": {
+          "kind": "groups",
+          "groups": 9,
+          "each": 2,
+          "icon": "⅓",
+          "label": "9 bags of ⅔ lb = 6 lb"
+        },
+        "math": "6 × 3/2 = 18/2 = 9",
+        "say": "Nine groups of two thirds make 6 pounds."
+      }
+    ],
+    "answer": "Agent Park can fill 9 bags."
+  },
+  "6-10": {
+    "steps": [
+      {
+        "title": "Write the mixed number as a fraction",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "5¼",
+            "= 20/4 + 1/4",
+            "= 21/4"
+          ],
+          "focus": 2
+        },
+        "math": "5¼ = 21/4",
+        "say": "5 wholes is 20 fourths, plus 1 more fourth."
+      },
+      {
+        "title": "Divide — keep, change, flip",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "keep 21/4",
+            "change ÷ to ×",
+            "flip ¾ to 4/3"
+          ],
+          "focus": 2
+        },
+        "math": "21/4 ÷ 3/4 = 21/4 × 4/3",
+        "say": "Multiply by the reciprocal of ¾."
+      },
+      {
+        "title": "Multiply and simplify",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "5¼ ft",
+              "parts": [
+                {
+                  "text": "¾"
+                },
+                {
+                  "text": "¾"
+                },
+                {
+                  "text": "¾"
+                },
+                {
+                  "text": "¾"
+                },
+                {
+                  "text": "¾"
+                },
+                {
+                  "text": "¾"
+                },
+                {
+                  "text": "¾",
+                  "tone": "focus"
+                }
+              ]
+            }
+          ],
+          "total": "7 pieces"
+        },
+        "math": "21/4 × 4/3 = 84/12 = 7",
+        "say": "Seven ¾-foot pieces fill the 5¼-foot rope."
+      }
+    ],
+    "answer": "She can cut 7 pieces."
+  },
+  "6-11": {
+    "steps": [
+      {
+        "title": "Find the dividend and divisor",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "dividend: 5/6 hour",
+            "divisor: 1/12 hour"
+          ]
+        },
+        "math": "5/6 ÷ 1/12 = ?",
+        "say": "Total footage divided by each report segment."
+      },
+      {
+        "title": "Multiply by the reciprocal",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "keep 5/6",
+            "change ÷ to ×",
+            "flip 1/12 to 12/1"
+          ],
+          "focus": 2
+        },
+        "math": "5/6 × 12/1 = 60/6 = 10",
+        "say": "Ten segments fit in the footage."
+      },
+      {
+        "title": "Check that it is reasonable",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "5/6 hour",
+              "parts": [
+                {
+                  "text": "1/12"
+                },
+                {
+                  "text": "1/12"
+                },
+                {
+                  "text": "1/12"
+                },
+                {
+                  "text": "1/12"
+                },
+                {
+                  "text": "1/12"
+                },
+                {
+                  "text": "1/12"
+                },
+                {
+                  "text": "1/12"
+                },
+                {
+                  "text": "1/12"
+                },
+                {
+                  "text": "1/12"
+                },
+                {
+                  "text": "1/12"
+                }
+              ]
+            }
+          ],
+          "total": "10 × 1/12 = 10/12"
+        },
+        "math": "10 × 1/12 = 10/12 = 5/6 ✓",
+        "say": "Ten twelfths is the same as five sixths."
+      }
+    ],
+    "answer": "5/6 ÷ 1/12 = 10, so she writes 10 reports."
+  },
+  "6-12": {
+    "steps": [
+      {
+        "title": "Find the LCM of 7 and 10",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "7 = 7",
+            "10 = 2 × 5",
+            "no common factor but 1"
+          ]
+        },
+        "math": "LCM(7, 10) = 7 × 10 = 70",
+        "say": "No shared factors, so multiply them."
+      },
+      {
+        "title": "Find the packs of ribbons",
+        "picture": {
+          "kind": "groups",
+          "groups": 10,
+          "each": 7,
+          "icon": "🎀",
+          "label": "10 packs of 7 = 70"
+        },
+        "math": "70 ÷ 7 = 10 packs",
+        "say": "Ten packs of 7 ribbons make 70."
+      },
+      {
+        "title": "Find the packs of pin buttons",
+        "picture": {
+          "kind": "groups",
+          "groups": 7,
+          "each": 10,
+          "icon": "📍",
+          "label": "7 packs of 10 = 70"
+        },
+        "math": "70 ÷ 10 = 7 packs",
+        "say": "Seven packs of 10 buttons make 70."
+      }
+    ],
+    "answer": "The fewest is 70 ribbons and 70 pin buttons: 10 packs of ribbons and 7 packs of pin buttons."
+  },
+  "6-13": {
+    "steps": [
+      {
+        "title": "Split 84",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "84",
+            "2 (prime)",
+            "42"
+          ],
+          "focus": 1
+        },
+        "math": "84 = 2 × 42",
+        "say": "42 is not prime, so keep splitting."
+      },
+      {
+        "title": "Split 42",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "42",
+            "2 (prime)",
+            "21"
+          ],
+          "focus": 1
+        },
+        "math": "42 = 2 × 21",
+        "say": "21 is not prime, so keep splitting."
+      },
+      {
+        "title": "Split 21",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "21",
+            "3 (prime)",
+            "7 (prime)"
+          ]
+        },
+        "math": "21 = 3 × 7",
+        "say": "3 and 7 are prime, so the tree is done."
+      },
+      {
+        "title": "Write the prime factorization",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "2",
+            "2",
+            "3",
+            "7"
+          ]
+        },
+        "math": "84 = 2 × 2 × 3 × 7 = 2² × 3 × 7",
+        "say": "Two 2s become 2 squared."
+      },
+      {
+        "title": "Check by multiplying",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "2 × 2 = 4",
+            "4 × 3 = 12",
+            "12 × 7 = 84"
+          ],
+          "focus": 2
+        },
+        "math": "4 × 3 × 7 = 12 × 7 = 84 ✓"
+      }
+    ],
+    "answer": "84 = 2 × 2 × 3 × 7 = 2² × 3 × 7."
+  },
+  "6-14": {
+    "steps": [
+      {
+        "title": "Write the factored form",
+        "picture": {
+          "kind": "rect",
+          "width": "11 + 6",
+          "height": "7",
+          "label": "7 rooms"
+        },
+        "math": "7(11 + 6)",
+        "say": "7 rooms, each with an $11 stand and $6 tuner."
+      },
+      {
+        "title": "Distribute the 7",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "7 rooms",
+              "parts": [
+                {
+                  "text": "7 × 11 = 77",
+                  "size": 11
+                },
+                {
+                  "text": "7 × 6 = 42",
+                  "size": 6
+                }
+              ]
+            }
+          ],
+          "total": "$119"
+        },
+        "math": "7 × 11 + 7 × 6 = 77 + 42 = 119",
+        "say": "Multiply 7 by each term, then add."
+      },
+      {
+        "title": "Add inside the parentheses first",
+        "picture": {
+          "kind": "rect",
+          "width": "17",
+          "height": "7",
+          "label": "119"
+        },
+        "math": "11 + 6 = 17, then 7 × 17 = 119",
+        "say": "Same total either way."
+      },
+      {
+        "title": "Compare the two forms",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "7(11 + 6) = 119",
+            "7 × 11 + 7 × 6 = 119"
+          ]
+        },
+        "math": "7(11 + 6) = 7 × 11 + 7 × 6",
+        "say": "The distributive property makes them equal."
+      }
+    ],
+    "answer": "Both forms give $119 for all 7 rooms."
+  },
+  "6-15": {
+    "steps": [
+      {
+        "title": "Find the like terms",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "5x",
+            "3x",
+            "7",
+            "2"
+          ]
+        },
+        "math": "5x + 7 + 3x + 2",
+        "say": "x-terms go together; numbers go together."
+      },
+      {
+        "title": "Combine like terms",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "x-terms",
+              "parts": [
+                {
+                  "text": "5x",
+                  "size": 5
+                },
+                {
+                  "text": "3x",
+                  "size": 3
+                }
+              ]
+            },
+            {
+              "label": "numbers",
+              "parts": [
+                {
+                  "text": "7",
+                  "size": 7
+                },
+                {
+                  "text": "2",
+                  "size": 2
+                }
+              ]
+            }
+          ]
+        },
+        "math": "5x + 3x = 8x · 7 + 2 = 9 → 8x + 9"
+      },
+      {
+        "title": "Substitute x = 4",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "8(4) = 32",
+            "+ 9",
+            "= 41"
+          ],
+          "focus": 2
+        },
+        "math": "8(4) + 9 = 32 + 9 = 41",
+        "say": "Replace x with 4, multiply, then add."
+      }
+    ],
+    "answer": "The simplified expression is 8x + 9; with 4 microphones the cost is $41."
+  },
+  "7-1": {
+    "steps": [
+      {
+        "title": "Write each play as an integer",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "loss 10 → −10",
+            "gain 4 → +4",
+            "loss 3 → −3",
+            "gain 21 → +21"
+          ]
+        },
+        "math": "−10, +4, −3, +21",
+        "say": "Losses are negative; gains are positive."
+      },
+      {
+        "title": "Add the plays in order",
+        "picture": {
+          "kind": "number-line",
+          "min": -12,
+          "max": 14,
+          "step": 2,
+          "points": [
+            {
+              "value": 0,
+              "label": "start"
+            },
+            {
+              "value": 12,
+              "label": "+12",
+              "tone": "unknown"
+            }
+          ],
+          "jumps": [
+            {
+              "from": 0,
+              "to": -10,
+              "label": "−10"
+            },
+            {
+              "from": -10,
+              "to": -6,
+              "label": "+4"
+            },
+            {
+              "from": -6,
+              "to": -9,
+              "label": "−3"
+            },
+            {
+              "from": -9,
+              "to": 12,
+              "label": "+21"
+            }
+          ]
+        },
+        "math": "−10 + 4 = −6 → −6 + (−3) = −9 → −9 + 21 = 12"
+      },
+      {
+        "title": "Compare with 10 yards",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "Gained",
+              "value": 12,
+              "text": "12 yd",
+              "tone": "focus"
+            },
+            {
+              "label": "Needed",
+              "value": 10,
+              "text": "10 yd"
+            }
+          ]
+        },
+        "math": "12 ≥ 10, and 12 − 10 = 2",
+        "say": "They gained 2 more yards than they needed."
+      }
+    ],
+    "answer": "Yes. The team is 12 yards past the line of scrimmage, so they made the first down with 2 yards to spare."
+  },
+  "7-2": {
+    "steps": [
+      {
+        "title": "Try numbers",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "x = 2",
+            "y = 5",
+            "2 < 5 ✓"
+          ]
+        },
+        "math": "x = 2, y = 5, so x < y",
+        "say": "Pick two positives with x less than y."
+      },
+      {
+        "title": "Find the opposites",
+        "picture": {
+          "kind": "number-line",
+          "min": -6,
+          "max": 6,
+          "step": 1,
+          "points": [
+            {
+              "value": 2,
+              "label": "2"
+            },
+            {
+              "value": 5,
+              "label": "5"
+            },
+            {
+              "value": -2,
+              "label": "−2"
+            },
+            {
+              "value": -5,
+              "label": "−5"
+            }
+          ]
+        },
+        "math": "opposite of 2 is −2; opposite of 5 is −5",
+        "say": "Opposites reflect each number across 0."
+      },
+      {
+        "title": "Compare on the number line",
+        "picture": {
+          "kind": "number-line",
+          "min": -6,
+          "max": 0,
+          "step": 1,
+          "points": [
+            {
+              "value": -5,
+              "label": "−5"
+            },
+            {
+              "value": -2,
+              "label": "−2",
+              "tone": "unknown"
+            }
+          ]
+        },
+        "math": "−2 is right of −5, so −2 > −5",
+        "say": "Farther right on the line means greater."
+      },
+      {
+        "title": "Explain why it always works",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "x closer to 0",
+            "−x still closer to 0",
+            "−x is farther right"
+          ],
+          "focus": 2
+        },
+        "math": "x < y → −x > −y",
+        "say": "The smaller positive always has the greater opposite."
+      }
+    ],
+    "answer": "Yes, I agree: if 0 < x < y, then −x > −y (for example, 2 < 5 and −2 > −5)."
+  },
+  "7-3": {
+    "steps": [
+      {
+        "title": "Find Everest's distance",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "+8,849 m",
+            "|+8,849| = 8,849"
+          ],
+          "focus": 1
+        },
+        "math": "|+8,849| = 8,849 meters",
+        "say": "Absolute value is distance from sea level, 0."
+      },
+      {
+        "title": "Find Mauna Kea's distance",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "−6,005 m",
+            "|−6,005| = 6,005"
+          ],
+          "focus": 1
+        },
+        "math": "|−6,005| = 6,005 meters",
+        "say": "Distance is never negative."
+      },
+      {
+        "title": "Compare the distances",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "Everest summit",
+              "value": 8849,
+              "text": "8,849 m",
+              "tone": "focus"
+            },
+            {
+              "label": "Mauna Kea base",
+              "value": 6005,
+              "text": "6,005 m"
+            }
+          ]
+        },
+        "math": "8,849 > 6,005",
+        "say": "Everest's summit is farther from sea level."
+      }
+    ],
+    "answer": "Everest's summit is 8,849 m from sea level and Mauna Kea's base is 6,005 m; Everest's summit is farther."
+  },
+  "7-4": {
+    "steps": [
+      {
+        "title": "Plot the scores on a number line",
+        "picture": {
+          "kind": "number-line",
+          "min": -4,
+          "max": 5,
+          "step": 1,
+          "points": [
+            {
+              "value": -3,
+              "label": "R"
+            },
+            {
+              "value": -2,
+              "label": "E"
+            },
+            {
+              "value": 0,
+              "label": "T"
+            },
+            {
+              "value": 1,
+              "label": "B"
+            },
+            {
+              "value": 2,
+              "label": "F"
+            },
+            {
+              "value": 4,
+              "label": "S"
+            }
+          ]
+        },
+        "math": "−2, +1, 0, −3, +4, +2",
+        "say": "Left means less; right means greater."
+      },
+      {
+        "title": "Order from least to greatest",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Place",
+            "Player",
+            "Score"
+          ],
+          "rows": [
+            [
+              "1st",
+              "Reginald",
+              "−3"
+            ],
+            [
+              "2nd",
+              "Evelyn",
+              "−2"
+            ],
+            [
+              "3rd",
+              "Terrance",
+              "0"
+            ],
+            [
+              "4th",
+              "Brielle",
+              "+1"
+            ],
+            [
+              "5th",
+              "Francisco",
+              "+2"
+            ],
+            [
+              "6th",
+              "Sofia",
+              "+4"
+            ]
+          ],
+          "highlight": [
+            [
+              0,
+              1
+            ],
+            [
+              5,
+              1
+            ]
+          ]
+        },
+        "math": "−3 < −2 < 0 < +1 < +2 < +4"
+      },
+      {
+        "title": "Name the leader and last place",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "Reginald −3: least",
+            "Sofia +4: greatest"
+          ]
+        },
+        "math": "least = −3 (Reginald) · greatest = +4 (Sofia)",
+        "say": "Fewest strokes compared to par wins in golf."
+      }
+    ],
+    "answer": "Order: Reginald, Evelyn, Terrance, Brielle, Francisco, Sofia. Reginald (−3) is winning; Sofia (+4) has the most strokes to make up."
+  },
+  "7-5": {
+    "steps": [
+      {
+        "title": "Plot the three corners",
+        "picture": {
+          "kind": "coords",
+          "points": [
+            {
+              "x": 2,
+              "y": 2,
+              "label": "(2, 2)"
+            },
+            {
+              "x": 2,
+              "y": 6,
+              "label": "(2, 6)"
+            },
+            {
+              "x": 6,
+              "y": 6,
+              "label": "(6, 6)"
+            }
+          ]
+        },
+        "math": "(2, 2), (2, 6), (6, 6)"
+      },
+      {
+        "title": "Find the fourth corner",
+        "picture": {
+          "kind": "coords",
+          "points": [
+            {
+              "x": 2,
+              "y": 2,
+              "label": "(2, 2)"
+            },
+            {
+              "x": 2,
+              "y": 6,
+              "label": "(2, 6)"
+            },
+            {
+              "x": 6,
+              "y": 6,
+              "label": "(6, 6)"
+            },
+            {
+              "x": 6,
+              "y": 2,
+              "label": "(6, 2)"
+            },
+            {
+              "x": 2,
+              "y": 2
+            }
+          ],
+          "connect": true
+        },
+        "math": "x from (6, 6), y from (2, 2) → (6, 2)",
+        "say": "The missing corner lines up with both neighbors."
+      },
+      {
+        "title": "Find the side length",
+        "picture": {
+          "kind": "number-line",
+          "min": 0,
+          "max": 8,
+          "step": 1,
+          "points": [
+            {
+              "value": 2,
+              "label": "2"
+            },
+            {
+              "value": 6,
+              "label": "6"
+            }
+          ],
+          "jumps": [
+            {
+              "from": 2,
+              "to": 6,
+              "label": "4 units"
+            }
+          ]
+        },
+        "math": "6 − 2 = 4 units across and up",
+        "say": "Subtract coordinates along each side."
+      }
+    ],
+    "answer": "The fourth corner is (6, 2), and the side length is 4 units."
+  },
+  "7-6": {
+    "label": "Question 1 and Question 2",
+    "steps": [
+      {
+        "title": "Plot the Grocery and Library",
+        "picture": {
+          "kind": "coords",
+          "points": [
+            {
+              "x": -0.75,
+              "y": 0,
+              "label": "Grocery (−¾, 0)"
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "label": "turn"
+            },
+            {
+              "x": 0,
+              "y": -0.75,
+              "label": "Library (0, −¾)"
+            }
+          ],
+          "connect": true
+        },
+        "math": "Grocery (−¾, 0) → Library (0, −¾)"
+      },
+      {
+        "title": "Find the east distance",
+        "picture": {
+          "kind": "number-line",
+          "min": -1,
+          "max": 0.5,
+          "step": 0.25,
+          "points": [
+            {
+              "value": -0.75,
+              "label": "−¾"
+            },
+            {
+              "value": 0,
+              "label": "0"
+            }
+          ],
+          "jumps": [
+            {
+              "from": -0.75,
+              "to": 0,
+              "label": "¾"
+            }
+          ]
+        },
+        "math": "|−¾ − 0| = ¾ unit",
+        "say": "Going east changes only the x-coordinate."
+      },
+      {
+        "title": "Find the south distance and add",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "parts": [
+                {
+                  "text": "east ¾"
+                },
+                {
+                  "text": "south ¾"
+                }
+              ]
+            }
+          ],
+          "total": "1½ units"
+        },
+        "math": "|0 − (−¾)| = ¾ → ¾ + ¾ = 1½ units",
+        "say": "Going south changes only the y-coordinate."
+      },
+      {
+        "title": "Compare the y-coordinates",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Place",
+            "y"
+          ],
+          "rows": [
+            [
+              "Bank",
+              "−1"
+            ],
+            [
+              "Grocery",
+              "0"
+            ],
+            [
+              "Library",
+              "−¾"
+            ],
+            [
+              "Post Office",
+              "1¼"
+            ]
+          ],
+          "highlight": [
+            [
+              0,
+              1
+            ],
+            [
+              3,
+              1
+            ]
+          ]
+        },
+        "math": "greatest y = 1¼ (Post Office), least y = −1 (Bank)"
+      },
+      {
+        "title": "Add the absolute values",
+        "picture": {
+          "kind": "number-line",
+          "min": -1.5,
+          "max": 1.5,
+          "step": 0.25,
+          "points": [
+            {
+              "value": -1,
+              "label": "Bank −1"
+            },
+            {
+              "value": 1.25,
+              "label": "Post Office 1¼"
+            }
+          ],
+          "jumps": [
+            {
+              "from": -1,
+              "to": 0,
+              "label": "1"
+            },
+            {
+              "from": 0,
+              "to": 1.25,
+              "label": "1¼"
+            }
+          ]
+        },
+        "math": "1¼ + 1 = 2¼ units",
+        "say": "Opposite sides of 0, so add the distances."
+      }
+    ],
+    "answer": "Deon walks 1½ units. The Post Office and Bank are farthest apart north-south, 2¼ units."
+  },
+  "7-7": {
+    "steps": [
+      {
+        "title": "Find Space A's area (trapezoid)",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "bottom base 15 ft",
+            "top base 15 − 5 = 10 ft",
+            "height 35 ft"
+          ],
+          "caption": "Space A: (0, 0), (5, 35), (15, 35), (15, 0)"
+        },
+        "math": "A = ½ × (15 + 10) × 35 = 437.5 ft²",
+        "say": "Space A has two parallel bases, so use the trapezoid formula."
+      },
+      {
+        "title": "Find Space B's area (triangle)",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "base 39 − 15 = 24 ft",
+            "height 35 ft"
+          ],
+          "caption": "Space B: (15, 0), (15, 35), (39, 0)"
+        },
+        "math": "A = ½ × 24 × 35 = 420 ft²"
+      },
+      {
+        "title": "Find each monthly rent",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Space",
+            "Area",
+            "Rate per ft²",
+            "Monthly rent"
+          ],
+          "rows": [
+            [
+              "A",
+              "437.5 ft²",
+              "$13.89",
+              "$6,076.88"
+            ],
+            [
+              "B",
+              "420 ft²",
+              "$13.49",
+              "$5,665.80"
+            ]
+          ]
+        },
+        "math": "437.5 × 13.89 ≈ 6,076.88;  420 × 13.49 = 5,665.80",
+        "say": "Multiply each area by its price per square foot."
+      },
+      {
+        "title": "Compare the rents",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "Space A",
+              "value": 6076.88,
+              "text": "$6,076.88"
+            },
+            {
+              "label": "Space B",
+              "value": 5665.8,
+              "text": "$5,665.80",
+              "tone": "focus"
+            }
+          ]
+        },
+        "math": "$6,076.88 − $5,665.80 = $411.08 saved with B",
+        "say": "Space B is a little smaller but costs less each month."
+      }
+    ],
+    "answer": "Recommend Space B: $5,665.80 a month, about $411.08 less than Space A ($6,076.88), with 17.5 fewer square feet."
+  },
+  "7-8": {
+    "label": "All four clues",
+    "steps": [
+      {
+        "title": "Read the signs of each clue",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Clue",
+            "x (east/west)",
+            "y (north/south)",
+            "Signs"
+          ],
+          "rows": [
+            [
+              "A(4, 3)",
+              "east",
+              "north",
+              "(+, +)"
+            ],
+            [
+              "B(−5, 2)",
+              "west",
+              "north",
+              "(−, +)"
+            ],
+            [
+              "C(−3, −4)",
+              "west",
+              "south",
+              "(−, −)"
+            ],
+            [
+              "D(2, −5)",
+              "east",
+              "south",
+              "(+, −)"
+            ]
+          ]
+        },
+        "math": "A (+, +)   B (−, +)   C (−, −)   D (+, −)"
+      },
+      {
+        "title": "Match signs to quadrants",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "I: (+, +)",
+            "II: (−, +)",
+            "III: (−, −)",
+            "IV: (+, −)"
+          ]
+        },
+        "math": "A → I,  B → II,  C → III,  D → IV",
+        "say": "The two signs alone tell you the quadrant."
+      },
+      {
+        "title": "Check on the coordinate plane",
+        "picture": {
+          "kind": "coords",
+          "points": [
+            {
+              "x": 4,
+              "y": 3,
+              "label": "A"
+            },
+            {
+              "x": -5,
+              "y": 2,
+              "label": "B"
+            },
+            {
+              "x": -3,
+              "y": -4,
+              "label": "C"
+            },
+            {
+              "x": 2,
+              "y": -5,
+              "label": "D"
+            }
+          ],
+          "alt": "Points A(4, 3), B(−5, 2), C(−3, −4) and D(2, −5) on a coordinate plane, one in each quadrant."
+        },
+        "math": "Each clue lands in a different quadrant"
+      }
+    ],
+    "answer": "A(4, 3) is in Quadrant I (+, +); B(−5, 2) in Quadrant II (−, +); C(−3, −4) in Quadrant III (−, −); D(2, −5) in Quadrant IV (+, −)."
+  },
+  "7-9": {
+    "steps": [
+      {
+        "title": "Reflect across the y-axis",
+        "picture": {
+          "kind": "coords",
+          "points": [
+            {
+              "x": -6,
+              "y": 4,
+              "label": "Chest"
+            },
+            {
+              "x": 6,
+              "y": 4,
+              "label": "Decoy"
+            }
+          ],
+          "alt": "The chest at (−6, 4) and its mirror image, the decoy, at (6, 4)."
+        },
+        "math": "(x, y) → (−x, y):  (−6, 4) → (6, 4)",
+        "say": "Flip the sign of x; keep y the same."
+      },
+      {
+        "title": "Find the distance from the y-axis",
+        "picture": {
+          "kind": "number-line",
+          "min": -6,
+          "max": 6,
+          "step": 1,
+          "points": [
+            {
+              "value": -6,
+              "label": "Chest"
+            },
+            {
+              "value": 0,
+              "label": "y-axis"
+            },
+            {
+              "value": 6,
+              "label": "Decoy"
+            }
+          ],
+          "jumps": [
+            {
+              "from": 0,
+              "to": -6,
+              "label": "6"
+            },
+            {
+              "from": 0,
+              "to": 6,
+              "label": "6"
+            }
+          ]
+        },
+        "math": "|−6| = 6 and |6| = 6",
+        "say": "Both chests are 6 units away, on opposite sides."
+      }
+    ],
+    "answer": "The decoy chest is at (6, 4), exactly 6 units from the y-axis."
+  },
+  "8-1": {
+    "steps": [
+      {
+        "title": "Write an equation for each mix",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "Healthy Start: 8 per box",
+            "Basic Breakfast: 12 per box",
+            "b = number of boxes",
+            "goal: 24 muffins"
+          ]
+        },
+        "math": "8b = 24   and   12b = 24"
+      },
+      {
+        "title": "Solve for Healthy Start",
+        "picture": {
+          "kind": "groups",
+          "groups": 3,
+          "each": 8,
+          "icon": "🧁",
+          "label": "3 boxes × 8 muffins"
+        },
+        "math": "8b = 24 → b = 24 ÷ 8 = 3 boxes",
+        "say": "Divide both sides by 8."
+      },
+      {
+        "title": "Solve for Basic Breakfast",
+        "picture": {
+          "kind": "groups",
+          "groups": 2,
+          "each": 12,
+          "icon": "🧁",
+          "label": "2 boxes × 12 muffins"
+        },
+        "math": "12b = 24 → b = 24 ÷ 12 = 2 boxes",
+        "say": "Divide both sides by 12."
+      },
+      {
+        "title": "Compare and recommend",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "Healthy Start",
+              "value": 3,
+              "text": "3 boxes"
+            },
+            {
+              "label": "Basic Breakfast",
+              "value": 2,
+              "text": "2 boxes",
+              "tone": "focus"
+            }
+          ]
+        },
+        "math": "Both make exactly 24; 2 boxes < 3 boxes",
+        "say": "Either works, but Basic Breakfast means fewer boxes to buy."
+      }
+    ],
+    "answer": "Either mix works with no leftovers (3 Healthy Start boxes or 2 Basic Breakfast boxes); recommend 2 Basic Breakfast boxes — fewer boxes — unless he prefers the Healthy Start recipe."
+  },
+  "8-2": {
+    "steps": [
+      {
+        "title": "Find the pug's weight",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "Bulldog",
+              "parts": [
+                {
+                  "text": "50 lb",
+                  "size": 50,
+                  "tone": "known"
+                }
+              ]
+            },
+            {
+              "label": "Pug",
+              "parts": [
+                {
+                  "text": "p = 18",
+                  "size": 18,
+                  "tone": "focus"
+                },
+                {
+                  "text": "32 lb less",
+                  "size": 32
+                }
+              ]
+            }
+          ]
+        },
+        "math": "p = 50 − 32 = 18 pounds"
+      },
+      {
+        "title": "Find the Irish Setter's weight",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "Bulldog",
+              "parts": [
+                {
+                  "text": "50 lb",
+                  "size": 50,
+                  "tone": "known"
+                }
+              ]
+            },
+            {
+              "label": "Irish Setter",
+              "parts": [
+                {
+                  "text": "50 lb",
+                  "size": 50,
+                  "tone": "known"
+                },
+                {
+                  "text": "+20",
+                  "size": 20,
+                  "tone": "focus"
+                }
+              ]
+            }
+          ]
+        },
+        "math": "s = 50 + 20 = 70 pounds"
+      },
+      {
+        "title": "Find the Terrier and Shiba Inu",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "Irish Terrier: 43 lb less than Setter",
+            "Shiba Inu: 5 lb more than pug"
+          ]
+        },
+        "math": "t = 70 − 43 = 27;  i = 18 + 5 = 23",
+        "say": "Each new weight builds on one you already found."
+      },
+      {
+        "title": "Compare with the 30-pound limit",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "Pug",
+              "value": 18,
+              "text": "18 ✓",
+              "tone": "focus"
+            },
+            {
+              "label": "Shiba Inu",
+              "value": 23,
+              "text": "23 ✓",
+              "tone": "focus"
+            },
+            {
+              "label": "Irish Terrier",
+              "value": 27,
+              "text": "27 ✓",
+              "tone": "focus"
+            },
+            {
+              "label": "Bulldog",
+              "value": 50,
+              "text": "50 ✗"
+            },
+            {
+              "label": "Irish Setter",
+              "value": 70,
+              "text": "70 ✗"
+            }
+          ],
+          "caption": "Limit: 30 pounds"
+        },
+        "math": "18 ≤ 30 ✓  23 ≤ 30 ✓  27 ≤ 30 ✓  50 ✗  70 ✗"
+      }
+    ],
+    "answer": "Recommend the pug (18 lb), the Shiba Inu (23 lb), or the Irish Terrier (27 lb) — all under the 30-pound limit."
+  },
+  "8-3": {
+    "steps": [
+      {
+        "title": "Find how many pretzels sold",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "Sold",
+              "parts": [
+                {
+                  "text": "crackers 50",
+                  "size": 50,
+                  "tone": "known"
+                },
+                {
+                  "text": "pretzels ?",
+                  "size": 65,
+                  "tone": "unknown"
+                }
+              ]
+            }
+          ],
+          "total": "115 bags"
+        },
+        "math": "115 − 50 = 65 bags of pretzels"
+      },
+      {
+        "title": "Check the cracker need",
+        "picture": {
+          "kind": "number-line",
+          "min": 0,
+          "max": 4,
+          "step": 0.5,
+          "points": [
+            {
+              "value": 2.5,
+              "label": "2.5"
+            }
+          ],
+          "jumps": [
+            {
+              "from": 2.5,
+              "to": 4,
+              "label": "b ≥ 2.5"
+            }
+          ]
+        },
+        "math": "20b ≥ 50 → b ≥ 50 ÷ 20 → b ≥ 2.5",
+        "say": "Each box has 20 cracker bags."
+      },
+      {
+        "title": "Check the pretzel need",
+        "picture": {
+          "kind": "number-line",
+          "min": 0,
+          "max": 4,
+          "step": 0.5,
+          "points": [
+            {
+              "value": 2.6,
+              "label": "2.6"
+            }
+          ],
+          "jumps": [
+            {
+              "from": 2.6,
+              "to": 4,
+              "label": "b ≥ 2.6"
+            }
+          ]
+        },
+        "math": "25b ≥ 65 → b ≥ 65 ÷ 25 → b ≥ 2.6",
+        "say": "Each box has 25 pretzel bags."
+      },
+      {
+        "title": "Round up to whole boxes",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Boxes",
+            "Cracker bags",
+            "Pretzel bags"
+          ],
+          "rows": [
+            [
+              "2",
+              "40 (need 50)",
+              "50 (need 65)"
+            ],
+            [
+              "3",
+              "60",
+              "75"
+            ]
+          ],
+          "highlight": [
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              1,
+              2
+            ]
+          ]
+        },
+        "math": "b = 3: 60 − 50 = 10 and 75 − 65 = 10 extra",
+        "say": "Two boxes are too few for both snacks."
+      }
+    ],
+    "answer": "Order 3 boxes: 60 cracker bags and 75 pretzel bags, leaving 10 of each if demand stays the same."
+  },
+  "8-4": {
+    "steps": [
+      {
+        "title": "Find the cost of four tickets",
+        "picture": {
+          "kind": "groups",
+          "groups": 4,
+          "each": 1,
+          "icon": "🎟️",
+          "label": "4 tickets × $75.50"
+        },
+        "math": "4 × $75.50 = $302"
+      },
+      {
+        "title": "Write the inequality",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "$15 per hour",
+            "h = combined hours",
+            "earn at least $302"
+          ]
+        },
+        "math": "15h ≥ 302"
+      },
+      {
+        "title": "Solve for the hours",
+        "picture": {
+          "kind": "number-line",
+          "min": 18,
+          "max": 22,
+          "step": 0.5,
+          "points": [
+            {
+              "value": 20.133,
+              "label": "20 2/15"
+            }
+          ],
+          "jumps": [
+            {
+              "from": 20.133,
+              "to": 22,
+              "label": "h ≥ 20 2/15"
+            }
+          ]
+        },
+        "math": "h ≥ 302 ÷ 15 = 20 2/15 hours (20 h 8 min)",
+        "say": "Shared equally, that is 5 hours 2 minutes each."
+      },
+      {
+        "title": "Split whole hours among friends",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Friend",
+            "Hours",
+            "Earned"
+          ],
+          "rows": [
+            [
+              "1",
+              "5",
+              "$75"
+            ],
+            [
+              "2",
+              "5",
+              "$75"
+            ],
+            [
+              "3",
+              "5",
+              "$75"
+            ],
+            [
+              "4",
+              "6",
+              "$90"
+            ],
+            [
+              "Total",
+              "21",
+              "$315"
+            ]
+          ],
+          "highlight": [
+            [
+              4,
+              1
+            ],
+            [
+              4,
+              2
+            ]
+          ]
+        },
+        "math": "21 × $15 = $315;  $315 − $302 = $13 left"
+      }
+    ],
+    "answer": "They need at least 20 2/15 hours (20 h 8 min) — about 5 h 2 min each. With whole hours, 21 hours split 5, 5, 5, 6 earns $315 and leaves $13."
+  },
+  "8-5": {
+    "steps": [
+      {
+        "title": "Write the inequality",
+        "picture": {
+          "kind": "number-line",
+          "min": 700,
+          "max": 800,
+          "step": 10,
+          "points": [
+            {
+              "value": 750,
+              "label": "750 (closed)"
+            }
+          ],
+          "jumps": [
+            {
+              "from": 750,
+              "to": 800,
+              "label": "shade right"
+            }
+          ]
+        },
+        "math": "m ≥ 750",
+        "say": "At least means 750 counts, so the circle is closed."
+      },
+      {
+        "title": "Try lawn mowing only",
+        "picture": {
+          "kind": "groups",
+          "groups": 6,
+          "each": 5,
+          "icon": "🌱",
+          "label": "30 lawns × $25"
+        },
+        "math": "25n ≥ 750 → n ≥ 30 → 30 lawns"
+      },
+      {
+        "title": "Try car washes only",
+        "picture": {
+          "kind": "number-line",
+          "min": 35,
+          "max": 40,
+          "step": 0.5,
+          "points": [
+            {
+              "value": 37.5,
+              "label": "37.5"
+            },
+            {
+              "value": 38,
+              "label": "38",
+              "tone": "unknown"
+            }
+          ]
+        },
+        "math": "20n ≥ 750 → n ≥ 37.5 → 38 washes",
+        "say": "She can't do half a wash, so round up."
+      },
+      {
+        "title": "Try a mix of jobs",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Job",
+            "Count",
+            "Earned"
+          ],
+          "rows": [
+            [
+              "Lawn mowing",
+              "20",
+              "$500"
+            ],
+            [
+              "Car wash",
+              "10",
+              "$200"
+            ],
+            [
+              "Dog walking",
+              "10",
+              "$50"
+            ],
+            [
+              "Total",
+              "",
+              "$750"
+            ]
+          ],
+          "highlight": [
+            [
+              3,
+              2
+            ]
+          ]
+        },
+        "math": "20(25) + 10(20) + 10(5) = 750 ≥ 750 ✓",
+        "say": "Exactly $750 still works because equality is allowed."
+      }
+    ],
+    "answer": "m ≥ 750. Ways that work: 30 lawns; or 38 car washes; or 20 lawns + 10 car washes + 10 dog walks = $750."
+  },
+  "8-6": {
+    "steps": [
+      {
+        "title": "Write the inequality",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "parts": [
+                {
+                  "text": "spent $52",
+                  "size": 52,
+                  "tone": "known"
+                },
+                {
+                  "text": "g",
+                  "size": 33,
+                  "tone": "unknown"
+                }
+              ]
+            }
+          ],
+          "total": "at most $85"
+        },
+        "math": "52 + g ≤ 85"
+      },
+      {
+        "title": "Subtract 52 from both sides",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "52 + g ≤ 85",
+            "52 + g − 52 ≤ 85 − 52",
+            "g ≤ 33"
+          ],
+          "focus": 2
+        },
+        "math": "g ≤ 85 − 52 → g ≤ 33"
+      },
+      {
+        "title": "Graph the inequality",
+        "picture": {
+          "kind": "number-line",
+          "min": -10,
+          "max": 40,
+          "step": 5,
+          "points": [
+            {
+              "value": 33,
+              "label": "33 (closed)"
+            }
+          ],
+          "jumps": [
+            {
+              "from": 33,
+              "to": -10,
+              "label": "shade left"
+            }
+          ]
+        },
+        "math": "Closed circle at 33, shade left"
+      },
+      {
+        "title": "Keep what makes sense",
+        "picture": {
+          "kind": "number-line",
+          "min": 0,
+          "max": 40,
+          "step": 5,
+          "points": [
+            {
+              "value": 0,
+              "label": "$0"
+            },
+            {
+              "value": 33,
+              "label": "$33"
+            }
+          ],
+          "jumps": [
+            {
+              "from": 0,
+              "to": 33,
+              "label": "0 ≤ g ≤ 33"
+            }
+          ]
+        },
+        "math": "0 ≤ g ≤ 33 (both endpoints included)",
+        "say": "She cannot spend a negative amount."
+      }
+    ],
+    "answer": "g ≤ 33; in context 0 ≤ g ≤ 33 — Reyes can spend from $0 through $33 more."
+  },
+  "8-7": {
+    "steps": [
+      {
+        "title": "Write the inequality",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "parts": [
+                {
+                  "text": "logged 26 h",
+                  "size": 26,
+                  "tone": "known"
+                },
+                {
+                  "text": "t",
+                  "size": 14,
+                  "tone": "unknown"
+                }
+              ]
+            }
+          ],
+          "total": "at most 40 hours"
+        },
+        "math": "26 + t ≤ 40"
+      },
+      {
+        "title": "Subtract 26 from both sides",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "26 + t ≤ 40",
+            "26 + t − 26 ≤ 40 − 26",
+            "t ≤ 14"
+          ],
+          "focus": 2
+        },
+        "math": "t ≤ 40 − 26 → t ≤ 14"
+      },
+      {
+        "title": "Graph the inequality",
+        "picture": {
+          "kind": "number-line",
+          "min": -4,
+          "max": 20,
+          "step": 2,
+          "points": [
+            {
+              "value": 14,
+              "label": "14 (closed)"
+            }
+          ],
+          "jumps": [
+            {
+              "from": 14,
+              "to": -4,
+              "label": "shade left"
+            }
+          ]
+        },
+        "math": "Closed circle at 14, shade left"
+      },
+      {
+        "title": "Keep what makes sense",
+        "picture": {
+          "kind": "number-line",
+          "min": 0,
+          "max": 20,
+          "step": 2,
+          "points": [
+            {
+              "value": 0,
+              "label": "0"
+            },
+            {
+              "value": 14,
+              "label": "14"
+            }
+          ],
+          "jumps": [
+            {
+              "from": 0,
+              "to": 14,
+              "label": "0 ≤ t ≤ 14"
+            }
+          ]
+        },
+        "math": "0 ≤ t ≤ 14 (closed endpoints)",
+        "say": "Overtime hours cannot be negative."
+      }
+    ],
+    "answer": "t ≤ 14; in context 0 ≤ t ≤ 14 — the team can use up to 14 more hours of overtime."
+  },
+  "9-1": {
+    "steps": [
+      {
+        "title": "Check the hours open",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "open 11 a.m. – 9 p.m.",
+            "40 pizzas → same hours",
+            "90 pizzas → same hours"
+          ]
+        },
+        "math": "Hours do not depend on pizzas sold → independent"
+      },
+      {
+        "title": "Check the number of employees",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "40 pizzas",
+              "value": 6,
+              "text": "6 workers"
+            },
+            {
+              "label": "90 pizzas",
+              "value": 6,
+              "text": "6 workers"
+            }
+          ]
+        },
+        "math": "Employees stay 6 → independent of pizzas sold"
+      },
+      {
+        "title": "Write the cheese cost equation",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Pizzas (p)",
+            "Cheese cost"
+          ],
+          "rows": [
+            [
+              "1",
+              "$1.15"
+            ],
+            [
+              "10",
+              "$11.50"
+            ],
+            [
+              "40",
+              "$46.00"
+            ]
+          ]
+        },
+        "math": "cheese cost = 1.15p",
+        "say": "Every pizza adds $1.15 of cheese."
+      },
+      {
+        "title": "Write the sauce cost equation",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Pizzas (p)",
+            "Sauce cost"
+          ],
+          "rows": [
+            [
+              "1",
+              "$1.95"
+            ],
+            [
+              "10",
+              "$19.50"
+            ],
+            [
+              "40",
+              "$78.00"
+            ]
+          ]
+        },
+        "math": "sauce cost = 1.95p",
+        "say": "Every pizza adds $1.95 of sauce."
+      },
+      {
+        "title": "Name the variables",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "p = independent variable",
+            "cost = dependent variable"
+          ]
+        },
+        "math": "Cost grows at a steady rate as p grows"
+      }
+    ],
+    "answer": "Hours open and number of employees are independent of pizza sales. Cheese cost (1.15p) and sauce cost (1.95p) depend on p, the number of pizzas sold."
+  },
+  "9-2": {
+    "steps": [
+      {
+        "title": "Read the points on the graph",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Years",
+            "Interest"
+          ],
+          "rows": [
+            [
+              "1",
+              "≈ $26"
+            ],
+            [
+              "2",
+              "≈ $52"
+            ],
+            [
+              "3",
+              "≈ $79"
+            ],
+            [
+              "4",
+              "≈ $105"
+            ]
+          ]
+        },
+        "math": "Each year adds about $26",
+        "say": "The points make a straight line through the origin."
+      },
+      {
+        "title": "Check the yearly interest",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "principal $750",
+            "rate 3.5% = 0.035"
+          ]
+        },
+        "math": "0.035 × 750 = $26.25 per year"
+      },
+      {
+        "title": "Write the equation",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "1 yr",
+              "value": 26.25,
+              "text": "$26.25"
+            },
+            {
+              "label": "2 yr",
+              "value": 52.5,
+              "text": "$52.50"
+            },
+            {
+              "label": "3 yr",
+              "value": 78.75,
+              "text": "$78.75"
+            },
+            {
+              "label": "4 yr",
+              "value": 105,
+              "text": "$105"
+            }
+          ]
+        },
+        "math": "Line passes (0, 0) → i = 26.25y"
+      },
+      {
+        "title": "Predict 5 years",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Years (y)",
+            "Interest (i)"
+          ],
+          "rows": [
+            [
+              "4",
+              "$105.00"
+            ],
+            [
+              "5",
+              "$131.25"
+            ]
+          ],
+          "highlight": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        "math": "i = 26.25 × 5 = 131.25 ≈ $131"
+      }
+    ],
+    "answer": "Interest grows at a steady $26.25 a year (0.035 × 750), so i = 26.25y; after 5 years Nakai will have earned about $131."
+  },
+  "9-3": {
+    "steps": [
+      {
+        "title": "Write an equation for each plan",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "Purchase: c = 0.75s",
+            "Stream: c = 80"
+          ]
+        },
+        "math": "c = 0.75s   and   c = 80"
+      },
+      {
+        "title": "Find where the costs match",
+        "picture": {
+          "kind": "number-line",
+          "min": 104,
+          "max": 109,
+          "step": 1,
+          "points": [
+            {
+              "value": 106.667,
+              "label": "106 2/3",
+              "tone": "unknown"
+            }
+          ]
+        },
+        "math": "0.75s = 80 → s = 80 ÷ 0.75 = 106 2/3",
+        "say": "There is no whole number of songs where they tie."
+      },
+      {
+        "title": "Check the whole numbers nearby",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Songs",
+            "Purchase",
+            "Stream"
+          ],
+          "rows": [
+            [
+              "106",
+              "$79.50",
+              "$80"
+            ],
+            [
+              "107",
+              "$80.25",
+              "$80"
+            ]
+          ]
+        },
+        "math": "0.75 × 106 = 79.50;  0.75 × 107 = 80.25"
+      },
+      {
+        "title": "Decide which plan is cheaper",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "0–106 songs → purchase",
+            "107 or more → stream"
+          ]
+        },
+        "math": "Purchase if s ≤ 106; stream if s ≥ 107"
+      }
+    ],
+    "answer": "Purchase (c = 0.75s) if Diamond expects 106 songs or fewer a year; stream (c = 80) if she expects 107 or more."
+  },
+  "9-4": {
+    "steps": [
+      {
+        "title": "Write an equation for each bakery",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "Belle City: c = 24d",
+            "Sweet Shoppe: c = 18d + 20",
+            "budget c = $110"
+          ]
+        },
+        "math": "c = 24d   and   c = 18d + 20"
+      },
+      {
+        "title": "Substitute the budget: Belle City",
+        "picture": {
+          "kind": "groups",
+          "groups": 4,
+          "each": 12,
+          "icon": "🧁",
+          "label": "4 dozen = $96"
+        },
+        "math": "24d = 110 → d ≈ 4.58 → 4 dozen for $96"
+      },
+      {
+        "title": "Substitute the budget: Sweet Shoppe",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "parts": [
+                {
+                  "text": "$20 fee",
+                  "size": 20,
+                  "tone": "known"
+                },
+                {
+                  "text": "$18",
+                  "size": 18
+                },
+                {
+                  "text": "$18",
+                  "size": 18
+                },
+                {
+                  "text": "$18",
+                  "size": 18
+                },
+                {
+                  "text": "$18",
+                  "size": 18
+                },
+                {
+                  "text": "$18",
+                  "size": 18
+                }
+              ]
+            }
+          ],
+          "total": "$110"
+        },
+        "math": "18d + 20 = 110 → 18d = 90 → d = 5"
+      },
+      {
+        "title": "Compare small orders",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Order",
+            "Belle City",
+            "Sweet Shoppe"
+          ],
+          "rows": [
+            [
+              "3 dozen",
+              "$72",
+              "$74"
+            ],
+            [
+              "Most for $110",
+              "4 dozen",
+              "5 dozen"
+            ]
+          ],
+          "highlight": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ]
+          ]
+        },
+        "math": "Same cost: 24d = 18d + 20 → 6d = 20 → d = 3 1/3",
+        "say": "The $20 fee matters most on small orders."
+      }
+    ],
+    "answer": "Recommend The Sweet Shoppe: 5 dozen for exactly $110 (Belle City gets only 4 dozen). For 3 dozen or fewer, Belle City is cheaper ($72 vs $74)."
+  },
+  "10-1": {
+    "steps": [
+      {
+        "title": "Find one person's daily savings",
+        "picture": {
+          "kind": "groups",
+          "groups": 2,
+          "each": 4,
+          "icon": "💧",
+          "label": "2 brushings × 4 gallons"
+        },
+        "math": "2 × 4 = 8 gallons a day"
+      },
+      {
+        "title": "Find one person's yearly savings",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "8 gallons a day",
+            "365 days a year"
+          ]
+        },
+        "math": "8 × 365 = 2,920 gallons a year"
+      },
+      {
+        "title": "Multiply by people in the house",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "People",
+            "Gallons saved a year"
+          ],
+          "rows": [
+            [
+              "1",
+              "2,920"
+            ],
+            [
+              "3",
+              "8,760"
+            ],
+            [
+              "4",
+              "11,680"
+            ],
+            [
+              "5",
+              "14,600"
+            ],
+            [
+              "8",
+              "23,360"
+            ]
+          ]
+        },
+        "math": "2,920 × 3, × 4, × 5, × 8"
+      },
+      {
+        "title": "Compare the households",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "3 people",
+              "value": 8760,
+              "text": "8,760"
+            },
+            {
+              "label": "4 people",
+              "value": 11680,
+              "text": "11,680"
+            },
+            {
+              "label": "5 people",
+              "value": 14600,
+              "text": "14,600"
+            },
+            {
+              "label": "8 people",
+              "value": 23360,
+              "text": "23,360"
+            }
+          ]
+        },
+        "math": "Each extra person adds 2,920 gallons",
+        "say": "The savings grow by the same amount per person."
+      }
+    ],
+    "answer": "One person saves 2,920 gallons a year; 3 people save 8,760, 4 save 11,680, 5 save 14,600, and 8 save 23,360 gallons."
+  },
+  "10-3": {
+    "steps": [
+      {
+        "title": "Read the tiles row by row",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Col 1",
+            "Col 2",
+            "Col 3",
+            "Col 4"
+          ],
+          "rows": [
+            [
+              "13",
+              "2",
+              "10",
+              "3"
+            ],
+            [
+              "1",
+              "12",
+              "8",
+              "4"
+            ],
+            [
+              "5",
+              "□",
+              "9",
+              "6"
+            ],
+            [
+              "15",
+              "14",
+              "11",
+              "7"
+            ]
+          ],
+          "highlight": [
+            [
+              2,
+              1
+            ]
+          ]
+        },
+        "math": "13, 2, 10, 3, 1, 12, 8, 4, 5, 9, 6, 15, 14, 11, 7"
+      },
+      {
+        "title": "Count the out-of-order pairs",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "13: 12",
+            "2: 1",
+            "10: 8",
+            "3: 1",
+            "12: 7",
+            "8: 4",
+            "9: 2",
+            "15: 3",
+            "14: 2",
+            "11: 1"
+          ],
+          "caption": "smaller tiles that come after each tile (others: 0)"
+        },
+        "math": "12+1+8+1+7+4+2+3+2+1 = 41 pairs"
+      },
+      {
+        "title": "Track what a slide changes",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "sideways: count stays the same",
+            "up/down: count changes by an odd number",
+            "up/down: empty row changes by 1"
+          ]
+        },
+        "math": "pairs + empty-row number: odd stays odd",
+        "say": "No slide can change whether that total is odd or even."
+      },
+      {
+        "title": "Compare with the finished puzzle",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Puzzle",
+            "Pairs",
+            "Empty row (from bottom)",
+            "Total"
+          ],
+          "rows": [
+            [
+              "Finished",
+              "0",
+              "1",
+              "1 (odd)"
+            ],
+            [
+              "This one",
+              "41",
+              "2",
+              "43 (odd)"
+            ]
+          ],
+          "highlight": [
+            [
+              1,
+              3
+            ]
+          ]
+        },
+        "math": "43 is odd, like 0 + 1 = 1 → it can be solved"
+      }
+    ],
+    "answer": "Solvable: 41 out-of-order pairs + empty space in row 2 from the bottom = 43, odd — the same as the finished puzzle (0 + 1 = 1)."
+  }
+}

@@ -600,5 +600,121 @@
         "value": 31
       }
     ]
+  },
+  "workedSteps": {
+    "steps": [
+      {
+        "title": "Read the tiles row by row",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Col 1",
+            "Col 2",
+            "Col 3",
+            "Col 4"
+          ],
+          "rows": [
+            [
+              "13",
+              "2",
+              "10",
+              "3"
+            ],
+            [
+              "1",
+              "12",
+              "8",
+              "4"
+            ],
+            [
+              "5",
+              "□",
+              "9",
+              "6"
+            ],
+            [
+              "15",
+              "14",
+              "11",
+              "7"
+            ]
+          ],
+          "highlight": [
+            [
+              2,
+              1
+            ]
+          ]
+        },
+        "math": "13, 2, 10, 3, 1, 12, 8, 4, 5, 9, 6, 15, 14, 11, 7"
+      },
+      {
+        "title": "Count the out-of-order pairs",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "13: 12",
+            "2: 1",
+            "10: 8",
+            "3: 1",
+            "12: 7",
+            "8: 4",
+            "9: 2",
+            "15: 3",
+            "14: 2",
+            "11: 1"
+          ],
+          "caption": "smaller tiles that come after each tile (others: 0)"
+        },
+        "math": "12+1+8+1+7+4+2+3+2+1 = 41 pairs"
+      },
+      {
+        "title": "Track what a slide changes",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "sideways: count stays the same",
+            "up/down: count changes by an odd number",
+            "up/down: empty row changes by 1"
+          ]
+        },
+        "math": "pairs + empty-row number: odd stays odd",
+        "say": "No slide can change whether that total is odd or even."
+      },
+      {
+        "title": "Compare with the finished puzzle",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Puzzle",
+            "Pairs",
+            "Empty row (from bottom)",
+            "Total"
+          ],
+          "rows": [
+            [
+              "Finished",
+              "0",
+              "1",
+              "1 (odd)"
+            ],
+            [
+              "This one",
+              "41",
+              "2",
+              "43 (odd)"
+            ]
+          ],
+          "highlight": [
+            [
+              1,
+              3
+            ]
+          ]
+        },
+        "math": "43 is odd, like 0 + 1 = 1 → it can be solved"
+      }
+    ],
+    "answer": "Solvable: 41 out-of-order pairs + empty space in row 2 from the bottom = 43, odd — the same as the finished puzzle (0 + 1 = 1)."
   }
 }
