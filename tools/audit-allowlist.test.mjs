@@ -183,12 +183,18 @@ test("severities below high are not this gate's business", () => {
   assert.deepEqual([blocking, honoured, stale], [[], [], []]);
 });
 
-test("the committed allowlist is keyed the durable way", async () => {
+test("the committed allowlist is keyed the durable way", async (t) => {
   const { readFileSync } = await import("node:fs");
   const { fileURLToPath } = await import("node:url");
   const path = fileURLToPath(new URL("./audit-allowlist.json", import.meta.url));
   const { accepted } = JSON.parse(readFileSync(path, "utf8"));
-  assert.ok(accepted.length > 0, "nothing to check means this test has stopped checking");
+  /* An empty allowlist is the goal state, not a broken one: entries are built
+     to expire. Report it as skipped so the run says this check had nothing to
+     look at, rather than failing the gate for having no accepted risk. */
+  if (accepted.length === 0) {
+    t.skip("allowlist is empty — no accepted advisories to check");
+    return;
+  }
   for (const a of accepted) {
     assert.match(
       String(a.advisory),
