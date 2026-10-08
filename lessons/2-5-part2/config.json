@@ -683,5 +683,117 @@
       }
     ],
     "intro": "Build each box plot, then measure both spreads: range from whisker to whisker, IQR across the box."
+  },
+  "workedSteps": {
+    "steps": [
+      {
+        "title": "Find each team's range",
+        "picture": {
+          "kind": "tape",
+          "rows": [
+            {
+              "label": "Team A",
+              "parts": [
+                {
+                  "text": "$1M to $20M",
+                  "size": 19,
+                  "tone": "known"
+                }
+              ]
+            },
+            {
+              "label": "Team B",
+              "parts": [
+                {
+                  "text": "$1M to $40M",
+                  "size": 39,
+                  "tone": "focus"
+                }
+              ]
+            }
+          ]
+        },
+        "math": "A: 20 − 1 = 19;  B: 40 − 1 = 39 (millions)"
+      },
+      {
+        "title": "Find each team's IQR",
+        "picture": {
+          "kind": "number-line",
+          "min": 0,
+          "max": 12,
+          "step": 1,
+          "points": [
+            {
+              "value": 2,
+              "label": "A Q1"
+            },
+            {
+              "value": 10.5,
+              "label": "A Q3"
+            },
+            {
+              "value": 9,
+              "label": "B Q3"
+            }
+          ],
+          "jumps": [
+            {
+              "from": 2,
+              "to": 10.5,
+              "label": "A ≈ 8.5"
+            },
+            {
+              "from": 2,
+              "to": 9,
+              "label": "B ≈ 7"
+            }
+          ],
+          "alt": "Salary in millions of dollars"
+        },
+        "math": "A: 10.5 − 2 = 8.5;  B: 9 − (just over 2) ≈ 7 (millions)"
+      },
+      {
+        "title": "Compare range and IQR",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "A range",
+              "value": 19,
+              "text": "$19M"
+            },
+            {
+              "label": "B range",
+              "value": 39,
+              "text": "$39M"
+            },
+            {
+              "label": "A IQR",
+              "value": 8.5,
+              "text": "$8.5M"
+            },
+            {
+              "label": "B IQR",
+              "value": 7,
+              "text": "$7M"
+            }
+          ]
+        },
+        "math": "B: larger range, slightly smaller IQR",
+        "say": "Team B's middle half is not more spread out."
+      },
+      {
+        "title": "Make a reasoned recommendation",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "highest salary seen → Team B",
+            "max is not a typical salary"
+          ]
+        },
+        "math": "tie the choice to range and IQR"
+      }
+    ],
+    "answer": "Team B for the chance at the highest observed salary (range ≈ $39M vs. $19M), but its IQR (≈ $7M vs. $8.5M) shows its middle half is not more spread out; the plots cannot predict a new player's salary."
   }
 }

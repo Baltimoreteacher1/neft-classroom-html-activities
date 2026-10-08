@@ -413,17 +413,21 @@ t("submitting GRADES the warm-up and persists the attempt", () => {
   });
 });
 
-/* ═══ 2 · PART 2 — Today's Problem lays the six moves ACROSS ════════════════ */
+/* ═══ 2 · PART 2 — Today's Problem shows the worked steps ACROSS ═══════════ */
 
-console.log("\npart 2 · Today's Problem — six moves, one row-flow");
+// Joel, 2026-10-08, replacing the know/work/answer boxes and the "I'm stuck"
+// bar: "just have the steps/procedures for solving listed horizontally and
+// already accessible … show the step (visually and mathematically) and we
+// would go through it together."
+console.log("\npart 2 · Today's Problem — worked steps, one row");
 
 const toProblem = [...p2.doc.querySelectorAll("button")].find((b) =>
   /See today's problem/i.test(b.textContent),
 );
 assert.ok(toProblem, "the Review phase lost its 'See today's problem' advance button");
 toProblem.click();
-// Waiting on a marker that Today's Problem always carries — NOT on the grid
-// under test, which would turn "the grid is gone" into a hang instead of a
+// Waiting on a marker that Today's Problem always carries — NOT on the row
+// under test, which would turn "the row is gone" into a hang instead of a
 // named failure.
 await waitFor(
   () =>
@@ -431,66 +435,49 @@ await waitFor(
   "the Today's Problem phase to render",
 );
 
-const SOLVE_ORDER = ["know", "work", "answer"];
+const p2Config = readJson(`lessons/${PART2}/config.json`);
 
-t("the compacted guided moves are children of one .p2-solve-steps grid, in order", () => {
-  const grid = p2.doc.querySelector(".p2-solve-steps");
-  assert.ok(
-    grid,
-    "no .p2-solve-steps container on Today's Problem — the moves are stacked down the " +
-      "page again (Joel: the steps should line up next to each other horizontally)",
+t("every authored step is on screen, in order, each with its math", () => {
+  const row = p2.doc.querySelector(".ws-row");
+  assert.ok(row, "no .ws-row on Today's Problem — the worked steps are not rendered");
+  const steps = [...row.children];
+  assert.equal(
+    steps.length,
+    p2Config.workedSteps.steps.length,
+    `${steps.length} steps on screen, ${p2Config.workedSteps.steps.length} authored`,
   );
-  const keys = [...grid.children].map((child) => {
-    const input = child.querySelector("textarea");
-    return input ? String(input.id).replace(/^p2-\d+-/, "") : `<no textarea: ${child.className}>`;
+  steps.forEach((li, i) => {
+    const want = p2Config.workedSteps.steps[i];
+    assert.equal(li.querySelector(".ws-title")?.textContent, want.title, `step ${i + 1} title`);
+    assert.equal(li.querySelector(".ws-math")?.textContent, want.math, `step ${i + 1} math`);
+    assert.ok(!li.closest("details,[hidden]"), `step ${i + 1} is hidden behind a click`);
   });
-  assert.deepEqual(
-    keys,
-    SOLVE_ORDER,
-    `the grid holds [${keys.join(", ")}] — all compacted moves must be its direct children, in ` +
-      "know → work → answer order",
-  );
+  assert.ok(row.querySelector(".ws-visual"), "no step drew its picture");
+  assert.ok(p2.doc.querySelector(".ws-answer"), "the answer line is missing");
 });
 
-t("'My work' spans the full row", () => {
-  const grid = p2.doc.querySelector(".p2-solve-steps");
-  assert.ok(grid, "no .p2-solve-steps grid — nothing can span a row that does not exist");
-  const wide = grid.querySelectorAll(":scope > .p2-solve-wide");
+t("the blank know/work/answer boxes and the stuck bar are gone from Today's Problem", () => {
+  const card = p2.doc.querySelector(".ws-card");
+  assert.ok(card, "no .ws-card — nothing to check");
   assert.equal(
-    wide.length,
-    1,
-    `${wide.length} full-row children in the solve grid — exactly one ("My work") must span`,
+    p2.doc.querySelectorAll('textarea[id^="p2-1-"]').length,
+    0,
+    "Today's Problem still renders phase-1 textareas",
   );
-  assert.equal(
-    wide[0].querySelector("textarea").id.replace(/^p2-\d+-/, ""),
-    "work",
-    "the full-row child is not 'My work' — a six-row textarea at a third of the width is not " +
-      "somewhere a student can show every step",
-  );
+  assert.equal(card.querySelectorAll("textarea").length, 0, "the steps card holds a textarea");
 });
 
-t("the stylesheet actually lays that grid out (jsdom has no layout to measure)", () => {
+t("the stylesheet lays the steps out in one row (jsdom has no layout to measure)", () => {
   const css = read("engine/styles/design-system.css");
-  const rule = /\.p2-solve-steps\s*\{([^}]*)\}/.exec(css);
-  assert.ok(rule, ".p2-solve-steps has no rule in design-system.css — the markup is inert");
+  const rule = /\.ws-row\s*\{([^}]*)\}/.exec(css);
+  assert.ok(rule, ".ws-row has no rule in design-system.css — the markup is inert");
+  assert.match(rule[1], /display:\s*grid/, ".ws-row is not display:grid");
   assert.match(
     rule[1],
-    /display:\s*grid/,
-    `.p2-solve-steps is not display:grid — it reads "${rule[1].replace(/\s+/g, " ").trim()}"`,
+    /grid-auto-flow:\s*column/,
+    ".ws-row must flow by column so the steps sit side by side, never stacked",
   );
-  assert.match(
-    rule[1],
-    /grid-template-columns:\s*repeat\(\s*auto-fit\s*,\s*minmax\(/,
-    ".p2-solve-steps must use repeat(auto-fit, minmax(...)) so the column count follows the " +
-      "viewport and a phone collapses to one column with no separate breakpoint",
-  );
-  const wideRule = /\.p2-solve-steps\s*>\s*\.p2-solve-wide\s*\{([^}]*)\}/.exec(css);
-  assert.ok(wideRule, "no .p2-solve-steps > .p2-solve-wide rule — 'My work' will not span");
-  assert.match(
-    wideRule[1],
-    /grid-column:\s*1\s*\/\s*-1/,
-    `'My work' does not span every column — it reads "${wideRule[1].replace(/\s+/g, " ").trim()}"`,
-  );
+  assert.match(rule[1], /overflow-x:\s*auto/, ".ws-row must scroll sideways on a phone");
 });
 
 /* ═══ 3 · PART 1 REGRESSION GUARD — the blast radius ════════════════════════ */
@@ -672,6 +659,23 @@ pass++;
 console.log(
   `  ok  ${part2Ids.length} part2 configs · ${questionCount} warm-up questions, all gradable`,
 );
+
+// Every Part 2 page carries a complete worked solution — the steps the class
+// walks through on Today's Problem. A page without one shows the problem and
+// nothing to solve it with.
+const { validateWorkedSteps } = await import("@eduwonderlab/engine/core/part-two-steps.js");
+const stepFailures = [];
+for (const id of part2Ids) {
+  const errs = validateWorkedSteps(readJson(`lessons/${id}/config.json`).workedSteps);
+  if (errs.length) stepFailures.push(`${id}: ${errs.join("; ")}`);
+}
+assert.deepEqual(
+  stepFailures,
+  [],
+  `part2 pages without valid workedSteps:\n${stepFailures.join("\n")}`,
+);
+pass++;
+console.log(`  ok  ${part2Ids.length} part2 configs · every one has a valid worked solution`);
 
 if (failures.length) {
   console.error(`\npart-two-warmup: ${failures.length} FAILED — ${failures.join("; ")}`);

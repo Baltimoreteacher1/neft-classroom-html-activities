@@ -642,5 +642,109 @@
     ],
     "titleEs": "Costo del estudio: 25 + 8h",
     "captionEs": "Cada barra es el costo total 25 + 8h; la base de $25 (0 h) se queda fija y cada hora extra suma $8."
+  },
+  "workedSteps": {
+    "steps": [
+      {
+        "title": "Check critical defects",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "0 ÷ 1,500 = 0%",
+            "limit 0%",
+            "meets ✓"
+          ],
+          "focus": 2
+        },
+        "math": "0 ÷ 1,500 = 0% → meets 0% limit"
+      },
+      {
+        "title": "Check major defects",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "25 ÷ 1,500 ≈ 0.0167",
+            "≈ 1.7%",
+            "under 2% ✓"
+          ],
+          "focus": 2
+        },
+        "math": "25 ÷ 1,500 ≈ 0.0167 ≈ 1.7% < 2%"
+      },
+      {
+        "title": "Check minor defects",
+        "picture": {
+          "kind": "chips",
+          "items": [
+            "143 ÷ 1,500 ≈ 0.0953",
+            "≈ 9.5%",
+            "over 5% ✗"
+          ],
+          "focus": 2
+        },
+        "math": "143 ÷ 1,500 ≈ 0.0953 ≈ 9.5% > 5%"
+      },
+      {
+        "title": "Compare with the limits",
+        "picture": {
+          "kind": "table",
+          "headers": [
+            "Level",
+            "Rate",
+            "Limit",
+            "Within limit?"
+          ],
+          "rows": [
+            [
+              "Critical",
+              "0%",
+              "0%",
+              "yes"
+            ],
+            [
+              "Major",
+              "≈ 1.7%",
+              "2%",
+              "yes"
+            ],
+            [
+              "Minor",
+              "≈ 9.5%",
+              "5%",
+              "no"
+            ]
+          ],
+          "highlight": [
+            [
+              2,
+              3
+            ]
+          ]
+        },
+        "math": "two pass, minor fails (≈ 9.5% is nearly double 5%)"
+      },
+      {
+        "title": "Decide what to do",
+        "picture": {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "minor rate",
+              "value": 9.5,
+              "text": "≈ 9.5%",
+              "tone": "focus"
+            },
+            {
+              "label": "minor limit",
+              "value": 5,
+              "text": "5%",
+              "tone": "known"
+            }
+          ]
+        },
+        "math": "pause production → find the source of minor defects"
+      }
+    ],
+    "answer": "Pause production and investigate the minor defects — about 9.5% is over the 5% limit."
   }
 }
