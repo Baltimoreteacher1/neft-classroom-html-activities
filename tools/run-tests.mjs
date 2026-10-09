@@ -8,9 +8,18 @@
 // simply executes each script with node and aggregates pass/fail.
 //
 // Usage: node tools/run-tests.mjs   (wired as `npm run test`)
+//
+// Scripts run CONCURRENTLY in a bounded pool (TEST_JOBS overrides the size).
+// They ran one at a time until 2026-10-09, which made `test` the slowest member
+// of the pre-push gate (130-285s for ~330 scripts). Each script is its own node
+// process, so the only shared state is the filesystem and ports. Tests that bind
+// HTTP use port 0; tests that touch the real tree are listed in SERIAL_TESTS and
+// run alone after the pool. Output is buffered per script and printed in
+// discovery order once all scripts finish.
 
-import { execFileSync } from "node:child_process";
+import { execFile } from "node:child_process";
 import { readdirSync, statSync } from "node:fs";
+import { availableParallelism } from "node:os";
 import { join, relative } from "node:path";
 import { SKIP_EXIT } from "./lib/skip-exit.mjs";
 
@@ -71,25 +80,77 @@ if (tests.length === 0) {
   process.exit(1);
 }
 
+const JOBS = Math.max(1, Number(process.env.TEST_JOBS) || Math.min(8, availableParallelism() - 1));
+
+/**
+ * Tests that must run ALONE, after the pool drains, because they write the real
+ * working tree while running and a concurrent test would read it mid-write:
+ *   - gate-mutation plants additive files in the tree;
+ *   - build-injectors-idempotent re-runs the build's in-place injectors;
+ *   - small-group-generator-idempotent and generators-preserve-vocabulary run
+ *     the generators, which overwrite tools/*-rows.json (and
+ *     _facilitation-data.js) before the test restores them. Run together, one
+ *     snapshots the other's overwrite and "restores" it — measured 2026-10-09.
+ * A new test that writes outside a tmpdir belongs here.
+ */
+const SERIAL_TESTS = new Set([
+  "tools/gate-mutation.test.mjs",
+  "tools/build-injectors-idempotent.test.mjs",
+  "tools/small-group-generator-idempotent.test.mjs",
+  "tools/generators-preserve-vocabulary.test.mjs",
+]);
+
+/** Run one script; `e.status` carries the exit code, as execFileSync's error did. */
+function runOne(file) {
+  return new Promise((resolve) => {
+    execFile(process.execPath, [file], { maxBuffer: 64 * 1024 * 1024 }, (err, stdout, stderr) => {
+      resolve({ file, e: err ? { status: err.code } : null, output: `${stdout}${stderr}` });
+    });
+  });
+}
+
+/** Run `files` with at most `jobs` at once; results come back in input order. */
+async function runPool(files, jobs) {
+  const results = new Array(files.length);
+  let next = 0;
+  const worker = async () => {
+    while (next < files.length) {
+      const i = next++;
+      results[i] = await runOne(files[i]);
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(jobs, files.length) }, worker));
+  return results;
+}
+
+const isSerial = (file) => SERIAL_TESTS.has(relative(ROOT, file));
+const results = [
+  ...(await runPool(
+    tests.filter((f) => !isSerial(f)),
+    JOBS,
+  )),
+  ...(await runPool(tests.filter(isSerial), 1)),
+];
+
 let failed = 0;
 const skipped = [];
-for (const file of tests) {
+for (const { file, e, output } of results) {
   const rel = relative(ROOT, file);
-  try {
-    execFileSync(process.execPath, [file], { stdio: "inherit" });
+  if (output) process.stdout.write(output.endsWith("\n") ? output : `${output}\n`);
+  if (!e) {
     console.log(`PASS  ${rel}`);
-  } catch (e) {
-    // Exit 3 = SKIP (tools/lib/skip-exit.mjs): the test could not run — a dirty
-    // tree it refuses to judge, a runtime it needs and does not have. Not a
-    // pass, not a failure, and NAMED in the summary either way.
-    if (e?.status === SKIP_EXIT) {
-      console.log(`SKIP  ${rel}  (did not run)`);
-      skipped.push(rel);
-      continue;
-    }
-    console.error(`FAIL  ${rel}`);
-    failed += 1;
+    continue;
   }
+  // Exit 3 = SKIP (tools/lib/skip-exit.mjs): the test could not run — a dirty
+  // tree it refuses to judge, a runtime it needs and does not have. Not a
+  // pass, not a failure, and NAMED in the summary either way.
+  if (e?.status === SKIP_EXIT) {
+    console.log(`SKIP  ${rel}  (did not run)`);
+    skipped.push(rel);
+    continue;
+  }
+  console.error(`FAIL  ${rel}`);
+  failed += 1;
 }
 
 console.log(`\n${tests.length - failed - skipped.length}/${tests.length} test scripts passed.`);

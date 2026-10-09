@@ -218,8 +218,15 @@ test("URL restoration and browser back keep filters and selected preview synchro
     assert.equal($("nav-lesson-title").textContent, "Understand Rates and Unit Rates");
     pick("3-3");
     assert.equal(new URL(window.location.href).searchParams.get("lesson"), "3-3");
+    // Wait for the popstate itself, not a fixed delay: jsdom delivers it on a
+    // later task, and a 30ms sleep lost that race on a loaded machine. The
+    // navigator's handler is synchronous and registered first, so it has run
+    // by the time this listener fires.
+    const popped = new Promise((resolve) =>
+      window.addEventListener("popstate", resolve, { once: true }),
+    );
     window.history.back();
-    await new Promise((resolve) => setTimeout(resolve, 30));
+    await popped;
     assert.equal($("nav-lesson-title").textContent, "Understand Rates and Unit Rates");
     assert.equal($("curr-search").value, "rate");
     assert.equal($("nav-unit").value, "3");

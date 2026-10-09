@@ -48,6 +48,127 @@ const server = createServer((req, res) => {
 });
 await new Promise((r) => server.listen(0, "127.0.0.1", r));
 const origin = `http://127.0.0.1:${server.address().port}`;
+/* One lab's full walk: every tab, every level's practice, the expedition and
+ * the matching game. Labs share nothing (progress is stored per lab id), so
+ * the sweep runs them in parallel across LAB_WORKERS isolated browser contexts;
+ * walking all 46 in one tab took ~106s of the gate's serial browser lane. */
+const LAB_WORKERS = Math.max(1, Number(process.env.LAB_WORKERS) || 4);
+async function sweepLab(page, item) {
+  const lab = JSON.parse(
+    readFileSync(join(REPO_ROOT, "curriculum/learning-labs", item.id, "content.json")),
+  );
+  await page.goto(origin + item.href);
+  try {
+    await page.locator("#level").waitFor({ timeout: 8000 });
+  } catch (error) {
+    console.error("Failed page:", await page.locator("body").innerText());
+    throw error;
+  }
+  for (const tab of ["brief", "learn", "investigate", "practice", "create", "games"]) {
+    await page.locator(`#tab-${tab}`).click();
+    await page.locator(`#panel-${tab}`).waitFor({ state: "visible" });
+    report.tabs++;
+    assert.ok(await page.locator(`#panel-${tab}`).innerText());
+  }
+  for (const level of ["support", "core", "stretch"]) {
+    await page.selectOption("#level", level);
+    report.levels++;
+    await page.locator("#tab-practice").click();
+    const bank = lab.practice[level];
+    const selected = full
+      ? bank
+      : [
+          bank[0],
+          bank.find((q) => q.type === "number"),
+          bank.find((q) => q.type === "repair"),
+          bank.find((q) => q.type === "explain"),
+        ].filter(Boolean);
+    for (const q of selected) {
+      await page.locator(`[data-question="${bank.indexOf(q)}"]`).click();
+      if (q.type === "choice" || q.type === "repair")
+        await page.locator(`.question input[value="${q.answer}"]`).check();
+      else
+        await page
+          .locator('.question [name="answer"]')
+          .fill(
+            q.type === "number"
+              ? String(q.answer)
+              : "I compared the given quantities, used a model, and checked my reasoning with the lesson.",
+          );
+      await page.locator('.question button[type="submit"]').click();
+      const feedback = await page.locator(".practice-feedback").innerText();
+      assert.match(
+        feedback,
+        q.type === "explain" ? /saved/ : /That works/,
+        `${item.id} ${q.id}: ${feedback}`,
+      );
+      report.answers++;
+    }
+  }
+  for (const gameLevel of full ? ["support", "core", "stretch"] : ["core"]) {
+    await page.selectOption("#level", gameLevel);
+    await page.locator("#tab-games").click();
+    // The finale is a route-map expedition: start a fresh one if a previous
+    // level already restored all three destinations, then restore them out
+    // of order to exercise route choice.
+    if (await page.locator("[data-replay]").isVisible())
+      await page.locator("[data-replay]").click();
+    const kicker = await page.locator(".lab-expedition-kicker").innerText();
+    const cycle = Number(/expedition (\d+)/i.exec(kicker)[1]) - 1;
+    const tier = (["support", "core", "stretch"].indexOf(gameLevel) + cycle) % 3;
+    for (const r of [2, 0, 1]) {
+      await page.locator(`[data-site="${r}"]`).click();
+      const p = puzzle(lab.model, r, tier);
+      if (lab.model.kind === "inequality") {
+        // The default includes equality; choose an interior solution or counterexample.
+        const threshold = p.start[0],
+          pass = r % 2 === 0;
+        const value =
+          lab.model.mode === "entry" ? threshold + (pass ? 1 : -1) : threshold + (pass ? -1 : 1);
+        await page.locator("#game-1").fill(String(value));
+      } else await page.locator(`#game-${p.free}`).fill(String(p.goal[p.free]));
+      await page.locator("[data-check]").click();
+      assert.match(
+        await page.locator(".game-feedback").innerText(),
+        /restored\./,
+        `${item.id} game destination ${r}`,
+      );
+      await page.locator("[data-check]").click();
+      report.puzzleRounds++;
+    }
+    assert.match(await page.locator(".lab-expedition-status").innerText(), /Expedition complete/);
+    await page.locator('[data-game="match"]').click();
+    const first = await page.locator("[data-card]").count();
+    assert.ok(first >= 8);
+    const revealed = new Map();
+    // Read each card through the UI, including the mismatch/retry path.
+    for (let i = 0; i < first; i += 2) {
+      for (const j of [i, i + 1]) {
+        await page.locator(`[data-card="${j}"]`).click();
+        revealed.set(await page.locator(`[data-card="${j}"] span`).last().innerText(), j);
+      }
+      if (await page.locator("[data-clear]").isVisible())
+        await page.locator("[data-clear]").click();
+    }
+    for (const v of lab.vocabulary.slice(0, gameLevel === "stretch" ? 6 : 4)) {
+      const a = revealed.get(v.term),
+        b = revealed.get(v.definition);
+      assert.notEqual(a, undefined);
+      assert.notEqual(b, undefined);
+      if (await page.locator(`[data-card="${a}"]`).isDisabled()) continue;
+      await page.locator(`[data-card="${a}"]`).click();
+      await page.locator(`[data-card="${b}"]`).click();
+    }
+    assert.match(await page.locator(".match-status").innerText(), /All \d+ connections found/);
+    report.matchingGames++;
+  }
+  report.labs++;
+  if (report.labs % 10 === 0)
+    console.log(
+      `Browser sweep: ${report.labs}/${catalog.length} labs, ${report.answers} answers checked.`,
+    );
+}
+
 let browser;
 const report = {
   labs: 0,
@@ -66,133 +187,31 @@ try {
     viewport: { width: 1365, height: 900 },
     reducedMotion: "reduce",
   });
-  const page = await context.newPage();
-  page.on("pageerror", (error) => report.errors.push(error.message));
-  page.on("console", (message) => {
-    if (message.type() === "error") console.error("Browser console:", message.text());
-  });
+  const watch = (p) => {
+    p.on("pageerror", (error) => report.errors.push(error.message));
+    p.on("console", (message) => {
+      if (message.type() === "error") console.error("Browser console:", message.text());
+    });
+    return p;
+  };
+  const page = watch(await context.newPage());
   if (!hubOnly) {
-    for (const [n, item] of catalog.entries()) {
-      if (selectedLabs.size && !selectedLabs.has(item.id)) continue;
-      const lab = JSON.parse(
-        readFileSync(join(REPO_ROOT, "curriculum/learning-labs", item.id, "content.json")),
-      );
-      await page.goto(origin + item.href);
-      try {
-        await page.locator("#level").waitFor({ timeout: 8000 });
-      } catch (error) {
-        console.error("Failed page:", await page.locator("body").innerText());
-        throw error;
-      }
-      for (const tab of ["brief", "learn", "investigate", "practice", "create", "games"]) {
-        await page.locator(`#tab-${tab}`).click();
-        await page.locator(`#panel-${tab}`).waitFor({ state: "visible" });
-        report.tabs++;
-        assert.ok(await page.locator(`#panel-${tab}`).innerText());
-      }
-      for (const level of ["support", "core", "stretch"]) {
-        await page.selectOption("#level", level);
-        report.levels++;
-        await page.locator("#tab-practice").click();
-        const bank = lab.practice[level];
-        const selected = full
-          ? bank
-          : [
-              bank[0],
-              bank.find((q) => q.type === "number"),
-              bank.find((q) => q.type === "repair"),
-              bank.find((q) => q.type === "explain"),
-            ].filter(Boolean);
-        for (const q of selected) {
-          await page.locator(`[data-question="${bank.indexOf(q)}"]`).click();
-          if (q.type === "choice" || q.type === "repair")
-            await page.locator(`.question input[value="${q.answer}"]`).check();
-          else
-            await page
-              .locator('.question [name="answer"]')
-              .fill(
-                q.type === "number"
-                  ? String(q.answer)
-                  : "I compared the given quantities, used a model, and checked my reasoning with the lesson.",
-              );
-          await page.locator('.question button[type="submit"]').click();
-          const feedback = await page.locator(".practice-feedback").innerText();
-          assert.match(
-            feedback,
-            q.type === "explain" ? /saved/ : /That works/,
-            `${item.id} ${q.id}: ${feedback}`,
-          );
-          report.answers++;
+    const queue = catalog.filter((item) => !selectedLabs.size || selectedLabs.has(item.id));
+    let nextLab = 0;
+    await Promise.all(
+      Array.from({ length: Math.min(LAB_WORKERS, queue.length) }, async () => {
+        const labContext = await browser.newContext({
+          viewport: { width: 1365, height: 900 },
+          reducedMotion: "reduce",
+        });
+        const labPage = watch(await labContext.newPage());
+        try {
+          while (nextLab < queue.length) await sweepLab(labPage, queue[nextLab++]);
+        } finally {
+          await labContext.close();
         }
-      }
-      for (const gameLevel of full ? ["support", "core", "stretch"] : ["core"]) {
-        await page.selectOption("#level", gameLevel);
-        await page.locator("#tab-games").click();
-        // The finale is a route-map expedition: start a fresh one if a previous
-        // level already restored all three destinations, then restore them out
-        // of order to exercise route choice.
-        if (await page.locator("[data-replay]").isVisible())
-          await page.locator("[data-replay]").click();
-        const kicker = await page.locator(".lab-expedition-kicker").innerText();
-        const cycle = Number(/expedition (\d+)/i.exec(kicker)[1]) - 1;
-        const tier = (["support", "core", "stretch"].indexOf(gameLevel) + cycle) % 3;
-        for (const r of [2, 0, 1]) {
-          await page.locator(`[data-site="${r}"]`).click();
-          const p = puzzle(lab.model, r, tier);
-          if (lab.model.kind === "inequality") {
-            // The default includes equality; choose an interior solution or counterexample.
-            const threshold = p.start[0],
-              pass = r % 2 === 0;
-            const value =
-              lab.model.mode === "entry"
-                ? threshold + (pass ? 1 : -1)
-                : threshold + (pass ? -1 : 1);
-            await page.locator("#game-1").fill(String(value));
-          } else await page.locator(`#game-${p.free}`).fill(String(p.goal[p.free]));
-          await page.locator("[data-check]").click();
-          assert.match(
-            await page.locator(".game-feedback").innerText(),
-            /restored\./,
-            `${item.id} game destination ${r}`,
-          );
-          await page.locator("[data-check]").click();
-          report.puzzleRounds++;
-        }
-        assert.match(
-          await page.locator(".lab-expedition-status").innerText(),
-          /Expedition complete/,
-        );
-        await page.locator('[data-game="match"]').click();
-        const first = await page.locator("[data-card]").count();
-        assert.ok(first >= 8);
-        const revealed = new Map();
-        // Read each card through the UI, including the mismatch/retry path.
-        for (let i = 0; i < first; i += 2) {
-          for (const j of [i, i + 1]) {
-            await page.locator(`[data-card="${j}"]`).click();
-            revealed.set(await page.locator(`[data-card="${j}"] span`).last().innerText(), j);
-          }
-          if (await page.locator("[data-clear]").isVisible())
-            await page.locator("[data-clear]").click();
-        }
-        for (const v of lab.vocabulary.slice(0, gameLevel === "stretch" ? 6 : 4)) {
-          const a = revealed.get(v.term),
-            b = revealed.get(v.definition);
-          assert.notEqual(a, undefined);
-          assert.notEqual(b, undefined);
-          if (await page.locator(`[data-card="${a}"]`).isDisabled()) continue;
-          await page.locator(`[data-card="${a}"]`).click();
-          await page.locator(`[data-card="${b}"]`).click();
-        }
-        assert.match(await page.locator(".match-status").innerText(), /All \d+ connections found/);
-        report.matchingGames++;
-      }
-      report.labs++;
-      if (n % 10 === 0)
-        console.log(
-          `Browser sweep: ${report.labs}/${catalog.length} labs, ${report.answers} answers checked.`,
-        );
-    }
+      }),
+    );
     // Keyboard tabs, resume, wrong-answer feedback, storage errors, export, print.
     await page.goto(origin + "/curriculum/learning-labs/recipe-remix/");
     await page.locator("#level").waitFor();
