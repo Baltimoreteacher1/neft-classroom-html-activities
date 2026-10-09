@@ -4,7 +4,6 @@ const games = [
   ['kitchen', '/math/unit-2/games/unit2-fraction-kitchen.html', [1, 2]],
   ['foundry', '/math/unit-2/games/unit2-fraction-foundry.html', [2, 4]],
   ['ratio', '/math/unit-3/6-rp-1game/', [4, 6]],
-  ['rally', '/math/unit-3/games/unit3-ratio-rally.html', [3, 6]],
   ['discount', '/math/unit-4/games/unit4-discount-dash.html', [3, 0]],
   ['area', '/math/unit-5/games/unit5-area-architect.html', [3, 2]],
   ['expression', '/math/unit-6/games/unit6-expression-engine.html', [0, 1]],
@@ -31,8 +30,6 @@ async function nativeMove(page: Page, id: string, correct: boolean) {
       s.cuts = correct ? s.current.d : 1; s.sel = correct ? s.current.answer : 0; s.forge();
     } else if (id === 'ratio') {
       if (correct) s.counts = s.round.need.slice(); else s.counts = [0, 0]; s.serve();
-    } else if (id === 'rally') {
-      const q = s.questions[s.currentQ]; s.pickChoice(q.choices.findIndex((value: any) => (value === q.answer) === correct));
     } else if (id === 'discount') {
       s.grabCell(s.row, correct ? s.row.data.bestIdxs[0] : s.row.data.cells.findIndex((_: any, i: number) => !s.row.data.bestIdxs.includes(i)));
     } else if (id === 'area') {

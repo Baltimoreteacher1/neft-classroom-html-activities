@@ -60,7 +60,6 @@
   <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
 <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
 <link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007">
-<link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261007">
 </head>
   <body>
 
@@ -96,6 +95,7 @@
         white-space: nowrap;
       "
     ></div>
+    <script src="/math/games/shared/ratio-rally-pro.js?v=20261009"></script>
     <script>
       // ── RATIO RALLY — Road Trip Checkpoints (calm, turn-based) ──
       // Phaser 3 — Grade 6 Math — Equivalent Ratios, Proportions, Unit Rates
@@ -227,6 +227,24 @@
           [523, 659, 784, 1047, 784, 1047, 1319, 1568].forEach((f, i) =>
             setTimeout(() => this.play("sine", f, 0.15, 0.3), i * 90),
           );
+        },
+        coin() {
+          this.play("square", 988, 0.06, 0.12);
+          setTimeout(() => this.play("square", 1319, 0.12, 0.12), 60);
+        },
+        nitro() {
+          [220, 330, 440, 660, 880].forEach((f, i) =>
+            setTimeout(() => this.play("sawtooth", f, 0.14, 0.14), i * 60),
+          );
+        },
+        badge() {
+          [784, 988, 1319].forEach((f, i) =>
+            setTimeout(() => this.play("triangle", f, 0.16, 0.25), i * 90),
+          );
+        },
+        stamp() {
+          this.noise(0.12, 0.2);
+          this.play("square", 110, 0.2, 0.25);
         },
         crowd(level) {
           // Ambient crowd noise that builds
@@ -628,6 +646,7 @@
         g.clear();
 
         g.destroy();
+        RRPro.buildTextures(this);
         this.scene.start("Title");
       };
 
@@ -670,7 +689,7 @@
         }
 
         // Cars racing with more dynamic animation
-        const pc = this.add.image(cx - 40, 400, "car_player").setScale(1.8);
+        const pc = this.add.image(cx - 40, 400, RRPro.carKey()).setScale(1.8);
         const ai1 = this.add.image(cx + 50, 440, "car_ai1").setScale(1.5);
         const ai2 = this.add
           .image(cx + 10, 380, "car_ai2")
@@ -794,11 +813,16 @@
           })
           .setOrigin(0.5);
 
+        RRPro.garageUI(this, cx, 472, {
+          onChange: (key) => pc.setTexture(key),
+          onMove: () => SFX.tap(),
+        });
+
         const btn = this.add
-          .rectangle(cx, 530, 260, 56, 0x00ccff)
+          .rectangle(cx, 536, 260, 52, 0x00ccff)
           .setInteractive({ useHandCursor: true });
         const btnT = this.add
-          .text(cx, 530, "START TRIP", {
+          .text(cx, 536, "START TRIP", {
             fontSize: "22px",
             fontStyle: "bold",
             color: "#002244",
@@ -1003,6 +1027,14 @@
               ? { grass: 0x334455, road: 0x555555 }
               : { grass: 0x1a0a33, road: 0x333344 };
         this.questionStartTime = 0;
+        this.race = RRPro.createRace(this.difficulty, TRIP_LEN);
+        this.coins = 0;
+        this.needBounce = false;
+        this.bounceRun = 0;
+        this.recovered = false;
+        this.nitro = false;
+        this.toastQ = [];
+        this.toastBusy = false;
       };
 
       // Respect the OS "reduce motion" setting and the studio Calm motion toggle.
@@ -1031,20 +1063,40 @@
         for (let y = -40; y < H + 40; y += 60) {
           this.laneLines.push(this.add.rectangle(W / 2, y, 4, 25, 0xffff00, 0.7));
         }
-        // Scenery
+        // Rumble strips along both road edges scroll with the drive.
+        this.rumble = [-1, 1].map((side) =>
+          this.add.tileSprite(W / 2 + side * (ROAD_W / 2 + 15), H / 2, 10, H, "rumble").setAlpha(0.8),
+        );
+        // Biome scenery: cacti and rocks, city lights and towers, crystals and asteroids.
         this.scenery = [];
+        const props = RRPro.sceneryFor(this.difficulty);
         for (let i = 0; i < 16; i++) {
           const side = i % 2 === 0 ? -1 : 1;
           const t = this.add
-            .image(W / 2 + side * (ROAD_W / 2 + randInt(30, 120)), randInt(-50, H + 50), "tree")
-            .setScale(randInt(8, 15) / 10)
-            .setAlpha(0.7);
+            .image(W / 2 + side * (ROAD_W / 2 + randInt(40, 160)), randInt(-50, H + 50), props[i % props.length])
+            .setScale(randInt(9, 16) / 10)
+            .setAlpha(0.9);
           this.scenery.push(t);
         }
+        // Rival racers: placed by their lead over the player, off screen when far away.
+        this.rivalCars = ["car_rival1", "car_rival2"].map((key, i) =>
+          this.add.image(ROAD_LEFT + LANE_W * (i ? 3.5 : 0.5), -80, key).setScale(1.2).setDepth(2),
+        );
 
         // Player car (parked until a checkpoint is solved)
         this.carShadow = this.add.image(W / 2, H - 98, "carShadow").setDepth(2).setAlpha(0.55);
-        this.player = this.add.image(W / 2, H - 120, "car_player").setScale(1.3).setDepth(3);
+        this.player = this.add.image(W / 2, H - 120, RRPro.carKey()).setScale(1.3).setDepth(3);
+        this.flames = [-7, 7].map((dx) =>
+          this.add.image(W / 2 + dx, H - 84, "flame").setDepth(2).setAlpha(0).setScale(0.8),
+        );
+        this.speedLines = this.add.particles(0, 0, "speedline", {
+          x: { min: ROAD_LEFT - 120, max: ROAD_LEFT + ROAD_W + 120 },
+          y: -40,
+          speedY: { min: 900, max: 1400 },
+          lifespan: 600,
+          frequency: 25,
+          emitting: false,
+        }).setDepth(6);
 
         // HUD: trip map (one flag per checkpoint) + score
         this.add.rectangle(W / 2, 0, W, 64, 0x000000, 0.75).setOrigin(0.5, 0).setDepth(20);
@@ -1052,7 +1104,7 @@
           .text(16, 34, "Score: 0", { fontSize: "18px", color: "#7fe0ff", fontStyle: "bold" })
           .setDepth(21);
         this.progressLabel = this.add
-          .text(W - 16, 34, "", { fontSize: "18px", color: "#ffffff", fontStyle: "bold" })
+          .text(W - 16, 34, "", { fontSize: "15px", color: "#ffffff", fontStyle: "bold" })
           .setOrigin(1, 0)
           .setDepth(21);
         this.flags = [];
@@ -1063,9 +1115,16 @@
           const fx = x0 + ((x1 - x0) * i) / Math.max(1, this.totalCheckpoints - 1);
           this.flags.push(this.add.circle(fx, 16, 7, 0x445566).setStrokeStyle(2, 0xaaccee).setDepth(22));
         }
-        this.mapCar = this.add.image(x0, 16, "car_player").setScale(0.45).setAngle(90).setDepth(23);
+        this.rivalDots = [0xff4444, 0xffaa00].map((color) =>
+          this.add.circle(x0, 16, 5, color).setStrokeStyle(1, 0xffffff).setDepth(22.5),
+        );
+        this.mapCar = this.add.image(x0, 16, RRPro.carKey()).setScale(0.45).setAngle(90).setDepth(23);
+        this.coinText = this.add
+          .text(140, 34, "0", { fontSize: "18px", color: "#ffd23d", fontStyle: "bold" })
+          .setDepth(21);
+        this.add.image(128, 44, "coin").setScale(0.8).setDepth(21);
         this.streakLabel = this.add
-          .text(W / 2, 34, "", { fontSize: "16px", color: "#ffdd00", fontStyle: "bold" })
+          .text(330, 34, "", { fontSize: "15px", color: "#ffdd00", fontStyle: "bold" })
           .setOrigin(0.5, 0)
           .setDepth(21);
 
@@ -1151,44 +1210,90 @@
       GameScene.prototype.updateHUD = function () {
         this.scoreText.setText(`Score: ${this.score}`);
         const n = Math.min(this.currentQ + 1, this.totalCheckpoints);
+        const snap = this.race.snapshot();
         this.progressLabel.setText(
-          this.raceFinished ? "Trip complete!" : `Checkpoint ${n} of ${this.totalCheckpoints}`,
+          this.raceFinished
+            ? `Finished ${RRPro.ordinal(snap.position)}!`
+            : `${RRPro.ordinal(snap.position)} place · Checkpoint ${n} of ${this.totalCheckpoints}`,
         );
-        this.streakLabel.setText(this.combo >= 2 ? `Streak x${this.combo}` : "");
+        const tier = RRPro.tierFor(this.combo);
+        this.streakLabel
+          .setText(tier ? `${tier.name} x${tier.mult}` : this.combo >= 2 ? `Streak x${this.combo}` : "")
+          .setColor(tier ? tier.color : "#ffdd00");
+        this.coinText.setText(String(this.coins));
         this.flags.forEach((f, i) => {
           f.setFillStyle(i < this.checkpointsHit ? 0x22cc66 : i === this.currentQ ? 0xffaa00 : 0x445566);
         });
         const x0 = 150,
           x1 = W - 150;
         const pos = Math.min(this.checkpointsHit, this.totalCheckpoints - 1);
-        this.mapCar.x = x0 + ((x1 - x0) * pos) / Math.max(1, this.totalCheckpoints - 1);
+        const along = (progress) => x0 + (x1 - x0) * Math.min(1, progress / this.totalCheckpoints);
+        this.mapCar.x = along(snap.player);
+        this.rivalDots.forEach((dot, i) => (dot.x = along(snap.rivals[i])));
+        this.placeRivals(snap, !this.reducedMotion && this.driving);
+      };
+
+      // Rivals sit on the road by their lead over the player (110 px per checkpoint).
+      GameScene.prototype.placeRivals = function (snap, animate) {
+        this.rivalCars.forEach((car, i) => {
+          const y = Phaser.Math.Clamp(H - 120 - (snap.rivals[i] - snap.player) * 110, -90, H + 90);
+          if (animate) this.tweens.add({ targets: car, y, duration: this.driveMs, ease: "Sine.easeInOut" });
+          else car.y = y;
+        });
       };
 
       // Drive one segment of road. Pure reward animation AFTER a solved
       // checkpoint; nothing to steer or dodge.
       GameScene.prototype.driveSegment = function (done) {
+        const nitro = this.nitro;
+        this.driveMs = nitro ? 1500 : 1100;
+        this.driving = true;
+        const finish = () => {
+          this.driving = false;
+          done();
+        };
         if (this.reducedMotion) {
-          this.time.delayedCall(250, done);
+          this.updateHUD();
+          this.time.delayedCall(250, finish);
           return;
         }
         const dist = { v: 0 };
         let last = 0;
         SFX.engine();
+        if (nitro) {
+          SFX.nitro();
+          RRPro.shake(this, 700, 0.003);
+          this.speedLines.start();
+          this.flames.forEach((f) => this.tweens.add({ targets: f, alpha: 1, scaleY: { from: 0.8, to: 1.3 }, duration: 90, yoyo: true, repeat: 7 }));
+          this.tweens.add({ targets: this.cameras.main, zoom: 1.05, duration: 500, yoyo: true, hold: 400 });
+        }
+        // The checkpoint gate sweeps over the car as you drive through it.
+        const gate = this.add
+          .container(W / 2, -40, [
+            this.add.rectangle(0, 0, ROAD_W + 50, 22, 0xff8800),
+            this.add.text(0, 0, `CHECKPOINT ${this.checkpointsHit}`, { fontSize: "14px", fontStyle: "bold", color: "#ffffff" }).setOrigin(0.5),
+            this.add.rectangle(-(ROAD_W / 2 + 25), 40, 8, 80, 0xffffff),
+            this.add.rectangle(ROAD_W / 2 + 25, 40, 8, 80, 0xffffff),
+          ])
+          .setDepth(5);
+        this.tweens.add({ targets: gate, y: H + 100, duration: this.driveMs, ease: "Sine.easeIn", onComplete: () => gate.destroy() });
+        this.updateHUD();
         this.tweens.add({
           targets: dist,
-          v: 420,
-          duration: 1100,
+          v: nitro ? 700 : 420,
+          duration: this.driveMs,
           ease: "Sine.easeInOut",
           onUpdate: () => {
             const d = dist.v - last;
             last = dist.v;
+            this.rumble.forEach((r) => (r.tilePositionY -= d));
             this.laneLines.forEach((l) => {
               l.y += d;
               if (l.y > H + 40) l.y -= H + 80;
             });
-            this.scenery.forEach((s) => {
-              s.y += d * 0.7;
-              if (s.y > H + 60) s.y -= H + 120;
+            this.scenery.forEach((sc) => {
+              sc.y += d * 0.7;
+              if (sc.y > H + 60) sc.y -= H + 120;
             });
             this.parallaxLayers.forEach((layer) =>
               layer.items.forEach((it) => {
@@ -1197,7 +1302,11 @@
               }),
             );
           },
-          onComplete: done,
+          onComplete: () => {
+            this.speedLines.stop();
+            this.flames.forEach((f) => f.setAlpha(0));
+            finish();
+          },
         });
       };
 
@@ -1309,17 +1418,35 @@
         const isCorrect = c === q.answer;
         if (isCorrect) {
           this.locked = true;
-          const pts = POINTS[Math.min(this.tries, POINTS.length - 1)];
-          this.score += pts;
           if (this.tries === 0) {
             this.totalCorrect++;
             this.combo++;
             this.maxCombo = Math.max(this.maxCombo, this.combo);
+            if (this.needBounce && ++this.bounceRun >= 3) this.recovered = true;
           } else {
             this.helped++;
+            this.needBounce = true;
+            this.bounceRun = 0;
           }
+          const pts = RRPro.points(POINTS[Math.min(this.tries, POINTS.length - 1)], this.tries, this.combo);
+          this.score += pts;
+          const tier = RRPro.tierFor(this.combo);
+          this.nitro = this.tries === 0 && !!tier;
+          const gained = RRPro.coinsFor(this.tries, this.nitro);
+          RRPro.popup(this, entry.rect.x, entry.rect.y - 40, `+${pts}`, "#7dffb0", 26);
+          RRPro.coinFly(this, { x: entry.rect.x, y: entry.rect.y }, { x: 128, y: 44 }, gained, () => {
+            this.coins++;
+            this.coinText.setText(String(this.coins));
+            SFX.coin();
+          });
+          if (this.reducedMotion) this.coins += gained;
+          if (tier && this.tries === 0 && this.combo === tier.min) {
+            RRPro.flair(this, `${tier.name}! x${tier.mult} points`, tier.color);
+            SFX.badge();
+          }
+          if (this.totalCorrect === 1 && this.tries === 0) RRPro.toast(this, "First try!", "Solved without a hint. Keep it going.");
+          if (this.combo === 5 && this.tries === 0) RRPro.toast(this, "Five Alive", "5 first tries in a row.", 0xff8a4a);
           this.checkpointsHit++;
-          window.FlagshipAdventure?.record({ firstTry: this.tries === 0, kind: q.type });
           SFX.correct();
           entry.rect.setFillStyle(0x1f9d55);
           this.answerBtns.forEach((b) => b.rect.disableInteractive());
@@ -1336,6 +1463,7 @@
           this.time.delayedCall(1600, () => {
             this.clearPanel();
             SFX.checkpoint();
+            this.race.advance(this.tries, this.nitro);
             this.driveSegment(() => {
               this.locked = false;
               this.currentQ++;
@@ -1352,6 +1480,9 @@
         this.skillMiss[q.type] = (this.skillMiss[q.type] || 0) + 1;
         entry.eliminated = true;
         entry.rect.setFillStyle(0x5a2330).disableInteractive();
+        this.nitro = false;
+        if (!this.reducedMotion)
+          this.tweens.add({ targets: [entry.rect, entry.val], x: "+=6", duration: 50, yoyo: true, repeat: 3 });
         entry.val.setAlpha(0.45);
         SFX.wrong();
         const why = q.wrong[c] || "Not quite.";
@@ -1384,6 +1515,9 @@
             checkpointsHit: this.checkpointsHit,
             skillMiss: this.skillMiss,
             skillSeen: Object.keys(this.skillSeen).map(Number),
+            coins: this.coins,
+            position: this.race.snapshot().position,
+            recovered: this.recovered,
           });
         });
       };
@@ -1460,36 +1594,74 @@
           .text(cx, 72, `You reached all ${d.checkpointsHit} checkpoints.`, { fontSize: "18px", color: "#b8d4ee" })
           .setOrigin(0.5);
         for (let i = 0; i < 3; i++) {
-          this.add.image(cx - 50 + i * 50, 108, i < stars ? "bigstar" : "emptystar").setScale(1.2);
+          this.add.image(570 + i * 45, 116, i < stars ? "bigstar" : "emptystar").setScale(0.8);
         }
         if (isNewHighScore && d.score > 0) {
           SFX.newRecord();
           this.add
-            .text(cx, 140, "NEW PERSONAL BEST!", { fontSize: "20px", fontStyle: "bold", color: "#ffdd00" })
+            .text(230, 110, "NEW PERSONAL BEST!", { fontSize: "20px", fontStyle: "bold", color: "#ffdd00" })
             .setOrigin(0.5);
         }
 
+        const position = d.position || 1;
+        const rank = RRPro.rank(pct, position);
+        const res = RRPro.commit({
+          total,
+          totalCorrect: d.totalCorrect,
+          maxCombo: d.maxCombo,
+          helped: d.helped,
+          position,
+          recovered: d.recovered,
+          skillSeen: d.skillSeen || [],
+          coins: d.coins || 0,
+        });
         const stats = [
           ["Score", String(d.score), "#7fe0ff"],
           ["First-try correct", `${d.totalCorrect} of ${total} (${Math.round(pct)}%)`, "#22cc66"],
           ["Solved with coaching", String(d.helped), "#ffb347"],
           ["Best streak", `x${d.maxCombo}`, "#ffdd00"],
-          ["Personal best", String(Math.max(prevHigh, d.score)), "#ffdd00"],
+          ["Coins earned", `${d.coins || 0}  (${res.totalCoins} saved)`, "#ffd23d"],
         ];
         stats.forEach((s, i) => {
-          const y = 172 + i * 36;
-          this.add.rectangle(cx, y, 460, 30, 0x1a2a4a, 0.9);
-          this.add.text(cx - 215, y, s[0], { fontSize: "16px", color: "#b8d4ee" }).setOrigin(0, 0.5);
-          this.add.text(cx + 215, y, s[1], { fontSize: "17px", fontStyle: "bold", color: s[2] }).setOrigin(1, 0.5);
+          const y = 140 + i * 28;
+          this.add.rectangle(230, y, 400, 25, 0x1a2a4a, 0.9);
+          this.add.text(40, y, s[0], { fontSize: "15px", color: "#b8d4ee" }).setOrigin(0, 0.5);
+          this.add.text(420, y, s[1], { fontSize: "16px", fontStyle: "bold", color: s[2] }).setOrigin(1, 0.5);
         });
+        // Rank stamp + race finish
+        const rankColor = { S: "#ffdd00", A: "#22cc66", B: "#4fb3ff", C: "#ffb347" }[rank];
+        const stamp = this.add
+          .text(615, 190, rank, { fontSize: "96px", fontStyle: "bold", color: rankColor, stroke: "#000", strokeThickness: 6 })
+          .setOrigin(0.5);
+        this.add.text(615, 246, `RANK ${rank}`, { fontSize: "14px", fontStyle: "bold", color: "#b8d4ee" }).setOrigin(0.5);
+        this.add
+          .text(615, 270, `Finished ${RRPro.ordinal(position)} in the race`, { fontSize: "16px", fontStyle: "bold", color: position === 1 ? "#ffdd00" : "#d6e6f5" })
+          .setOrigin(0.5);
+        if (!reduced) {
+          stamp.setScale(3).setAlpha(0);
+          this.tweens.add({ targets: stamp, scale: 1, alpha: 1, duration: 350, delay: 400, ease: "Back.easeIn", onComplete: () => { SFX.stamp(); this.cameras.main.shake(120, 0.004); } });
+        }
+        // Badges
+        this.add.text(40, 272, `BADGES  ${Object.keys(res.owned).length} of ${RRPro.BADGES.length}`, { fontSize: "13px", fontStyle: "bold", color: "#9fc3e6" });
+        RRPro.BADGES.forEach((b, i) => {
+          const bx = 40 + (i % 3) * 245,
+            by = 304 + Math.floor(i / 3) * 34;
+          const isNew = res.fresh.includes(b),
+            has = res.earned.includes(b) || res.owned[b.id];
+          this.add.rectangle(bx + 115, by, 232, 28, isNew ? 0x3a3210 : 0x1a2a4a, 0.95).setStrokeStyle(isNew ? 2 : 1, isNew ? 0xffdd00 : 0x35507a);
+          this.add.text(bx + 8, by, `${has ? "★" : "☆"} ${b.name}${isNew ? "  NEW" : ""}`, { fontSize: "13px", fontStyle: "bold", color: has ? "#ffe9a0" : "#6f86a3" }).setOrigin(0, 0.5);
+        });
+        if (res.fresh.length) SFX.badge();
+        const unlock = res.unlockedSkins.length ? `NEW CAR UNLOCKED: ${res.unlockedSkins.map((k) => k.name).join(", ")}! Pick it on the title screen.` : "";
+        if (unlock) this.add.text(cx, 366, unlock, { fontSize: "15px", fontStyle: "bold", color: "#7dffb0" }).setOrigin(0.5);
 
         // Skills practiced + what to practice next
         const seen = (d.skillSeen || []).map((t) => SKILLS[t]).filter(Boolean);
         this.add
-          .text(cx, 360, "Skills practiced: " + seen.join(" · "), {
-            fontSize: "15px",
+          .text(cx, 382, "Skills practiced: " + seen.join(" · "), {
+            fontSize: "13px",
             color: "#d6e6f5",
-            wordWrap: { width: 680 },
+            wordWrap: { width: 740 },
             align: "center",
           })
           .setOrigin(0.5, 0);
@@ -1502,7 +1674,7 @@
               ? "Practice next: you are ready for the Unit 3 project. Great work!"
               : "Practice next: try a harder track for new kinds of ratio problems.";
         this.add
-          .text(cx, 410, next, {
+          .text(cx, 432, next, {
             fontSize: "17px",
             fontStyle: "bold",
             color: "#ffd27a",
@@ -1592,7 +1764,5 @@
   <script src="/assets/formula-popup.js" defer></script>
 <script src="/assets/game-studio.js?v=20261003" defer></script>
 <script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
-<script src="/math/games/shared/flagship-puzzles.js?v=20261007" defer></script>
-<script src="/math/games/shared/flagship-adventures.js?v=20261007" defer></script>
 </body>
 </html>

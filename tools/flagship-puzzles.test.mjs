@@ -13,7 +13,6 @@ for (const id of [
   "kitchen",
   "foundry",
   "ratio",
-  "rally",
   "discount",
   "area",
   "expression",
