@@ -3887,52 +3887,52 @@ ${MATH_INPUT_CSS}
    Bigger text, comfortable reading rhythm across all family devices
    ============================================================ */
 body {
-  font-size: 18px !important;
+  font-size: 22px !important;
   line-height: 1.65 !important;
 }
 .problem-stem {
-  font-size: 20px !important;
+  font-size: 26px !important;
   line-height: 1.55 !important;
   font-weight: 700 !important;
 }
 .problem-number-badge {
-  font-size: 20px !important;
+  font-size: 24px !important;
 }
 .mc-option-label, .choice-text {
-  font-size: 18px !important;
+  font-size: 22px !important;
   line-height: 1.5 !important;
 }
 .learning-big {
-  font-size: 20px !important;
+  font-size: 26px !important;
   line-height: 1.55 !important;
 }
 .bilingual-col, .worked-step, .welcome-lead, .watch-for-list, .watch-for, .hw-steps {
-  font-size: 17.5px !important;
+  font-size: 21px !important;
   line-height: 1.6 !important;
 }
 .hw-step-guide > summary {
-  font-size: 17px !important;
+  font-size: 21px !important;
 }
 .step-label {
-  font-size: 17.5px !important;
+  font-size: 21px !important;
   line-height: 1.55 !important;
 }
 .custom-input, .custom-textarea {
-  font-size: 18px !important;
+  font-size: 22px !important;
 }
 .btn-primary, .btn-secondary, .btn-check-one {
-  font-size: 17.5px !important;
+  font-size: 21px !important;
 }
 .feedback-box, .explanation-box {
-  font-size: 17.5px !important;
+  font-size: 21px !important;
   line-height: 1.55 !important;
 }
 .math-talk-bubble {
-  font-size: 18.5px !important;
+  font-size: 23px !important;
   line-height: 1.55 !important;
 }
 .obj-popup-def {
-  font-size: 18px !important;
+  font-size: 22px !important;
   line-height: 1.6 !important;
 }
 </style>
