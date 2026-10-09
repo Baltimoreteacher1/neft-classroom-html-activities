@@ -102,9 +102,15 @@ const SERIAL_TESTS = new Set([
 
 /** Run one script; `e.status` carries the exit code, as execFileSync's error did. */
 function runOne(file) {
+  const started = Date.now();
   return new Promise((resolve) => {
     execFile(process.execPath, [file], { maxBuffer: 64 * 1024 * 1024 }, (err, stdout, stderr) => {
-      resolve({ file, e: err ? { status: err.code } : null, output: `${stdout}${stderr}` });
+      resolve({
+        file,
+        e: err ? { status: err.code } : null,
+        output: `${stdout}${stderr}`,
+        ms: Date.now() - started,
+      });
     });
   });
 }
@@ -152,6 +158,14 @@ for (const { file, e, output } of results) {
   console.error(`FAIL  ${rel}`);
   failed += 1;
 }
+
+// Where the time goes. The serial tail (SERIAL_TESTS) is invisible in the
+// gate's per-check timings, and it was ~125s of build-injectors-idempotent alone.
+const slowest = [...results]
+  .sort((a, b) => b.ms - a.ms)
+  .slice(0, 5)
+  .map((r) => `${relative(ROOT, r.file)} ${(r.ms / 1000).toFixed(1)}s`);
+console.log(`\nslowest test scripts: ${slowest.join(", ")}`);
 
 console.log(`\n${tests.length - failed - skipped.length}/${tests.length} test scripts passed.`);
 if (optedOut.length) {
