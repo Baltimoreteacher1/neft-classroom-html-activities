@@ -101,9 +101,7 @@
       // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
       // (document.write blocks parsing so the mirror is ready before the game script runs).
       if (typeof Phaser === "undefined") {
-        document.write(
-          '<script src="/games/vendor/phaser/phaser-3.80.1.min.js"><\/script>',
-        );
+        document.write('<script src="/games/vendor/phaser/phaser-3.80.1.min.js"><\/script>');
       }
       // If both CDNs are unreachable, show a clear message instead of a blank page.
       window.addEventListener("load", function () {
@@ -123,49 +121,75 @@
     <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
     <!-- ghl-injected:end -->
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-  <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
-  <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
-<link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007">
-<link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261007">
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+    <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />
+    <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/assets/game-studio.css?v=20261002" />
+    <link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007" />
+    <link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261007" />
+  </head>
   <body>
-
-            <!-- EWL Universal Arcade Enhancements Header -->
-      <div class="ewl-arcade-header-bar">
-        <div class="ewl-arcade-title-group">
-          <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
-          <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
-        </div>
-        <div class="ewl-arcade-controls">
-          <button type="button" class="ewl-btn-toggle active" id="ewl-btn-l1" onclick="if(window.ewlSetLevel) window.ewlSetLevel(1)">L1 Support</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-l2" onclick="if(window.ewlSetLevel) window.ewlSetLevel(2)">L2 Challenge</button>
-          <button type="button" class="ewl-sound-toggle-btn" id="ewl-btn-sound" onclick="if(window.GameFX && window.GameFX.AudioSynth){ window.GameFX.AudioSynth.muted = !window.GameFX.AudioSynth.muted; this.innerText = window.GameFX.AudioSynth.muted ? '🔇 Muted' : '🔊 Sound On'; }">🔊 Sound On</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-lang" onclick="if(window.ewlToggleLang) window.ewlToggleLang()">🌐 EN / ES</button>
-        </div>
+    <!-- EWL Universal Arcade Enhancements Header -->
+    <div class="ewl-arcade-header-bar">
+      <div class="ewl-arcade-title-group">
+        <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge"
+          >⭐ Level 1: Guided Support</span
+        >
+        <span style="font-size: 13px; font-weight: 600; opacity: 0.85"
+          >| EduWonderLab Interactive Arcade</span
+        >
       </div>
-  
+      <div class="ewl-arcade-controls">
+        <button
+          type="button"
+          class="ewl-btn-toggle active"
+          id="ewl-btn-l1"
+          onclick="if (window.ewlSetLevel) window.ewlSetLevel(1);"
+        >
+          L1 Support
+        </button>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-l2"
+          onclick="if (window.ewlSetLevel) window.ewlSetLevel(2);"
+        >
+          L2 Challenge
+        </button>
+        <button
+          type="button"
+          class="ewl-sound-toggle-btn"
+          id="ewl-btn-sound"
+          onclick="
+            if (window.GameFX && window.GameFX.AudioSynth) {
+              window.GameFX.AudioSynth.muted = !window.GameFX.AudioSynth.muted;
+              this.innerText = window.GameFX.AudioSynth.muted ? '🔇 Muted' : '🔊 Sound On';
+            }
+          "
+        >
+          🔊 Sound On
+        </button>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-lang"
+          onclick="if (window.ewlToggleLang) window.ewlToggleLang();"
+        >
+          🌐 EN / ES
+        </button>
+      </div>
+    </div>
+
     <!-- On-screen touch controls: mirror the existing keyboard scheme.
          Left = navigate answers, right = action (select/answer). Shown only
          on touch devices; fully keyboard/AT accessible (ARIA labels + focus). -->
     <div id="touch-controls" role="group" aria-label="Game touch controls">
       <div class="tc-cluster">
-        <button
-          type="button"
-          class="tc-btn"
-          data-key="ArrowLeft"
-          aria-label="Previous answer"
-        >
+        <button type="button" class="tc-btn" data-key="ArrowLeft" aria-label="Previous answer">
           &#8592;
         </button>
-        <button
-          type="button"
-          class="tc-btn"
-          data-key="ArrowRight"
-          aria-label="Next answer"
-        >
+        <button type="button" class="tc-btn" data-key="ArrowRight" aria-label="Next answer">
           &#8594;
         </button>
       </div>
@@ -194,16 +218,13 @@
       // When the user prefers reduced motion we disable screenshakes, sprite
       // bobbing, ball tweens and other purely-decorative motion. Live so a
       // mid-session OS toggle is respected.
-      const RM_QUERY =
-        window.matchMedia &&
-        window.matchMedia("(prefers-reduced-motion: reduce)");
+      const RM_QUERY = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
       const RM = { on: !!(RM_QUERY && RM_QUERY.matches) };
       if (RM_QUERY) {
         const _rmUpdate = (e) => {
           RM.on = e.matches;
         };
-        if (RM_QUERY.addEventListener)
-          RM_QUERY.addEventListener("change", _rmUpdate);
+        if (RM_QUERY.addEventListener) RM_QUERY.addEventListener("change", _rmUpdate);
         else if (RM_QUERY.addListener) RM_QUERY.addListener(_rmUpdate);
       }
       // Safe camera-shake wrapper: no-op under reduced motion.
@@ -221,9 +242,7 @@
           if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
           if (!this.ctx)
             try {
-              this.ctx = new (
-                window.AudioContext || window.webkitAudioContext
-              )();
+              this.ctx = new (window.AudioContext || window.webkitAudioContext)();
             } catch (e) {}
         }
         tone(f, d, t = "sine", v = 0.1) {
@@ -235,10 +254,7 @@
             o.type = t;
             o.frequency.value = f;
             g.gain.setValueAtTime(v, this.ctx.currentTime);
-            g.gain.exponentialRampToValueAtTime(
-              0.001,
-              this.ctx.currentTime + d,
-            );
+            g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + d);
             o.connect(g);
             g.connect(this.ctx.destination);
             o.start();
@@ -252,16 +268,12 @@
             const bufSize = this.ctx.sampleRate * d;
             const buf = this.ctx.createBuffer(1, bufSize, this.ctx.sampleRate);
             const data = buf.getChannelData(0);
-            for (let i = 0; i < bufSize; i++)
-              data[i] = (Math.random() * 2 - 1) * v;
+            for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * v;
             const src = this.ctx.createBufferSource();
             const g = this.ctx.createGain();
             src.buffer = buf;
             g.gain.setValueAtTime(v, this.ctx.currentTime);
-            g.gain.exponentialRampToValueAtTime(
-              0.001,
-              this.ctx.currentTime + d,
-            );
+            g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + d);
             src.connect(g);
             g.connect(this.ctx.destination);
             src.start();
@@ -294,18 +306,11 @@
         }
         crowd() {
           for (let i = 0; i < 5; i++)
-            setTimeout(
-              () =>
-                this.tone(200 + Math.random() * 400, 0.15, "triangle", 0.03),
-              i * 60,
-            );
+            setTimeout(() => this.tone(200 + Math.random() * 400, 0.15, "triangle", 0.03), i * 60);
         }
         crowdRoar() {
           for (let i = 0; i < 10; i++)
-            setTimeout(
-              () => this.tone(150 + Math.random() * 600, 0.2, "triangle", 0.04),
-              i * 40,
-            );
+            setTimeout(() => this.tone(150 + Math.random() * 600, 0.2, "triangle", 0.04), i * 40);
         }
         win() {
           [523, 659, 784, 880, 1047].forEach((f, i) =>
@@ -314,9 +319,7 @@
         }
         victory3Star() {
           const melody = [523, 659, 784, 1047, 784, 1047, 1319, 1568];
-          melody.forEach((f, i) =>
-            setTimeout(() => this.tone(f, 0.2, "sine", 0.12), i * 100),
-          );
+          melody.forEach((f, i) => setTimeout(() => this.tone(f, 0.2, "sine", 0.12), i * 100));
         }
         lose() {
           [400, 350, 300, 250].forEach((f, i) =>
@@ -358,10 +361,7 @@
         }
         ambientCrowd() {
           for (let i = 0; i < 3; i++) {
-            setTimeout(
-              () => this.tone(100 + Math.random() * 150, 0.6, "triangle", 0.01),
-              i * 200,
-            );
+            setTimeout(() => this.tone(100 + Math.random() * 150, 0.6, "triangle", 0.01), i * 200);
           }
         }
       }
@@ -389,7 +389,8 @@
           return "Median: put the values in order from least to greatest and find the middle. With an even count, average the two middle values.";
         if (/mode/i.test(t)) return "Mode: the value that appears MOST often.";
         if (/range/i.test(t)) return "Range: greatest value minus least value.";
-        if (/mean/i.test(t)) return "Mean: add all the values, then divide by how many values there are.";
+        if (/mean/i.test(t))
+          return "Mean: add all the values, then divide by how many values there are.";
         return "Read the data again and use the measure the question names.";
       }
       function workedStep(q) {
@@ -530,7 +531,18 @@
               1,
             ).map(String),
             explain: "Mean = (" + v.join("+") + ")/" + n + " = " + s + "/" + n + " = " + m,
-            step: "Add them: " + v.join(" + ") + " = " + s + ". Now divide by " + n + ": " + s + " ÷ " + n + " = ?",
+            step:
+              "Add them: " +
+              v.join(" + ") +
+              " = " +
+              s +
+              ". Now divide by " +
+              n +
+              ": " +
+              s +
+              " ÷ " +
+              n +
+              " = ?",
             raw: { kind: "mean", values: v },
           };
         };
@@ -560,7 +572,11 @@
         };
 
         B.mode = (t) => {
-          const ctx = t.pick(["Goalie saves per game: ", "Shots blocked per game: ", "Corner kicks per game: "]);
+          const ctx = t.pick([
+            "Goalie saves per game: ",
+            "Shots blocked per game: ",
+            "Corner kicks per game: ",
+          ]);
           let M, S, U, v;
           for (;;) {
             [M, S, U] = t.distinct(5, 30, 3);
@@ -578,11 +594,15 @@
             text: ctx + v.join(", ") + ". What is the mode?",
             data: v.join(", "),
             correct: M,
-            wrongs: wrongs(M, [S, 3, med2 % 2 ? null : med2 / 2, U, s % 6 ? null : s / 6], 1).map(String),
+            wrongs: wrongs(M, [S, 3, med2 % 2 ? null : med2 / 2, U, s % 6 ? null : s / 6], 1).map(
+              String,
+            ),
             explain: M + " appears 3 times (most frequent) = mode",
             step:
               "Count each value: " +
-              order.map((x) => x + " appears " + count(x) + (count(x) === 1 ? " time" : " times")).join(", ") +
+              order
+                .map((x) => x + " appears " + count(x) + (count(x) === 1 ? " time" : " times"))
+                .join(", ") +
               ". The value that appears most often is ?",
             raw: { kind: "mode", values: v },
           };
@@ -605,9 +625,11 @@
             text: ctx[0] + v.join(", ") + ctx[1],
             data: v.join(", "),
             correct: r,
-            wrongs: wrongs(r, [Math.abs(v[4] - v[0]), srt[4] - srt[1], srt[3] - srt[0], srt[0], srt[4]], 1).map(
-              String,
-            ),
+            wrongs: wrongs(
+              r,
+              [Math.abs(v[4] - v[0]), srt[4] - srt[1], srt[3] - srt[0], srt[0], srt[4]],
+              1,
+            ).map(String),
             explain: "Range = " + srt[4] + " - " + srt[0] + " = " + r,
             step:
               "Greatest value = " +
@@ -687,7 +709,14 @@
               1,
             ).map((w) => fx(w, 10, 1)),
             explain: "Mean = " + s + "/7 ≈ " + fx(s, 7, 1),
-            step: "Add: " + v.join(" + ") + " = " + s + ". Divide, then round to the nearest tenth: " + s + " ÷ 7 ≈ ?",
+            step:
+              "Add: " +
+              v.join(" + ") +
+              " = " +
+              s +
+              ". Divide, then round to the nearest tenth: " +
+              s +
+              " ÷ 7 ≈ ?",
             raw: { kind: "meanTenth", values: v },
           };
         };
@@ -705,9 +734,11 @@
             text: "Batting avgs: " + d + ". Range?",
             data: d,
             correct: thou(r),
-            wrongs: wrongs(r, [Math.abs(v[6] - v[0]), srt[6] - srt[1], srt[5] - srt[0], srt[5] - srt[1]], 1).map(
-              thou,
-            ),
+            wrongs: wrongs(
+              r,
+              [Math.abs(v[6] - v[0]), srt[6] - srt[1], srt[5] - srt[0], srt[5] - srt[1]],
+              1,
+            ).map(thou),
             explain: "Range = " + thou(srt[6]) + " - " + thou(srt[0]) + " = " + thou(r),
             step:
               "Greatest = " +
@@ -754,7 +785,14 @@
               1,
             ).map(half),
             explain:
-              "Sort: " + srt.join(",") + ". 6 values: median = (" + srt[2] + "+" + srt[3] + ")/2 = " + half(m2),
+              "Sort: " +
+              srt.join(",") +
+              ". 6 values: median = (" +
+              srt[2] +
+              "+" +
+              srt[3] +
+              ")/2 = " +
+              half(m2),
             step:
               "Sort: " +
               srt.join(", ") +
@@ -883,7 +921,13 @@
           const v = [...v4];
           v.splice(pos, 0, o);
           return {
-            text: ctx + ": " + v.join(",") + ". The " + o + " is an error. Removing it changes mean by:",
+            text:
+              ctx +
+              ": " +
+              v.join(",") +
+              ". The " +
+              o +
+              " is an error. Removing it changes mean by:",
             data: v.join(", "),
             correct: "Mean decreases by " + sh(d),
             wrongs: [
@@ -891,7 +935,8 @@
               "Mean stays same",
               "Mean decreases by " + sh(10 * o - m4), // the outlier's distance, not the change
             ],
-            explain: "With " + o + ": mean=" + sh(m5) + ". Without: mean=" + sh(m4) + ". Diff=" + sh(d),
+            explain:
+              "With " + o + ": mean=" + sh(m5) + ". Without: mean=" + sh(m4) + ". Diff=" + sh(d),
             step:
               "With the " +
               o +
@@ -909,7 +954,9 @@
               sh(m4) +
               " = ?",
             hint:
-              "Find the mean WITH the " + o + " (5 values), then the mean WITHOUT it (4 values), then subtract.",
+              "Find the mean WITH the " +
+              o +
+              " (5 values), then the mean WITHOUT it (4 values), then subtract.",
             raw: { kind: "outlier", values: v, outlier: o },
           };
         };
@@ -918,7 +965,8 @@
         function quartiles(srt) {
           const n = srt.length,
             h = Math.floor(n / 2);
-          const med2 = (a) => (a.length % 2 ? 2 * a[(a.length - 1) / 2] : a[a.length / 2 - 1] + a[a.length / 2]);
+          const med2 = (a) =>
+            a.length % 2 ? 2 * a[(a.length - 1) / 2] : a[a.length / 2 - 1] + a[a.length / 2];
           return { q1x2: med2(srt.slice(0, h)), q3x2: med2(srt.slice(n - h)) };
         }
 
@@ -944,7 +992,14 @@
             data: v.join(", "),
             correct: "Median",
             wrongs: ["Mean", "Mode", "Range"],
-            explain: "Outlier " + o + " skews mean to " + exact(s, 8) + ". Median (" + med + ") resists outliers.",
+            explain:
+              "Outlier " +
+              o +
+              " skews mean to " +
+              exact(s, 8) +
+              ". Median (" +
+              med +
+              ") resists outliers.",
             step:
               "The " +
               o +
@@ -987,7 +1042,11 @@
             data: "A: " + A[0] + "-" + A[1] + " | B: " + Bt[0] + "-" + Bt[1],
             correct: "Team " + X + " more consistent (smaller range)",
             // (no "higher mean" option: with generated scores that claim could be true)
-            wrongs: ["Team " + Y + " more consistent", "Same consistency", "Range does not show consistency"],
+            wrongs: [
+              "Team " + Y + " more consistent",
+              "Same consistency",
+              "Range does not show consistency",
+            ],
             explain:
               "Range " +
               Math.min(rA, rB) +
@@ -1088,9 +1147,7 @@
         const d2 = [8, 3, 7, 12, 5];
         qs.push(
           mk(
-            "Scout: Assists per match: " +
-              d2.join(", ") +
-              ". What is the median?",
+            "Scout: Assists per match: " + d2.join(", ") + ". What is the median?",
             "7",
             ["8", "5", "3"],
             "Sort: 3,5,7,8,12. Middle value = 7",
@@ -1155,9 +1212,7 @@
         const d6 = [24, 31, 28, 35, 22, 18, 26];
         qs.push(
           mk(
-            "Lap times: " +
-              d6.join(", ") +
-              " sec. Mean (round to nearest tenth)?",
+            "Lap times: " + d6.join(", ") + " sec. Mean (round to nearest tenth)?",
             "26.3",
             ["28.0", "26.0", "27.5"],
             "Mean = 184/7 ≈ 26.3",
@@ -1240,11 +1295,7 @@
           mk(
             "Team A: 72-88 (range 16). Team B: 60-95 (range 35). Which is true?",
             "Team A more consistent (smaller range)",
-            [
-              "Team B more consistent",
-              "Same consistency",
-              "A is better because higher mean",
-            ],
+            ["Team B more consistent", "Same consistency", "A is better because higher mean"],
             "Smaller range = less spread = more consistent",
             3,
             "Champ",
@@ -1271,7 +1322,10 @@
       // the season ramps instead of jumping between phases.
       function rampByTier(qs) {
         const order = qs.map((q) => ({ q, k: q.tier + Math.random() * 0.5 }));
-        return order.sort((a, b) => a.k - b.k).map((o) => o.q).slice(0, 15);
+        return order
+          .sort((a, b) => a.k - b.k)
+          .map((o) => o.q)
+          .slice(0, 15);
       }
 
       // First completed season = the authored data sets; every replay after
@@ -1335,9 +1389,7 @@
           this.add
             .rectangle(cx, H - 120, W - 100, 220, 0x000000, 0)
             .setStrokeStyle(2, 0xfbbf24, 0.3);
-          this.add
-            .circle(cx, H - 120, 60, 0x000000, 0)
-            .setStrokeStyle(2, 0xfbbf24, 0.3);
+          this.add.circle(cx, H - 120, 60, 0x000000, 0).setStrokeStyle(2, 0xfbbf24, 0.3);
 
           // Basketball with bounce + spin
           const ball = this.add.graphics().setPosition(cx, 310);
@@ -1348,24 +1400,10 @@
           ball.lineBetween(-45, 0, 45, 0);
           ball.lineBetween(0, -45, 0, 45);
           ball.beginPath();
-          ball.arc(
-            -15,
-            0,
-            30,
-            Phaser.Math.DegToRad(270),
-            Phaser.Math.DegToRad(90),
-            false,
-          );
+          ball.arc(-15, 0, 30, Phaser.Math.DegToRad(270), Phaser.Math.DegToRad(90), false);
           ball.strokePath();
           ball.beginPath();
-          ball.arc(
-            15,
-            0,
-            30,
-            Phaser.Math.DegToRad(90),
-            Phaser.Math.DegToRad(270),
-            false,
-          );
+          ball.arc(15, 0, 30, Phaser.Math.DegToRad(90), Phaser.Math.DegToRad(270), false);
           ball.strokePath();
           if (!RM.on) {
             this.tweens.add({
@@ -1386,9 +1424,7 @@
           }
 
           // Ball shadow
-          const shadow = this.add
-            .ellipse(cx, 360, 60, 12, 0x000000, 0.2)
-            .setDepth(0);
+          const shadow = this.add.ellipse(cx, 360, 60, 12, 0x000000, 0.2).setDepth(0);
           if (!RM.on) {
             this.tweens.add({
               targets: shadow,
@@ -1478,9 +1514,7 @@
           phases.forEach((p, i) => {
             const px = cx - 280 + i * 280,
               py = 440;
-            const box = this.add
-              .rectangle(px, py, 230, 80, 0x1e293b)
-              .setStrokeStyle(2, p.color);
+            const box = this.add.rectangle(px, py, 230, 80, 0x1e293b).setStrokeStyle(2, p.color);
             this.add
               .text(px, py - 15, p.name, {
                 fontSize: "16px",
@@ -1504,25 +1538,16 @@
           });
 
           // Scoreboard
+          this.add.rectangle(cx, 545, 400, 40, 0x1e293b).setStrokeStyle(1, 0x334155);
           this.add
-            .rectangle(cx, 545, 400, 40, 0x1e293b)
-            .setStrokeStyle(1, 0x334155);
-          this.add
-            .text(
-              cx,
-              545,
-              "15 Questions | 3 Phases | Manage Your Team to Victory!",
-              {
-                fontSize: "13px",
-                color: "#94a3b8",
-              },
-            )
+            .text(cx, 545, "15 Questions | 3 Phases | Manage Your Team to Victory!", {
+              fontSize: "13px",
+              color: "#94a3b8",
+            })
             .setOrigin(0.5);
 
           // Start button with glow
-          const btnGlow = this.add
-            .rectangle(cx, 620, 260, 68, 0xef4444, 0.3)
-            .setDepth(0);
+          const btnGlow = this.add.rectangle(cx, 620, 260, 68, 0xef4444, 0.3).setDepth(0);
           if (!RM.on) {
             this.tweens.add({
               targets: btnGlow,
@@ -1572,15 +1597,10 @@
             this.time.delayedCall(400, () => this.scene.start("Game"));
           });
           this.add
-            .text(
-              cx,
-              680,
-              "Click or keys 1-4 to answer | F = 50/50 | D = Double Points",
-              {
-                fontSize: "12px",
-                color: "#475569",
-              },
-            )
+            .text(cx, 680, "Click or keys 1-4 to answer | F = 50/50 | D = Double Points", {
+              fontSize: "12px",
+              color: "#475569",
+            })
             .setOrigin(0.5);
           this.input.keyboard.on("keydown", (e) => {
             if (e.key === "Enter" || e.key === " ") {
@@ -1599,12 +1619,22 @@
         }
         create() {
           sfx.init();
-          this.questions = seasonQuestions();
-          this.freshSeason = this.questions.some((q) => q.fresh);
+          const launch = this.sys.settings.data || {};
+          this.misses = [];
+          this.solved = 0;
+          this.answerTries = 0;
+          if (launch.replay && launch.replay.length) {
+            this.questions = launch.replay.map((q) => JSON.parse(JSON.stringify(q)));
+            this.freshSeason = false;
+          } else {
+            this.questions = seasonQuestions();
+            this.freshSeason = this.questions.some((q) => q.fresh);
+          }
           const studioTier = this.sys.settings.data?.studioTier || 2;
-          if (studioTier !== 2) {
-            const chosenTier = studioTier === 1 ? 1 : Math.max(...this.questions.map(q => q.tier));
-            this.questions = this.questions.filter(q => q.tier === chosenTier);
+          if (!(launch.replay && launch.replay.length) && studioTier !== 2) {
+            const chosenTier =
+              studioTier === 1 ? 1 : Math.max(...this.questions.map((q) => q.tier));
+            this.questions = this.questions.filter((q) => q.tier === chosenTier);
           }
           this.qIndex = 0;
           this.score = 0;
@@ -1670,9 +1700,7 @@
 
         // Confetti burst
         spawnConfetti(x, y, count) {
-          const colors = [
-            0xef4444, 0xfbbf24, 0x22c55e, 0x3b82f6, 0xff6600, 0xa78bfa,
-          ];
+          const colors = [0xef4444, 0xfbbf24, 0x22c55e, 0x3b82f6, 0xff6600, 0xa78bfa];
           const emitter = this.add.particles(x, y, "__WHITE", {
             speed: { min: 100, max: 350 },
             angle: { min: 0, max: 360 },
@@ -1700,14 +1728,7 @@
           // A container holds the floor + markings so it can drift subtly with
           // the pointer (and gently sway under reduced motion = static).
           this.courtLayer = this.add.container(0, 0).setDepth(0);
-          const floor = this.add.rectangle(
-            W / 2,
-            H - 80,
-            W + 120,
-            160,
-            0x8b4513,
-            0.08,
-          );
+          const floor = this.add.rectangle(W / 2, H - 80, W + 120, 160, 0x8b4513, 0.08);
           this.courtLayer.add(floor);
           // Receding floorboard lines for depth (procedural)
           for (let i = 0; i < 7; i++) {
@@ -1724,9 +1745,7 @@
               .setStrokeStyle(1, 0xfbbf24, 0.15),
           );
           this.courtLayer.add(
-            this.add
-              .circle(W / 2, H - 80, 40, 0x000000, 0)
-              .setStrokeStyle(1, 0xfbbf24, 0.15),
+            this.add.circle(W / 2, H - 80, 40, 0x000000, 0).setStrokeStyle(1, 0xfbbf24, 0.15),
           );
 
           // --- Dynamic arena lighting (procedural spotlight sweep) ---
@@ -1813,9 +1832,7 @@
         }
 
         buildHUD() {
-          this.hudBg = this.add
-            .rectangle(W / 2, 22, W, 44, 0x000000, 0.8)
-            .setDepth(10);
+          this.hudBg = this.add.rectangle(W / 2, 22, W, 44, 0x000000, 0.8).setDepth(10);
           this.hudQ = this.add
             .text(15, 10, "", {
               fontSize: "14px",
@@ -1847,21 +1864,14 @@
             .setDepth(11);
 
           // Progress bar
-          this.progBg = this.add
-            .rectangle(W / 2, 44, W - 20, 6, 0x334155)
-            .setDepth(10);
-          this.progFill = this.add
-            .rectangle(10, 44, 0, 6, 0xef4444)
-            .setOrigin(0, 0.5)
-            .setDepth(10);
+          this.progBg = this.add.rectangle(W / 2, 44, W - 20, 6, 0x334155).setDepth(10);
+          this.progFill = this.add.rectangle(10, 44, 0, 6, 0xef4444).setOrigin(0, 0.5).setDepth(10);
 
           // Progress dots
           this.progDots = [];
           const dotSpacing = (W - 40) / this.totalQ;
           for (let i = 0; i < this.totalQ; i++) {
-            const dot = this.add
-              .circle(20 + i * dotSpacing, 54, 3, 0x334155)
-              .setDepth(10);
+            const dot = this.add.circle(20 + i * dotSpacing, 54, 3, 0x334155).setDepth(10);
             this.progDots.push(dot);
           }
 
@@ -1900,9 +1910,7 @@
           };
           sfx.phaseTransition();
 
-          const overlay = this.add
-            .rectangle(W / 2, H / 2, W, H, 0x000000, 0.9)
-            .setDepth(50);
+          const overlay = this.add.rectangle(W / 2, H / 2, W, H, 0x000000, 0.9).setDepth(50);
           const phaseText = this.add
             .text(W / 2, H / 2 - 20, phaseNames[newPhase] || newPhase, {
               fontSize: "42px",
@@ -2005,14 +2013,7 @@
           const cardY = 170;
           const cardH = q.data ? 200 : 160;
           const card = this.add
-            .rectangle(
-              W / 2,
-              cardY + cardH / 2 - 20,
-              700,
-              cardH,
-              0x1e293b,
-              0.95,
-            )
+            .rectangle(W / 2, cardY + cardH / 2 - 20, 700, cardH, 0x1e293b, 0.95)
             .setStrokeStyle(2, phaseColors[q.phase] || 0x334155)
             .setDepth(5);
           this.qGroup.add(card);
@@ -2034,10 +2035,7 @@
               fontSize: "11px",
               color: "#fff",
               backgroundColor:
-                "#" +
-                (phaseColors[q.phase] || 0x334155)
-                  .toString(16)
-                  .padStart(6, "0"),
+                "#" + (phaseColors[q.phase] || 0x334155).toString(16).padStart(6, "0"),
               padding: { x: 8, y: 3 },
               fontStyle: "bold",
             })
@@ -2327,13 +2325,7 @@
             this.powerUps.doublePoints--;
             this.doublePointsActive = true;
             sfx.powerup();
-            this.showFloatingText(
-              W / 2,
-              H / 2,
-              "DOUBLE POINTS!",
-              "#a78bfa",
-              "22px",
-            );
+            this.showFloatingText(W / 2, H / 2, "DOUBLE POINTS!", "#a78bfa", "22px");
           }
           if (this.powerUpGroup) this.powerUpGroup.destroy(true);
           this.powerUpGroup = this.add.group();
@@ -2348,9 +2340,11 @@
           const q = this.questions[this.qIndex];
           const chosen = this.answerBtns[idx].optText;
           const correct = chosen === q.correct;
+          this.answerTries++;
 
           const tries = this.attempts || 0;
           if (correct) {
+            this.solved++;
             // Calculate score (no time-based bonus — calm, self-paced).
             // Full points for an unaided first try; fewer after help.
             const helpFactor = [1, 0.5, 0.25, 0][Math.min(tries, 3)];
@@ -2360,7 +2354,10 @@
             if (this.doublePointsActive) subtotal *= 2;
 
             this.score += subtotal;
-            window.FlagshipAdventure?.record({ firstTry: tries === 0, kind: q.type || "statistics" });
+            window.FlagshipAdventure?.record({
+              firstTry: tries === 0,
+              kind: q.type || "statistics",
+            });
             if (tries === 0) {
               this.streak++;
               this.wins++;
@@ -2368,10 +2365,7 @@
               this.losses++;
             }
             if (this.streak > this.bestStreak) this.bestStreak = this.streak;
-            this.comboMultiplier = Math.min(
-              1 + Math.floor(this.streak / 2) * 0.5,
-              4,
-            );
+            this.comboMultiplier = Math.min(1 + Math.floor(this.streak / 2) * 0.5, 4);
 
             // Update progress dots
             if (this.progDots[this.qIndex]) {
@@ -2383,12 +2377,7 @@
 
             // Floating score text
             const btn = this.answerBtns[idx];
-            this.showFloatingText(
-              btn.bg.x,
-              btn.bg.y - 30,
-              `+${subtotal}`,
-              "#22c55e",
-            );
+            this.showFloatingText(btn.bg.x, btn.bg.y - 30, `+${subtotal}`, "#22c55e");
 
             if (this.doublePointsActive) {
               this.showFloatingText(W / 2, 120, "DOUBLE!", "#a78bfa", "16px");
@@ -2397,35 +2386,17 @@
             // Streak milestone effects
             if (this.streak === 3) {
               sfx.streak3();
-              this.showFloatingText(
-                W / 2,
-                H / 2 - 60,
-                "STREAK x3!",
-                "#f59e0b",
-                "28px",
-              );
+              this.showFloatingText(W / 2, H / 2 - 60, "STREAK x3!", "#f59e0b", "28px");
               this.spawnConfetti(W / 2, H / 2, 30);
               sfx.crowd();
             } else if (this.streak === 5) {
               sfx.streak5();
-              this.showFloatingText(
-                W / 2,
-                H / 2 - 60,
-                "ON FIRE x5!",
-                "#ff6600",
-                "32px",
-              );
+              this.showFloatingText(W / 2, H / 2 - 60, "ON FIRE x5!", "#ff6600", "32px");
               this.spawnConfetti(W / 2, H / 2, 50);
               sfx.crowdRoar();
             } else if (this.streak === 7) {
               sfx.streak7();
-              this.showFloatingText(
-                W / 2,
-                H / 2 - 60,
-                "UNSTOPPABLE x7!",
-                "#ef4444",
-                "36px",
-              );
+              this.showFloatingText(W / 2, H / 2 - 60, "UNSTOPPABLE x7!", "#ef4444", "36px");
               this.spawnConfetti(W / 2, H / 2, 80);
               sfx.crowdRoar();
               // Bonus power-up
@@ -2438,7 +2409,8 @@
                 " pts" +
                 (tries > 0 ? " (with help)" : "") +
                 (tries === 0 && this.streak >= 3 ? " STREAK x" + this.streak + "!" : "") +
-                "  ✔ " + q.explain,
+                "  ✔ " +
+                q.explain,
             );
             try {
               const sr = document.getElementById("sr-status");
@@ -2468,9 +2440,7 @@
             if (RM.on) {
               hoopBurst();
             } else {
-              const ball = this.add
-                .circle(W / 2, H - 100, 15, 0xf97316)
-                .setDepth(9);
+              const ball = this.add.circle(W / 2, H - 100, 15, 0xf97316).setDepth(9);
               this.tweens.add({
                 targets: ball,
                 x: W - 40,
@@ -2493,6 +2463,7 @@
             // Not yet: rule this choice out, give the next rung of help, and
             // let the student try again. Nothing advances on its own.
             this.attempts = tries + 1;
+            if (this.attempts === 1) this.misses.push(JSON.parse(JSON.stringify(q)));
             this.streak = 0;
             this.comboMultiplier = 1;
             const btn = this.answerBtns[idx];
@@ -2513,7 +2484,8 @@
             } else if (this.attempts === 2 && left > 1) {
               msg = "Try this step: " + workedStep(q);
             } else {
-              msg = "Here is the full solution: " + q.explain + " Tap the matching answer to go on.";
+              msg =
+                "Here is the full solution: " + q.explain + " Tap the matching answer to go on.";
             }
             this.fbObj.setText(msg);
             this.fbObj.setColor("#fbbf24");
@@ -2543,16 +2515,12 @@
           if (this.answered) return;
           if (e.key >= "1" && e.key <= "4") {
             const i = parseInt(e.key) - 1;
-            if (i < this.answerBtns.length && !this.answerBtns[i].eliminated)
-              this.submitAnswer(i);
+            if (i < this.answerBtns.length && !this.answerBtns[i].eliminated) this.submitAnswer(i);
           }
           if (e.key === "f" || e.key === "F") this.usePowerUp("fiftyFifty");
           if (e.key === "d" || e.key === "D") this.usePowerUp("doublePoints");
           if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-            this.selectedIdx = Math.min(
-              this.selectedIdx + 1,
-              this.answerBtns.length - 1,
-            );
+            this.selectedIdx = Math.min(this.selectedIdx + 1, this.answerBtns.length - 1);
             if (this.selectedIdx < 0) this.selectedIdx = 0;
             this.highlightSel();
           }
@@ -2560,8 +2528,7 @@
             this.selectedIdx = Math.max(this.selectedIdx - 1, 0);
             this.highlightSel();
           }
-          if (e.key === "Enter" && this.selectedIdx >= 0)
-            this.submitAnswer(this.selectedIdx);
+          if (e.key === "Enter" && this.selectedIdx >= 0) this.submitAnswer(this.selectedIdx);
         }
 
         highlightSel() {
@@ -2597,9 +2564,7 @@
           };
           this.hudQ.setText(`Q${this.qIndex + 1}/${this.totalQ}`);
           this.hudScore.setText(`SCORE: ${this.score}`);
-          this.hudLives.setText(
-            "LIVES: " + "■".repeat(this.lives) + "□".repeat(3 - this.lives),
-          );
+          this.hudLives.setText("LIVES: " + "■".repeat(this.lives) + "□".repeat(3 - this.lives));
 
           // Streak with color scaling
           if (this.streak >= 2) {
@@ -2670,9 +2635,7 @@
                 maxScore: this.totalQ,
                 problemsCorrect: this.wins,
                 problemsAttempted: this.totalQ,
-                percent: this.totalQ
-                  ? Math.round((this.wins / this.totalQ) * 100)
-                  : 0,
+                percent: this.totalQ ? Math.round((this.wins / this.totalQ) * 100) : 0,
                 standard: "6.DS",
               });
           } catch (e) {}
@@ -2689,6 +2652,9 @@
               losses: this.losses,
               isNewHighScore: isNewHighScore,
               prevBest: prevBest,
+              solved: this.solved,
+              answerTries: this.answerTries,
+              misses: this.misses.slice(),
             });
           });
         }
@@ -2710,7 +2676,13 @@
           this.cameras.main.fadeIn(500);
 
           const pct = d.total > 0 ? Math.round((d.correct / d.total) * 100) : 0;
-          const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
+          const solved = d.solved != null ? d.solved : d.correct;
+          const answerTries = d.answerTries != null ? d.answerTries : d.total;
+          const accuracy = answerTries ? solved / answerTries : 0;
+          const stars =
+            (solved >= 3 ? 1 : 0) +
+            (d.bestStreak >= 3 || solved >= 8 ? 1 : 0) +
+            (d.total >= 4 && accuracy >= 0.8 ? 1 : 0);
 
           // Ambient particles
           this.add.particles(W / 2, H / 2, "__WHITE", {
@@ -2749,12 +2721,7 @@
             }
           } else sfx.lose();
 
-          const titles = [
-            "Bench Warmer",
-            "Solid Starter",
-            "All-Star!",
-            "MVP! CHAMPION!",
-          ];
+          const titles = ["Bench Warmer", "Solid Starter", "All-Star!", "MVP! CHAMPION!"];
           const titleText = this.add
             .text(cx, 55, titles[stars], {
               fontSize: "42px",
@@ -2844,9 +2811,7 @@
           }
 
           // Scoreboard
-          this.add
-            .rectangle(cx, 200, 300, 60, 0x1e293b)
-            .setStrokeStyle(2, 0xef4444);
+          this.add.rectangle(cx, 200, 300, 60, 0x1e293b).setStrokeStyle(2, 0xef4444);
           // Win/Loss record with animated stat counter (tween 0 -> actual).
           const recordText = this.add
             .text(cx, 190, `0W — 0L`, {
@@ -2889,9 +2854,7 @@
               fontStyle: "bold",
             })
             .setOrigin(0.5);
-          this.add
-            .text(cx, 315, "Accuracy", { fontSize: "12px", color: "#64748b" })
-            .setOrigin(0.5);
+          this.add.text(cx, 315, "Accuracy", { fontSize: "12px", color: "#64748b" }).setOrigin(0.5);
 
           if (RM.on) {
             scoreText.setText(pct + "%");
@@ -3023,6 +2986,23 @@
             });
           });
 
+          if (d.misses && d.misses.length) {
+            const practice = this.add
+              .rectangle(cx, 580, 280, 48, 0xf59e0b)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(cx, 580, "PRACTICE THE MISSES", {
+                fontSize: "16px",
+                color: "#1a1408",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+            practice.on("pointerdown", () => {
+              sfx.click();
+              this.scene.start("Game", { replay: d.misses });
+            });
+          }
+
           this.add
             .text(cx, H - 25, "Stats Slam — Neft Teacher — 6.DS.1–6.DS.6", {
               fontSize: "11px",
@@ -3103,8 +3083,7 @@
               fireKey(key);
               // Leverage the shared FX kit for tactile button feedback.
               try {
-                if (window.GameFX && typeof GameFX.pop === "function")
-                  GameFX.pop(btn);
+                if (window.GameFX && typeof GameFX.pop === "function") GameFX.pop(btn);
               } catch (err) {}
             },
             { passive: false },
@@ -3125,7 +3104,7 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <!-- gfx-injected:end -->
     <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-    
+
     <!-- mwb-injected:end -->
     <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
     <script src="/assets/game-hint-ladder.js" defer></script>
@@ -3145,23 +3124,33 @@
       });
     </script>
     <!-- ghl-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
-  
-      <!-- EWL Diagnostic Misconception Coach -->
-      <div class="ewl-coach-card" id="ewl-coach-card" style="display: flex; position: relative; z-index: 100;">
-        <div class="ewl-coach-icon">💡</div>
-        <div class="ewl-coach-content">
-          <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
-          <p id="ewl-coach-text" data-en="The median is the middle value. Mean Absolute Deviation (MAD) measures spread!" data-es="La mediana es el valor central. MAD mide la dispersión.">The median is the middle value. Mean Absolute Deviation (MAD) measures spread!</p>
-        </div>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
+
+    <!-- EWL Diagnostic Misconception Coach -->
+    <div
+      class="ewl-coach-card"
+      id="ewl-coach-card"
+      style="display: flex; position: relative; z-index: 100"
+    >
+      <div class="ewl-coach-icon">💡</div>
+      <div class="ewl-coach-content">
+        <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
+        <p
+          id="ewl-coach-text"
+          data-en="The median is the middle value. Mean Absolute Deviation (MAD) measures spread!"
+          data-es="La mediana es el valor central. MAD mide la dispersión."
+        >
+          The median is the middle value. Mean Absolute Deviation (MAD) measures spread!
+        </p>
       </div>
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <script src="/assets/formula-popup.js" defer></script>
-<script src="/assets/game-studio.js?v=20261003" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
-<script src="/math/games/shared/flagship-puzzles.js?v=20261007" defer></script>
-<script src="/math/games/shared/flagship-adventures.js?v=20261007" defer></script>
-</body>
+    </div>
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <script src="/assets/formula-popup.js" defer></script>
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
+    <script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
+    <script src="/math/games/shared/flagship-puzzles.js?v=20261007" defer></script>
+    <script src="/math/games/shared/flagship-adventures.js?v=20261007" defer></script>
+  </body>
 </html>

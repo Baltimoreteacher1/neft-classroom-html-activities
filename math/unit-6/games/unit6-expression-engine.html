@@ -45,9 +45,7 @@
       // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
       // (document.write blocks parsing so the mirror is ready before the game script runs).
       if (typeof Phaser === "undefined") {
-        document.write(
-          '<script src="/games/vendor/phaser/phaser-3.80.1.min.js"><\/script>',
-        );
+        document.write('<script src="/games/vendor/phaser/phaser-3.80.1.min.js"><\/script>');
       }
       // If both CDNs are unreachable, show a clear message instead of a blank page.
       window.addEventListener("load", function () {
@@ -66,44 +64,76 @@
     <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
     <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
     <!-- ghl-injected:end -->
-      <link rel="stylesheet" href="/assets/game-topbar.css" />
+    <link rel="stylesheet" href="/assets/game-topbar.css" />
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-  <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
-  <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
-<link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007">
-<link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261007">
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+    <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />
+    <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/assets/game-studio.css?v=20261002" />
+    <link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007" />
+    <link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261007" />
+  </head>
   <body>
-
-            <!-- EWL Universal Arcade Enhancements Header -->
-      <div class="ewl-arcade-header-bar">
-        <div class="ewl-arcade-title-group">
-          <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
-          <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
-        </div>
-        <div class="ewl-arcade-controls">
-          <button type="button" class="ewl-btn-toggle active" id="ewl-btn-l1" onclick="if(window.ewlSetLevel) window.ewlSetLevel(1)">L1 Support</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-l2" onclick="if(window.ewlSetLevel) window.ewlSetLevel(2)">L2 Challenge</button>
-          <button type="button" class="ewl-sound-toggle-btn" id="ewl-btn-sound" onclick="if(window.GameFX && window.GameFX.AudioSynth){ window.GameFX.AudioSynth.muted = !window.GameFX.AudioSynth.muted; this.innerText = window.GameFX.AudioSynth.muted ? '🔇 Muted' : '🔊 Sound On'; }">🔊 Sound On</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-lang" onclick="if(window.ewlToggleLang) window.ewlToggleLang()">🌐 EN / ES</button>
-        </div>
+    <!-- EWL Universal Arcade Enhancements Header -->
+    <div class="ewl-arcade-header-bar">
+      <div class="ewl-arcade-title-group">
+        <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge"
+          >⭐ Level 1: Guided Support</span
+        >
+        <span style="font-size: 13px; font-weight: 600; opacity: 0.85"
+          >| EduWonderLab Interactive Arcade</span
+        >
       </div>
-  
+      <div class="ewl-arcade-controls">
+        <button
+          type="button"
+          class="ewl-btn-toggle active"
+          id="ewl-btn-l1"
+          onclick="if (window.ewlSetLevel) window.ewlSetLevel(1);"
+        >
+          L1 Support
+        </button>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-l2"
+          onclick="if (window.ewlSetLevel) window.ewlSetLevel(2);"
+        >
+          L2 Challenge
+        </button>
+        <button
+          type="button"
+          class="ewl-sound-toggle-btn"
+          id="ewl-btn-sound"
+          onclick="
+            if (window.GameFX && window.GameFX.AudioSynth) {
+              window.GameFX.AudioSynth.muted = !window.GameFX.AudioSynth.muted;
+              this.innerText = window.GameFX.AudioSynth.muted ? '🔇 Muted' : '🔊 Sound On';
+            }
+          "
+        >
+          🔊 Sound On
+        </button>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-lang"
+          onclick="if (window.ewlToggleLang) window.ewlToggleLang();"
+        >
+          🌐 EN / ES
+        </button>
+      </div>
+    </div>
+
     <!-- nt-game-topbar-injected:begin (tools/inject-game-topbar.js) -->
-    <header class="nt-game-topbar" role="banner"><span class="ngt-title">Expression Engine — Factory Assembly Line</span></header>
+    <header class="nt-game-topbar" role="banner">
+      <span class="ngt-title">Expression Engine — Factory Assembly Line</span>
+    </header>
     <!-- nt-game-topbar-injected:end -->
     <!-- ARIA live region: announces answer-submission results (correct /
          defective / streaks) to screen-reader students. Additive only. -->
-    <div
-      id="ee-live"
-      class="ee-sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    ></div>
+    <div id="ee-live" class="ee-sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
     <script>
       // Expression Engine — Factory Assembly Line
       // Grade 6: 6.AT.5–6.AT.7 (Write & evaluate expressions)
@@ -111,6 +141,14 @@
 
       const W = 1024,
         H = 768;
+      /** 1 star at 3 correct, 2 at a streak of 3 or 8 correct, 3 at 80%+ on a finished round of 4+. */
+      function selfPacedStars(correct, total, bestStreak) {
+        let stars = 0;
+        if (correct >= 3) stars = 1;
+        if ((bestStreak || 0) >= 3 || correct >= 8) stars = 2;
+        if (total >= 4 && correct / total >= 0.8) stars = 3;
+        return stars;
+      }
       const LS_KEY = "expression_engine_highscore";
 
       // --- Accessibility helpers (additive; never touch gameplay/scoring) ---
@@ -118,8 +156,7 @@
       // reads the media query directly. Re-checked live so toggling the OS
       // setting takes effect without a reload.
       const EE_RM_QUERY =
-        window.matchMedia &&
-        window.matchMedia("(prefers-reduced-motion: reduce)");
+        window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
       function eeReduceMotion() {
         if (typeof window.__flagshipReduced === "boolean") return window.__flagshipReduced;
         if (window.GameFX && typeof window.GameFX.reduce === "boolean") {
@@ -195,7 +232,10 @@
               `Evaluate ${c}x when x = ${x}`,
               ans,
               [
-                [ans + c, `that is one group of ${c} too many. ${c}x means exactly ${x} groups of ${c}.`],
+                [
+                  ans + c,
+                  `that is one group of ${c} too many. ${c}x means exactly ${x} groups of ${c}.`,
+                ],
                 [ans - x, "check your multiplication fact again."],
                 [c + x, `${c}x means ${c} TIMES x, not ${c} plus x.`],
               ],
@@ -220,7 +260,10 @@
               `Evaluate ${a} + ${b}n when n = ${n}`,
               ans,
               [
-                [a * b + n, `you multiplied ${a} × ${b}. The ${b} belongs to n: multiply ${b} × n first.`],
+                [
+                  a * b + n,
+                  `you multiplied ${a} × ${b}. The ${b} belongs to n: multiply ${b} × n first.`,
+                ],
                 [b * n, `you found ${b}n but forgot to add the ${a}.`],
                 [a + b + n, `${b}n means ${b} × n, so multiply before you add.`],
               ],
@@ -243,12 +286,19 @@
               `Which is equivalent to ${a}(x + ${c})?`,
               `${a}x + ${a * c}`,
               [
-                [`${a}x + ${c}`, `the ${a} multiplies BOTH terms inside. You multiplied x but not ${c}.`],
-                [`x + ${a * c}`, `the ${a} multiplies BOTH terms inside. You multiplied ${c} but not x.`],
+                [
+                  `${a}x + ${c}`,
+                  `the ${a} multiplies BOTH terms inside. You multiplied x but not ${c}.`,
+                ],
+                [
+                  `x + ${a * c}`,
+                  `the ${a} multiplies BOTH terms inside. You multiplied ${c} but not x.`,
+                ],
                 [`${a}x + ${a + c}`, `${a} × ${c} is multiplication, not ${a} + ${c}.`],
               ],
               {
-                method: "Distributive property: multiply the outside number by EACH term inside the parentheses.",
+                method:
+                  "Distributive property: multiply the outside number by EACH term inside the parentheses.",
                 nudge: `${a} × x = ${a}x. Now multiply ${a} × ${c}.`,
                 step: `${a}(x + ${c}) = ${a} × x + ${a} × ${c} = ${a}x + ${a * c}`,
               },
@@ -269,7 +319,10 @@
               [
                 [co * a + 1, `a² means a × a = ${a} × ${a}, not just ${a}.`],
                 [co * a * a, "you skipped the + 1 at the end."],
-                [co + a * a + 1, `${coef(co, "a²")} means ${co} × a², so multiply — do not add the ${co}.`],
+                [
+                  co + a * a + 1,
+                  `${coef(co, "a²")} means ${co} × a², so multiply — do not add the ${co}.`,
+                ],
               ],
               {
                 method: "Exponents first: a² means a × a. Then multiply, then add.",
@@ -295,11 +348,18 @@
               `${xc}x + ${nc}`,
               [
                 [`${xc}x + ${b + d}`, `it is MINUS ${d}, so subtract: ${b} − ${d}.`],
-                [`${a + c + b}x − ${d}`, `${b} has no x, so it is not a like term with the x-terms.`],
-                [`${a * c}x + ${nc}`, "to combine like terms, ADD the x-coefficients — do not multiply them."],
+                [
+                  `${a + c + b}x − ${d}`,
+                  `${b} has no x, so it is not a like term with the x-terms.`,
+                ],
+                [
+                  `${a * c}x + ${nc}`,
+                  "to combine like terms, ADD the x-coefficients — do not multiply them.",
+                ],
               ],
               {
-                method: "Like terms have the same variable part. Combine x-terms together and numbers together.",
+                method:
+                  "Like terms have the same variable part. Combine x-terms together and numbers together.",
                 nudge: `x-terms: ${a}x + ${coef(c, "x")}. Numbers: ${b} − ${d}. Do each one.`,
                 step: `${a}x + ${coef(c, "x")} = ${xc}x and ${b} − ${d} = ${nc}, so ${xc}x + ${nc}`,
               },
@@ -322,12 +382,16 @@
                 `Evaluate ${c}(${a}y − ${b}) when y = ${y}`,
                 ans,
                 [
-                  [c * a * y - b, `the ${c} multiplies the WHOLE group (${a}y − ${b}), including the ${b}.`],
+                  [
+                    c * a * y - b,
+                    `the ${c} multiplies the WHOLE group (${a}y − ${b}), including the ${b}.`,
+                  ],
                   [ans + c, "check the multiplication of the outside number again."],
                   [ans - b, `work inside the parentheses first, then multiply by ${c}.`],
                 ],
                 {
-                  method: "Parentheses first: find the value inside, then multiply by the outside number.",
+                  method:
+                    "Parentheses first: find the value inside, then multiply by the outside number.",
                   nudge: `Inside: ${a} × ${y} − ${b} = ${inner}. Now multiply by ${c}.`,
                   step: `${a} × ${y} − ${b} = ${inner}, then ${c} × ${inner} = ${ans}`,
                 },
@@ -349,9 +413,7 @@
           if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
           if (!this.ctx)
             try {
-              this.ctx = new (
-                window.AudioContext || window.webkitAudioContext
-              )();
+              this.ctx = new (window.AudioContext || window.webkitAudioContext)();
             } catch (e) {}
         }
         play(freq, dur, type = "sine", vol = 0.1) {
@@ -363,10 +425,7 @@
             o.type = type;
             o.frequency.value = freq;
             g.gain.setValueAtTime(vol, this.ctx.currentTime);
-            g.gain.exponentialRampToValueAtTime(
-              0.001,
-              this.ctx.currentTime + dur,
-            );
+            g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + dur);
             o.connect(g);
             g.connect(this.ctx.destination);
             o.start();
@@ -385,10 +444,7 @@
             src.buffer = buf;
             const g = this.ctx.createGain();
             g.gain.setValueAtTime(vol, this.ctx.currentTime);
-            g.gain.exponentialRampToValueAtTime(
-              0.001,
-              this.ctx.currentTime + dur,
-            );
+            g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + dur);
             src.connect(g);
             g.connect(this.ctx.destination);
             src.start();
@@ -445,9 +501,7 @@
           );
         }
         levelUp() {
-          [523, 659, 784, 1047].forEach((f, i) =>
-            setTimeout(() => this.play(f, 0.15), i * 100),
-          );
+          [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => this.play(f, 0.15), i * 100));
         }
         win3star() {
           [523, 659, 784, 880, 1047, 1175, 1318, 1568].forEach((f, i) =>
@@ -550,9 +604,7 @@
           }
           // Conveyor belt animation
           for (let i = 0; i < 20; i++) {
-            const r = this.add
-              .rectangle(i * 55, H - 40, 50, 8, 0x475569)
-              .setOrigin(0, 0.5);
+            const r = this.add.rectangle(i * 55, H - 40, 50, 8, 0x475569).setOrigin(0, 0.5);
             if (!reduceMotion) {
               this.tweens.add({
                 targets: r,
@@ -744,9 +796,7 @@
             bg.on("pointerdown", () => {
               sfx.click();
               this.cameras.main.fadeOut(400);
-              this.time.delayedCall(400, () =>
-                this.scene.start("Game", { difficulty: i }),
-              );
+              this.time.delayedCall(400, () => this.scene.start("Game", { difficulty: i }));
             });
           });
           // Controls info
@@ -781,25 +831,29 @@
         }
         init(data) {
           this.difficulty = data.difficulty ?? 1;
+          this.presetQueue = Array.isArray(data.queue) ? data.queue : null;
         }
         create() {
           this.cameras.main.setBackgroundColor("#0f172a");
           sfx.init();
           // Snapshot reduced-motion preference for this scene (additive polish).
           this.reduceMotion = eeReduceMotion();
-          this.questions = generateQuestions();
-          if (this.difficulty === 0)
-            this.questions = this.questions
-              .filter((q) => q.tier === 1)
-              .slice(0, 15);
-          if (this.questions.length < 15) {
-            while (this.questions.length < 15) {
-              this.questions.push(
-                ...generateQuestions().filter((q) =>
-                  this.difficulty === 0 ? q.tier === 1 : true,
-                ),
-              );
+          if (this.presetQueue) {
+            this.questions = this.presetQueue.slice();
+            this.spare = [];
+          } else {
+            this.questions = generateQuestions();
+            if (this.difficulty === 0) this.questions = this.questions.filter((q) => q.tier === 1);
+            if (this.questions.length < 15) {
+              while (this.questions.length < 15) {
+                this.questions.push(
+                  ...generateQuestions().filter((q) =>
+                    this.difficulty === 0 ? q.tier === 1 : true,
+                  ),
+                );
+              }
             }
+            this.spare = this.questions.slice(15, 17);
             this.questions = this.questions.slice(0, 15);
           }
           this.qIndex = 0;
@@ -808,6 +862,7 @@
           this.wrongTries = 0; // wrong picks on the current part
           this.usedFifty = false;
           this.missTally = {}; // skill -> wrong picks, for "practice next"
+          this.missedQs = [];
           this.nextBtn = null;
           this.streak = 0;
           this.bestStreak = 0;
@@ -854,9 +909,7 @@
           this.setupParallax();
 
           // HUD
-          this.hudBg = this.add
-            .rectangle(W / 2, 28, W, 56, 0x1e293b)
-            .setDepth(10);
+          this.hudBg = this.add.rectangle(W / 2, 28, W, 56, 0x1e293b).setDepth(10);
           this.hudQ = this.add
             .text(20, 16, "", {
               fontSize: "16px",
@@ -877,9 +930,7 @@
 
           // Streak counter with visual pulse container
           this.streakContainer = this.add.container(520, 28).setDepth(12);
-          this.streakBg = this.add
-            .rectangle(0, 0, 0, 0, 0xf59e0b, 0)
-            .setOrigin(0.5);
+          this.streakBg = this.add.rectangle(0, 0, 0, 0, 0xf59e0b, 0).setOrigin(0.5);
           this.streakContainer.add(this.streakBg);
           this.hudStreak = this.add
             .text(0, -12, "", {
@@ -904,13 +955,8 @@
             .setAlpha(0);
 
           // Progress bar
-          this.progBg = this.add
-            .rectangle(W / 2, 54, W - 40, 6, 0x334155)
-            .setDepth(10);
-          this.progFill = this.add
-            .rectangle(20, 54, 0, 6, 0x3b82f6)
-            .setOrigin(0, 0.5)
-            .setDepth(10);
+          this.progBg = this.add.rectangle(W / 2, 54, W - 40, 6, 0x334155).setDepth(10);
+          this.progFill = this.add.rectangle(20, 54, 0, 6, 0x3b82f6).setOrigin(0, 0.5).setDepth(10);
 
           // Question display area
           this.qPanel = this.add
@@ -1097,14 +1143,10 @@
             .setDepth(9);
 
           // Red flash overlay
-          this.redFlash = this.add
-            .rectangle(W / 2, H / 2, W, H, 0xff0000, 0)
-            .setDepth(30);
+          this.redFlash = this.add.rectangle(W / 2, H / 2, W, H, 0xff0000, 0).setDepth(30);
 
           // Phase transition overlay
-          this.transitionOverlay = this.add
-            .rectangle(W / 2, H / 2, W, H, 0x0f172a, 0)
-            .setDepth(50);
+          this.transitionOverlay = this.add.rectangle(W / 2, H / 2, W, H, 0x0f172a, 0).setDepth(50);
           this.transitionText = this.add
             .text(W / 2, H / 2, "", {
               fontSize: "42px",
@@ -1140,13 +1182,7 @@
           this.add.rectangle(W / 2, H - 20, W, 40, 0x1e293b).setDepth(0);
           for (let i = 0; i < 25; i++) {
             this.add
-              .rectangle(
-                i * 50,
-                H - 2,
-                25,
-                4,
-                i % 2 === 0 ? 0xfbbf24 : 0x0f172a,
-              )
+              .rectangle(i * 50, H - 2, 25, 4, i % 2 === 0 ? 0xfbbf24 : 0x0f172a)
               .setOrigin(0, 0.5)
               .setDepth(1);
           }
@@ -1159,11 +1195,7 @@
           for (let i = 0; i < 4; i++) {
             const gx = Phaser.Math.Between(100, W - 100),
               gy = Phaser.Math.Between(200, 400);
-            const g = this.add
-              .graphics()
-              .setPosition(gx, gy)
-              .setDepth(0)
-              .setAlpha(0.15);
+            const g = this.add.graphics().setPosition(gx, gy).setDepth(0).setAlpha(0.15);
             const r = Phaser.Math.Between(20, 50);
             g.lineStyle(2, 0x64748b);
             g.strokeCircle(0, 0, r);
@@ -1272,9 +1304,7 @@
                 wrongIndices.push(i);
               }
             });
-            const toRemove = wrongIndices
-              .sort(() => Math.random() - 0.5)
-              .slice(0, 2);
+            const toRemove = wrongIndices.sort(() => Math.random() - 0.5).slice(0, 2);
             toRemove.forEach((i) => {
               const box = this.answerBoxes[i];
               box.bg.setFillStyle(0x111122, 0.3).setStrokeStyle(1, 0x333344);
@@ -1413,9 +1443,7 @@
               .setStrokeStyle(2, 0x3b82f6)
               .setDepth(3)
               .setInteractive({ useHandCursor: true });
-            const highlight = this.add
-              .rectangle(x, 440, 164, 54, 0x3b82f6, 0)
-              .setDepth(2);
+            const highlight = this.add.rectangle(x, 440, 164, 54, 0x3b82f6, 0).setDepth(2);
             const txt = this.add
               .text(x, 440, opt, {
                 fontSize: "18px",
@@ -1454,8 +1482,7 @@
               }
             });
             bg.on("pointerdown", () => {
-              if (!this.answered && !this.removedChoices.includes(i))
-                this.selectAnswer(i);
+              if (!this.answered && !this.removedChoices.includes(i)) this.selectAnswer(i);
             });
             this.answerBoxes.push({
               bg,
@@ -1528,7 +1555,10 @@
           if (correct) {
             this.answered = true;
             this.totalCorrect++;
-            window.FlagshipAdventure?.record({ firstTry: this.wrongTries === 0 && !this.usedFifty, kind: q.skill || "expression" });
+            window.FlagshipAdventure?.record({
+              firstTry: this.wrongTries === 0 && !this.usedFifty,
+              kind: q.skill || "expression",
+            });
             const tries = this.wrongTries;
             if (tries === 0 && !this.usedFifty) this.firstTry++;
             let pts = q.tier * 10 * (1 + Math.min(this.streak, 5) * 0.1);
@@ -1550,6 +1580,7 @@
               if (this.streak > this.bestStreak) this.bestStreak = this.streak;
             } else {
               this.streak = 0;
+              this.noteMiss(q);
             }
             this.combo = Math.max(1, Math.min(this.streak, 5));
 
@@ -1564,7 +1595,8 @@
               });
 
             const streakText = this.streak >= 3 ? ` STREAK x${this.streak}!` : "";
-            const lead = tries === 0 ? `CORRECT! +${pts} pts${streakText}` : `CORRECT with help! +${pts} pts`;
+            const lead =
+              tries === 0 ? `CORRECT! +${pts} pts${streakText}` : `CORRECT with help! +${pts} pts`;
             this.fbText.setText(lead);
             this.fbText.setColor("#4ade80");
             // Reinforce the method with the full worked step.
@@ -1581,7 +1613,13 @@
               this.showFloatingText(W / 2, H / 2 - 50, "STREAK x5! AMAZING!", "#ef4444", "34px");
             } else if (this.streak === 7) {
               sfx.streak7();
-              this.showFloatingText(W / 2, H / 2 - 50, "STREAK x7! UNSTOPPABLE!", "#a78bfa", "36px");
+              this.showFloatingText(
+                W / 2,
+                H / 2 - 50,
+                "STREAK x7! UNSTOPPABLE!",
+                "#a78bfa",
+                "36px",
+              );
             }
             if (this.streak >= 2) {
               this.hudStreak.setText(`STREAK: ${this.streak}x`);
@@ -1640,13 +1678,15 @@
               if (ci >= 0) {
                 this.answerBoxes[ci].bg.setFillStyle(0x166534).setStrokeStyle(3, 0x22c55e);
               }
+              this.noteMiss(q);
               this.fbText.setText(`Not quite — ${why}`);
               this.fbText.setColor("#fca5a5");
-              this.hintText.setText(`Worked step: ${q.step}. The part is ${q.correct}.`);
-              eeAnnounce(`Not quite. ${why} Worked step: ${q.step}. The answer is ${q.correct}.`);
+              this.hintText.setText("Not yet. One part is still open — check it yourself.");
+              eeAnnounce(`Not quite. ${why} One part is still open.`);
               this.showNextButton();
             } else {
-              const hint = this.wrongTries === 1 ? "Hint: " + q.method : "Try this step: " + q.nudge;
+              const hint =
+                this.wrongTries === 1 ? "Hint: " + q.method : "Try this step: " + q.nudge;
               this.fbText.setText(`Not quite — ${why}`);
               this.fbText.setColor("#fca5a5");
               this.hintText.setText(hint);
@@ -1654,6 +1694,10 @@
             }
           }
           this.updateHUD();
+        }
+
+        noteMiss(q) {
+          if (q && !this.missedQs.includes(q)) this.missedQs.push(q);
         }
 
         // Self-paced: the student moves on when ready (button, Enter or Space).
@@ -1689,10 +1733,7 @@
           }
           if (e.key >= "1" && e.key <= "4") {
             const idx = parseInt(e.key) - 1;
-            if (
-              idx < this.answerBoxes.length &&
-              !this.removedChoices.includes(idx)
-            )
+            if (idx < this.answerBoxes.length && !this.removedChoices.includes(idx))
               this.selectAnswer(idx);
           }
           if (e.key === "q" || e.key === "Q") {
@@ -1702,10 +1743,7 @@
             this.activatePowerUp("doublePoints");
           }
           if (e.key === "ArrowRight") {
-            this.selectedIdx = Math.min(
-              this.selectedIdx + 1,
-              this.answerBoxes.length - 1,
-            );
+            this.selectedIdx = Math.min(this.selectedIdx + 1, this.answerBoxes.length - 1);
             if (this.selectedIdx < 0) this.selectedIdx = 0;
             // Skip removed choices
             while (
@@ -1718,10 +1756,7 @@
           }
           if (e.key === "ArrowLeft") {
             this.selectedIdx = Math.max(this.selectedIdx - 1, 0);
-            while (
-              this.removedChoices.includes(this.selectedIdx) &&
-              this.selectedIdx > 0
-            ) {
+            while (this.removedChoices.includes(this.selectedIdx) && this.selectedIdx > 0) {
               this.selectedIdx--;
             }
             this.highlightSelected();
@@ -1788,9 +1823,7 @@
                 maxScore: this.totalQ,
                 problemsCorrect: this.totalCorrect,
                 problemsAttempted: this.totalQ,
-                percent: this.totalQ
-                  ? Math.round((this.totalCorrect / this.totalQ) * 100)
-                  : 0,
+                percent: this.totalQ ? Math.round((this.totalCorrect / this.totalQ) * 100) : 0,
               });
           } catch (e) {}
           this.cameras.main.fadeOut(400);
@@ -1804,6 +1837,8 @@
               difficulty: this.difficulty,
               firstTry: this.firstTry,
               missTally: this.missTally,
+              missed: this.missedQs,
+              spare: this.spare || [],
             });
           });
         }
@@ -1824,11 +1859,9 @@
           const reduceMotion = eeReduceMotion();
           this.cameras.main.setBackgroundColor("#0f172a");
           // Announce the final result for screen-reader students.
-          eeAnnounce(
-            `Round complete. Score ${d.score}. ${d.correct} of ${d.total} correct.`,
-          );
+          eeAnnounce(`Round complete. Score ${d.score}. ${d.correct} of ${d.total} correct.`);
           const pct = d.total > 0 ? Math.round((d.correct / d.total) * 100) : 0;
-          const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
+          const stars = selfPacedStars(d.correct, d.total, d.bestStreak);
 
           // High score check
           const prevHigh = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
@@ -1844,22 +1877,17 @@
               const burstCount = stars === 3 ? 8 : 5;
               for (let i = 0; i < burstCount; i++) {
                 this.time.delayedCall(i * 300, () => {
-                  const e = this.add.particles(
-                    Phaser.Math.Between(200, W - 200),
-                    0,
-                    "confetti",
-                    {
-                      speed: { min: 100, max: 300 },
-                      angle: { min: 60, max: 120 },
-                      scale: { start: 1.5, end: 0.2 },
-                      rotate: { min: 0, max: 360 },
-                      lifespan: 1500,
-                      tint: [0xfbbf24, 0x3b82f6, 0x22c55e, 0xef4444, 0xa78bfa],
-                      gravityY: 200,
-                      quantity: 20,
-                      emitting: false,
-                    },
-                  );
+                  const e = this.add.particles(Phaser.Math.Between(200, W - 200), 0, "confetti", {
+                    speed: { min: 100, max: 300 },
+                    angle: { min: 60, max: 120 },
+                    scale: { start: 1.5, end: 0.2 },
+                    rotate: { min: 0, max: 360 },
+                    lifespan: 1500,
+                    tint: [0xfbbf24, 0x3b82f6, 0x22c55e, 0xef4444, 0xa78bfa],
+                    gravityY: 200,
+                    quantity: 20,
+                    emitting: false,
+                  });
                   e.explode(25);
                 });
               }
@@ -1874,12 +1902,7 @@
           }
 
           // Title
-          const titles = [
-            "Keep Practicing!",
-            "Good Effort!",
-            "Great Work!",
-            "FACTORY MASTER!",
-          ];
+          const titles = ["Keep Practicing!", "Good Effort!", "Great Work!", "FACTORY MASTER!"];
           const titleText = this.add
             .text(cx, 50, titles[stars], {
               fontSize: "42px",
@@ -1955,9 +1978,7 @@
 
           // Score circle
           const circleY = isNewHigh ? 210 : 195;
-          this.add
-            .circle(cx, circleY, 60, 0x1e293b)
-            .setStrokeStyle(4, 0x3b82f6);
+          this.add.circle(cx, circleY, 60, 0x1e293b).setStrokeStyle(4, 0x3b82f6);
           this.add
             .text(cx, circleY - 8, String(pct) + "%", {
               fontSize: "32px",
@@ -1991,9 +2012,7 @@
           stats.forEach((s, i) => {
             const x = cx - 250 + i * 170,
               y = statsY;
-            this.add
-              .rectangle(x, y, 140, 70, 0x1e293b)
-              .setStrokeStyle(1, 0x334155);
+            this.add.rectangle(x, y, 140, 70, 0x1e293b).setStrokeStyle(1, 0x334155);
             const valText = this.add
               .text(x, y - 12, String(s.val), {
                 fontSize: "24px",
@@ -2073,6 +2092,27 @@
             });
           });
 
+          const missed = d.missed || [];
+          if (missed.length) {
+            const extra = (d.spare || []).filter((q) => !missed.includes(q)).slice(0, 2);
+            const queue = missed.concat(extra);
+            const sharpen = this.add
+              .rectangle(cx, btnY + 148, 280, 48, 0xf59e0b)
+              .setStrokeStyle(2, 0xfde68a)
+              .setInteractive({ useHandCursor: true });
+            this.add
+              .text(cx, btnY + 148, "SHARPEN MISSES", {
+                fontSize: "18px",
+                color: "#1c1403",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5);
+            sharpen.on("pointerdown", () => {
+              sfx.click();
+              this.scene.start("Game", { difficulty: d.difficulty, queue });
+            });
+          }
+
           const menu = this.add
             .rectangle(cx + 120, btnY, 200, 55, 0x334155)
             .setStrokeStyle(2, 0x475569)
@@ -2132,12 +2172,10 @@
             .setOrigin(0.5);
           // Footer
           this.add
-            .text(
-              cx,
-              H - 30,
-              "Expression Engine — Neft Teacher — 6.AT.5–6.AT.7",
-              { fontSize: "12px", color: "#475569" },
-            )
+            .text(cx, H - 30, "Expression Engine — Neft Teacher — 6.AT.5–6.AT.7", {
+              fontSize: "12px",
+              color: "#475569",
+            })
             .setOrigin(0.5);
 
           // Keyboard
@@ -2173,7 +2211,7 @@
         },
         input: { keyboard: true, mouse: true, touch: true },
       };
-      const game = window.__flagshipGame = new Phaser.Game(config);
+      const game = (window.__flagshipGame = new Phaser.Game(config));
 
       // --- Focus & keyboard management (additive; no gameplay change) ---
       // Phaser renders to a <canvas>; by default it is not in the tab order, so
@@ -2185,8 +2223,7 @@
         try {
           const canvas = game.canvas;
           if (!canvas) return;
-          if (!canvas.hasAttribute("tabindex"))
-            canvas.setAttribute("tabindex", "0");
+          if (!canvas.hasAttribute("tabindex")) canvas.setAttribute("tabindex", "0");
           canvas.setAttribute("role", "application");
           canvas.setAttribute(
             "aria-label",
@@ -2209,7 +2246,7 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <!-- gfx-injected:end -->
     <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-    
+
     <!-- mwb-injected:end -->
     <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
     <script src="/assets/game-hint-ladder.js" defer></script>
@@ -2229,23 +2266,33 @@
       });
     </script>
     <!-- ghl-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
-  
-      <!-- EWL Diagnostic Misconception Coach -->
-      <div class="ewl-coach-card" id="ewl-coach-card" style="display: flex; position: relative; z-index: 100;">
-        <div class="ewl-coach-icon">💡</div>
-        <div class="ewl-coach-content">
-          <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
-          <p id="ewl-coach-text" data-en="Only combine LIKE terms (same variable and exponent)!" data-es="¡Solo combina términos SEMEJANTES!">Only combine LIKE terms (same variable and exponent)!</p>
-        </div>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
+
+    <!-- EWL Diagnostic Misconception Coach -->
+    <div
+      class="ewl-coach-card"
+      id="ewl-coach-card"
+      style="display: flex; position: relative; z-index: 100"
+    >
+      <div class="ewl-coach-icon">💡</div>
+      <div class="ewl-coach-content">
+        <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
+        <p
+          id="ewl-coach-text"
+          data-en="Only combine LIKE terms (same variable and exponent)!"
+          data-es="¡Solo combina términos SEMEJANTES!"
+        >
+          Only combine LIKE terms (same variable and exponent)!
+        </p>
       </div>
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <script src="/assets/formula-popup.js" defer></script>
-<script src="/assets/game-studio.js?v=20261003" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
-<script src="/math/games/shared/flagship-puzzles.js?v=20261007" defer></script>
-<script src="/math/games/shared/flagship-adventures.js?v=20261007" defer></script>
-</body>
+    </div>
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <script src="/assets/formula-popup.js" defer></script>
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
+    <script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
+    <script src="/math/games/shared/flagship-puzzles.js?v=20261007" defer></script>
+    <script src="/math/games/shared/flagship-adventures.js?v=20261007" defer></script>
+  </body>
 </html>

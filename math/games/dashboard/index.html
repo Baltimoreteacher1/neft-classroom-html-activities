@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <meta
       name="description"
       content="Teacher analytics dashboard for the Grade 6 math games — reads EduPulse and Save/Resume data stored on this device to show attempts, best scores, stars, session performance, and a needs-review callout. Fully client-side; nothing leaves this browser."
@@ -12,42 +12,34 @@
     <link rel="stylesheet" href="/assets/shared.css" />
     <link rel="stylesheet" href="./styles.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-  <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+    <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />
+  </head>
   <body>
     <a class="skip-link" href="#dash-main">Skip to dashboard</a>
-<main class="page-shell">
+    <main class="page-shell">
       <header class="hero compact-hero" id="dash-head">
         <p class="eyebrow">Math Curriculum · Device Progress</p>
         <h1>Math Games Dashboard</h1>
         <p class="hero-copy">
-          Reads the EduPulse and Save/Resume data saved in this browser and
-          summarizes play across the Grade 6 math games: attempts, best score,
-          stars, session performance, and who needs review. Pure client-side —
-          nothing leaves this device. These results describe practice sessions; they do not certify skill mastery.
+          Reads the EduPulse and Save/Resume data saved in this browser and summarizes play across
+          the Grade 6 math games: attempts, best score, stars, session performance, and who needs
+          review. Pure client-side — nothing leaves this device. These results describe practice
+          sessions; they do not certify skill mastery.
         </p>
         <p class="dash-scope" id="scope-line" aria-live="polite"></p>
       </header>
 
-      <section
-        class="dash-toolbar"
-        role="region"
-        aria-label="Dashboard controls"
-      >
+      <section class="dash-toolbar" role="region" aria-label="Dashboard controls">
         <label class="visually-hidden" for="f-search">Search</label>
-        <input
-          type="search"
-          id="f-search"
-          placeholder="Search game, standard, or student…"
-        />
+        <input type="search" id="f-search" placeholder="Search game, standard, or student…" />
         <label class="visually-hidden" for="f-view">View</label>
         <select id="f-view" aria-label="Group results by">
           <option value="game">By game</option>
@@ -55,24 +47,30 @@
           <option value="student">By student</option>
         </select>
         <span class="dash-spacer"></span>
-        <button class="dash-btn" id="btn-refresh" type="button">
-          ↻ Refresh
-        </button>
+        <button class="dash-btn" id="btn-refresh" type="button">↻ Refresh</button>
         <button class="dash-btn" id="btn-print" type="button">⎙ Print</button>
-        <button class="dash-btn" id="btn-import-backups" type="button" onclick="triggerBackupImport()">📂 Import Backups</button>
-        <input type="file" id="file-import-backups" multiple accept=".json" style="display:none;" onchange="handleBackupImport(event)" />
-        <button class="dash-btn primary" id="btn-export" type="button">
-          ⤓ Export CSV
+        <button
+          class="dash-btn"
+          id="btn-import-backups"
+          type="button"
+          onclick="triggerBackupImport()"
+        >
+          📂 Import Backups
         </button>
+        <input
+          type="file"
+          id="file-import-backups"
+          multiple
+          accept=".json"
+          style="display: none"
+          onchange="handleBackupImport(event)"
+        />
+        <button class="dash-btn primary" id="btn-export" type="button">⤓ Export CSV</button>
       </section>
 
       <p id="dashboard-import-status" role="status" aria-live="polite"></p>
       <div id="dash-main">
-        <section
-          class="dash-cards"
-          id="kpi-row"
-          aria-label="Summary totals"
-        ></section>
+        <section class="dash-cards" id="kpi-row" aria-label="Summary totals"></section>
 
         <section
           class="dash-panel review-panel"
@@ -83,18 +81,31 @@
           <div class="section-heading">
             <h2 id="review-h">Needs review</h2>
             <p>
-              Sessions to revisit (1 star, low score, or a
-              not-yet-finished game) — a quick list of who to check in with.
+              Sessions to revisit (1 star, low score, or a not-yet-finished game) — a quick list of
+              who to check in with.
             </p>
           </div>
           <ul class="review-list" id="review-list"></ul>
         </section>
 
-        <section
-          class="dash-panel"
-          id="table-panel"
-          aria-labelledby="table-h"
-        >
+        <section class="dash-panel" id="mission-panel" aria-labelledby="mission-h" hidden>
+          <div class="section-heading">
+            <h2 id="mission-h">Conference mission</h2>
+            <p id="mission-status" role="status"></p>
+          </div>
+          <p id="mission-focus" class="mission-focus"></p>
+          <div class="mission-actions">
+            <button class="dash-btn primary" id="mission-mark" type="button">
+              Mark this conference done
+            </button>
+            <button class="dash-btn" id="mission-next" type="button">Next session</button>
+            <button class="dash-btn" id="mission-reset" type="button">
+              Clear conference marks
+            </button>
+          </div>
+        </section>
+
+        <section class="dash-panel" id="table-panel" aria-labelledby="table-h">
           <div class="section-heading">
             <h2 id="table-h">Results</h2>
             <p id="table-sub"></p>
@@ -107,12 +118,7 @@
           </div>
         </section>
 
-        <section
-          class="dash-panel empty-state"
-          id="empty-state"
-          aria-labelledby="empty-h"
-          hidden
-        >
+        <section class="dash-panel empty-state" id="empty-state" aria-labelledby="empty-h" hidden>
           <div class="section-heading">
             <h2 id="empty-h">No game data on this device yet</h2>
             <p>
@@ -123,32 +129,29 @@
           <ol class="empty-steps">
             <li>
               Open any Grade 6 math game (e.g.
-              <a href="/math/games/">the Math Games hub</a>) and play a round to
-              the results screen.
+              <a href="/math/games/">the Math Games hub</a>) and play a round to the results screen.
             </li>
             <li>
-              If you want results grouped by student, have students type their
-              name on a game or activity that asks for it — otherwise everything
-              is grouped as <strong>This device</strong>.
+              If you want results grouped by student, have students type their name on a game or
+              activity that asks for it — otherwise everything is grouped as
+              <strong>This device</strong>.
             </li>
             <li>
-              Come back here and press <strong>Refresh</strong>. Completions and
-              saved sessions will appear automatically.
+              Come back here and press <strong>Refresh</strong>. Completions and saved sessions will
+              appear automatically.
             </li>
           </ol>
           <p class="muted-note">
-            Note: game scores are also sent to the EduPulse gradebook online.
-            The full class gradebook is read with a teacher admin key on the
-            EduPulse service — it is intentionally not exposed in the browser, so
-            this page shows only the locally saved play.
+            Note: game scores are also sent to the EduPulse gradebook online. The full class
+            gradebook is read with a teacher admin key on the EduPulse service — it is intentionally
+            not exposed in the browser, so this page shows only the locally saved play.
           </p>
         </section>
       </div>
 
       <footer class="dash-foot">
         <p class="muted-note">
-          Local-first &middot; no network calls &middot; safe to share the
-          screen. Data source:
+          Local-first &middot; no network calls &middot; safe to share the screen. Data source:
           <span id="source-note">localStorage</span>.
         </p>
       </footer>
@@ -182,31 +185,55 @@
         try {
           sessionStorage.setItem("gfx-brief:" + location.pathname, "1");
         } catch (_e) {}
-        
-        window.triggerBackupImport = function() {
-          document.getElementById('file-import-backups').click();
+
+        window.triggerBackupImport = function () {
+          document.getElementById("file-import-backups").click();
         };
-        
-        window.handleBackupImport = async function(event) {
+
+        window.handleBackupImport = async function (event) {
           var files = Array.from(event.target.files || []);
           if (!files.length) return;
-          var outcomes = await Promise.all(files.map(async function(file) {
-            try {
-              if (file.size > 2 * 1024 * 1024) throw new Error("File too large");
-              var data = JSON.parse(await file.text());
-              if (!data || data.schema !== 1 || typeof data.activityId !== "string" || !data.activityId || !data.state || typeof data.state !== "object" || Array.isArray(data.state)) throw new Error("Unsupported backup");
-              var code = String(data.saveCode || ('IMP-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,6))).replace(/[^A-Za-z0-9_-]/g, '').slice(0,64);
-              data.saveCode = code;
-              localStorage.setItem("nsr:rec:" + code, JSON.stringify(data));
-              return true;
-            } catch (_) { return false; }
-          }));
+          var outcomes = await Promise.all(
+            files.map(async function (file) {
+              try {
+                if (file.size > 2 * 1024 * 1024) throw new Error("File too large");
+                var data = JSON.parse(await file.text());
+                if (
+                  !data ||
+                  data.schema !== 1 ||
+                  typeof data.activityId !== "string" ||
+                  !data.activityId ||
+                  !data.state ||
+                  typeof data.state !== "object" ||
+                  Array.isArray(data.state)
+                )
+                  throw new Error("Unsupported backup");
+                var code = String(
+                  data.saveCode ||
+                    "IMP-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 6),
+                )
+                  .replace(/[^A-Za-z0-9_-]/g, "")
+                  .slice(0, 64);
+                data.saveCode = code;
+                localStorage.setItem("nsr:rec:" + code, JSON.stringify(data));
+                return true;
+              } catch (_) {
+                return false;
+              }
+            }),
+          );
           var loaded = outcomes.filter(Boolean).length;
-          document.getElementById("dashboard-import-status").textContent = loaded + " of " + files.length + " backups imported. " + (loaded < files.length ? "Skipped files were unsupported, too large, or could not be saved." : "Progress is available below.");
+          document.getElementById("dashboard-import-status").textContent =
+            loaded +
+            " of " +
+            files.length +
+            " backups imported. " +
+            (loaded < files.length
+              ? "Skipped files were unsupported, too large, or could not be saved."
+              : "Progress is available below.");
           event.target.value = "";
           load();
         };
-
 
         /* ---------- tiny safe helpers ---------- */
         function safe(fn, fallback) {
@@ -219,8 +246,7 @@
         function lsKeys() {
           return safe(function () {
             var out = [];
-            for (var i = 0; i < localStorage.length; i++)
-              out.push(localStorage.key(i));
+            for (var i = 0; i < localStorage.length; i++) out.push(localStorage.key(i));
             return out;
           }, []);
         }
@@ -287,10 +313,7 @@
             name = nt.alias || "";
           }
           var period =
-            lsGet("edupulse_class_period") ||
-            lsGet("nt_class") ||
-            lsGet("nt_class_code") ||
-            "";
+            lsGet("edupulse_class_period") || lsGet("nt_class") || lsGet("nt_class_code") || "";
           if (!period) {
             var nt2 = parseJSON(lsGet("nt_student")) || {};
             period = nt2.section || "";
@@ -337,8 +360,7 @@
             if (Array.isArray(state.scores)) {
               state.scores.forEach(function (s) {
                 var v = num(s && s.score);
-                if (v !== null && (bestScore === null || v > bestScore))
-                  bestScore = v;
+                if (v !== null && (bestScore === null || v > bestScore)) bestScore = v;
               });
             }
             rows.push(
@@ -375,7 +397,9 @@
                 student: dev.name || "",
                 period: dev.period || "",
                 activityId: "practice-arcade:" + id,
-                game: unit ? "Practice Arcade · Unit " + unit[1] + " Review" : "Practice Arcade · Lesson " + id,
+                game: unit
+                  ? "Practice Arcade · Unit " + unit[1] + " Review"
+                  : "Practice Arcade · Lesson " + id,
                 score: v.score,
                 percent: total ? Math.round(((first || 0) / total) * 100) : null,
                 stars: v.stars,
@@ -402,8 +426,7 @@
                 student: v.studentName || dev.name || "",
                 period: v.classPeriod || dev.period || "",
                 activityId: v.activityId || "",
-                game:
-                  v.activityTitle || titleFromActivityId(v.activityId),
+                game: v.activityTitle || titleFromActivityId(v.activityId),
                 standard: v.standard || "",
                 score: v.score,
                 maxScore: v.maxScore,
@@ -418,7 +441,7 @@
             if (k.indexOf(LS_PREFIX) === 0) return; // already handled (A)
             if (!/edupulse|score|ewl|game|result/i.test(k)) return;
             var raw = lsGet(k);
-            if (!raw || raw[0] !== "{" && raw[0] !== "[") return;
+            if (!raw || (raw[0] !== "{" && raw[0] !== "[")) return;
             var v = parseJSON(raw);
             if (!v) return;
             if (Array.isArray(v)) {
@@ -463,10 +486,8 @@
           var map = {};
           rows.forEach(function (r) {
             var keyVal;
-            if (mode === "standard")
-              keyVal = r.standard || "(no standard)";
-            else if (mode === "student")
-              keyVal = r.student || "This device";
+            if (mode === "standard") keyVal = r.standard || "(no standard)";
+            else if (mode === "student") keyVal = r.student || "This device";
             else keyVal = r.game || "Activity";
             if (!map[keyVal]) {
               map[keyVal] = {
@@ -492,19 +513,13 @@
                 : r.score != null && r.maxScore
                   ? Math.round((r.score / r.maxScore) * 100)
                   : null;
-            if (pct != null && (a.bestPercent == null || pct > a.bestPercent))
-              a.bestPercent = pct;
+            if (pct != null && (a.bestPercent == null || pct > a.bestPercent)) a.bestPercent = pct;
             if (r.stars != null && (a.bestStars == null || r.stars > a.bestStars))
               a.bestStars = r.stars;
             if (mode !== "game" && r.game) a.games[r.game] = 1;
-            if (mode !== "standard" && r.standard)
-              a.standards[r.standard] = 1;
-            if (mode !== "student")
-              a.students[r.student || "This device"] = 1;
-            if (
-              r.lastPlayed &&
-              (!a.lastPlayed || r.lastPlayed > a.lastPlayed)
-            )
+            if (mode !== "standard" && r.standard) a.standards[r.standard] = 1;
+            if (mode !== "student") a.students[r.student || "This device"] = 1;
+            if (r.lastPlayed && (!a.lastPlayed || r.lastPlayed > a.lastPlayed))
               a.lastPlayed = r.lastPlayed;
           });
           return Object.keys(map).map(function (k) {
@@ -522,6 +537,9 @@
         /* ---------- state ---------- */
         var ALL_ROWS = [];
         var EL = {};
+        var MISSION_KEY = "dash-conference-v1";
+        var MISSION_NEEDS = [];
+        var missionCursor = 0;
         function $(id) {
           return document.getElementById(id);
         }
@@ -552,6 +570,7 @@
             EL.empty.hidden = false;
             EL.tablePanel.hidden = true;
             EL.reviewPanel.hidden = true;
+            EL.missionPanel.hidden = true;
             EL.kpi.innerHTML = "";
             EL.scope.textContent = "";
             return;
@@ -581,6 +600,7 @@
           renderKPIs(rows);
           renderTable(aggregate(rows, mode), mode);
           renderReview(rows);
+          renderMission();
         }
 
         function renderKPIs(rows) {
@@ -593,10 +613,8 @@
             if (r.game) games[r.game] = 1;
             if (r.standard) standards[r.standard] = 1;
             students[r.student || "This device"] = 1;
-            if (r.stars != null && (stars == null || r.stars > stars))
-              stars = r.stars;
-            if (r.score != null && (best == null || r.score > best))
-              best = r.score;
+            if (r.stars != null && (stars == null || r.stars > stars)) stars = r.stars;
+            if (r.score != null && (best == null || r.score > best)) best = r.score;
           });
           var cards = [
             { label: "Sessions", value: rows.length },
@@ -621,20 +639,12 @@
 
         function renderTable(aggs, mode) {
           var firstHead =
-            mode === "standard"
-              ? "Standard"
-              : mode === "student"
-                ? "Student"
-                : "Game";
+            mode === "standard" ? "Standard" : mode === "student" ? "Student" : "Game";
           var secondHead =
-            mode === "student"
-              ? "Games"
-              : mode === "standard"
-                ? "Games"
-                : "Standard";
+            mode === "student" ? "Games" : mode === "standard" ? "Games" : "Standard";
           EL.thead.innerHTML =
             "<tr>" +
-            "<th scope=\"col\">" +
+            '<th scope="col">' +
             firstHead +
             "</th>" +
             '<th scope="col">' +
@@ -702,11 +712,7 @@
             .join("");
           EL.tableSub.textContent =
             "Grouped by " +
-            (mode === "standard"
-              ? "standard"
-              : mode === "student"
-                ? "student"
-                : "game") +
+            (mode === "standard" ? "standard" : mode === "student" ? "student" : "game") +
             " · best score and stars per group · " +
             aggs.length +
             " row(s).";
@@ -740,8 +746,7 @@
                 : r.score != null && r.maxScore
                   ? Math.round((r.score / r.maxScore) * 100)
                   : null;
-            if (pct != null && (a.bestPercent == null || pct > a.bestPercent))
-              a.bestPercent = pct;
+            if (pct != null && (a.bestPercent == null || pct > a.bestPercent)) a.bestPercent = pct;
             if (r.stars != null && (a.bestStars == null || r.stars > a.bestStars))
               a.bestStars = r.stars;
             if (r.lastPlayed && (!a.lastPlayed || r.lastPlayed > a.lastPlayed))
@@ -758,6 +763,14 @@
               return (y.lastPlayed || "").localeCompare(x.lastPlayed || "");
             });
 
+          MISSION_NEEDS = needs.map(function (a) {
+            return {
+              key: a.student + "||" + a.game,
+              student: a.student,
+              game: a.game,
+              standard: a.standard || "",
+            };
+          });
           if (!needs.length) {
             EL.reviewPanel.hidden = true;
             return;
@@ -768,8 +781,7 @@
               var detail = [];
               if (a.bestStars != null) detail.push(starGlyphs(a.bestStars));
               if (a.bestPercent != null) detail.push(a.bestPercent + "%");
-              else if (a.bestScore != null)
-                detail.push("score " + a.bestScore);
+              else if (a.bestScore != null) detail.push("score " + a.bestScore);
               if (a.standard) detail.push(esc(a.standard));
               return (
                 '<li class="review-item"><span class="review-who">' +
@@ -783,6 +795,65 @@
               );
             })
             .join("");
+        }
+
+        function readMarks() {
+          try {
+            var v = JSON.parse(localStorage.getItem(MISSION_KEY) || "[]");
+            return Array.isArray(v) ? v : [];
+          } catch (e) {
+            return [];
+          }
+        }
+
+        function writeMarks(marks) {
+          try {
+            localStorage.setItem(MISSION_KEY, JSON.stringify(marks));
+          } catch (e) {}
+        }
+
+        function renderMission() {
+          if (!EL.missionPanel) return;
+          var needs = MISSION_NEEDS;
+          if (!needs.length) {
+            EL.missionPanel.hidden = true;
+            return;
+          }
+          EL.missionPanel.hidden = false;
+          var marks = readMarks();
+          var open = needs.filter(function (item) {
+            return marks.indexOf(item.key) === -1;
+          });
+          if (!open.length) {
+            EL.missionStatus.textContent =
+              "Mission complete: " +
+              needs.length +
+              " conference" +
+              (needs.length === 1 ? "" : "s") +
+              " recorded on this device.";
+            EL.missionFocus.textContent =
+              "Every session on the review list has a conference mark. Clear the marks to run the mission again.";
+            EL.missionMark.disabled = true;
+            EL.missionNext.disabled = true;
+            return;
+          }
+          if (missionCursor >= needs.length) missionCursor = 0;
+          var item = needs[missionCursor % needs.length];
+          var guard = 0;
+          while (marks.indexOf(item.key) !== -1 && guard < needs.length) {
+            missionCursor = (missionCursor + 1) % needs.length;
+            item = needs[missionCursor];
+            guard++;
+          }
+          EL.missionMark.disabled = false;
+          EL.missionNext.disabled = open.length < 2;
+          EL.missionStatus.textContent =
+            open.length +
+            " of " +
+            needs.length +
+            " review sessions still need a conference. Take them one at a time.";
+          EL.missionFocus.textContent =
+            item.student + " · " + item.game + (item.standard ? " · " + item.standard : "");
         }
 
         /* ---------- CSV export ---------- */
@@ -833,10 +904,7 @@
           var url = URL.createObjectURL(blob);
           var a = document.createElement("a");
           a.href = url;
-          a.download =
-            "math-games-dashboard-" +
-            new Date().toISOString().slice(0, 10) +
-            ".csv";
+          a.download = "math-games-dashboard-" + new Date().toISOString().slice(0, 10) + ".csv";
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
@@ -857,6 +925,11 @@
             tableSub: $("table-sub"),
             reviewPanel: $("review-panel"),
             reviewList: $("review-list"),
+            missionPanel: $("mission-panel"),
+            missionStatus: $("mission-status"),
+            missionFocus: $("mission-focus"),
+            missionMark: $("mission-mark"),
+            missionNext: $("mission-next"),
             empty: $("empty-state"),
             scope: $("scope-line"),
           };
@@ -867,32 +940,49 @@
           $("btn-export").addEventListener("click", exportCSV);
           EL.search.addEventListener("input", render);
           EL.view.addEventListener("change", render);
+          EL.missionMark.addEventListener("click", function () {
+            var item = MISSION_NEEDS[missionCursor];
+            if (!item) return;
+            var marks = readMarks();
+            if (marks.indexOf(item.key) === -1) marks.push(item.key);
+            writeMarks(marks);
+            missionCursor = (missionCursor + 1) % Math.max(1, MISSION_NEEDS.length);
+            renderMission();
+          });
+          EL.missionNext.addEventListener("click", function () {
+            if (!MISSION_NEEDS.length) return;
+            missionCursor = (missionCursor + 1) % MISSION_NEEDS.length;
+            renderMission();
+          });
+          $("mission-reset").addEventListener("click", function () {
+            writeMarks([]);
+            missionCursor = 0;
+            renderMission();
+          });
           load();
         }
 
-        if (document.readyState === "loading")
-          document.addEventListener("DOMContentLoaded", init);
+        if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
         else init();
       })();
     </script>
 
     <script src="/assets/app.js" defer></script>
     <script src="/assets/nt-page-enhance.js" defer></script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  
-  <!-- mwb-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
 
-  
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <script src="/assets/formula-popup.js" defer></script>
-  <!-- nt-chrome-injected:begin (shared page chrome — tools/inject-nt-chrome.js) -->
-  <script src="/assets/nt-chrome.js" defer></script>
-  <!-- nt-chrome-injected:end -->
-</body>
+    <!-- mwb-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
+
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <script src="/assets/formula-popup.js" defer></script>
+    <!-- nt-chrome-injected:begin (shared page chrome — tools/inject-nt-chrome.js) -->
+    <script src="/assets/nt-chrome.js" defer></script>
+    <!-- nt-chrome-injected:end -->
+  </body>
 </html>

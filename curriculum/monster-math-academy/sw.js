@@ -1,5 +1,5 @@
 /* Monster Math Academy — service worker (offline app shell) */
-const CACHE = "mma-studio-v3";
+const CACHE = "mma-studio-v4";
 
 /* Stable shell assets. Hashed Vite build files (JS/CSS) are intentionally
    NOT listed here — they change every build. The runtime fetch handler
@@ -11,6 +11,8 @@ const SHELL = [
   "./",
   "./index.html",
   "./offline.html",
+  "./rematch.js",
+  "./rematch.css",
   "./manifest.webmanifest",
   "/assets/game-studio.js?v=20261003",
   "/assets/game-studio.css?v=20261002",
@@ -36,7 +38,9 @@ self.addEventListener("activate", (event) => {
       .keys()
       .then((keys) =>
         Promise.all(
-          keys.filter((key) => key.startsWith("mma-") && key !== CACHE).map((key) => caches.delete(key)),
+          keys
+            .filter((key) => key.startsWith("mma-") && key !== CACHE)
+            .map((key) => caches.delete(key)),
         ),
       )
       .then(() => self.clients.claim()),
@@ -61,8 +65,7 @@ self.addEventListener("fetch", (event) => {
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request).catch(async () => {
-        const shell =
-          (await caches.match("./index.html")) || (await caches.match("./"));
+        const shell = (await caches.match("./index.html")) || (await caches.match("./"));
         return shell || (await caches.match("./offline.html"));
       }),
     );
