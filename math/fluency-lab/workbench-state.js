@@ -48,41 +48,26 @@ export function createWorkbenchState() {
     else delete s.fractions.shaded[d];
   }
 
-  // full=false is the authored practice problem: pick the right tool and set up the givens,
-  // but leave the work (and so the answer) to the student. full=true is a student's own
-  // typed problem, so the model is built out completely.
-  function apply(p, full) {
+  // Set up the practice problem's givens in the tool that fits it, leaving the work
+  // (and so the answer) to the student.
+  function apply(p) {
     s.tool = p.tool;
-    if (p.tool === "counters") {
-      if (full) layoutCounters(p.a, p.b, p.takeAway);
-      else layoutCounters(p.a, 0, 0, p.a + p.b);
-    } else if (p.tool === "numberline") {
-      s.numberline = { start: p.start, jumps: full ? [p.jump] : [], draft: "" };
-    } else if (p.tool === "fractions") {
+    if (p.tool === "counters") layoutCounters(p.a, 0, 0, p.a + p.b);
+    else if (p.tool === "numberline") s.numberline = { start: p.start, jumps: [], draft: "" };
+    else if (p.tool === "fractions") {
       s.fractions = fresh().fractions;
-      for (const { n, d } of p.fractions) {
-        addStrip(d);
-        if (full) shadeStrip(d, n);
-      }
-    } else if (p.tool === "array") {
-      s.array = { rows: p.rows, cols: p.cols, split: Math.min(5, p.cols - 1) };
-    } else if (p.tool === "integers") {
-      s.integers = full
-        ? { pos: p.pos, neg: p.neg }
-        : {
-            pos: p.first > 0 ? Math.min(15, p.first) : 0,
-            neg: p.first < 0 ? Math.min(15, -p.first) : 0,
-          };
-    } else if (p.tool === "balance") {
-      s.balance = { coeff: p.coeff, constant: p.constant, rhs: p.rhs };
-    }
+      for (const { d } of p.fractions) addStrip(d);
+    } else if (p.tool === "array") s.array = { rows: p.rows, cols: p.cols, split: Math.min(5, p.cols - 1) };
+    else if (p.tool === "integers")
+      s.integers = { pos: p.first > 0 ? Math.min(15, p.first) : 0, neg: p.first < 0 ? Math.min(15, -p.first) : 0 };
+    else if (p.tool === "balance") s.balance = { coeff: p.coeff, constant: p.constant, rhs: p.rhs };
   }
 
   function resetToItem(item) {
     s = fresh();
     const q = item?.question ?? "";
     const parsed = parseProblem(q);
-    if (parsed && !parsed.error) apply(parsed, false);
+    if (parsed && !parsed.error) apply(parsed);
     else if (q.includes("/")) s.tool = "fractions";
   }
 
@@ -255,9 +240,5 @@ export function createWorkbenchState() {
     filled,
     nlCurrent,
     resetToItem,
-    applyTyped: (parsed) => apply(parsed, true),
-    selectTool: (tool) => {
-      s.tool = tool;
-    },
   };
 }

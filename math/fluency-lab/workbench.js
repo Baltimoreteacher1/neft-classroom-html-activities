@@ -1,5 +1,4 @@
 import { createWorkbenchState, isWholeText } from "./workbench-state.js";
-import { parseProblem } from "./workbench-parse.js";
 import { renderInlineProblemModel } from "./visual-lab.js";
 
 const esc = (value) =>
@@ -9,30 +8,13 @@ const esc = (value) =>
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
 
-const TOOLS = [
-  ["model", "💡 Problem Model"],
-  ["counters", "🔵 Ten-Frames"],
-  ["numberline", "📏 Number Line"],
-  ["fractions", "🍰 Fraction Strips"],
-  ["array", "🔲 Area Model"],
-  ["integers", "➕➖ Zero Pairs"],
-  ["balance", "⚖️ Balance Scale"],
-];
-
-const ENTRY_EXAMPLES = "e.g. 15 + 8, 34 - 18, 6 x 8, 3/4, -4 + 7, 2x + 4 = 12";
-const ENTRY_HELP = "Try 15 + 8, 34 - 18, 6 x 8, 3/4, -4 + 7 or 2x + 4 = 12.";
-
-export function mountWorkbench(container, { skill, item, onSelectTool } = {}) {
+export function mountWorkbench(container, { skill, item } = {}) {
   container.classList.add("interactive-math-workbench");
 
   const wb = createWorkbenchState();
-  let entryText = "";
-  let entryMsg = "";
   let hint = "";
 
   wb.resetToItem(item);
-  // Students see only the tool that fits this problem (plus any tool their own typed problem needs).
-  const fitTool = wb.state.tool;
 
   function setAnswerInput(val) {
     const input = document.querySelector("#answer-input");
@@ -59,22 +41,10 @@ export function mountWorkbench(container, { skill, item, onSelectTool } = {}) {
       <div class="workbench-bar">
         <div class="workbench-header-row">
           <div class="workbench-titles">
-            <span class="workbench-title">Build it with a model</span>
-            <span class="workbench-subtitle">Use the model to help you solve.</span>
+            <span class="workbench-title">Use the model to help you solve.</span>
           </div>
         </div>
-        <div class="workbench-entry">
-          <label class="workbench-entry-label" for="wb-problem-input">Type any problem or numbers:</label>
-          <div class="workbench-entry-row">
-            <input id="wb-problem-input" type="text" class="workbench-entry-input" data-focus-key="wb-entry" autocomplete="off" spellcheck="false" enterkeyhint="go" placeholder="${ENTRY_EXAMPLES}" value="${esc(entryText)}" title="${ENTRY_HELP}"/>
-            <button type="button" class="mini-tool-btn entry-btn" data-entry="model" data-focus-key="wb-model">🔍 Model this</button>
-            <button type="button" class="mini-tool-btn entry-btn" data-entry="reset" data-focus-key="wb-reset">↺ Reset to problem</button>
-          </div>
-          <p class="workbench-entry-msg" role="status" aria-live="polite">${esc(entryMsg)}</p>
-        </div>
-        <div class="workbench-tabs" role="tablist" aria-label="Interactive math tools">
-          ${TOOLS.filter(([id]) => id === fitTool || id === tool).map(([id, label]) => `<button type="button" class="tool-tab ${tool === id ? "active" : ""}" data-tool="${id}" data-focus-key="tab-${id}" role="tab" aria-selected="${tool === id}">${label}</button>`).join("")}
-        </div>
+        <button type="button" class="mini-tool-btn" data-reset-model data-focus-key="wb-reset">Start over</button>
       </div>
       <div class="workbench-body">
         ${renderActiveTool()}
@@ -389,22 +359,6 @@ export function mountWorkbench(container, { skill, item, onSelectTool } = {}) {
     render();
   };
 
-  function submitEntry() {
-    const parsed = parseProblem(entryText, { strict: true });
-    if (!parsed) {
-      entryMsg = entryText.trim()
-        ? `I couldn't read that. ${ENTRY_HELP}`
-        : `Type a problem first. ${ENTRY_HELP}`;
-    } else if (parsed.error) {
-      entryMsg = parsed.error;
-    } else {
-      wb.applyTyped(parsed);
-      onSelectTool?.(wb.state.tool);
-      entryMsg = `Modeling ${entryText.trim()}. Change any number in the tool to keep experimenting.`;
-    }
-    act(() => {});
-  }
-
   function bindField(input) {
     const spec = wb.fields[input.dataset.field];
     const read = () => (isWholeText(input.value) ? Number(input.value.trim()) : null);
@@ -430,35 +384,13 @@ export function mountWorkbench(container, { skill, item, onSelectTool } = {}) {
     const on = (selector, handler) => container.querySelectorAll(selector).forEach(handler);
     const { actions } = wb;
 
-    on("[data-tool]", (btn) => {
-      btn.onclick = () => {
-        wb.selectTool(btn.dataset.tool);
-        onSelectTool?.(btn.dataset.tool);
-        act(() => {});
-      };
-    });
 
     on("[data-copy-val]", (btn) => {
       btn.onclick = () => setAnswerInput(btn.dataset.copyVal);
     });
 
-    // Universal problem bar
-    const entry = container.querySelector("#wb-problem-input");
-    entry.oninput = () => {
-      entryText = entry.value;
-    };
-    entry.onkeydown = (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        submitEntry();
-      }
-    };
-    container.querySelector("[data-entry='model']").onclick = submitEntry;
-    container.querySelector("[data-entry='reset']").onclick = () => {
+    container.querySelector("[data-reset-model]").onclick = () => {
       wb.resetToItem(item);
-      onSelectTool?.(wb.state.tool);
-      entryText = "";
-      entryMsg = "Back to the practice problem.";
       act(() => {});
     };
 

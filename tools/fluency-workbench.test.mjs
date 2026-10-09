@@ -52,17 +52,6 @@ wb.resetToItem({ question: "Order these fractions 1/2 and 3/4" });
 assert.equal(wb.state.tool, "fractions");
 assert.deepEqual(wb.state.fractions.shaded, {}, "an authored fraction problem arrives unshaded");
 
-// ---- state: a typed problem is built out completely -------------------------------------
-wb.applyTyped(strict("15 + 8"));
-assert.deepEqual(wb.counts(), { a: 15, b: 8 });
-assert.equal(wb.state.counters.total, 30);
-wb.applyTyped(strict("15 - 8"));
-assert.equal(wb.filled(), 7);
-wb.applyTyped(strict("34 - 18"));
-assert.equal(wb.nlCurrent(), 16);
-wb.applyTyped(strict("3/4"));
-assert.deepEqual([...wb.state.fractions.shaded[4]], [0, 1, 2]);
-
 // ---- state: every number box enforces its own range -------------------------------------
 wb.fields["counters-a"].set(25);
 assert.deepEqual(wb.fields["counters-b"].range(), [0, 5], "A + B can never pass 30 counters");
@@ -96,47 +85,47 @@ for (const [k, v] of Object.entries({ window: dom.window, document: dom.window.d
   Object.defineProperty(globalThis, k, { value: v, configurable: true, writable: true });
 const { mountWorkbench } = await import("../math/fluency-lab/workbench.js");
 const host = document.querySelector("#wb");
-mountWorkbench(host, { skill: "addition", item: { question: "34 + 18", skill: "addition" } });
-
 const $ = (sel) => host.querySelector(sel);
 const type = (el, value) => {
   el.value = value;
   el.dispatchEvent(new dom.window.Event("input", { bubbles: true }));
 };
-const enter = (el) =>
-  el.dispatchEvent(new dom.window.KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+// Each practice problem opens its own model, already set to the problem's numbers.
+const open = (question) =>
+  mountWorkbench(host, { skill: "practice", item: { question, skill: "practice" } });
 
-assert.ok($("#wb-problem-input"), "universal problem bar is present");
+open("34 + 18");
+assert.equal($("#wb-problem-input"), null, "students do not type a problem into the workbench");
 assert.equal(
-  $("[data-tool].active").dataset.tool,
-  "numberline",
-  "34 + 18 starts on the number line",
+  host.querySelectorAll("[data-tool]").length,
+  0,
+  "only the one model that fits is shown",
+);
+assert.match(
+  $(".numberline-readout").textContent,
+  /Start:\s*34/,
+  "34 + 18 opens on the number line at 34",
 );
 
-type($("#wb-problem-input"), "6 x 8");
-enter($("#wb-problem-input"));
-assert.equal($("[data-tool].active").dataset.tool, "array");
+open("6 x 8");
 assert.equal($("[data-field='rows']").value, "6");
 assert.equal($("[data-field='cols']").value, "8");
-
 type($("[data-field='rows']"), "9");
-assert.match($(".array-split-header").textContent, /9 × 8/);
+assert.match(
+  $(".array-split-header").textContent,
+  /9 × 8/,
+  "the model's own number boxes still work",
+);
 assert.equal($("[data-field='rows']").value, "9", "typing keeps the value in the box");
 
-type($("#wb-problem-input"), "banana");
-$("[data-entry='model']").click();
-assert.match($(".workbench-entry-msg").textContent, /couldn't read/);
-assert.equal($("[data-tool].active").dataset.tool, "array", "a bad entry changes nothing");
-
-type($("#wb-problem-input"), "-4 + 7");
-$("[data-entry='model']").click();
-assert.equal($("[data-tool].active").dataset.tool, "integers");
-assert.equal($("[data-field='pos']").value, "7");
-assert.equal($("[data-field='neg']").value, "4");
+// The model is set up with the givens; the student does the work in it.
+open("-4 + 7");
+assert.equal($("[data-field='neg']").value, "4", "-4 + 7 starts with 4 negatives");
+assert.equal($("[data-field='pos']").value, "0", "the student adds the positives");
+type($("[data-field='pos']"), "7");
 assert.match($(".integers-readout").textContent, /\+3/);
 
-type($("#wb-problem-input"), "2x + 4 = 12");
-$("[data-entry='model']").click();
+open("2x + 4 = 12");
 assert.equal($("[data-field='bal-coeff']").value, "2");
 assert.match($(".balance-readout").textContent, /x = 4/);
 type($("[data-field='bal-coeff']"), "0");
@@ -148,34 +137,26 @@ assert.equal(
 );
 assert.match($(".workbench-hint").textContent, /other than 0/);
 
-type($("#wb-problem-input"), "3/4");
-$("[data-entry='model']").click();
-assert.equal($(".strip-label + .interactive-fraction-strip") !== null, true);
-assert.equal(host.querySelectorAll(".fraction-strip-piece.shaded").length, 3);
-type($("[data-field='fr-num']"), "1");
-type($("[data-field='fr-den']"), "5");
-$("[data-fraction-action='add']").click();
-assert.ok($("[data-remove-strip='5']"), "a custom 1/5 strip is added and removable");
+open("3/4");
+assert.equal(
+  host.querySelectorAll(".fraction-strip-piece.shaded").length,
+  0,
+  "the student shades 3/4",
+);
+assert.ok(host.querySelector(".interactive-fraction-strip"), "a fourths strip is ready");
 
-type($("#wb-problem-input"), "15 + 8");
-$("[data-entry='model']").click();
-assert.equal($("[data-field='counters-a']").value, "15");
-assert.equal($("[data-field='counters-b']").value, "8");
+open("15 + 8");
+assert.equal($("[data-field='counters-a']").value, "15", "15 + 8 starts with 15 counters");
+type($("[data-field='counters-b']"), "8");
 assert.equal(host.querySelectorAll(".interactive-counter-cell.part-b").length, 8);
 
-$("[data-tool='numberline']").click();
+open("34 + 18");
 type($("[data-field='nl-start']"), "5");
-type($("#wb-jump-input"), "-8");
-$("[data-jump-action='add']").click();
-assert.match($(".numberline-readout").textContent, /Current Position:\s*-3/);
-
-$("[data-entry='reset']").click();
-assert.equal(
-  $("[data-tool].active").dataset.tool,
-  "numberline",
-  "reset returns to the practice problem's tool",
+$("[data-reset-model]").click();
+assert.match(
+  $(".numberline-readout").textContent,
+  /Start:\s*34/,
+  "Start over returns to the problem's numbers",
 );
-assert.match($(".numberline-readout").textContent, /Start:\s*34/);
-assert.equal($("#wb-problem-input").value, "");
 
 console.log("fluency-workbench: ok");

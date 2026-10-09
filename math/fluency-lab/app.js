@@ -13,6 +13,7 @@ import { transferPrompt } from "./lesson-content.js";
 import { handleModelTap, interactivePicture, mathText, stepVisual, stepsBlock, trailPicture } from "./trail-pictures.js";
 import { PROFILE_NAMES, assignmentQueue, cleanProgress, decodeAssignment, downloadFile, makeBackup, mountTeacherStudio, parseBackup, profileKey, profiles, progressReport, readLocal, selectProfile, writeLocal } from "./school-tools.js";
 import { mountWorkbench } from "./workbench.js";
+import { createWorkbenchState } from "./workbench-state.js";
 import { mountTrail } from "./trail-view.js";
 
 const STORAGE_KEY = "ewl-fluency-progress-v1";
@@ -548,6 +549,12 @@ function nextProblem(restoredItem = null) {
 
 // Every practice problem carries its own model: the interactive picture of these numbers, or,
 // when no picture fits, the workbench limited to the one tool that suits the problem.
+function workbenchFits(item) {
+  const wb = createWorkbenchState();
+  wb.resetToItem(item);
+  return wb.state.tool !== "model" || Boolean(renderInlineProblemModel(item.skill, item));
+}
+
 function mountProblemModel(show) {
   const host = els.problemVisualScaffold;
   if (!host) return;
@@ -560,7 +567,14 @@ function mountProblemModel(show) {
   const picture = interactivePicture(state.item.model);
   els.drillPanel.style.setProperty("--trail", getGrade(state.item.skill.grade).color);
   if (picture) host.innerHTML = `<div class="tr-model">${picture}</div>`;
-  else mountWorkbench(host, { skill: state.item.skill, item: state.item });
+  else if (workbenchFits(state.item)) mountWorkbench(host, { skill: state.item.skill, item: state.item });
+  else {
+    // No model fits this kind of problem (rounding, money, time …): show nothing rather than an empty box.
+    host.hidden = true;
+    host.innerHTML = "";
+    els.toggleProblemVisual.hidden = true;
+    return;
+  }
   els.toggleProblemVisual.setAttribute("aria-expanded", "true");
   els.toggleProblemVisual.textContent = "Hide the model";
 }
