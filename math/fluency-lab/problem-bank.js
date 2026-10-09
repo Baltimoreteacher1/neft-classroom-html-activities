@@ -39,6 +39,7 @@ function problem(question, answer, options = {}) {
     choices: options.choices || null,
     unit: options.unit || "",
     model: options.model || null,
+    steps: options.steps || [options.explanation || `The answer is ${options.displayAnswer || answers[0]}.`],
   };
 }
 
@@ -54,16 +55,72 @@ function friendlyJumps(start, amount, direction) {
   return [part, amount - part].filter(Boolean).map((jump) => jump * direction);
 }
 
+const fmt = (value) => whole.format(value);
+
+// Two or three short number sentences that walk to the answer, using the problem's own numbers.
+function factSteps(op, a, b, answer, strategy) {
+  const small = Math.min(a, b);
+  const big = Math.max(a, b);
+  if (op === "add") {
+    if (small === 0) return [`Adding 0 changes nothing.`, `${a} + ${b} = ${answer}`];
+    if (strategy === "doubles") return [`${a} + ${a} = ${answer}`];
+    if (strategy === "near") return [`${small} + ${small} = ${small * 2}`, `${small * 2} + 1 = ${answer}`];
+    if (strategy === "makeTen" && big < 10 && answer > 10) return [`${big} + ${10 - big} = 10`, `10 + ${small - (10 - big)} = ${answer}`];
+    if (answer <= 20 && small <= 3) return [`Start at ${big}.`, `Count on ${small}: ${Array.from({ length: small }, (_, i) => big + i + 1).join(", ")}`];
+    if (answer <= 20) return big < 10 && answer > 10 ? [`${big} + ${10 - big} = 10`, `10 + ${small - (10 - big)} = ${answer}`] : [`${a} + ${b} = ${answer}`];
+    const jumps = friendlyJumps(a, b, 1);
+    let at = a;
+    return jumps.map((jump) => `${fmt(at)} + ${fmt(jump)} = ${fmt((at += jump))}`);
+  }
+  if (op === "sub") {
+    if (b === 0) return [`Take away 0. Nothing changes.`, `${a} − 0 = ${a}`];
+    if (strategy === "countBack" || (a <= 20 && b <= 2)) return [`Start at ${a}.`, `Count back ${b}: ${Array.from({ length: b }, (_, i) => a - i - 1).join(", ")}`];
+    if (a <= 20) return [`${b} + ? = ${a}`, `${b} + ${answer} = ${a}`, `So ${a} − ${b} = ${answer}`];
+    let at = a;
+    return friendlyJumps(a, b, -1).map((jump) => `${fmt(at)} − ${fmt(-jump)} = ${fmt((at += jump))}`);
+  }
+  if (op === "mul") {
+    if (small === 0) return [`Times 0 is always 0.`, `${a} × ${b} = 0`];
+    if (small === 1) return [`1 group of ${big} is ${big}.`, `${a} × ${b} = ${big}`];
+    if (strategy === "zeros" || (big % 10 === 0 && big > 10)) {
+      const zerosA = String(a).match(/0*$/)[0].length;
+      const zerosB = String(b).match(/0*$/)[0].length;
+      const basicA = a / 10 ** zerosA;
+      const basicB = b / 10 ** zerosB;
+      return [`${basicA} × ${basicB} = ${basicA * basicB}`, `Add ${zerosA + zerosB} zero${zerosA + zerosB === 1 ? "" : "s"}: ${fmt(answer)}`];
+    }
+    if (big > 12) {
+      const split = big >= 100 ? Math.floor(big / 100) * 100 : Math.floor(big / 10) * 10;
+      return [`${fmt(split)} × ${small} = ${fmt(split * small)}`, `${fmt(big - split)} × ${small} = ${fmt((big - split) * small)}`, `${fmt(split * small)} + ${fmt((big - split) * small)} = ${fmt(answer)}`].filter((line) => !line.startsWith("0 ×"));
+    }
+    if (big === 9) return [`10 × ${small} = ${10 * small}`, `${10 * small} − ${small} = ${answer}`];
+    if (big >= 6 && big <= 8) return [`5 × ${small} = ${5 * small}`, `${big - 5} × ${small} = ${(big - 5) * small}`, `${5 * small} + ${(big - 5) * small} = ${answer}`];
+    return [`Count by ${big}s:`, Array.from({ length: small }, (_, i) => big * (i + 1)).join(", ")];
+  }
+  if (answer <= 12) return [`${b} × ? = ${fmt(a)}`, `${b} × ${answer} = ${fmt(a)}`, `So ${fmt(a)} ÷ ${b} = ${answer}`];
+  const tens = Math.floor(answer / 10) * 10;
+  return [`${b} × ${fmt(tens)} = ${fmt(b * tens)}`, `${b} × ${answer - tens} = ${fmt(b * (answer - tens))}`, `${fmt(tens)} + ${answer - tens} = ${fmt(answer)}`];
+}
+
 function factModel(op, a, b, answer, config) {
-  if (op === "add" && a + b <= 20) return { type: "counters", total: 20, filled: a, target: a + b, shown: a + b, caption: `${a} + ${b} on a double ten-frame` };
-  if (op === "sub" && a <= 20) return { type: "counters", total: 20, filled: Math.max(0, a - b), target: a, shown: Math.max(0, a - b), caption: `Start with ${a}, take away ${b}` };
+  if (op === "add" && a + b <= 20) return { type: "counters", total: 20, kind: "join", filled: a, target: a + b, shown: a + b, caption: `${a} + ${b} on a double ten-frame` };
+  if (op === "sub" && a <= 20) return { type: "counters", total: 20, kind: "takeAway", filled: Math.max(0, a - b), target: a, shown: Math.max(0, a - b), caption: `Start with ${a}, take away ${b}` };
   if (op === "add" || op === "sub") {
     const jumps = friendlyJumps(a, b, op === "add" ? 1 : -1);
     return { type: "numberline", start: a, jumps, caption: `${whole.format(a)} ${FACT_SYMBOL[op]} ${whole.format(b)} in friendly jumps` };
   }
   if (op === "mul") {
     if (config.tens && a <= 12 && b / 10 <= 12) return { type: "array", a, b: b / 10, split: a, unit: 10, caption: `${a} rows of ${b / 10} tens` };
-    if (a >= 1 && b >= 1 && a <= 12 && b <= 12) return { type: "array", a, b, split: a > 5 ? 5 : a, caption: `${a} rows of ${b}` };
+    if (a >= 1 && b >= 1 && a <= 12 && b <= 12) {
+      // Match the guided steps: break-apart facts show the big factor as rows (5 rows + the rest);
+      // skip-count facts show the small factor as rows, counting by the big factor.
+      const small = Math.min(a, b);
+      const big = Math.max(a, b);
+      const breakApart = big >= 6 && big <= 9 && small >= 2;
+      const rows = breakApart ? big : small;
+      const cols = breakApart ? small : big;
+      return { type: "array", a: rows, b: cols, split: breakApart && big <= 8 ? 5 : rows, caption: `${rows} rows of ${cols}` };
+    }
     if (a > 12) {
       const split = a >= 100 ? Math.floor(a / 100) * 100 : Math.floor(a / 10) * 10;
       return { type: "array", a, b, split, caption: `Area model: ${whole.format(a)} = ${whole.format(split)} + ${whole.format(a - split)}, each times ${b}` };
@@ -74,52 +131,27 @@ function factModel(op, a, b, answer, config) {
   return null;
 }
 
-const GROUP_SCENES = [
-  ["bag", "apples"],
-  ["plate", "cookies"],
-  ["row", "chairs"],
-  ["box", "crayons"],
-  ["shelf", "books"],
-  ["vase", "flowers"],
-];
-const plural = (count, noun) => `${count} ${count === 1 ? noun : `${noun}s`}`;
-
-// Early multiplication and division: vary the picture of the fact (symbols, equal groups,
-// missing factor) and give a hint built from the actual numbers without revealing the answer.
-function coachedFact(op, a, b, answer, config, rng) {
-  const [container, thing] = pick(GROUP_SCENES, rng);
-  const symbol = FACT_SYMBOL[op];
-  const canSpeak = op === "mul" ? a >= 2 && b >= 2 && !config.tens : b >= 2 && answer >= 2;
-  const format = canSpeak ? pick(["symbol", "symbol", "story", "missing"], rng) : "symbol";
-  const sentence = `${whole.format(a)} ${symbol} ${whole.format(b)} = ${whole.format(answer)}.`;
-  if (op === "mul") {
-    const small = Math.min(a, b);
-    const big = Math.max(a, b);
-    let hint;
-    if (config.tens) hint = `Solve the basic fact ${a} × ${b / 10} first. Then count that many tens.`;
-    else if (small <= 1) hint = small === 0 ? "Zero equal groups, or zero in each group, means nothing at all." : "One group of any size stays that size.";
-    else if (small <= 5) hint = `Skip-count by ${big}, ${small} times: ${Array.from({ length: small - 1 }, (_, i) => big * (i + 1)).join(", ")}, ... What comes next?`;
-    else {
-      const f = a >= 6 ? a : b;
-      const o = f === a ? b : a;
-      hint = f === 9 ? `Start with 10 × ${o} = ${10 * o}. Then take away one group of ${o}.` : `Start with 5 × ${o} = ${5 * o}. Then add ${f - 5} more group${f - 5 === 1 ? "" : "s"} of ${o}.`;
-    }
-    if (format === "story") {
-      return problem(`${plural(a, container)} with ${b} ${thing} in each ${container}. How many ${thing} in all?`, answer, { hint, explanation: `${a} groups of ${b} is ${a} × ${b}. ${sentence}`, model: factModel(op, a, b, answer, config) });
-    }
-    if (format === "missing") {
-      return problem(`${a} × □ = ${whole.format(answer)}. What number belongs in the box?`, b, { hint: `Ask: how many groups of ${a} make ${whole.format(answer)}? Skip-count by ${a}.`, explanation: `${sentence} The missing factor is ${b}.` });
-    }
-    return problem(`${whole.format(a)} × ${whole.format(b)} = ?`, answer, { hint, explanation: sentence, model: factModel(op, a, b, answer, config) });
+// Early multiplication and division stay basic facts; the hint is built from the actual numbers
+// (skip-count, a 5-fact or 10-fact, or the related multiplication) without giving the answer.
+function coachedFact(op, a, b, answer, config) {
+  const model = factModel(op, a, b, answer, config);
+  if (op === "div") {
+    return problem(`${whole.format(a)} ÷ ${b} = ?`, answer, {
+      hint: `Think multiplication: ${b} × ? = ${whole.format(a)}.`,
+      explanation: `${whole.format(a)} ÷ ${b} = ${answer} because ${b} × ${answer} = ${whole.format(a)}.`,
+      model,
+      steps: factSteps(op, a, b, answer),
+    });
   }
-  const hint = `Think: ${b} × ? = ${whole.format(a)}. Skip-count by ${b} until you reach ${whole.format(a)}.`;
-  if (format === "story") {
-    return problem(`${whole.format(a)} ${thing} are shared equally into ${plural(b, container)}. How many ${thing} go in each ${container}?`, answer, { hint, explanation: `${whole.format(a)} ÷ ${b} = ${answer} because ${b} × ${answer} = ${whole.format(a)}.`, model: factModel(op, a, b, answer, config) });
-  }
-  if (format === "missing") {
-    return problem(`${b} × □ = ${whole.format(a)}. What number belongs in the box?`, answer, { hint, explanation: `${b} × ${answer} = ${whole.format(a)}, so ${whole.format(a)} ÷ ${b} = ${answer}.` });
-  }
-  return problem(`${whole.format(a)} ÷ ${whole.format(b)} = ?`, answer, { hint, explanation: `${whole.format(a)} ÷ ${whole.format(b)} = ${answer} because ${b} × ${answer} = ${whole.format(a)}.`, model: factModel(op, a, b, answer, config) });
+  const small = Math.min(a, b);
+  const big = Math.max(a, b);
+  let hint;
+  if (config.tens) hint = `Solve ${a} × ${b / 10} first. Then count that many tens.`;
+  else if (small <= 1) hint = small === 0 ? "Zero groups, or zero in each group, makes 0." : "One group of a number is that number.";
+  else if (big <= 5 || big === 10) hint = `Skip-count by ${big}, ${small} times.`;
+  else if (big === 9) hint = `Start with 10 × ${small} = ${10 * small}. Then take away one group of ${small}.`;
+  else hint = `Start with 5 × ${small} = ${5 * small}. Then add ${big - 5} more group${big - 5 === 1 ? "" : "s"} of ${small}.`;
+  return problem(`${whole.format(a)} × ${whole.format(b)} = ?`, answer, { hint, explanation: `${whole.format(a)} × ${whole.format(b)} = ${whole.format(answer)}`, model, steps: factSteps(op, a, b, answer, config.tens ? "zeros" : "") });
 }
 
 const generators = {
@@ -151,7 +183,7 @@ const generators = {
       answer = randInt(config.minQuotient ?? 1, config.maxQuotient ?? max, rng);
       a = b * answer;
     }
-    if (config.coach) return coachedFact(op, a, b, answer, config, rng);
+    if (config.coach) return coachedFact(op, a, b, answer, config);
     const symbol = FACT_SYMBOL[op];
     return problem(`${whole.format(a)} ${symbol} ${whole.format(b)} = ?`, answer, {
       hint:
@@ -164,6 +196,63 @@ const generators = {
               : "Ask: what number times the divisor makes the dividend?",
       explanation: `${whole.format(a)} ${symbol} ${whole.format(b)} = ${whole.format(answer)}.`,
       model: factModel(op, a, b, answer, config),
+      steps: factSteps(op, a, b, answer),
+    });
+  },
+
+  // Basic facts from explicit pools: the fact-trail stations (one strategy per station).
+  factPool(config, rng) {
+    const op = config.op;
+    let a;
+    let b;
+    let answer;
+    for (let tries = 0; tries < 50; tries += 1) {
+      if (op === "add") {
+        a = pick(config.left, rng);
+        b = config.pair === "double" ? a : config.pair === "near" ? a + 1 : pick(config.right, rng);
+        if (config.swap && rng() < 0.5) [a, b] = [b, a];
+        answer = a + b;
+      } else if (op === "sub") {
+        b = pick(config.right, rng);
+        answer = pick(config.result, rng);
+        a = answer + b;
+      } else if (op === "mul") {
+        a = pick(config.left, rng);
+        b = pick(config.right, rng);
+        if (rng() < 0.5) [a, b] = [b, a];
+        answer = a * b;
+      } else {
+        b = pick(config.right, rng);
+        answer = pick(config.result, rng);
+        a = b * answer;
+      }
+      const top = op === "sub" ? a : answer;
+      if (top <= (config.maxResult ?? Infinity)) break;
+    }
+    const symbol = FACT_SYMBOL[op];
+    const small = Math.min(a, b);
+    const big = Math.max(a, b);
+    const hints = {
+      countOn: `Start at ${big}. Count on ${small}.`,
+      doubles: `This is a double. Think of ${a} and ${b} as a matching pair.`,
+      near: `Use the double you know: ${small} + ${small}. Then add 1 more.`,
+      makeTen: `Make a ten first. ${big} needs ${10 - big} more to make 10.`,
+      countBack: `Start at ${a}. Count back ${b}.`,
+      thinkAdd: `Think addition: ${b} + ? = ${a}.`,
+      skipCount: small >= 2 ? `Skip-count by ${big}, ${small} times.` : small === 0 ? "Zero groups, or zero in each group, makes 0." : "One group of a number is that number.",
+      fiveFact: `Start with 5 × ${small} = ${5 * small}. Then add ${big - 5} more group${big - 5 === 1 ? "" : "s"} of ${small}.`,
+      tenFact: `Start with 10 × ${small} = ${10 * small}. Then take away ${10 - big} group${10 - big === 1 ? "" : "s"} of ${small}.`,
+      thinkMul: `Think multiplication: ${b} × ? = ${a}.`,
+      addAny: "Look for a double you know, or make a ten first.",
+      zeros: `Multiply the basic fact first. Then write the zeros from ${a} and ${b}.`,
+    };
+    let strategy = config.strategy;
+    if (strategy === "breakApart") strategy = big === 9 ? "tenFact" : big >= 6 && big <= 8 && small >= 2 ? "fiveFact" : "skipCount";
+    return problem(`${a} ${symbol} ${b} = ?`, answer, {
+      hint: hints[strategy] || hints.countOn,
+      explanation: `${a} ${symbol} ${b} = ${answer}`,
+      model: factModel(op, a, b, answer, {}),
+      steps: factSteps(op, a, b, answer, strategy),
     });
   },
 
@@ -198,6 +287,8 @@ const generators = {
     return problem(`${known} + ? = ${target}`, answer, {
       hint: `Picture a ${target}-frame. How many spaces are still empty?`,
       explanation: `${known} needs ${answer} more to make ${target}.`,
+      steps: [`${known} + ? = ${target}`, `Count the empty spaces: ${answer}`, `${known} + ${answer} = ${target}`],
+      model: target <= 20 ? { type: "counters", kind: "missing", total: target <= 10 ? 10 : 20, filled: known, target, shown: known, caption: `${known} counters. How many more make ${target}?` } : null,
     });
   },
 
@@ -489,9 +580,16 @@ const generators = {
     }
     const answer = op === "add" ? a + b : op === "sub" ? a - b : op === "mul" ? a * b : a / b;
     const symbol = FACT_SYMBOL[op];
-    return problem(`${a} ${symbol} (${b}) = ?`, answer, {
+    return problem(`${a} ${symbol} ${b < 0 ? `(${b})` : b} = ?`, answer, {
       hint: op === "add" || op === "sub" ? "Use a number line and pay attention to direction." : "Find the size first, then use the sign rules.",
-      explanation: `${a} ${symbol} (${b}) = ${answer}.`,
+      explanation: `${a} ${symbol} ${b < 0 ? `(${b})` : b} = ${answer}.`,
+      steps:
+        op === "mul" || op === "div"
+          ? [`Size: ${Math.abs(a)} ${symbol} ${Math.abs(b)} = ${Math.abs(answer)}`, `Sign: ${(a < 0) === (b < 0) || answer === 0 ? "same signs, so positive" : "different signs, so negative"}`, `${a} ${symbol} ${b < 0 ? `(${b})` : b} = ${answer}`]
+          : op === "sub"
+            ? [`Subtracting ${b} is adding ${-b}.`, `${a} + ${-b < 0 ? `(${-b})` : -b} = ${answer}`]
+            : [`Start at ${a}. Move ${Math.abs(b)} ${b < 0 ? "left" : "right"}.`, `${a} + ${b < 0 ? `(${b})` : b} = ${answer}`],
+      model: (op === "add" || op === "sub") && b !== 0 ? { type: "numberline", start: a, jumps: [op === "add" ? b : -b], caption: op === "add" ? `Start at ${a}. Adding ${b} moves ${b < 0 ? "left" : "right"}.` : `Start at ${a}. Subtracting ${b} moves ${b < 0 ? "right" : "left"}.` } : null,
     });
   },
 

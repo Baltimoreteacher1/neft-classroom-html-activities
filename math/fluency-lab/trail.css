@@ -1,0 +1,1554 @@
+/* Fact Trail design system. Loaded last: it also sets the page chrome (type, page tint, header)
+   so the whole lab reads as one student-facing product. One accent per grade (--trail). */
+:root {
+  --t-ink: #13233a;
+  --t-ink-soft: #4a5a70;
+  --t-page: #eef3f9;
+  --t-paper: #ffffff;
+  --t-rule: #d5deea;
+  --t-gold: #f3b61f;
+  --t-good: #1e8a5a;
+  --t-good-soft: #e3f4ea;
+  --t-practice: #d9782a;
+  --t-practice-soft: #fdf0e3;
+  --t-focus: #1f5fbf;
+  font-family: "Lexend", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+}
+
+body {
+  background: var(--t-page);
+  color: var(--t-ink);
+  font-family: "Lexend", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+}
+
+/* The skip link is invisible until it has keyboard focus. */
+.skip-link:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  transform: none;
+}
+
+:where(button, a, input, select, textarea):focus-visible {
+  outline: 3px solid var(--t-focus);
+  outline-offset: 3px;
+}
+
+/* ---------- page chrome ---------- */
+.site-header {
+  background: var(--t-ink);
+}
+
+.intro {
+  display: block;
+  padding: 2rem 0 0.5rem;
+}
+
+.intro h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4.4vw, 3rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.intro-copy > p:not(.plain-label) {
+  margin: 0.5rem 0 0;
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+.overall-stats {
+  margin-top: 0.9rem;
+}
+
+.hub-tabs {
+  margin: 1rem 0 0.5rem;
+  border-bottom: 1px solid var(--t-rule);
+}
+
+.hub-tabs .teacher-tab {
+  margin-left: auto;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.grade-rail {
+  padding: 1rem 0 0.25rem;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.grade-rail-heading {
+  margin-bottom: 0.6rem;
+}
+
+.grade-rail-heading h2 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--t-ink-soft);
+}
+
+.grade-tab {
+  border-radius: 12px;
+  font-family: inherit;
+}
+
+.grade-tab strong {
+  font-size: 1.6rem;
+}
+
+/* ---------- the trail ---------- */
+.trail {
+  margin: 1.25rem 0 2.5rem;
+  padding: clamp(1.25rem, 3vw, 2.25rem);
+  border-radius: 24px;
+  background: var(--t-paper);
+  border-top: 10px solid var(--trail);
+  box-shadow:
+    0 1px 0 var(--t-rule),
+    0 18px 40px -28px rgba(19, 35, 58, 0.45);
+}
+
+.tr-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+}
+
+.tr-head h2 {
+  margin: 0;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.tr-focus {
+  margin: 0.3rem 0 0;
+  color: var(--t-ink-soft);
+  font-size: 1.1rem;
+}
+
+.tr-tally {
+  display: flex;
+  gap: 1.25rem;
+  color: var(--t-ink-soft);
+}
+
+.tr-tally b {
+  color: var(--t-ink);
+  font-size: 1.35rem;
+}
+
+.tr-gold,
+.tr-tally .tr-gold {
+  color: #b07d00;
+}
+
+/* Stops sit on a dotted path; each medal shows its facts in large type. */
+.tr-map {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1.75rem 1rem;
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: stop;
+}
+
+.tr-stop {
+  position: relative;
+  counter-increment: stop;
+}
+
+.tr-stop:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 48px;
+  left: calc(50% + 52px);
+  width: calc(100% - 104px + 1rem);
+  border-top: 4px dotted var(--t-rule);
+}
+
+.tr-stop.done:not(:last-child)::after {
+  border-top-color: var(--trail);
+}
+
+.tr-stop button {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.25rem 0.25rem 0.5rem;
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  color: var(--t-ink);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.tr-medal {
+  display: grid;
+  width: 96px;
+  height: 96px;
+  place-items: center;
+  border: 4px solid var(--trail);
+  border-radius: 50%;
+  background: var(--t-paper);
+  color: var(--trail);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  padding: 0.4rem;
+  transition: transform 0.15s ease;
+}
+
+.tr-stop.done .tr-medal {
+  background: var(--trail);
+  color: #fff;
+}
+
+.tr-stop.next .tr-medal {
+  box-shadow: 0 0 0 8px color-mix(in srgb, var(--trail) 22%, transparent);
+}
+
+.tr-stop button:hover .tr-medal {
+  transform: translateY(-3px);
+}
+
+.tr-name {
+  font-weight: 600;
+  font-size: 1rem;
+  text-align: center;
+  line-height: 1.25;
+}
+
+.tr-stars {
+  display: inline-flex;
+  gap: 0.15rem;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.tr-star {
+  color: #d3dae4;
+}
+
+.tr-star.on {
+  color: var(--t-gold);
+}
+
+.tr-stars.big {
+  font-size: 3.6rem;
+  gap: 0.4rem;
+}
+
+.tr-here {
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: var(--trail);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.tr-more {
+  margin: 2rem 0 0;
+  text-align: center;
+}
+
+.tr-link {
+  border: 0;
+  background: none;
+  color: var(--t-focus);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+  padding: 0.6rem;
+}
+
+/* ---------- fact chart ---------- */
+.tr-chart {
+  margin-top: 2.5rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--t-rule);
+}
+
+.tr-chart-head h3 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.tr-chart-head p {
+  margin: 0.35rem 0 1rem;
+  color: var(--t-ink-soft);
+}
+
+.tr-chart-scroll {
+  overflow-x: auto;
+}
+
+.tr-grid {
+  border-collapse: separate;
+  border-spacing: 3px;
+  font-variant-numeric: tabular-nums;
+}
+
+.tr-grid th {
+  width: 2.4rem;
+  height: 2.2rem;
+  color: var(--t-ink-soft);
+  font-weight: 600;
+}
+
+.tr-grid .tr-sym {
+  color: var(--trail);
+  font-size: 1.3rem;
+}
+
+.tr-grid td {
+  width: 2.4rem;
+  height: 2.2rem;
+  border-radius: 6px;
+  background: #f1f4f8;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.tr-grid td.known {
+  background: var(--trail);
+  color: #fff;
+}
+
+.tr-grid td.growing {
+  background: color-mix(in srgb, var(--trail) 30%, #fff);
+}
+
+.tr-grid td.practice {
+  background: var(--t-practice-soft);
+  box-shadow: inset 0 0 0 2px var(--t-practice);
+}
+
+.tr-grid td.off {
+  background: transparent;
+}
+
+.tr-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 0.8rem 0 0;
+  color: var(--t-ink-soft);
+  font-size: 0.92rem;
+}
+
+.tr-legend i {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.4rem;
+  border-radius: 4px;
+  vertical-align: -0.15rem;
+}
+
+.tr-legend .known {
+  background: var(--trail);
+}
+
+.tr-legend .growing {
+  background: color-mix(in srgb, var(--trail) 30%, #fff);
+}
+
+.tr-legend .practice {
+  background: var(--t-practice-soft);
+  box-shadow: inset 0 0 0 2px var(--t-practice);
+}
+
+/* ---------- strategy card, round, finish ---------- */
+.tr-card,
+.tr-round,
+.tr-done {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.tr-back {
+  display: inline-block;
+  margin-bottom: 1rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--t-rule);
+  border-radius: 999px;
+  background: var(--t-paper);
+  color: var(--t-ink-soft);
+  font: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.tr-card .tr-back {
+  float: left;
+}
+
+.tr-kicker {
+  clear: both;
+  margin: 0;
+  color: var(--trail);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.tr-idea {
+  margin: 0.4rem auto 1.25rem;
+  max-width: 28ch;
+  font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.tr-example {
+  padding: 1.25rem;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--trail) 7%, #fff);
+}
+
+.tr-example-fact {
+  margin: 0.75rem 0 0;
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.tr-example-fact b {
+  color: var(--trail);
+}
+
+.tr-example-tip,
+.tr-tip {
+  margin: 0.5rem 0 0;
+  color: var(--t-ink-soft);
+  font-size: 1.1rem;
+}
+
+.tr-go {
+  margin-top: 1.5rem;
+  min-height: 56px;
+  padding: 0.8rem 2.2rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--trail);
+  color: #fff;
+  font: inherit;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--trail) 70%, #000);
+}
+
+.tr-go:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--trail) 70%, #000);
+}
+
+.tr-go.alt {
+  background: var(--t-paper);
+  color: var(--trail);
+  box-shadow: inset 0 0 0 3px var(--trail);
+}
+
+.tr-round-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.tr-round-top .tr-back {
+  margin: 0;
+}
+
+.tr-round-name {
+  font-weight: 600;
+  color: var(--t-ink-soft);
+}
+
+.tr-count {
+  font-weight: 600;
+  color: var(--t-ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.tr-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.45rem;
+  margin: 1.25rem 0 0.5rem;
+}
+
+.tr-dot {
+  width: 0.95rem;
+  height: 0.95rem;
+  border-radius: 50%;
+  background: #dfe6ef;
+}
+
+.tr-dot.right {
+  background: var(--t-good);
+}
+
+.tr-dot.miss {
+  background: var(--t-practice);
+}
+
+.tr-q {
+  margin: 1.25rem 0 1rem;
+  font-size: var(--t-fact-size, 4rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.tr-answer {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.tr-input {
+  width: min(240px, 60vw);
+  min-height: 64px;
+  padding: 0.4rem 0.8rem;
+  border: 3px solid var(--t-rule);
+  border-radius: 16px;
+  background: #fff;
+  color: var(--t-ink);
+  font: inherit;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.tr-input:focus {
+  border-color: var(--trail);
+  outline: none;
+}
+
+.tr-answer.good .tr-input {
+  border-color: var(--t-good);
+  background: var(--t-good-soft);
+}
+
+.tr-check {
+  min-height: 64px;
+  padding: 0 1.6rem;
+  border: 0;
+  border-radius: 16px;
+  background: var(--t-ink);
+  color: #fff;
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tr-feedback {
+  min-height: 1.8rem;
+  margin: 0.75rem 0 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--t-ink-soft);
+}
+
+.tr-feedback.good {
+  color: var(--t-good);
+}
+
+.tr-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 76px);
+  justify-content: center;
+  gap: 0.55rem;
+  margin: 1rem 0 0;
+}
+
+.tr-pad button {
+  height: 60px;
+  border: 1px solid var(--t-rule);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--t-ink);
+  font: inherit;
+  font-size: 1.6rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 3px 0 var(--t-rule);
+}
+
+.tr-pad button:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--t-rule);
+}
+
+.tr-tools {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.25rem;
+}
+
+.tr-tool {
+  min-height: 44px;
+  padding: 0.5rem 1.1rem;
+  border: 2px solid var(--t-rule);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--t-ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tr-help,
+.tr-peek {
+  margin: 0.5rem auto 1.25rem;
+  padding: 1.1rem;
+  border-radius: 18px;
+}
+
+.tr-help {
+  background: var(--t-practice-soft);
+}
+
+.tr-peek {
+  background: color-mix(in srgb, var(--trail) 7%, #fff);
+}
+
+.tr-miss-title {
+  margin: 0 0 0.75rem;
+  color: #9a4f12;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.tr-fact {
+  margin: 0.75rem 0 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.tr-retype {
+  margin: 0.4rem 0 0;
+  color: var(--t-ink-soft);
+}
+
+.tr-done h2 {
+  margin: 0.75rem 0 0.25rem;
+  font-size: clamp(2rem, 5vw, 2.8rem);
+}
+
+.tr-score {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.tr-review {
+  margin: 1.25rem auto 0;
+  max-width: 460px;
+  padding: 1rem;
+  border-radius: 16px;
+  background: var(--t-practice-soft);
+}
+
+.tr-review p {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+}
+
+.tr-review ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tr-review li {
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: #fff;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+
+.tr-perfect {
+  margin: 1rem 0 0;
+  color: var(--t-good);
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+
+.tr-done-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.tr-done-actions .tr-go.alt {
+  margin-top: 0.75rem;
+}
+
+.tr-done .tr-stars.big .tr-star.on {
+  animation: tr-pop 0.45s ease-out backwards;
+}
+
+.tr-done .tr-star:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.tr-done .tr-star:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes tr-pop {
+  from {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+}
+
+.tr-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+/* ---------- pictures ---------- */
+.tp {
+  margin: 0;
+}
+
+.tp-frames {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.9rem;
+}
+
+.tp-frame {
+  display: grid;
+  grid-template-columns: repeat(5, 40px);
+  gap: 4px;
+  padding: 6px;
+  border: 3px solid var(--t-ink);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.tp-cell {
+  position: relative;
+  height: 40px;
+  border-radius: 4px;
+  background: #f4f6f9;
+}
+
+.tp-cell.dot::after,
+.tp-cell.dot-add::after,
+.tp-cell.dot-gone::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+}
+
+.tp-cell.dot::after {
+  background: var(--trail);
+}
+
+.tp-cell.dot-add::after {
+  background: var(--t-gold);
+}
+
+.tp-cell.dot-gone::after {
+  background: transparent;
+  border: 3px dashed var(--t-practice);
+}
+
+.tp-cell.empty-goal {
+  background: color-mix(in srgb, var(--t-gold) 25%, #fff);
+}
+
+.tp-key-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.25rem;
+  margin: 0.7rem 0 0;
+  color: var(--t-ink-soft);
+  font-weight: 600;
+}
+
+.tp-key {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.35rem;
+  border-radius: 50%;
+  vertical-align: -0.15rem;
+}
+
+.tp-key.dot {
+  background: var(--trail);
+}
+
+.tp-key.dot-add {
+  background: var(--t-gold);
+}
+
+.tp-key.dot-gone {
+  border: 2px dashed var(--t-practice);
+}
+
+.tp-key.empty-goal {
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--t-gold) 25%, #fff);
+}
+
+.tp-array {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.tp-row {
+  display: flex;
+  gap: 5px;
+}
+
+.tp-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--trail);
+}
+
+.tp-row.row-b .tp-dot {
+  background: var(--t-gold);
+}
+
+.tp-array.tens .tp-dot {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.tp-caption {
+  margin: 0.55rem 0 0;
+  color: var(--t-ink-soft);
+  font-weight: 600;
+}
+
+.tp-area {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.tp-area-side {
+  align-self: center;
+  font-weight: 700;
+}
+
+.tp-area-box {
+  display: flex;
+  flex: 1;
+  min-height: 120px;
+  border: 3px solid var(--t-ink);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.tp-area-box > div {
+  position: relative;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--trail) 16%, #fff);
+}
+
+.tp-area-box > div + div {
+  border-left: 3px dashed var(--t-ink);
+  background: color-mix(in srgb, var(--t-gold) 22%, #fff);
+}
+
+.tp-area-box small {
+  position: absolute;
+  top: 0.3rem;
+  font-weight: 700;
+}
+
+.tp-area-box b {
+  font-size: 1.05rem;
+}
+
+.tp-line {
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  font-family: inherit;
+}
+
+.tp-line text {
+  font-size: 16px;
+  font-weight: 700;
+  text-anchor: middle;
+  fill: var(--t-ink);
+}
+
+.tp-line .tp-start {
+  fill: var(--trail);
+}
+
+.tp-axis,
+.tp-tick {
+  stroke: var(--t-ink);
+  stroke-width: 3;
+  fill: none;
+}
+
+.tp-jump {
+  stroke: var(--trail);
+  stroke-width: 4;
+  fill: none;
+}
+
+/* ---------- more practice (the full skill library) ---------- */
+.more-practice {
+  padding: 2rem 0 1rem;
+  border-top: 1px solid var(--t-rule);
+}
+
+.more-practice .daily-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 0;
+  margin: 2rem 0;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--t-rule);
+  border-radius: 18px;
+  box-shadow: none;
+}
+
+.more-practice .daily-card > div {
+  max-width: 560px;
+}
+
+.more-practice .daily-card h3 {
+  margin: 0 0 0.3rem;
+  font-size: 1.3rem;
+}
+
+.more-practice .daily-card p {
+  margin: 0;
+}
+
+.skill-jump {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 1.5rem 0 0;
+  font-weight: 600;
+}
+
+.skill-jump select {
+  min-height: 44px;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--t-rule);
+  border-radius: 10px;
+  background: #fff;
+  font: inherit;
+}
+
+/* ---------- grade bands: size and tone follow the student's age ---------- */
+.trail[data-band="early"] {
+  --t-fact-size: clamp(3.4rem, 11vw, 5.2rem);
+}
+
+.trail[data-band="early"] .tr-medal {
+  width: 104px;
+  height: 104px;
+  font-size: 1.3rem;
+}
+
+.trail[data-band="early"] .tr-pad {
+  grid-template-columns: repeat(3, 84px);
+}
+
+.trail[data-band="early"] .tr-pad button {
+  height: 68px;
+  font-size: 1.9rem;
+}
+
+.trail[data-band="middle"] {
+  --t-fact-size: clamp(3rem, 9vw, 4.4rem);
+}
+
+.trail[data-band="upper"] {
+  --t-fact-size: clamp(2.2rem, 6.5vw, 3.2rem);
+  border-radius: 14px;
+}
+
+.trail[data-band="upper"] .tr-medal {
+  border-radius: 18px;
+  font-size: 1rem;
+}
+
+.trail[data-band="upper"] .tr-go,
+.trail[data-band="upper"] .tr-tool,
+.trail[data-band="upper"] .tr-here {
+  border-radius: 10px;
+}
+
+@media (max-width: 640px) {
+  .trail {
+    padding: 1.1rem;
+    border-radius: 18px;
+  }
+
+  .tr-map {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tr-stop::after {
+    display: none;
+  }
+
+  .tr-answer {
+    flex-wrap: wrap;
+  }
+
+  .tr-round-name {
+    display: none;
+  }
+
+  .tp-frame {
+    grid-template-columns: repeat(5, 30px);
+  }
+
+  .tp-cell {
+    height: 30px;
+  }
+
+  .tp-dot {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tr-done .tr-stars.big .tr-star.on,
+  .tr-medal {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* ---------- guided steps + Chromebook play layout ---------- */
+body.trail-playing .intro,
+body.trail-playing .hub-tabs,
+body.trail-playing .grade-rail,
+body.trail-playing .more-practice,
+body.trail-playing .data-tools,
+body.trail-playing .site-footer,
+body.trail-playing .assignment-banner {
+  display: none;
+}
+
+body.trail-playing .trail {
+  margin-top: 0.75rem;
+  padding-top: 1rem;
+}
+
+.tr-card-top {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tr-card .tr-back {
+  float: none;
+  margin: 0;
+}
+
+.tr-card-top .tr-kicker {
+  clear: none;
+}
+
+.tr-card .tr-idea {
+  margin: 0.75rem auto 1rem;
+  max-width: 34ch;
+}
+
+.tr-card,
+.tr-round {
+  max-width: 1040px;
+}
+
+.tr-lesson {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: stretch;
+  text-align: center;
+}
+
+.tr-example-fact {
+  margin: 0 0 0.75rem;
+}
+
+.tr-guide {
+  padding: 1.1rem 1.25rem;
+  border-radius: 18px;
+  border: 2px solid var(--t-rule);
+  background: #fff;
+  text-align: left;
+}
+
+.tr-guide-title {
+  margin: 0 0 0.6rem;
+  font-weight: 700;
+  color: var(--t-ink-soft);
+}
+
+.tr-steps {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.tr-steps li {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem 0.8rem;
+  border-radius: 12px;
+  background: #f4f6f9;
+  font-size: 1.35rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.tr-steps li.latest {
+  background: color-mix(in srgb, var(--trail) 12%, #fff);
+  box-shadow: inset 4px 0 0 var(--trail);
+}
+
+.tr-steps li > span {
+  display: grid;
+  flex: none;
+  width: 1.8rem;
+  height: 1.8rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--trail);
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.tr-step-next {
+  margin-top: 0.7rem;
+  min-height: 48px;
+  padding: 0.5rem 1.4rem;
+  border: 3px solid var(--trail);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--t-ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tr-round-top .tr-dots {
+  margin: 0;
+}
+
+.tr-play {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1.5rem 2rem;
+  align-items: start;
+  margin-top: 0.5rem;
+}
+
+.tr-main {
+  min-width: 0;
+}
+
+.tr-q {
+  margin: 0.75rem 0 1rem;
+}
+
+.tr-side {
+  padding-top: 0.75rem;
+}
+
+.tr-side .tr-pad {
+  margin: 0;
+}
+
+.tr-help,
+.tr-peek {
+  margin: 0.75rem 0 0;
+}
+
+.tr-help-body {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem 1.5rem;
+}
+
+.tr-help-body > .tr-steps,
+.tr-help-body > .tr-tip {
+  flex: 1 1 220px;
+  max-width: 340px;
+}
+
+.tr-help-body .tr-step-next {
+  flex-basis: 100%;
+  max-width: max-content;
+}
+
+.tr-fact {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .tr-lesson,
+  .tr-play {
+    grid-template-columns: 1fr;
+  }
+
+  .tr-side {
+    padding-top: 0;
+  }
+
+  .tr-side .tr-pad {
+    margin: 0 auto;
+  }
+}
+
+/* Chromebook (1366×768, ~650px tall viewport): keep the whole problem on one screen. */
+@media (max-height: 760px) and (min-width: 861px) {
+  .trail[data-band] {
+    --t-fact-size: clamp(2.4rem, 7.5vh, 3.6rem);
+  }
+
+  .tr-q {
+    margin: 0.4rem 0 0.7rem;
+  }
+
+  .tr-input,
+  .tr-check {
+    min-height: 56px;
+  }
+
+  .tr-pad button,
+  .trail[data-band="early"] .tr-pad button {
+    height: 54px;
+    font-size: 1.5rem;
+  }
+
+  .tr-steps li {
+    font-size: 1.15rem;
+    padding: 0.4rem 0.7rem;
+  }
+
+  .tp-cell {
+    height: 32px;
+  }
+
+  .tp-frame {
+    grid-template-columns: repeat(5, 32px);
+  }
+
+  .tp-dot {
+    width: 18px;
+    height: 18px;
+  }
+
+  .tr-card .tr-idea {
+    font-size: 1.5rem;
+    margin: 0.5rem auto 0.75rem;
+  }
+
+  .tr-go {
+    margin-top: 1rem;
+  }
+}
+
+/* ---------- interactive models (used while answering) ---------- */
+.tr-model {
+  margin: 0.25rem auto 0;
+  padding: 0.75rem 1rem 0.9rem;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--trail) 6%, #fff);
+  border: 2px solid color-mix(in srgb, var(--trail) 18%, #fff);
+}
+
+.tr-model-open {
+  margin-top: 0.25rem;
+}
+
+.tp-prompt {
+  margin: 0 0 0.6rem;
+  font-weight: 600;
+  color: var(--t-ink-soft);
+}
+
+.tp-readout {
+  margin: 0.6rem 0 0;
+  font-weight: 600;
+  color: var(--t-ink-soft);
+}
+
+.tp-readout b {
+  color: var(--t-ink);
+  font-size: 1.35rem;
+  font-variant-numeric: tabular-nums;
+}
+
+button.tp-cell {
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+button.tp-cell[data-n]::after {
+  opacity: 0.35;
+}
+
+button.tp-cell[data-n] {
+  color: var(--t-ink);
+  font-weight: 700;
+  font-size: 1rem;
+  z-index: 1;
+}
+
+.tp-cell.slot {
+  background: #fff;
+  outline: 2px dashed color-mix(in srgb, var(--t-gold) 70%, #fff);
+  outline-offset: -4px;
+}
+
+.tp-cell.slot.filled::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  background: var(--t-gold);
+}
+
+.tp-cell.dot.gone::after {
+  background: transparent;
+  border: 3px dashed var(--t-practice);
+}
+
+.tp-cell.dot.gone::before {
+  content: "✕";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--t-practice);
+  font-weight: 700;
+}
+
+button.tp-row {
+  position: relative;
+  display: flex;
+  gap: 5px;
+  padding: 3px 6px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+}
+
+button.tp-row:hover {
+  background: color-mix(in srgb, var(--trail) 10%, #fff);
+}
+
+button.tp-row .tp-dot {
+  opacity: 0.45;
+}
+
+button.tp-row.counted .tp-dot {
+  opacity: 1;
+}
+
+.tp-run {
+  position: absolute;
+  left: calc(100% + 0.5rem);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--trail);
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.tp-live .tp-array {
+  padding-right: 3.5rem;
+}
+
+.tp-part {
+  position: relative;
+  display: grid;
+  place-items: center;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+  background: color-mix(in srgb, var(--trail) 16%, #fff);
+}
+
+.tp-part + .tp-part {
+  border-left: 3px dashed var(--t-ink);
+  background: color-mix(in srgb, var(--t-gold) 22%, #fff);
+}
+
+.tp-part small {
+  position: absolute;
+  top: 0.3rem;
+  font-weight: 700;
+}
+
+.tp-part i {
+  font-style: normal;
+  font-weight: 700;
+  color: var(--trail);
+}
+
+.tp-part.done {
+  box-shadow: inset 0 0 0 3px var(--trail);
+}
+
+.tp-hop {
+  opacity: 0.25;
+}
+
+.tp-hop.shown {
+  opacity: 1;
+}
+
+.tp-hop-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tp-hop-btn {
+  min-height: 44px;
+  padding: 0.4rem 1rem;
+  border: 2px solid var(--trail);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--t-ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tp-hop-btn:disabled {
+  border-color: var(--t-rule);
+  color: var(--t-ink-soft);
+  cursor: default;
+}
+
+@media (max-height: 760px) and (min-width: 861px) {
+  .tr-model {
+    padding: 0.5rem 0.75rem 0.6rem;
+  }
+
+  .tp-prompt {
+    margin-bottom: 0.4rem;
+    font-size: 0.95rem;
+  }
+
+  .tp-readout {
+    margin-top: 0.4rem;
+  }
+}
+
+.tr-side {
+  width: 300px;
+}
+
+.tr-side .tr-peek {
+  margin-top: 1rem;
+  padding: 0.8rem;
+}
+
+.tr-side .tr-steps li {
+  font-size: 1.15rem;
+}
+
+@media (max-height: 760px) and (min-width: 861px) {
+  .tp-live .tp-dot {
+    width: 17px;
+    height: 17px;
+  }
+
+  .tp-live .tp-array,
+  .tp-live .tp-row {
+    gap: 4px;
+  }
+
+  button.tp-row {
+    padding: 2px 6px;
+  }
+}
+
+@media (max-width: 860px) {
+  .tr-side {
+    width: auto;
+  }
+}

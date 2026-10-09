@@ -10,8 +10,10 @@
     />
     <link rel="canonical" href="https://eduwonderlab.com/math/fluency-lab/" />
     <title>Math Fluency Lab · Grades 1–8 | EduWonderLab</title>
+    <link rel="stylesheet" href="/assets/fonts/small-group.css" />
     <link rel="stylesheet" href="./styles.css" />
     <link rel="stylesheet" href="./tutor.css" />
+    <link rel="stylesheet" href="./trail.css" />
     <script type="module" src="./app.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
@@ -26,7 +28,6 @@
         <span><strong>Math Fluency Lab</strong><small>EduWonderLab</small></span>
       </button>
       <nav aria-label="Page controls">
-        <label class="profile-control skill-nav-control" for="quick-skill-select">Skill<select id="quick-skill-select"><option value="">Jump to any skill (Grades 1–8)...</option></select></label>
         <label class="profile-control" for="profile-select">Learner<select id="profile-select"></select></label>
         <button id="add-profile" class="quiet-button" type="button">Add learner</button>
         <button id="text-size" class="quiet-button" type="button" aria-pressed="false">
@@ -39,45 +40,32 @@
     <main id="main">
       <section class="intro" aria-labelledby="page-title">
         <div class="intro-copy">
-          <p class="plain-label">Grades 1–8 · Practice at your pace</p>
-          <h1 id="page-title">Practice makes patterns.</h1>
-          <p>
-            See the idea. Build it yourself. Practice a little each day. Choose from 80 skills
-            across eight grades, with fresh problems, helpful coaching, and a path that grows with you.
-          </p>
+          <h1 id="page-title">Math Fluency Lab</h1>
+          <p>Pick your grade. Follow your trail. Take your time: there are no timers here.</p>
           <div id="overall-stats" class="overall-stats" aria-label="Saved practice progress"></div>
         </div>
-        <aside class="daily-card" aria-labelledby="daily-title">
-          <span class="paper-number" aria-hidden="true">10</span>
-          <div>
-            <h2 id="daily-title">Today’s 10</h2>
-            <p>A personal mix of a developing skill, memory refreshers, and something new. No timer needed.</p>
-            <button id="daily-ten" class="primary-action" type="button">Start today’s 10</button>
-          </div>
-        </aside>
       </section>
 
       <div id="storage-warning" class="storage-warning" role="status" hidden>Progress cannot be saved in this browser right now. Download a backup before closing the page.</div>
       <section id="assignment-banner" class="assignment-banner" aria-label="Your assignment" hidden></section>
       <nav id="hub-tabs" class="hub-tabs" aria-label="Fluency Lab areas">
         <button type="button" data-view="library" aria-current="page">Practice</button>
-        <button type="button" data-view="path">My learning path</button>
-        <button type="button" data-view="notebook">Mistake notebook</button>
-        <button type="button" data-view="teacher">Teacher studio</button>
+        <button type="button" data-view="path">My progress</button>
+        <button type="button" data-view="notebook">Fix my mistakes</button>
+        <button type="button" data-view="teacher" class="teacher-tab">For teachers</button>
       </nav>
       <section class="grade-rail" aria-labelledby="choose-grade">
         <div class="grade-rail-heading">
-          <h2 id="choose-grade">Choose a grade</h2>
-          <p>You can switch at any time.</p>
+          <h2 id="choose-grade">My grade</h2>
         </div>
         <div id="grade-tabs" class="grade-tabs" role="tablist" aria-label="Grade level"></div>
       </section>
 
-      <section id="library-view" class="library" aria-labelledby="grade-heading">
-        <section id="personal-dashboard" class="personal-dashboard" aria-label="Your next steps"></section>
+      <section id="library-view" class="library" aria-labelledby="trail-title">
+        <section id="trail-view" class="trail" aria-labelledby="trail-title"></section>
+        <div id="more-practice" class="more-practice">
         <div class="library-heading">
           <div>
-            <p class="plain-label">Skill library</p>
             <h2 id="grade-heading">Grade 1</h2>
             <p id="grade-promise"></p>
           </div>
@@ -90,13 +78,23 @@
         </div>
 
         <div id="skill-grid" class="skill-grid" aria-live="polite"></div>
+        <aside class="daily-card" aria-labelledby="daily-title">
+          <div>
+            <h3 id="daily-title">Today’s 10</h3>
+            <p>A mix of skills picked for you: one you are building, a few to remember, and one new idea.</p>
+          </div>
+          <button id="daily-ten" class="primary-action" type="button">Start today’s 10</button>
+        </aside>
+        <section id="personal-dashboard" class="personal-dashboard" aria-label="Your next steps"></section>
+        <label class="skill-jump" for="quick-skill-select">Go to any skill<select id="quick-skill-select"><option value="">Choose a skill (Grades 1–8)</option></select></label>
+        </div>
       </section>
 
       <section id="path-view" class="hub-panel" aria-label="My learning path" hidden></section>
       <section id="notebook-view" class="hub-panel" aria-label="Mistake notebook" hidden></section>
       <section id="teacher-view" class="hub-panel" aria-label="Teacher studio" hidden></section>
       <section id="workspace-view" class="workspace" aria-labelledby="workspace-title" hidden>
-        <button id="back-library" class="back-button" type="button">← Back to skill library</button>
+        <button id="back-library" class="back-button" type="button">← Back to my trail</button>
 
         <header class="workspace-heading">
           <div>

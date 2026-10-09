@@ -12,6 +12,7 @@ import { mountVisualLesson, renderModel, renderInlineProblemModel } from "./visu
 import { transferPrompt, getPublisherExplanation, getDynamicGuidedSteps } from "./lesson-content.js";
 import { PROFILE_NAMES, assignmentQueue, cleanProgress, decodeAssignment, downloadFile, makeBackup, mountTeacherStudio, parseBackup, profileKey, profiles, progressReport, readLocal, selectProfile, writeLocal } from "./school-tools.js";
 import { mountWorkbench } from "./workbench.js";
+import { mountTrail } from "./trail-view.js";
 
 const STORAGE_KEY = "ewl-fluency-progress-v1";
 const SETTINGS_KEY = "ewl-fluency-settings-v1";
@@ -21,10 +22,13 @@ const STREAK_GOAL = 10;
 const initialParams = new URLSearchParams(location.search);
 let activeProfile = profiles().active;
 let cleanupVisual = null;
+let cleanupTrail = null;
 let pendingRestore = null;
 
 const els = {
   gradeTabs: document.querySelector("#grade-tabs"),
+  trail: document.querySelector("#trail-view"),
+  morePractice: document.querySelector("#more-practice"),
   gradeHeading: document.querySelector("#grade-heading"),
   gradePromise: document.querySelector("#grade-promise"),
   gradeSummary: document.querySelector("#grade-summary"),
@@ -201,7 +205,12 @@ function renderLibrary() {
   els.library.hidden = false;
   const grade = getGrade(state.grade);
   document.documentElement.style.setProperty("--grade", grade.color);
-  els.gradeHeading.textContent = grade.label;
+  cleanupTrail?.();
+  cleanupTrail = mountTrail(els.trail, {
+    grade: state.grade,
+    onShowSkills: () => els.morePractice.scrollIntoView({ behavior: "smooth", block: "start" }),
+  });
+  els.gradeHeading.textContent = `More ${grade.label} practice`;
   els.gradePromise.textContent = grade.promise;
   renderGradeTabs();
   const strands = ["All", ...new Set(grade.skills.map((skill) => skill.strand))];
