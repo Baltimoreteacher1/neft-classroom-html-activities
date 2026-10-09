@@ -79,6 +79,7 @@ const RUN = [
   "/assets/curriculum-product-upgrades.js",
   "/assets/curriculum-navigator.js",
   "/assets/curriculum-resources.js",
+  "/assets/pacing-days.generated.js",
   "/assets/curriculum-home.js",
   "/assets/futures-lab.js",
   "/assets/gradebook-embed.js",

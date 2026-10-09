@@ -201,7 +201,7 @@ export const STANDARDS = {
   },
   "6.AT.2": {
     shortLabel: "Unit Rate",
-    unit: 4,
+    unit: 3,
     fullText:
       "Understand the concept of a unit rate a/b associated with a ratio a:b with b ≠ 0, and use rate language in the context of a ratio relationship.",
   },
@@ -224,53 +224,88 @@ export const STANDARDS = {
   },
   "6.AT.3c": {
     shortLabel: "Measurement Conversion",
-    unit: 4,
+    unit: 3,
     fullText:
       "Use ratio reasoning to convert measurement units; manipulate and transform units appropriately when multiplying or dividing quantities.",
   },
   "6.NOS.1": {
     shortLabel: "Dividing Fractions",
-    unit: 2,
+    unit: 6,
     fullText:
       "Interpret and compute quotients of fractions, and solve word problems involving division of fractions by fractions.",
   },
   "6.NOS.2": {
     shortLabel: "Multi-Digit Division",
-    unit: 1,
+    unit: 2,
     fullText: "Fluently divide multi-digit numbers using the standard algorithm.",
   },
   "6.NOS.3": {
     shortLabel: "Decimal Operations",
-    unit: 1,
+    unit: 2,
     fullText:
       "Fluently add, subtract, multiply, and divide multi-digit decimals using the standard algorithm for each operation.",
   },
   "6.NOS.4": {
     shortLabel: "GCF & LCM",
-    unit: 1,
+    unit: 6,
     fullText:
       "Find the greatest common factor of two whole numbers ≤ 100 and the least common multiple of two whole numbers ≤ 12. Use the distributive property to express a sum of two whole numbers with a common factor.",
   },
+  "6.NOS.5": {
+    shortLabel: "Positive & Negative Numbers in Context",
+    unit: 7,
+    fullText:
+      "Use understanding of rational numbers as positive and negative numbers to describe quantities having opposite directions or values (e.g., temperature above/below zero, elevation above/below sea level, credits/debits, positive/negative electric charge). Use rational numbers to represent quantities in context and explain the meaning of 0 in each situation.",
+  },
   "6.NOS.6": {
     shortLabel: "Rational Numbers on the Line",
-    unit: 9,
+    unit: 7,
     fullText:
       "Understand a rational number as a point on the number line; extend number line diagrams and coordinate axes to represent points with negative number coordinates.",
   },
+  "6.NOS.6b": {
+    shortLabel: "Locating Rational Numbers",
+    unit: 7,
+    fullText: "Locate and interpret the positions of rational numbers on a number line.",
+  },
+  "6.NOS.6c": {
+    shortLabel: "Opposites on the Number Line",
+    unit: 7,
+    fullText:
+      "Recognize and locate opposite signs of rational numbers as indicating locations on opposite sides of 0 on the number line.",
+  },
   "6.NOS.7": {
     shortLabel: "Reflections in Coordinates",
-    unit: 9,
+    unit: 7,
     fullText:
       "Understand signs of numbers in ordered pairs as indicating locations in quadrants of the coordinate plane; recognize that ordered pairs differing only by signs are reflections across one or both axes.",
   },
   "6.NOS.8": {
     shortLabel: "Ordering & Absolute Value",
-    unit: 9,
+    unit: 7,
     fullText: "Understand ordering and absolute value of rational numbers.",
+  },
+  "6.NOS.8a": {
+    shortLabel: "Inequalities as Position",
+    unit: 7,
+    fullText:
+      "Interpret statements of inequality as statements about the relative position of two numbers on a number line (e.g., interpret −3 > −7 as a statement that –3 is located to the right of –7 on a horizontal number line).",
+  },
+  "6.NOS.8b": {
+    shortLabel: "Ordering in Context",
+    unit: 7,
+    fullText:
+      "Write, interpret, and explain statements of order for rational numbers in context (e.g., write −3℃ > −7℃ to express the fact that −3℃ is warmer than −7℃).",
+  },
+  "6.NOS.8c": {
+    shortLabel: "Absolute Value as Magnitude",
+    unit: 7,
+    fullText:
+      "Use understanding of the absolute value of a rational number as its distance from 0 on the number line to interpret absolute value as magnitude for a positive or negative quantity in context (e.g., for an account balance of –30 dollars, write |–30| = 30 to describe the size of the debt in dollars).",
   },
   "6.NOS.9": {
     shortLabel: "Coordinate Plane Problems",
-    unit: 9,
+    unit: 7,
     fullText:
       "Solve real-world and mathematical problems by graphing points in all four quadrants of the coordinate plane; use coordinates and absolute value to find distances.",
   },
@@ -285,6 +320,12 @@ export const STANDARDS = {
     fullText:
       "Write expressions that record operations with numbers and with letters standing for numbers.",
   },
+  "6.AT.6b": {
+    shortLabel: "Parts of an Expression",
+    unit: 6,
+    fullText:
+      "Identify parts of an expression using mathematical language (e.g., sum, term, product, factor, quotient, coefficient) and view one or more parts of an expression as a single unit (e.g., describe the expression 2(8 + 7) as a product of two factors; view (8 + 7) as both a single unit and a sum of two terms).",
+  },
   "6.AT.6c": {
     shortLabel: "Evaluating Expressions",
     unit: 6,
@@ -298,19 +339,19 @@ export const STANDARDS = {
   },
   "6.AT.8": {
     shortLabel: "Solutions of Equations & Inequalities",
-    unit: 7,
+    unit: 8,
     fullText:
       "Understand solving an equation or inequality as a process of answering which values make it true; use substitution to determine whether a given number makes an equation or inequality true.",
   },
   "6.AT.9": {
     shortLabel: "Inequalities",
-    unit: 7,
+    unit: 8,
     fullText:
       "Write an inequality of the form x > c or x < c to represent a constraint or condition; recognize that such inequalities have infinitely many solutions; represent solutions on number line diagrams.",
   },
   "6.AT.11": {
     shortLabel: "Two-Variable Relationships",
-    unit: 7,
+    unit: 9,
     fullText:
       "Use variables to represent two quantities in a real-world problem that change in relationship to one another; write an equation to express one quantity, thought of as the dependent variable, in terms of the other quantity, thought of as the independent variable. Analyze the relationship between the dependent and independent variables using graphs and tables, and relate these to the equation.",
   },
@@ -322,49 +363,66 @@ export const STANDARDS = {
   },
   "6.GR.2": {
     shortLabel: "Volume",
-    unit: 10,
+    unit: 5,
     fullText:
       "Find the volume of a right rectangular prism with fractional edge lengths; apply the formulas V = l·w·h and V = b·h to find volumes of right rectangular prisms.",
   },
+  "6.GR.3": {
+    shortLabel: "Polygons in the Coordinate Plane",
+    unit: 7,
+    fullText:
+      "Draw polygons in the Coordinate Plane given coordinates for the vertices; use coordinates to find the length of a side joining endpoints with the same first coordinate or the same second coordinate. Apply these techniques in context.",
+  },
   "6.GR.4": {
     shortLabel: "Surface Area & Nets",
-    unit: 10,
+    unit: 5,
     fullText:
       "Represent three-dimensional figures using nets made up of rectangles and triangles, and use the nets to find the surface area of these figures.",
   },
   "6.DS.1": {
     shortLabel: "Statistical Questions",
-    unit: 8,
+    unit: 2,
     fullText:
       "Recognize a statistical question as one that anticipates variability in the data related to the question and accounts for it in the answers.",
   },
   "6.DS.3": {
     shortLabel: "Distributions",
-    unit: 8,
+    unit: 2,
     fullText:
       "Understand that a set of data collected to answer a statistical question has a distribution which can be described by its center, spread, and overall shape.",
   },
   "6.DS.4": {
     shortLabel: "Measures of Center & Variability",
-    unit: 8,
+    unit: 2,
     fullText:
       "Recognize that a measure of center for a numerical data set summarizes all of its values with a single number, while a measure of variation describes how its values vary with a single number.",
   },
   "6.DS.5": {
     shortLabel: "Data Displays",
-    unit: 8,
+    unit: 2,
     fullText:
       "Display numerical data in plots on a number line, including dot plots, histograms, and box plots.",
   },
+  "6.DS.6a": {
+    shortLabel: "Number of Observations",
+    unit: 2,
+    fullText: "Report the number of observations.",
+  },
+  "6.DS.6b": {
+    shortLabel: "Attribute & Units of Measurement",
+    unit: 2,
+    fullText:
+      "Describe the nature of the attribute under investigation, including how it was measured and its units of measurement.",
+  },
   "6.DS.6c": {
     shortLabel: "Summarizing Data Sets",
-    unit: 8,
+    unit: 2,
     fullText:
       "Summarize numerical data sets by giving quantitative measures of center (median and/or mean) and variability (interquartile range and/or mean absolute deviation).",
   },
   "6.DS.6d": {
     shortLabel: "Relating Measures to Context",
-    unit: 8,
+    unit: 2,
     fullText:
       "Relate the choice of measures of center and variability to the shape of the data distribution and the context in which the data were gathered.",
   },
@@ -3688,6 +3746,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/about/",
+    title: "About this curriculum",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/ai-hub/",
     title: "AI Learning Hub",
     category: "Hub",
@@ -4537,6 +4601,12 @@ export const ACTIVITIES = [
   {
     path: "/teacher-tools/tiered-differentiation-builder/",
     title: "Tiered Differentiation Builder",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/teacher-tools/tomorrow-groups/",
+    title: "Tomorrow&#39;s Groups",
     category: "Tool",
     unit: null,
   },
@@ -6527,7 +6597,7 @@ export const LESSONS = [
     unit: 7,
     lesson: 1,
     title: "Explore Integers and Their Opposites",
-    standard: "6.NOS.6",
+    standard: "6.NOS.5",
   },
   {
     id: "7-2",
@@ -6569,7 +6639,7 @@ export const LESSONS = [
     unit: 7,
     lesson: 7,
     title: "Represent Polygons on the Coordinate Plane",
-    standard: "6.NOS.9",
+    standard: "6.GR.3",
   },
   {
     id: "7-8",

@@ -42,6 +42,22 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 .muted-note{color:var(--muted);font-size:14px;margin:6px 0 0;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
+
+ol.choices{margin:6px 0 4px;}
+.lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
+.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
+  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
+.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
+.lang-panel{display:none;margin-top:6px;}
+#family-lang-en:checked ~ .lang-panels [data-lang="en"],
+#family-lang-es:checked ~ .lang-panels [data-lang="es"],
+#family-lang-ar:checked ~ .lang-panels [data-lang="ar"],
+#family-lang-fr:checked ~ .lang-panels [data-lang="fr"],
+#family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
+.lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
+.auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
+  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -59,7 +75,20 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 <section>
   <h2>What students are learning</h2>
   <p>When a variable is multiplied or divided by a number, I use the inverse operation to get it alone. Division undoes multiplication, and multiplication undoes division.</p>
-  <p class="callout"><strong>Key idea:</strong> Solving Multiplication &amp; Division Equations. Formula: ax = b → x = b/a | x/a = b → x = a · b. 1. Identify the operation applied to the variable. 2. Use the inverse operation: Divide to undo multiplication; multiply to undo division. 3. Balance: Apply the inverse operation to both sides to isolate the variable</p>
+  <p class="callout"><strong>Key idea:</strong> To solve a multiplication or division equation, undo it with the opposite step on both sides. For 4x = 20, divide both sides by 4: x = 5. For x ÷ 3 = 6, multiply both sides by 3: x = 18.<br><span class="es-text" lang="es">Idea clave: Para resolver una ecuación de multiplicación o división, deshazla con el paso contrario en los dos lados. Para 4x = 20, divide los dos lados entre 4: x = 5. Para x ÷ 3 = 6, multiplica los dos lados por 3: x = 18.</span></p>
+</section>
+
+<section class="lang-section">
+  <h2>Read this in your language <span class="es">· Lea esto en su idioma</span></h2>
+  <div class="lang-picker"><input type="radio" class="lang-radio" name="family-lang" id="family-lang-en" value="en" checked><label for="family-lang-en" lang="en">English</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-es" value="es"><label for="family-lang-es" lang="es">Español</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-ar" value="ar"><label for="family-lang-ar" lang="ar">العربية</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-fr" value="fr"><label for="family-lang-fr" lang="fr">Français</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-prs" value="prs"><label for="family-lang-prs" lang="prs">دری</label>
+  <div class="lang-panels">
+  <div class="lang-panel" data-lang="en" lang="en"><p class="callout">To solve a multiplication or division equation, undo it with the opposite step on both sides. For 4x = 20, divide both sides by 4: x = 5. For x ÷ 3 = 6, multiply both sides by 3: x = 18.</p><ul><li><span class="kw"><bdi>Solve Multiplication and Division Equations</bdi></span> — Use inverse multiplication or division to isolate the variable.</li><li><span class="kw"><bdi>Inverse operation</bdi></span> — Two math actions that undo each other, like × and ÷.</li><li><span class="kw"><bdi>Multiply</bdi></span> — To add equal groups again and again.</li><li><span class="kw"><bdi>Divide</bdi></span> — To split into equal groups.</li><li><span class="kw"><bdi>Isolate</bdi></span> — To get the letter by itself on one side.</li><li><span class="kw"><bdi>Coefficient</bdi></span> — The number in front of a letter, like the 3 in 3x.</li><li><span class="kw"><bdi>Solution</bdi></span> — A number that makes the equation or inequality true.</li><li><span class="kw"><bdi>Division Property of Equality</bdi></span> — Dividing both sides by the same nonzero number keeps an equation balanced.</li><li><span class="kw"><bdi>Multiplication Property of Equality</bdi></span> — Multiplying both sides by the same number keeps an equation balanced.</li></ul></div>
+  <div class="lang-panel" data-lang="es" lang="es"><p class="callout">Para resolver una ecuación de multiplicación o división, deshazla con el paso contrario en los dos lados. Para 4x = 20, divide los dos lados entre 4: x = 5. Para x ÷ 3 = 6, multiplica los dos lados por 3: x = 18.</p><ul><li><span class="kw"><bdi>Resolver ecuaciones de multiplicación y división</bdi></span> — Usar la multiplicación o división inversa para aislar la variable.</li><li><span class="kw"><bdi>Operación inversa</bdi></span> — Dos operaciones que se deshacen entre sí, como × y ÷.</li><li><span class="kw"><bdi>Multiplicar</bdi></span> — Sumar grupos iguales una y otra vez.</li><li><span class="kw"><bdi>Dividir</bdi></span> — Repartir en grupos iguales.</li><li><span class="kw"><bdi>Despejar</bdi></span> — Dejar la letra sola en un lado.</li><li><span class="kw"><bdi>Coeficiente</bdi></span> — El número frente a una letra, como el 3 en 3x.</li><li><span class="kw"><bdi>Solución</bdi></span> — Un número que hace verdadera la ecuación o desigualdad.</li><li><span class="kw"><bdi>Propiedad de división de la igualdad</bdi></span> — Dividir ambos lados entre el mismo número distinto de cero mantiene una ecuación equilibrada.</li><li><span class="kw"><bdi>Propiedad de multiplicación de la igualdad</bdi></span> — Multiplicar ambos lados por el mismo número mantiene una ecuación equilibrada.</li></ul></div>
+  <div class="lang-panel" data-lang="ar" lang="ar" dir="rtl"><p class="auto-label">ترجمة آلية · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">لحلّ معادلة ضرب أو قسمة، اعكسها بالخطوة المعاكسة في الطرفين. في 4x = 20، اقسم الطرفين على 4: x = 5. وفي x ÷ 3 = 6، اضرب الطرفين في 3: x = 18.</p><ul><li><span class="kw"><bdi>حلّ معادلات الضرب والقسمة</bdi></span> (<bdi lang="en">Solve Multiplication and Division Equations</bdi>) — استخدام الضرب أو القسمة العكسية لعزل المتغيّر.</li><li><span class="kw"><bdi>عملية عكسية</bdi></span> (<bdi lang="en">Inverse operation</bdi>) — عمليتان حسابيتان تلغي إحداهما الأخرى، مثل × و ÷.</li><li><span class="kw"><bdi>يضرب</bdi></span> (<bdi lang="en">Multiply</bdi>) — أن تجمع مجموعات متساوية مرة بعد مرة.</li><li><span class="kw"><bdi>يقسم</bdi></span> (<bdi lang="en">Divide</bdi>) — أن توزّع إلى مجموعات متساوية.</li><li><span class="kw"><bdi>عزل المتغيّر</bdi></span> (<bdi lang="en">Isolate</bdi>) — جعل الحرف وحده في أحد طرفي المعادلة.</li><li><span class="kw"><bdi>معامل</bdi></span> (<bdi lang="en">Coefficient</bdi>) — العدد الموجود أمام الحرف، مثل 3 في 3x.</li><li><span class="kw"><bdi>حلّ</bdi></span> (<bdi lang="en">Solution</bdi>) — عدد يجعل المعادلة أو المتباينة صحيحة.</li><li><span class="kw"><bdi>خاصية القسمة للمساواة</bdi></span> (<bdi lang="en">Division Property of Equality</bdi>) — قسمة الطرفين على العدد نفسه (غير الصفر) تُبقي المعادلة متوازنة.</li><li><span class="kw"><bdi>خاصية الضرب للمساواة</bdi></span> (<bdi lang="en">Multiplication Property of Equality</bdi>) — ضرب الطرفين في العدد نفسه يُبقي المعادلة متوازنة.</li></ul></div>
+  <div class="lang-panel" data-lang="fr" lang="fr"><p class="auto-label">Traduction automatique · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">Pour résoudre une équation de multiplication ou de division, défais-la avec l'opération contraire des deux côtés. Pour 4x = 20, divise les deux côtés par 4 : x = 5. Pour x ÷ 3 = 6, multiplie les deux côtés par 3 : x = 18.</p><ul><li><span class="kw"><bdi>résoudre des équations de multiplication et de division</bdi></span> (<bdi lang="en">Solve Multiplication and Division Equations</bdi>) — Utiliser la multiplication ou la division inverse pour isoler la variable.</li><li><span class="kw"><bdi>opération inverse</bdi></span> (<bdi lang="en">Inverse operation</bdi>) — Deux opérations qui s'annulent l'une l'autre, comme × et ÷.</li><li><span class="kw"><bdi>multiplier</bdi></span> (<bdi lang="en">Multiply</bdi>) — Ajouter des groupes égaux encore et encore.</li><li><span class="kw"><bdi>diviser</bdi></span> (<bdi lang="en">Divide</bdi>) — Partager en groupes égaux.</li><li><span class="kw"><bdi>isoler</bdi></span> (<bdi lang="en">Isolate</bdi>) — Mettre la lettre toute seule d'un côté.</li><li><span class="kw"><bdi>coefficient</bdi></span> (<bdi lang="en">Coefficient</bdi>) — Le nombre devant une lettre, comme le 3 dans 3x.</li><li><span class="kw"><bdi>solution</bdi></span> (<bdi lang="en">Solution</bdi>) — Nombre qui rend l'équation ou l'inéquation vraie.</li><li><span class="kw"><bdi>propriété de division de l'égalité</bdi></span> (<bdi lang="en">Division Property of Equality</bdi>) — Diviser les deux côtés par le même nombre (non nul) garde l'équation en équilibre.</li><li><span class="kw"><bdi>propriété de multiplication de l'égalité</bdi></span> (<bdi lang="en">Multiplication Property of Equality</bdi>) — Multiplier les deux côtés par le même nombre garde l'équation en équilibre.</li></ul></div>
+  <div class="lang-panel" data-lang="prs" lang="prs" dir="rtl"><p class="auto-label">ترجمه ماشینی · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">برای حل معادلهٔ ضرب یا تقسیم، آن را با عملیهٔ مخالف در هر دو طرف برعکس کنید. در 4x = 20، هر دو طرف را بر 4 تقسیم کنید: x = 5. در x ÷ 3 = 6، هر دو طرف را در 3 ضرب کنید: x = 18.</p><ul><li><span class="kw"><bdi>حل معادله‌های ضرب و تقسیم</bdi></span> (<bdi lang="en">Solve Multiplication and Division Equations</bdi>) — با ضرب یا تقسیم معکوس، متحول را تنها بسازید.</li><li><span class="kw"><bdi>عملیهٔ معکوس</bdi></span> (<bdi lang="en">Inverse operation</bdi>) — دو عملیه که یکدیگر را خنثی می‌کنند، مانند × و ÷.</li><li><span class="kw"><bdi>ضرب کردن</bdi></span> (<bdi lang="en">Multiply</bdi>) — جمع کردن گروه‌های برابر بار بار.</li><li><span class="kw"><bdi>تقسیم کردن</bdi></span> (<bdi lang="en">Divide</bdi>) — بخش کردن به گروه‌های برابر.</li><li><span class="kw"><bdi>تنها ساختن متحول</bdi></span> (<bdi lang="en">Isolate</bdi>) — حرف را در یک طرف تنها گذاشتن.</li><li><span class="kw"><bdi>ضریب</bdi></span> (<bdi lang="en">Coefficient</bdi>) — عددی که پیش از حرف می‌آید، مانند 3 در 3x.</li><li><span class="kw"><bdi>حل</bdi></span> (<bdi lang="en">Solution</bdi>) — عددی که معادله یا نامساوات را درست می‌سازد.</li><li><span class="kw"><bdi>خاصیت تقسیم در تساوی</bdi></span> (<bdi lang="en">Division Property of Equality</bdi>) — تقسیم هر دو طرف بر یک عدد (غیر از صفر)، معادله را متوازن نگه می‌دارد.</li><li><span class="kw"><bdi>خاصیت ضرب در تساوی</bdi></span> (<bdi lang="en">Multiplication Property of Equality</bdi>) — ضرب هر دو طرف در یک عدد، معادله را متوازن نگه می‌دارد.</li></ul></div>
+  </div>
+  </div>
 </section>
 <section>
   <h2>Key words</h2>
@@ -71,7 +100,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Practice at home</h2>
-  <ol><li>Solve: w / 8 = 6</li></ol>
+  <ol><li>Solve: y / 4 = 9<ol class="choices" type="A"><li>y = 36</li><li>y = 13</li><li>y = 2.25</li><li>y = 5</li></ol></li></ol>
 </section>
 
 <section class="tool-section">
@@ -83,7 +112,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Answer check</h2>
-  <ol><li>Solve: w / 8 = 6 → <span class="answer">w = 48</span></li></ol>
+  <ol><li>Solve: y / 4 = 9 → <span class="answer">y = 36</span></li></ol>
 </section>
 <section>
   <h2>Common mistake</h2>

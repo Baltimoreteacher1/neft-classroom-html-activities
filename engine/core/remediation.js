@@ -1,3 +1,4 @@
+import { displayLetterFor } from "./choice-order.js";
 import { interventionFor } from "./misconception-interventions.js";
 import { misconceptionLabel, studentExplanation } from "./misconceptions.js";
 
@@ -136,7 +137,9 @@ export function buildWorkedExample(question) {
     Array.isArray(question.choices) &&
     typeof question.correctIndex === "number"
   ) {
-    const letter = ["A", "B", "C", "D", "E"][question.correctIndex] || "?";
+    // The letter the student SAW: choices are shown in display order
+    // (choice-order.js), so the authored index is not the on-screen letter.
+    const letter = displayLetterFor(question, question.correctIndex);
     steps.push({
       label: "The correct answer",
       work: `${letter}: ${question.choices[question.correctIndex]}`,

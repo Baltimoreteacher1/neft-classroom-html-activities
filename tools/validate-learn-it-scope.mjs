@@ -86,6 +86,14 @@ const selfTests = [
         .length === 1,
   ],
   [
+    "the evidence excludes the family glossary, which repeats every term",
+    () =>
+      orphanTerms({
+        vocabulary: [{ term: "Net" }],
+        familyLanguages: { fr: { vocabulary: [{ term: "Net", translation: "patron" }] } },
+      }).length === 1,
+  ],
+  [
     "inflection is not read as absence",
     () =>
       !orphanTerms({

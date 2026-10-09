@@ -41,6 +41,7 @@ import { createApp } from "./app.js";
 import { fireCelebrationFX, renderCelebrationPicker } from "./celebration-picker.js";
 import { mountCertificateDownload } from "./certificate-export.js";
 import { mountChalkAnnotations } from "./chalk-annotate.js";
+import { choiceOrderFor } from "./choice-order.js";
 import { deriveCommonMistake, deriveErrorExample } from "./content-enrichment.js";
 import { mountDiscussionMoment } from "./discourse.js";
 import { extractDivisionDiagram } from "./division-helper.js";
@@ -3339,7 +3340,10 @@ export function renderWarmupPhase(el, state, ctx, config, opts = {}) {
 
     const selectedIdx = savedAnswers[qIdx];
 
-    q.choices.forEach((choiceText, cIdx) => {
+    // Display order (choice-order.js): `cIdx` stays the AUTHORED index, which is
+    // what is saved, scored and fingerprinted; only the on-screen position moves.
+    choiceOrderFor(q).forEach((cIdx) => {
+      const choiceText = q.choices[cIdx];
       const choiceLabel = document.createElement("label");
       choiceLabel.style.cssText =
         "display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid #cbd5e1; border-radius:8px; background:#ffffff; cursor:pointer; font-size:17px; font-weight:500; line-height:1.45; color:#0f172a; transition:all 0.15s;";
@@ -3398,12 +3402,12 @@ export function renderWarmupPhase(el, state, ctx, config, opts = {}) {
     const bonusDetails = document.createElement("details");
     bonusDetails.className = "reading-bonus";
     const bonusSummary = document.createElement("summary");
-    bonusSummary.textContent = "Bonus · Remember When";
+    bonusSummary.innerHTML = stackHtml("Bonus · Spiral review", "Bono · Repaso en espiral");
     bonusDetails.append(bonusSummary);
     const bonusContent = document.createElement("div");
     bonusDetails.append(bonusContent);
     retrievalHost.append(bonusDetails);
-    mountRetrievalOpener(bonusContent, config, state, 0, { variant: "bonus", max: 1 })
+    mountRetrievalOpener(bonusContent, config, state, 0, { variant: "bonus", max: 1, spiral: true })
       .then(() => {
         if (!bonusContent.childElementCount) bonusDetails.remove();
       })
@@ -3693,7 +3697,9 @@ function evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox) {
     input.disabled = true;
   });
 
-  choices.forEach((lbl, cIdx) => {
+  choices.forEach((lbl) => {
+    // Labels are in DISPLAY order; the radio's value is the authored index.
+    const cIdx = Number(lbl.querySelector("input[type='radio']")?.value);
     lbl.style.borderColor = "#cbd5e1";
     lbl.style.background = "#ffffff";
     lbl.style.cursor = "default";
@@ -5199,7 +5205,9 @@ function renderConnectCheck(cfg, state) {
     const settle = (picked) => {
       const isRight = picked === answerIdx;
       results[qi] = isRight;
-      opts.querySelectorAll("button").forEach((b, bi) => {
+      opts.querySelectorAll("button").forEach((b) => {
+        // Buttons sit in DISPLAY order; their authored index rides on the node.
+        const bi = Number(b.dataset.choiceIndex);
         b.disabled = true;
         b.classList.toggle("is-correct", bi === answerIdx);
         b.classList.toggle("is-wrong", bi === picked && !isRight);
@@ -5217,10 +5225,12 @@ function renderConnectCheck(cfg, state) {
       }${coach ? `${esc(coach)} ` : ""}${esc(q.explanation || "")}</span>`;
     };
 
-    choices.forEach((choice, ci) => {
+    choiceOrderFor({ ...q, choices }).forEach((ci) => {
+      const choice = choices[ci];
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "connect-check-choice";
+      btn.dataset.choiceIndex = String(ci);
       btn.innerHTML = renderMathText(String(choice));
       btn.addEventListener("click", () => {
         state.saveResponse(3, key, String(ci));

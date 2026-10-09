@@ -14,7 +14,21 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { JSDOM } from "jsdom";
 
-const page = readFileSync(new URL("../curriculum/my-progress/index.html", import.meta.url), "utf8");
+const pageOnly = readFileSync(
+  new URL("../curriculum/my-progress/index.html", import.meta.url),
+  "utf8",
+);
+const mathPage = readFileSync(new URL("../math/my-progress/index.html", import.meta.url), "utf8");
+// Both progress URLs render ONE shared component; its source is part of what
+// the student sees, so every copy rule below is checked against page + module.
+const storesSrc = readFileSync(
+  new URL("../assets/my-progress/progress-stores.js", import.meta.url),
+  "utf8",
+);
+const viewSrc = ["progress-sections.js", "progress-view.js"]
+  .map((f) => readFileSync(new URL(`../assets/my-progress/${f}`, import.meta.url), "utf8"))
+  .join("\n");
+const page = [pageOnly, storesSrc, viewSrc].join("\n");
 
 let checks = 0;
 
@@ -76,7 +90,7 @@ for (const [label, pattern] of [
   checks += 1;
   assert.ok(/never sent anywhere/i.test(page), "and the page says so to the student");
   checks += 1;
-  assert.ok(/noindex/.test(page), "the page is not indexable");
+  assert.ok(/noindex/.test(pageOnly), "the page is not indexable");
 }
 
 // ── It renders, against a real NTSignal store ──────────────────────────────
@@ -140,6 +154,215 @@ for (const [label, pattern] of [
     hub.includes("/curriculum/my-progress/"),
     "and linked from the curriculum hub — an unreachable page is not a feature",
   );
+}
+
+// ── One unified view, read-only over every tool's store ────────────────────
+{
+  const day = 86400000;
+  const now = Date.now();
+  const seed = {
+    "nt-signal:v1": JSON.stringify({
+      standards: {
+        "6.AT.1": { attempts: 5, correct: 5, lastTs: now - day },
+        "6.NOS.2": { attempts: 4, correct: 1, lastTs: now - 2 * day },
+        "6.GR.1": { attempts: 1, correct: 1, lastTs: now },
+      },
+    }),
+    "pa-summary-3-4": JSON.stringify({
+      score: 120,
+      stars: 2,
+      firstTry: 5,
+      total: 8,
+      playedAt: now - 3 * day,
+    }),
+    "pa-summary-unit-7": JSON.stringify({
+      score: 300,
+      stars: 3,
+      firstTry: 9,
+      total: 10,
+      playedAt: now - day,
+    }),
+    nt_results_v1: JSON.stringify([
+      {
+        activityId: "webquest-x",
+        activityTitle: "Ratio WebQuest",
+        scorePercent: 85,
+        completedAt: new Date(now - 4 * day).toISOString(),
+      },
+    ]),
+    "choiceboard-u3": JSON.stringify([true, true, true, false, false, false, false, false, false]),
+    "nsr:rec:ABC123": JSON.stringify({
+      activityId: "stats-slam",
+      activityTitle: "Stats Slam",
+      url: "/math/statistics/games/unit8-stats-slam.html",
+      progressPercent: 40,
+      updatedAt: new Date(now - 5 * day).toISOString(),
+    }),
+    "ewl-fluency-profiles-v1": JSON.stringify({ ids: [0, 2], active: 0 }),
+    "ewl-fluency-progress-v1": JSON.stringify({
+      "6:divide-fractions": {
+        attempts: 10,
+        correct: 4,
+        sprintBest: 6,
+        lastPracticed: new Date(now - day).toISOString(),
+      },
+    }),
+    "ewl-fluency-progress-v1:profile-2": JSON.stringify({
+      "5:multiply-decimals": {
+        attempts: 6,
+        correct: 6,
+        streakBest: 9,
+        lastPracticed: new Date(now).toISOString(),
+      },
+    }),
+    "ewl-fluency-tutor-v2": JSON.stringify({
+      sessions: [{ at: now - day, answered: 10, correct: 4, mode: "practice" }],
+    }),
+    arl_progress: JSON.stringify({
+      completedMissions: ["mission-1", "mission-2"],
+      missionStars: { "mission-1": 3, "mission-2": 2 },
+      lastPlayedAt: new Date(now - 2 * day).toISOString(),
+    }),
+  };
+  /** A storage that records any attempt to write: reading must never write. */
+  function readOnlyStorage(data) {
+    const keys = Object.keys(data);
+    return {
+      writes: 0,
+      get length() {
+        return keys.length;
+      },
+      key: (i) => keys[i] ?? null,
+      getItem: (k) => (k in data ? data[k] : null),
+      setItem() {
+        this.writes += 1;
+      },
+      removeItem() {
+        this.writes += 1;
+      },
+    };
+  }
+  const vm = await import("node:vm");
+  const ctx = { window: {} };
+  vm.runInNewContext(storesSrc, ctx);
+  const S = ctx.window.NTProgressStores;
+  const store = readOnlyStorage(seed);
+  const snap = S.collect(store);
+
+  checks += 1;
+  assert.equal(store.writes, 0, "collecting progress never writes to any tool's store");
+  checks += 1;
+  assert.equal(
+    /\.(setItem|removeItem)\(/.test(storesSrc),
+    false,
+    "the store readers contain no write call at all",
+  );
+  checks += 1;
+  assert.equal(snap.arcade.runs.length, 2, "Practice Arcade lesson + unit runs are read");
+  checks += 1;
+  assert.equal(snap.results[0].percent, 85, "saved activity results are read");
+  checks += 1;
+  assert.equal(snap.saves[0].percent, 40, "Save/Resume records are read");
+  checks += 1;
+  assert.equal(snap.fluency.length, 2, "every Fluency Lab learner profile is read");
+  checks += 1;
+  assert.equal(
+    snap.fluency[0].skills[0].best,
+    6,
+    "the older sprintBest field still counts as the best run",
+  );
+  checks += 1;
+  assert.equal(snap.fluency[1].skills[0].best, 9, "and so does the newer streakBest field");
+  checks += 1;
+  assert.equal(
+    snap.almostRight.missions.filter((m) => m.done).length,
+    2,
+    "Almost-Right missions are read",
+  );
+  checks += 1;
+  assert.equal(snap.boards[2].bingo, true, "choice-board bingo is detected");
+
+  const rows = S.skillRows(snap);
+  checks += 1;
+  assert.deepEqual(
+    [...rows.map((r) => r.code)].sort().join(","),
+    "6.AT.1,6.NOS.2",
+    "a one-attempt standard stays below the evidence bar in the unified view too",
+  );
+  const next = S.nextSuggestion(snap);
+  checks += 1;
+  assert.equal(next.code, "6.NOS.2", "the next suggestion is the skill most worth another look");
+  checks += 1;
+  assert.ok(S.recentActivity(snap, 20).length >= 5, "recent activity merges every store");
+  checks += 1;
+  assert.equal(
+    S.isEmpty(S.collect(readOnlyStorage({}))),
+    true,
+    "an empty device is reported as empty, not broken",
+  );
+
+  // The view writes only in Restore, and only the two stores Restore has always merged.
+  const viewWrites = viewSrc.match(/localStorage\.setItem\(\s*("[^"]*"|[^,]+)/g) || [];
+  checks += 1;
+  assert.ok(viewWrites.length > 0, "Restore still merges a backup");
+  for (const w of viewWrites) {
+    checks += 1;
+    assert.ok(
+      /nt_results_v1|choiceboard-u/.test(w),
+      `the view may only restore results/choice boards, found: ${w}`,
+    );
+  }
+  checks += 1;
+  assert.equal(
+    /removeItem\(/.test(viewSrc),
+    false,
+    "the unified view never deletes another tool's data",
+  );
+
+  // Both URLs render the same component, against the same seeded device.
+  for (const [route, html] of [
+    ["/curriculum/my-progress/", pageOnly],
+    ["/math/my-progress/", mathPage],
+  ]) {
+    checks += 1;
+    assert.ok(/data-progress-view/.test(html), `${route} mounts the unified view`);
+    for (const f of ["progress-stores.js", "progress-sections.js", "progress-view.js"]) {
+      checks += 1;
+      assert.ok(html.includes(`/assets/my-progress/${f}`), `${route} loads ${f}`);
+    }
+    const dom = new JSDOM(html.replace(/<script[\s\S]*?<\/script>/g, ""), {
+      url: `https://eduwonderlab.com${route}`,
+      runScripts: "outside-only",
+    });
+    for (const [k, v] of Object.entries(seed)) dom.window.localStorage.setItem(k, v);
+    const before = JSON.stringify(Object.entries(dom.window.localStorage));
+    dom.window.eval(storesSrc);
+    dom.window.eval(viewSrc);
+    if (dom.window.document.readyState === "loading")
+      await new Promise((r) => dom.window.addEventListener("DOMContentLoaded", r));
+    const text = dom.window.document.querySelector("[data-progress-view]").textContent;
+    for (const expected of [
+      "Practice Arcade",
+      "Stats Slam",
+      "Fluency Lab",
+      "Almost-Right",
+      "Ratio WebQuest",
+      "Next suggested skill",
+      "Próxima habilidad sugerida",
+      "Print my progress",
+      "Back up to a file",
+      "Restore from a file",
+    ]) {
+      checks += 1;
+      assert.ok(text.includes(expected), `${route} shows "${expected}"`);
+    }
+    checks += 1;
+    assert.equal(
+      JSON.stringify(Object.entries(dom.window.localStorage)),
+      before,
+      `${route} rendered without changing any store`,
+    );
+  }
 }
 
 console.log(`my progress: ${checks} checks passed.`);

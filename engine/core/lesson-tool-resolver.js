@@ -147,6 +147,11 @@ export function resolveInteractiveToolForLesson(config) {
       label: "Interactive Factor Tree Explorer: Build prime factorizations step-by-step!",
     };
   }
+  // 6.NOS.5 — Positive & negative numbers in context (integers and their
+  // opposites on the number line, lesson 7-1).
+  if (std === "6.NOS.5") {
+    return { kind: "number-line-explorer", label: "Interactive Number Line Explorer" };
+  }
   // 6.NOS.6 — Coordinate Plane / Number Line
   if (std === "6.NOS.6") {
     if (wb("number line"))
@@ -175,8 +180,9 @@ export function resolveInteractiveToolForLesson(config) {
   if (std === "6.NOS.8") {
     return { kind: "number-line-explorer", label: "Interactive Absolute Value & Integer Explorer" };
   }
-  // 6.NOS.9 — Distance
-  if (std === "6.NOS.9") {
+  // 6.NOS.9 — Distance. 6.GR.3 (polygons in the coordinate plane, lesson 7-7)
+  // finds side lengths as distances between vertices sharing a coordinate.
+  if (std === "6.NOS.9" || std === "6.GR.3") {
     return {
       kind: "number-line-explorer",
       label: "Interactive Distance on a Number Line Explorer",

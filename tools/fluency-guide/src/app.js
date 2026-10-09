@@ -575,7 +575,9 @@
     if (!visible.length) {
       host.innerHTML =
         '<div class="empty"><h3>No lessons match these filters</h3>' +
-        "<p>Try fewer keywords, another unit, or clear the filters to see all 54 lessons.</p>" +
+        "<p>Try fewer keywords, another unit, or clear the filters to see all " +
+        LESSONS.length +
+        " lessons.</p>" +
         '<button class="btn btn-primary" type="button" data-act="clear">Clear all filters</button></div>';
       return;
     }
@@ -3318,12 +3320,12 @@
       if (!ok) report.passed = false;
     });
 
-    if (report.totalLessons !== 54) report.passed = false;
+    if (report.totalLessons !== 78) report.passed = false;
     if (report.spineSkills !== 12) report.passed = false;
 
     console.log(
       report.passed
-        ? "✓ Self-test passed: 54 lessons, 216 foundation exercises, 12 spine skills, parser verified."
+        ? "✓ Self-test passed: 78 lessons, 312 foundation exercises, 12 spine skills, parser verified."
         : "✗ Self-test detected inconsistencies.",
       report,
     );

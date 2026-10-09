@@ -37,16 +37,16 @@ for (const input of ['', '   ', null, 'NaN', 'Infinity', '1e3', '1/0', '3:0',
 test('no expression code was executed', () => assert.equal(context.wasExecuted, undefined));
 
 test('full library shape and automatic/review accounting remain explicit', () => {
-  assert.equal(lessons.length, 54);
-  assert.equal(tasks.length, 216);
+  assert.equal(lessons.length, 78);
+  assert.equal(tasks.length, 312);
   assert.equal(data.spine.length, 12);
   assert.equal(data.spine.reduce((n, s) => n + s.drill.items.length, 0), 72);
   const counts = {};
   for (const {problem} of tasks) counts[answerKind(problem)] = (counts[answerKind(problem)] || 0) + 1;
-  assert.deepEqual(counts, {sequence: 6, number: 154, interval: 1, review: 41, ratio: 2, coordinate: 7, set: 3, symbol: 2});
+  assert.deepEqual(counts, {sequence: 7, number: 225, interval: 1, review: 65, ratio: 2, coordinate: 7, set: 3, symbol: 2});
 });
 
-test('all 216 canonical answers are either recognized or honestly routed to review', () => {
+test('all 312 canonical answers are either recognized or honestly routed to review', () => {
   for (const {lesson, index, problem} of tasks) {
     const result = check(problem.answer, problem);
     if (answerKind(problem) === 'review') {
@@ -55,19 +55,19 @@ test('all 216 canonical answers are either recognized or honestly routed to revi
     } else assert.equal(result.match, true, `${lesson}/${index}: ${JSON.stringify(result)}`);
   }
 });
-test('all 175 automatically checked tasks reject appended explanatory garbage', () => {
+test('all 247 automatically checked tasks reject appended explanatory garbage', () => {
   for (const {lesson, index, problem} of tasks.filter(t => answerKind(t.problem) !== 'review')) {
     assert.equal(check(problem.answer + ' unrelated words', problem).match, false, `${lesson}/${index}`);
   }
 });
-test('all 154 numeric tasks reject opposite-sign answers', () => {
+test('all 225 numeric tasks reject opposite-sign answers', () => {
   for (const {lesson, index, problem} of tasks.filter(t => answerKind(t.problem) === 'number')) {
     const expected = parseMath(problem.answer);
     assert.ok(Number.isFinite(expected), `${lesson}/${index}: expected number must parse`);
     if (expected !== 0) assert.equal(check(String(-expected), problem).match, false, `${lesson}/${index}`);
   }
 });
-test('all 41 self-review tasks refuse to auto-certify either canonical or nonsense prose', () => {
+test('all 65 self-review tasks refuse to auto-certify either canonical or nonsense prose', () => {
   for (const {lesson, index, problem} of tasks.filter(t => answerKind(t.problem) === 'review')) {
     for (const raw of [problem.answer, 'I do not know', '42']) {
       const result = check(raw, problem);

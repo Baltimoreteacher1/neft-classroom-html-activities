@@ -16,6 +16,7 @@ const STORAGE_KEY = "ewl-fluency-progress-v1";
 const SETTINGS_KEY = "ewl-fluency-settings-v1";
 const TUTOR_KEY = "ewl-fluency-tutor-v2";
 const SESSION_KEY = "ewl-fluency-session-v2";
+const STREAK_GOAL = 10;
 const initialParams = new URLSearchParams(location.search);
 let activeProfile = profiles().active;
 let cleanupVisual = null;
@@ -45,8 +46,9 @@ const els = {
   sessionType: document.querySelector("#session-type"),
   sessionCount: document.querySelector("#session-count"),
   sessionAccuracy: document.querySelector("#session-accuracy"),
-  timerWrap: document.querySelector("#timer-wrap"),
-  timer: document.querySelector("#timer"),
+  streakWrap: document.querySelector("#streak-wrap"),
+  streakMeter: document.querySelector("#streak-meter"),
+  streakLabel: document.querySelector("#streak-label"),
   progressBar: document.querySelector("#session-progress"),
   problemNumber: document.querySelector("#problem-number"),
   question: document.querySelector("#question"),
@@ -99,8 +101,6 @@ const state = {
   item: null,
   itemAttempts: 0,
   guidedStepsShown: 0,
-  timerId: null,
-  timeLeft: 60,
   progress: cleanProgress(loadJson(STORAGE_KEY, {})),
   settings: loadJson(SETTINGS_KEY, { largeText: false }),
   tutor: sanitizeTutor(loadJson(TUTOR_KEY, emptyTutor())),
@@ -139,7 +139,7 @@ function recordFor(skill) {
     correct: 0,
     completedSets: 0,
     bestStreak: 0,
-    sprintBest: 0,
+    streakBest: 0,
     guidedProblems: 0,
     guidedCorrect: 0,
     guidedSets: 0,
@@ -187,7 +187,6 @@ function renderGradeTabs() {
 
 function renderLibrary() {
   saveActiveSession();
-  stopTimer();
   cleanupVisual?.();
   showArea("library");
   state.skill = null;
@@ -324,7 +323,7 @@ function renderModeTabs(mixed = false) {
         ["guided", "Guided practice"],
         ["adaptive", "Adaptive practice"],
         ["practice", "Practice 10"],
-        ["sprint", "60-second sprint"],
+        ["streak", "Streak: 10 in a row"],
       ]
         .map(
           ([mode, label]) =>
@@ -376,7 +375,6 @@ function setMode(mode) {
   cleanupVisual?.();
   cleanupVisual = null;
   state.mode = mode;
-  stopTimer();
   els.modeTabs.querySelectorAll("[role=tab]").forEach((tab) => {
     tab.setAttribute("aria-selected", String(tab.dataset.mode === mode));
   });
@@ -403,7 +401,7 @@ function setMode(mode) {
       });
     }
   } else {
-    beginSession(mode, mode === "sprint" ? Infinity : mode === "guided" ? 5 : 10);
+    beginSession(mode, mode === "streak" ? Infinity : mode === "guided" ? 5 : 10);
   }
 }
 
@@ -428,12 +426,10 @@ function createSession(mode, target, queue = null) {
 }
 
 function beginSession(mode, target, queue = null) {
-  stopTimer();
   state.session = createSession(mode, target, queue);
   state.recentQuestions = [];
   state.item = null;
   state.itemAttempts = 0;
-  state.timeLeft = 60;
   els.learnPanel.hidden = true;
   els.drillPanel.hidden = false;
   els.summary.hidden = true;
@@ -442,11 +438,9 @@ function beginSession(mode, target, queue = null) {
   els.answerForm.hidden = false;
   els.independentPractice.hidden = true;
   els.resetButton.textContent = mode === "guided" ? "Try another guided set" : "Start another set";
-  els.timerWrap.hidden = mode !== "sprint";
-  els.timer.textContent = "1:00";
   els.sessionType.textContent =
-    mode === "sprint"
-      ? "60-second sprint"
+    mode === "streak"
+      ? "Streak · 10 in a row"
       : mode === "guided"
         ? "Guided practice · 5"
         : mode === "daily"
@@ -459,7 +453,6 @@ function beginSession(mode, target, queue = null) {
   if (mode === "repair") els.sessionType.textContent = "Repair practice";
   if (mode === "assignment") els.sessionType.textContent = state.assignment.label;
   nextProblem();
-  if (mode === "sprint") startTimer();
 }
 
 function problemSkill() {
@@ -471,7 +464,7 @@ function problemSkill() {
 function nextProblem(restoredItem = null) {
   if (restoredItem && typeof restoredItem.question !== "string") restoredItem = null;
   if (!state.session || state.session.finished) return;
-  if (state.session.answered >= state.session.target) {
+  if (state.session.answered >= state.session.target || streakComplete(state.session)) {
     finishSession();
     return;
   }
@@ -503,7 +496,7 @@ function nextProblem(restoredItem = null) {
   els.checkButton.hidden = false;
   els.answerInput.value = "";
   els.answerInput.disabled = false;
-  els.problemNumber.textContent = state.session.mode === "sprint" ? `Problem ${state.session.answered + 1}` : `Problem ${state.session.answered + 1} of ${state.session.target}`;
+  els.problemNumber.textContent = state.session.mode === "streak" ? `Problem ${state.session.answered + 1}` : `Problem ${state.session.answered + 1} of ${state.session.target}`;
   els.question.textContent = state.item.question;
   els.topic.textContent = `${skill.title} · Grade ${skill.grade}`;
   els.insight.textContent = state.session.mode === "diagnostic" ? "One sample per skill. Choose “I’m not sure yet” whenever you need to." : state.session.queue?.[state.session.answered]?.purpose || (state.initialSupport ? "A smaller step with coaching. We’ll build back toward independent work." : adapting && level === 2 ? "Your recent answers were strong. Try this one independently, then explain a check." : adapting ? "Work at your pace. Help is here when you need it." : "");
@@ -580,23 +573,9 @@ function submitAnswer(value) {
     if (!correct) rememberMistake(state.tutor, state.item.skill, state.item, value);
   }
   if (state.session.mode === "diagnostic") { finalizeProblem(correct); return; }
-  const sessionId = state.session.id;
-  if (correct) {
-    if (state.session.mode === "sprint") {
-      finalizeProblem(true, true);
-      window.setTimeout(() => {
-        if (state.session?.id === sessionId && state.session?.mode === "sprint" && state.timeLeft > 0) nextProblem();
-      }, 260);
-    } else {
-      finalizeProblem(true);
-    }
-    return;
-  }
-  if (state.session.mode === "sprint") {
-    finalizeProblem(false, true);
-    window.setTimeout(() => {
-      if (state.session?.id === sessionId && state.session?.mode === "sprint" && state.timeLeft > 0) nextProblem();
-    }, 350);
+  if (correct || state.session.mode === "streak") {
+    // Streak mode: one answer per problem, so a miss restarts the count. No clock — the student moves on with "Next problem".
+    finalizeProblem(correct);
     return;
   }
   if (state.initialSupport && state.itemAttempts < 3) {
@@ -616,7 +595,7 @@ function submitAnswer(value) {
   finalizeProblem(false);
 }
 
-function finalizeProblem(correct, sprintAdvance = false) {
+function finalizeProblem(correct) {
   const session = state.session;
   if (!session || session.finished || state.itemDone) return;
   state.itemDone = true;
@@ -627,9 +606,10 @@ function finalizeProblem(correct, sprintAdvance = false) {
     session.bestStreak = Math.max(session.bestStreak, session.streak);
     showFeedback("Correct", state.item.explanation, "correct");
   } else {
+    const lostStreak = session.mode === "streak" && session.streak > 0;
     session.streak = 0;
     session.missed.push({ skill: state.item.skill, item: state.item });
-    showFeedback("Keep this one", `${state.item.hint} ${state.item.explanation}`, "incorrect");
+    showFeedback(lostStreak ? "New streak starts now" : "Keep this one", `${state.item.hint} ${state.item.explanation}`, "incorrect");
   }
   const independent = !state.initialSupport && !state.hintBeforeFirst;
   const firstCorrect = state.firstAnswerCorrect === true;
@@ -654,8 +634,8 @@ function finalizeProblem(correct, sprintAdvance = false) {
   els.checkButton.hidden = true;
   els.hintButton.hidden = true;
   els.skip.hidden = true;
-  els.nextButton.hidden = sprintAdvance;
-  els.nextButton.textContent = session.answered >= session.target ? "Finish set" : "Next problem";
+  els.nextButton.hidden = false;
+  els.nextButton.textContent = session.answered >= session.target || streakComplete(session) ? "Finish set" : "Next problem";
   updateSessionHeader();
   saveActiveSession();
 }
@@ -670,6 +650,7 @@ function updateSkillRecord(skill, correct, mode) {
     record.attempts += 1;
     if (correct) record.correct += 1;
     record.bestStreak = Math.max(record.bestStreak, state.session.streak);
+    if (mode === "streak") record.streakBest = Math.min(STREAK_GOAL, Math.max(record.streakBest, state.session.streak));
   }
   record.lastPracticed = new Date().toISOString();
   state.progress[key] = record;
@@ -688,44 +669,47 @@ function updateSessionHeader() {
   const session = state.session;
   els.sessionCount.textContent = `${session.answered} completed`;
   els.sessionAccuracy.textContent = session.mode === "diagnostic" ? "Finding a starting point" : `${session.correct} solved · ${session.independentCorrect} without help`;
-  const progress = Number.isFinite(session.target) ? (session.answered / session.target) * 100 : Math.min(100, session.answered * 5);
+  const progress = session.mode === "streak" ? (session.streak / STREAK_GOAL) * 100 : Number.isFinite(session.target) ? (session.answered / session.target) * 100 : Math.min(100, session.answered * 5);
   els.progressBar.style.width = `${Math.min(100, progress)}%`;
+  renderStreakMeter();
 }
 
-function startTimer() {
-  stopTimer();
-  state.timerId = window.setInterval(() => {
-    state.timeLeft -= 1;
-    els.timer.textContent = `0:${String(Math.max(0, state.timeLeft)).padStart(2, "0")}`;
-    if (state.timeLeft <= 0) finishSession();
-  }, 1000);
+function streakComplete(session) {
+  return session?.mode === "streak" && session.streak >= STREAK_GOAL;
 }
 
-function stopTimer() {
-  if (state.timerId) window.clearInterval(state.timerId);
-  state.timerId = null;
+function renderStreakMeter() {
+  const session = state.session;
+  els.streakWrap.hidden = session?.mode !== "streak";
+  if (session?.mode !== "streak") return;
+  const current = Math.min(STREAK_GOAL, session.streak);
+  const best = state.skill ? recordFor(state.skill).streakBest : 0;
+  els.streakMeter.innerHTML = Array.from({ length: STREAK_GOAL }, (_, index) => `<span class="${index < current ? "lit" : ""}"></span>`).join("");
+  els.streakMeter.setAttribute("aria-label", `${current} of ${STREAK_GOAL} correct in a row`);
+  els.streakLabel.textContent = `${current} of ${STREAK_GOAL} in a row${best ? ` · Best ${best}` : ""}`;
 }
 
 function finishSession() {
   if (!state.session || state.session.finished) return;
-  stopTimer();
   const session = state.session;
   session.finished = true;
-  if (session.mode !== "sprint") writeLocal(profileKey(SESSION_KEY, activeProfile), null);
+  writeLocal(profileKey(SESSION_KEY, activeProfile), null);
   document.querySelector(".problem-stage").hidden = true;
   els.answerForm.hidden = true;
   els.feedback.hidden = true;
   els.summary.hidden = false;
   const accuracyPercent = session.answered ? Math.round((session.correct / session.answered) * 100) : 0;
   els.summaryTitle.textContent =
-    session.mode === "sprint"
-      ? "Sprint complete"
+    streakComplete(session)
+      ? "Ten in a row!"
       : session.mode === "guided"
         ? "Guided practice complete"
         : "Practice complete";
   els.summaryCopy.textContent =
     session.mode === "guided"
       ? "You worked through five coached examples. Continue to Practice 10 when the steps feel familiar, or repeat this guided set."
+      : streakComplete(session)
+        ? "Ten correct answers in a row, each one at your own pace. That is steady, careful work."
       : accuracyPercent >= 90
         ? "Accurate and steady. This skill is becoming automatic."
         : accuracyPercent >= 70
@@ -743,7 +727,7 @@ function finishSession() {
     const record = recordFor(state.skill);
     record.completedSets += session.mode === "practice" ? 1 : 0;
     record.guidedSets += session.mode === "guided" ? 1 : 0;
-    if (session.mode === "sprint") record.sprintBest = Math.max(record.sprintBest, session.correct);
+    if (session.mode === "streak") record.streakBest = Math.min(STREAK_GOAL, Math.max(record.streakBest, session.bestStreak));
     state.progress[key] = record;
     saveProgress();
     renderMastery();
@@ -823,7 +807,7 @@ function renderDashboard() {
 
 function openHubView(view) {
   if (view === "library") { renderLibrary(); return; }
-  saveActiveSession(); stopTimer(); cleanupVisual?.(); cleanupVisual = null;
+  saveActiveSession(); cleanupVisual?.(); cleanupVisual = null;
   showArea(view);
   if (view === "path") renderPath();
   if (view === "notebook") renderNotebook();
@@ -861,7 +845,7 @@ function renderNotebook() {
 }
 
 function openPlanned(mode, queue) {
-  saveActiveSession(); stopTimer(); cleanupVisual?.(); cleanupVisual = null;
+  saveActiveSession(); cleanupVisual?.(); cleanupVisual = null;
   state.skill = null; state.mixedPool = queue.map((entry) => findSkill(entry.key)); state.mode = mode;
   showArea("workspace");
   els.workspaceGrade.textContent = `Grade ${state.grade}`;
@@ -897,7 +881,7 @@ function renderAssignmentBanner() {
 }
 
 function saveActiveSession() {
-  if (!state.session || state.session.finished || !state.item || state.session.mode === "sprint") return;
+  if (!state.session || state.session.finished || !state.item) return;
   const { rng: _rng, problemSkills: _skills, ...session } = state.session;
   const snapshot = { version: 2, grade: state.grade, skillId: state.skill?.id || null, session, item: state.item, itemDone: state.itemDone,
     itemAttempts: state.itemAttempts, firstAnswerCorrect: state.firstAnswerCorrect, hintBeforeFirst: state.hintBeforeFirst, initialSupport: state.initialSupport,
@@ -908,9 +892,9 @@ function saveActiveSession() {
 }
 
 function resumePractice(saved = loadJson(SESSION_KEY, null)) {
-  const allowed = ["practice", "guided", "adaptive", "daily", "mixed", "repair", "diagnostic", "assignment"];
+  const allowed = ["practice", "guided", "adaptive", "streak", "daily", "mixed", "repair", "diagnostic", "assignment"];
   if (!saved || saved.version !== 2 || !allowed.includes(saved.session?.mode) || !findSkill(`${saved.grade}:${saved.item?.skill?.id}`) || (saved.session.queue && saved.session.queue.some((entry) => !findSkill(entry.key)))) { announce("There is no saved practice to resume."); return; }
-  stopTimer(); cleanupVisual?.(); cleanupVisual = null;
+  cleanupVisual?.(); cleanupVisual = null;
   state.grade = saved.grade; state.skill = saved.skillId ? getSkill(saved.grade, saved.skillId) : null;
   state.mixedPool = getGrade(state.grade).skills; state.mode = saved.session.mode; state.assignment = saved.assignment || state.assignment;
   state.session = { ...saved.session, rng: Math.random, problemSkills: [], finished: false };
@@ -922,7 +906,7 @@ function resumePractice(saved = loadJson(SESSION_KEY, null)) {
   els.workspaceStandard.textContent = "Continue where you left off";
   if (state.skill) { renderMastery(); renderModeTabs(); renderLearn(); } else renderModeTabs(true);
   els.learnPanel.hidden = true; els.visualPanel.hidden = true; els.drillPanel.hidden = false; els.summary.hidden = true;
-  els.answerForm.hidden = false; document.querySelector(".problem-stage").hidden = false; els.timerWrap.hidden = true;
+  els.answerForm.hidden = false; document.querySelector(".problem-stage").hidden = false;
   els.sessionType.textContent = "Resumed practice";
   if (saved.itemDone) nextProblem();
   else {
@@ -943,7 +927,7 @@ function renderProfiles() {
 }
 
 function switchProfile(id) {
-  saveActiveSession(); saveSettings(); stopTimer(); selectProfile(id); activeProfile = id;
+  saveActiveSession(); saveSettings(); selectProfile(id); activeProfile = id;
   state.session = null; state.item = null;
   state.progress = cleanProgress(loadJson(STORAGE_KEY, {})); state.tutor = sanitizeTutor(loadJson(TUTOR_KEY, emptyTutor()));
   state.settings = loadJson(SETTINGS_KEY, { largeText: false }); state.grade = Number(loadJson(`${SETTINGS_KEY}:grade`, 1)) || 1;
@@ -1116,7 +1100,7 @@ document.querySelector("#restore-preview").addEventListener("click", (event) => 
   if (event.target.id === "cancel-restore") { pendingRestore = null; event.currentTarget.hidden = true; }
   if (event.target.id === "confirm-restore" && pendingRestore) {
     downloadFile(`fluency-before-restore-${localDay()}.json`, JSON.stringify(makeBackup(state), null, 2));
-    stopTimer(); state.session = null; state.item = null;
+    state.session = null; state.item = null;
     state.progress = pendingRestore.progress; state.tutor = pendingRestore.tutor; state.settings = pendingRestore.settings; state.grade = pendingRestore.grade;
     writeLocal(profileKey(SESSION_KEY, activeProfile), null); saveProgress(); saveSettings(); applySettings(); renderLibrary();
     pendingRestore = null; event.currentTarget.hidden = true; announce("Progress restored into the current learner profile.");

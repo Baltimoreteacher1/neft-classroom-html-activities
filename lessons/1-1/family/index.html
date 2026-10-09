@@ -42,6 +42,22 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 .muted-note{color:var(--muted);font-size:14px;margin:6px 0 0;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
+
+ol.choices{margin:6px 0 4px;}
+.lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
+.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
+  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
+.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
+.lang-panel{display:none;margin-top:6px;}
+#family-lang-en:checked ~ .lang-panels [data-lang="en"],
+#family-lang-es:checked ~ .lang-panels [data-lang="es"],
+#family-lang-ar:checked ~ .lang-panels [data-lang="ar"],
+#family-lang-fr:checked ~ .lang-panels [data-lang="fr"],
+#family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
+.lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
+.auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
+  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -59,7 +75,20 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 <section>
   <h2>What students are learning</h2>
   <p>Before any new mathematics, the book asks a different question: where does math already live in your day?</p>
-  <p class="callout"><strong>Key idea:</strong> Math Practices: Mindset &amp; Problem Solving. 1. Make sense of the problem and persevere in solving it. 2. Look for entry points and decompose complex tasks into manageable parts. 3. Use estimation and mental math to check for reasonableness</p>
+  <p class="callout"><strong>Key idea:</strong> Everyone uses math every day — at home, at school, and in the neighborhood. When a problem feels big, first understand it, then break it into smaller parts and keep trying. A quick estimate or mental math helps you check if your answer makes sense.<br><span class="es-text" lang="es">Idea clave: Todos usamos las matemáticas todos los días: en casa, en la escuela y en el vecindario. Cuando un problema parece grande, primero hay que entenderlo, luego dividirlo en partes más pequeñas y seguir intentando. Una estimación rápida o el cálculo mental ayudan a comprobar si la respuesta tiene sentido.</span></p>
+</section>
+
+<section class="lang-section">
+  <h2>Read this in your language <span class="es">· Lea esto en su idioma</span></h2>
+  <div class="lang-picker"><input type="radio" class="lang-radio" name="family-lang" id="family-lang-en" value="en" checked><label for="family-lang-en" lang="en">English</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-es" value="es"><label for="family-lang-es" lang="es">Español</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-ar" value="ar"><label for="family-lang-ar" lang="ar">العربية</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-fr" value="fr"><label for="family-lang-fr" lang="fr">Français</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-prs" value="prs"><label for="family-lang-prs" lang="prs">دری</label>
+  <div class="lang-panels">
+  <div class="lang-panel" data-lang="en" lang="en"><p class="callout">Everyone uses math every day — at home, at school, and in the neighborhood. When a problem feels big, first understand it, then break it into smaller parts and keep trying. A quick estimate or mental math helps you check if your answer makes sense.</p><ul><li><span class="kw"><bdi>doer of math</bdi></span> — Anyone who uses mathematical thinking — which is everyone, every day.</li><li><span class="kw"><bdi>math story</bdi></span> — Your own history with mathematics — what you have done, felt, and learned so far.</li><li><span class="kw"><bdi>strength</bdi></span> — Something you already do well and can share with others.</li><li><span class="kw"><bdi>decompose</bdi></span> — To break a number into parts that add, subtract, multiply, or divide back to it.</li><li><span class="kw"><bdi>estimate</bdi></span> — A reasoned answer that is close enough to be useful, without counting every one.</li></ul></div>
+  <div class="lang-panel" data-lang="es" lang="es"><p class="callout">Todos usamos las matemáticas todos los días: en casa, en la escuela y en el vecindario. Cuando un problema parece grande, primero hay que entenderlo, luego dividirlo en partes más pequeñas y seguir intentando. Una estimación rápida o el cálculo mental ayudan a comprobar si la respuesta tiene sentido.</p><ul><li><span class="kw"><bdi>persona que hace matemáticas</bdi></span> — Cualquiera que use el pensamiento matemático, es decir, todos, todos los días.</li><li><span class="kw"><bdi>historia matemática</bdi></span> — Tu propia historia con las matemáticas: lo que has hecho, sentido y aprendido.</li><li><span class="kw"><bdi>fortaleza</bdi></span> — Algo que ya haces bien y puedes compartir con otros.</li><li><span class="kw"><bdi>descomponer</bdi></span> — Separar un número en partes que se combinan para volver a formarlo.</li><li><span class="kw"><bdi>estimar</bdi></span> — Una respuesta razonada, lo bastante cercana para ser útil, sin contar todo.</li></ul></div>
+  <div class="lang-panel" data-lang="ar" lang="ar" dir="rtl"><p class="auto-label">ترجمة آلية · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">كلّنا نستخدم الرياضيات كل يوم: في البيت، وفي المدرسة، وفي الحيّ. عندما تبدو المسألة كبيرة، افهمها أولًا، ثم قسّمها إلى أجزاء أصغر، واستمر في المحاولة. التقدير السريع أو الحساب الذهني يساعدك على التحقق من أن إجابتك منطقية.</p><ul><li><span class="kw"><bdi>شخص يمارس الرياضيات</bdi></span> (<bdi lang="en">doer of math</bdi>) — أي شخص يستخدم التفكير الرياضي، أي الجميع، كل يوم.</li><li><span class="kw"><bdi>قصتي مع الرياضيات</bdi></span> (<bdi lang="en">math story</bdi>) — تاريخك الخاص مع الرياضيات: ما فعلته وشعرت به وتعلّمته حتى الآن.</li><li><span class="kw"><bdi>نقطة قوة</bdi></span> (<bdi lang="en">strength</bdi>) — شيء تُجيده بالفعل ويمكنك مشاركته مع الآخرين.</li><li><span class="kw"><bdi>تفكيك</bdi></span> (<bdi lang="en">decompose</bdi>) — تقسيم عدد إلى أجزاء تُعيد تكوينه عند جمعها أو طرحها أو ضربها أو قسمتها.</li><li><span class="kw"><bdi>تقدير</bdi></span> (<bdi lang="en">estimate</bdi>) — إجابة مدروسة قريبة بما يكفي لتكون مفيدة، دون عدّ كل شيء.</li></ul></div>
+  <div class="lang-panel" data-lang="fr" lang="fr"><p class="auto-label">Traduction automatique · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">Tout le monde utilise les maths chaque jour : à la maison, à l'école et dans le quartier. Quand un problème paraît difficile, il faut d'abord le comprendre, puis le découper en petites parties et continuer à essayer. Une estimation rapide ou le calcul mental aide à vérifier si la réponse a du sens.</p><ul><li><span class="kw"><bdi>personne qui fait des maths</bdi></span> (<bdi lang="en">doer of math</bdi>) — Toute personne qui utilise la pensée mathématique — c'est-à-dire tout le monde, chaque jour.</li><li><span class="kw"><bdi>histoire avec les maths</bdi></span> (<bdi lang="en">math story</bdi>) — Ton propre parcours avec les mathématiques — ce que tu as fait, ressenti et appris jusqu'ici.</li><li><span class="kw"><bdi>point fort</bdi></span> (<bdi lang="en">strength</bdi>) — Quelque chose que tu fais déjà bien et que tu peux partager avec les autres.</li><li><span class="kw"><bdi>décomposer</bdi></span> (<bdi lang="en">decompose</bdi>) — Séparer un nombre en parties qui, en les additionnant, soustrayant, multipliant ou divisant, redonnent ce nombre.</li><li><span class="kw"><bdi>estimer</bdi></span> (<bdi lang="en">estimate</bdi>) — Une réponse réfléchie, assez proche pour être utile, sans tout compter un par un.</li></ul></div>
+  <div class="lang-panel" data-lang="prs" lang="prs" dir="rtl"><p class="auto-label">ترجمه ماشینی · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">همه ما هر روز از ریاضی استفاده می‌کنیم: در خانه، در مکتب و در محله. وقتی یک مسئله بزرگ به نظر می‌رسد، اول آن را بفهمید، بعد آن را به بخش‌های کوچک‌تر تقسیم کنید و به کوشش ادامه دهید. یک تخمین سریع یا حساب ذهنی کمک می‌کند ببینید که آیا جواب شما معقول است.</p><ul><li><span class="kw"><bdi>انجام‌دهنده ریاضی</bdi></span> (<bdi lang="en">doer of math</bdi>) — هر کسی که از تفکر ریاضی استفاده می‌کند — یعنی همه، هر روز.</li><li><span class="kw"><bdi>داستان ریاضی من</bdi></span> (<bdi lang="en">math story</bdi>) — تاریخچه خود شما با ریاضی — آنچه تا حالا انجام داده‌اید، احساس کرده‌اید و آموخته‌اید.</li><li><span class="kw"><bdi>نقطه قوت</bdi></span> (<bdi lang="en">strength</bdi>) — چیزی که از قبل خوب انجام می‌دهید و می‌توانید با دیگران شریک کنید.</li><li><span class="kw"><bdi>تجزیه کردن</bdi></span> (<bdi lang="en">decompose</bdi>) — شکستن یک عدد به بخش‌هایی که با جمع، تفریق، ضرب یا تقسیم دوباره همان عدد را می‌سازند.</li><li><span class="kw"><bdi>تخمین</bdi></span> (<bdi lang="en">estimate</bdi>) — جوابی سنجیده که به اندازه کافی نزدیک است تا مفید باشد، بدون شمردن همه چیز.</li></ul></div>
+  </div>
+  </div>
 </section>
 <section>
   <h2>Key words</h2>
@@ -71,7 +100,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Practice at home</h2>
-  <ol><li>Which statement best shows what this lesson means by “we are all doers of math”?</li></ol>
+  <ol><li>Sam's grandmother says she is &quot;not a math person,&quot; but she doubles recipes and keeps track of the grocery budget. Which response best fits the idea that everyone is a doer of math?<ol class="choices" type="A"><li>She is right — only people who score high on tests really do math</li><li>Cooking and shopping use math thinking, and when she shares her ways with Sam, they both learn</li><li>She does some math, but it only counts if she solves it the way Sam's teacher does</li><li>If she practiced harder, she would get the same answers as everyone else, the same way</li></ol></li></ol>
 </section>
 
 <section class="tool-section">
@@ -83,7 +112,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Answer check</h2>
-  <ol><li>Which statement best shows what this lesson means by “we are all doers of math”? → <span class="answer">Everyone uses mathematical thinking daily, in different ways, and sharing those ways helps us grow</span></li></ol>
+  <ol><li>Sam's grandmother says she is &quot;not a math person,&quot; but she doubles recipes and keeps track of the grocery budget. Which response best fits the idea that everyone is a doer of math? → <span class="answer">Cooking and shopping use math thinking, and when she shares her ways with Sam, they both learn</span></li></ol>
 </section>
 <section>
   <h2>Common mistake</h2>

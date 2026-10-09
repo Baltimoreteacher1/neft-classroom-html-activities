@@ -662,12 +662,6 @@
           "Mínimo 2, mediana 7, máximo 12",
           "Mínimo 2, mediana 5, máximo 12",
           "Mínimo 2, mediana 8, máximo 10"
-        ],
-        "misconceptionTags": [
-          "stat-histogram-bin-misread",
-          null,
-          null,
-          null
         ]
       },
       {
@@ -837,6 +831,12 @@
           "En un diagrama de caja es la caja misma, no los bigotes, la que contiene la mitad central de los datos.",
           "La caja se extiende desde Q1 en un extremo hasta Q3 en el otro.",
           "Busca Q1 y Q3 en la lista de valores que te dieron y lee los dos números entre los que va la caja."
+        ],
+        "misconceptionTags": [
+          "stat-range-for-iqr",
+          null,
+          null,
+          null
         ]
       },
       {
@@ -897,9 +897,9 @@
         "correctIndex": 1,
         "explanation": "IQR = Q3 − Q1 = 28 − 15 = 13.",
         "choiceFeedback": [
-          "Full range from min to max is 25, but IQR is different.",
+          "10 is the minimum, a single data value. The IQR is a distance: Q3 − Q1.",
           "",
-          "IQR only uses the quartiles, not min and max.",
+          "20 is the median, a measure of center. The IQR measures spread: Q3 − Q1.",
           "This is the spread, but IQR is Q3 − Q1 only."
         ],
         "hints": [
@@ -915,9 +915,9 @@
           "Plantea la resta Q3 − Q1: eso es 28 − 15. La diferencia que obtengas es el RIC."
         ],
         "misconceptionTags": [
-          "stat-range-for-iqr",
           null,
-          "stat-range-for-iqr",
+          null,
+          "stat-center-vs-spread",
           "stat-range-for-iqr"
         ]
       },
@@ -935,7 +935,7 @@
         "choiceFeedback": [
           "",
           "The line shows center—but mean is a different measure.",
-          "The line is always the middle value, not an average.",
+          "The mode is the most common value. The line inside the box marks the middle value of the ordered data.",
           "The range is a spread — the whole distance from the smallest value to the largest — not a single line drawn inside the box. Think about which value splits the data in half."
         ],
         "hints": [
@@ -959,7 +959,7 @@
         "misconceptionTags": [
           null,
           "stat-mean-vs-median",
-          "stat-mean-vs-median",
+          null,
           "stat-center-vs-spread"
         ]
       },
@@ -1006,9 +1006,9 @@
         "explanation": "Range = max − min = 31 − 8 = 23.",
         "choiceFeedback": [
           "Max is 31, min is 8—range is the difference.",
-          "Range is spread—subtract max from min, don't add.",
+          "Range is the greatest value minus the least value: 31 − 8. Find both ends first, then subtract.",
           "",
-          "Find max and min—is range the minimum?"
+          "31 is the greatest value alone. The range is the distance from the least to the greatest: subtract 8."
         ],
         "hints": [
           "Range = how far the data stretches: the gap between the biggest and smallest values only. The middle values don't matter.",
@@ -1673,6 +1673,12 @@
             "",
             "That is the median itself, which is a center rather than a spread. IQR = Q3 - Q1.",
             "That is the maximum minus the minimum, which is the range. IQR uses Q3 and Q1."
+          ],
+          "misconceptionTags": [
+            null,
+            null,
+            "stat-center-vs-spread",
+            "stat-range-for-iqr"
           ]
         },
         "partB": {
@@ -1684,7 +1690,13 @@
             "The values that occur most often."
           ],
           "correctIndex": 2,
-          "explanation": "Q1 marks the 25th percentile and Q3 the 75th, so the box spans the middle half of the data. The whiskers reach out to the minimum and maximum."
+          "explanation": "Q1 marks the 25th percentile and Q3 the 75th, so the box spans the middle half of the data. The whiskers reach out to the minimum and maximum.",
+          "misconceptionTags": [
+            "stat-range-for-iqr",
+            null,
+            null,
+            null
+          ]
         },
         "standard": "6.DS.5"
       },
@@ -1834,13 +1846,13 @@
         "choiceFeedback": [
           "That's the second value in order, not the middle one of five.",
           "",
-          "That looks like an average of two values, but with five numbers the median is just the middle one.",
+          "7 is the mean: you added all five values and divided by 5. The median is the middle value once they are in order.",
           "That's the largest value, not the middle one once they're in order."
         ],
         "choiceFeedbackEs": [
           "Ese es el segundo valor en orden, no el del medio entre cinco.",
           "",
-          "Eso parece el promedio de dos valores, pero con cinco números la mediana es solo el del medio.",
+          "7 es la media: sumaste los cinco valores y dividiste entre 5. La mediana es el valor del medio cuando están en orden.",
           "Ese es el valor más grande, no el del medio una vez ordenados."
         ]
       },
@@ -1957,5 +1969,174 @@
         }
       }
     ]
+  },
+  "familyKeyIdea": "A box plot shows how data is spread out using five numbers: the lowest, the first quartile (Q1), the median, the third quartile (Q3), and the highest. The box goes from Q1 to Q3 and holds the middle half of the data; its length is Q3 − Q1. Lines called whiskers reach from the box out to the lowest and highest numbers.",
+  "familyKeyIdeaEs": "Un diagrama de caja muestra cómo se reparten los datos usando cinco números: el menor, el primer cuartil (Q1), la mediana, el tercer cuartil (Q3) y el mayor. La caja va de Q1 a Q3 y contiene la mitad central de los datos; su largo es Q3 − Q1. Unas líneas llamadas bigotes van desde la caja hasta el número menor y el número mayor.",
+  "familyLanguages": {
+    "ar": {
+      "keyIdea": "مخطط الصندوق يبيّن كيف تنتشر البيانات باستخدام خمسة أعداد: الأصغر، والربيع الأول (Q1)، والوسيط، والربيع الثالث (Q3)، والأكبر. يمتد الصندوق من Q1 إلى Q3 ويحتوي على النصف الأوسط من البيانات، وطوله Q3 − Q1. وتمتد خطوط تُسمّى الشوارب من الصندوق إلى أصغر عدد وأكبر عدد.",
+      "vocabulary": [
+        {
+          "term": "Display Data with Box Plots",
+          "translation": "عرض البيانات بمخططات الصندوق",
+          "definition": "إظهار ملخص الأعداد الخمسة لمجموعة بيانات في مخطط الصندوق والشوارب."
+        },
+        {
+          "term": "Box Plot",
+          "translation": "مخطط الصندوق",
+          "definition": "رسم بياني يبيّن كيف تنتشر البيانات باستخدام خمسة أعداد أساسية."
+        },
+        {
+          "term": "Median",
+          "translation": "الوسيط",
+          "definition": "العدد الأوسط عندما ترتب الأعداد."
+        },
+        {
+          "term": "Quartile",
+          "translation": "الربيع",
+          "definition": "أعداد تقسم البيانات إلى أربعة أجزاء متساوية."
+        },
+        {
+          "term": "Interquartile Range",
+          "translation": "المدى الربيعي",
+          "definition": "مدى انتشار النصف الأوسط من البيانات (Q3 − Q1)."
+        },
+        {
+          "term": "Data distribution",
+          "translation": "توزيع البيانات",
+          "definition": "شكل البيانات: أين تقع ومدى تباعدها."
+        },
+        {
+          "term": "Variability",
+          "translation": "التباين",
+          "definition": "مدى تباعد الأعداد بعضها عن بعض."
+        },
+        {
+          "term": "Five-number summary",
+          "translation": "ملخص الأعداد الخمسة",
+          "definition": "القيمة الصغرى، والربيع الأول، والوسيط، والربيع الثالث، والقيمة العظمى لمجموعة بيانات."
+        },
+        {
+          "term": "Whisker",
+          "translation": "الشارب",
+          "definition": "خط في مخطط الصندوق يمتد من الصندوق إلى أصغر قيمة أو أكبر قيمة."
+        },
+        {
+          "term": "Middle half",
+          "translation": "النصف الأوسط",
+          "definition": "القيم من الربيع الأول إلى الربيع الثالث، وهي التي يغطيها الصندوق."
+        }
+      ]
+    },
+    "fr": {
+      "keyIdea": "Une boîte à moustaches montre comment les données sont réparties à l'aide de cinq nombres : le plus petit, le premier quartile (Q1), la médiane, le troisième quartile (Q3) et le plus grand. La boîte va de Q1 à Q3 et contient la moitié centrale des données ; sa longueur est Q3 − Q1. Des lignes appelées moustaches vont de la boîte jusqu'au plus petit et au plus grand nombre.",
+      "vocabulary": [
+        {
+          "term": "Display Data with Box Plots",
+          "translation": "Représenter des données avec des boîtes à moustaches",
+          "definition": "Montrer le résumé en cinq nombres d'un ensemble de données dans une boîte à moustaches."
+        },
+        {
+          "term": "Box Plot",
+          "translation": "Boîte à moustaches",
+          "definition": "Un graphique qui montre comment les données sont réparties à l'aide de cinq nombres clés."
+        },
+        {
+          "term": "Median",
+          "translation": "Médiane",
+          "definition": "Le nombre du milieu quand on range les nombres dans l'ordre."
+        },
+        {
+          "term": "Quartile",
+          "translation": "Quartile",
+          "definition": "Des nombres qui partagent les données en quatre parties égales."
+        },
+        {
+          "term": "Interquartile Range",
+          "translation": "Écart interquartile",
+          "definition": "L'étendue de la moitié centrale des données (Q3 − Q1)."
+        },
+        {
+          "term": "Data distribution",
+          "translation": "Distribution des données",
+          "definition": "L'allure des données : où elles se situent et à quel point elles sont dispersées."
+        },
+        {
+          "term": "Variability",
+          "translation": "Variabilité",
+          "definition": "À quel point les nombres sont dispersés."
+        },
+        {
+          "term": "Five-number summary",
+          "translation": "Résumé en cinq nombres",
+          "definition": "Le minimum, le premier quartile, la médiane, le troisième quartile et le maximum d'un ensemble de données."
+        },
+        {
+          "term": "Whisker",
+          "translation": "Moustache",
+          "definition": "Une ligne sur une boîte à moustaches qui va de la boîte jusqu'à la plus petite ou la plus grande valeur."
+        },
+        {
+          "term": "Middle half",
+          "translation": "Moitié centrale",
+          "definition": "Les valeurs du premier quartile au troisième quartile, que la boîte recouvre."
+        }
+      ]
+    },
+    "prs": {
+      "keyIdea": "نمودار جعبه‌ای با پنج عدد نشان می‌دهد که معلومات چگونه پخش شده است: کوچک‌ترین، چارک اول (Q1)، میانه، چارک سوم (Q3) و بزرگ‌ترین. جعبه از Q1 تا Q3 می‌رود و نیمهٔ وسطی معلومات را در بر می‌گیرد؛ طول آن Q3 − Q1 است. خط‌هایی به نام سبیلک از جعبه تا کوچک‌ترین و بزرگ‌ترین عدد امتداد دارند.",
+      "vocabulary": [
+        {
+          "term": "Display Data with Box Plots",
+          "translation": "نمایش معلومات با نمودار جعبه‌ای",
+          "definition": "خلاصهٔ پنج‌عددی یک مجموعهٔ معلومات را در یک نمودار جعبه و سبیلک نشان دهید."
+        },
+        {
+          "term": "Box Plot",
+          "translation": "نمودار جعبه‌ای",
+          "definition": "گرافی که با پنج عدد اصلی نشان می‌دهد معلومات چگونه پخش شده است."
+        },
+        {
+          "term": "Median",
+          "translation": "میانه",
+          "definition": "عدد وسط، وقتی اعداد را به ترتیب می‌گذارید."
+        },
+        {
+          "term": "Quartile",
+          "translation": "چارک",
+          "definition": "اعدادی که معلومات را به چهار بخش مساوی تقسیم می‌کنند."
+        },
+        {
+          "term": "Interquartile Range",
+          "translation": "دامنهٔ بین چارکی",
+          "definition": "پراکندگی نیمهٔ وسطی معلومات (Q3 − Q1)."
+        },
+        {
+          "term": "Data distribution",
+          "translation": "توزیع معلومات",
+          "definition": "معلومات چگونه به نظر می‌رسد: کجا قرار دارد و چقدر پراکنده است."
+        },
+        {
+          "term": "Variability",
+          "translation": "تغییرپذیری",
+          "definition": "اعداد چقدر از هم پراکنده هستند."
+        },
+        {
+          "term": "Five-number summary",
+          "translation": "خلاصهٔ پنج‌عددی",
+          "definition": "کمترین قیمت، چارک اول، میانه، چارک سوم و بیشترین قیمت یک مجموعهٔ معلومات."
+        },
+        {
+          "term": "Whisker",
+          "translation": "سبیلک",
+          "definition": "خطی در نمودار جعبه‌ای که از جعبه تا کوچک‌ترین یا بزرگ‌ترین قیمت امتداد دارد."
+        },
+        {
+          "term": "Middle half",
+          "translation": "نیمهٔ وسطی",
+          "definition": "قیمت‌ها از چارک اول تا چارک سوم، که جعبه آن‌ها را می‌پوشاند."
+        }
+      ]
+    }
   }
 }

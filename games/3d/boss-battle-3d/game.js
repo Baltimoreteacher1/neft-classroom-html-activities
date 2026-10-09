@@ -1,762 +1,522 @@
 /**
- * MCAP Boss Battle 3D — Grade 6 Reveal Math review (BCPS / MCAP prep).
+ * Boss Battle 3D — Grade 6 Reveal Math review where the MATH IS THE ATTACK.
  *
- * A real Three.js + engine3d game (not a 2D quiz skin):
- *   - A rendered 3D boss enemy floats in an arena (rounded body, glowing core,
- *     eyes, orbiting shards). It idles, bobs, and reacts to the battle.
- *   - The student answers MCAP review questions to ATTACK. A correct answer
- *     fires an energy strike at the boss → hit flash, bloom pulse, particle
- *     burst, camera shake, boss recoils and loses health.
- *   - A wrong answer lets the boss ATTACK BACK → the arena shakes, the screen
- *     flashes red, and the player loses a life (heart).
- *   - Multiple PHASES that scale difficulty: each phase is one Reveal unit
- *     (1→10). Clear a phase by draining the boss's health; the boss morphs to
- *     the next unit's color/name and questions get harder.
- *   - Win = defeat the final phase. Lose = run out of lives.
- *   - Full HUD: score, lives (hearts), phase progress, streak.
+ * Every round the player BUILDS a quantity and the game uses it physically:
+ *   - beam rounds: the number you set is the beam's power (or crystals loaded,
+ *     area filled, cubes packed). Exact = it breaks through and hits the boss;
+ *     too little fizzles short; too much is reflected off the shield.
+ *   - pulse rounds (fraction division): you set how many pulses to fire; each
+ *     pulse visibly drains its fraction of the shield gauge.
+ *   - aim rounds (integers, coordinates): the bolt flies to the point you typed
+ *     on the holographic board — a wrong coordinate visibly lands left/right/
+ *     above/below.
+ * Misses never print the answer. Help is earned: after a miss a method hint
+ * unlocks, after two a concrete next step, after three a fresh challenge.
  *
- * Questions come from ./problems.js (one source of truth, mirrors the MCAP
- * Review Arcade bank). The choices are shuffled per render; the correct VALUE
- * is tracked so the bank's answer index stays valid.
+ * Calm, no-fail: there are no lives and no game over — the boss only blocks.
+ * Untimed: no clock of any kind. Progress (phase, boss HP, score) is saved to
+ * localStorage after every hit, so leaving and returning resumes the battle.
  *
- * Engine contract: export default { id, vocab, createGame(ctx) } and the engine
- * (engine3d/game-base.js) mounts it. ctx documented in engine3d/README.md.
+ * Rounds come from ./generators.js (procedural, fresh numbers every time),
+ * checked by ./mechanics.js. Phases follow UNITS in ./problems.js.
  */
 
-import { makeLabel, updateLabel } from "/games/engine3d/label3d.js";
+import { updateLabel } from "/games/engine3d/label3d.js";
+import { createArena } from "./scene.js";
 import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
-import { BANK, UNITS } from "./problems.js";
+import { UNITS } from "./problems.js";
+import { makeRound } from "./generators.js";
+import { checkBuild, makeRng, missMessage } from "./mechanics.js";
+import { createBoard, boardPoint } from "./board.js";
+import { createHpBar, createPanel, injectStyles } from "./ui.js";
 
-// ---- Difficulty shaping ----------------------------------------------------
-// Self-paced: there is NO timer and no time pressure of any kind. The ONLY
-// difference between levels is MATH DIFFICULTY (which units/phases you face) and
-// how much support you get — never speed. Level 1 (support): fewer phases (a
-// focused set of core strands), more lives, EN/ES support text. Level 2
-// (enrichment): the full 10-unit boss rush, fewer lives. Each phase needs N
-// CORRECT hits to drain the boss; later phases need more hits → difficulty
-// scales by how many right answers it takes, not by any clock.
 function buildPlan(level) {
   const support = level !== 2;
-  // Phases = ordered subset of units. Level 1 fights a focused 6-phase gauntlet;
-  // Level 2 faces the full 10-unit boss rush.
-  const phaseUnits = support
-    ? [1, 2, 3, 5, 7, 10] // core MCAP strands, gentler ramp
-    : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // full curriculum boss rush
   return {
     support,
-    phaseUnits,
-    startLives: support ? 5 : 3,
-    // Correct hits to clear a phase grows as you go deeper (min 3, +1 every 2
-    // phases). This is the only difficulty ramp — students still take as long
-    // as they want on every single question.
-    hitsForPhase: (idx) => (support ? 3 : 3) + Math.floor(idx / 2),
-    bilingual: support, // Level 1 may include EN/ES support text
+    // Level 0/1 fight a focused gauntlet; Level 2 faces every unit.
+    phaseUnits: support ? [1, 2, 3, 5, 7, 10] : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    // Clean first-try hits deal 2, helped hits deal 1: HP = 2 × clean hits needed.
+    hpForPhase: (idx) => 2 * (3 + Math.floor(idx / 2)),
   };
+}
+
+const SAVE_PREFIX = "bb3d:run:v2:L";
+function loadRun(level) {
+  try {
+    const s = JSON.parse(localStorage.getItem(SAVE_PREFIX + level) || "null");
+    return s && Number.isInteger(s.phaseIndex) ? s : null;
+  } catch {
+    return null;
+  }
+}
+function saveRun(level, state) {
+  try {
+    localStorage.setItem(SAVE_PREFIX + level, JSON.stringify({ ...state, updated: Date.now() }));
+  } catch {
+    /* storage unavailable: play continues without resume */
+  }
+}
+function clearRun(level) {
+  try {
+    localStorage.removeItem(SAVE_PREFIX + level);
+  } catch {
+    /* ignore */
+  }
 }
 
 export default {
   id: "boss-battle-3d-mcap",
-  totalSteps: 0, // dynamic; we drive hud.setProgress ourselves (phase X of Y)
+  totalSteps: 0,
   vocab: [
     {
       term: "Boss Battle",
       definition:
-        "A big challenge level. Answer math questions to beat the boss!",
+        "A big challenge. You build the attack with math — the numbers you choose are what the cannon fires.",
       emoji: "👾",
     },
     {
       term: "Phase",
-      definition:
-        "One stage of the fight. Each phase reviews a different Grade 6 math unit.",
+      definition: "One stage of the fight. Each phase uses a different Grade 6 math unit.",
       emoji: "🌀",
     },
     {
-      term: "Review",
+      term: "Coordinate",
       definition:
-        "Practicing skills you already learned to get ready for the MCAP test.",
-      emoji: "📚",
+        "A number that tells a position, like (3, −2) on a grid. You aim with coordinates.",
+      emoji: "🎯",
     },
     {
       term: "Strategy",
-      definition:
-        "A smart plan. Read each question carefully before you choose an answer.",
+      definition: "A smart plan. Read the challenge, decide the operation, then build your number.",
       emoji: "🧠",
     },
   ],
 
   createGame(ctx) {
-    const {
-      scene,
-      camera,
-      THREE,
-      input,
-      hud,
-      feel,
-      announce,
-      caption,
-      level,
-      onScore,
-      onFrame,
-    } = ctx;
-
+    const { scene, camera, THREE, hud, feel, announce, caption, level, onScore, onFrame } = ctx;
     const plan = buildPlan(level);
     const reduced = feel.reducedMotion;
+    const rng = makeRng((Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0);
 
-    // ----- battle state -----
-    let lives = plan.startLives;
-    let phaseIndex = 0; // 0-based index into plan.phaseUnits
+    let phaseIndex = 0;
     let bossMaxHp = 0;
     let bossHp = 0;
-    let streak = 0;
-    let totalScore = 0; // running score total we track ourselves (mirrors onScore)
-    let answered = false; // guard against double answers per question
+    let totalScore = 0;
+    let turn = 0;
+    let round = null;
+    let misses = 0;
+    let busy = false;
     let gameOver = false;
-    let currentQ = null;
-    let currentChoiceOrder = []; // shuffled choice strings
-    let correctValue = ""; // the correct choice string
-    let clarity = null; // clarity-kit controller (start/help/end overlays)
-    let started = false; // gameplay begins only after the Start overlay
+    let started = false;
+    let clarity = null;
     const timers = new Set();
     const frameUnsubs = [];
-
-    // Self-paced: no per-question timer. Students answer at their own pace; the
-    // boss only reacts to CORRECT vs WRONG answers, never to elapsed time.
 
     function later(fn, ms) {
       const t = setTimeout(() => {
         timers.delete(t);
-        if (!gameOver || fn.__runOnOver) fn();
+        if (!gameOver) fn();
       }, ms);
       timers.add(t);
-      return t;
     }
 
-    // ===================================================================
-    //  ARENA + BOSS (real 3D)
-    // ===================================================================
-    const arena = new THREE.Group();
-    scene.add(arena);
+    const { ring, ringMat, boss, body, bodyMat, core, coreMat, eyeMat, shards, shardMat, shield, shieldMat, nameLabel, bolt, boltMat } = createArena(THREE, scene, UNITS);
 
-    // Stage floor — receives shadows, anchors the boss in space.
-    const floorMat = new THREE.MeshStandardMaterial({
-      color: 0x132a4a,
-      roughness: 0.92,
-      metalness: 0.05,
-    });
-    const floor = new THREE.Mesh(new THREE.CircleGeometry(11, 64), floorMat);
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -2.6;
-    floor.receiveShadow = true;
-    arena.add(floor);
+    const board = createBoard(THREE, scene);
 
-    // Glowing arena ring (emissive → catches bloom).
-    const ringMat = new THREE.MeshStandardMaterial({
-      color: 0x0d1b30,
-      emissive: 0x1fa6a2,
-      emissiveIntensity: 0.9,
-      roughness: 0.4,
-      metalness: 0.3,
-    });
-    const ring = new THREE.Mesh(
-      new THREE.TorusGeometry(7.4, 0.16, 16, 80),
-      ringMat,
-    );
-    ring.rotation.x = -Math.PI / 2;
-    ring.position.y = -2.55;
-    arena.add(ring);
-
-    // Pillars around the arena for depth.
-    const pillarGeo = new THREE.CylinderGeometry(0.32, 0.42, 6, 10);
-    const pillarMat = new THREE.MeshStandardMaterial({
-      color: 0x10243f,
-      roughness: 0.8,
-      metalness: 0.15,
-    });
-    for (let i = 0; i < 8; i++) {
-      const a = (i / 8) * Math.PI * 2;
-      const p = new THREE.Mesh(pillarGeo, pillarMat);
-      p.position.set(Math.cos(a) * 9.2, 0.4, Math.sin(a) * 9.2);
-      p.castShadow = true;
-      p.receiveShadow = true;
-      arena.add(p);
+    function unitMeta() {
+      const u = plan.phaseUnits[phaseIndex];
+      return UNITS.find((m) => m.u === u) || UNITS[0];
     }
-
-    // ----- the BOSS -----
-    const boss = new THREE.Group();
-    boss.position.set(0, 1.1, 0);
-    arena.add(boss);
-
-    // Body: a rounded, faceted core (icosahedron reads as a menacing crystal).
-    const bodyMat = new THREE.MeshStandardMaterial({
-      color: UNITS[0].color,
-      roughness: 0.32,
-      metalness: 0.45,
-      emissive: UNITS[0].color,
-      emissiveIntensity: 0.35,
-      flatShading: true,
-    });
-    const body = new THREE.Mesh(new THREE.IcosahedronGeometry(1.7, 1), bodyMat);
-    body.castShadow = true;
-    boss.add(body);
-
-    // Inner energy core — bright, pulses, drives bloom feedback.
-    const coreMat = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      emissive: 0xfff2c0,
-      emissiveIntensity: 1.6,
-      roughness: 0.2,
-      metalness: 0.1,
-    });
-    const core = new THREE.Mesh(
-      new THREE.IcosahedronGeometry(0.85, 1),
-      coreMat,
-    );
-    boss.add(core);
-
-    // Two eyes — give it a face and a "tell" for attacks.
-    const eyeMat = new THREE.MeshStandardMaterial({
-      color: 0x0a0f18,
-      emissive: 0xff3b3b,
-      emissiveIntensity: 0.6,
-      roughness: 0.3,
-    });
-    const eyeGeo = new THREE.SphereGeometry(0.22, 16, 16);
-    const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
-    const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
-    eyeL.position.set(-0.55, 0.35, 1.45);
-    eyeR.position.set(0.55, 0.35, 1.45);
-    boss.add(eyeL, eyeR);
-
-    // Orbiting shards — pure visual life; rotate every frame.
-    const shards = new THREE.Group();
-    boss.add(shards);
-    const shardMat = new THREE.MeshStandardMaterial({
-      color: UNITS[0].color,
-      emissive: UNITS[0].color,
-      emissiveIntensity: 0.7,
-      roughness: 0.35,
-      metalness: 0.5,
-      flatShading: true,
-    });
-    for (let i = 0; i < 6; i++) {
-      const s = new THREE.Mesh(new THREE.TetrahedronGeometry(0.36), shardMat);
-      const a = (i / 6) * Math.PI * 2;
-      s.position.set(
-        Math.cos(a) * 2.7,
-        Math.sin(a * 1.3) * 0.6,
-        Math.sin(a) * 2.7,
-      );
-      s.userData.a = a;
-      shards.add(s);
-    }
-
-    // Floating phase nameplate above the boss (3D sprite label).
-    const nameLabel = makeLabel(UNITS[0].title, {
-      scale: 0.78,
-      color: "#ffffff",
-      background: "rgba(11,22,40,0.86)",
-    });
-    nameLabel.position.set(0, 3.5, 0);
-    boss.add(nameLabel);
-
-    // Energy bolt that flies from camera toward the boss on a correct answer.
-    const boltMat = new THREE.MeshStandardMaterial({
-      color: 0xfff6d0,
-      emissive: 0xffe48a,
-      emissiveIntensity: 2.2,
-      roughness: 0.1,
-    });
-    const bolt = new THREE.Mesh(
-      new THREE.SphereGeometry(0.32, 16, 16),
-      boltMat,
-    );
-    bolt.visible = false;
-    scene.add(bolt);
-
-    // Damage cracks: as HP drops we tint the body darker + crank emissive on core.
     function applyDamageVisual() {
       const frac = bossMaxHp > 0 ? bossHp / bossMaxHp : 1;
-      // Body desaturates / darkens as it takes damage.
-      const base = new THREE.Color(UNITS[phaseIndexUnitMeta().idx].color);
-      bodyMat.color.copy(base).multiplyScalar(0.45 + 0.55 * frac);
+      bodyMat.color.set(unitMeta().color).multiplyScalar(0.45 + 0.55 * frac);
       bodyMat.emissiveIntensity = 0.2 + 0.5 * frac;
-      // Core flares brighter (unstable) as it nears defeat.
       coreMat.emissiveIntensity = 1.4 + (1 - frac) * 1.8;
-      eyeMat.emissiveIntensity = 0.5 + (1 - frac) * 0.8;
-      if (hpFillEl) renderHpBar();
+      hp.render(
+        `Phase ${phaseIndex + 1}/${plan.phaseUnits.length} · ${unitMeta().title}`,
+        bossHp,
+        bossMaxHp,
+      );
     }
-
-    function phaseIndexUnitMeta() {
-      const u = plan.phaseUnits[phaseIndex];
-      const idx = UNITS.findIndex((m) => m.u === u);
-      return { u, idx: idx < 0 ? 0 : idx, meta: UNITS[idx < 0 ? 0 : idx] };
-    }
-
-    // Recolor boss for a new phase.
     function dressForPhase() {
-      const { meta, idx } = phaseIndexUnitMeta();
-      const c = new THREE.Color(meta.color);
-      bodyMat.color.copy(c);
+      const c = new THREE.Color(unitMeta().color);
       bodyMat.emissive.copy(c);
       shardMat.color.copy(c);
       shardMat.emissive.copy(c);
       ringMat.emissive.copy(c);
-      updateLabel(nameLabel, meta.title);
+      updateLabel(nameLabel, unitMeta().title);
+      // The label canvas changes size with the name; drop the GPU copy so the
+      // texture is re-uploaded at the new size instead of keeping the old name.
+      nameLabel.material.map.dispose();
+      nameLabel.material.map.needsUpdate = true;
       applyDamageVisual();
-      return { meta, idx };
     }
 
-    // ===================================================================
-    //  DOM: answer panel + battle banner + intro/result overlays
-    // ===================================================================
+    // ================================================================ DOM
     injectStyles();
     const mountEl = ctx.renderer.domElement.parentNode || document.body;
-
-    const panel = document.createElement("div");
-    panel.className = "bb-panel";
-    panel.innerHTML = `
-      <div class="bb-q-meta" data-bb="meta"></div>
-      <p class="bb-q" data-bb="q" role="status" aria-live="polite"></p>
-      <div class="bb-choices" data-bb="choices" role="group" aria-label="Answer choices"></div>
-      <div class="bb-why" data-bb="why" hidden></div>`;
-    mountEl.appendChild(panel);
-    const metaEl = panel.querySelector('[data-bb="meta"]');
-    const qEl = panel.querySelector('[data-bb="q"]');
-    const choicesEl = panel.querySelector('[data-bb="choices"]');
-    const whyEl = panel.querySelector('[data-bb="why"]');
-
-    // Red damage vignette flash (player hit).
+    const panel = createPanel(mountEl, {
+      onFire: fire,
+      onHint: () => revealHint(),
+      onSwap: () => nextRound(true),
+      onToggleEs: () => panel.setEs(!panel.showEs),
+      onRestart: () => {
+        clearRun(level);
+        location.reload();
+      },
+    });
+    panel.setEs(plan.support);
+    const hp = createHpBar(mountEl);
     const vignette = document.createElement("div");
     vignette.className = "bb-vignette";
     mountEl.appendChild(vignette);
-
-    // Always-visible BOSS HP bar (top-center). The engine HUD shows score/lives/
-    // streak/phase progress but has no health gauge, so we own this one. It shows
-    // the boss name and a fill that drains as the boss takes hits. There is no
-    // timer — the game is fully self-paced.
-    const hpWrap = document.createElement("div");
-    hpWrap.className = "bb-hpwrap";
-    hpWrap.innerHTML = `
-      <div class="bb-hp-head">
-        <span class="bb-hp-name" data-bb="hpname">Boss</span>
-        <span class="bb-hp-num" data-bb="hpnum"></span>
-      </div>
-      <div class="bb-hp-track" role="progressbar" aria-label="Boss health"
-           aria-valuemin="0" aria-valuemax="100" data-bb="hptrack">
-        <div class="bb-hp-fill" data-bb="hpfill"></div>
-      </div>`;
-    mountEl.appendChild(hpWrap);
-    const hpNameEl = hpWrap.querySelector('[data-bb="hpname"]');
-    const hpNumEl = hpWrap.querySelector('[data-bb="hpnum"]');
-    const hpFillEl = hpWrap.querySelector('[data-bb="hpfill"]');
-    const hpTrackEl = hpWrap.querySelector('[data-bb="hptrack"]');
-
-    function renderHpBar() {
-      const { meta } = phaseIndexUnitMeta();
-      const frac = bossMaxHp > 0 ? bossHp / bossMaxHp : 1;
-      hpNameEl.textContent = `Phase ${phaseIndex + 1}/${plan.phaseUnits.length} · ${meta.title}`;
-      hpNumEl.textContent = `${bossHp}/${bossMaxHp} HP`;
-      hpFillEl.style.width = `${Math.round(frac * 100)}%`;
-      // fill shifts teal → amber → red as the boss weakens (clear "almost there")
-      const hue = 8 + frac * 152; // ~160 (teal-green) full → ~8 (red) empty
-      hpFillEl.style.background = `linear-gradient(90deg,hsl(${hue},70%,52%),hsl(${hue + 18},75%,62%))`;
-      hpTrackEl.setAttribute("aria-valuenow", String(Math.round(frac * 100)));
-    }
-
-    // Lives are rendered as hearts in the HUD via hud.setLives, but we also keep
-    // a big banner for phase changes / win / lose.
     const banner = document.createElement("div");
     banner.className = "bb-banner";
     banner.hidden = true;
     mountEl.appendChild(banner);
-
     function showBanner(html, ms = 1700) {
       banner.innerHTML = html;
       banner.hidden = false;
       if (!reduced) banner.classList.add("bb-pop");
-      if (ms > 0) {
+      if (ms > 0)
         later(() => {
           banner.hidden = true;
           banner.classList.remove("bb-pop");
         }, ms);
-      }
     }
 
-    // ===================================================================
-    //  QUESTION FLOW
-    // ===================================================================
-    function shuffle(arr) {
-      const a = arr.slice();
-      for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      return a;
+    // ================================================================ FLOW
+    function persist() {
+      saveRun(level, { phaseIndex, bossHp, bossMaxHp, totalScore, turn });
     }
 
-    // Per-phase queue of question indices (so we don't repeat within a phase).
-    let phaseQueue = [];
-    function refillPhaseQueue() {
-      const { u } = phaseIndexUnitMeta();
-      phaseQueue = shuffle(BANK[u].map((_, i) => i));
-    }
-
-    function nextQuestion() {
+    function nextRound() {
+      // A swap ("New challenge") calls this too: same skill (turn unchanged), fresh numbers.
       if (gameOver) return;
-      if (phaseQueue.length === 0) refillPhaseQueue();
-      const { u, meta } = phaseIndexUnitMeta();
-      const qi = phaseQueue.pop();
-      currentQ = BANK[u][qi];
-      correctValue = currentQ.choices[currentQ.answer];
-      currentChoiceOrder = shuffle(currentQ.choices);
-      answered = false;
-
-      metaEl.textContent = `Phase ${phaseIndex + 1}/${plan.phaseUnits.length} · ${meta.theme} · Topic: ${currentQ.topic}`;
-      qEl.textContent = currentQ.q;
-      whyEl.hidden = true;
-      whyEl.textContent = "";
-
-      renderChoices();
-      hud.setObjective(
-        `${meta.title} — answer to attack!  (Phase ${phaseIndex + 1} of ${plan.phaseUnits.length})`,
+      round = makeRound(plan.phaseUnits[phaseIndex], rng, turn);
+      misses = 0;
+      busy = false;
+      const meta = unitMeta();
+      panel.render(
+        round,
+        `Phase ${phaseIndex + 1}/${plan.phaseUnits.length} · ${meta.theme} · ${round.skill}`,
       );
+      if (round.mechanic === "aim")
+        board.show(round.fields.length > 1 ? "grid" : "line", round.shadow);
+      else board.hide();
+      shield.visible = round.mechanic !== "aim";
+      hud.setObjective(`${meta.title} — build the attack!`);
       hud.setProgress(phaseIndex, plan.phaseUnits.length);
-      if (clarity) {
+      if (clarity)
         clarity.setObjective(
-          `Phase ${phaseIndex + 1}/${plan.phaseUnits.length} — answer correctly to attack ${meta.title}.`,
+          `Phase ${phaseIndex + 1}/${plan.phaseUnits.length} — build the exact attack to hit ${meta.title}.`,
         );
-        if (clarity.setTarget)
-          clarity.setTarget(`${meta.theme} · ${meta.standard}`);
+      if (clarity && clarity.setTarget) clarity.setTarget(`${meta.theme} · ${meta.standard}`);
+      announce(`Phase ${phaseIndex + 1}. ${round.en}`);
+      caption(round.en);
+    }
+
+    function revealHint() {
+      if (!round) return;
+      const tier = misses >= 2 ? 2 : 1;
+      for (let t = 1; t <= tier; t++) panel.addHint(t, round.hints[t - 1]);
+      announce(round.hints[tier - 1].en);
+    }
+
+    function fire() {
+      if (!started || busy || gameOver || !round) return;
+      const values = panel.values();
+      const result = checkBuild(round, values);
+      if (result.dirs.includes("blank")) {
+        panel.feedback(missMessage(round, result), "miss");
+        return;
       }
-      announce(`Phase ${phaseIndex + 1}. ${currentQ.q}`);
-      caption(currentQ.q);
+      busy = true;
+      panel.lock(true);
+      const done = () => (result.ok ? hit() : miss(result));
+      if (round.mechanic === "aim") shootAt(values, result.ok, done);
+      else if (round.mechanic === "pulses") firePulses(values[0], done);
+      else fireBeam(result.ok ? "ok" : result.dirs[0], done);
     }
 
-    function renderChoices() {
-      choicesEl.innerHTML = "";
-      currentChoiceOrder.forEach((choice, i) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "bb-choice";
-        const letter = String.fromCharCode(65 + i);
-        btn.innerHTML = `<span class="bb-key">${letter}</span><span class="bb-val">${escapeHtml(choice)}</span>`;
-        btn.addEventListener("pointerdown", (e) => {
-          e.stopPropagation(); // don't double-fire canvas tap
-        });
-        btn.addEventListener("click", () => choose(choice, btn));
-        choicesEl.appendChild(btn);
-      });
-      // focus first for keyboard players
-      const first = choicesEl.querySelector(".bb-choice");
-      if (first) first.focus();
-    }
-
-    function choose(choice, btn) {
-      if (answered || gameOver) return;
-      answered = true;
-      const correct = choice === correctValue;
-      // lock all buttons, mark correct/incorrect
-      const btns = [...choicesEl.querySelectorAll(".bb-choice")];
-      btns.forEach((b) => {
-        b.disabled = true;
-        const val = b.querySelector(".bb-val").textContent;
-        if (val === correctValue) b.classList.add("is-correct");
-      });
-      if (!correct && btn) btn.classList.add("is-wrong");
-
-      if (correct) playerAttack();
-      else bossAttack();
-    }
-
-    // ===================================================================
-    //  COMBAT
-    // ===================================================================
-    function playerAttack() {
-      streak += 1;
-      const dmg = 1;
-      const bonus = streak >= 3 ? 5 : 0; // streak bonus points
-      const points = 10 + bonus;
+    function hit() {
+      const clean = misses === 0;
+      const dmg = clean ? 2 : 1;
+      const points = clean ? 10 : 5;
       totalScore += points;
-      onScore(points); // engine updates score + streak HUD + progress/persist
-      feel.sfx("correct", "Correct! Direct hit.");
-      hud.setStreak(streak);
-
-      // fire energy bolt from camera toward boss
-      fireBolt(() => {
-        bossHp = Math.max(0, bossHp - dmg);
-        applyDamageVisual();
-        // hit reaction: flash core, burst, shake, recoil
-        flashCore(0x9bffea);
-        feel.burst(boss.position.clone().add(new THREE.Vector3(0, 0.4, 1)), {
-          color: 0xfff2c0,
-          count: 30,
-          spread: 4.5,
-        });
-        if (!reduced) {
-          feel.shake(0.32, 0.25);
-          bossRecoil();
-        }
-        whyEl.hidden = false;
-        whyEl.textContent = `✅ ${currentQ.why}`;
-
-        if (bossHp <= 0) {
-          // Killing blow on this phase: big bloom flash + extra burst.
-          bigHitFlash();
-          if (!reduced) {
-            feel.shake(0.5, 0.4);
-            feel.burst(
-              boss.position.clone().add(new THREE.Vector3(0, 0.4, 1)),
-              { color: 0xffffff, count: 40, spread: 6, life: 1.1 },
-            );
-          }
-          later(() => clearPhase(), 650);
-        } else {
-          hud.message(
-            `Hit! ${streak >= 3 ? "🔥 Combo +" + bonus + " " : ""}+${points}`,
-            { tone: "ok", duration: 900 },
-          );
-          later(() => nextQuestion(), 1500);
-        }
+      onScore(points, { skillTag: round.skill });
+      hud.setScore(totalScore);
+      feel.sfx("correct", "Direct hit!");
+      bossHp = Math.max(0, bossHp - dmg);
+      applyDamageVisual();
+      flashCore(0x9bffea);
+      feel.burst(boss.position.clone().add(new THREE.Vector3(0, 0.4, 1)), {
+        color: 0xfff2c0,
+        count: 30,
+        spread: 4.5,
       });
+      if (!reduced) {
+        feel.shake(0.3, 0.25);
+        bossRecoil();
+      }
+      panel.feedback(
+        clean
+          ? {
+              en: `Exact build — the attack breaks through! −${dmg} HP`,
+              es: `¡Construcción exacta — el ataque atraviesa! −${dmg} PV`,
+            }
+          : {
+              en: `You fixed it — the attack lands! −${dmg} HP`,
+              es: `¡Lo corregiste — el ataque acierta! −${dmg} PV`,
+            },
+        "ok",
+      );
+      persist();
+      turn += 1;
+      if (bossHp <= 0) later(clearPhase, 900);
+      else later(() => nextRound(), 1500);
     }
 
-    function bossAttack(reason = "") {
-      streak = 0;
-      hud.setStreak(0);
-      // Do NOT call onScore on a miss: the engine treats points>=0 as a
-      // successful step (it would advance its internal step/streak). We own the
-      // streak/lives here; a wrong answer simply earns no points.
-      feel.sfx("wrong", "Not quite. The boss strikes back!");
-      lives -= 1;
-      hud.setLives(lives);
-
-      // boss telegraphs (winds up, eyes flare) then lunges + shake + red flash
+    function miss(result) {
+      misses += 1;
+      const msg = missMessage(round, result);
+      feel.sfx("wrong", msg.en);
       bossTelegraph();
-      bossLunge();
       if (!reduced) {
-        feel.shake(0.55, 0.45);
+        vignette.classList.remove("bb-flash");
+        void vignette.offsetWidth;
         vignette.classList.add("bb-flash");
-        later(() => vignette.classList.remove("bb-flash"), 480);
-      } else {
-        vignette.classList.add("bb-flash-static");
-        later(() => vignette.classList.remove("bb-flash-static"), 480);
       }
-      flashCore(0xff5a5a);
-      whyEl.hidden = false;
-      whyEl.textContent = `${reason}❌ The answer was “${correctValue}”. ${currentQ.why}`;
-      announce(`${reason}Incorrect. The boss attacks. ${lives} lives left.`);
-
-      if (lives <= 0) {
-        later(() => loseGame(), 900);
-      } else {
-        hud.message(`The boss hit you! ${"♥".repeat(lives)} left`, {
-          tone: "warn",
-          duration: 1100,
-        });
-        later(() => nextQuestion(), 1900);
-      }
+      const extra =
+        misses === 1
+          ? { en: " A hint is ready if you want it.", es: " Hay una pista lista si la quieres." }
+          : misses === 2
+            ? {
+                en: " Hint 2 is ready: the next step.",
+                es: " La pista 2 está lista: el siguiente paso.",
+              }
+            : {
+                en: " You can also try a new challenge.",
+                es: " También puedes probar un reto nuevo.",
+              };
+      panel.feedback({ en: msg.en + extra.en, es: msg.es + extra.es }, "miss");
+      panel.allowHint(true);
+      if (misses >= 3) panel.allowSwap(true);
+      announce(msg.en);
+      busy = false;
+      panel.lock(false);
     }
 
     function clearPhase() {
-      if (gameOver) return;
-      const { meta } = phaseIndexUnitMeta();
+      const meta = unitMeta();
       feel.sfx("fanfare", `${meta.title} defeated!`);
       totalScore += 25;
-      onScore(25); // phase-clear bonus
-      if (!reduced)
-        feel.burst(boss.position.clone().add(new THREE.Vector3(0, 0.5, 1)), {
-          color: 0xfff2c0,
-          count: 60,
-          spread: 7,
-          life: 1.3,
-        });
+      onScore(25, { skillTag: "phase-clear" });
+      hud.setScore(totalScore);
       showBanner(
-        `<div class="bb-big">PHASE CLEAR!</div><div class="bb-small">${meta.title} defeated · +25</div>`,
+        `<div class="bb-big">PHASE CLEAR!</div><div class="bb-small">${meta.title} defeated · +25</div><div class="bb-small">¡Fase superada!</div>`,
         1700,
       );
-
       phaseIndex += 1;
       if (phaseIndex >= plan.phaseUnits.length) {
-        later(() => winGame(), 1700);
+        later(winGame, 1700);
         return;
       }
-      // morph to next phase
+      startPhase();
+      persist();
       later(() => {
-        const m = dressForPhase();
-        startPhase();
+        dressForPhase();
+        const m = unitMeta();
         showBanner(
-          `<div class="bb-small">PHASE ${phaseIndex + 1} of ${plan.phaseUnits.length}</div><div class="bb-big">${m.meta.title}</div><div class="bb-small">${m.meta.theme} · ${m.meta.standard}</div>`,
-          1700,
+          `<div class="bb-small">PHASE ${phaseIndex + 1} of ${plan.phaseUnits.length}</div><div class="bb-big">${m.title}</div><div class="bb-small">${m.theme} · ${m.standard}</div>`,
+          1600,
         );
-        later(() => nextQuestion(), 1750);
+        later(() => nextRound(), 1650);
       }, 1750);
     }
 
     function startPhase() {
-      bossMaxHp = plan.hitsForPhase(phaseIndex);
+      bossMaxHp = plan.hpForPhase(phaseIndex);
       bossHp = bossMaxHp;
-      refillPhaseQueue();
-      applyDamageVisual();
     }
 
-    // ===================================================================
-    //  ANIMATIONS / JUICE
-    // ===================================================================
-    function fireBolt(onHit) {
+    // ================================================================ SHOTS
+    function launch(from, to, duration, onDone, arcDrop = 0) {
       if (reduced) {
-        onHit();
+        onDone();
         return;
       }
       bolt.visible = true;
-      const start = new THREE.Vector3();
-      camera.getWorldPosition(start);
-      start.y -= 0.6;
-      const end = boss.position.clone().add(new THREE.Vector3(0, 0.3, 1));
-      bolt.position.copy(start);
+      boltMat.opacity = 1;
+      bolt.position.copy(from);
       feel.tween({
         from: 0,
         to: 1,
-        duration: 0.32,
+        duration,
         onUpdate: (v) => {
-          bolt.position.lerpVectors(start, end, v);
-          bolt.scale.setScalar(0.6 + v * 0.8);
+          bolt.position.lerpVectors(from, to, v);
+          bolt.position.y -= arcDrop * v * v;
+          bolt.scale.setScalar(0.6 + v * 0.6);
         },
         onComplete: () => {
           bolt.visible = false;
-          onHit();
+          onDone();
         },
       });
       feel.sfx("pop");
     }
+    function muzzle() {
+      const p = new THREE.Vector3();
+      camera.getWorldPosition(p);
+      p.y -= 0.8;
+      return p;
+    }
+    const bossFront = () => boss.position.clone().add(new THREE.Vector3(0, 0.3, 1));
 
+    /** outcome "ok" | "low" | "high" — low fizzles short, high is reflected. */
+    function fireBeam(outcome, done) {
+      const start = muzzle();
+      if (outcome === "ok") return launch(start, bossFront(), 0.34, done);
+      if (outcome === "low") {
+        const mid = start.clone().lerp(bossFront(), 0.5);
+        return launch(
+          start,
+          mid,
+          0.3,
+          () => {
+            feel.burst(mid, { color: 0x8899aa, count: 10, spread: 1.2 });
+            done();
+          },
+          1.2,
+        );
+      }
+      const shieldPt = boss.position.clone().add(new THREE.Vector3(0, 0.3, 2.35));
+      launch(start, shieldPt, 0.28, () => {
+        flashShield();
+        launch(shieldPt, start.clone().add(new THREE.Vector3(3.5, 2, 0)), 0.3, done);
+      });
+    }
+
+    function firePulses(count, done) {
+      const pulse = round.visual.pulse;
+      let left = round.visual.shield;
+      const total = left;
+      const n = Math.max(0, Math.min(40, Math.round(count)));
+      let i = 0;
+      const step = () => {
+        if (i >= n || gameOver) {
+          panel.setGauge(left / total);
+          done();
+          return;
+        }
+        i += 1;
+        const start = muzzle();
+        const shieldPt = boss.position.clone().add(new THREE.Vector3((i % 3) - 1, 0.3, 2.35));
+        const after = () => {
+          if (left > 1e-9) {
+            left = Math.max(0, left - pulse);
+            panel.setGauge(left / total);
+            flashShield();
+          } else feel.burst(shieldPt, { color: 0xc77dff, count: 6, spread: 1 });
+          if (reduced) step();
+          else later(step, 60);
+        };
+        if (reduced) after();
+        else launch(start, shieldPt, 0.16, after);
+      };
+      step();
+    }
+
+    function shootAt(values, ok, done) {
+      const x = values[0];
+      const y = round.fields.length > 1 ? values[1] : 0;
+      const target = boardPoint(THREE, x, y);
+      launch(muzzle(), target, 0.36, () => {
+        board.markAt(target);
+        feel.burst(target, {
+          color: ok ? 0xfff2c0 : 0x8899aa,
+          count: ok ? 20 : 8,
+          spread: ok ? 2 : 0.8,
+        });
+        if (ok) launch(target, bossFront(), 0.22, done);
+        else done();
+      });
+    }
+
+    // ================================================================ JUICE
     function flashCore(hex) {
-      const c = new THREE.Color(hex);
       const orig = coreMat.emissive.clone();
-      coreMat.emissive.copy(c);
-      const baseI = coreMat.emissiveIntensity;
-      coreMat.emissiveIntensity = baseI + 2.2;
+      const base = coreMat.emissiveIntensity;
+      coreMat.emissive.set(hex);
       feel.tween({
         from: 0,
         to: 1,
         duration: 0.4,
         onUpdate: (v) => {
-          coreMat.emissiveIntensity = baseI + 2.2 * (1 - v);
+          coreMat.emissiveIntensity = base + 2.2 * (1 - v);
         },
         onComplete: () => {
           coreMat.emissive.copy(orig);
-          coreMat.emissiveIntensity = baseI;
+          coreMat.emissiveIntensity = base;
         },
       });
     }
-
+    function flashShield() {
+      feel.tween({
+        from: 0,
+        to: 1,
+        duration: 0.3,
+        onUpdate: (v) => {
+          shieldMat.opacity = 0.16 + 0.4 * (1 - v);
+        },
+        onComplete: () => {
+          shieldMat.opacity = 0.16;
+        },
+      });
+    }
     function bossRecoil() {
       const base = boss.position.z;
       feel.tween({
         from: 0,
         to: 1,
         duration: 0.28,
-        onUpdate: (v) => {
-          boss.position.z = base - Math.sin(v * Math.PI) * 0.9;
-        },
-        onComplete: () => {
-          boss.position.z = base;
-        },
+        onUpdate: (v) => (boss.position.z = base - Math.sin(v * Math.PI) * 0.9),
+        onComplete: () => (boss.position.z = base),
       });
     }
-
-    // Attack TELEGRAPH: before the boss strikes back it "winds up" — eyes flare
-    // red and the boss leans back briefly. A clear tell that an attack is coming.
     function bossTelegraph() {
       if (reduced) return;
-      const baseEye = eyeMat.emissiveIntensity;
-      const baseScale = eyeL.scale.x;
+      const base = eyeMat.emissiveIntensity;
       feel.tween({
         from: 0,
         to: 1,
-        duration: 0.22,
+        duration: 0.3,
         onUpdate: (v) => {
-          const pulse = Math.sin(v * Math.PI);
-          eyeMat.emissiveIntensity = baseEye + pulse * 2.4;
-          const s = baseScale + pulse * 0.5;
-          eyeL.scale.setScalar(s);
-          eyeR.scale.setScalar(s);
+          eyeMat.emissiveIntensity = base + Math.sin(v * Math.PI) * 2.4;
         },
-        onComplete: () => {
-          eyeMat.emissiveIntensity = baseEye;
-          eyeL.scale.setScalar(baseScale);
-          eyeR.scale.setScalar(baseScale);
-        },
+        onComplete: () => (eyeMat.emissiveIntensity = base),
       });
     }
 
-    // Big finishing-blow flash: spike BOTH body + core emissive so the bloom
-    // pass blooms hard, plus an extra particle burst. Used on the killing hit.
-    function bigHitFlash() {
-      const baseCore = coreMat.emissiveIntensity;
-      const baseBody = bodyMat.emissiveIntensity;
-      const whiteCore = coreMat.emissive.clone();
-      coreMat.emissive.setHex(0xffffff);
-      feel.tween({
-        from: 0,
-        to: 1,
-        duration: 0.5,
-        onUpdate: (v) => {
-          const fall = 1 - v;
-          coreMat.emissiveIntensity = baseCore + 4.5 * fall;
-          bodyMat.emissiveIntensity = baseBody + 2.5 * fall;
-        },
-        onComplete: () => {
-          coreMat.emissive.copy(whiteCore);
-          coreMat.emissiveIntensity = baseCore;
-          bodyMat.emissiveIntensity = baseBody;
-        },
-      });
-    }
-
-    function bossLunge() {
-      if (reduced) return;
-      const base = boss.position.z;
-      feel.tween({
-        from: 0,
-        to: 1,
-        duration: 0.34,
-        onUpdate: (v) => {
-          boss.position.z = base + Math.sin(v * Math.PI) * 2.0;
-        },
-        onComplete: () => {
-          boss.position.z = base;
-        },
-      });
-    }
-
-    // idle motion + shard orbit + boss-hp ring scaling
     let elapsed = 0;
-    const unsub = onFrame((dt) => {
-      elapsed += dt;
-      // No answer countdown: the game is self-paced, so the frame loop only
-      // drives idle/visual motion below.
-      if (!reduced) {
+    frameUnsubs.push(
+      onFrame((dt) => {
+        elapsed += dt;
+        if (reduced) return;
         boss.position.y = 1.1 + Math.sin(elapsed * 1.4) * 0.18;
-        boss.rotation.y += dt * 0.25;
+        body.rotation.y += dt * 0.25;
         core.rotation.y -= dt * 0.8;
-        core.rotation.x += dt * 0.4;
         shards.rotation.y += dt * 0.6;
-        shards.children.forEach((s, i) => {
-          const a = s.userData.a + elapsed * 0.5;
-          s.position.y = Math.sin(a * 1.3 + i) * 0.6;
+        for (const s of shards.children) {
           s.rotation.x += dt * 1.2;
           s.rotation.z += dt * 0.8;
-        });
+        }
         ring.rotation.z += dt * 0.15;
-      }
-      // billboard the nameplate toward camera
-      nameLabel.lookAt &&
-        nameLabel.position &&
-        (nameLabel.material.rotation = 0);
-    });
-    frameUnsubs.push(unsub);
+      }),
+    );
 
-    // Camera intro: sweep in toward the boss.
     function cameraIntro() {
       if (reduced) {
         feel.syncCamera();
@@ -777,174 +537,104 @@ export default {
         onComplete: () => {
           camera.position.copy(target);
           camera.lookAt(0, 0.6, 0);
-          feel.syncCamera(); // re-base shake to true resting position
+          feel.syncCamera();
         },
       });
     }
 
-    // ===================================================================
-    //  WIN / LOSE
-    // ===================================================================
     function winGame() {
-      if (gameOver) return;
       gameOver = true;
-      feel.sfx("win", "You defeated the boss! MCAP Champion!");
-      panel.classList.add("bb-hidden");
-      hpWrap.classList.add("bb-hidden");
-      if (!reduced) {
-        feel.burst(new THREE.Vector3(0, 1.5, 1), {
-          color: 0xf2c15b,
-          count: 90,
-          spread: 9,
-          life: 1.6,
-        });
-      }
-      const stats = `Final score: ${totalScore} · All ${plan.phaseUnits.length} phases cleared · ${"♥".repeat(Math.max(0, lives))} lives left`;
-      if (clarity) {
-        clarity.win({
-          badge: "🏆",
-          titleEn: "Boss defeated — MCAP Champion!",
-          stats,
-          onPlayAgain: () => location.reload(),
-        });
-      } else {
-        showBanner(
-          `<div class="bb-big">🏆 VICTORY!</div>
-           <div class="bb-small">${stats}</div>
-           <button class="bb-restart" type="button">Play again</button>`,
-          0,
-        );
-        wireRestart();
-      }
-      announce(`Victory! You defeated the boss. Final score ${totalScore}.`);
+      clearRun(level);
+      feel.sfx("win", "You defeated the boss!");
+      panel.hide();
+      hp.el.classList.add("bb-hidden");
+      board.hide();
+      const stats = `Final score: ${totalScore} · All ${plan.phaseUnits.length} phases cleared · ¡Todas las fases superadas!`;
+      clarity.win({
+        badge: "🏆",
+        titleEn: "Boss defeated — you built every attack!",
+        stats,
+        onPlayAgain: () => location.reload(),
+      });
+      announce(`Victory! Final score ${totalScore}.`);
     }
 
-    function loseGame() {
-      if (gameOver) return;
-      gameOver = true;
-      feel.sfx("wrong", "Out of lives. Try again, hero.");
-      panel.classList.add("bb-hidden");
-      hpWrap.classList.add("bb-hidden");
-      const { meta } = phaseIndexUnitMeta();
-      const stats = `You fell on Phase ${phaseIndex + 1}: ${meta.title}. Score: ${totalScore} — review ${meta.theme} (${meta.standard}) and try again!`;
-      if (clarity) {
-        clarity.lose({
-          badge: "💥",
-          titleEn: "The boss defeated you — try again!",
-          stats,
-          onPlayAgain: () => location.reload(),
-        });
-      } else {
-        showBanner(
-          `<div class="bb-big">💥 DEFEATED</div>
-           <div class="bb-small">${stats}</div>
-           <button class="bb-restart" type="button">Try again</button>`,
-          0,
-        );
-        wireRestart();
-      }
-      announce(`Defeated on phase ${phaseIndex + 1}. Score ${totalScore}.`);
-    }
-
-    function wireRestart() {
-      const btn = banner.querySelector(".bb-restart");
-      if (!btn) return;
-      btn.addEventListener("pointerdown", (e) => e.stopPropagation());
-      btn.addEventListener("click", () => location.reload());
-      btn.focus();
-    }
-
-    // ===================================================================
-    //  KEYBOARD: 1-4 / A-D pick a choice, Enter confirms focused button
-    // ===================================================================
-    function onKey(e) {
-      if (!started || gameOver || answered) return;
-      const k = e.key.toLowerCase();
-      let idx = -1;
-      if (k >= "1" && k <= "4") idx = Number(k) - 1;
-      else if (k >= "a" && k <= "d") idx = k.charCodeAt(0) - 97;
-      if (idx >= 0) {
-        const btns = choicesEl.querySelectorAll(".bb-choice");
-        if (btns[idx]) {
-          e.preventDefault();
-          btns[idx].click();
-        }
-      }
-    }
-    window.addEventListener("keydown", onKey);
-
-    // ===================================================================
-    //  START
-    // ===================================================================
-    // Gameplay proper — fired once the student presses Start in the clarity
-    // overlay (and again is not needed: Play Again reloads the page).
     function beginPlay() {
       if (started) return;
       started = true;
-      const { meta } = phaseIndexUnitMeta();
+      const meta = unitMeta();
+      const resumed = phaseIndex > 0 || bossHp < bossMaxHp || totalScore > 0;
       showBanner(
-        `<div class="bb-small">MCAP BOSS BATTLE</div>
-         <div class="bb-big">${meta.title}</div>
-         <div class="bb-small">Phase 1 of ${plan.phaseUnits.length} · ${meta.theme}</div>
-         <div class="bb-tip">Take your time — no timer. Answer questions to attack. Wrong answers cost a life. Keys: 1-4 or A-D.</div>`,
+        resumed
+          ? `<div class="bb-small">WELCOME BACK · BIENVENIDO DE NUEVO</div><div class="bb-big">${meta.title}</div><div class="bb-small">Resuming phase ${phaseIndex + 1} of ${plan.phaseUnits.length} · Continúas en la fase ${phaseIndex + 1}</div>`
+          : `<div class="bb-small">BOSS BATTLE</div><div class="bb-big">${meta.title}</div><div class="bb-small">Phase 1 of ${plan.phaseUnits.length} · ${meta.theme}</div><div class="bb-tip">No timer. Build the exact number — the cannon fires what you build.<br>Sin reloj. Construye el número exacto — el cañón dispara lo que construyes.</div>`,
         1900,
       );
       later(() => {
-        panel.classList.remove("bb-hidden");
-        nextQuestion();
+        panel.show();
+        nextRound();
       }, 1950);
-      announce(
-        `Battle started. ${plan.phaseUnits.length} phases. You have ${lives} lives. Answer math questions to attack the boss.`,
-      );
+    }
+
+    if (new URLSearchParams(location.search).get("debug") === "1") {
+      window.__bossDebug = Object.freeze({
+        get round() {
+          return round && JSON.parse(JSON.stringify(round));
+        },
+        get state() {
+          return {
+            phaseIndex,
+            bossHp,
+            bossMaxHp,
+            totalScore,
+            misses,
+            busy,
+            started,
+            gameOver,
+            phases: plan.phaseUnits.length,
+          };
+        },
+      });
     }
 
     return {
       start() {
-        dressForPhase();
         startPhase();
+        const saved = loadRun(level);
+        if (saved && saved.phaseIndex < plan.phaseUnits.length) {
+          phaseIndex = saved.phaseIndex;
+          bossMaxHp = plan.hpForPhase(phaseIndex);
+          bossHp = Math.max(1, Math.min(bossMaxHp, saved.bossHp | 0));
+          totalScore = saved.totalScore | 0;
+          turn = saved.turn | 0;
+        }
+        dressForPhase();
         cameraIntro();
-        hud.setLives(lives);
-        hud.setScore(0);
-        renderHpBar();
-        // Hide the answer panel until the student presses Start so the
-        // objective overlay reads cleanly first.
-        panel.classList.add("bb-hidden");
-
-        const { meta } = phaseIndexUnitMeta();
-        // Clarity / onboarding kit: start+objective overlay, how-to-play panel,
-        // persistent "?" Help button, mini-HUD objective chip, and a clear
-        // win/lose end screen with Play Again. Drives nothing in the 3D scene.
+        hud.setScore(totalScore);
         clarity = initClarity({
           mount: mountEl,
           announce,
-          title: "MCAP Boss Battle — Grade 6 Math Review",
+          title: "Boss Battle — Build the Attack",
           objectiveEn:
-            "Answer Grade 6 math questions correctly to attack the boss. Drain its health to clear each phase, then beat all phases to win.",
+            "Build each attack with math: the number you set is what the cannon fires. Exact builds break the boss's shield. Clear every phase to win.",
           objectiveEs:
-            "Responde preguntas de matemáticas para atacar al jefe. Vacía su salud para vencer cada fase y gana al superar todas.",
-          standard: `${plan.phaseUnits.length} phases · all Grade 6 units (6.AT, 6.NOS, 6.AT, 6.GR, 6.DS)`,
+            "Construye cada ataque con matemáticas: el número que pones es lo que dispara el cañón. Las construcciones exactas rompen el escudo del jefe. Supera todas las fases para ganar.",
+          standard: `${plan.phaseUnits.length} phases · Grade 6 units (6.AT, 6.NOS, 6.GR, 6.DS)`,
           controls: [
             {
-              key: "Tap / Click a choice",
-              actionEn:
-                "Choose an answer to fire an attack at the boss (on a tablet, just tap an answer)",
-              actionEs:
-                "Toca una respuesta para atacar al jefe (en una tableta, solo toca una respuesta)",
+              key: "Type or use − / +",
+              actionEn: "Set your number (whole numbers, decimals like 2.5, or fractions like 3/4)",
+              actionEs: "Pon tu número (enteros, decimales como 2.5 o fracciones como 3/4)",
             },
             {
-              key: "Keyboard: 1–4",
-              actionEn: "Pick answer A, B, C, or D by number",
-              actionEs: "Elige la respuesta A, B, C o D por número",
+              key: "Fire / Enter",
+              actionEn: "Fire the attack you built",
+              actionEs: "Dispara el ataque que construiste",
             },
             {
-              key: "Keyboard: A–D",
-              actionEn: "Pick an answer by its letter",
-              actionEs: "Elige una respuesta por su letra",
-            },
-            {
-              key: "Keyboard: Tab / Enter",
-              actionEn: "Move between answers and confirm the focused one",
-              actionEs: "Muévete entre respuestas y confirma con Enter",
+              key: "Hint",
+              actionEn: "After a miss, open a hint (a second hint after two misses)",
+              actionEs: "Después de fallar, abre una pista (otra después de dos fallos)",
             },
             {
               key: "?",
@@ -953,129 +643,28 @@ export default {
             },
           ],
           howToWinEn:
-            "Take all the time you need — there is no timer. A correct answer hits the boss and drains its health bar; a wrong answer lets the boss strike back and costs a life. Clear every phase before your hearts run out. Watch the red HP bar up top — when it empties, the phase is cleared!",
+            "There is no timer and no game over. If your number is too small the beam fizzles; too big and the shield reflects it; on the grid you see where your bolt landed. Fix your build and fire again. First-try builds deal double damage. Your battle is saved — come back any day.",
           howToWinEs:
-            "Tómate el tiempo que necesites — no hay reloj. Una respuesta correcta daña al jefe; una incorrecta te quita una vida. Supera todas las fases antes de quedarte sin corazones.",
+            "No hay reloj ni fin del juego. Si tu número es muy pequeño, el rayo se apaga; si es muy grande, el escudo lo refleja; en la cuadrícula ves dónde cayó tu rayo. Corrige y dispara otra vez. Acertar al primer intento hace el doble de daño. Tu batalla se guarda — vuelve cualquier día.",
           startLabelEn: "Start battle",
           onStart: beginPlay,
           onPlayAgain: () => location.reload(),
         });
-        // Mirror the first phase into the clarity objective chip.
         clarity.setObjective(
-          `Phase 1/${plan.phaseUnits.length} — answer correctly to attack ${meta.title}.`,
+          `Phase ${phaseIndex + 1}/${plan.phaseUnits.length} — build the exact attack to hit ${unitMeta().title}.`,
         );
-
-        announce(
-          `MCAP Boss Battle. ${plan.phaseUnits.length} phases. Press Start battle to begin, or How to play for the controls.`,
-        );
+        announce(`Boss Battle. ${plan.phaseUnits.length} phases. Press Start battle to begin.`);
       },
       dispose() {
         gameOver = true;
-        window.removeEventListener("keydown", onKey);
-        frameUnsubs.forEach((u) => u && u());
-        timers.forEach((t) => clearTimeout(t));
+        for (const u of frameUnsubs) if (u) u();
+        for (const t of timers) clearTimeout(t);
         timers.clear();
         if (clarity) clarity.dispose();
-        [panel, vignette, banner, hpWrap].forEach((el) => {
-          if (el && el.parentNode) el.parentNode.removeChild(el);
-        });
+        panel.dispose();
+        for (const el of [vignette, banner, hp.el]) el.remove();
+        if (window.__bossDebug) delete window.__bossDebug;
       },
     };
   },
 };
-
-// ---------------------------------------------------------------------------
-function escapeHtml(s) {
-  return String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
-function injectStyles() {
-  if (document.getElementById("bb3d-styles")) return;
-  const s = document.createElement("style");
-  s.id = "bb3d-styles";
-  s.textContent = `
-  .bb-panel{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);
-    width:min(680px,calc(100% - 24px));z-index:30;
-    background:rgba(11,22,40,.9);backdrop-filter:blur(4px);
-    -webkit-backdrop-filter:blur(4px);
-    border:1px solid rgba(255,255,255,.16);border-top:4px solid var(--amber,#f2c15b);
-    border-radius:var(--radius-md,14px);padding:12px 14px 14px;
-    box-shadow:0 10px 34px rgba(0,0,0,.45);color:#fff;
-    font-family:var(--font-body,system-ui,sans-serif);}
-  .bb-panel.bb-hidden{display:none;}
-  .bb-hidden{display:none !important;}
-  /* Always-visible BOSS HP bar (top-center, below the engine HUD top row). */
-  .bb-hpwrap{position:absolute;top:50px;left:50%;transform:translateX(-50%);
-    width:min(440px,calc(100% - 220px));z-index:18;pointer-events:none;
-    font-family:var(--font-body,system-ui,sans-serif);color:#fff;}
-  .bb-hp-head{display:flex;align-items:baseline;gap:8px;margin-bottom:4px;
-    text-shadow:0 1px 3px rgba(0,0,0,.7);}
-  .bb-hp-name{font-size:12.5px;font-weight:800;letter-spacing:.02em;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1 1 auto;}
-  .bb-hp-num{font-size:11.5px;font-weight:700;color:rgba(255,255,255,.85);
-    white-space:nowrap;}
-  .bb-hp-track{height:13px;border-radius:999px;background:rgba(0,0,0,.42);
-    border:1px solid rgba(255,255,255,.25);overflow:hidden;
-    box-shadow:0 2px 8px rgba(0,0,0,.4),inset 0 1px 2px rgba(0,0,0,.5);}
-  .bb-hp-fill{height:100%;width:100%;border-radius:999px;
-    background:linear-gradient(90deg,#1fa6a2,#49c06a);
-    transition:width .35s ease,background .35s ease;}
-  @media (prefers-reduced-motion: reduce){.bb-hp-fill{transition:none;}}
-  @media (max-width:560px){.bb-hpwrap{top:44px;width:calc(100% - 24px);}}
-  .bb-q-meta{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
-    color:var(--amber,#f2c15b);margin-bottom:6px;line-height:1.3;}
-  .bb-q{margin:0 0 10px;font-size:clamp(15px,2.2vw,19px);font-weight:600;line-height:1.32;}
-  .bb-choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-  @media (max-width:520px){.bb-choices{grid-template-columns:1fr;}}
-  .bb-choice{display:flex;align-items:center;gap:10px;text-align:left;cursor:pointer;
-    padding:10px 12px;border-radius:12px;border:2px solid rgba(255,255,255,.18);
-    background:rgba(31,166,162,.16);color:#fff;font-size:15px;font-weight:600;
-    transition:transform .12s ease,border-color .12s ease,background .12s ease;}
-  .bb-choice:hover:not(:disabled){border-color:var(--teal,#1fa6a2);transform:translateY(-2px);
-    background:rgba(31,166,162,.3);}
-  .bb-choice:focus-visible{outline:3px solid var(--amber,#f2c15b);outline-offset:2px;}
-  .bb-choice:disabled{cursor:default;opacity:.95;}
-  .bb-choice.is-correct{background:var(--success,#0f7c4a);border-color:#36d98a;}
-  .bb-choice.is-wrong{background:var(--error,#b64e2f);border-color:#ff7a55;}
-  .bb-key{flex:0 0 auto;width:26px;height:26px;border-radius:7px;display:flex;
-    align-items:center;justify-content:center;background:rgba(0,0,0,.35);
-    font-weight:800;font-size:14px;color:var(--amber,#f2c15b);}
-  .bb-val{flex:1 1 auto;}
-  .bb-why{margin-top:10px;font-size:13.5px;line-height:1.4;color:#dfe9f4;
-    background:rgba(255,255,255,.07);border-radius:10px;padding:8px 10px;}
-  .bb-vignette{position:absolute;inset:0;z-index:25;pointer-events:none;opacity:0;
-    box-shadow:inset 0 0 140px 40px rgba(214,40,40,.0);}
-  .bb-vignette.bb-flash{animation:bbflash .48s ease;}
-  .bb-vignette.bb-flash-static{opacity:1;box-shadow:inset 0 0 140px 40px rgba(214,40,40,.5);}
-  @keyframes bbflash{0%{opacity:0;box-shadow:inset 0 0 0 0 rgba(214,40,40,0);}
-    25%{opacity:1;box-shadow:inset 0 0 160px 60px rgba(214,40,40,.65);}
-    100%{opacity:0;box-shadow:inset 0 0 0 0 rgba(214,40,40,0);}}
-  .bb-banner{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);
-    z-index:40;text-align:center;color:#fff;pointer-events:auto;
-    background:rgba(11,22,40,.92);border:1px solid rgba(255,255,255,.18);
-    border-radius:18px;padding:22px 30px;box-shadow:0 18px 50px rgba(0,0,0,.5);
-    font-family:var(--font-display,system-ui,sans-serif);max-width:90%;}
-  .bb-banner.bb-pop{animation:bbpop .4s ease;}
-  @keyframes bbpop{0%{transform:translate(-50%,-50%) scale(.7);opacity:0;}
-    100%{transform:translate(-50%,-50%) scale(1);opacity:1;}}
-  .bb-big{font-size:clamp(26px,5vw,40px);font-weight:800;margin:4px 0;
-    color:var(--amber,#f2c15b);text-shadow:0 2px 8px rgba(0,0,0,.5);}
-  .bb-small{font-size:15px;opacity:.92;margin:3px 0;font-family:var(--font-body,system-ui,sans-serif);}
-  .bb-tip{font-size:13px;opacity:.78;margin-top:8px;font-family:var(--font-body,system-ui,sans-serif);}
-  .bb-restart{margin-top:14px;cursor:pointer;border:none;border-radius:12px;
-    padding:11px 22px;font-size:16px;font-weight:800;background:var(--teal,#1fa6a2);
-    color:#fff;font-family:var(--font-display,system-ui,sans-serif);}
-  .bb-restart:hover{filter:brightness(1.08);}
-  .bb-restart:focus-visible{outline:3px solid var(--amber,#f2c15b);outline-offset:2px;}
-  @media (prefers-reduced-motion: reduce){
-    .bb-choice{transition:none;}.bb-banner.bb-pop{animation:none;}
-    .bb-vignette.bb-flash{animation:none;}}
-  /* keep the answer panel from colliding with on-screen touch dpad */
-  @media (max-width:560px){.bb-panel{bottom:8px;width:calc(100% - 12px);padding:10px;}}
-  `;
-  document.head.appendChild(s);
-}

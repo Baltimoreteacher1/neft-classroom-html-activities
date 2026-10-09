@@ -42,6 +42,22 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 .muted-note{color:var(--muted);font-size:14px;margin:6px 0 0;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
+
+ol.choices{margin:6px 0 4px;}
+.lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
+.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
+  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
+.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
+.lang-panel{display:none;margin-top:6px;}
+#family-lang-en:checked ~ .lang-panels [data-lang="en"],
+#family-lang-es:checked ~ .lang-panels [data-lang="es"],
+#family-lang-ar:checked ~ .lang-panels [data-lang="ar"],
+#family-lang-fr:checked ~ .lang-panels [data-lang="fr"],
+#family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
+.lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
+.auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
+  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -59,7 +75,20 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 <section>
   <h2>What students are learning</h2>
   <p>Volume is the space inside a rectangular prism. There are two ways to write the same rule. You can multiply all three edges, V = length × width × height. Or you can find the base area first, B = length × width, and then stack that base up the height: V = B × h. Both give the same number, and both work when an edge is a fraction or a decimal.</p>
-  <p class="callout"><strong>Key idea:</strong> Volume of Rectangular Prisms with Fractional Edges. Formula: V = l × w × h = B × h. 1. Convert mixed numbers to improper fractions before multiplying. 2. Multiply numerators across, multiply denominators across: V = (l · w · h). 3. Simplify the fraction and label with cubic units</p>
+  <p class="callout"><strong>Key idea:</strong> Volume is the space inside a box. Multiply length × width × height, even when an edge is a fraction. A box 2 ft long, 1½ ft wide, and 1 ft tall holds 2 × 1½ × 1 = 3 cubic feet.<br><span class="es-text" lang="es">Idea clave: El volumen es el espacio dentro de una caja. Multiplica largo × ancho × alto, aunque una arista sea una fracción. Una caja de 2 pies de largo, 1½ pies de ancho y 1 pie de alto contiene 2 × 1½ × 1 = 3 pies cúbicos.</span></p>
+</section>
+
+<section class="lang-section">
+  <h2>Read this in your language <span class="es">· Lea esto en su idioma</span></h2>
+  <div class="lang-picker"><input type="radio" class="lang-radio" name="family-lang" id="family-lang-en" value="en" checked><label for="family-lang-en" lang="en">English</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-es" value="es"><label for="family-lang-es" lang="es">Español</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-ar" value="ar"><label for="family-lang-ar" lang="ar">العربية</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-fr" value="fr"><label for="family-lang-fr" lang="fr">Français</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-prs" value="prs"><label for="family-lang-prs" lang="prs">دری</label>
+  <div class="lang-panels">
+  <div class="lang-panel" data-lang="en" lang="en"><p class="callout">Volume is the space inside a box. Multiply length × width × height, even when an edge is a fraction. A box 2 ft long, 1½ ft wide, and 1 ft tall holds 2 × 1½ × 1 = 3 cubic feet.</p><ul><li><span class="kw"><bdi>Volume of Rectangular Prisms</bdi></span> — The space inside a rectangular prism. Formula: V = Bh = l × w × h.</li><li><span class="kw"><bdi>Volume</bdi></span> — How much space is inside a solid shape.</li><li><span class="kw"><bdi>Rectangular prism</bdi></span> — A solid box shape with six flat rectangle sides.</li><li><span class="kw"><bdi>Cubic units</bdi></span> — The units used to measure space inside, like cubic inches.</li><li><span class="kw"><bdi>Dimensions</bdi></span> — How long, how wide, and how tall a shape is.</li><li><span class="kw"><bdi>Base area</bdi></span> — The area of the bottom of a solid. Volume = base area × height.</li></ul></div>
+  <div class="lang-panel" data-lang="es" lang="es"><p class="callout">El volumen es el espacio dentro de una caja. Multiplica largo × ancho × alto, aunque una arista sea una fracción. Una caja de 2 pies de largo, 1½ pies de ancho y 1 pie de alto contiene 2 × 1½ × 1 = 3 pies cúbicos.</p><ul><li><span class="kw"><bdi>Volumen de prismas rectangulares</bdi></span> — El espacio dentro de un prisma rectangular. Fórmula: V = Bh = l × w × h.</li><li><span class="kw"><bdi>Volumen</bdi></span> — Cuánto espacio hay dentro de una figura sólida.</li><li><span class="kw"><bdi>Prisma rectangular</bdi></span> — Una figura sólida en forma de caja con seis lados rectangulares.</li><li><span class="kw"><bdi>Unidades cúbicas</bdi></span> — Las unidades para medir el espacio interior, como pulgadas cúbicas.</li><li><span class="kw"><bdi>Dimensiones</bdi></span> — Qué tan largo, ancho y alto es una figura.</li><li><span class="kw"><bdi>Área de la base</bdi></span> — El área del fondo de un sólido. Volumen = área de la base × altura.</li></ul></div>
+  <div class="lang-panel" data-lang="ar" lang="ar" dir="rtl"><p class="auto-label">ترجمة آلية · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">الحجم هو الفراغ داخل صندوق. اضرب الطول × العرض × الارتفاع، حتى لو كان أحد الأحرف كسرًا. صندوق طوله 2 قدم وعرضه 1½ قدم وارتفاعه 1 قدم يتسع لـ 2 × 1½ × 1 = 3 أقدام مكعبة.</p><ul><li><span class="kw"><bdi>حجم المنشورات المستطيلة</bdi></span> (<bdi lang="en">Volume of Rectangular Prisms</bdi>) — الفراغ داخل منشور مستطيلي. الصيغة: ح = م.ق × ع = ط × ع × ر.</li><li><span class="kw"><bdi>الحجم</bdi></span> (<bdi lang="en">Volume</bdi>) — مقدار الفراغ داخل مجسم.</li><li><span class="kw"><bdi>منشور مستطيلي</bdi></span> (<bdi lang="en">Rectangular prism</bdi>) — مجسم على شكل صندوق له ستة أوجه مستطيلة.</li><li><span class="kw"><bdi>وحدات مكعبة</bdi></span> (<bdi lang="en">Cubic units</bdi>) — الوحدات المستخدمة لقياس الفراغ الداخلي، مثل البوصة المكعبة.</li><li><span class="kw"><bdi>الأبعاد</bdi></span> (<bdi lang="en">Dimensions</bdi>) — كم طول الشكل، وكم عرضه، وكم ارتفاعه.</li><li><span class="kw"><bdi>مساحة القاعدة</bdi></span> (<bdi lang="en">Base area</bdi>) — مساحة الوجه السفلي للمجسم. الحجم = مساحة القاعدة × الارتفاع.</li></ul></div>
+  <div class="lang-panel" data-lang="fr" lang="fr"><p class="auto-label">Traduction automatique · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">Le volume, c'est l'espace à l'intérieur d'une boîte. On multiplie longueur × largeur × hauteur, même quand une arête est une fraction. Une boîte de 2 pi de long, 1½ pi de large et 1 pi de haut contient 2 × 1½ × 1 = 3 pieds cubes.</p><ul><li><span class="kw"><bdi>Volume des prismes rectangulaires</bdi></span> (<bdi lang="en">Volume of Rectangular Prisms</bdi>) — L'espace à l'intérieur d'un prisme rectangulaire. Formule : V = Bh = L × l × h.</li><li><span class="kw"><bdi>Volume</bdi></span> (<bdi lang="en">Volume</bdi>) — La quantité d'espace à l'intérieur d'un solide.</li><li><span class="kw"><bdi>Prisme rectangulaire</bdi></span> (<bdi lang="en">Rectangular prism</bdi>) — Un solide en forme de boîte avec six faces rectangulaires.</li><li><span class="kw"><bdi>Unités cubes</bdi></span> (<bdi lang="en">Cubic units</bdi>) — Les unités qui mesurent l'espace intérieur, comme les pouces cubes.</li><li><span class="kw"><bdi>Dimensions</bdi></span> (<bdi lang="en">Dimensions</bdi>) — À quel point une figure est longue, large et haute.</li><li><span class="kw"><bdi>Aire de la base</bdi></span> (<bdi lang="en">Base area</bdi>) — L'aire du fond d'un solide. Volume = aire de la base × hauteur.</li></ul></div>
+  <div class="lang-panel" data-lang="prs" lang="prs" dir="rtl"><p class="auto-label">ترجمه ماشینی · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">حجم، فضای داخل یک جعبه است. طول × عرض × ارتفاع را ضرب کنید، حتی اگر یک یال کسر باشد. جعبه‌ای به طول 2 فوت، عرض 1½ فوت و ارتفاع 1 فوت، 2 × 1½ × 1 = 3 فوت مکعب جا دارد.</p><ul><li><span class="kw"><bdi>حجم منشورهای مستطیلی</bdi></span> (<bdi lang="en">Volume of Rectangular Prisms</bdi>) — فضای داخل یک منشور مستطیلی. فورمول: V = Bh = l × w × h.</li><li><span class="kw"><bdi>حجم</bdi></span> (<bdi lang="en">Volume</bdi>) — مقدار فضای داخل یک جسم.</li><li><span class="kw"><bdi>منشور مستطیلی</bdi></span> (<bdi lang="en">Rectangular prism</bdi>) — جسمی به شکل جعبه با شش رویهٔ مستطیلی.</li><li><span class="kw"><bdi>واحدهای مکعب</bdi></span> (<bdi lang="en">Cubic units</bdi>) — واحدهایی که برای اندازه‌گیری فضای داخل به کار می‌روند، مانند انچ مکعب.</li><li><span class="kw"><bdi>ابعاد</bdi></span> (<bdi lang="en">Dimensions</bdi>) — یک شکل چقدر دراز، چقدر پهن و چقدر بلند است.</li><li><span class="kw"><bdi>مساحت قاعده</bdi></span> (<bdi lang="en">Base area</bdi>) — مساحت کف یک جسم. حجم = مساحت قاعده × ارتفاع.</li></ul></div>
+  </div>
+  </div>
 </section>
 <section>
   <h2>Key words</h2>
@@ -71,7 +100,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Practice at home</h2>
-  <ol><li>A rectangular prism has l = 7 ft, w = 2 ft, h = 3 ft. What is the volume?</li></ol>
+  <ol><li>A garden planter box has l = 8 ft, w = 3 ft, h = 2 ft. What is the volume?<ol class="choices" type="A"><li>48 ft³</li><li>13 ft³</li><li>24 ft³</li><li>48 ft²</li></ol></li></ol>
 </section>
 
 <section class="tool-section">
@@ -83,7 +112,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Answer check</h2>
-  <ol><li>A rectangular prism has l = 7 ft, w = 2 ft, h = 3 ft. What is the volume? → <span class="answer">42 ft³</span></li></ol>
+  <ol><li>A garden planter box has l = 8 ft, w = 3 ft, h = 2 ft. What is the volume? → <span class="answer">48 ft³</span></li></ol>
 </section>
 <section>
   <h2>Common mistake</h2>

@@ -271,6 +271,16 @@ const STANDARD_OVERRIDES = {
       source: "Khan Academy",
     },
   ],
+  // 6.NOS.5 — positive and negative numbers in context (lesson 7-1, retagged
+  // from 6.NOS.6 on 2026-10-08); the same introduction to negative numbers.
+  "6.NOS.5": [
+    {
+      titleEn: "Negative numbers and opposites",
+      titleEs: "Números negativos y opuestos",
+      url: `${KA}/math/cc-sixth-grade-math/cc-6th-negative-number-topics/cc-6th-negative-numbers-intro/v/negative-numbers-introduction`,
+      source: "Khan Academy",
+    },
+  ],
   // 6.NOS.6 — integers and opposites. Was "Writing equations from word problems".
   "6.NOS.6": [
     {

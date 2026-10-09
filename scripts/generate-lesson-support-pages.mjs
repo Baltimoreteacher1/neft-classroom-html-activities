@@ -31,6 +31,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { interactiveVisualHost } from "@eduwonderlab/engine/core/interactive-visual.js";
+import { FAMILY_LANGUAGES, familyFieldProblems } from "./lib/family-content.mjs";
 import { writeGenerated } from "./lib/preserve-injected.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -60,9 +61,16 @@ const SENTENCE_FRAMES = [
 
 // Up to `n` accurate practice problems with answers, drawn from data that
 // already carries its own answer: matching-game pairs (the block `label` is the
-// directions; the `term` is the thing to solve) and the exit ticket.
+// directions; the `term` is the thing to solve) and the lesson's `familyCheck`.
 // Returns { directions, problems:[{q,a}] }. `q` is shown verbatim under the
 // directions, so a bare term like "12" reads correctly with its instruction.
+//
+// NEVER the exit ticket. This page is public and prints answers, and until
+// 2026-10-08 it appended `reflect.exitTicket` here — 55 of 84 family pages
+// handed out the lesson's own exit-ticket question WITH its answer before the
+// student had taken it. `familyCheck` is an authored PARALLEL item (same skill,
+// different numbers and context). A lesson without one gets no check item at
+// all; there is deliberately no fallback. `validate:family-exit-ticket` pins it.
 function practiceProblems(cfg, n = 3) {
   const out = [];
   let directions = "";
@@ -75,10 +83,15 @@ function practiceProblems(cfg, n = 3) {
       }
     }
   }
-  const et = cfg.reflect?.exitTicket;
-  if (et?.stem && Array.isArray(et.choices) && et.choices[et.correctIndex] != null) {
-    // Exit-ticket stems are full questions, so they don't need the directions line.
-    out.push({ q: et.stem, a: String(et.choices[et.correctIndex]), standalone: true });
+  const fc = cfg.familyCheck;
+  if (fc?.stem && Array.isArray(fc.choices) && fc.choices[fc.correctIndex] != null) {
+    // familyCheck stems are full questions, so they don't need the directions line.
+    out.push({
+      q: fc.stem,
+      a: String(fc.choices[fc.correctIndex]),
+      choices: fc.choices.map(String),
+      standalone: true,
+    });
   }
   const seen = new Set();
   const picked = [];
@@ -184,6 +197,74 @@ function familyToolSection(model) {
 </section>`;
 }
 
+/* ---------- the family language picker ---------- */
+
+/**
+ * "Read this in your language": the key idea and key words in English, Spanish
+ * and the three machine-translated languages from `familyLanguages`. Pure HTML +
+ * CSS (radio inputs drive which panel shows), so it works with scripts off and on
+ * every device a family has. The machine-translated panels say so — in their own
+ * language AND in English, so the teacher reading over a shoulder knows too.
+ * Arabic and Dari panels are right-to-left; English terms inside them are
+ * isolated with <bdi> so a term like "Ratio table" keeps its own direction.
+ */
+function familyLanguagesSection(cfg, vocabList) {
+  const fl = cfg.familyLanguages;
+  if (!fl) return "";
+  const keyIdeaEn = cfg.familyKeyIdea || cfg.launch?.conceptIntro?.keyIdea || "";
+  const keyIdeaEs = cfg.familyKeyIdeaEs || cfg.launch?.conceptIntro?.keyIdeaEs || "";
+  const panelBody = (code) => {
+    if (code === "en")
+      return {
+        keyIdea: keyIdeaEn,
+        words: vocabList.map((w) => ({ t: w.term, d: w.definition || "" })),
+      };
+    if (code === "es")
+      return {
+        keyIdea: keyIdeaEs,
+        words: vocabList
+          .filter((w) => w.termEs || w.definitionEs)
+          .map((w) => ({ t: w.termEs || w.term, d: w.definitionEs || "" })),
+      };
+    const entry = fl[code];
+    return {
+      keyIdea: entry.keyIdea,
+      words: entry.vocabulary.map((w) => ({ t: w.translation, d: w.definition, en: w.term })),
+    };
+  };
+  const radios = FAMILY_LANGUAGES.map(
+    (l, i) =>
+      `<input type="radio" class="lang-radio" name="family-lang" id="family-lang-${l.code}" value="${l.code}"${i === 0 ? " checked" : ""}><label for="family-lang-${l.code}" lang="${l.code}">${esc(l.name)}</label>`,
+  ).join("");
+  const panels = FAMILY_LANGUAGES.map((l) => {
+    const { keyIdea, words } = panelBody(l.code);
+    const dir = l.rtl ? ' dir="rtl"' : "";
+    const auto = l.machine
+      ? `<p class="auto-label">${esc(l.autoLabel)} · <span lang="en" dir="ltr">Automatic translation</span></p>`
+      : "";
+    const list = words.length
+      ? `<ul>${words
+          .map(
+            (w) =>
+              `<li><span class="kw"><bdi>${esc(w.t)}</bdi></span>${w.en ? ` (<bdi lang="en">${esc(w.en)}</bdi>)` : ""} — ${esc(w.d)}</li>`,
+          )
+          .join("")}</ul>`
+      : "";
+    return `<div class="lang-panel" data-lang="${l.code}" lang="${l.code}"${dir}>${auto}${
+      keyIdea ? `<p class="callout">${esc(keyIdea)}</p>` : ""
+    }${list}</div>`;
+  }).join("\n  ");
+  return `
+<section class="lang-section">
+  <h2>Read this in your language <span class="es">· Lea esto en su idioma</span></h2>
+  <div class="lang-picker">${radios}
+  <div class="lang-panels">
+  ${panels}
+  </div>
+  </div>
+</section>`;
+}
+
 /* ---------- shared page chrome ---------- */
 
 const PALETTE = `
@@ -224,6 +305,26 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
   .tool-section{display:none;}}
 `;
 
+// Family-page-only rules (choice lists, language picker). Kept out of PALETTE so
+// the teacher-notes and student-help pages do not churn for styles they never use.
+const FAMILY_CSS = `
+ol.choices{margin:6px 0 4px;}
+.lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
+.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
+  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
+.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
+.lang-panel{display:none;margin-top:6px;}
+#family-lang-en:checked ~ .lang-panels [data-lang="en"],
+#family-lang-es:checked ~ .lang-panels [data-lang="es"],
+#family-lang-ar:checked ~ .lang-panels [data-lang="ar"],
+#family-lang-fr:checked ~ .lang-panels [data-lang="fr"],
+#family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
+.lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
+.auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
+  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
+`;
+
 function page({ title, kind, head, body, id, scripts = "" }) {
   return `<!doctype html>
 <html lang="en">
@@ -233,7 +334,7 @@ function page({ title, kind, head, body, id, scripts = "" }) {
 <meta name="robots" content="noindex" />
 <title>${esc(title)}</title>
 <!-- generated:support-page kind=${kind} lesson=${id} — regenerate: npm run generate-support-pages -->
-<style>${PALETTE}</style>
+<style>${PALETTE}${kind === "family" ? FAMILY_CSS : ""}</style>
 </head>
 <body>
 <div class="wrap">
@@ -249,6 +350,9 @@ ${scripts}
 /* ---------- builders ---------- */
 
 function familyPage(id, cfg, unit, lesson) {
+  const problems0 = familyFieldProblems(cfg);
+  if (problems0.length)
+    throw new Error(`lessons/${id}/config.json family fields:\n  - ${problems0.join("\n  - ")}`);
   const v = vocab(cfg);
   const model = selectFamilyModel(cfg);
   const example = workedExampleLines(cfg);
@@ -256,7 +360,10 @@ function familyPage(id, cfg, unit, lesson) {
   const stdBadge = cfg.standard ? `<span class="std">${esc(cfg.standard)}</span>` : "";
 
   const learning = cfg.launch?.conceptIntro?.intro || cfg.contentObjective || "";
-  const keyIdea = cfg.launch?.conceptIntro?.keyIdea || "";
+  // `familyKeyIdea` is the plain-language (grade-4 reading level) version a
+  // family can use; the teacher key idea is the fallback, never the other way.
+  const keyIdea = cfg.familyKeyIdea || cfg.launch?.conceptIntro?.keyIdea || "";
+  const keyIdeaEs = cfg.familyKeyIdea ? cfg.familyKeyIdeaEs || "" : "";
 
   const kwList = v.length
     ? `<ul>${v
@@ -276,8 +383,12 @@ function familyPage(id, cfg, unit, lesson) {
     : `<p>Open the guided notes for a worked example.</p>`;
 
   const dirLine = directions ? `<p>${esc(directions)}</p>` : "";
+  const choiceList = (p) =>
+    p.choices?.length
+      ? `<ol class="choices" type="A">${p.choices.map((c) => `<li>${esc(c)}</li>`).join("")}</ol>`
+      : "";
   const practiceHtml = problems.length
-    ? `${dirLine}<ol>${problems.map((p) => `<li>${esc(p.q)}</li>`).join("")}</ol>`
+    ? `${dirLine}<ol>${problems.map((p) => `<li>${esc(p.q)}${choiceList(p)}</li>`).join("")}</ol>`
     : `<p>Use the homework for practice problems.</p>`;
 
   const answerHtml = problems.length
@@ -296,8 +407,9 @@ function familyPage(id, cfg, unit, lesson) {
 <section>
   <h2>What students are learning</h2>
   <p>${esc(learning)}</p>
-  ${keyIdea ? `<p class="callout"><strong>Key idea:</strong> ${esc(keyIdea)}</p>` : ""}
+  ${keyIdea ? `<p class="callout"><strong>Key idea:</strong> ${esc(keyIdea)}${keyIdeaEs ? `<br><span class="es-text" lang="es">Idea clave: ${esc(keyIdeaEs)}</span>` : ""}</p>` : ""}
 </section>
+${familyLanguagesSection(cfg, v)}
 <section>
   <h2>Key words</h2>
   ${kwList}

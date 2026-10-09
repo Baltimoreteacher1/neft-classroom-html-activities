@@ -66,6 +66,23 @@ export function parseHeaders(text) {
  */
 export function patternsCanOverlap(a, b) {
   if (a === b) return true;
+  // Host-absolute rules (`https://:project.pages.dev/*`) apply only on hosts
+  // they match, but a relative rule applies on EVERY host — so the two overlap
+  // whenever their paths do. Two absolute rules are disjoint only when their
+  // hosts provably are: a `:placeholder` matches exactly one DNS label, so a
+  // different label count or a differing literal label means no common host.
+  const ABS = /^https:\/\/([^/]*)(\/.*)?$/;
+  const [ma, mb] = [ABS.exec(a), ABS.exec(b)];
+  if (ma && mb) {
+    const [ha, hb] = [ma[1].split("."), mb[1].split(".")];
+    const hostsOverlap =
+      !ha.some((l) => l.includes("*")) && !hb.some((l) => l.includes("*"))
+        ? ha.length === hb.length &&
+          ha.every((l, i) => l.startsWith(":") || hb[i].startsWith(":") || l === hb[i])
+        : true;
+    if (!hostsOverlap) return false;
+  }
+  if (ma || mb) return patternsCanOverlap(ma ? ma[2] || "/" : a, mb ? mb[2] || "/" : b);
   const toRe = (p) =>
     new RegExp(
       `^${p
@@ -158,6 +175,10 @@ const overlapCases = [
   ["/a*", "/b*", false],
   ["/a*", "/a/b*", true],
   ["/*", "/anything/at/all", true],
+  ["https://:project.pages.dev/*", "/*", true],
+  ["https://:project.pages.dev/*", "/lessons/sw.js", true],
+  ["https://:project.pages.dev/*", "https://:version.:project.pages.dev/*", false],
+  ["https://:project.pages.dev/*", "https://example.pages.dev/a", true],
 ];
 for (const [a, b, want] of overlapCases) {
   check(

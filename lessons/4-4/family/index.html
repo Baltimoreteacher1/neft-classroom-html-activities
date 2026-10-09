@@ -42,6 +42,22 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 .muted-note{color:var(--muted);font-size:14px;margin:6px 0 0;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
+
+ol.choices{margin:6px 0 4px;}
+.lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
+.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
+  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
+.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
+.lang-panel{display:none;margin-top:6px;}
+#family-lang-en:checked ~ .lang-panels [data-lang="en"],
+#family-lang-es:checked ~ .lang-panels [data-lang="es"],
+#family-lang-ar:checked ~ .lang-panels [data-lang="ar"],
+#family-lang-fr:checked ~ .lang-panels [data-lang="fr"],
+#family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
+.lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
+.auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
+  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -59,7 +75,20 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 <section>
   <h2>What students are learning</h2>
   <p>A percent is a piece of a whole. The whole is called the base — it is the number right after the word “of,” and “of” means multiply. Your answer is the piece you get, called the part.</p>
-  <p class="callout"><strong>Key idea:</strong> Finding the Percent of a Number. Formula: Part = Percent × Whole. 1. Identify the percent and the whole (base amount). 2. Convert the percent to a decimal or simplified fraction. 3. Multiply the decimal/fraction by the whole to calculate the part</p>
+  <p class="callout"><strong>Key idea:</strong> To find a percent of a number, change the percent to a decimal and multiply. 25% of 80 is 0.25 × 80 = 20. So 25% off an $80 game saves $20.<br><span class="es-text" lang="es">Idea clave: Para hallar un porcentaje de un número, cambia el porcentaje a decimal y multiplica. 25% de 80 es 0.25 × 80 = 20. Así que 25% de descuento en un juego de $80 ahorra $20.</span></p>
+</section>
+
+<section class="lang-section">
+  <h2>Read this in your language <span class="es">· Lea esto en su idioma</span></h2>
+  <div class="lang-picker"><input type="radio" class="lang-radio" name="family-lang" id="family-lang-en" value="en" checked><label for="family-lang-en" lang="en">English</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-es" value="es"><label for="family-lang-es" lang="es">Español</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-ar" value="ar"><label for="family-lang-ar" lang="ar">العربية</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-fr" value="fr"><label for="family-lang-fr" lang="fr">Français</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-prs" value="prs"><label for="family-lang-prs" lang="prs">دری</label>
+  <div class="lang-panels">
+  <div class="lang-panel" data-lang="en" lang="en"><p class="callout">To find a percent of a number, change the percent to a decimal and multiply. 25% of 80 is 0.25 × 80 = 20. So 25% off an $80 game saves $20.</p><ul><li><span class="kw"><bdi>Percent of a Number</bdi></span> — A part of a number found by multiplying the number by the percent written as a decimal.</li><li><span class="kw"><bdi>Percent</bdi></span> — A way to compare a number to 100, shown with the % sign.</li><li><span class="kw"><bdi>Base</bdi></span> — The whole amount you start with — the number right after the word “of.”</li><li><span class="kw"><bdi>Part</bdi></span> — How much of the base (the whole) you get. It is your answer.</li><li><span class="kw"><bdi>Equation</bdi></span> — A number sentence with an equal sign. The percent one is: part = percent × base.</li><li><span class="kw"><bdi>Discount</bdi></span> — Money taken off the first price to make it cheaper.</li><li><span class="kw"><bdi>Double number line</bdi></span> — Two number lines that line up percents with amounts.</li><li><span class="kw"><bdi>Equivalent fraction</bdi></span> — A fraction with the same value written with different numbers.</li></ul></div>
+  <div class="lang-panel" data-lang="es" lang="es"><p class="callout">Para hallar un porcentaje de un número, cambia el porcentaje a decimal y multiplica. 25% de 80 es 0.25 × 80 = 20. Así que 25% de descuento en un juego de $80 ahorra $20.</p><ul><li><span class="kw"><bdi>Porcentaje de un número</bdi></span> — Una parte de un número que se halla multiplicando el número por el porcentaje escrito como decimal.</li><li><span class="kw"><bdi>Porcentaje</bdi></span> — Una manera de comparar un número con 100, con el signo %.</li><li><span class="kw"><bdi>Base</bdi></span> — La cantidad total con la que empiezas: el número que va después de la palabra “de”.</li><li><span class="kw"><bdi>Parte</bdi></span> — Cuánto obtienes de la base (el total). Es tu respuesta.</li><li><span class="kw"><bdi>Ecuación</bdi></span> — Una oración numérica con signo de igual. La de porcentaje es: parte = porcentaje × base.</li><li><span class="kw"><bdi>Descuento</bdi></span> — Dinero que se quita del precio original para que sea más barato.</li><li><span class="kw"><bdi>Recta numérica doble</bdi></span> — Dos rectas numéricas que alinean porcentajes con cantidades.</li><li><span class="kw"><bdi>Fracción equivalente</bdi></span> — Una fracción con el mismo valor escrita con números diferentes.</li></ul></div>
+  <div class="lang-panel" data-lang="ar" lang="ar" dir="rtl"><p class="auto-label">ترجمة آلية · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">لإيجاد نسبة مئوية من عدد، حوّل النسبة المئوية إلى عدد عشري ثم اضرب. 25% من 80 هي 0.25 × 80 = 20. إذن خصم 25% على لعبة سعرها 80 دولارًا يوفّر 20 دولارًا.</p><ul><li><span class="kw"><bdi>نسبة مئوية من عدد</bdi></span> (<bdi lang="en">Percent of a Number</bdi>) — جزء من عدد نجده بضرب العدد في النسبة المئوية مكتوبةً كعدد عشري.</li><li><span class="kw"><bdi>نسبة مئوية</bdi></span> (<bdi lang="en">Percent</bdi>) — طريقة لمقارنة عدد بـ 100، وتُكتب بالرمز %.</li><li><span class="kw"><bdi>الأساس</bdi></span> (<bdi lang="en">Base</bdi>) — الكمية الكاملة التي نبدأ بها — العدد الذي يأتي بعد كلمة «من».</li><li><span class="kw"><bdi>الجزء</bdi></span> (<bdi lang="en">Part</bdi>) — مقدار ما تحصل عليه من الأساس (الكل). إنه إجابتك.</li><li><span class="kw"><bdi>معادلة</bdi></span> (<bdi lang="en">Equation</bdi>) — جملة عددية فيها علامة يساوي. معادلة النسبة المئوية هي: الجزء = النسبة المئوية × الأساس.</li><li><span class="kw"><bdi>خصم</bdi></span> (<bdi lang="en">Discount</bdi>) — مال يُطرح من السعر الأصلي ليصبح أرخص.</li><li><span class="kw"><bdi>خط أعداد مزدوج</bdi></span> (<bdi lang="en">Double number line</bdi>) — خطا أعداد يطابقان النسب المئوية مع الكميات.</li><li><span class="kw"><bdi>كسر مكافئ</bdi></span> (<bdi lang="en">Equivalent fraction</bdi>) — كسر له القيمة نفسها لكنه مكتوب بأعداد مختلفة.</li></ul></div>
+  <div class="lang-panel" data-lang="fr" lang="fr"><p class="auto-label">Traduction automatique · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">Pour trouver un pourcentage d'un nombre, on écrit le pourcentage en nombre décimal et on multiplie. 25 % de 80, c'est 0,25 × 80 = 20. Donc une remise de 25 % sur un jeu à 80 $ fait économiser 20 $.</p><ul><li><span class="kw"><bdi>Pourcentage d'un nombre</bdi></span> (<bdi lang="en">Percent of a Number</bdi>) — Une partie d'un nombre, trouvée en multipliant ce nombre par le pourcentage écrit en nombre décimal.</li><li><span class="kw"><bdi>Pourcentage</bdi></span> (<bdi lang="en">Percent</bdi>) — Une façon de comparer un nombre à 100, écrite avec le signe %.</li><li><span class="kw"><bdi>Base</bdi></span> (<bdi lang="en">Base</bdi>) — La quantité entière de départ — le nombre qui vient juste après le mot « de ».</li><li><span class="kw"><bdi>Partie</bdi></span> (<bdi lang="en">Part</bdi>) — La quantité de la base (le tout) que l'on obtient. C'est la réponse.</li><li><span class="kw"><bdi>Équation</bdi></span> (<bdi lang="en">Equation</bdi>) — Une phrase mathématique avec un signe égal. Celle du pourcentage est : partie = pourcentage × base.</li><li><span class="kw"><bdi>Remise</bdi></span> (<bdi lang="en">Discount</bdi>) — L'argent enlevé du prix de départ pour le rendre moins cher.</li><li><span class="kw"><bdi>Double droite numérique</bdi></span> (<bdi lang="en">Double number line</bdi>) — Deux droites numériques qui alignent les pourcentages avec les quantités.</li><li><span class="kw"><bdi>Fraction équivalente</bdi></span> (<bdi lang="en">Equivalent fraction</bdi>) — Une fraction de même valeur écrite avec d'autres nombres.</li></ul></div>
+  <div class="lang-panel" data-lang="prs" lang="prs" dir="rtl"><p class="auto-label">ترجمه ماشینی · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">برای پیدا کردن فیصدی یک عدد، فیصدی را به عدد اعشاری تبدیل کنید و ضرب کنید. 25% از 80 می‌شود 0.25 × 80 = 20. پس 25% تخفیف روی یک بازی 80 دالری، 20 دالر صرفه‌جویی می‌کند.</p><ul><li><span class="kw"><bdi>فیصدی یک عدد</bdi></span> (<bdi lang="en">Percent of a Number</bdi>) — بخشی از یک عدد که با ضرب کردن عدد در فیصدیِ نوشته‌شده به شکل اعشاری پیدا می‌شود.</li><li><span class="kw"><bdi>فیصدی</bdi></span> (<bdi lang="en">Percent</bdi>) — راهی برای مقایسهٔ یک عدد با 100 که با علامت % نشان داده می‌شود.</li><li><span class="kw"><bdi>اساس</bdi></span> (<bdi lang="en">Base</bdi>) — مقدار کاملی که با آن شروع می‌کنید — عددی که درست بعد از کلمهٔ «از» می‌آید.</li><li><span class="kw"><bdi>بخش</bdi></span> (<bdi lang="en">Part</bdi>) — مقداری که از اساس (کل) به دست می‌آورید. این جواب شماست.</li><li><span class="kw"><bdi>معادله</bdi></span> (<bdi lang="en">Equation</bdi>) — یک جملهٔ عددی با علامت مساوی. معادلهٔ فیصدی این است: بخش = فیصدی × اساس.</li><li><span class="kw"><bdi>تخفیف</bdi></span> (<bdi lang="en">Discount</bdi>) — پولی که از قیمت اول کم می‌شود تا ارزان‌تر شود.</li><li><span class="kw"><bdi>خط عدد دوگانه</bdi></span> (<bdi lang="en">Double number line</bdi>) — دو خط عدد که فیصدی‌ها را با مقدارها جفت می‌کنند.</li><li><span class="kw"><bdi>کسر معادل</bdi></span> (<bdi lang="en">Equivalent fraction</bdi>) — کسری با همان ارزش که با عددهای دیگری نوشته شده است.</li></ul></div>
+  </div>
+  </div>
 </section>
 <section>
   <h2>Key words</h2>
@@ -71,7 +100,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Practice at home</h2>
-  <ol><li>What is 45% of 360?</li></ol>
+  <ol><li>What is 35% of 260?<ol class="choices" type="A"><li>35</li><li>130</li><li>91</li><li>225</li></ol></li></ol>
 </section>
 
 <section class="tool-section">
@@ -83,7 +112,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Answer check</h2>
-  <ol><li>What is 45% of 360? → <span class="answer">162</span></li></ol>
+  <ol><li>What is 35% of 260? → <span class="answer">91</span></li></ol>
 </section>
 <section>
   <h2>Common mistake</h2>

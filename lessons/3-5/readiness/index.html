@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Get Ready · Lesson 3-5: Compare Ratios — Neft Teacher</title>
-    <meta name="description" content="Readiness pre-lesson for Compare Ratios (6.AT.3): a quick check that routes you to the right level, then targeted practice so you walk into the lesson ready." />
+    <title>Get Ready · Lesson 3-5: Compare Ratio Relationships — Neft Teacher</title>
+    <meta name="description" content="Readiness pre-lesson for Compare Ratio Relationships (6.AT.3): a quick check that routes you to the right level, then targeted practice so you walk into the lesson ready." />
     <style>
       :root {
         --navy: #0f2b3c;
@@ -425,6 +425,18 @@
         text-decoration: none;
         margin-top: 10px;
       }
+      /* Spanish sibling line under its English (rendered only when authored). */
+      .es {
+        display: block;
+        color: #3f4d5c;
+        font-style: italic;
+        font-weight: 400;
+        font-size: 0.92em;
+        margin-top: 2px;
+      }
+      summary .es {
+        display: inline;
+      }
       @media print {
         .progress-wrap,
         .btn,
@@ -456,7 +468,7 @@
   <body>
     <header class="phero">
       <div class="deco">🆚</div>
-      <h1>Get Ready: Compare Ratios</h1>
+      <h1>Get Ready: Compare Ratio Relationships</h1>
       <p>To compare two ratios you scale them to a common number and see which is bigger — the same skill as comparing <strong>fractions</strong> with a common denominator. Warm up scaling fractions and comparing and the comparison is clear.</p>
       <div class="tags">
         <span class="tag gold">Readiness Pre-Lesson</span>
@@ -641,10 +653,14 @@
         </div>
       </section>
 
-      <div class="handoff">
+      <div class="handoff" id="handoff">
         <h2>🎉 You're warmed up!</h2>
         <p>You've practiced exactly what Lesson 3-5 uses. Time to dive in.</p>
         <a class="go" href="/lessons/3-5/">Start Lesson 3-5 →</a>
+        <!-- Shown only when this page runs inside the lesson shell's Get Ready
+             tab: finishing here hands off to the Warm-Up on the SAME screen
+             instead of navigating to the lesson URL. -->
+        <button class="go" id="toWarmup" type="button" style="display:none; border:0; cursor:pointer; font-size:1rem;">Continue to Warm-Up ⚡ →</button>
       </div>
 
       <div style="text-align:center;">
@@ -704,6 +720,46 @@
         var pct = Math.min(100, Math.round((Object.keys(done).length / TOTAL_ITEMS) * 100));
         document.getElementById("pfill").style.width = pct + "%";
         document.getElementById("pct").textContent = pct;
+        checkExitComplete();
+      }
+
+      // ---- hand-off to the lesson Warm-Up -------------------------------
+      // When this page is embedded in the lesson shell's "Get Ready" tab, a
+      // student who finishes the exit ticket should slide straight into the
+      // Warm-Up on the same screen — not be told to "Start Lesson" (a link
+      // that, inside the iframe, would load a whole second lesson shell).
+      var EXIT_KEYS = ["x1","x2"];
+      var EMBEDDED = window.parent !== window;
+      var handedOff = false;
+
+      function handOffToWarmup() {
+        if (handedOff) return;
+        handedOff = true;
+        try {
+          window.parent.postMessage(
+            { type: "nt-readiness-complete", lessonId: "3-5" },
+            window.location.origin,
+          );
+        } catch (e) {}
+      }
+
+      function checkExitComplete() {
+        if (!EMBEDDED || handedOff) return;
+        if (!EXIT_KEYS.every(function (k) { return done[k]; })) return;
+        var h = document.getElementById("handoff");
+        if (h) h.scrollIntoView({ behavior: "smooth", block: "center" });
+        // Give the student a beat to read the ✅ before the screen changes.
+        setTimeout(handOffToWarmup, 1200);
+      }
+
+      if (EMBEDDED) {
+        var goLink = document.querySelector(".handoff .go[href]");
+        if (goLink) goLink.style.display = "none";
+        var warmBtn = document.getElementById("toWarmup");
+        if (warmBtn) {
+          warmBtn.style.display = "inline-block";
+          warmBtn.addEventListener("click", handOffToWarmup);
+        }
       }
 
       function scorePath() {

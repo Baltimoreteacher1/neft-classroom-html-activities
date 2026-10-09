@@ -106,6 +106,18 @@
 /access-teacher/
   Cache-Control: public, no-cache, must-revalidate
 
+# The *.pages.dev mirror (production + every preview/branch deployment) serves
+# the same pages as https://eduwonderlab.com. Keep it out of search results so
+# the canonical domain is the only one indexed. Host-absolute rules are matched
+# against the request host, so these never touch eduwonderlab.com. Pattern form
+# is Cloudflare's own documented example (Pages › Configuration › Headers ›
+# "Prevent your pages.dev deployments showing in search results").
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex
+
+https://:version.:project.pages.dev/*
+  X-Robots-Tag: noindex
+
 # Command Center PWA: service worker and manifest must always revalidate.
 /teacher-tools/neftos-command-center/service-worker.js
   Cache-Control: public, max-age=0, must-revalidate

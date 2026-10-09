@@ -175,6 +175,49 @@ click('[data-view="path"]');
 assert.equal(win.document.querySelectorAll(".path-skill").length, 10);
 assert.match($("#path-view").textContent, /two different days/);
 
+// Streak mode: untimed, 10 correct in a row, a miss restarts the count, no clock anywhere.
+click('[data-view="library"]');
+click('[data-skill="division"]');
+click('[data-mode="streak"]');
+assert.equal(savedSession().session.mode, "streak", "Streak sessions save and can resume");
+assert.equal($("#streak-wrap").hidden, false, "Streak meter shows in streak mode");
+assert.equal($("#timer-wrap"), null, "No timer element exists");
+assert.doesNotMatch(
+  $("#drill-panel").textContent,
+  /\d:\d\d|second/i,
+  "No clock text in the practice panel",
+);
+for (let i = 0; i < 3; i++) {
+  solveCurrent();
+  click("#next-problem");
+}
+assert.equal(win.document.querySelectorAll("#streak-meter .lit").length, 3);
+fill("#answer-input", -999);
+submit("#answer-form");
+assert.equal(
+  win.document.querySelectorAll("#streak-meter .lit").length,
+  0,
+  "A miss restarts the streak",
+);
+assert.equal(
+  $("#next-problem").hidden,
+  false,
+  "Moving on is the student's choice, never automatic",
+);
+click("#next-problem");
+for (let i = 0; i < 10; i++) {
+  assert.equal($("#session-summary").hidden, true, `Streak continues until ten in a row (${i})`);
+  solveCurrent();
+  click("#next-problem");
+}
+assert.equal($("#session-summary").hidden, false, "Ten in a row completes the streak");
+assert.match($("#summary-title").textContent, /Ten in a row/);
+assert.equal(
+  JSON.parse(win.localStorage.getItem("ewl-fluency-progress-v1"))["4:division"].streakBest,
+  10,
+  "streakBest is stored",
+);
+
 click('[data-view="library"]');
 click("[data-start-daily]");
 assert.equal(savedSession().session.queue.length, 10);

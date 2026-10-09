@@ -297,28 +297,48 @@
       }
     </style>
     <link rel="stylesheet" href="/assets/curriculum-navigator.css?v=2155e3cc" />
-    <link rel="stylesheet" href="/assets/curriculum-home.css?v=0ae056db" />
+    <link rel="stylesheet" href="/assets/curriculum-home.css?v=6bb8118c" />
     <link rel="stylesheet" href="/assets/curriculum-resources.css?v=d742af68" />
     <link rel="stylesheet" href="/assets/curriculum-system.css" />
   </head>
   <body class="light-theme curriculum-home curriculum-product">
 <!-- curriculum-shell:begin -->
-<nav class="ewl-course-nav" aria-label="Curriculum navigation"><div class="ewl-course-nav__inner"><a class="ewl-course-brand" href="/curriculum/"><img src="/assets/favicon.svg" width="28" height="28" alt="">EduWonderLab<span>Grade 6 math</span></a><ul><li><a href="/curriculum/" aria-current="page">Dashboard</a></li><li><a href="/curriculum/units/">Lessons</a></li><li><a href="/curriculum/practice-workbooks/">Practice</a></li><li><a href="/curriculum/arcade/">Games</a></li><li><a href="/curriculum/learning-labs/">Learning labs</a></li><li><a href="/curriculum/family-connections/">Homework</a></li><li><a href="/curriculum/extra-help/">Extra Help</a></li><li><a href="/curriculum/fluency/">Fluency</a></li></ul></div></nav>
+<a class="ewl-skip" href="#main-content">Skip to main content</a><nav class="ewl-course-nav" aria-label="Curriculum navigation"><div class="ewl-course-nav__inner"><a class="ewl-course-brand" href="/curriculum/"><img src="/assets/favicon.svg" width="28" height="28" alt="">EduWonderLab<span>Grade 6 math</span></a><div class="ewl-course-menu"><ul class="ewl-course-links"><li><a href="/curriculum/" aria-current="page">Dashboard</a></li><li><a href="/curriculum/units/">Lessons</a></li><li><a href="/curriculum/practice-workbooks/">Practice</a></li><li><a href="/curriculum/arcade/">Games</a></li><li><a href="/curriculum/learning-labs/">Learning labs</a></li><li><a href="/curriculum/family-connections/">Homework</a></li><li><a href="/curriculum/extra-help/">Extra Help</a></li><li><a href="/curriculum/fluency/">Fluency</a></li></ul><details class="ewl-course-more"><summary>More</summary><ul><li><a href="/curriculum/arcade/">Games</a></li><li><a href="/curriculum/learning-labs/">Learning labs</a></li><li><a href="/curriculum/family-connections/">Homework</a></li><li><a href="/curriculum/extra-help/">Extra Help</a></li><li><a href="/curriculum/fluency/">Fluency</a></li></ul></details></div><div class="ewl-course-tools"><div class="hub-reading-control"><button id="udlFloatingLauncher" type="button" aria-expanded="false" aria-controls="udlMenuPopover" onclick="toggleUdlMenu()">Reading supports</button><div id="udlMenuPopover" role="region" aria-labelledby="udlMenuTitle" style="display: none"><h2 id="udlMenuTitle">Reading and language supports</h2><label><span>Atkinson headings and controls</span><input type="checkbox" id="chkDyslexiaFont" onchange="toggleDyslexiaFont(this.checked)" /></label><label><span>High contrast</span><input type="checkbox" id="chkHighContrast" onchange="toggleHighContrast(this.checked)" /></label><a href="/esol/">Open language supports</a></div></div></div></div></nav>
 <!-- curriculum-shell:end -->
 <header class="curriculum-guide" id="curriculum-start">
-      <a class="skip-link" href="#main-content">Skip to main content</a>
       <p class="curriculum-guide__eyebrow">Curriculum</p>
       <h1>Grade 6 mathematics</h1>
-      <!-- Static on purpose. This banner and the audience nav below used to be
-           built by JS after load and pushed the 1,000px-tall actions nav down
-           the page: CLS 0.52 on mobile (Lighthouse, 2026-09-20). The scripts
-           now bind to these nodes instead of creating them. -->
-      <p id="hub-mode-banner" class="hub-mode-banner hub-student-only">
-        <span>Student view </span>
-        <button type="button" class="hub-hint-link" id="hub-mode-banner-switch">
-          Switch to Teacher view
+      <!-- Audience switcher. Student is the default; Family is remembered on this
+           device (nt-hub-audience); Teacher is the existing Teacher view and its
+           PIN (assets/curriculum-enhancements.js) — no new credential. The
+           class is set here, before first paint, so a family does not see the
+           student page flash. Wiring: assets/curriculum-home.js. -->
+      <script>
+        try {
+          if (localStorage.getItem("nt-hub-audience") === "family")
+            document.body.classList.add("hub-aud-family");
+        } catch (e) {}
+      </script>
+      <div class="hub-audience" role="group" aria-labelledby="hub-audience-label">
+        <span id="hub-audience-label" class="hub-audience__label"
+          >Show this page for <span lang="es">· Mostrar para</span></span
+        >
+        <button type="button" class="hub-audience__btn" data-hub-audience="student" aria-pressed="true">
+          Student <span lang="es">· Estudiante</span></button
+        ><button type="button" class="hub-audience__btn" data-hub-audience="family" aria-pressed="false">
+          Family <span lang="es">· Familia</span></button
+        ><button
+          type="button"
+          class="hub-audience__btn"
+          id="hub-mode-banner-switch"
+          data-hub-audience="teacher"
+          aria-pressed="false"
+        >
+          Teacher <span class="hub-audience__lock" aria-hidden="true">🔒</span>
         </button>
-      </p>
+      </div>
+      <!-- Kept for the existing mode wiring: "Preview student view" is what the
+           Student and Family buttons press when they leave Teacher view. -->
       <p id="hub-teacher-banner" class="hub-teacher-only">
         <span>Teacher view</span
         ><button type="button" class="hub-hint-link" data-home-mode>Preview student view</button>
@@ -327,12 +347,17 @@
         Find a lesson, prepare its materials, and share the student link. Your planning tools are
         one click away.
       </p>
-      <p class="curriculum-guide__lede hub-student-only">
+      <p class="curriculum-guide__lede hub-for-student">
         Find your lesson. Everything you need to learn and practice is together.
+        <span lang="es">Encuentra tu lección. Todo lo que necesitas para aprender y practicar está aquí.</span>
+      </p>
+      <p class="curriculum-guide__lede hub-for-family">
+        See what your child is learning this week, the homework, and how to help at home.
+        <span lang="es">Vea lo que su hijo aprende esta semana, la tarea y cómo ayudar en casa.</span>
       </p>
 
       <nav class="hub-shortcuts" aria-label="Curriculum shortcuts">
-        <a class="hub-resource-shortcut" href="#curriculum-resources">Resources &amp; tools</a
+        <a class="hub-resource-shortcut hub-teacher-only" href="#curriculum-resources">Resources &amp; tools</a
         ><button
           class="curriculum-guide__action hub-teacher-only"
           type="button"
@@ -366,46 +391,115 @@
         ><a class="hub-teacher-only" href="/curriculum/fluency/teacher/#view=studio"
           >Fluency &amp; Readiness</a
         ><a class="hub-student-only" href="/curriculum/fluency/">Fluency practice</a>
-        <aside class="hub-reading-control" aria-label="Reading preferences">
-          <button
-            id="udlFloatingLauncher"
-            type="button"
-            aria-expanded="false"
-            aria-controls="udlMenuPopover"
-            onclick="toggleUdlMenu()"
-          >
-            Reading supports
-          </button>
-          <div
-            id="udlMenuPopover"
-            role="region"
-            aria-labelledby="udlMenuTitle"
-            style="display: none"
-          >
-            <h2 id="udlMenuTitle">Reading and language supports</h2>
-            <label
-              ><span>Atkinson headings and controls</span
-              ><input
-                type="checkbox"
-                id="chkDyslexiaFont"
-                onchange="toggleDyslexiaFont(this.checked)"
-            /></label>
-            <label
-              ><span>High contrast</span
-              ><input
-                type="checkbox"
-                id="chkHighContrast"
-                onchange="toggleHighContrast(this.checked)"
-            /></label>
-            <a href="/esol/">Open language supports</a>
-          </div>
-        </aside>
       </nav>
     </header>
 
     <main id="main-content" class="hub-page">
+      <!-- Now / Next: the lesson the class is on today and the next class day,
+           read from the pacing baseline in assets/pacing-days.generated.js
+           (tools/sync-curriculum-shell.mjs). Rendered by assets/curriculum-home.js;
+           without script the unit list below still carries every date. -->
+      <section class="hub-now" id="hub-now" aria-labelledby="hub-now-title">
+        <h2 id="hub-now-title">This week in class <span lang="es">· Esta semana en clase</span></h2>
+        <div class="hub-now__cards" data-hub-now>
+          <p class="hub-now__fallback">
+            The unit list below shows when each unit is taught.
+            <span lang="es">La lista de unidades muestra cuándo se enseña cada una.</span>
+          </p>
+        </div>
+      </section>
+      <section class="hub-panel hub-for-student" aria-labelledby="hub-student-title">
+        <h2 id="hub-student-title">Start here <span lang="es">· Empieza aquí</span></h2>
+        <ul class="hub-cards">
+          <li>
+            <a class="hub-card" href="/curriculum/units/"
+              ><strong>Lessons <span lang="es">· Lecciones</span></strong
+              ><span>Every unit and lesson, in order.</span><span lang="es">Todas las unidades y lecciones, en orden.</span></a
+            >
+          </li>
+          <li>
+            <a class="hub-card" href="/curriculum/practice-workbooks/"
+              ><strong>Practice <span lang="es">· Práctica</span></strong
+              ><span>A practice sheet for every lesson.</span><span lang="es">Una hoja de práctica para cada lección.</span></a
+            >
+          </li>
+          <li>
+            <a class="hub-card" href="/curriculum/arcade/"
+              ><strong>Games <span lang="es">· Juegos</span></strong
+              ><span>Review games for each unit.</span><span lang="es">Juegos de repaso para cada unidad.</span></a
+            >
+          </li>
+          <li>
+            <a class="hub-card" href="/curriculum/learning-labs/"
+              ><strong>Learning labs <span lang="es">· Laboratorios</span></strong
+              ><span>Hands-on labs for every lesson.</span><span lang="es">Laboratorios prácticos para cada lección.</span></a
+            >
+          </li>
+          <li>
+            <a class="hub-card" href="/curriculum/fluency/"
+              ><strong>Fluency <span lang="es">· Fluidez</span></strong
+              ><span>Practice facts until they feel easy.</span><span lang="es">Practica operaciones hasta que sean fáciles.</span></a
+            >
+          </li>
+          <li>
+            <a class="hub-card" href="/curriculum/extra-help/"
+              ><strong>Extra Help <span lang="es">· Ayuda extra</span></strong
+              ><span>Step-by-step help for each lesson.</span><span lang="es">Ayuda paso a paso para cada lección.</span></a
+            >
+          </li>
+          <li>
+            <a class="hub-card" href="/curriculum/my-progress/"
+              ><strong>My Progress <span lang="es">· Mi progreso</span></strong
+              ><span>See what you have practiced.</span><span lang="es">Mira lo que has practicado.</span></a
+            >
+          </li>
+        </ul>
+        <h3 class="hub-more__title">More to explore <span lang="es">· Más para explorar</span></h3>
+        <ul class="hub-more">
+          <li><a href="/mentor-lab/">Unit 0 · Math Mentors</a></li>
+          <li><a href="/netfold-pro/">NetFold 3D shapes</a></li>
+          <li><a href="/curriculum/almost-right-lab/">The Almost-Right Lab</a></li>
+          <li><a href="/curriculum/division-foundry/">Order Up! division review</a></li>
+          <li><a href="/curriculum/math-workbench/">Math Workbench</a></li>
+          <li><a href="/math/student-board/">The Class Board</a></li>
+          <li><a href="/curriculum/projects/">Culminating projects</a></li>
+          <li><a href="/curriculum/monster-math-academy/">Monster Math Academy</a></li>
+          <li><a href="/curriculum/ai-hub/">AI Learning Hub</a></li>
+          <li><a href="/curriculum/manipulatives/">Printable manipulatives</a></li>
+          <li><a href="/directory/">Find anything on the site</a></li>
+        </ul>
+      </section>
+      <section class="hub-panel hub-for-family" aria-labelledby="hub-family-title">
+        <h2 id="hub-family-title">For families <span lang="es">· Para familias</span></h2>
+        <ul class="hub-cards">
+          <li>
+            <a class="hub-card" href="/curriculum/family-connections/"
+              ><strong>This week’s homework <span lang="es">· La tarea de esta semana</span></strong
+              ><span>Homework for this week, with answers you can check together.</span><span lang="es">La tarea de esta semana, con respuestas para revisar juntos.</span></a
+            >
+          </li>
+          <li>
+            <a class="hub-card" href="/curriculum/family-connections/" data-hub-family-guide
+              ><strong>Lesson guide <span lang="es">· Guía de la lección</span></strong
+              ><span>What this week’s lesson teaches and how to help at home.</span><span lang="es">Lo que enseña la lección de esta semana y cómo ayudar en casa.</span></a
+            >
+          </li>
+          <li>
+            <a class="hub-card" href="/curriculum/family-connections/?lang=es"
+              ><strong>En español <span lang="es">· In Spanish</span></strong
+              ><span>Homework and guides in Spanish.</span><span lang="es">La tarea y las guías en español.</span></a
+            >
+          </li>
+          <li>
+            <a class="hub-card" href="/curriculum/extra-help/"
+              ><strong>Extra Help <span lang="es">· Ayuda extra</span></strong
+              ><span>Step-by-step help for each lesson.</span><span lang="es">Ayuda paso a paso para cada lección.</span></a
+            >
+          </li>
+        </ul>
+      </section>
 <!-- course-overview:begin -->
-<section class="course-overview" id="course-overview" aria-labelledby="course-overview-title"><div class="course-overview__head"><h2 id="course-overview-title">Your Grade 6 course</h2><p>10 units. 84 lessons. Units are listed by number; the dates show when each one is taught.</p></div><ol class="course-unit-list"><li data-unit="1" data-start="2026-08-24" data-end="2026-09-08"><a href="/curriculum/units/#unit-1"><span class="course-unit-number">Unit 1</span><strong class="course-unit-title">Math Is Discovery</strong><span class="course-unit-count">6 lessons</span><span class="course-unit-dates">Aug 24 – Sep 8</span></a></li><li data-unit="2" data-start="2027-04-22" data-end="2027-05-17"><a href="/curriculum/units/#unit-2"><span class="course-unit-number">Unit 2</span><strong class="course-unit-title">Statistics</strong><span class="course-unit-count">12 lessons</span><span class="course-unit-dates">Apr 22 – May 17</span></a></li><li data-unit="3" data-start="2026-09-09" data-end="2026-10-08"><a href="/curriculum/units/#unit-3"><span class="course-unit-number">Unit 3</span><strong class="course-unit-title">Ratios &amp; Rates</strong><span class="course-unit-count">10 lessons</span><span class="course-unit-dates">Sep 9 – Oct 8</span></a></li><li data-unit="4" data-start="2026-10-09" data-end="2026-11-04"><a href="/curriculum/units/#unit-4"><span class="course-unit-number">Unit 4</span><strong class="course-unit-title">Percents</strong><span class="course-unit-count">5 lessons</span><span class="course-unit-dates">Oct 9 – Nov 4</span></a></li><li data-unit="5" data-start="2027-03-19" data-end="2027-04-21"><a href="/curriculum/units/#unit-5"><span class="course-unit-number">Unit 5</span><strong class="course-unit-title">Area, Surface Area &amp; Volume</strong><span class="course-unit-count">10 lessons</span><span class="course-unit-dates">Mar 19 – Apr 21</span></a></li><li data-unit="6" data-start="2026-11-05" data-end="2026-12-07"><a href="/curriculum/units/#unit-6"><span class="course-unit-number">Unit 6</span><strong class="course-unit-title">Expressions</strong><span class="course-unit-count">15 lessons</span><span class="course-unit-dates">Nov 5 – Dec 7</span></a></li><li data-unit="7" data-start="2026-12-08" data-end="2027-01-20"><a href="/curriculum/units/#unit-7"><span class="course-unit-number">Unit 7</span><strong class="course-unit-title">Integers &amp; the Coordinate Plane</strong><span class="course-unit-count">9 lessons</span><span class="course-unit-dates">Dec 8 – Jan 20</span></a></li><li data-unit="8" data-start="2027-01-21" data-end="2027-02-23"><a href="/curriculum/units/#unit-8"><span class="course-unit-number">Unit 8</span><strong class="course-unit-title">Equations &amp; Inequalities</strong><span class="course-unit-count">7 lessons</span><span class="course-unit-dates">Jan 21 – Feb 23</span></a></li><li data-unit="9" data-start="2027-02-24" data-end="2027-03-18"><a href="/curriculum/units/#unit-9"><span class="course-unit-number">Unit 9</span><strong class="course-unit-title">Two-Variable Relationships</strong><span class="course-unit-count">4 lessons</span><span class="course-unit-dates">Feb 24 – Mar 18</span></a></li><li data-unit="10" data-start="2027-06-01" data-end="2027-06-11"><a href="/curriculum/units/#unit-10"><span class="course-unit-number">Unit 10</span><strong class="course-unit-title">Math Is Synthesis</strong><span class="course-unit-count">6 lessons</span><span class="course-unit-dates">Jun 1 – Jun 11</span></a></li></ol></section>
+<section class="course-overview" id="course-overview" aria-labelledby="course-overview-title"><div class="course-overview__head"><h2 id="course-overview-title">Your Grade 6 course</h2><p>10 units. 84 lessons. Listed in the order your class learns them, with the dates for each. <span lang="es">Unidades en el orden en que tu clase las aprende, con sus fechas.</span></p></div><ol class="course-unit-list"><li data-unit="1" data-start="2026-08-24" data-end="2026-09-08"><a href="/curriculum/units/#unit-1"><span class="course-unit-number">Unit 1</span><strong class="course-unit-title">Math Is Discovery</strong><span class="course-unit-count">6 lessons</span><span class="course-unit-dates">Aug 24 – Sep 8</span></a></li><li data-unit="3" data-start="2026-09-09" data-end="2026-10-08"><a href="/curriculum/units/#unit-3"><span class="course-unit-number">Unit 3</span><strong class="course-unit-title">Ratios &amp; Rates</strong><span class="course-unit-count">10 lessons</span><span class="course-unit-dates">Sep 9 – Oct 8</span></a></li><li data-unit="4" data-start="2026-10-09" data-end="2026-11-04"><a href="/curriculum/units/#unit-4"><span class="course-unit-number">Unit 4</span><strong class="course-unit-title">Percents</strong><span class="course-unit-count">5 lessons</span><span class="course-unit-dates">Oct 9 – Nov 4</span></a></li><li data-unit="6" data-start="2026-11-05" data-end="2026-12-07"><a href="/curriculum/units/#unit-6"><span class="course-unit-number">Unit 6</span><strong class="course-unit-title">Expressions</strong><span class="course-unit-count">15 lessons</span><span class="course-unit-dates">Nov 5 – Dec 7</span></a></li><li data-unit="7" data-start="2026-12-08" data-end="2027-01-20"><a href="/curriculum/units/#unit-7"><span class="course-unit-number">Unit 7</span><strong class="course-unit-title">Integers &amp; the Coordinate Plane</strong><span class="course-unit-count">9 lessons</span><span class="course-unit-dates">Dec 8 – Jan 20</span></a></li><li data-unit="8" data-start="2027-01-21" data-end="2027-02-23"><a href="/curriculum/units/#unit-8"><span class="course-unit-number">Unit 8</span><strong class="course-unit-title">Equations &amp; Inequalities</strong><span class="course-unit-count">7 lessons</span><span class="course-unit-dates">Jan 21 – Feb 23</span></a></li><li data-unit="9" data-start="2027-02-24" data-end="2027-03-18"><a href="/curriculum/units/#unit-9"><span class="course-unit-number">Unit 9</span><strong class="course-unit-title">Two-Variable Relationships</strong><span class="course-unit-count">4 lessons</span><span class="course-unit-dates">Feb 24 – Mar 18</span></a></li><li data-unit="5" data-start="2027-03-19" data-end="2027-04-21"><a href="/curriculum/units/#unit-5"><span class="course-unit-number">Unit 5</span><strong class="course-unit-title">Area, Surface Area &amp; Volume</strong><span class="course-unit-count">10 lessons</span><span class="course-unit-dates">Mar 19 – Apr 21</span></a></li><li data-unit="2" data-start="2027-04-22" data-end="2027-05-17"><a href="/curriculum/units/#unit-2"><span class="course-unit-number">Unit 2</span><strong class="course-unit-title">Statistics</strong><span class="course-unit-count">12 lessons</span><span class="course-unit-dates">Apr 22 – May 17</span></a></li><li data-unit="10" data-unscheduled=""><a href="/curriculum/units/#unit-10"><span class="course-unit-number">Unit 10</span><strong class="course-unit-title">Math Is Synthesis</strong><span class="course-unit-count">6 lessons</span><span class="course-unit-dates">Not scheduled this year <span lang="es">· No programada este año</span></span></a></li></ol></section>
 <!-- course-overview:end -->
       <section id="curriculum-resources" aria-labelledby="resources-title">
         <h2 id="resources-title">Resources &amp; tools</h2>
@@ -2498,206 +2592,6 @@
                 }
               </style>
 
-              <!-- ==========================================================================
-               MASTER 180-DAY COURSE PACING MATRIX & INSTRUCTIONAL DESIGN (GATEWAY 1)
-               ========================================================================== -->
-              <section
-                id="master-pacing-matrix"
-                class="mailbox-feature cns-feature"
-                style="border: 2px solid #6366f1; background: #ffffff"
-                aria-labelledby="pacing-matrix-title"
-              >
-                <span
-                  class="mf-icon"
-                  style="background: linear-gradient(135deg, #6366f1, #4338ca); color: #fff"
-                  aria-hidden="true"
-                  >📅</span
-                >
-                <div class="mf-body">
-                  <span class="mf-tag" style="color: #4338ca; background: rgba(99, 102, 241, 0.12)"
-                    >EdReports Gateway 1 · Master Pacing Model</span
-                  >
-                  <h2 id="pacing-matrix-title">Course pacing reference</h2>
-                  <p class="mf-sub">
-                    A rigorous, standards-aligned scope and sequence accounting for every
-                    instructional day of the 36-week academic year.
-                  </p>
-                  <div
-                    style="
-                      display: grid;
-                      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-                      gap: 10px;
-                      margin: 16px 0;
-                    "
-                  >
-                    <div
-                      style="
-                        background: #f8fafc;
-                        border: 1px solid #e2e8f0;
-                        border-radius: 12px;
-                        padding: 12px;
-                        text-align: center;
-                      "
-                    >
-                      <div style="font-size: 22px; font-weight: 900; color: #0284c7">84 Days</div>
-                      <div
-                        style="font-weight: 800; font-size: 12.5px; color: #1e293b; margin-top: 3px"
-                      >
-                        Core Lessons
-                      </div>
-                      <div style="font-size: 11px; color: #64748b; margin-top: 2px">
-                        5-stage inquiry &amp; problem solving
-                      </div>
-                    </div>
-                    <div
-                      style="
-                        background: #f8fafc;
-                        border: 1px solid #e2e8f0;
-                        border-radius: 12px;
-                        padding: 12px;
-                        text-align: center;
-                      "
-                    >
-                      <div style="font-size: 22px; font-weight: 900; color: #0d9488">20 Days</div>
-                      <div
-                        style="font-weight: 800; font-size: 12.5px; color: #1e293b; margin-top: 3px"
-                      >
-                        Diagnostic &amp; Checks
-                      </div>
-                      <div style="font-size: 11px; color: #64748b; margin-top: 2px">
-                        10 pre-unit + 10 mid-unit checks
-                      </div>
-                    </div>
-                    <div
-                      style="
-                        background: #f8fafc;
-                        border: 1px solid #e2e8f0;
-                        border-radius: 12px;
-                        padding: 12px;
-                        text-align: center;
-                      "
-                    >
-                      <div style="font-size: 22px; font-weight: 900; color: #7c3aed">20 Days</div>
-                      <div
-                        style="font-weight: 800; font-size: 12.5px; color: #1e293b; margin-top: 3px"
-                      >
-                        Summative &amp; Projects
-                      </div>
-                      <div style="font-size: 11px; color: #64748b; margin-top: 2px">
-                        Forms A/B &amp; Culminating Tasks
-                      </div>
-                    </div>
-                    <div
-                      style="
-                        background: #f8fafc;
-                        border: 1px solid #e2e8f0;
-                        border-radius: 12px;
-                        padding: 12px;
-                        text-align: center;
-                      "
-                    >
-                      <div style="font-size: 22px; font-weight: 900; color: #d97706">20 Days</div>
-                      <div
-                        style="font-weight: 800; font-size: 12.5px; color: #1e293b; margin-top: 3px"
-                      >
-                        MTSS Intervention
-                      </div>
-                      <div style="font-size: 11px; color: #64748b; margin-top: 2px">
-                        Tier 2/3 Forge reteach buffers
-                      </div>
-                    </div>
-                    <div
-                      style="
-                        background: #f8fafc;
-                        border: 1px solid #e2e8f0;
-                        border-radius: 12px;
-                        padding: 12px;
-                        text-align: center;
-                      "
-                    >
-                      <div style="font-size: 22px; font-weight: 900; color: #475569">36 Days</div>
-                      <div
-                        style="font-weight: 800; font-size: 12.5px; color: #1e293b; margin-top: 3px"
-                      >
-                        Review &amp; Flex Reserve
-                      </div>
-                      <div style="font-size: 11px; color: #64748b; margin-top: 2px">
-                        MCAP state testing &amp; closures
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Course Sequence Rationale Callout -->
-                  <div
-                    style="
-                      background: #eff6ff;
-                      border-left: 4px solid #3b82f6;
-                      border-radius: 0 10px 10px 0;
-                      padding: 12px 16px;
-                      margin-top: 14px;
-                    "
-                  >
-                    <strong
-                      style="color: #1e40af; font-size: 13px; display: block; margin-bottom: 3px"
-                    >
-                      Course Sequence Rationale: Unit 2 Statistics Placement
-                    </strong>
-                    <p style="margin: 0; font-size: 12.5px; line-height: 1.55; color: #1e3a8a">
-                      In accordance with developmental learning progressions, Unit 2 introduces
-                      Statistics immediately following the introductory unit to establish positive
-                      classroom mathematical identity and collaborative data storytelling. By
-                      grounding numerical analysis in concrete student data collections (dot plots,
-                      histograms) before introducing abstract variable manipulations in Expressions
-                      (Unit 6) and Equations (Unit 8), students develop strong conceptual intuition
-                      for distribution and variation.
-                    </p>
-                  </div>
-
-                  <!-- Standardized 5-Stage Lesson Delivery Framework -->
-                  <div
-                    style="
-                      background: #f0fdf4;
-                      border-left: 4px solid #22c55e;
-                      border-radius: 0 10px 10px 0;
-                      padding: 12px 16px;
-                      margin-top: 12px;
-                    "
-                  >
-                    <strong
-                      style="color: #166534; font-size: 13px; display: block; margin-bottom: 4px"
-                    >
-                      Standardized 5-Stage Lesson Delivery Framework (60 Minutes)
-                    </strong>
-                    <div
-                      style="
-                        display: flex;
-                        flex-wrap: wrap;
-                        gap: 8px;
-                        margin-top: 4px;
-                        font-size: 12px;
-                        color: #14532d;
-                      "
-                    >
-                      <span style="background: #dcfce7; padding: 3px 8px; border-radius: 6px"
-                        >1. Launch / Access Task (5–10m)</span
-                      >
-                      <span style="background: #dcfce7; padding: 3px 8px; border-radius: 6px"
-                        >2. Concept Exploration (15–20m)</span
-                      >
-                      <span style="background: #dcfce7; padding: 3px 8px; border-radius: 6px"
-                        >3. Guided Anchor Practice (15m)</span
-                      >
-                      <span style="background: #dcfce7; padding: 3px 8px; border-radius: 6px"
-                        >4. Differentiated Stations (15m)</span
-                      >
-                      <span style="background: #dcfce7; padding: 3px 8px; border-radius: 6px"
-                        >5. Exit Ticket Synthesis (5–10m)</span
-                      >
-                    </div>
-                  </div>
-                </div>
-              </section>
-
               <section
                 class="mailbox-feature cns-feature hub-teacher-only"
                 data-category="teacher"
@@ -3331,7 +3225,7 @@
                 }
               </style>
               <section
-                class="mailbox-feature lpg-feature"
+                class="mailbox-feature lpg-feature hub-teacher-only"
                 data-category="teacher"
                 aria-labelledby="lpg-feature-title"
               >
@@ -3367,7 +3261,7 @@
                   background: rgba(21, 72, 127, 0.12);
                 }
               </style>
-              <section class="mailbox-feature sss-feature" aria-labelledby="sss-feature-title">
+              <section class="mailbox-feature sss-feature hub-teacher-only" aria-labelledby="sss-feature-title">
                 <span class="mf-icon" aria-hidden="true">🧬</span>
                 <div class="mf-body">
                   <span class="mf-tag">Teacher Tool</span>
@@ -3870,7 +3764,7 @@
                   </div>
                 </div>
               </section>
-              <section class="mailbox-feature" aria-labelledby="canvas-autograde-title">
+              <section class="mailbox-feature hub-teacher-only" aria-labelledby="canvas-autograde-title">
                 <span class="mf-icon" aria-hidden="true">🎯</span>
                 <div class="mf-body">
                   <span class="mf-tag">Auto-Grading · No IT</span>
@@ -3897,7 +3791,7 @@
                   </div>
                 </div>
               </section>
-              <section class="mailbox-feature" aria-labelledby="canvas-feature-title">
+              <section class="mailbox-feature hub-teacher-only" aria-labelledby="canvas-feature-title">
                 <span class="mf-icon" aria-hidden="true">🚀</span>
                 <div class="mf-body">
                   <span class="mf-tag">Featured Tool</span>
@@ -4604,403 +4498,6 @@
             })();
           </script>
 
-          <!-- ==========================================================================
-           PUBLISHER & ADOPTION EVALUATION SHOWCASE (Unrestricted Evaluator Access)
-           ========================================================================== -->
-          <section
-            id="evaluator-showcase"
-            class="evaluator-showcase-panel"
-            style="
-              background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-              color: #f8fafc;
-              border-radius: 20px;
-              padding: 24px 28px;
-              margin: 20px 0 24px 0;
-              box-shadow: 0 12px 36px -10px rgba(15, 23, 42, 0.35);
-              border: 1px solid rgba(56, 189, 248, 0.3);
-            "
-          >
-            <div
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                flex-wrap: wrap;
-                gap: 12px;
-                margin-bottom: 12px;
-              "
-            >
-              <div style="display: flex; align-items: center; gap: 10px">
-                <span
-                  style="
-                    background: rgba(14, 165, 233, 0.2);
-                    color: #38bdf8;
-                    border: 1px solid #0284c7;
-                    padding: 4px 12px;
-                    border-radius: 999px;
-                    font-weight: 800;
-                    font-size: 11.5px;
-                    letter-spacing: 0.05em;
-                    text-transform: uppercase;
-                  "
-                >
-                  Publisher &amp; Adoption Evaluator Showcase
-                </span>
-                <span style="font-size: 12.5px; color: #94a3b8; font-weight: 600"
-                  >Curriculum samples &amp; review resources</span
-                >
-              </div>
-              <span
-                style="
-                  font-size: 11.5px;
-                  background: rgba(34, 197, 94, 0.15);
-                  color: #4ade80;
-                  border: 1px solid rgba(34, 197, 94, 0.3);
-                  padding: 3px 10px;
-                  border-radius: 6px;
-                  font-weight: 700;
-                "
-              >
-                Public samples · Teacher resources require access
-              </span>
-            </div>
-            <h2
-              style="
-                font-family: Nunito, sans-serif;
-                font-size: 20px;
-                font-weight: 800;
-                color: #ffffff;
-                margin: 0 0 6px 0;
-              "
-            >
-              Explore the curriculum design
-            </h2>
-            <p
-              style="
-                margin: 0 0 16px 0;
-                font-size: 13.5px;
-                line-height: 1.6;
-                color: #cbd5e1;
-                max-width: 960px;
-              "
-            >
-              Welcome district adoption committee members, state review panels, and educational
-              publishers. Explore sample lessons, teacher facilitation guides, learning supports,
-              and standards crosswalks. Teacher guides and answer keys use the site’s teacher access
-              controls.
-            </p>
-            <div
-              style="
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 12px;
-              "
-            >
-              <a
-                href="/lessons/1-1/learn.html"
-                class="eval-card"
-                style="
-                  background: rgba(255, 255, 255, 0.07);
-                  border: 1px solid rgba(255, 255, 255, 0.12);
-                  padding: 12px 14px;
-                  border-radius: 12px;
-                  text-decoration: none;
-                  color: #f8fafc;
-                  transition: all 0.2s ease;
-                "
-              >
-                <div style="font-size: 16px; margin-bottom: 3px">📖 Sample Lesson Anatomy</div>
-                <div style="font-weight: 700; font-size: 13.5px; color: #38bdf8">
-                  Lesson 1-1 Interactive Concept
-                </div>
-                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 3px">
-                  Explore the 5-stage lesson delivery model with CRA visual scaffolds.
-                </div>
-              </a>
-              <a
-                href="/lessons/1-1/teacher-notes/"
-                class="eval-card"
-                style="
-                  background: rgba(255, 255, 255, 0.07);
-                  border: 1px solid rgba(255, 255, 255, 0.12);
-                  padding: 12px 14px;
-                  border-radius: 12px;
-                  text-decoration: none;
-                  color: #f8fafc;
-                  transition: all 0.2s ease;
-                "
-              >
-                <div style="font-size: 16px; margin-bottom: 3px">
-                  👩‍🏫 Teacher Guide &amp; Discourse
-                </div>
-                <div style="font-weight: 700; font-size: 13.5px; color: #a78bfa">
-                  Lesson 1-1 Facilitation Notes
-                </div>
-                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 3px">
-                  Mathematical background, anticipated misconceptions &amp; talk moves.
-                </div>
-              </a>
-              <a
-                href="/math/unit-1/projects/answer-key/"
-                class="eval-card"
-                style="
-                  background: rgba(255, 255, 255, 0.07);
-                  border: 1px solid rgba(255, 255, 255, 0.12);
-                  padding: 12px 14px;
-                  border-radius: 12px;
-                  text-decoration: none;
-                  color: #f8fafc;
-                  transition: all 0.2s ease;
-                "
-              >
-                <div style="font-size: 16px; margin-bottom: 3px">🎯 Scoring Rubrics &amp; Keys</div>
-                <div style="font-weight: 700; font-size: 13.5px; color: #f472b6">
-                  Unit 1 Culminating Rubric
-                </div>
-                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 3px">
-                  4-level mastery rubrics, student work exemplars &amp; point keys.
-                </div>
-              </a>
-              <a
-                href="/evidence/"
-                class="eval-card"
-                style="
-                  background: rgba(255, 255, 255, 0.07);
-                  border: 1px solid rgba(255, 255, 255, 0.12);
-                  padding: 12px 14px;
-                  border-radius: 12px;
-                  text-decoration: none;
-                  color: #f8fafc;
-                  transition: all 0.2s ease;
-                "
-              >
-                <div style="font-size: 16px; margin-bottom: 3px">
-                  📊 Evidence &amp; Learning Model
-                </div>
-                <div style="font-weight: 700; font-size: 13.5px; color: #34d399">
-                  Community Math Studio Model
-                </div>
-                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 3px">
-                  Google Innovator research base, dual-coding &amp; growth metrics.
-                </div>
-              </a>
-            </div>
-          </section>
-
-          <!-- ==========================================================================
-               ENTERPRISE INTEROPERABILITY, UDL 3.0, WIDA & COMPLIANCE (GATEWAY 3)
-               ========================================================================== -->
-          <section
-            id="enterprise-standards-compliance"
-            class="mailbox-feature cns-feature"
-            style="border: 2px solid #0284c7; background: #ffffff"
-            aria-labelledby="enterprise-standards-title"
-          >
-            <span
-              class="mf-icon"
-              style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #fff"
-              aria-hidden="true"
-              >🛡️</span
-            >
-            <div class="mf-body">
-              <span class="mf-tag" style="color: #0369a1; background: rgba(2, 132, 199, 0.12)"
-                >Classroom integrations · Learning supports · Data privacy</span
-              >
-              <h2 id="enterprise-standards-title">Platform &amp; learning supports</h2>
-              <p class="mf-sub">
-                Explore the available classroom integrations, learning supports, and data settings.
-              </p>
-
-              <div
-                style="
-                  display: grid;
-                  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-                  gap: 12px;
-                  margin: 16px 0;
-                "
-              >
-                <div
-                  style="
-                    background: #f8fafc;
-                    border: 1px solid #e2e8f0;
-                    border-radius: 12px;
-                    padding: 14px;
-                  "
-                >
-                  <strong
-                    style="
-                      color: #0284c7;
-                      font-size: 13.5px;
-                      display: flex;
-                      align-items: center;
-                      gap: 6px;
-                    "
-                  >
-                    Classroom integrations
-                  </strong>
-                  <ul
-                    style="
-                      margin: 8px 0 0 0;
-                      padding-left: 18px;
-                      font-size: 12px;
-                      line-height: 1.5;
-                      color: #475569;
-                    "
-                  >
-                    <li>
-                      <strong>LTI 1.3 Advantage:</strong> Grade passback (AGS) &amp; Deep Linking
-                      (DL) support
-                    </li>
-                    <li><strong>SCORM 1.2:</strong> Self-grading deployable packages</li>
-                    <li><strong>Common Cartridge:</strong> IMS CC export for Canvas</li>
-                    <li>
-                      <strong>Teacher setup:</strong>
-                      <a href="/teacher-tools/canvas-console/">Open the Canvas package tools</a>
-                    </li>
-                  </ul>
-                </div>
-
-                <div
-                  style="
-                    background: #f8fafc;
-                    border: 1px solid #e2e8f0;
-                    border-radius: 12px;
-                    padding: 14px;
-                  "
-                >
-                  <strong
-                    style="
-                      color: #7c3aed;
-                      font-size: 13.5px;
-                      display: flex;
-                      align-items: center;
-                      gap: 6px;
-                    "
-                  >
-                    CAST UDL 3.0 Framework
-                  </strong>
-                  <ul
-                    style="
-                      margin: 8px 0 0 0;
-                      padding-left: 18px;
-                      font-size: 12px;
-                      line-height: 1.5;
-                      color: #475569;
-                    "
-                  >
-                    <li>
-                      <strong>Engagement:</strong> Gamified mastery, choice boards, and Class Boss
-                      cooperative tasks
-                    </li>
-                    <li>
-                      <strong>Representation:</strong> NetFold 3D dynamic nets, dual-coded visual
-                      models, bilingual audio
-                    </li>
-                    <li>
-                      <strong>Action &amp; Expression:</strong> Math Workbench drafting, spoken
-                      explanations in Teach the Machine
-                    </li>
-                  </ul>
-                </div>
-
-                <div
-                  style="
-                    background: #f8fafc;
-                    border: 1px solid #e2e8f0;
-                    border-radius: 12px;
-                    padding: 14px;
-                  "
-                >
-                  <strong
-                    style="
-                      color: #0d9488;
-                      font-size: 13.5px;
-                      display: flex;
-                      align-items: center;
-                      gap: 6px;
-                    "
-                  >
-                    WIDA 2020 ELD Framework
-                  </strong>
-                  <ul
-                    style="
-                      margin: 8px 0 0 0;
-                      padding-left: 18px;
-                      font-size: 12px;
-                      line-height: 1.5;
-                      color: #475569;
-                    "
-                  >
-                    <li>
-                      <strong>Levels 1–5 Scaffolding:</strong> Structured supports from Entering to
-                      Bridging
-                    </li>
-                    <li>
-                      <strong>Language Objectives:</strong> Explicit linguistic targets paired with
-                      math standards
-                    </li>
-                    <li>
-                      <strong>Dual-Language Assets:</strong> English and Spanish supports where
-                      available
-                    </li>
-                    <li>
-                      <strong>Tier 2/3 Cognates:</strong> Illustrated mathematical vocabulary
-                      anchors
-                    </li>
-                  </ul>
-                </div>
-
-                <div
-                  style="
-                    background: #f8fafc;
-                    border: 1px solid #e2e8f0;
-                    border-radius: 12px;
-                    padding: 14px;
-                  "
-                >
-                  <strong
-                    style="
-                      color: #16a34a;
-                      font-size: 13.5px;
-                      display: flex;
-                      align-items: center;
-                      gap: 6px;
-                    "
-                  >
-                    Data &amp; access
-                  </strong>
-                  <ul
-                    style="
-                      margin: 8px 0 0 0;
-                      padding-left: 18px;
-                      font-size: 12px;
-                      line-height: 1.5;
-                      color: #475569;
-                    "
-                  >
-                    <li>
-                      <strong>Data privacy:</strong> See the data privacy guide for what each
-                      feature stores
-                    </li>
-                    <li>
-                      <strong>Local-First Storage:</strong> Device progress and optional save-code
-                      recovery
-                    </li>
-                    <li>
-                      <strong>Privacy guide:</strong>
-                      <a href="/curriculum/data-privacy/"
-                        >Read feature-specific storage and sharing details</a
-                      >
-                    </li>
-                    <li>
-                      <strong>Accessibility features:</strong> Keyboard navigation, readable type,
-                      and lesson supports
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </section>
         </div>
       </details>
     </main>
@@ -5011,7 +4508,8 @@
     <footer class="hub">
       Neft Teacher · Grade 6 Math · 10 units · 84 lessons · 214 pathways (168 small-group / 36
       catch-up / 10 unit projects) ·
-      <a href="/evidence/">Community Math Studio evidence</a>
+      <a href="/evidence/">Community Math Studio evidence</a> ·
+      <a href="/curriculum/about/">About this curriculum</a>
     </footer>
 
     <!-- Beautiful Custom Launch Modal -->
@@ -5119,7 +4617,8 @@
     <script src="/assets/curriculum-navigator.js?v=6570ddf0" defer></script>
     <link rel="stylesheet" href="/assets/reveal-document-links.css?v=b4feb3a4" />
     <script src="/assets/curriculum-resources.js?v=7b688655" defer></script>
-    <script src="/assets/curriculum-home.js?v=f4d46b5e" defer></script>
+    <script src="/assets/pacing-days.generated.js" defer></script>
+    <script src="/assets/curriculum-home.js?v=43533720" defer></script>
     <script src="/assets/futures-lab.js?v=20260619" defer></script>
     <script src="/assets/gradebook-embed.js?v=20260624" defer></script>
 

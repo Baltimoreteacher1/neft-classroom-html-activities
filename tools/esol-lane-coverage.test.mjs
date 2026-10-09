@@ -29,7 +29,14 @@ import path from "node:path";
 import test from "node:test";
 
 const ROOT = process.cwd();
-const ENTRIES = ["engine/core/lesson-renderer.js", "engine/core/small-group-renderer.js"];
+// The family page (/lessons/<id>/family/) is rendered at build time by
+// scripts/generate-lesson-support-pages.mjs, not by either engine — it is the
+// only reader of `familyKeyIdeaEs`, so it is a renderer entry point too.
+const ENTRIES = [
+  "engine/core/lesson-renderer.js",
+  "engine/core/small-group-renderer.js",
+  "scripts/generate-lesson-support-pages.mjs",
+];
 
 function moduleGraph(entries) {
   const seen = new Set();

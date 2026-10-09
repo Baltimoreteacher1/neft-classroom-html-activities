@@ -301,7 +301,9 @@ try {
   if (hubOnly || !process.argv.includes("--labs-only")) {
     const hub = await context.newPage();
     await hub.goto(origin + "/curriculum/units/");
-    await hub.locator(".unit-card").first().waitFor();
+    // A bare URL opens the unit being taught today (district pacing), not
+    // necessarily Unit 1, so wait for whichever card the browser shows.
+    await hub.locator(".unit-card:not([hidden])").first().waitFor();
     report.curriculumLinks = 0;
     for (const item of catalog) {
       // Navigate through the public unit picker before using that unit's lessons.

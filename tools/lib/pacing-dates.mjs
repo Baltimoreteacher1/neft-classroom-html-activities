@@ -17,6 +17,11 @@ export function usDate(iso) {
 /**
  * Compact per-sequence date map used as the hub's generated fallback.
  * Keys are strings because JSON / `window.__NT_PACING_DATES` stringify them.
+ * Keys are the DISTRICT SEQUENCE (1 = Pre-Unit, 2 = Unit 3, …), never the
+ * curriculum unit number, so every entry carries its `curriculum_unit` (null
+ * for MSTAR). A consumer that labels curriculum units must resolve through
+ * that field: looking `dates[unitNumber]` up directly put "Now" on Unit 2
+ * while Unit 3 was being taught.
  */
 export function datesFromRanges(ranges) {
   const units = Array.isArray(ranges) ? ranges : ranges?.units;
@@ -26,6 +31,7 @@ export function datesFromRanges(ranges) {
       start_date: usDate(unit.startDate),
       end_date: usDate(unit.endDate),
       instructional_days: unit.instructionalDays,
+      curriculum_unit: unit.curriculumUnit ?? null,
     };
   }
   return out;
@@ -65,7 +71,7 @@ export function diffPacingDates(expected, actual) {
       diffs.push({ sequence, kind: "missing" });
       continue;
     }
-    for (const field of ["start_date", "end_date", "instructional_days"]) {
+    for (const field of ["start_date", "end_date", "instructional_days", "curriculum_unit"]) {
       if (want[field] !== got[field]) {
         diffs.push({ sequence, field, expected: want[field], actual: got[field] });
       }

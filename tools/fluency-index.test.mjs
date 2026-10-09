@@ -7,7 +7,7 @@ const html = readFileSync(`${REPO_ROOT}/curriculum/fluency/index.html`, "utf8");
 const doc = new JSDOM(html).window.document;
 
 // 1. Shared curriculum shell navigation
-const navLinks = [...doc.querySelectorAll(".ewl-course-nav li a")];
+const navLinks = [...doc.querySelectorAll(".ewl-course-links > li > a")];
 assert.equal(navLinks.length, 8, "Top course navigation has exactly 8 destinations");
 const labels = navLinks.map((a) => a.textContent.trim());
 const helpIndex = labels.indexOf("Extra Help");
@@ -16,7 +16,7 @@ assert.ok(helpIndex !== -1, "Extra Help link exists");
 assert.ok(fluencyIndex !== -1, "Fluency link exists");
 assert.equal(fluencyIndex, helpIndex + 1, "Fluency button is directly adjacent to Extra Help");
 
-const activeLink = doc.querySelector('.ewl-course-nav [aria-current="page"]');
+const activeLink = doc.querySelector('.ewl-course-links [aria-current="page"]');
 assert.ok(activeLink, "An active page link exists in navigation");
 assert.equal(activeLink.textContent.trim(), "Fluency", "Fluency is marked aria-current=page");
 assert.equal(activeLink.getAttribute("href"), "/curriculum/fluency/");
@@ -59,14 +59,18 @@ const domainPills = [...doc.querySelectorAll(".domain-pill")].map((b) =>
 );
 assert.deepEqual(domainPills, ["all", "6.RP", "6.NS", "6.EE", "6.G", "6.SP"]);
 
-// 5. Units and Lessons Coverage (Units 2-9, 54 Lessons)
+// 5. Units and Lessons Coverage (Units 1-9, 78 Lessons; Unit 10 is not taught)
 const units = [...doc.querySelectorAll(".unit-block")];
-assert.equal(units.length, 8, "Expected 8 units (Units 2 through 9)");
+assert.equal(units.length, 9, "Expected 9 units (Units 1 through 9)");
 const unitNumbers = units.map((u) => u.getAttribute("data-unit"));
-assert.deepEqual(unitNumbers, ["2", "3", "4", "5", "6", "7", "8", "9"]);
+assert.deepEqual(unitNumbers, ["1", "2", "3", "4", "5", "6", "7", "8", "9"]);
 
 const lessonCards = [...doc.querySelectorAll(".fluency-lesson-card")];
-assert.equal(lessonCards.length, 54, "Expected all 54 Reveal Math lessons to be present in index");
+assert.equal(
+  lessonCards.length,
+  78,
+  "Expected all 78 taught Reveal Math lessons to be present in index",
+);
 
 for (const card of lessonCards) {
   const id = card.getAttribute("data-id");
@@ -106,5 +110,5 @@ assert.equal(
 assert.equal(html.includes("class tallies"), false, "No teacher dashboard leaked");
 
 console.log(
-  "Fluency Index test: 54 lessons across Units 2–9, navigation placement, toolbar filters, studio routing, and public safety PASS.",
+  "Fluency Index test: 78 lessons across Units 1–9, navigation placement, toolbar filters, studio routing, and public safety PASS.",
 );

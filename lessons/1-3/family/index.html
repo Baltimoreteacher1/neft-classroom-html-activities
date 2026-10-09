@@ -42,6 +42,22 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 .muted-note{color:var(--muted);font-size:14px;margin:6px 0 0;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
+
+ol.choices{margin:6px 0 4px;}
+.lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
+.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
+  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
+.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
+.lang-panel{display:none;margin-top:6px;}
+#family-lang-en:checked ~ .lang-panels [data-lang="en"],
+#family-lang-es:checked ~ .lang-panels [data-lang="es"],
+#family-lang-ar:checked ~ .lang-panels [data-lang="ar"],
+#family-lang-fr:checked ~ .lang-panels [data-lang="fr"],
+#family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
+.lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
+.auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
+  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -59,7 +75,20 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 <section>
   <h2>What students are learning</h2>
   <p>The book opens with a warm-up — about how many coins are in the picture? — then rides an aerial tramway that must move 4,000 passengers.</p>
-  <p class="callout"><strong>Key idea:</strong> Math Practices: Visual Models &amp; Tools. 1. Select the mathematical tool (tape diagram, number line, grid) that best represents the quantities. 2. Label all parts and units clearly. 3. Connect visual relationships directly to numerical expressions</p>
+  <p class="callout"><strong>Key idea:</strong> Pick a tool that helps you see the math, like a tape diagram (a bar split into equal parts), a number line, or a grid. Label every part and its units. Then use the picture to write the number sentence that matches it.<br><span class="es-text" lang="es">Idea clave: Hay que elegir una herramienta que ayude a ver las matemáticas, como un diagrama de cintas (una barra dividida en partes iguales), una recta numérica o una cuadrícula. Se rotula cada parte con sus unidades. Luego se usa el dibujo para escribir la operación que le corresponde.</span></p>
+</section>
+
+<section class="lang-section">
+  <h2>Read this in your language <span class="es">· Lea esto en su idioma</span></h2>
+  <div class="lang-picker"><input type="radio" class="lang-radio" name="family-lang" id="family-lang-en" value="en" checked><label for="family-lang-en" lang="en">English</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-es" value="es"><label for="family-lang-es" lang="es">Español</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-ar" value="ar"><label for="family-lang-ar" lang="ar">العربية</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-fr" value="fr"><label for="family-lang-fr" lang="fr">Français</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-prs" value="prs"><label for="family-lang-prs" lang="prs">دری</label>
+  <div class="lang-panels">
+  <div class="lang-panel" data-lang="en" lang="en"><p class="callout">Pick a tool that helps you see the math, like a tape diagram (a bar split into equal parts), a number line, or a grid. Label every part and its units. Then use the picture to write the number sentence that matches it.</p><ul><li><span class="kw"><bdi>representation</bdi></span> — A picture, diagram, table, or equation that shows the mathematics in a situation.</li><li><span class="kw"><bdi>tape diagram</bdi></span> — A rectangle cut into equal parts that helps you visualize how a total breaks apart.</li><li><span class="kw"><bdi>tool</bdi></span> — Anything you choose to help you see relationships and solve a problem — a table, a diagram, a graph.</li><li><span class="kw"><bdi>ordered pair</bdi></span> — Two numbers that go together, like a time and a number of trips, that you can plot as a point.</li><li><span class="kw"><bdi>round trip</bdi></span> — A complete journey from the start, to the destination, and back to the start.</li></ul></div>
+  <div class="lang-panel" data-lang="es" lang="es"><p class="callout">Hay que elegir una herramienta que ayude a ver las matemáticas, como un diagrama de cintas (una barra dividida en partes iguales), una recta numérica o una cuadrícula. Se rotula cada parte con sus unidades. Luego se usa el dibujo para escribir la operación que le corresponde.</p><ul><li><span class="kw"><bdi>representación</bdi></span> — Un dibujo, diagrama, tabla o ecuación que muestra las matemáticas de una situación.</li><li><span class="kw"><bdi>diagrama de cintas</bdi></span> — Un rectángulo dividido en partes iguales que te ayuda a visualizar cómo se separa un total.</li><li><span class="kw"><bdi>herramienta</bdi></span> — Cualquier cosa que eliges para ver relaciones y resolver un problema: una tabla, un diagrama, una gráfica.</li><li><span class="kw"><bdi>par ordenado</bdi></span> — Dos números que van juntos, como un tiempo y un número de viajes, que puedes graficar como un punto.</li><li><span class="kw"><bdi>viaje de ida y vuelta</bdi></span> — Un recorrido completo desde el inicio hasta el destino y de regreso al inicio.</li></ul></div>
+  <div class="lang-panel" data-lang="ar" lang="ar" dir="rtl"><p class="auto-label">ترجمة آلية · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">اختر أداة تساعدك على رؤية الرياضيات، مثل المخطط الشريطي (شريط مقسّم إلى أجزاء متساوية) أو خط الأعداد أو الشبكة. اكتب اسم كل جزء ووحدته. ثم استخدم الرسم لكتابة الجملة العددية المناسبة له.</p><ul><li><span class="kw"><bdi>تمثيل</bdi></span> (<bdi lang="en">representation</bdi>) — صورة أو مخطط أو جدول أو معادلة تُظهر الرياضيات في موقف ما.</li><li><span class="kw"><bdi>مخطط شريطي</bdi></span> (<bdi lang="en">tape diagram</bdi>) — مستطيل مقسّم إلى أجزاء متساوية يساعدك على تصوّر كيف ينقسم المجموع.</li><li><span class="kw"><bdi>أداة</bdi></span> (<bdi lang="en">tool</bdi>) — أي شيء تختاره لمساعدتك على رؤية العلاقات وحل المسألة: جدول، أو مخطط، أو رسم بياني.</li><li><span class="kw"><bdi>زوج مرتب</bdi></span> (<bdi lang="en">ordered pair</bdi>) — عددان يسيران معًا، مثل زمن وعدد رحلات، ويمكنك تمثيلهما كنقطة.</li><li><span class="kw"><bdi>رحلة ذهاب وعودة</bdi></span> (<bdi lang="en">round trip</bdi>) — رحلة كاملة من نقطة البداية إلى الوجهة ثم العودة إلى البداية.</li></ul></div>
+  <div class="lang-panel" data-lang="fr" lang="fr"><p class="auto-label">Traduction automatique · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">On choisit un outil qui aide à voir les maths, comme un diagramme en bandes (une barre partagée en parts égales), une droite numérique ou un quadrillage. On indique le nom de chaque partie et son unité. Ensuite, on se sert du dessin pour écrire le calcul qui lui correspond.</p><ul><li><span class="kw"><bdi>représentation</bdi></span> (<bdi lang="en">representation</bdi>) — Un dessin, un schéma, un tableau ou une équation qui montre les maths d'une situation.</li><li><span class="kw"><bdi>diagramme en bandes</bdi></span> (<bdi lang="en">tape diagram</bdi>) — Un rectangle partagé en parts égales qui aide à voir comment un total se divise.</li><li><span class="kw"><bdi>outil</bdi></span> (<bdi lang="en">tool</bdi>) — Tout ce que tu choisis pour t'aider à voir les relations et résoudre un problème — un tableau, un schéma, un graphique.</li><li><span class="kw"><bdi>couple (paire ordonnée)</bdi></span> (<bdi lang="en">ordered pair</bdi>) — Deux nombres qui vont ensemble, comme une durée et un nombre de trajets, que l'on peut placer comme un point sur un graphique.</li><li><span class="kw"><bdi>aller-retour</bdi></span> (<bdi lang="en">round trip</bdi>) — Un trajet complet du départ jusqu'à la destination, puis retour au départ.</li></ul></div>
+  <div class="lang-panel" data-lang="prs" lang="prs" dir="rtl"><p class="auto-label">ترجمه ماشینی · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">یک وسیله انتخاب کنید که به شما کمک کند ریاضی را ببینید، مانند نمودار نواری (یک نوار که به بخش‌های مساوی تقسیم شده)، خط اعداد یا شبکه. هر بخش و واحد آن را نام‌گذاری کنید. بعد از تصویر استفاده کنید تا جمله عددی مربوط به آن را بنویسید.</p><ul><li><span class="kw"><bdi>نمایش</bdi></span> (<bdi lang="en">representation</bdi>) — یک تصویر، نمودار، جدول یا معادله که ریاضیِ یک موقعیت را نشان می‌دهد.</li><li><span class="kw"><bdi>نمودار نواری</bdi></span> (<bdi lang="en">tape diagram</bdi>) — یک مستطیل که به بخش‌های مساوی تقسیم شده و کمک می‌کند ببینید یک مجموع چطور تقسیم می‌شود.</li><li><span class="kw"><bdi>وسیله</bdi></span> (<bdi lang="en">tool</bdi>) — هر چیزی که انتخاب می‌کنید تا به شما کمک کند رابطه‌ها را ببینید و مسئله را حل کنید — یک جدول، یک نمودار، یک گراف.</li><li><span class="kw"><bdi>جفت مرتب</bdi></span> (<bdi lang="en">ordered pair</bdi>) — دو عدد که با هم هستند، مانند یک زمان و تعداد سفرها، که می‌توانید آن‌ها را به شکل یک نقطه رسم کنید.</li><li><span class="kw"><bdi>رفت و برگشت</bdi></span> (<bdi lang="en">round trip</bdi>) — یک سفر کامل از نقطه شروع تا مقصد و دوباره برگشت به نقطه شروع.</li></ul></div>
+  </div>
+  </div>
 </section>
 <section>
   <h2>Key words</h2>
@@ -71,7 +100,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Practice at home</h2>
-  <ol><li>Which statement best shows what this lesson means by &quot;math is in my world&quot;?</li></ol>
+  <ol><li>Lena is planning snacks and drinks for her soccer team's end-of-season party. Which way of working best matches the idea that math is in our world?<ol class="choices" type="A"><li>Type every number into a calculator, because real-life problems can't be solved any other way</li><li>Solve it first, then draw a table at the end just to make the page look nice</li><li>Use a tape diagram for every problem she ever solves, whether it fits or not</li><li>Picture the party, use a table or diagram to show how the amounts connect, and choose the tool that fits best</li></ol></li></ol>
 </section>
 
 <section class="tool-section">
@@ -83,7 +112,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Answer check</h2>
-  <ol><li>Which statement best shows what this lesson means by &quot;math is in my world&quot;? → <span class="answer">We visualize real problems, use tools to show relationships among quantities, and choose our tools strategically</span></li></ol>
+  <ol><li>Lena is planning snacks and drinks for her soccer team's end-of-season party. Which way of working best matches the idea that math is in our world? → <span class="answer">Picture the party, use a table or diagram to show how the amounts connect, and choose the tool that fits best</span></li></ol>
 </section>
 <section>
   <h2>Common mistake</h2>

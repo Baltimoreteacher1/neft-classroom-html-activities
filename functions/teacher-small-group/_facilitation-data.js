@@ -4,7 +4,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Divided when the problem multiplies; Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Divided when the problem multiplies; Added when the problem multiplies; Right digits, wrong magnitude. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Which number did you make friendlier — and what did that cost you?",
       lookFor: "A student who names the strategy they used, not only the number they landed on.",
@@ -52,7 +52,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right digits, wrong magnitude. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Which two numbers are you actually comparing — the fractions, or the blocks?",
       lookFor:
@@ -102,12 +102,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Multiplied when the problem divides; Divided when the problem multiplies. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right digits, wrong magnitude; Added when the problem multiplies; Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "On the tape diagram, is this one group repeated, or two amounts joined? Which operation matches?",
+      ask: "Estimate to the nearest whole first — then check where the point lands on the tape diagram.",
       lookFor:
-        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
-      ifStuck: "Ask what the operation *does* to the quantity before they compute.",
+        "Watch for the “Right digits, wrong magnitude” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Estimate to the nearest whole first, then count decimal places out loud.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -127,10 +127,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "When does repeated addition stop being a practical method — and what replaces it?",
+      ask: "Why does multiplying by a number under 1 shrink the answer? Explain with place value.",
       lookFor:
-        "A student who can explain why the “Added when the problem multiplies” error fails in every case, not just this one.",
-      ifStuck: "Ask them to write the repeated-addition version and count the terms.",
+        "A student who can explain why the “Right digits, wrong magnitude” error fails in every case, not just this one.",
+      ifStuck: "Ask them to estimate first, then say which digit their answer disagrees with.",
       extend: "Ask them to find a case where the strategy breaks, and explain the boundary.",
     },
     frames: [
@@ -196,12 +196,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right digits, wrong magnitude; Added when the problem multiplies; Multiplied when the problem adds. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "On the bar graph, is this one group repeated, or two amounts joined? Which operation matches?",
+      ask: "Estimate to the nearest whole first — then check where the point lands on the bar graph.",
       lookFor:
-        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
-      ifStuck: "Ask what the operation *does* to the quantity before they compute.",
+        "Watch for the “Right digits, wrong magnitude” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Estimate to the nearest whole first, then count decimal places out loud.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -221,10 +221,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "When does repeated addition stop being a practical method — and what replaces it?",
+      ask: "Why does multiplying by a number under 1 shrink the answer? Explain with place value.",
       lookFor:
-        "A student who can explain why the “Added when the problem multiplies” error fails in every case, not just this one.",
-      ifStuck: "Ask them to write the repeated-addition version and count the terms.",
+        "A student who can explain why the “Right digits, wrong magnitude” error fails in every case, not just this one.",
+      ifStuck: "Ask them to estimate first, then say which digit their answer disagrees with.",
       extend: "Ask them to find a case where the strategy breaks, and explain the boundary.",
     },
     frames: [
@@ -625,7 +625,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Confused a measure of center with a measure of spread; Chose the mean when an outlier distorts it. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Chose the mean when an outlier distorts it; Confused a measure of center with a measure of spread. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Is there a value far from the rest? Which measure does it drag?",
       lookFor:
@@ -725,10 +725,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right digits, wrong magnitude; Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "On the place-value columns, is this one group repeated, or two amounts joined? Which operation matches?",
+      ask: "Estimate to the nearest whole first — then check where the point lands on the place-value columns.",
       lookFor:
-        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
-      ifStuck: "Ask what the operation *does* to the quantity before they compute.",
+        "Watch for the “Right digits, wrong magnitude” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Estimate to the nearest whole first, then count decimal places out loud.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -749,10 +749,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "When does repeated addition stop being a practical method — and what replaces it?",
+      ask: "Why does multiplying by a number under 1 shrink the answer? Explain with place value.",
       lookFor:
-        "A student who can explain why the “Added when the problem multiplies” error fails in every case, not just this one.",
-      ifStuck: "Ask them to write the repeated-addition version and count the terms.",
+        "A student who can explain why the “Right digits, wrong magnitude” error fails in every case, not just this one.",
+      ifStuck: "Ask them to estimate first, then say which digit their answer disagrees with.",
       extend: "Ask them to state the rule as always / sometimes / never, and defend it.",
     },
     frames: [
@@ -772,7 +772,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Misread the bins or the scale on a data display; Reported a data value where a frequency was asked; Added the dimensions instead of multiplying. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Misread the bins or the scale on a data display; Reported a data value where a frequency was asked. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Point at this interval's two endpoints on the histogram. Which values belong inside?",
       lookFor:
@@ -823,13 +823,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added the data set instead of averaging it; Used the mean where the median was asked (or the reverse). Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added the data set instead of averaging it; Used the mean where the median was asked (or the reverse); Chose the mean when an outlier distorts it. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "Which word did the question use? What does that word tell you to DO?",
+      ask: "Could your answer be one real value from this list? An average has to land inside.",
       lookFor:
-        "Watch for the “Used the mean where the median was asked (or the reverse)” error — that is the one this lesson's check diagnoses.",
-      ifStuck:
-        "Ask them to say which word the question used, then what that word tells you to DO with the numbers.",
+        "Watch for the “Added the data set instead of averaging it” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Ask whether the answer could be a realistic single value in that set.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -850,10 +849,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "When do the mean and median agree? What has to be true of the data?",
+      ask: "Why must a mean sit between the smallest and largest value? Prove it.",
       lookFor:
-        "A student who can explain why the “Used the mean where the median was asked (or the reverse)” error fails in every case, not just this one.",
-      ifStuck: "Ask what has to be true of the data for the two measures to agree.",
+        "A student who can explain why the “Added the data set instead of averaging it” error fails in every case, not just this one.",
+      ifStuck: "Hand them a second data set on the dot plot and ask which claim survives both.",
       extend: "Ask which measure they would report to argue each side, and what that reveals.",
     },
     frames: [
@@ -873,7 +872,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Used the full range instead of the IQR; Used the mean where the median was asked (or the reverse); Confused a measure of center with a measure of spread. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Confused a measure of center with a measure of spread; Used the full range instead of the IQR; Used the mean where the median was asked (or the reverse). Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Does the question want a typical value, or how spread out the data is?",
       lookFor:
@@ -923,12 +922,13 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Used the full range instead of the IQR; Confused a measure of center with a measure of spread. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Confused a measure of center with a measure of spread; Used the full range instead of the IQR. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "Which two numbers does the IQR use? Point at them.",
+      ask: "Does the question want a typical value, or how spread out the data is?",
       lookFor:
-        "Watch for the “Used the full range instead of the IQR” error — that is the one this lesson's check diagnoses.",
-      ifStuck: "Have them mark Q1 and Q3 on the plot and cover everything outside them.",
+        "Watch for the “Confused a measure of center with a measure of spread” error — that is the one this lesson's check diagnoses.",
+      ifStuck:
+        "Ask what the question wants to know: a typical value, or how scattered the data is?.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -948,10 +948,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "Can the range and IQR ever be equal? What would the data look like?",
+      ask: "Two sets share a mean but not a spread. Build them and say what each measure hides.",
       lookFor:
-        "A student who can explain why the “Used the full range instead of the IQR” error fails in every case, not just this one.",
-      ifStuck: "Ask for a data set where range and IQR are as far apart as possible.",
+        "A student who can explain why the “Confused a measure of center with a measure of spread” error fails in every case, not just this one.",
+      ifStuck: "Give two sets with the same mean and ask which measure tells them apart.",
       extend: "Ask which measure they would report to argue each side, and what that reveals.",
     },
     frames: [
@@ -1033,7 +1033,7 @@ export const FACILITATION_BY_LESSON = {
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
-      "Students explain you slide the decimal point right in the divisor to make it whole (6.3 to 63) and slide the dividend's point right the same number of places, naming 18.9 as the dividend and 6.3 as the divisor.",
+      "Students name 394.50 ÷ 75: the total cost is the dividend and the 75 workbooks are the divisor, because the total is shared equally among the books (394.50 × 75 would be the cost of 75 whole orders, not one book). Strong answers estimate first ($400 ÷ 80 is about $5) and check that 75 × $5.26 = $394.50.",
       "Students rewrite 18.9 ÷ 6.3 as 189 ÷ 63 = 3, explaining moving both points one place keeps the division equivalent, so 3 pods are filled.",
       "Students rewrite 22.5 ÷ 1.5 as 225 ÷ 15 = 15, so 15 hoses can be made with none left over.",
       "Students explain that a whole-number divisor lets them divide normally, and equivalent division keeps the quotient the same while removing the decimal from the divisor.",
@@ -1058,7 +1058,7 @@ export const FACILITATION_BY_LESSON = {
       "I can check my answer by ___ .",
     ],
     listenFor: [
-      "Students explain you slide the decimal point right in the divisor to make it whole (6.3 to 63) and slide the dividend's point right the same number of places, naming 18.9 as the dividend and 6.3 as the divisor.",
+      "Students name 394.50 ÷ 75: the total cost is the dividend and the 75 workbooks are the divisor, because the total is shared equally among the books (394.50 × 75 would be the cost of 75 whole orders, not one book). Strong answers estimate first ($400 ÷ 80 is about $5) and check that 75 × $5.26 = $394.50.",
       "Students rewrite 18.9 ÷ 6.3 as 189 ÷ 63 = 3, explaining moving both points one place keeps the division equivalent, so 3 pods are filled.",
       "Students rewrite 22.5 ÷ 1.5 as 225 ÷ 15 = 15, so 15 hoses can be made with none left over.",
       "Students explain that a whole-number divisor lets them divide normally, and equivalent division keeps the quotient the same while removing the decimal from the divisor.",
@@ -1069,7 +1069,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added the data set instead of averaging it; Added when the problem multiplies; Multiplied when the problem adds. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added the data set instead of averaging it; Divided when the problem multiplies; Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Could your answer be one real value from this list? An average has to land inside.",
       lookFor:
@@ -1118,7 +1118,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right magnitude, lost the negative sign; Added the data set instead of averaging it; Confused a measure of center with a measure of spread. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added the data set instead of averaging it; Confused a measure of center with a measure of spread. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Does the question want a typical value, or how spread out the data is?",
       lookFor:
@@ -1132,7 +1132,7 @@ export const FACILITATION_BY_LESSON = {
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
-      "Students choose Player A as more consistent and recognize that equal means hide different spreads.",
+      "Students name the 75°F day as farthest from the mean (4 degrees below 79), notice that every other day is within 3 degrees of 79, and conclude that the week's highs are fairly consistent — they cluster close to the mean with little variation.",
       "A strong answer explains that signed deviations above and below the mean cancel to zero; absolute value keeps their nonnegative distances, including zero.",
       "Students pick Keeper A and explain that a smaller MAD means a smaller average distance from the mean in these games.",
       "Students compute absolute deviations 2, 2, 0, 4, 4 (sum 12), divide by 5, and report MAD = 2.4.",
@@ -1157,7 +1157,7 @@ export const FACILITATION_BY_LESSON = {
       "I can check my answer by ___ .",
     ],
     listenFor: [
-      "Students choose Player A as more consistent and recognize that equal means hide different spreads.",
+      "Students name the 75°F day as farthest from the mean (4 degrees below 79), notice that every other day is within 3 degrees of 79, and conclude that the week's highs are fairly consistent — they cluster close to the mean with little variation.",
       "A strong answer explains that signed deviations above and below the mean cancel to zero; absolute value keeps their nonnegative distances, including zero.",
       "Students pick Keeper A and explain that a smaller MAD means a smaller average distance from the mean in these games.",
       "Students compute absolute deviations 2, 2, 0, 4, 4 (sum 12), divide by 5, and report MAD = 2.4.",
@@ -1215,12 +1215,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Right digits, wrong magnitude; Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "On the ratio table, is this one group repeated, or two amounts joined? Which operation matches?",
+      ask: "Estimate to the nearest whole first — then check where the point lands on the ratio table.",
       lookFor:
-        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
-      ifStuck: "Ask what the operation *does* to the quantity before they compute.",
+        "Watch for the “Right digits, wrong magnitude” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Estimate to the nearest whole first, then count decimal places out loud.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -1240,10 +1240,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "When does repeated addition stop being a practical method — and what replaces it?",
+      ask: "Why does multiplying by a number under 1 shrink the answer? Explain with place value.",
       lookFor:
-        "A student who can explain why the “Added when the problem multiplies” error fails in every case, not just this one.",
-      ifStuck: "Ask them to write the repeated-addition version and count the terms.",
+        "A student who can explain why the “Right digits, wrong magnitude” error fails in every case, not just this one.",
+      ifStuck: "Ask them to estimate first, then say which digit their answer disagrees with.",
       extend: "Ask them to write a ratio that is NOT equivalent, and justify why it fails.",
     },
     frames: [
@@ -1262,7 +1262,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Divided in the wrong order; Gave the total instead of the unit rate. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Divided in the wrong order; Gave the total instead of the unit rate; Compared two ratios without a common basis. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "What does ONE of them cost? Finish: “for one ___, there is ___.”",
       lookFor:
@@ -1310,13 +1310,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Scaled a ratio by adding instead of multiplying. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Gave the total instead of the unit rate; Scaled a ratio by adding instead of multiplying. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "On the ratio table, how many TIMES bigger did the first amount get?",
+      ask: "On the ratio table, is this one group repeated, or two amounts joined? Which operation matches?",
       lookFor:
-        "Watch for the “Scaled a ratio by adding instead of multiplying” error — that is the one this lesson's check diagnoses.",
-      ifStuck:
-        "Ask what ONE batch is worth, then how many batches — a ratio grows by copies, not by steps.",
+        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -1324,7 +1323,7 @@ export const FACILITATION_BY_LESSON = {
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
-      "A strong answer says BOTH quantities are multiplied by the same number (4), so 2:3 becomes 8:12, keeping the ratio equivalent.",
+      "A strong answer says BOTH ingredients are multiplied by 2: 2 cups of baking soda becomes 4 cups and 1 cup of cornstarch becomes 2 cups, so 2:1 becomes 4:2 — an equivalent ratio, which is why the clay keeps the same consistency. A weak answer adds the same amount to each ingredient.",
       "Listen for use of a scale factor (multiplying both parts) and recognition that every row in the table is an equivalent ratio showing the same pattern.",
       "A strong answer connects both scenarios as scaling a ratio with a scale factor, keeping berries-to-yogurt (3:2) equivalent across every serving.",
       'Listen for students naming a specific strategy tied to 6.AT.3a — not just "I multiplied." They should connect steps to the key idea.',
@@ -1336,11 +1335,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "Why does adding to both parts break a ratio when adding to both sides keeps an equation true?",
+      ask: "When does repeated addition stop being a practical method — and what replaces it?",
       lookFor:
-        "A student who can explain why the “Scaled a ratio by adding instead of multiplying” error fails in every case, not just this one.",
-      ifStuck:
-        "Give them a 1-to-something row on the ratio table and ask what one step of scaling does.",
+        "A student who can explain why the “Added when the problem multiplies” error fails in every case, not just this one.",
+      ifStuck: "Ask them to write the repeated-addition version and count the terms.",
       extend: "Ask them to write a ratio that is NOT equivalent, and justify why it fails.",
     },
     frames: [
@@ -1349,7 +1347,7 @@ export const FACILITATION_BY_LESSON = {
       "I can check my answer by ___ .",
     ],
     listenFor: [
-      "A strong answer says BOTH quantities are multiplied by the same number (4), so 2:3 becomes 8:12, keeping the ratio equivalent.",
+      "A strong answer says BOTH ingredients are multiplied by 2: 2 cups of baking soda becomes 4 cups and 1 cup of cornstarch becomes 2 cups, so 2:1 becomes 4:2 — an equivalent ratio, which is why the clay keeps the same consistency. A weak answer adds the same amount to each ingredient.",
       "Listen for use of a scale factor (multiplying both parts) and recognition that every row in the table is an equivalent ratio showing the same pattern.",
       "A strong answer connects both scenarios as scaling a ratio with a scale factor, keeping berries-to-yogurt (3:2) equivalent across every serving.",
       'Listen for students naming a specific strategy tied to 6.AT.3a — not just "I multiplied." They should connect steps to the key idea.',
@@ -1359,13 +1357,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Scaled a ratio by adding instead of multiplying; Flipped the ratio. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Flipped the ratio; Added when the problem multiplies; Swapped the x and y coordinates. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "On the ratio table, how many TIMES bigger did the first amount get?",
+      ask: "Which quantity does the question name FIRST? Label both before you write.",
       lookFor:
-        "Watch for the “Scaled a ratio by adding instead of multiplying” error — that is the one this lesson's check diagnoses.",
-      ifStuck:
-        "Ask what ONE batch is worth, then how many batches — a ratio grows by copies, not by steps.",
+        "Watch for the “Flipped the ratio” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Have them label both quantities with units before writing the ratio.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -1373,7 +1370,7 @@ export const FACILITATION_BY_LESSON = {
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
-      "A strong answer chooses sundaes (x) and ounces of sauce (y), and predicts a straight line because each sundae always needs 2 more ounces.",
+      "A strong answer uses the one bag as the unit: each bag holds 6 balls, so 6 bags hold 6 × 6 = 36 balls, and organizes the pairs in a table (1 bag : 6 balls, 2 : 12, 3 : 18, …) that could be graphed as (bags, balls). A weak answer adds 6 once instead of using 6 groups of 6.",
       "Listen for 'straight line through the origin' and the connection that the constant 2-ounce step shows a proportional relationship.",
       "A strong answer says the proportional line lets the owner read off (or extend to) salsa amounts for taco counts not in the table.",
       'Listen for students naming a specific strategy tied to 6.AT.3a — not just "I multiplied." They should connect steps to the key idea.',
@@ -1385,11 +1382,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "Why does adding to both parts break a ratio when adding to both sides keeps an equation true?",
+      ask: "When would the flipped ratio be the correct answer? Write that question.",
       lookFor:
-        "A student who can explain why the “Scaled a ratio by adding instead of multiplying” error fails in every case, not just this one.",
-      ifStuck:
-        "Give them a 1-to-something row on the ratio table and ask what one step of scaling does.",
+        "A student who can explain why the “Flipped the ratio” error fails in every case, not just this one.",
+      ifStuck: "Ask them to write the question that WOULD make the flipped ratio correct.",
       extend: "Ask them to write a ratio that is NOT equivalent, and justify why it fails.",
     },
     frames: [
@@ -1398,7 +1394,7 @@ export const FACILITATION_BY_LESSON = {
       "I can check my answer by ___ .",
     ],
     listenFor: [
-      "A strong answer chooses sundaes (x) and ounces of sauce (y), and predicts a straight line because each sundae always needs 2 more ounces.",
+      "A strong answer uses the one bag as the unit: each bag holds 6 balls, so 6 bags hold 6 × 6 = 36 balls, and organizes the pairs in a table (1 bag : 6 balls, 2 : 12, 3 : 18, …) that could be graphed as (bags, balls). A weak answer adds 6 once instead of using 6 groups of 6.",
       "Listen for 'straight line through the origin' and the connection that the constant 2-ounce step shows a proportional relationship.",
       "A strong answer says the proportional line lets the owner read off (or extend to) salsa amounts for taco counts not in the table.",
       'Listen for students naming a specific strategy tied to 6.AT.3a — not just "I multiplied." They should connect steps to the key idea.',
@@ -1421,7 +1417,7 @@ export const FACILITATION_BY_LESSON = {
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
-      "Students recognize that 3:5 and 4:7 have different milk amounts, so a fair comparison needs equal milk (a common amount) or a unit rate (cocoa per 1 oz).",
+      "Students recognize that both friends used the same number of blue cans (3), so counting blue cans cannot settle it: how blue the paint is depends on blue compared with red — Reginald's 3 blue : 3 red versus Anwar's 3 blue : 2 red (3 of 6 cans versus 3 of 5) — so Anwar's purple is bluer.",
       "Students explain that equal milk (35 oz) makes the comparison fair, so 21 tbsp > 20 tbsp means Chef Reyes is more chocolatey.",
       "Students compute $9.00/pizza for Mario's and about $8.33/pizza for Sal's, then choose Sal's because the lower unit rate is the better deal.",
       'Listen for students naming a specific strategy tied to 6.AT.3 — not just "I multiplied." They should connect steps to the key idea.',
@@ -1446,7 +1442,7 @@ export const FACILITATION_BY_LESSON = {
       "I can check my answer by ___ .",
     ],
     listenFor: [
-      "Students recognize that 3:5 and 4:7 have different milk amounts, so a fair comparison needs equal milk (a common amount) or a unit rate (cocoa per 1 oz).",
+      "Students recognize that both friends used the same number of blue cans (3), so counting blue cans cannot settle it: how blue the paint is depends on blue compared with red — Reginald's 3 blue : 3 red versus Anwar's 3 blue : 2 red (3 of 6 cans versus 3 of 5) — so Anwar's purple is bluer.",
       "Students explain that equal milk (35 oz) makes the comparison fair, so 21 tbsp > 20 tbsp means Chef Reyes is more chocolatey.",
       "Students compute $9.00/pizza for Mario's and about $8.33/pizza for Sal's, then choose Sal's because the lower unit rate is the better deal.",
       'Listen for students naming a specific strategy tied to 6.AT.3 — not just "I multiplied." They should connect steps to the key idea.',
@@ -1456,7 +1452,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Multiplied when the problem divides; Compared two ratios without a common basis. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the ratio table, is this one group repeated, or two amounts joined? Which operation matches?",
       lookFor:
@@ -1503,12 +1499,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Divided when the problem multiplies. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Divided when the problem multiplies; Right digits, wrong magnitude. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "On the ratio table, is this one group repeated, or two amounts joined? Which operation matches?",
+      ask: "Are we splitting a total into groups, or building a total from groups?",
       lookFor:
-        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
-      ifStuck: "Ask what the operation *does* to the quantity before they compute.",
+        "Watch for the “Divided when the problem multiplies” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Estimate first — should the answer be bigger or smaller than you started?.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -1528,10 +1524,11 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "When does repeated addition stop being a practical method — and what replaces it?",
+      ask: "Rewrite this as the opposite operation and show the two must agree.",
       lookFor:
-        "A student who can explain why the “Added when the problem multiplies” error fails in every case, not just this one.",
-      ifStuck: "Ask them to write the repeated-addition version and count the terms.",
+        "A student who can explain why the “Divided when the problem multiplies” error fails in every case, not just this one.",
+      ifStuck:
+        "Shrink it: give them a 1-to-something case on the ratio table, then ask what changed.",
       extend: "Ask them to write a ratio that is NOT equivalent, and justify why it fails.",
     },
     frames: [
@@ -1550,7 +1547,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Gave the total instead of the unit rate. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Divided in the wrong order; Gave the total instead of the unit rate. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "What does ONE of them cost? Finish: “for one ___, there is ___.”",
       lookFor:
@@ -1598,7 +1595,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Scaled a ratio by adding instead of multiplying; Flipped the ratio; Gave the total instead of the unit rate. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Scaled a ratio by adding instead of multiplying; Flipped the ratio. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the ratio table, how many TIMES bigger did the first amount get?",
       lookFor:
@@ -1647,7 +1644,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Right digits, wrong magnitude. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Combined the two amounts instead of comparing them; Right digits, wrong magnitude; Boundary value wrongly included or excluded. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Estimate to the nearest whole first — then check where the point lands on the percent grid.",
       lookFor:
@@ -1741,7 +1738,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Percent answer off by a factor of 100; Right digits, wrong magnitude; Used the percent as a plain number. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right digits, wrong magnitude; Used the percent as a plain number. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Estimate to the nearest whole first — then check where the point lands on the percent grid.",
       lookFor:
@@ -1788,13 +1785,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Used the percent as a plain number; Multiplied when the problem divides; Right digits, wrong magnitude. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "On the percent grid, which piece is the whole, and which piece are we naming?",
+      ask: "What does the percent sign actually mean here — how many out of 100?",
       lookFor:
-        "Watch for: multiplying by the percent number itself instead of its decimal form — for example, finding 30% of 80 by computing 30 × 80 = 2,400 instead of 0.30….",
-      ifStuck:
-        "Work the first step together on the percent grid, then hand the second one back to them.",
+        "Watch for the “Used the percent as a plain number” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Make them say the percent as “per hundred” out loud.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -1814,8 +1810,9 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "Would this method still work if the percent were over 100? Convince me.",
-      lookFor: "A student generalising past the numbers in the example — “this works whenever…”.",
+      ask: "Is 20% always smaller than 30? Find a case that settles it.",
+      lookFor:
+        "A student who can explain why the “Used the percent as a plain number” error fails in every case, not just this one.",
       ifStuck: "Ask for 10% first, then build the target percent from it.",
       extend: "Ask which is larger: 20% of 50, or 50% of 20 — and why that happens.",
     },
@@ -1835,7 +1832,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides; Used the percent as a plain number. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Should the answer be bigger or smaller than what you started with? Say why first.",
       lookFor:
@@ -1882,7 +1879,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides; Added when the problem multiplies; Swapped area and perimeter. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Swapped area and perimeter; Did not undo the operation. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the area model, is this one group repeated, or two amounts joined? Which operation matches?",
       lookFor:
@@ -1979,7 +1976,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Found base × height but forgot the half. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Found base × height but forgot the half; Did not undo the operation. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Draw the rectangle around the triangle on the area model. How much of it is the triangle?",
       lookFor:
@@ -2026,7 +2023,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Found base × height but forgot the half. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Found base × height but forgot the half; Multiplied when the problem adds; Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Draw the rectangle around the triangle on the area model. How much of it is the triangle?",
       lookFor:
@@ -2073,12 +2070,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Swapped area and perimeter; Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Found base × height but forgot the half. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "Are we covering the inside, or walking around the edge? What unit does that need?",
+      ask: "Draw the rectangle around the triangle on the area model. How much of it is the triangle?",
       lookFor:
-        "Watch for the “Swapped area and perimeter” error — that is the one this lesson's check diagnoses.",
-      ifStuck: "Ask what the unit should be — units or square units?.",
+        "Watch for the “Found base × height but forgot the half” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Draw the rectangle around the triangle — the triangle is half of it.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -2098,10 +2095,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "Draw two shapes with equal perimeter and different area. What does that show?",
+      ask: "Why is the half there for EVERY triangle, not just right ones?",
       lookFor:
-        "A student who can explain why the “Swapped area and perimeter” error fails in every case, not just this one.",
-      ifStuck: "Ask for two shapes with equal perimeter and different area.",
+        "A student who can explain why the “Found base × height but forgot the half” error fails in every case, not just this one.",
+      ifStuck: "Ask them to draw the enclosing rectangle on the area model and name the fraction.",
       extend: "Ask for two different shapes with the same answer — what stayed constant?",
     },
     frames: [
@@ -2170,7 +2167,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Found the volume instead of the surface area; Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Found the volume instead of the surface area; Swapped area and perimeter; Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Are we wrapping the outside or filling the inside? Which unit says so?",
       lookFor:
@@ -2270,13 +2267,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Found the volume instead of the surface area. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Found base × height but forgot the half; Swapped area and perimeter. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "Are we wrapping the outside or filling the inside? Which unit says so?",
+      ask: "On the net, is this one group repeated, or two amounts joined? Which operation matches?",
       lookFor:
-        "Watch for the “Found the volume instead of the surface area” error — that is the one this lesson's check diagnoses.",
-      ifStuck:
-        "Ask what the unit has to be — square units cover a surface, cubic units fill a space.",
+        "Watch for the “Added when the problem multiplies” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Ask what the operation *does* to the quantity before they compute.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -2297,10 +2293,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "Can two solids share a surface area but not a volume? Build them.",
+      ask: "When does repeated addition stop being a practical method — and what replaces it?",
       lookFor:
-        "A student who can explain why the “Found the volume instead of the surface area” error fails in every case, not just this one.",
-      ifStuck: "Ask them to say the unit out loud before computing — square or cubic?",
+        "A student who can explain why the “Added when the problem multiplies” error fails in every case, not just this one.",
+      ifStuck: "Ask them to write the repeated-addition version and count the terms.",
       extend: "Ask for two different shapes with the same answer — what stayed constant?",
     },
     frames: [
@@ -2320,7 +2316,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Found base × height but forgot the half; Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Found base × height but forgot the half. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Draw the rectangle around the triangle on the area model. How much of it is the triangle?",
       lookFor:
@@ -2508,7 +2504,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Confused factors with multiples. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the factor tree, is this one group repeated, or two amounts joined? Which operation matches?",
       lookFor:
@@ -2606,7 +2602,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Distributed to the first term only. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Distributed to the first term only; Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Does the outside number touch BOTH terms? Trace it on the tape diagram.",
       lookFor:
@@ -2747,12 +2743,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Worked left to right instead of by operation order; Added the data set instead of averaging it. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Multiplied the base by the exponent. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "Which operation has to happen first here, and how do you know?",
+      ask: "Write every factor out. How many are there, and what are you multiplying?",
       lookFor:
-        "Watch for the “Worked left to right instead of by operation order” error — that is the one this lesson's check diagnoses.",
-      ifStuck: "Have them circle the operation that must go first, then compute.",
+        "Watch for the “Multiplied the base by the exponent” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Expand it once — write out every factor before evaluating.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -2772,10 +2768,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "Write an expression where left-to-right gives the same answer. Why does it?",
+      ask: "When is a base times its exponent equal to the power? Find every case.",
       lookFor:
-        "A student who can explain why the “Worked left to right instead of by operation order” error fails in every case, not just this one.",
-      ifStuck: "Ask them to write the same expression with parentheses that force their order.",
+        "A student who can explain why the “Multiplied the base by the exponent” error fails in every case, not just this one.",
+      ifStuck: "Ask them to substitute one number into both expressions and compare.",
       extend: "Ask them to write an expression a classmate would simplify wrongly, and say why.",
     },
     frames: [
@@ -2794,12 +2790,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Worked left to right instead of by operation order. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Worked left to right instead of by operation order; Multiplied when the problem adds. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "Which operation has to happen first here, and how do you know?",
+      ask: "Write every factor out. How many are there, and what are you multiplying?",
       lookFor:
-        "Watch for the “Worked left to right instead of by operation order” error — that is the one this lesson's check diagnoses.",
-      ifStuck: "Have them circle the operation that must go first, then compute.",
+        "Watch for the “Multiplied the base by the exponent” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Expand it once — write out every factor before evaluating.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -2819,10 +2815,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "Write an expression where left-to-right gives the same answer. Why does it?",
+      ask: "When is a base times its exponent equal to the power? Find every case.",
       lookFor:
-        "A student who can explain why the “Worked left to right instead of by operation order” error fails in every case, not just this one.",
-      ifStuck: "Ask them to write the same expression with parentheses that force their order.",
+        "A student who can explain why the “Multiplied the base by the exponent” error fails in every case, not just this one.",
+      ifStuck: "Ask them to substitute one number into both expressions and compare.",
       extend: "Ask them to write an expression a classmate would simplify wrongly, and say why.",
     },
     frames: [
@@ -2841,7 +2837,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Divided when the problem multiplies; Subtracted in the wrong order. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the model, is this one group repeated, or two amounts joined? Which operation matches?",
       lookFor:
@@ -2854,7 +2850,7 @@ export const FACILITATION_BY_LESSON = {
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
-      "Students write 12t + 50, identify t as the variable number of tickets, 12 as the coefficient (price per ticket), and 50 as the constant venue fee that does not change.",
+      "Students say the $1.50, $12.95 and $0.65 prices are each paid once per student, so each is multiplied by the number of students s (1.50s + 12.95s + 0.65s, or 15.10s), and the $23.50 shipping fee is paid once for the whole order, so it is a constant that is added, not multiplied: 15.10s + 23.50.",
       "A strong answer matches key words to operations (sum/more than = add, less than = subtract, product = multiply) and explains '12 less than g' starts with g, giving g − 12.",
       "Students write 25 + 8h, identify 25 as the constant setup fee and 8 as the coefficient (cost per hour) multiplying the variable h.",
       'Listen for students naming a specific strategy tied to 6.AT.6a — not just "I multiplied." They should connect steps to the key idea.',
@@ -2878,7 +2874,7 @@ export const FACILITATION_BY_LESSON = {
       "I can check my answer by ___ .",
     ],
     listenFor: [
-      "Students write 12t + 50, identify t as the variable number of tickets, 12 as the coefficient (price per ticket), and 50 as the constant venue fee that does not change.",
+      "Students say the $1.50, $12.95 and $0.65 prices are each paid once per student, so each is multiplied by the number of students s (1.50s + 12.95s + 0.65s, or 15.10s), and the $23.50 shipping fee is paid once for the whole order, so it is a constant that is added, not multiplied: 15.10s + 23.50.",
       "A strong answer matches key words to operations (sum/more than = add, less than = subtract, product = multiply) and explains '12 less than g' starts with g, giving g − 12.",
       "Students write 25 + 8h, identify 25 as the constant setup fee and 8 as the coefficient (cost per hour) multiplying the variable h.",
       'Listen for students naming a specific strategy tied to 6.AT.6a — not just "I multiplied." They should connect steps to the key idea.',
@@ -2888,12 +2884,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem adds. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem adds; Distributed to the first term only. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "Show me on the tape diagram — are we combining two amounts, or scaling one of them?",
+      ask: "Does the outside number touch BOTH terms? Trace it on the tape diagram.",
       lookFor:
-        "Watch for the “Multiplied when the problem adds” error — that is the one this lesson's check diagnoses.",
-      ifStuck: "Have them restate the problem as a story, then name the operation.",
+        "Watch for the “Distributed to the first term only” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Draw the area model — the outside factor touches BOTH terms.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -2913,10 +2909,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "Write a problem where the answer is the SUM, and one where it is the PRODUCT. What changed?",
+      ask: "Show the distributive property with an area model, then say why it must hold.",
       lookFor:
-        "A student who can explain why the “Multiplied when the problem adds” error fails in every case, not just this one.",
-      ifStuck: "Ask them to substitute one number into both expressions and compare.",
+        "A student who can explain why the “Distributed to the first term only” error fails in every case, not just this one.",
+      ifStuck: "Ask them to check the expansion against the tape diagram term by term.",
       extend: "Ask them to write an expression a classmate would simplify wrongly, and say why.",
     },
     frames: [
@@ -2935,7 +2931,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Confused factors with multiples. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Confused factors with multiples; Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "What does each place stand for on the factor tree?",
       lookFor:
@@ -3107,8 +3103,8 @@ export const FACILITATION_BY_LESSON = {
       ask: "When is a negative number greater than another negative? Order three and justify.",
       lookFor:
         "A student who can explain why the “Right magnitude, lost the negative sign” error fails in every case, not just this one.",
-      ifStuck: "Put both values on the number line and ask which is further from zero.",
-      extend: "Ask when a negative answer is larger than a positive one, and why.",
+      ifStuck: "Ask them to test the claim on a friendlier number first, then return.",
+      extend: "Ask them to state the rule as always / sometimes / never, and defend it.",
     },
     frames: [
       "I claim ___ , and my evidence is ___ .",
@@ -3140,7 +3136,7 @@ export const FACILITATION_BY_LESSON = {
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
-      "Student explains a rational number is any number that can be written as a fraction, including integers and decimals.",
+      "Student says the flower and the roots are both 7/8 foot from the ground (0) — the same distance — but in opposite directions, so the heights are 7/8 and −7/8, a pair of opposites.",
       "Student places -1 1/2 between -1 and -2, halfway, reasoning from the value of the fraction part.",
       "Student explains converting to a common form (both decimals or both fractions) makes comparison and ordering easier.",
       "Student explains integers are rational (write as a fraction over 1) but rationals like 1/2 are not integers.",
@@ -3165,7 +3161,7 @@ export const FACILITATION_BY_LESSON = {
       "I can check my answer by ___ .",
     ],
     listenFor: [
-      "Student explains a rational number is any number that can be written as a fraction, including integers and decimals.",
+      "Student says the flower and the roots are both 7/8 foot from the ground (0) — the same distance — but in opposite directions, so the heights are 7/8 and −7/8, a pair of opposites.",
       "Student places -1 1/2 between -1 and -2, halfway, reasoning from the value of the fraction part.",
       "Student explains converting to a common form (both decimals or both fractions) makes comparison and ordering easier.",
       "Student explains integers are rational (write as a fraction over 1) but rationals like 1/2 are not integers.",
@@ -3194,7 +3190,7 @@ export const FACILITATION_BY_LESSON = {
       "Student uses absolute value to show both are 30 feet from sea level (zero), ignoring direction.",
       "Student explains the opposite flips the sign while absolute value always gives the non-negative distance from zero.",
       "Student gives a real context (temperature, elevation, money) and explains zero as the reference point between positive and negative.",
-      'Listen for students naming a specific strategy tied to 6.NOS.8 — not just "I multiplied." They should connect steps to the key idea.',
+      'Listen for students naming a specific strategy tied to 6.NOS.8 — not just "I guessed." They should name measuring how far the number is from zero on the number line, ignoring the sign, to find or compare absolute values.',
     ],
   },
   "7-3-group2": {
@@ -3218,19 +3214,20 @@ export const FACILITATION_BY_LESSON = {
       "Student uses absolute value to show both are 30 feet from sea level (zero), ignoring direction.",
       "Student explains the opposite flips the sign while absolute value always gives the non-negative distance from zero.",
       "Student gives a real context (temperature, elevation, money) and explains zero as the reference point between positive and negative.",
-      'Listen for students naming a specific strategy tied to 6.NOS.8 — not just "I multiplied." They should connect steps to the key idea.',
+      'Listen for students naming a specific strategy tied to 6.NOS.8 — not just "I guessed." They should name measuring how far the number is from zero on the number line, ignoring the sign, to find or compare absolute values.',
     ],
   },
   "7-4-group1": {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right magnitude, lost the negative sign. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students who struggled on the formative check / exit ticket for this lesson.",
     teacherMoves: {
-      ask: "Which side of zero does this answer sit on? Point to it on the number line.",
+      ask: "Between which two integers does this value belong? Show me on the number line.",
       lookFor:
-        "Watch for the “Right magnitude, lost the negative sign” error — that is the one this lesson's check diagnoses.",
-      ifStuck: "Place the answer on a number line — which side of zero?.",
+        "Watch for: thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8.",
+      ifStuck:
+        "Locate the two whole numbers it falls between first, then split that interval into equal parts.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -3242,7 +3239,7 @@ export const FACILITATION_BY_LESSON = {
       "Student orders -8, -1, 3, 5 and uses left-to-right position on the number line to justify the order.",
       "Student connects left position to 'less than' and right position to 'greater than', and uses the symbol correctly.",
       "Student explains -10 is less than -2 because it is farther left, correcting the 'bigger digits' misconception.",
-      'Listen for students naming a specific strategy tied to 6.NOS.8 — not just "I multiplied." They should connect steps to the key idea.',
+      'Listen for students naming a specific strategy tied to 6.NOS.8 — not just "I guessed." They should name placing the numbers on a number line and reading left to right, because farther left means less.',
     ],
   },
   "7-4-group2": {
@@ -3251,9 +3248,8 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "When is a negative number greater than another negative? Order three and justify.",
-      lookFor:
-        "A student who can explain why the “Right magnitude, lost the negative sign” error fails in every case, not just this one.",
+      ask: "Is that true for negative numbers too, or only positive ones? Show a case.",
+      lookFor: "A student generalising past the numbers in the example — “this works whenever…”.",
       ifStuck: "Put both values on the number line and ask which is further from zero.",
       extend: "Ask when a negative answer is larger than a positive one, and why.",
     },
@@ -3267,7 +3263,7 @@ export const FACILITATION_BY_LESSON = {
       "Student orders -8, -1, 3, 5 and uses left-to-right position on the number line to justify the order.",
       "Student connects left position to 'less than' and right position to 'greater than', and uses the symbol correctly.",
       "Student explains -10 is less than -2 because it is farther left, correcting the 'bigger digits' misconception.",
-      'Listen for students naming a specific strategy tied to 6.NOS.8 — not just "I multiplied." They should connect steps to the key idea.',
+      'Listen for students naming a specific strategy tied to 6.NOS.8 — not just "I guessed." They should name placing the numbers on a number line and reading left to right, because farther left means less.',
     ],
   },
   "7-5-group1": {
@@ -3291,7 +3287,7 @@ export const FACILITATION_BY_LESSON = {
       "Student moves 4 right along the x-axis and 2 up along the y-axis, naming each axis and the origin as the start.",
       "Student connects the x-value to horizontal travel and the y-value to vertical travel, like map or grid directions from a starting point.",
       "Student identifies that the x- and y-coordinates were swapped and explains the correct order (x first, then y).",
-      'Listen for students naming a specific strategy tied to 6.NOS.6 — not just "I multiplied." They should connect steps to the key idea.',
+      'Listen for students naming a specific strategy tied to 6.NOS.6 — not just "I guessed." They should name starting at the origin and moving along the x-axis first, then along the y-axis.',
     ],
   },
   "7-5-group2": {
@@ -3317,14 +3313,14 @@ export const FACILITATION_BY_LESSON = {
       "Student moves 4 right along the x-axis and 2 up along the y-axis, naming each axis and the origin as the start.",
       "Student connects the x-value to horizontal travel and the y-value to vertical travel, like map or grid directions from a starting point.",
       "Student identifies that the x- and y-coordinates were swapped and explains the correct order (x first, then y).",
-      'Listen for students naming a specific strategy tied to 6.NOS.6 — not just "I multiplied." They should connect steps to the key idea.',
+      'Listen for students naming a specific strategy tied to 6.NOS.6 — not just "I guessed." They should name starting at the origin and moving along the x-axis first, then along the y-axis.',
     ],
   },
   "7-6-group1": {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem adds. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Swapped area and perimeter; Multiplied when the problem adds. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Show me on the model — are we combining two amounts, or scaling one of them?",
       lookFor:
@@ -3339,9 +3335,9 @@ export const FACILITATION_BY_LESSON = {
     listenFor: [
       "Student finds the distance by subtracting the x-coordinates (7 - 2 = 5) since the points share a horizontal line.",
       "Student adds the absolute values (3 + 4 = 7) because the points are on opposite sides of zero.",
-      "Student explains distance is a length (how far apart) and absolute value guarantees a non-negative result.",
+      "Student explains distance is a length (how far apart) and absolute value guarantees a non-negative result, and that the distance is zero only when the two points are the same point.",
       "Student catches that the classmate ignored the negative sign; correct distance is |6| + |-2| = 8.",
-      'Listen for students naming a specific strategy tied to 6.NOS.9 — not just "I multiplied." They should connect steps to the key idea.',
+      'Listen for students naming a specific strategy tied to 6.NOS.9 — not just "I guessed." They should name checking which coordinate the points share, then subtracting the other coordinates, or adding the absolute values when the points are on opposite sides of an axis.',
     ],
   },
   "7-6-group2": {
@@ -3364,9 +3360,9 @@ export const FACILITATION_BY_LESSON = {
     listenFor: [
       "Student finds the distance by subtracting the x-coordinates (7 - 2 = 5) since the points share a horizontal line.",
       "Student adds the absolute values (3 + 4 = 7) because the points are on opposite sides of zero.",
-      "Student explains distance is a length (how far apart) and absolute value guarantees a non-negative result.",
+      "Student explains distance is a length (how far apart) and absolute value guarantees a non-negative result, and that the distance is zero only when the two points are the same point.",
       "Student catches that the classmate ignored the negative sign; correct distance is |6| + |-2| = 8.",
-      'Listen for students naming a specific strategy tied to 6.NOS.9 — not just "I multiplied." They should connect steps to the key idea.',
+      'Listen for students naming a specific strategy tied to 6.NOS.9 — not just "I guessed." They should name checking which coordinate the points share, then subtracting the other coordinates, or adding the absolute values when the points are on opposite sides of an axis.',
     ],
   },
   "7-7-group1": {
@@ -3402,7 +3398,7 @@ export const FACILITATION_BY_LESSON = {
       lookFor:
         "A student who can explain why the “Swapped area and perimeter” error fails in every case, not just this one.",
       ifStuck: "Ask for two shapes with equal perimeter and different area.",
-      extend: "Ask them to state the rule as always / sometimes / never, and defend it.",
+      extend: "Ask for two different shapes with the same answer — what stayed constant?",
     },
     frames: [
       "I claim ___ , and my evidence is ___ .",
@@ -3437,7 +3433,7 @@ export const FACILITATION_BY_LESSON = {
       "Student moves left for negative x and down for negative y, landing in quadrant III.",
       "Student connects each quadrant to a unique sign pattern for x and y.",
       "Student says (5, -2) is right and down, in quadrant IV, from the signs alone.",
-      'Listen for students naming a specific strategy tied to 6.NOS.7 — not just "I multiplied." They should connect steps to the key idea.',
+      'Listen for students naming a specific strategy tied to 6.NOS.7 — not just "I guessed." They should name reading the sign of each coordinate (left or right, then up or down) to decide the quadrant.',
     ],
   },
   "7-8-group2": {
@@ -3463,7 +3459,7 @@ export const FACILITATION_BY_LESSON = {
       "Student moves left for negative x and down for negative y, landing in quadrant III.",
       "Student connects each quadrant to a unique sign pattern for x and y.",
       "Student says (5, -2) is right and down, in quadrant IV, from the signs alone.",
-      'Listen for students naming a specific strategy tied to 6.NOS.7 — not just "I multiplied." They should connect steps to the key idea.',
+      'Listen for students naming a specific strategy tied to 6.NOS.7 — not just "I guessed." They should name reading the sign of each coordinate (left or right, then up or down) to decide the quadrant.',
     ],
   },
   "7-9-group1": {
@@ -3487,7 +3483,7 @@ export const FACILITATION_BY_LESSON = {
       "Student flips the sign of the y-coordinate, so (4, -5) becomes (4, 5), and explains the x stays the same.",
       "Student connects the axis to a mirror line and the reflected point to a mirror image, equal distance on the opposite side.",
       "Student identifies they flipped x instead of y; the correct image over the x-axis is (2, -3).",
-      'Listen for students naming a specific strategy tied to 6.NOS.7 — not just "I multiplied." They should connect steps to the key idea.',
+      'Listen for students naming a specific strategy tied to 6.NOS.7 — not just "I guessed." They should name deciding which axis is the mirror line and changing only the sign of the other coordinate.',
     ],
   },
   "7-9-group2": {
@@ -3513,14 +3509,14 @@ export const FACILITATION_BY_LESSON = {
       "Student flips the sign of the y-coordinate, so (4, -5) becomes (4, 5), and explains the x stays the same.",
       "Student connects the axis to a mirror line and the reflected point to a mirror image, equal distance on the opposite side.",
       "Student identifies they flipped x instead of y; the correct image over the x-axis is (2, -3).",
-      'Listen for students naming a specific strategy tied to 6.NOS.7 — not just "I multiplied." They should connect steps to the key idea.',
+      'Listen for students naming a specific strategy tied to 6.NOS.7 — not just "I guessed." They should name deciding which axis is the mirror line and changing only the sign of the other coordinate.',
     ],
   },
   "8-1-group1": {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem adds; Added when the problem multiplies; Divided when the problem multiplies. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem adds; Subtracted in the wrong order; Added when the problem multiplies. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Show me on the tape diagram — are we combining two amounts, or scaling one of them?",
       lookFor:
@@ -3536,7 +3532,7 @@ export const FACILITATION_BY_LESSON = {
       "Students choose a variable (such as n) for the unknown gems, build n + 8 = 20, and connect 'plus 8 more' to + 8 and 'equals 20 total' to = 20.",
       "Students place the expression n + 8 on one side and the total 20 on the other, explaining the equal sign means both sides have the same value.",
       "Students explain that an equation captures the relationship clearly, lets you use a variable for the unknown, and can be solved instead of guessing.",
-      'Listen for students naming a specific strategy tied to 6.AT.8 — not just "I multiplied." They should connect steps to the key idea.',
+      'Listen for students naming a specific strategy tied to 6.AT.8 — not just "I guessed." They should name matching each phrase (plus, less than, times, divided by) to an operation and using a variable for the unknown.',
     ],
   },
   "8-1-group2": {
@@ -3560,7 +3556,7 @@ export const FACILITATION_BY_LESSON = {
       "Students choose a variable (such as n) for the unknown gems, build n + 8 = 20, and connect 'plus 8 more' to + 8 and 'equals 20 total' to = 20.",
       "Students place the expression n + 8 on one side and the total 20 on the other, explaining the equal sign means both sides have the same value.",
       "Students explain that an equation captures the relationship clearly, lets you use a variable for the unknown, and can be solved instead of guessing.",
-      'Listen for students naming a specific strategy tied to 6.AT.8 — not just "I multiplied." They should connect steps to the key idea.',
+      'Listen for students naming a specific strategy tied to 6.AT.8 — not just "I guessed." They should name matching each phrase (plus, less than, times, divided by) to an operation and using a variable for the unknown.',
     ],
   },
   "8-2-group1": {
@@ -3569,10 +3565,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Answered with a number already in the equation; Did not undo the operation. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "Which number is the unknown, and which one was handed to you?",
+      ask: "What is being done to the variable? Show the undo on the tape diagram.",
       lookFor:
-        "Watch for the “Answered with a number already in the equation” error — that is the one this lesson's check diagnoses.",
-      ifStuck: "Ask them to substitute their answer back into the original equation out loud.",
+        "Watch for the “Did not undo the operation” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Have them name the operation acting on the variable BEFORE they touch both sides.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -3583,7 +3579,7 @@ export const FACILITATION_BY_LESSON = {
       "Students recognize 23 is added to n and that subtracting 23 (the inverse operation) from both sides will isolate n.",
       "Students subtract 23 from both sides to get n = 35 and explain that doing the same to both sides keeps the equation balanced and the solution true.",
       "Students give a realistic context (money saved, distance left, missing count) and connect it to isolating a variable using an inverse operation.",
-      'Listen for students naming a specific strategy tied to 6.AT.8 — not just "I multiplied." They should connect steps to the key idea.',
+      'Listen for students naming a specific strategy tied to 6.AT.8 — not just "I guessed." They should name using the inverse operation on both sides (subtract to undo addition, add to undo subtraction) and checking by substituting.',
     ],
   },
   "8-2-group2": {
@@ -3592,10 +3588,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "Substitute your answer back in. What does a true statement prove?",
+      ask: "Why must the same move happen on both sides? What breaks if it does not?",
       lookFor:
-        "A student who can explain why the “Answered with a number already in the equation” error fails in every case, not just this one.",
-      ifStuck: "Ask them to check a wrong answer by substitution and say what it proves.",
+        "A student who can explain why the “Did not undo the operation” error fails in every case, not just this one.",
+      ifStuck: "Ask them to substitute their answer back and say what a false statement proves.",
       extend: "Ask them to build an equation with no solution, then one true for every value.",
     },
     frames: [
@@ -3607,7 +3603,7 @@ export const FACILITATION_BY_LESSON = {
       "Students recognize 23 is added to n and that subtracting 23 (the inverse operation) from both sides will isolate n.",
       "Students subtract 23 from both sides to get n = 35 and explain that doing the same to both sides keeps the equation balanced and the solution true.",
       "Students give a realistic context (money saved, distance left, missing count) and connect it to isolating a variable using an inverse operation.",
-      'Listen for students naming a specific strategy tied to 6.AT.8 — not just "I multiplied." They should connect steps to the key idea.',
+      'Listen for students naming a specific strategy tied to 6.AT.8 — not just "I guessed." They should name using the inverse operation on both sides (subtract to undo addition, add to undo subtraction) and checking by substituting.',
     ],
   },
   "8-3-group1": {
@@ -3630,7 +3626,7 @@ export const FACILITATION_BY_LESSON = {
       "Students read 3x as 3 groups of x, recognize multiplication, and contrast it with addition, knowing they will divide (not subtract) to solve.",
       "Students divide both sides by 3 to get x = 7 (or multiply by 4 to get x = 36) and name division/multiplication as inverse operations.",
       "Students name a real context (equal price per item, sharing equally, total from groups) and choose the correct inverse operation to isolate the variable.",
-      'Listen for students naming a specific strategy tied to 6.AT.8 — not just "I multiplied." They should connect steps to the key idea.',
+      'Listen for students naming a specific strategy tied to 6.AT.8 — not just "I divided." They should name the inverse operation on both sides (divide to undo multiplication, multiply to undo division) and a substitution check.',
     ],
   },
   "8-3-group2": {
@@ -3654,19 +3650,19 @@ export const FACILITATION_BY_LESSON = {
       "Students read 3x as 3 groups of x, recognize multiplication, and contrast it with addition, knowing they will divide (not subtract) to solve.",
       "Students divide both sides by 3 to get x = 7 (or multiply by 4 to get x = 36) and name division/multiplication as inverse operations.",
       "Students name a real context (equal price per item, sharing equally, total from groups) and choose the correct inverse operation to isolate the variable.",
-      'Listen for students naming a specific strategy tied to 6.AT.8 — not just "I multiplied." They should connect steps to the key idea.',
+      'Listen for students naming a specific strategy tied to 6.AT.8 — not just "I divided." They should name the inverse operation on both sides (divide to undo multiplication, multiply to undo division) and a substitution check.',
     ],
   },
   "8-4-group1": {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Boundary value wrongly included or excluded; Right boundary, symbol reversed. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right boundary, symbol reversed; Boundary value wrongly included or excluded. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "Is the boundary number itself allowed? Read the words again.",
+      ask: "Test one number from your answer on the number line. Does it actually work?",
       lookFor:
-        "Watch for the “Boundary value wrongly included or excluded” error — that is the one this lesson's check diagnoses.",
-      ifStuck: "Have them test the boundary value itself — does it make the statement true?.",
+        "Watch for the “Right boundary, symbol reversed” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Ask which moves can flip a symbol — adding and subtracting never do.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -3686,10 +3682,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "Write a real rule where the boundary counts, and one where it cannot.",
+      ask: "Which operation forces the symbol to turn, and why does it?",
       lookFor:
-        "A student who can explain why the “Boundary value wrongly included or excluded” error fails in every case, not just this one.",
-      ifStuck: "Ask them to check a wrong answer by substitution and say what it proves.",
+        "A student who can explain why the “Right boundary, symbol reversed” error fails in every case, not just this one.",
+      ifStuck: "Ask them to test one value from each side on the number line.",
       extend: "Ask them to build an equation with no solution, then one true for every value.",
     },
     frames: [
@@ -3755,7 +3751,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right boundary, symbol reversed. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Right boundary, symbol reversed; Did not undo the operation; Boundary value wrongly included or excluded. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Test one number from your answer on the number line. Does it actually work?",
       lookFor:
@@ -3771,7 +3767,7 @@ export const FACILITATION_BY_LESSON = {
       "Students note both use inverse operations to isolate the variable, but an inequality's solution is many values (a range) while an equation's is a single value.",
       "Students isolate the variable, graph the solution set with the correct circle and shading, and substitute a test value to confirm it makes the inequality true.",
       "Students give a real budget/time/capacity limit and explain that the inequality's solution set shows all amounts that keep them within the limit.",
-      'Listen for students naming a specific strategy tied to 6.AT.8 — not just "I multiplied." They should connect steps to the key idea.',
+      'Listen for students naming a specific strategy tied to 6.AT.8 — not just "I guessed." They should name isolating the variable with an inverse operation, keeping the inequality symbol, and testing a value from the solution set.',
     ],
   },
   "8-6-group2": {
@@ -3795,19 +3791,19 @@ export const FACILITATION_BY_LESSON = {
       "Students note both use inverse operations to isolate the variable, but an inequality's solution is many values (a range) while an equation's is a single value.",
       "Students isolate the variable, graph the solution set with the correct circle and shading, and substitute a test value to confirm it makes the inequality true.",
       "Students give a real budget/time/capacity limit and explain that the inequality's solution set shows all amounts that keep them within the limit.",
-      'Listen for students naming a specific strategy tied to 6.AT.8 — not just "I multiplied." They should connect steps to the key idea.',
+      'Listen for students naming a specific strategy tied to 6.AT.8 — not just "I guessed." They should name isolating the variable with an inverse operation, keeping the inequality symbol, and testing a value from the solution set.',
     ],
   },
   "8-7-group1": {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem adds; Multiplied when the problem divides; Right boundary, symbol reversed. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "Should the answer be bigger or smaller than what you started with? Say why first.",
+      ask: "What is being done to the variable? Show the undo on the number line.",
       lookFor:
-        "Watch for the “Multiplied when the problem divides” error — that is the one this lesson's check diagnoses.",
-      ifStuck: "Estimate first — should the answer be bigger or smaller than you started?.",
+        "Watch for the “Did not undo the operation” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Have them name the operation acting on the variable BEFORE they touch both sides.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -3818,7 +3814,7 @@ export const FACILITATION_BY_LESSON = {
       "Students use signal words ('equals/total' for an equation; 'at least/at most/no more than' for an inequality) to choose the correct model.",
       "Students describe modeling the situation, solving with inverse operations, and judging reasonableness by checking the answer fits the real context.",
       "Students give a realistic context and correctly match it to an equation (exact value) or inequality (range/limit), justifying their choice.",
-      'Listen for students naming a specific strategy tied to 6.AT.8 — not just "I multiplied." They should connect steps to the key idea.',
+      'Listen for students naming a specific strategy tied to 6.AT.8 — not just "I guessed." They should name choosing an equation or an inequality from the signal words, solving with inverse operations, and checking that the answer makes sense in the story.',
     ],
   },
   "8-7-group2": {
@@ -3827,10 +3823,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "When does dividing make a number BIGGER? Give a case and explain it.",
+      ask: "Why must the same move happen on both sides? What breaks if it does not?",
       lookFor:
-        "A student who can explain why the “Multiplied when the problem divides” error fails in every case, not just this one.",
-      ifStuck: "Ask whether the answer should grow or shrink, and why.",
+        "A student who can explain why the “Did not undo the operation” error fails in every case, not just this one.",
+      ifStuck: "Ask them to substitute their answer back and say what a false statement proves.",
       extend: "Ask them to build an equation with no solution, then one true for every value.",
     },
     frames: [
@@ -3842,7 +3838,7 @@ export const FACILITATION_BY_LESSON = {
       "Students use signal words ('equals/total' for an equation; 'at least/at most/no more than' for an inequality) to choose the correct model.",
       "Students describe modeling the situation, solving with inverse operations, and judging reasonableness by checking the answer fits the real context.",
       "Students give a realistic context and correctly match it to an equation (exact value) or inequality (range/limit), justifying their choice.",
-      'Listen for students naming a specific strategy tied to 6.AT.8 — not just "I multiplied." They should connect steps to the key idea.',
+      'Listen for students naming a specific strategy tied to 6.AT.8 — not just "I guessed." They should name choosing an equation or an inequality from the signal words, solving with inverse operations, and checking that the answer makes sense in the story.',
     ],
   },
   "9-1-group1": {
@@ -3898,7 +3894,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Swapped the x and y coordinates. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Swapped the x and y coordinates; Gave the total instead of the unit rate. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the ratio table, is this one group repeated, or two amounts joined? Which operation matches?",
       lookFor:
@@ -3947,7 +3943,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Swapped the x and y coordinates; Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Swapped the x and y coordinates; Did not undo the operation. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the model, is this one group repeated, or two amounts joined? Which operation matches?",
       lookFor:
@@ -3994,7 +3990,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Gave the total instead of the unit rate; Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Added when the problem multiplies; Divided when the problem multiplies; Did not undo the operation. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "On the model, is this one group repeated, or two amounts joined? Which operation matches?",
       lookFor:

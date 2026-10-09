@@ -31,6 +31,16 @@
 //     lesson the district plan does not schedule, gets no empty card.
 
 import { renderMultipleChoice } from "../components/multiple-choice.js";
+import { stackHtml } from "./i18n.js";
+import {
+  lessonMissRates,
+  missedSpiralItems,
+  pickSpiralItem,
+  recordSpiralAnswer,
+  selectSpiralSources,
+  spiralItemsFrom,
+} from "./spiral-review.js";
+import { normalizeStudentId } from "./state.js";
 
 const MAX_ITEMS = 3;
 /* Positions counted back from the lesson before yesterday's, when the device
@@ -171,6 +181,52 @@ export function selectReviewItems(
   return picked;
 }
 
+/** A lesson's config, fetched lazily; null offline or on any failure. */
+async function fetchLessonConfig(id) {
+  try {
+    const r = await fetch(`/lessons/${encodeURIComponent(id)}/config.json`, {
+      credentials: "omit",
+    });
+    return r.ok ? await r.json() : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The spiral review's picks: one question from a lesson taught 2–4 weeks ago
+ * and one from an earlier unit (engine/core/spiral-review.js decides which).
+ * Same shape as selectReviewItems' picks, plus `spiral` for the tag line.
+ * Empty when there is nothing earlier, or the source configs cannot be read —
+ * the caller then falls back to the one-question Remember When.
+ */
+export async function selectSpiralPicks(config, state, sequence) {
+  const lessonId = config?.lessonId || "";
+  const studentId = normalizeStudentId(state?.get?.()?.studentName || "");
+  const missRate = lessonMissRates(
+    (sequence || []).map((e) => e.id),
+    studentId,
+  );
+  const sources = selectSpiralSources(sequence, lessonId, { missRate });
+  const missed = missedSpiralItems();
+  const picks = [];
+  for (const [kind, source] of [
+    ["recent", sources.recent],
+    ["earlier", sources.earlier],
+  ]) {
+    if (!source) continue;
+    const cfg = await fetchLessonConfig(source.id);
+    const item = pickSpiralItem(spiralItemsFrom(cfg), { missed, seed: `${lessonId}|${source.id}` });
+    if (item) picks.push({ standard: source.standard, lesson: source.id, item, spiral: kind });
+  }
+  return picks;
+}
+
+const SPIRAL_TAG = {
+  recent: ["2–4 weeks ago", "hace 2–4 semanas"],
+  earlier: ["earlier unit", "unidad anterior"],
+};
+
 function esc(s) {
   const d = document.createElement("div");
   d.textContent = s ?? "";
@@ -206,7 +262,15 @@ export async function mountRetrievalOpener(host, config, state, phaseId, opts = 
   // Nothing to remember and nothing due: no empty card.
   if (!before.length && !due.length) return 0;
 
-  const picks = selectReviewItems(due, bank, { exclude: config?.standard || "", before, max });
+  // The warm-up asks for the SPIRAL review (opts.spiral): two questions reaching
+  // 2–4 weeks back and into an earlier unit. When it finds nothing — an early
+  // lesson, or the source configs are unreachable offline — the one-question
+  // Remember When below still runs, so the bonus never disappears for a reason
+  // the student cannot see.
+  let picks = opts.spiral ? await selectSpiralPicks(config, state, sequence) : [];
+  const spiral = picks.length > 0;
+  if (!spiral)
+    picks = selectReviewItems(due, bank, { exclude: config?.standard || "", before, max });
   if (!picks.length) return 0;
 
   const card = document.createElement("section");
@@ -220,7 +284,19 @@ export async function mountRetrievalOpener(host, config, state, phaseId, opts = 
     // question rather than a fifth one of today's.
     card.style.cssText =
       "border:1px solid #c7d2fe; border-left:6px solid #4f46e5; border-radius:12px; padding:16px; background:#f6f7ff;";
-    card.innerHTML = `
+    card.innerHTML = spiral
+      ? `
+    <div id="retrieval-heading" style="font-weight:700; font-size:19px; line-height:1.5; color:#0f172a; margin-bottom:6px;">
+      <span style="color:#4f46e5; font-weight:800; margin-right:6px;">⭐</span> 🌀 ${stackHtml("Bonus · Spiral review", "Bono · Repaso en espiral")}
+    </div>
+    <p style="margin:0 0 12px; font-size:15px; font-weight:500; line-height:1.5; color:#4b5563;">
+      ${stackHtml(
+        "Questions from earlier lessons — one from a few weeks ago, one from an earlier unit. They do not count toward your score.",
+        "Preguntas de lecciones anteriores — una de hace unas semanas y otra de una unidad anterior. No cuentan para tu puntuación.",
+      )}
+    </p>
+  `
+      : `
     <div id="retrieval-heading" style="font-weight:700; font-size:19px; line-height:1.5; color:#0f172a; margin-bottom:6px;">
       <span style="color:#4f46e5; font-weight:800; margin-right:6px;">⭐ Bonus.</span> 🔁 Remember When
     </div>
@@ -265,7 +341,10 @@ export async function mountRetrievalOpener(host, config, state, phaseId, opts = 
     const from = pick.lesson
       ? `<span class="badge badge-indigo">Lesson ${esc(pick.lesson)}</span> `
       : "";
-    tag.innerHTML = `${from}<span class="badge badge-indigo">${esc(pick.standard)}</span>`;
+    const when = pick.spiral
+      ? ` <span class="badge badge-indigo">${stackHtml(...SPIRAL_TAG[pick.spiral])}</span>`
+      : "";
+    tag.innerHTML = `${from}<span class="badge badge-indigo">${esc(pick.standard)}</span>${when}`;
     wrap.append(tag);
 
     renderMultipleChoice(wrap, {
@@ -276,6 +355,7 @@ export async function mountRetrievalOpener(host, config, state, phaseId, opts = 
         // must not move today's accuracy or XP.
         try {
           if (canSchedule) signal.recordReview(pick.standard, isCorrect);
+          if (pick.spiral) recordSpiralAnswer(pick.item, isCorrect);
           window.NTtelemetry?.track?.("retrieval_review", {
             standard: pick.standard,
             result: isCorrect ? "correct" : "incorrect",
@@ -284,12 +364,25 @@ export async function mountRetrievalOpener(host, config, state, phaseId, opts = 
           /* signals are best-effort */
         }
         answered += 1;
-        status.textContent =
-          answered >= picks.length
-            ? bonus
-              ? "Bonus done — nice. That one was pure memory."
-              : "Review done — nice. On to today."
-            : `${answered} of ${picks.length} done.`;
+        if (spiral) {
+          status.innerHTML =
+            answered >= picks.length
+              ? stackHtml(
+                  "Spiral review done — nice remembering.",
+                  "Repaso en espiral terminado — ¡buena memoria!",
+                )
+              : stackHtml(
+                  `${answered} of ${picks.length} done.`,
+                  `${answered} de ${picks.length} listas.`,
+                );
+        } else {
+          status.textContent =
+            answered >= picks.length
+              ? bonus
+                ? "Bonus done — nice. That one was pure memory."
+                : "Review done — nice. On to today."
+              : `${answered} of ${picks.length} done.`;
+        }
         state?.saveResponse?.(phaseId, `retrieval_${pick.standard}`, isCorrect ? "y" : "n");
       },
     });

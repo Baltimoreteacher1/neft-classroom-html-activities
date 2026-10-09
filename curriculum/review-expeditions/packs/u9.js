@@ -970,7 +970,7 @@
       answer: sh.answer,
       hints: [
         'Read the axis labels. The first number in the pair is on the horizontal axis.',
-        `(${x}, ${y}): ${x} is a number of ${c.many}; ${y} is a ${c.yw}.`,
+        `Find the first number of the pair on the horizontal axis and read that axis label. Then read the vertical axis label for the second number.`,
         x === 0 ? `A point with 0 ${c.many} shows the ${c.yw} before anything is counted. What do we call that value?` : `So the point pairs ${x} ${c.many} with one ${c.yw}. Which choice says that?`,
       ],
       hintEs: 'Lee los nombres de los ejes. El primer número del par está en el eje horizontal.',
@@ -1808,7 +1808,7 @@
       answer: sh.answer,
       hints: [
         `Ask two questions. What happens for <b>every</b> ${c.one}? That number multiplies ${c.xv}. What happens <b>once</b>? That number is added.`,
-        `Every ${c.one} adds ${k}, so the rate part is ${k}${c.xv}.${b ? ` The ${yWord(c, b)} happens once.` : ' Nothing is added just once.'}`,
+        `Find the amount that is added for each ${c.one}: that rate multiplies ${c.xv}. ${b ? 'Then find the amount that happens only once: it is added, not multiplied.' : 'Then check the story: does anything happen only once?'}`,
         `Test with 1 ${c.one}: the ${c.yw} should be ${yWord(c, k + b)}. Which equation gives ${k + b} when ${c.xv} = 1?`,
       ],
       hintEs: `Hazte dos preguntas. ¿Qué pasa por <b>cada</b> ${c.oneEs}? Ese número multiplica a ${c.xv}. ¿Qué pasa <b>una sola vez</b>? Ese número se suma.`,

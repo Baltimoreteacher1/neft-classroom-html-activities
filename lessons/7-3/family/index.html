@@ -42,6 +42,22 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 .muted-note{color:var(--muted);font-size:14px;margin:6px 0 0;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
+
+ol.choices{margin:6px 0 4px;}
+.lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
+.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
+  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
+.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
+.lang-panel{display:none;margin-top:6px;}
+#family-lang-en:checked ~ .lang-panels [data-lang="en"],
+#family-lang-es:checked ~ .lang-panels [data-lang="es"],
+#family-lang-ar:checked ~ .lang-panels [data-lang="ar"],
+#family-lang-fr:checked ~ .lang-panels [data-lang="fr"],
+#family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
+.lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
+.auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
+  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -58,8 +74,21 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 
 <section>
   <h2>What students are learning</h2>
-  <p>An integer is a whole number that can be positive, negative, or zero. The absolute value of a number is how far it is from zero on the number line. Distance is never negative.</p>
-  <p class="callout"><strong>Key idea:</strong> Absolute Value. Formula: |a| = Distance of a from 0 (always ≥ 0). 1. Absolute value represents distance on a number line, never direction. 2. Distance is always positive or zero: |-7| = 7 and |7| = 7. 3. Context: Magnitude of temperature, debt, elevation regardless of sign</p>
+  <p>A rational number is any number that can be written as a fraction: integers like -6, fractions like -3/4, and decimals like 2.5 are all rational numbers. The absolute value of a number is how far it is from zero on the number line. Distance is never negative.</p>
+  <p class="callout"><strong>Key idea:</strong> The absolute value of a number is how far it is from 0 on the number line. Distance is never negative, so |-7| = 7 and |7| = 7. This works for fractions and decimals too: |-2.5| = 2.5.<br><span class="es-text" lang="es">Idea clave: El valor absoluto de un número es qué tan lejos está del 0 en la recta numérica. Una distancia nunca es negativa, así que |-7| = 7 y |7| = 7. También sirve para fracciones y decimales: |-2.5| = 2.5.</span></p>
+</section>
+
+<section class="lang-section">
+  <h2>Read this in your language <span class="es">· Lea esto en su idioma</span></h2>
+  <div class="lang-picker"><input type="radio" class="lang-radio" name="family-lang" id="family-lang-en" value="en" checked><label for="family-lang-en" lang="en">English</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-es" value="es"><label for="family-lang-es" lang="es">Español</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-ar" value="ar"><label for="family-lang-ar" lang="ar">العربية</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-fr" value="fr"><label for="family-lang-fr" lang="fr">Français</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-prs" value="prs"><label for="family-lang-prs" lang="prs">دری</label>
+  <div class="lang-panels">
+  <div class="lang-panel" data-lang="en" lang="en"><p class="callout">The absolute value of a number is how far it is from 0 on the number line. Distance is never negative, so |-7| = 7 and |7| = 7. This works for fractions and decimals too: |-2.5| = 2.5.</p><ul><li><span class="kw"><bdi>Integers and Absolute Value</bdi></span> — Integers are whole numbers and their opposites; absolute value is their distance from zero.</li><li><span class="kw"><bdi>Integer</bdi></span> — Whole numbers and their opposites, like -2, -1, 0, 1, 2.</li><li><span class="kw"><bdi>Positive</bdi></span> — A number bigger than zero, to the right of zero on a number line.</li><li><span class="kw"><bdi>Negative</bdi></span> — A number smaller than zero, to the left of zero on a number line.</li><li><span class="kw"><bdi>Absolute value</bdi></span> — How far a number is from zero. It is never negative.</li><li><span class="kw"><bdi>Opposite</bdi></span> — Two numbers the same distance from zero, on opposite sides, like 3 and -3.</li><li><span class="kw"><bdi>Rational number</bdi></span> — A number that can be written as a fraction of two integers, with a bottom number that is not zero.</li><li><span class="kw"><bdi>Magnitude</bdi></span> — The size of a number; its distance from zero.</li></ul></div>
+  <div class="lang-panel" data-lang="es" lang="es"><p class="callout">El valor absoluto de un número es qué tan lejos está del 0 en la recta numérica. Una distancia nunca es negativa, así que |-7| = 7 y |7| = 7. También sirve para fracciones y decimales: |-2.5| = 2.5.</p><ul><li><span class="kw"><bdi>Enteros y valor absoluto</bdi></span> — Los enteros son números enteros y sus opuestos; el valor absoluto es su distancia desde cero.</li><li><span class="kw"><bdi>Número entero</bdi></span> — Un número entero que puede ser positivo, negativo o cero.</li><li><span class="kw"><bdi>Positivo</bdi></span> — Un número mayor que cero, a la derecha del cero en la recta numérica.</li><li><span class="kw"><bdi>Negativo</bdi></span> — Un número menor que cero, a la izquierda del cero en la recta numérica.</li><li><span class="kw"><bdi>Valor absoluto</bdi></span> — Qué tan lejos está un número de cero. Nunca es negativo.</li><li><span class="kw"><bdi>Opuesto</bdi></span> — Dos números a la misma distancia de cero, en lados opuestos, como 3 y -3.</li><li><span class="kw"><bdi>Número racional</bdi></span> — Un número que se puede escribir como una fracción de dos enteros, con un denominador que no sea cero.</li><li><span class="kw"><bdi>Magnitud</bdi></span> — El tamaño de un número; su distancia de cero.</li></ul></div>
+  <div class="lang-panel" data-lang="ar" lang="ar" dir="rtl"><p class="auto-label">ترجمة آلية · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">القيمة المطلقة لعدد هي بُعده عن 0 على خط الأعداد. المسافة لا تكون سالبة أبدًا، لذلك |-7| = 7 و |7| = 7. وهذا ينطبق أيضًا على الكسور والأعداد العشرية: |-2.5| = 2.5.</p><ul><li><span class="kw"><bdi>الأعداد الصحيحة والقيمة المطلقة</bdi></span> (<bdi lang="en">Integers and Absolute Value</bdi>) — الأعداد الصحيحة هي الأعداد الكاملة ومعاكساتها؛ والقيمة المطلقة هي بُعدها عن الصفر.</li><li><span class="kw"><bdi>عدد صحيح</bdi></span> (<bdi lang="en">Integer</bdi>) — الأعداد الكاملة ومعاكساتها، مثل -2، -1، 0، 1، 2.</li><li><span class="kw"><bdi>موجب</bdi></span> (<bdi lang="en">Positive</bdi>) — عدد أكبر من الصفر، يقع يمين الصفر على خط الأعداد.</li><li><span class="kw"><bdi>سالب</bdi></span> (<bdi lang="en">Negative</bdi>) — عدد أصغر من الصفر، يقع يسار الصفر على خط الأعداد.</li><li><span class="kw"><bdi>القيمة المطلقة</bdi></span> (<bdi lang="en">Absolute value</bdi>) — بُعد العدد عن الصفر. لا تكون سالبة أبدًا.</li><li><span class="kw"><bdi>المعاكس</bdi></span> (<bdi lang="en">Opposite</bdi>) — عددان لهما البُعد نفسه عن الصفر في جهتين متعاكستين، مثل 3 و -3.</li><li><span class="kw"><bdi>عدد نسبي</bdi></span> (<bdi lang="en">Rational number</bdi>) — عدد يمكن كتابته على شكل كسر بسطه ومقامه عددان صحيحان، والمقام لا يساوي صفرًا.</li><li><span class="kw"><bdi>المقدار</bdi></span> (<bdi lang="en">Magnitude</bdi>) — حجم العدد؛ أي بُعده عن الصفر.</li></ul></div>
+  <div class="lang-panel" data-lang="fr" lang="fr"><p class="auto-label">Traduction automatique · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">La valeur absolue d'un nombre, c'est sa distance à 0 sur la droite graduée. Une distance n'est jamais négative, donc |-7| = 7 et |7| = 7. C'est pareil pour les fractions et les décimaux : |-2,5| = 2,5.</p><ul><li><span class="kw"><bdi>nombres entiers relatifs et valeur absolue</bdi></span> (<bdi lang="en">Integers and Absolute Value</bdi>) — Les entiers relatifs sont les nombres entiers et leurs opposés ; la valeur absolue est leur distance à zéro.</li><li><span class="kw"><bdi>nombre entier relatif</bdi></span> (<bdi lang="en">Integer</bdi>) — Les nombres entiers et leurs opposés, comme -2, -1, 0, 1, 2.</li><li><span class="kw"><bdi>positif</bdi></span> (<bdi lang="en">Positive</bdi>) — Un nombre plus grand que zéro, à droite de zéro sur la droite graduée.</li><li><span class="kw"><bdi>négatif</bdi></span> (<bdi lang="en">Negative</bdi>) — Un nombre plus petit que zéro, à gauche de zéro sur la droite graduée.</li><li><span class="kw"><bdi>valeur absolue</bdi></span> (<bdi lang="en">Absolute value</bdi>) — La distance entre un nombre et zéro. Elle n'est jamais négative.</li><li><span class="kw"><bdi>opposé</bdi></span> (<bdi lang="en">Opposite</bdi>) — Deux nombres à la même distance de zéro, de chaque côté, comme 3 et -3.</li><li><span class="kw"><bdi>nombre rationnel</bdi></span> (<bdi lang="en">Rational number</bdi>) — Un nombre qui peut s'écrire comme une fraction de deux nombres entiers, avec un dénominateur qui n'est pas zéro.</li><li><span class="kw"><bdi>grandeur</bdi></span> (<bdi lang="en">Magnitude</bdi>) — La taille d'un nombre ; sa distance à zéro.</li></ul></div>
+  <div class="lang-panel" data-lang="prs" lang="prs" dir="rtl"><p class="auto-label">ترجمه ماشینی · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">قیمت مطلق یک عدد، فاصلهٔ آن از 0 روی محور اعداد است. فاصله هیچ وقت منفی نیست، پس |-7| = 7 و |7| = 7. این برای کسرها و اعداد اعشاری هم صدق می‌کند: |-2.5| = 2.5.</p><ul><li><span class="kw"><bdi>اعداد صحیح و قیمت مطلق</bdi></span> (<bdi lang="en">Integers and Absolute Value</bdi>) — اعداد صحیح، اعداد تام و قرینه‌های آن‌ها هستند؛ قیمت مطلق فاصلهٔ آن‌ها از صفر است.</li><li><span class="kw"><bdi>عدد صحیح</bdi></span> (<bdi lang="en">Integer</bdi>) — اعداد تام و قرینه‌های آن‌ها، مانند -2، -1، 0، 1، 2.</li><li><span class="kw"><bdi>مثبت</bdi></span> (<bdi lang="en">Positive</bdi>) — عددی بزرگ‌تر از صفر که روی محور اعداد در طرف راست صفر قرار دارد.</li><li><span class="kw"><bdi>منفی</bdi></span> (<bdi lang="en">Negative</bdi>) — عددی کوچک‌تر از صفر که روی محور اعداد در طرف چپ صفر قرار دارد.</li><li><span class="kw"><bdi>قیمت مطلق</bdi></span> (<bdi lang="en">Absolute value</bdi>) — فاصلهٔ یک عدد از صفر. هیچ وقت منفی نیست.</li><li><span class="kw"><bdi>قرینه</bdi></span> (<bdi lang="en">Opposite</bdi>) — دو عدد که به یک اندازه از صفر فاصله دارند، در دو طرف مخالف، مانند 3 و -3.</li><li><span class="kw"><bdi>عدد گویا</bdi></span> (<bdi lang="en">Rational number</bdi>) — عددی که می‌توان آن را به شکل کسری از دو عدد صحیح نوشت، به شرطی که مخرج آن صفر نباشد.</li><li><span class="kw"><bdi>اندازه (بزرگی)</bdi></span> (<bdi lang="en">Magnitude</bdi>) — اندازهٔ یک عدد؛ یعنی فاصلهٔ آن از صفر.</li></ul></div>
+  </div>
+  </div>
 </section>
 <section>
   <h2>Key words</h2>
@@ -71,7 +100,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Practice at home</h2>
-  <ol><li>Which integer has an absolute value of 8 and is located to the LEFT of zero on the number line?</li></ol>
+  <ol><li>Which integer has an absolute value of 6 and is located to the LEFT of zero on the number line?<ol class="choices" type="A"><li>6</li><li>-60</li><li>-6</li><li>0</li></ol></li></ol>
 </section>
 
 <section class="tool-section">
@@ -83,7 +112,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Answer check</h2>
-  <ol><li>Which integer has an absolute value of 8 and is located to the LEFT of zero on the number line? → <span class="answer">-8</span></li></ol>
+  <ol><li>Which integer has an absolute value of 6 and is located to the LEFT of zero on the number line? → <span class="answer">-6</span></li></ol>
 </section>
 <section>
   <h2>Common mistake</h2>

@@ -40,8 +40,8 @@ try {
     if (!data) throw new Error("The generated guide's lesson bank is missing.");
     return data.units.map((unit) => ({ number: unit.number, lessons: unit.lessons.length }));
   });
-  if (units.length !== 8 || units.reduce((n, u) => n + u.lessons, 0) !== 54)
-    throw new Error("Expected the reviewed 8 units and 54 lessons before printing.");
+  if (units.length !== 9 || units.reduce((n, u) => n + u.lessons, 0) !== 78)
+    throw new Error("Expected the reviewed 9 units and 78 lessons before printing.");
   await page.emulateMedia({ media: "print" });
 
   async function capture(name, expectedPages, isKey) {

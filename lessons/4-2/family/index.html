@@ -42,6 +42,22 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 .muted-note{color:var(--muted);font-size:14px;margin:6px 0 0;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
+
+ol.choices{margin:6px 0 4px;}
+.lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
+.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
+  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
+.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
+.lang-panel{display:none;margin-top:6px;}
+#family-lang-en:checked ~ .lang-panels [data-lang="en"],
+#family-lang-es:checked ~ .lang-panels [data-lang="es"],
+#family-lang-ar:checked ~ .lang-panels [data-lang="ar"],
+#family-lang-fr:checked ~ .lang-panels [data-lang="fr"],
+#family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
+.lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
+.auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
+  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -59,7 +75,20 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 <section>
   <h2>What students are learning</h2>
   <p>Equivalent forms name the same value in different ways. Percent means &quot;out of 100,&quot; so a fraction is already a percent once its denominator is 100.</p>
-  <p class="callout"><strong>Key idea:</strong> Fraction, Decimal &amp; Percent Equivalence. 1. Percent to Decimal: Divide by 100 (move decimal point 2 places left). 2. Decimal to Percent: Multiply by 100 (move decimal point 2 places right). 3. Fraction to Percent: Divide numerator by denominator, then convert decimal to percent</p>
+  <p class="callout"><strong>Key idea:</strong> A fraction, a decimal, and a percent can name the same amount. Half a pizza is 1/2, or 0.5, or 50%. To turn a decimal into a percent, multiply by 100: 0.25 becomes 25%.<br><span class="es-text" lang="es">Idea clave: Una fracción, un decimal y un porcentaje pueden nombrar la misma cantidad. Media pizza es 1/2, o 0.5, o 50%. Para convertir un decimal en porcentaje, multiplica por 100: 0.25 se convierte en 25%.</span></p>
+</section>
+
+<section class="lang-section">
+  <h2>Read this in your language <span class="es">· Lea esto en su idioma</span></h2>
+  <div class="lang-picker"><input type="radio" class="lang-radio" name="family-lang" id="family-lang-en" value="en" checked><label for="family-lang-en" lang="en">English</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-es" value="es"><label for="family-lang-es" lang="es">Español</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-ar" value="ar"><label for="family-lang-ar" lang="ar">العربية</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-fr" value="fr"><label for="family-lang-fr" lang="fr">Français</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-prs" value="prs"><label for="family-lang-prs" lang="prs">دری</label>
+  <div class="lang-panels">
+  <div class="lang-panel" data-lang="en" lang="en"><p class="callout">A fraction, a decimal, and a percent can name the same amount. Half a pizza is 1/2, or 0.5, or 50%. To turn a decimal into a percent, multiply by 100: 0.25 becomes 25%.</p><ul><li><span class="kw"><bdi>Fractions, Decimals, and Percents</bdi></span> — Three equivalent ways to name the same part of a whole.</li><li><span class="kw"><bdi>Percent</bdi></span> — A way to compare a number to 100, shown with the % sign.</li><li><span class="kw"><bdi>Decimal</bdi></span> — A number with a dot, like 0.5, that shows a part less than one.</li><li><span class="kw"><bdi>Equivalent</bdi></span> — Having the same value, just written a different way.</li><li><span class="kw"><bdi>Benchmark</bdi></span> — A familiar number you use to guess, like 50% or 1/2.</li><li><span class="kw"><bdi>Discount</bdi></span> — Money taken off the first price to make it cheaper.</li><li><span class="kw"><bdi>Hundredths</bdi></span> — The second place after the decimal point; parts out of 100.</li><li><span class="kw"><bdi>Common form</bdi></span> — One form, such as percents, that every value in a list is rewritten in.</li></ul></div>
+  <div class="lang-panel" data-lang="es" lang="es"><p class="callout">Una fracción, un decimal y un porcentaje pueden nombrar la misma cantidad. Media pizza es 1/2, o 0.5, o 50%. Para convertir un decimal en porcentaje, multiplica por 100: 0.25 se convierte en 25%.</p><ul><li><span class="kw"><bdi>Fracciones, decimales y porcentajes</bdi></span> — Tres maneras equivalentes de nombrar la misma parte de un todo.</li><li><span class="kw"><bdi>Porcentaje</bdi></span> — Una manera de comparar un número con 100, con el signo %.</li><li><span class="kw"><bdi>Decimal</bdi></span> — Un número con un punto, como 0.5, que muestra una parte menor que uno.</li><li><span class="kw"><bdi>Equivalente</bdi></span> — Tener el mismo valor, escrito de otra forma.</li><li><span class="kw"><bdi>Referencia</bdi></span> — Un número conocido que usas para estimar, como 50% o 1/2.</li><li><span class="kw"><bdi>Descuento</bdi></span> — Dinero que se quita del precio original para que sea más barato.</li><li><span class="kw"><bdi>Centésimos</bdi></span> — La segunda posición después del punto decimal; partes de 100.</li><li><span class="kw"><bdi>Forma común</bdi></span> — Una forma, como porcentajes, en la que se reescriben todos los valores de una lista.</li></ul></div>
+  <div class="lang-panel" data-lang="ar" lang="ar" dir="rtl"><p class="auto-label">ترجمة آلية · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">يمكن للكسر والعدد العشري والنسبة المئوية أن تعبّر عن الكمية نفسها. نصف البيتزا هو 1/2 أو 0.5 أو 50%. لتحويل العدد العشري إلى نسبة مئوية، اضربه في 100: يصبح 0.25 هو 25%.</p><ul><li><span class="kw"><bdi>الكسور والأعداد العشرية والنسب المئوية</bdi></span> (<bdi lang="en">Fractions, Decimals, and Percents</bdi>) — ثلاث طرق متكافئة لتسمية الجزء نفسه من الكل.</li><li><span class="kw"><bdi>نسبة مئوية</bdi></span> (<bdi lang="en">Percent</bdi>) — طريقة لمقارنة عدد بـ 100، وتُكتب بالرمز %.</li><li><span class="kw"><bdi>عدد عشري</bdi></span> (<bdi lang="en">Decimal</bdi>) — عدد فيه فاصلة، مثل 0.5، يدل على جزء أقل من واحد.</li><li><span class="kw"><bdi>متكافئ</bdi></span> (<bdi lang="en">Equivalent</bdi>) — له القيمة نفسها، لكنه مكتوب بطريقة مختلفة.</li><li><span class="kw"><bdi>عدد مرجعي</bdi></span> (<bdi lang="en">Benchmark</bdi>) — عدد مألوف تستخدمه للتقدير، مثل 50% أو 1/2.</li><li><span class="kw"><bdi>خصم</bdi></span> (<bdi lang="en">Discount</bdi>) — مال يُطرح من السعر الأصلي ليصبح أرخص.</li><li><span class="kw"><bdi>أجزاء من مئة</bdi></span> (<bdi lang="en">Hundredths</bdi>) — الخانة الثانية بعد الفاصلة العشرية؛ أجزاء من 100.</li><li><span class="kw"><bdi>صيغة موحّدة</bdi></span> (<bdi lang="en">Common form</bdi>) — صيغة واحدة، مثل النسب المئوية، تُعاد كتابة كل القيم في القائمة بها.</li></ul></div>
+  <div class="lang-panel" data-lang="fr" lang="fr"><p class="auto-label">Traduction automatique · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">Une fraction, un nombre décimal et un pourcentage peuvent désigner la même quantité. La moitié d'une pizza, c'est 1/2, ou 0,5, ou 50 %. Pour passer d'un nombre décimal à un pourcentage, on multiplie par 100 : 0,25 devient 25 %.</p><ul><li><span class="kw"><bdi>Fractions, nombres décimaux et pourcentages</bdi></span> (<bdi lang="en">Fractions, Decimals, and Percents</bdi>) — Trois façons équivalentes de nommer la même partie d'un tout.</li><li><span class="kw"><bdi>Pourcentage</bdi></span> (<bdi lang="en">Percent</bdi>) — Une façon de comparer un nombre à 100, écrite avec le signe %.</li><li><span class="kw"><bdi>Nombre décimal</bdi></span> (<bdi lang="en">Decimal</bdi>) — Un nombre avec une virgule, comme 0,5, qui montre une partie plus petite que un.</li><li><span class="kw"><bdi>Équivalent</bdi></span> (<bdi lang="en">Equivalent</bdi>) — Qui a la même valeur, mais écrit d'une autre façon.</li><li><span class="kw"><bdi>Repère</bdi></span> (<bdi lang="en">Benchmark</bdi>) — Un nombre familier qu'on utilise pour estimer, comme 50 % ou 1/2.</li><li><span class="kw"><bdi>Remise</bdi></span> (<bdi lang="en">Discount</bdi>) — L'argent enlevé du prix de départ pour le rendre moins cher.</li><li><span class="kw"><bdi>Centièmes</bdi></span> (<bdi lang="en">Hundredths</bdi>) — Le deuxième chiffre après la virgule ; des parts sur 100.</li><li><span class="kw"><bdi>Forme commune</bdi></span> (<bdi lang="en">Common form</bdi>) — Une seule forme, comme les pourcentages, dans laquelle on réécrit toutes les valeurs d'une liste.</li></ul></div>
+  <div class="lang-panel" data-lang="prs" lang="prs" dir="rtl"><p class="auto-label">ترجمه ماشینی · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">یک کسر، یک عدد اعشاری و یک فیصدی می‌توانند یک مقدار را نشان دهند. نیم پیتزا 1/2 یا 0.5 یا 50% است. برای تبدیل عدد اعشاری به فیصدی، آن را ضرب 100 کنید: 0.25 می‌شود 25%.</p><ul><li><span class="kw"><bdi>کسرها، اعداد اعشاری و فیصدی‌ها</bdi></span> (<bdi lang="en">Fractions, Decimals, and Percents</bdi>) — سه راه معادل برای نام بردن از یک بخش از یک کل.</li><li><span class="kw"><bdi>فیصدی</bdi></span> (<bdi lang="en">Percent</bdi>) — راهی برای مقایسهٔ یک عدد با 100 که با علامت % نشان داده می‌شود.</li><li><span class="kw"><bdi>عدد اعشاری</bdi></span> (<bdi lang="en">Decimal</bdi>) — عددی با نقطه، مانند 0.5، که بخشی کمتر از یک را نشان می‌دهد.</li><li><span class="kw"><bdi>معادل</bdi></span> (<bdi lang="en">Equivalent</bdi>) — دارای همان ارزش، فقط به شکل دیگری نوشته شده.</li><li><span class="kw"><bdi>عدد معیار</bdi></span> (<bdi lang="en">Benchmark</bdi>) — عددی آشنا که برای تخمین زدن به کار می‌برید، مانند 50% یا 1/2.</li><li><span class="kw"><bdi>تخفیف</bdi></span> (<bdi lang="en">Discount</bdi>) — پولی که از قیمت اول کم می‌شود تا ارزان‌تر شود.</li><li><span class="kw"><bdi>صدم‌ها</bdi></span> (<bdi lang="en">Hundredths</bdi>) — جای دوم بعد از نقطهٔ اعشار؛ بخش‌هایی از 100.</li><li><span class="kw"><bdi>شکل مشترک</bdi></span> (<bdi lang="en">Common form</bdi>) — یک شکل، مانند فیصدی، که همهٔ مقدارهای یک فهرست به آن دوباره نوشته می‌شوند.</li></ul></div>
+  </div>
+  </div>
 </section>
 <section>
   <h2>Key words</h2>
@@ -71,7 +100,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Practice at home</h2>
-  <ol><li>Which shows 0.45 as a fraction and a percent?</li></ol>
+  <ol><li>A family garden is 0.35 planted with tomatoes. Which shows 0.35 as a fraction and a percent?<ol class="choices" type="A"><li>3/5 and 35%</li><li>35/10 and 3.5%</li><li>7/20 and 35%</li><li>7/20 and 3.5%</li></ol></li></ol>
 </section>
 
 <section class="tool-section">
@@ -83,7 +112,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Answer check</h2>
-  <ol><li>Which shows 0.45 as a fraction and a percent? → <span class="answer">9/20 and 45%</span></li></ol>
+  <ol><li>A family garden is 0.35 planted with tomatoes. Which shows 0.35 as a fraction and a percent? → <span class="answer">7/20 and 35%</span></li></ol>
 </section>
 <section>
   <h2>Common mistake</h2>

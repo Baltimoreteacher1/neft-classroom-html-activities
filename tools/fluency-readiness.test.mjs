@@ -17,8 +17,8 @@ const student = getData(studentHTML);
 const lessons = teacher.units.flatMap((u) => u.lessons);
 const publicLessons = student.units.flatMap((u) => u.lessons);
 const source = JSON.parse(read("tools/fluency-guide/src/data/practice.json"));
-assert.equal(lessons.length, 54);
-assert.equal(publicLessons.length, 54);
+assert.equal(lessons.length, 78);
+assert.equal(publicLessons.length, 78);
 assert.equal(teacher.studentPath, "../");
 assert.equal(teacher.pdfPath, "printables/");
 assert.deepEqual(Object.keys(student).sort(), ["spine", "units"]);
@@ -88,7 +88,7 @@ const context = { window: {} };
 vm.runInNewContext(read("assets/curriculum-fluency.js"), context);
 const manifest = JSON.parse(read("data/fluency-resources.json"));
 const launch = JSON.parse(read("data/curriculum-launch-manifest.json"));
-assert.equal(Object.keys(manifest.resources).length, 54);
+assert.equal(Object.keys(manifest.resources).length, 78);
 for (const l of lessons) {
   assert.ok(
     launch.lessons.some((x) => x.id === l.id),
@@ -104,7 +104,7 @@ for (const l of lessons) {
   assert.equal(isTeacherSurface(resource.student), false);
   assert.equal(resource.siteLesson, `/lessons/${l.id}/`);
 }
-for (const id of ["1-1", "10-1", "__proto__", "bad"])
+for (const id of ["10-1", "10-6", "__proto__", "bad"])
   assert.equal(context.window.NT_FLUENCY.resourcesFor(id), null);
 assert.ok(teacherHTML.includes(read("tools/fluency-guide/src/app.js")), "app.js not rebuilt");
 const studioSource = read("tools/fluency-guide/src/studio.js");
@@ -175,5 +175,5 @@ for (const u of teacher.units)
     );
   }
 console.log(
-  "Fluency readiness: 54 lesson mappings, 216 tasks, exact public-data allowlist, teacher route normalization, shared engine/style freshness, printables, and navigation contracts passed.",
+  "Fluency readiness: 78 lesson mappings, 312 tasks, exact public-data allowlist, teacher route normalization, shared engine/style freshness, printables, and navigation contracts passed.",
 );

@@ -42,6 +42,22 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 .muted-note{color:var(--muted);font-size:14px;margin:6px 0 0;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
+
+ol.choices{margin:6px 0 4px;}
+.lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
+.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
+  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
+.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
+.lang-panel{display:none;margin-top:6px;}
+#family-lang-en:checked ~ .lang-panels [data-lang="en"],
+#family-lang-es:checked ~ .lang-panels [data-lang="es"],
+#family-lang-ar:checked ~ .lang-panels [data-lang="ar"],
+#family-lang-fr:checked ~ .lang-panels [data-lang="fr"],
+#family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
+.lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
+.auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
+  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -59,7 +75,20 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 <section>
   <h2>What students are learning</h2>
   <p>The book opens with two warm-ups: about how many peas are in the picture, and decompose 105.76 five different ways. Both are about thinking before computing.</p>
-  <p class="callout"><strong>Key idea:</strong> Math Practices: Sense Making &amp; Strategy Planning. 1. Identify known quantities and the unknown question. 2. Choose a strategy (draw a model, write an equation, or build a table). 3. Evaluate progress and pivot to an alternate approach if needed</p>
+  <p class="callout"><strong>Key idea:</strong> Before solving, find what you already know and what the question is asking. Pick a plan, like drawing a picture, writing an equation, or making a table. Check how it is going, and try a new plan if you get stuck.<br><span class="es-text" lang="es">Idea clave: Antes de resolver, hay que identificar lo que ya se sabe y lo que pregunta el problema. Luego se elige un plan, como hacer un dibujo, escribir una ecuación o hacer una tabla. Hay que revisar cómo va el trabajo y probar otro plan si uno se atora.</span></p>
+</section>
+
+<section class="lang-section">
+  <h2>Read this in your language <span class="es">· Lea esto en su idioma</span></h2>
+  <div class="lang-picker"><input type="radio" class="lang-radio" name="family-lang" id="family-lang-en" value="en" checked><label for="family-lang-en" lang="en">English</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-es" value="es"><label for="family-lang-es" lang="es">Español</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-ar" value="ar"><label for="family-lang-ar" lang="ar">العربية</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-fr" value="fr"><label for="family-lang-fr" lang="fr">Français</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-prs" value="prs"><label for="family-lang-prs" lang="prs">دری</label>
+  <div class="lang-panels">
+  <div class="lang-panel" data-lang="en" lang="en"><p class="callout">Before solving, find what you already know and what the question is asking. Pick a plan, like drawing a picture, writing an equation, or making a table. Check how it is going, and try a new plan if you get stuck.</p><ul><li><span class="kw"><bdi>quantity</bdi></span> — An amount in a problem — a number with a meaning attached, like 540 meters.</li><li><span class="kw"><bdi>relationship</bdi></span> — How two quantities compare or connect to each other.</li><li><span class="kw"><bdi>strategy</bdi></span> — A plan for how to solve a problem before you start computing.</li><li><span class="kw"><bdi>reasonable</bdi></span> — A solution that makes sense in the context of the problem.</li><li><span class="kw"><bdi>persevere</bdi></span> — To keep working on a problem, checking your progress and adjusting your plan when you get stuck.</li></ul></div>
+  <div class="lang-panel" data-lang="es" lang="es"><p class="callout">Antes de resolver, hay que identificar lo que ya se sabe y lo que pregunta el problema. Luego se elige un plan, como hacer un dibujo, escribir una ecuación o hacer una tabla. Hay que revisar cómo va el trabajo y probar otro plan si uno se atora.</p><ul><li><span class="kw"><bdi>cantidad</bdi></span> — Una cantidad en un problema: un número con un significado, como 540 metros.</li><li><span class="kw"><bdi>relación</bdi></span> — Cómo se comparan o se conectan dos cantidades entre sí.</li><li><span class="kw"><bdi>estrategia</bdi></span> — Un plan para resolver un problema antes de empezar a calcular.</li><li><span class="kw"><bdi>razonable</bdi></span> — Una solución que tiene sentido en el contexto del problema.</li><li><span class="kw"><bdi>perseverar</bdi></span> — Seguir trabajando en un problema, revisando tu progreso y ajustando tu plan cuando te atascas.</li></ul></div>
+  <div class="lang-panel" data-lang="ar" lang="ar" dir="rtl"><p class="auto-label">ترجمة آلية · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">قبل الحل، حدّد ما تعرفه بالفعل وما يسأل عنه السؤال. اختر خطة، مثل رسم صورة أو كتابة معادلة أو عمل جدول. راجع كيف يسير عملك، وجرّب خطة جديدة إذا توقّفت.</p><ul><li><span class="kw"><bdi>كمية</bdi></span> (<bdi lang="en">quantity</bdi>) — مقدار في مسألة: عدد له معنى، مثل 540 مترًا.</li><li><span class="kw"><bdi>علاقة</bdi></span> (<bdi lang="en">relationship</bdi>) — كيف تُقارَن كميتان أو ترتبطان ببعضهما.</li><li><span class="kw"><bdi>استراتيجية</bdi></span> (<bdi lang="en">strategy</bdi>) — خطة لحل المسألة قبل أن تبدأ الحساب.</li><li><span class="kw"><bdi>معقول</bdi></span> (<bdi lang="en">reasonable</bdi>) — حلّ له معنى في سياق المسألة.</li><li><span class="kw"><bdi>يثابر</bdi></span> (<bdi lang="en">persevere</bdi>) — الاستمرار في العمل على المسألة، مع مراجعة تقدّمك وتعديل خطتك عندما تتعثّر.</li></ul></div>
+  <div class="lang-panel" data-lang="fr" lang="fr"><p class="auto-label">Traduction automatique · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">Avant de résoudre, on repère ce qu'on sait déjà et ce que la question demande. On choisit un plan : faire un dessin, écrire une équation ou faire un tableau. On vérifie où on en est, et on essaie un autre plan si on bloque.</p><ul><li><span class="kw"><bdi>quantité</bdi></span> (<bdi lang="en">quantity</bdi>) — Une valeur dans un problème — un nombre qui a un sens, comme 540 mètres.</li><li><span class="kw"><bdi>relation</bdi></span> (<bdi lang="en">relationship</bdi>) — La façon dont deux quantités se comparent ou sont liées l'une à l'autre.</li><li><span class="kw"><bdi>stratégie</bdi></span> (<bdi lang="en">strategy</bdi>) — Un plan pour résoudre un problème avant de commencer à calculer.</li><li><span class="kw"><bdi>raisonnable</bdi></span> (<bdi lang="en">reasonable</bdi>) — Une solution qui a du sens dans le contexte du problème.</li><li><span class="kw"><bdi>persévérer</bdi></span> (<bdi lang="en">persevere</bdi>) — Continuer à travailler sur un problème, en vérifiant ses progrès et en ajustant son plan quand on bloque.</li></ul></div>
+  <div class="lang-panel" data-lang="prs" lang="prs" dir="rtl"><p class="auto-label">ترجمه ماشینی · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">پیش از حل کردن، معلوم کنید چه چیزی را از قبل می‌دانید و سؤال چه می‌پرسد. یک پلان انتخاب کنید، مثلاً کشیدن یک تصویر، نوشتن یک معادله یا ساختن یک جدول. ببینید کار چطور پیش می‌رود، و اگر گیر ماندید، یک پلان دیگر را امتحان کنید.</p><ul><li><span class="kw"><bdi>مقدار</bdi></span> (<bdi lang="en">quantity</bdi>) — یک مقدار در یک مسئله — عددی که معنایی دارد، مانند 540 متر.</li><li><span class="kw"><bdi>رابطه</bdi></span> (<bdi lang="en">relationship</bdi>) — اینکه دو مقدار چطور با هم مقایسه می‌شوند یا با هم ارتباط دارند.</li><li><span class="kw"><bdi>استراتیژی</bdi></span> (<bdi lang="en">strategy</bdi>) — یک پلان برای حل یک مسئله پیش از شروع حساب کردن.</li><li><span class="kw"><bdi>معقول</bdi></span> (<bdi lang="en">reasonable</bdi>) — حلی که در موقعیت مسئله معنا دارد.</li><li><span class="kw"><bdi>پشتکار داشتن</bdi></span> (<bdi lang="en">persevere</bdi>) — ادامه دادن کار روی یک مسئله، با بررسی پیشرفت خود و تغییر دادن پلان وقتی گیر می‌مانید.</li></ul></div>
+  </div>
+  </div>
 </section>
 <section>
   <h2>Key words</h2>
@@ -71,7 +100,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Practice at home</h2>
-  <ol><li>Which statement best shows what this lesson means by &quot;math is exploring and thinking&quot;?</li></ol>
+  <ol><li>Diego is figuring out how much paint he needs for a fence. His first plan isn't working. Which approach best matches the idea that math is exploring and thinking?<ol class="choices" type="A"><li>Do the calculation as fast as he can and move on, even if it doesn't seem right</li><li>Stop and wait until someone tells him the one right way to do it</li><li>Figure out what he knows and what he needs, make a plan, check how it's going, and try a new plan when he's stuck</li><li>Keep going without checking, and only look back if the final number seems strange</li></ol></li></ol>
 </section>
 
 <section class="tool-section">
@@ -83,7 +112,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Answer check</h2>
-  <ol><li>Which statement best shows what this lesson means by &quot;math is exploring and thinking&quot;? → <span class="answer">We make sense of problems, plan a strategy, check our progress, and try other strategies at dead ends</span></li></ol>
+  <ol><li>Diego is figuring out how much paint he needs for a fence. His first plan isn't working. Which approach best matches the idea that math is exploring and thinking? → <span class="answer">Figure out what he knows and what he needs, make a plan, check how it's going, and try a new plan when he's stuck</span></li></ol>
 </section>
 <section>
   <h2>Common mistake</h2>

@@ -42,6 +42,22 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 .muted-note{color:var(--muted);font-size:14px;margin:6px 0 0;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
+
+ol.choices{margin:6px 0 4px;}
+.lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
+.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
+  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
+.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
+.lang-panel{display:none;margin-top:6px;}
+#family-lang-en:checked ~ .lang-panels [data-lang="en"],
+#family-lang-es:checked ~ .lang-panels [data-lang="es"],
+#family-lang-ar:checked ~ .lang-panels [data-lang="ar"],
+#family-lang-fr:checked ~ .lang-panels [data-lang="fr"],
+#family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
+.lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
+.auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
+  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -59,7 +75,20 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 <section>
   <h2>What students are learning</h2>
   <p>Surface area of a pyramid is the base area plus all the triangular side faces. A square pyramid has 1 square base and 4 triangular faces. Each triangle uses the slant height: ½ × base × slant height.</p>
-  <p class="callout"><strong>Key idea:</strong> Surface Area of Pyramids. Formula: Surface Area = Base Area + Sum of Triangular Lateral Faces. 1. Calculate area of base polygon (square, rectangle, or triangle). 2. Calculate area of each triangular face using ½ × base × slant height. 3. Add the base area and all triangular face areas together</p>
+  <p class="callout"><strong>Key idea:</strong> The surface area of a pyramid is the area of its bottom plus the areas of its triangle sides. A square pyramid with a 6 in base edge and 5 in slant height: 6 × 6 = 36, each triangle is ½ × 6 × 5 = 15, so 36 + 4 × 15 = 96 square inches.<br><span class="es-text" lang="es">Idea clave: El área de superficie de una pirámide es el área de su base más las áreas de sus caras triangulares. Una pirámide cuadrada con arista de la base de 6 pulg y altura inclinada de 5 pulg: 6 × 6 = 36, cada triángulo es ½ × 6 × 5 = 15, así que 36 + 4 × 15 = 96 pulgadas cuadradas.</span></p>
+</section>
+
+<section class="lang-section">
+  <h2>Read this in your language <span class="es">· Lea esto en su idioma</span></h2>
+  <div class="lang-picker"><input type="radio" class="lang-radio" name="family-lang" id="family-lang-en" value="en" checked><label for="family-lang-en" lang="en">English</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-es" value="es"><label for="family-lang-es" lang="es">Español</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-ar" value="ar"><label for="family-lang-ar" lang="ar">العربية</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-fr" value="fr"><label for="family-lang-fr" lang="fr">Français</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-prs" value="prs"><label for="family-lang-prs" lang="prs">دری</label>
+  <div class="lang-panels">
+  <div class="lang-panel" data-lang="en" lang="en"><p class="callout">The surface area of a pyramid is the area of its bottom plus the areas of its triangle sides. A square pyramid with a 6 in base edge and 5 in slant height: 6 × 6 = 36, each triangle is ½ × 6 × 5 = 15, so 36 + 4 × 15 = 96 square inches.</p><ul><li><span class="kw"><bdi>Surface Area of Pyramids</bdi></span> — The total area of a pyramid's base and triangular faces. Formula: SA = B + lateral area.</li><li><span class="kw"><bdi>Pyramid</bdi></span> — A solid with a flat bottom and triangle sides that meet at one point on top.</li><li><span class="kw"><bdi>Slant height</bdi></span> — The height of a side triangle, measured along its slanted face.</li><li><span class="kw"><bdi>Lateral face</bdi></span> — A triangle side of a pyramid, not the bottom.</li><li><span class="kw"><bdi>Base</bdi></span> — The flat bottom of a pyramid.</li><li><span class="kw"><bdi>Apex</bdi></span> — The point at the top of a pyramid where the sides meet.</li><li><span class="kw"><bdi>Lateral area</bdi></span> — The total area of just the side triangles, not the bottom.</li><li><span class="kw"><bdi>Surface area</bdi></span> — The total area of every face of a solid, base included.</li></ul></div>
+  <div class="lang-panel" data-lang="es" lang="es"><p class="callout">El área de superficie de una pirámide es el área de su base más las áreas de sus caras triangulares. Una pirámide cuadrada con arista de la base de 6 pulg y altura inclinada de 5 pulg: 6 × 6 = 36, cada triángulo es ½ × 6 × 5 = 15, así que 36 + 4 × 15 = 96 pulgadas cuadradas.</p><ul><li><span class="kw"><bdi>Área de superficie de pirámides</bdi></span> — El área total de la base y las caras triangulares de una pirámide. Fórmula: SA = B + área lateral.</li><li><span class="kw"><bdi>Pirámide</bdi></span> — Un sólido con un fondo plano y lados triangulares que se unen en un punto arriba.</li><li><span class="kw"><bdi>Altura inclinada (apotema)</bdi></span> — La altura de un triángulo lateral, medida por su cara inclinada.</li><li><span class="kw"><bdi>Cara lateral</bdi></span> — Un lado triangular de una pirámide, no el fondo.</li><li><span class="kw"><bdi>Base</bdi></span> — El fondo plano de una pirámide.</li><li><span class="kw"><bdi>Ápice</bdi></span> — El punto en la parte de arriba de una pirámide donde se unen los lados.</li><li><span class="kw"><bdi>Área lateral</bdi></span> — El área total solo de los triángulos laterales, sin el fondo.</li><li><span class="kw"><bdi>Área superficial</bdi></span> — El área total de todas las caras de un sólido, incluida la base.</li></ul></div>
+  <div class="lang-panel" data-lang="ar" lang="ar" dir="rtl"><p class="auto-label">ترجمة آلية · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">المساحة السطحية للهرم هي مساحة قاعدته مضافًا إليها مساحات أوجهه المثلثة. هرم رباعي طول حرف قاعدته 6 بوصات وارتفاعه الجانبي 5 بوصات: 6 × 6 = 36، وكل مثلث ½ × 6 × 5 = 15، إذن 36 + 4 × 15 = 96 بوصة مربعة.</p><ul><li><span class="kw"><bdi>المساحة السطحية للأهرامات</bdi></span> (<bdi lang="en">Surface Area of Pyramids</bdi>) — المساحة الكلية لقاعدة الهرم وأوجهه المثلثة. الصيغة: م.س = ق + المساحة الجانبية.</li><li><span class="kw"><bdi>هرم</bdi></span> (<bdi lang="en">Pyramid</bdi>) — مجسم له قاعدة مستوية وأوجه مثلثة تلتقي في نقطة واحدة في الأعلى.</li><li><span class="kw"><bdi>الارتفاع الجانبي</bdi></span> (<bdi lang="en">Slant height</bdi>) — ارتفاع المثلث الجانبي، مقيسًا على وجهه المائل.</li><li><span class="kw"><bdi>وجه جانبي</bdi></span> (<bdi lang="en">Lateral face</bdi>) — وجه مثلث من أوجه الهرم، وليس القاعدة.</li><li><span class="kw"><bdi>القاعدة</bdi></span> (<bdi lang="en">Base</bdi>) — الوجه السفلي المستوي للهرم.</li><li><span class="kw"><bdi>الرأس</bdi></span> (<bdi lang="en">Apex</bdi>) — النقطة في أعلى الهرم حيث تلتقي الأوجه.</li><li><span class="kw"><bdi>المساحة الجانبية</bdi></span> (<bdi lang="en">Lateral area</bdi>) — المساحة الكلية للمثلثات الجانبية فقط، دون القاعدة.</li><li><span class="kw"><bdi>المساحة السطحية</bdi></span> (<bdi lang="en">Surface area</bdi>) — المساحة الكلية لكل أوجه المجسم، بما فيها القاعدة.</li></ul></div>
+  <div class="lang-panel" data-lang="fr" lang="fr"><p class="auto-label">Traduction automatique · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">L'aire totale d'une pyramide, c'est l'aire de sa base plus les aires de ses faces triangulaires. Une pyramide à base carrée de 6 po de côté et d'apothème 5 po : 6 × 6 = 36, chaque triangle vaut ½ × 6 × 5 = 15, donc 36 + 4 × 15 = 96 pouces carrés.</p><ul><li><span class="kw"><bdi>Aire totale des pyramides</bdi></span> (<bdi lang="en">Surface Area of Pyramids</bdi>) — L'aire totale de la base et des faces triangulaires d'une pyramide. Formule : A = B + aire latérale.</li><li><span class="kw"><bdi>Pyramide</bdi></span> (<bdi lang="en">Pyramid</bdi>) — Un solide avec un fond plat et des faces triangulaires qui se rejoignent en un point en haut.</li><li><span class="kw"><bdi>Apothème</bdi></span> (<bdi lang="en">Slant height</bdi>) — La hauteur d'une face triangulaire, mesurée le long de sa pente.</li><li><span class="kw"><bdi>Face latérale</bdi></span> (<bdi lang="en">Lateral face</bdi>) — Une face triangulaire de la pyramide, pas le fond.</li><li><span class="kw"><bdi>Base</bdi></span> (<bdi lang="en">Base</bdi>) — Le fond plat d'une pyramide.</li><li><span class="kw"><bdi>Sommet</bdi></span> (<bdi lang="en">Apex</bdi>) — Le point en haut de la pyramide où les faces se rejoignent.</li><li><span class="kw"><bdi>Aire latérale</bdi></span> (<bdi lang="en">Lateral area</bdi>) — L'aire totale des seules faces triangulaires, sans le fond.</li><li><span class="kw"><bdi>Aire totale</bdi></span> (<bdi lang="en">Surface area</bdi>) — L'aire totale de toutes les faces d'un solide, base comprise.</li></ul></div>
+  <div class="lang-panel" data-lang="prs" lang="prs" dir="rtl"><p class="auto-label">ترجمه ماشینی · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">مساحت سطح هرم، مساحت قاعدهٔ آن به اضافهٔ مساحت‌های رویه‌های مثلثی آن است. هرم مربعی با یال قاعدهٔ 6 انچ و ارتفاع مایل 5 انچ: 6 × 6 = 36، هر مثلث ½ × 6 × 5 = 15، پس 36 + 4 × 15 = 96 انچ مربع.</p><ul><li><span class="kw"><bdi>مساحت سطح هرم‌ها</bdi></span> (<bdi lang="en">Surface Area of Pyramids</bdi>) — مساحت کل قاعده و رویه‌های مثلثی یک هرم. فورمول: SA = B + مساحت جانبی.</li><li><span class="kw"><bdi>هرم</bdi></span> (<bdi lang="en">Pyramid</bdi>) — جسمی با کف هموار و رویه‌های مثلثی که در بالا در یک نقطه به هم می‌رسند.</li><li><span class="kw"><bdi>ارتفاع مایل</bdi></span> (<bdi lang="en">Slant height</bdi>) — ارتفاع یک مثلث جانبی که روی رویهٔ مایل آن اندازه می‌شود.</li><li><span class="kw"><bdi>رویهٔ جانبی</bdi></span> (<bdi lang="en">Lateral face</bdi>) — یک رویهٔ مثلثی هرم، نه کف آن.</li><li><span class="kw"><bdi>قاعده</bdi></span> (<bdi lang="en">Base</bdi>) — کف هموار یک هرم.</li><li><span class="kw"><bdi>رأس</bdi></span> (<bdi lang="en">Apex</bdi>) — نقطه‌ای در بالای هرم که رویه‌ها در آن به هم می‌رسند.</li><li><span class="kw"><bdi>مساحت جانبی</bdi></span> (<bdi lang="en">Lateral area</bdi>) — مساحت کل فقط مثلث‌های جانبی، بدون کف.</li><li><span class="kw"><bdi>مساحت سطح</bdi></span> (<bdi lang="en">Surface area</bdi>) — مساحت کل همهٔ رویه‌های یک جسم، با قاعده.</li></ul></div>
+  </div>
+  </div>
 </section>
 <section>
   <h2>Key words</h2>
@@ -71,7 +100,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Practice at home</h2>
-  <ol><li>A square pyramid has a base edge of 6 in and a slant height of 5 in. What is the total surface area?</li></ol>
+  <ol><li>A play tent is shaped like a square pyramid with a base edge of 4 ft and a slant height of 7 ft. What is the total surface area, floor included?<ol class="choices" type="A"><li>72 ft²</li><li>16 ft²</li><li>56 ft²</li><li>72 ft³</li></ol></li></ol>
 </section>
 
 <section class="tool-section">
@@ -83,7 +112,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Answer check</h2>
-  <ol><li>A square pyramid has a base edge of 6 in and a slant height of 5 in. What is the total surface area? → <span class="answer">96 in²</span></li></ol>
+  <ol><li>A play tent is shaped like a square pyramid with a base edge of 4 ft and a slant height of 7 ft. What is the total surface area, floor included? → <span class="answer">72 ft²</span></li></ol>
 </section>
 <section>
   <h2>Common mistake</h2>

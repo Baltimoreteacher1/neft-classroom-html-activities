@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import vm from "node:vm";
 import { JSDOM } from "jsdom";
-import { validateWorkshops, workshops } from "./workshop-bank.mjs";
+import { extendedWorkshopIds, validateWorkshops, workshops } from "./workshop-bank.mjs";
 
 const source = readFileSync(new URL("./src/studio.js", import.meta.url), "utf8");
 const ctx = vm.createContext({});
@@ -45,8 +45,33 @@ const average = (v) => v.reduce((a, b) => a + b, 0) / v.length;
 const common = (a, b) => {
   for (let n = Math.min(a, b); n >= 1; n--) if (a % n === 0 && b % n === 0) return n;
 };
+// Authored workshops (src/data/workshops-extended.json) carry a `check` expression per skill
+// task. Evaluate it independently, and require every number it uses to be visible to the
+// student in the prompt or the model, so a check cannot smuggle in a hidden quantity.
+const EXTENDED = new Set(extendedWorkshopIds);
+const visibleNumbers = (text) =>
+  (
+    String(text)
+      .replace(/(\d),(\d{3})(?!\d)/g, "$1$2")
+      .match(/\d+(?:\.\d+)?/g) || []
+  ).map(Number);
+function evaluateCheck(id, p, i) {
+  const src = String(p.check || "")
+    .replaceAll("×", "*")
+    .replaceAll("÷", "/")
+    .replaceAll("−", "-");
+  assert.match(src, /^[\d.\s+\-*/()]+$/, `${id}/${i}: check must be plain arithmetic`);
+  const shown = new Set([...visibleNumbers(p.prompt), ...visibleNumbers(JSON.stringify(p.model))]);
+  for (const n of visibleNumbers(src))
+    assert.ok(
+      shown.has(n) || [1, 2, 10, 100, 1000].includes(n),
+      `${id}/${i}: check uses ${n}, which the task never shows`,
+    );
+  return Function(`"use strict";return (${src});`)();
+}
 // Recompute from the visible quantities. These formulas do not import the bank's helpers.
 function expected(id, p, i) {
+  if (EXTENDED.has(id)) return evaluateCheck(id, p, i);
   const m = p.model;
   switch (id) {
     case "2-1":
@@ -232,12 +257,12 @@ function expected(id, p, i) {
       throw new Error(id);
   }
 }
-test("all 54 source lessons have complete, distinct instructional sequences", () => {
+test("all 78 taught lessons have complete, distinct instructional sequences", () => {
   const core = JSON.parse(
     readFileSync(new URL("./src/data/curriculum.core.json", import.meta.url)),
   );
   assert.deepEqual(validateWorkshops(core.units.flatMap((u) => u.lessons.map((l) => l.id))), []);
-  assert.equal(ids.length, 54);
+  assert.equal(ids.length, 78);
   for (const [id, w] of Object.entries(workshops)) {
     assert.equal(w.tasks.length, 8, id);
     assert.equal(w.tasks.filter((p) => p.guidance.length).length, 2, id);
@@ -303,14 +328,14 @@ test("both editions embed the exact model source and preserve existing lesson ba
         .textContent.replace(/^window\.FluencyData = /, "")
         .replace(/;$/, ""),
     );
-    assert.equal(dataset.units.flatMap((u) => u.lessons).length, 54);
+    assert.equal(dataset.units.flatMap((u) => u.lessons).length, 78);
     assert.equal(
       dataset.units.flatMap((u) => u.lessons).reduce((n, l) => n + l.workshop.tasks.length, 0),
-      432,
+      624,
     );
     assert.equal(
       dataset.units.flatMap((u) => u.lessons).reduce((n, l) => n + l.practice.length, 0),
-      216,
+      312,
     );
   }
 });

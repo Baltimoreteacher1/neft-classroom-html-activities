@@ -1,3 +1,4 @@
+import { choiceOrderFor } from "../core/choice-order.js";
 import { stackContent } from "../core/i18n.js";
 import { diagnoseChoice, misconceptionLabel, studentExplanation } from "../core/misconceptions.js";
 import { compareYourWorkFor } from "../core/notebook-prompt.js";
@@ -220,6 +221,8 @@ export function renderMultipleChoice(container, opts) {
     choiceFeedbackEs,
     hint,
     scaffold,
+    // Optional override for the display-order seed; defaults to the page's lesson.
+    lessonKey,
   } = opts || {};
   injectMultipleChoiceStyles();
 
@@ -257,10 +260,22 @@ export function renderMultipleChoice(container, opts) {
   let selected = null;
   let answered = false;
 
-  choices.forEach((choice, i) => {
+  // Display order, not authored order (engine/core/choice-order.js). `i` below
+  // is ALWAYS the authored index — it is what grading, choiceFeedback, the
+  // misconception lookup and onAnswer see. Only `slot` (the letter and the
+  // position on screen) follows the shuffle.
+  const order = choiceOrderFor({ ...opts, stem, choices }, lessonKey == null ? {} : { lessonKey });
+  wrapper.dataset.choiceOrder = order.join(",");
+  /** @type {HTMLLabelElement[]} labels by AUTHORED index */
+  const labelsByIndex = [];
+  const letterOf = (authoredIndex) => LETTERS[order.indexOf(authoredIndex)] || "?";
+
+  order.forEach((i, slot) => {
+    const choice = choices[i];
     const label = document.createElement("label");
+    labelsByIndex[i] = label;
     label.className = "mc-option-label mc-anim-in";
-    label.style.setProperty("--mc-i", String(i));
+    label.style.setProperty("--mc-i", String(slot));
     label.id = `label_${id}_${i}`;
     label.setAttribute("for", `${id}_${i}`);
 
@@ -269,7 +284,7 @@ export function renderMultipleChoice(container, opts) {
     input.name = id;
     input.id = `${id}_${i}`;
     input.value = String(i);
-    input.setAttribute("aria-label", `Option ${LETTERS[i]}: ${choice}`);
+    input.setAttribute("aria-label", `Option ${LETTERS[slot]}: ${choice}`);
 
     const radio = document.createElement("span");
     radio.className = "custom-radio";
@@ -277,7 +292,7 @@ export function renderMultipleChoice(container, opts) {
 
     const letter = document.createElement("span");
     letter.className = "mc-letter-badge";
-    letter.textContent = LETTERS[i];
+    letter.textContent = LETTERS[slot];
 
     const text = document.createElement("span");
     text.className = "choice-text";
@@ -340,7 +355,7 @@ export function renderMultipleChoice(container, opts) {
     answered = true;
 
     const isCorrect = selected === correctIndex;
-    const labels = optionsWrap.querySelectorAll(".mc-option-label");
+    const labels = labelsByIndex;
     const diagnosis = isCorrect ? null : diagnoseChoice(opts, selected);
 
     labels.forEach((l) => l.classList.remove("is-correct", "is-incorrect", "is-selected"));
@@ -374,8 +389,8 @@ export function renderMultipleChoice(container, opts) {
       if (revealAnswer) {
         // Out of retries — show the answer so the student isn't stuck.
         labels[correctIndex].classList.add("is-correct");
-        fbMsg = `The answer is ${LETTERS[correctIndex]}. ${explanation || ""}`.trim();
-        fbMsgEs = `La respuesta es ${LETTERS[correctIndex]}. ${explanationEs || ""}`.trim();
+        fbMsg = `The answer is ${letterOf(correctIndex)}. ${explanation || ""}`.trim();
+        fbMsgEs = `La respuesta es ${letterOf(correctIndex)}. ${explanationEs || ""}`.trim();
       } else {
         // Coach the retry instead of a bare "wrong": prefer authored
         // per-choice feedback (why THIS distractor tempts), then the problem's

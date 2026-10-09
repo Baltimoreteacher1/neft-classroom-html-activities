@@ -123,7 +123,7 @@ try {
     console.log(`Checked lesson ${l.id}`);
   }
   report.interactions.push(
-    "All 432 tasks: 324 objective DOM submissions checked; 108 reasoning tasks correctly request self-review.",
+    "All 624 tasks: 468 objective DOM submissions checked; 156 reasoning tasks correctly request self-review.",
   );
   await page.selectOption("#studio-lesson", "3-3");
   await page.locator('.fl-task-rail [data-task="2"]').click();
@@ -296,7 +296,7 @@ try {
     assert.equal(await page.locator(".fl-task-rail [data-studio=task]").count(), 8);
     assert.equal(await page.locator(".fl-model-lesson svg").count(), 1);
     report.interactions.push(
-      "Teacher export opens offline with complete workshop models and 54 lessons.",
+      "Teacher export opens offline with complete workshop models and 78 lessons.",
     );
   }
   assert.deepEqual(report.runtimeErrors, []);
@@ -309,7 +309,7 @@ try {
   console.log(
     JSON.stringify({
       lessonViewports: report.coverage.length,
-      tasks: 432,
+      tasks: 624,
       modelBounds: report.modelBounds.length,
       accessibilityViolations: report.accessibility.reduce((n, x) => n + x.violations.length, 0),
       preparedPackets: report.print.length,

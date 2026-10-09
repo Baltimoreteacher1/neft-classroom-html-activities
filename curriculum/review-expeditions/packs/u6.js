@@ -1371,7 +1371,7 @@
         answer: sh.answer,
         hints: [
           `With parentheses, the whole fraction ${a}/${b} is the base. The exponent counts how many times it is used as a factor.`,
-          `The base is ${a}/${b} and the exponent is ${e}, so ${s.factor} should appear ${e} times.`,
+          `Name the base (the whole fraction in parentheses) and the exponent. The exponent tells how many copies of the base are multiplied together.`,
           `Look for ${e} copies of ${s.factor}, each joined by a multiplication sign.`,
         ],
         hintEs: `Con paréntesis, toda la fracción ${a}/${b} es la base. El exponente cuenta cuántas veces se usa como factor.`,
@@ -1399,7 +1399,7 @@
       answer: sh.answer,
       hints: [
         'The base is the big number. The exponent is the small raised number. The exponent counts factors.',
-        `The base is ${b}. The exponent is ${e}, so ${b} should appear ${e} times.`,
+        `Name the base and the exponent. The exponent tells how many copies of the base are multiplied together, not what to multiply the base by.`,
         `Write ${b}, then × ${b}, until you have ${e} copies of ${b} joined by multiplication signs.`,
       ],
       hintEs: 'La base es el número grande. El exponente es el número pequeño y elevado. El exponente cuenta los factores.',

@@ -98,13 +98,13 @@
 
 | Lesson | Standard | Domain | Title |
 | ------ | -------- | ------ | ----- |
-| 7-1 | `6.NOS.6` (Rational Numbers on the Line) | Number and Operation Sense | Explore Integers and Their Opposites |
+| 7-1 | `6.NOS.5` (Positive & Negative Numbers in Context) | Number and Operation Sense | Explore Integers and Their Opposites |
 | 7-2 | `6.NOS.6` (Rational Numbers on the Line) | Number and Operation Sense | Represent Rational Numbers and Their Opposites on the Number Line |
 | 7-3 | `6.NOS.8` (Ordering & Absolute Value) | Number and Operation Sense | Understand Absolute Value of Rational Numbers |
 | 7-4 | `6.NOS.8` (Ordering & Absolute Value) | Number and Operation Sense | Compare and Order Integers and Rational Numbers |
 | 7-5 | `6.NOS.6` (Rational Numbers on the Line) | Number and Operation Sense | Represent Rational Numbers on the Coordinate Plane |
 | 7-6 | `6.NOS.9` (Coordinate Plane Problems) | Number and Operation Sense | Determine Distance on the Coordinate Plane |
-| 7-7 | `6.NOS.9` (Coordinate Plane Problems) | Number and Operation Sense | Represent Polygons on the Coordinate Plane |
+| 7-7 | `6.GR.3` (Polygons in the Coordinate Plane) | Geometric Reasoning and Measurement | Represent Polygons on the Coordinate Plane |
 | 7-8 | `6.NOS.7` (Reflections in Coordinates) | Number and Operation Sense | Ordered Pairs in All Four Quadrants |
 | 7-9 | `6.NOS.7` (Reflections in Coordinates) | Number and Operation Sense | Reflect Points Across Axes |
 

@@ -56,10 +56,14 @@ const lower = (s) => String(s).toLowerCase();
  * A copy of the lesson with the vocabulary block removed.
  *
  * Without this, "does the lesson use this term?" is answered by the term's own
- * definition, cloze sentence and examples — and every term passes.
+ * definition, cloze sentence and examples — and every term passes. The family
+ * glossary (`familyLanguages.<lang>.vocabulary[].term`) repeats every English
+ * term verbatim by design, so it is excluded for the same reason.
  */
 export function withoutVocabulary(config) {
-  const { vocabulary: _drop, notebook: _nb, ...rest } = config || {};
+  // `familyLanguages` restates every vocabulary term (with translations) for the
+  // family page, so it is a copy of the vocabulary block, not evidence of use.
+  const { vocabulary: _drop, notebook: _nb, familyLanguages: _fl, ...rest } = config || {};
   return rest;
 }
 

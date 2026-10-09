@@ -8,56 +8,67 @@ window.__NT_PACING_DATES = {
     start_date: "8/24/26",
     end_date: "9/8/26",
     instructional_days: 11,
+    curriculum_unit: 1,
   },
   2: {
     start_date: "9/9/26",
     end_date: "10/8/26",
     instructional_days: 21,
+    curriculum_unit: 3,
   },
   3: {
     start_date: "10/9/26",
     end_date: "11/4/26",
     instructional_days: 17,
+    curriculum_unit: 4,
   },
   4: {
     start_date: "11/5/26",
     end_date: "12/7/26",
     instructional_days: 19,
+    curriculum_unit: 6,
   },
   5: {
     start_date: "12/8/26",
     end_date: "1/20/27",
     instructional_days: 22,
+    curriculum_unit: 7,
   },
   6: {
     start_date: "1/21/27",
     end_date: "2/23/27",
     instructional_days: 22,
+    curriculum_unit: 8,
   },
   7: {
     start_date: "2/24/27",
     end_date: "3/18/27",
     instructional_days: 15,
+    curriculum_unit: 9,
   },
   8: {
     start_date: "3/19/27",
     end_date: "4/21/27",
     instructional_days: 18,
+    curriculum_unit: 5,
   },
   9: {
     start_date: "4/22/27",
     end_date: "5/17/27",
     instructional_days: 17,
+    curriculum_unit: 2,
   },
   10: {
     start_date: "5/18/27",
     end_date: "5/28/27",
     instructional_days: 9,
+    curriculum_unit: null,
   },
   11: {
     start_date: "6/1/27",
     end_date: "6/11/27",
     instructional_days: 9,
+    curriculum_unit: 10,
   },
 };
 

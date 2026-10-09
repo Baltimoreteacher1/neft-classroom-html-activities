@@ -42,6 +42,22 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 .muted-note{color:var(--muted);font-size:14px;margin:6px 0 0;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
+
+ol.choices{margin:6px 0 4px;}
+.lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
+.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
+  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
+.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
+.lang-panel{display:none;margin-top:6px;}
+#family-lang-en:checked ~ .lang-panels [data-lang="en"],
+#family-lang-es:checked ~ .lang-panels [data-lang="es"],
+#family-lang-ar:checked ~ .lang-panels [data-lang="ar"],
+#family-lang-fr:checked ~ .lang-panels [data-lang="fr"],
+#family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
+.lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
+.auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
+  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -59,7 +75,20 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 <section>
   <h2>What students are learning</h2>
   <p>Volume is how much space is inside a 3D shape. For a rectangular prism (a box), volume = length × width × height, measured in cubic units.</p>
-  <p class="callout"><strong>Key idea:</strong> Volume of Rectangular Prisms (Whole Numbers). Formula: V = Length × Width × Height = Base Area × Height (V = l · w · h = B · h). 1. Identify the length, width, and height of the box. 2. Multiply base area (l × w) by height (h). 3. Label answer in cubic units (e.g. in³, cm³, ft³)</p>
+  <p class="callout"><strong>Key idea:</strong> Volume is how many unit cubes fill a box. Multiply length × width × height. A box 5 cubes long, 3 wide, and 2 tall holds 5 × 3 × 2 = 30 cubes.<br><span class="es-text" lang="es">Idea clave: El volumen es cuántos cubos unitarios llenan una caja. Multiplica largo × ancho × alto. Una caja de 5 cubos de largo, 3 de ancho y 2 de alto contiene 5 × 3 × 2 = 30 cubos.</span></p>
+</section>
+
+<section class="lang-section">
+  <h2>Read this in your language <span class="es">· Lea esto en su idioma</span></h2>
+  <div class="lang-picker"><input type="radio" class="lang-radio" name="family-lang" id="family-lang-en" value="en" checked><label for="family-lang-en" lang="en">English</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-es" value="es"><label for="family-lang-es" lang="es">Español</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-ar" value="ar"><label for="family-lang-ar" lang="ar">العربية</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-fr" value="fr"><label for="family-lang-fr" lang="fr">Français</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-prs" value="prs"><label for="family-lang-prs" lang="prs">دری</label>
+  <div class="lang-panels">
+  <div class="lang-panel" data-lang="en" lang="en"><p class="callout">Volume is how many unit cubes fill a box. Multiply length × width × height. A box 5 cubes long, 3 wide, and 2 tall holds 5 × 3 × 2 = 30 cubes.</p><ul><li><span class="kw"><bdi>Volume with Whole-Number Edges</bdi></span> — The number of unit cubes inside a rectangular prism. Formula: V = l × w × h.</li><li><span class="kw"><bdi>Volume</bdi></span> — How much space is inside a solid shape.</li><li><span class="kw"><bdi>Rectangular prism</bdi></span> — A solid box shape with six flat rectangle sides.</li><li><span class="kw"><bdi>Cubic units</bdi></span> — The units used to measure space inside, like cubic inches.</li><li><span class="kw"><bdi>Length, width, height</bdi></span> — How long, how wide, and how tall a box is.</li><li><span class="kw"><bdi>Net</bdi></span> — A flat shape that folds up into a solid.</li><li><span class="kw"><bdi>Edge</bdi></span> — The line where two flat sides of a solid meet.</li><li><span class="kw"><bdi>Unit cube</bdi></span> — A cube that measures one unit on every edge.</li><li><span class="kw"><bdi>Base area</bdi></span> — The area of the bottom face of a prism.</li></ul></div>
+  <div class="lang-panel" data-lang="es" lang="es"><p class="callout">El volumen es cuántos cubos unitarios llenan una caja. Multiplica largo × ancho × alto. Una caja de 5 cubos de largo, 3 de ancho y 2 de alto contiene 5 × 3 × 2 = 30 cubos.</p><ul><li><span class="kw"><bdi>Volumen con aristas de números enteros</bdi></span> — La cantidad de cubos unitarios dentro de un prisma rectangular. Fórmula: V = l × w × h.</li><li><span class="kw"><bdi>Volumen</bdi></span> — Cuánto espacio hay dentro de una figura sólida.</li><li><span class="kw"><bdi>Prisma rectangular</bdi></span> — Una figura sólida en forma de caja con seis lados rectangulares.</li><li><span class="kw"><bdi>Unidades cúbicas</bdi></span> — Las unidades para medir el espacio interior, como pulgadas cúbicas.</li><li><span class="kw"><bdi>Largo, ancho, altura</bdi></span> — Qué tan largo, ancho y alto es una caja.</li><li><span class="kw"><bdi>Plantilla (desarrollo plano)</bdi></span> — Una figura plana que se dobla y forma un sólido.</li><li><span class="kw"><bdi>Arista</bdi></span> — La línea donde se unen dos lados planos de un sólido.</li><li><span class="kw"><bdi>Cubo unitario</bdi></span> — Un cubo que mide una unidad en cada arista.</li><li><span class="kw"><bdi>Área de la base</bdi></span> — El área de la cara inferior de un prisma.</li></ul></div>
+  <div class="lang-panel" data-lang="ar" lang="ar" dir="rtl"><p class="auto-label">ترجمة آلية · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">الحجم هو عدد مكعبات الوحدة التي تملأ صندوقًا. اضرب الطول × العرض × الارتفاع. صندوق طوله 5 مكعبات وعرضه 3 وارتفاعه 2 يتسع لـ 5 × 3 × 2 = 30 مكعبًا.</p><ul><li><span class="kw"><bdi>الحجم بأحرف أعداد صحيحة</bdi></span> (<bdi lang="en">Volume with Whole-Number Edges</bdi>) — عدد مكعبات الوحدة داخل منشور مستطيلي. الصيغة: ح = ط × ع × ر.</li><li><span class="kw"><bdi>الحجم</bdi></span> (<bdi lang="en">Volume</bdi>) — مقدار الفراغ داخل مجسم.</li><li><span class="kw"><bdi>منشور مستطيلي</bdi></span> (<bdi lang="en">Rectangular prism</bdi>) — مجسم على شكل صندوق له ستة أوجه مستطيلة.</li><li><span class="kw"><bdi>وحدات مكعبة</bdi></span> (<bdi lang="en">Cubic units</bdi>) — الوحدات المستخدمة لقياس الفراغ الداخلي، مثل البوصة المكعبة.</li><li><span class="kw"><bdi>الطول، العرض، الارتفاع</bdi></span> (<bdi lang="en">Length, width, height</bdi>) — كم طول الصندوق، وكم عرضه، وكم ارتفاعه.</li><li><span class="kw"><bdi>شبكة (مُفرَد المجسم)</bdi></span> (<bdi lang="en">Net</bdi>) — شكل مستوٍ يُطوى ليصبح مجسمًا.</li><li><span class="kw"><bdi>حرف</bdi></span> (<bdi lang="en">Edge</bdi>) — الخط الذي يلتقي عنده وجهان مستويان لمجسم.</li><li><span class="kw"><bdi>مكعب الوحدة</bdi></span> (<bdi lang="en">Unit cube</bdi>) — مكعب طول كل حرف فيه وحدة واحدة.</li><li><span class="kw"><bdi>مساحة القاعدة</bdi></span> (<bdi lang="en">Base area</bdi>) — مساحة الوجه السفلي للمنشور.</li></ul></div>
+  <div class="lang-panel" data-lang="fr" lang="fr"><p class="auto-label">Traduction automatique · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">Le volume, c'est le nombre de cubes unités qui remplissent une boîte. On multiplie longueur × largeur × hauteur. Une boîte de 5 cubes de long, 3 de large et 2 de haut contient 5 × 3 × 2 = 30 cubes.</p><ul><li><span class="kw"><bdi>Volume avec des arêtes entières</bdi></span> (<bdi lang="en">Volume with Whole-Number Edges</bdi>) — Le nombre de cubes unités à l'intérieur d'un prisme rectangulaire. Formule : V = L × l × h.</li><li><span class="kw"><bdi>Volume</bdi></span> (<bdi lang="en">Volume</bdi>) — La quantité d'espace à l'intérieur d'un solide.</li><li><span class="kw"><bdi>Prisme rectangulaire</bdi></span> (<bdi lang="en">Rectangular prism</bdi>) — Un solide en forme de boîte avec six faces rectangulaires.</li><li><span class="kw"><bdi>Unités cubes</bdi></span> (<bdi lang="en">Cubic units</bdi>) — Les unités qui mesurent l'espace intérieur, comme les pouces cubes.</li><li><span class="kw"><bdi>Longueur, largeur, hauteur</bdi></span> (<bdi lang="en">Length, width, height</bdi>) — À quel point une boîte est longue, large et haute.</li><li><span class="kw"><bdi>Patron</bdi></span> (<bdi lang="en">Net</bdi>) — Une figure plane qui se plie pour former un solide.</li><li><span class="kw"><bdi>Arête</bdi></span> (<bdi lang="en">Edge</bdi>) — La ligne où deux faces planes d'un solide se rejoignent.</li><li><span class="kw"><bdi>Cube unité</bdi></span> (<bdi lang="en">Unit cube</bdi>) — Un cube qui mesure une unité sur chaque arête.</li><li><span class="kw"><bdi>Aire de la base</bdi></span> (<bdi lang="en">Base area</bdi>) — L'aire de la face du bas d'un prisme.</li></ul></div>
+  <div class="lang-panel" data-lang="prs" lang="prs" dir="rtl"><p class="auto-label">ترجمه ماشینی · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">حجم یعنی چند مکعب واحد یک جعبه را پر می‌کنند. طول × عرض × ارتفاع را ضرب کنید. جعبه‌ای به طول 5 مکعب، عرض 3 و ارتفاع 2، جای 5 × 3 × 2 = 30 مکعب را دارد.</p><ul><li><span class="kw"><bdi>حجم با یال‌های عدد صحیح</bdi></span> (<bdi lang="en">Volume with Whole-Number Edges</bdi>) — تعداد مکعب‌های واحد داخل یک منشور مستطیلی. فورمول: V = l × w × h.</li><li><span class="kw"><bdi>حجم</bdi></span> (<bdi lang="en">Volume</bdi>) — مقدار فضای داخل یک جسم.</li><li><span class="kw"><bdi>منشور مستطیلی</bdi></span> (<bdi lang="en">Rectangular prism</bdi>) — جسمی به شکل جعبه با شش رویهٔ مستطیلی.</li><li><span class="kw"><bdi>واحدهای مکعب</bdi></span> (<bdi lang="en">Cubic units</bdi>) — واحدهایی که برای اندازه‌گیری فضای داخل به کار می‌روند، مانند انچ مکعب.</li><li><span class="kw"><bdi>طول، عرض، ارتفاع</bdi></span> (<bdi lang="en">Length, width, height</bdi>) — جعبه چقدر دراز، چقدر پهن و چقدر بلند است.</li><li><span class="kw"><bdi>گسترده</bdi></span> (<bdi lang="en">Net</bdi>) — شکلی هموار که تا می‌شود و یک جسم می‌سازد.</li><li><span class="kw"><bdi>یال</bdi></span> (<bdi lang="en">Edge</bdi>) — خطی که دو رویهٔ هموار یک جسم در آن به هم می‌رسند.</li><li><span class="kw"><bdi>مکعب واحد</bdi></span> (<bdi lang="en">Unit cube</bdi>) — مکعبی که هر یال آن یک واحد است.</li><li><span class="kw"><bdi>مساحت قاعده</bdi></span> (<bdi lang="en">Base area</bdi>) — مساحت رویهٔ پایینی یک منشور.</li></ul></div>
+  </div>
+  </div>
 </section>
 <section>
   <h2>Key words</h2>
@@ -71,7 +100,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Practice at home</h2>
-  <ol><li>A rectangular prism has l = 11 in, w = 5 in, h = 4 in. What is the volume?</li></ol>
+  <ol><li>A toy box is shaped like a rectangular prism with l = 12 in, w = 3 in, h = 5 in. What is the volume?<ol class="choices" type="A"><li>180 in³</li><li>36 in³</li><li>150 in³</li><li>180 in²</li></ol></li></ol>
 </section>
 
 <section class="tool-section">
@@ -83,7 +112,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Answer check</h2>
-  <ol><li>A rectangular prism has l = 11 in, w = 5 in, h = 4 in. What is the volume? → <span class="answer">220 in³</span></li></ol>
+  <ol><li>A toy box is shaped like a rectangular prism with l = 12 in, w = 3 in, h = 5 in. What is the volume? → <span class="answer">180 in³</span></li></ol>
 </section>
 <section>
   <h2>Common mistake</h2>

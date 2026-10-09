@@ -42,6 +42,22 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 .muted-note{color:var(--muted);font-size:14px;margin:6px 0 0;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
+
+ol.choices{margin:6px 0 4px;}
+.lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
+.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
+  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
+.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
+.lang-panel{display:none;margin-top:6px;}
+#family-lang-en:checked ~ .lang-panels [data-lang="en"],
+#family-lang-es:checked ~ .lang-panels [data-lang="es"],
+#family-lang-ar:checked ~ .lang-panels [data-lang="ar"],
+#family-lang-fr:checked ~ .lang-panels [data-lang="fr"],
+#family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
+.lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
+.auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
+  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -59,7 +75,20 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 <section>
   <h2>What students are learning</h2>
   <p>The value of each coin is a pattern. Noticing patterns — and the calculations that repeat — lets us solve problems we could never solve by counting one coin at a time.</p>
-  <p class="callout"><strong>Key idea:</strong> Math Practices: Patterns &amp; Generalizations. 1. Organize observations into a table of values. 2. Identify the constant change or rule connecting inputs to outputs. 3. Write a general rule or expression to predict future terms</p>
+  <p class="callout"><strong>Key idea:</strong> Write what you notice in a table. Look for the rule that stays the same from one step to the next. Then write that rule so you can predict what comes next.<br><span class="es-text" lang="es">Idea clave: Se anota en una tabla lo que se observa. Se busca la regla que se mantiene igual de un paso al siguiente. Luego se escribe esa regla para poder predecir lo que sigue.</span></p>
+</section>
+
+<section class="lang-section">
+  <h2>Read this in your language <span class="es">· Lea esto en su idioma</span></h2>
+  <div class="lang-picker"><input type="radio" class="lang-radio" name="family-lang" id="family-lang-en" value="en" checked><label for="family-lang-en" lang="en">English</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-es" value="es"><label for="family-lang-es" lang="es">Español</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-ar" value="ar"><label for="family-lang-ar" lang="ar">العربية</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-fr" value="fr"><label for="family-lang-fr" lang="fr">Français</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-prs" value="prs"><label for="family-lang-prs" lang="prs">دری</label>
+  <div class="lang-panels">
+  <div class="lang-panel" data-lang="en" lang="en"><p class="callout">Write what you notice in a table. Look for the rule that stays the same from one step to the next. Then write that rule so you can predict what comes next.</p><ul><li><span class="kw"><bdi>pattern</bdi></span> — Something that repeats or changes in a predictable way.</li><li><span class="kw"><bdi>pattern rule</bdi></span> — The instruction that tells how to get from one number in a pattern to the next.</li><li><span class="kw"><bdi>generalization</bdi></span> — A statement that is true for a whole pattern, made by noticing repeated calculations.</li><li><span class="kw"><bdi>table of values</bdi></span> — A table that lists each step of a pattern so you can check that a solution is reasonable.</li><li><span class="kw"><bdi>reasonableness</bdi></span> — Whether an answer makes sense — checked as you work, with adjustments made when needed.</li></ul></div>
+  <div class="lang-panel" data-lang="es" lang="es"><p class="callout">Se anota en una tabla lo que se observa. Se busca la regla que se mantiene igual de un paso al siguiente. Luego se escribe esa regla para poder predecir lo que sigue.</p><ul><li><span class="kw"><bdi>patrón</bdi></span> — Algo que se repite o cambia de una manera predecible.</li><li><span class="kw"><bdi>regla del patrón</bdi></span> — La instrucción que dice cómo pasar de un número del patrón al siguiente.</li><li><span class="kw"><bdi>generalización</bdi></span> — Una afirmación verdadera para todo un patrón, hecha al notar cálculos repetidos.</li><li><span class="kw"><bdi>tabla de valores</bdi></span> — Una tabla que muestra cada paso de un patrón para comprobar que una solución es razonable.</li><li><span class="kw"><bdi>sensatez del resultado</bdi></span> — Si una respuesta tiene sentido — se comprueba mientras trabajas y se ajusta cuando es necesario.</li></ul></div>
+  <div class="lang-panel" data-lang="ar" lang="ar" dir="rtl"><p class="auto-label">ترجمة آلية · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">اكتب ما تلاحظه في جدول. ابحث عن القاعدة التي تبقى ثابتة من خطوة إلى الخطوة التالية. ثم اكتب تلك القاعدة لتتمكّن من توقّع ما سيأتي بعد ذلك.</p><ul><li><span class="kw"><bdi>نمط</bdi></span> (<bdi lang="en">pattern</bdi>) — شيء يتكرر أو يتغيّر بطريقة يمكن توقّعها.</li><li><span class="kw"><bdi>قاعدة النمط</bdi></span> (<bdi lang="en">pattern rule</bdi>) — التعليمات التي توضّح كيف تنتقل من عدد في النمط إلى العدد التالي.</li><li><span class="kw"><bdi>تعميم</bdi></span> (<bdi lang="en">generalization</bdi>) — عبارة صحيحة للنمط كله، نصل إليها بملاحظة الحسابات المتكررة.</li><li><span class="kw"><bdi>جدول القيم</bdi></span> (<bdi lang="en">table of values</bdi>) — جدول يعرض كل خطوة من خطوات النمط لتتحقق من أن الحل معقول.</li><li><span class="kw"><bdi>معقولية الإجابة</bdi></span> (<bdi lang="en">reasonableness</bdi>) — هل للإجابة معنى؟ نتحقق من ذلك أثناء العمل ونعدّل عند الحاجة.</li></ul></div>
+  <div class="lang-panel" data-lang="fr" lang="fr"><p class="auto-label">Traduction automatique · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">On note ce qu'on remarque dans un tableau. On cherche la règle qui reste la même d'une étape à la suivante. Ensuite, on écrit cette règle pour pouvoir prédire ce qui vient après.</p><ul><li><span class="kw"><bdi>motif (suite régulière)</bdi></span> (<bdi lang="en">pattern</bdi>) — Quelque chose qui se répète ou change d'une façon prévisible.</li><li><span class="kw"><bdi>règle du motif</bdi></span> (<bdi lang="en">pattern rule</bdi>) — La consigne qui dit comment passer d'un nombre du motif au suivant.</li><li><span class="kw"><bdi>généralisation</bdi></span> (<bdi lang="en">generalization</bdi>) — Un énoncé vrai pour tout le motif, trouvé en remarquant des calculs qui se répètent.</li><li><span class="kw"><bdi>tableau de valeurs</bdi></span> (<bdi lang="en">table of values</bdi>) — Un tableau qui montre chaque étape d'un motif pour vérifier qu'une solution est raisonnable.</li><li><span class="kw"><bdi>vraisemblance</bdi></span> (<bdi lang="en">reasonableness</bdi>) — Le fait qu'une réponse ait du sens — on le vérifie en travaillant et on ajuste si besoin.</li></ul></div>
+  <div class="lang-panel" data-lang="prs" lang="prs" dir="rtl"><p class="auto-label">ترجمه ماشینی · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">آنچه را می‌بینید در یک جدول بنویسید. دنبال قاعده‌ای بگردید که از یک مرحله تا مرحله بعد یکسان می‌ماند. بعد آن قاعده را بنویسید تا بتوانید پیش‌بینی کنید بعداً چه می‌آید.</p><ul><li><span class="kw"><bdi>الگو</bdi></span> (<bdi lang="en">pattern</bdi>) — چیزی که به شکلی قابل پیش‌بینی تکرار می‌شود یا تغییر می‌کند.</li><li><span class="kw"><bdi>قاعده الگو</bdi></span> (<bdi lang="en">pattern rule</bdi>) — دستوری که می‌گوید چطور از یک عدد در الگو به عدد بعدی برسید.</li><li><span class="kw"><bdi>تعمیم</bdi></span> (<bdi lang="en">generalization</bdi>) — گفته‌ای که برای تمام الگو درست است و با دیدن حساب‌های تکراری ساخته می‌شود.</li><li><span class="kw"><bdi>جدول مقادیر</bdi></span> (<bdi lang="en">table of values</bdi>) — جدولی که هر مرحله یک الگو را نشان می‌دهد تا بررسی کنید که یک حل معقول است.</li><li><span class="kw"><bdi>معقول بودن</bdi></span> (<bdi lang="en">reasonableness</bdi>) — اینکه یک جواب معنا دارد یا نه — در حین کار بررسی می‌شود و در صورت نیاز اصلاح می‌شود.</li></ul></div>
+  </div>
+  </div>
 </section>
 <section>
   <h2>Key words</h2>
@@ -71,7 +100,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Practice at home</h2>
-  <ol><li>Which statement best captures what this lesson means by 'Math is Finding Patterns'?</li></ol>
+  <ol><li>Ana is laying stepping stones along a garden path, and each new section of the path adds the same number of stones. Which way of thinking best fits the idea that math is finding patterns?<ol class="choices" type="A"><li>Notice how the stones grow from section to section, use that rule to figure out longer paths, and check that the answer makes sense</li><li>Draw the stones in a neat design, because patterns are mainly there to look nice</li><li>Find the rule, but still count every single stone one at a time to be sure</li><li>Find the rule once, and after that never check whether the totals make sense</li></ol></li></ol>
 </section>
 
 <section class="tool-section">
@@ -83,7 +112,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Answer check</h2>
-  <ol><li>Which statement best captures what this lesson means by 'Math is Finding Patterns'? → <span class="answer">We look for patterns and relationships, use them to solve problems and make generalizations, and check our solutions for reasonableness</span></li></ol>
+  <ol><li>Ana is laying stepping stones along a garden path, and each new section of the path adds the same number of stones. Which way of thinking best fits the idea that math is finding patterns? → <span class="answer">Notice how the stones grow from section to section, use that rule to figure out longer paths, and check that the answer makes sense</span></li></ol>
 </section>
 <section>
   <h2>Common mistake</h2>

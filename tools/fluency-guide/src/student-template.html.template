@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="54 complete Grade 6 lesson workshops: visual models, step-by-step examples, guided and independent practice, error analysis, and math investigations.">
+<meta name="description" content="{{LESSONS}} complete Grade 6 lesson workshops: visual models, step-by-step examples, guided and independent practice, error analysis, and math investigations.">
 <meta name="color-scheme" content="light dark">
 <title>Fluency Practice Studio &amp; Lessons Index · EduWonderLab</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2213%22 fill=%22%231a56c4%22/%3E%3Ctext x=%229%22 y=%2244%22 font-family=%22Georgia,serif%22 font-size=%2234%22 fill=%22white%22%3ER6%3C/text%3E%3C/svg%3E">
@@ -37,7 +37,7 @@
 
 <nav class="viewbar" aria-label="Guide sections" role="navigation">
   <div class="wrap viewbar-inner" role="tablist" aria-orientation="horizontal" id="viewTablist">
-    <button class="viewtab active" role="tab" type="button" id="tab-lessons" aria-controls="view-lessons" data-act="view" data-view="lessons" aria-selected="true" tabindex="0">Lessons Index <span class="count">54</span></button>
+    <button class="viewtab active" role="tab" type="button" id="tab-lessons" aria-controls="view-lessons" data-act="view" data-view="lessons" aria-selected="true" tabindex="0">Lessons Index <span class="count">{{LESSONS}}</span></button>
     <button class="viewtab" role="tab" type="button" id="tab-studio" aria-controls="view-studio" data-act="view" data-view="studio" aria-selected="false" tabindex="-1">Practice Studio <span class="count count-featured">PRACTICE</span></button>
   </div>
 </nav>
@@ -49,13 +49,13 @@
         <div class="fluency-hero-badge">Reveal Math · McGraw Hill Alignment · Grade 6</div>
         <h1 id="fluencyHeroHeading">Fluency &amp; Readiness Index</h1>
         <p class="lead">
-          Master foundational fluency for Grade 6 mathematics. Explore 54 lessons across Units 2–9 with prerequisite skill progressions, 2-minute diagnostic quick checks, and interactive practice studios.
+          Master foundational fluency for Grade 6 mathematics. Explore {{LESSONS}} lessons across Units {{UNIT_RANGE}} with prerequisite skill progressions, 2-minute diagnostic quick checks, and interactive practice studios.
         </p>
         <div class="fluency-hero-stats">
-          <span class="fluency-stat-pill"><strong>54</strong> Lessons</span>
-          <span class="fluency-stat-pill"><strong>216</strong> Prerequisite Skills</span>
-          <span class="fluency-stat-pill"><strong>8</strong> Units (Units 2–9)</span>
-          <span class="fluency-stat-pill"><strong>432</strong> Interactive Tasks</span>
+          <span class="fluency-stat-pill"><strong>{{LESSONS}}</strong> Lessons</span>
+          <span class="fluency-stat-pill"><strong>{{PREREQS}}</strong> Prerequisite Skills</span>
+          <span class="fluency-stat-pill"><strong>{{UNITS}}</strong> Units (Units {{UNIT_RANGE}})</span>
+          <span class="fluency-stat-pill"><strong>{{TASKS}}</strong> Interactive Tasks</span>
         </div>
       </section>
 
@@ -70,15 +70,8 @@
           <div class="fluency-filters-group">
             <label class="sr-only" for="fluencyUnitSelect">Filter by unit</label>
             <select id="fluencyUnitSelect" class="fluency-select">
-              <option value="all">All Units (Units 2–9)</option>
-              <option value="2">Unit 2: Statistics &amp; Data</option>
-              <option value="3">Unit 3: Ratios &amp; Rates</option>
-              <option value="4">Unit 4: Fractions &amp; Percents</option>
-              <option value="5">Unit 5: Area &amp; Volume</option>
-              <option value="6">Unit 6: Expressions &amp; Exponents</option>
-              <option value="7">Unit 7: Integers &amp; Coordinates</option>
-              <option value="8">Unit 8: Equations &amp; Inequalities</option>
-              <option value="9">Unit 9: Two-Variable Relationships</option>
+              <option value="all">All Units (Units {{UNIT_RANGE}})</option>
+{{STUDENT_UNIT_OPTIONS}}
             </select>
 
             <label class="sr-only" for="fluencyOriginSelect">Filter by prerequisite origin</label>
@@ -90,7 +83,7 @@
           </div>
 
           <div class="fluency-results-count" id="fluencyResults" role="status" aria-live="polite">
-            Showing 54 of 54 lessons
+            Showing {{LESSONS}} of {{LESSONS}} lessons
           </div>
         </div>
 
@@ -118,7 +111,7 @@
   <div class="wrap">
     <div class="footer-grid">
       <div>
-        <p><strong>EduWonderLab · Grade 6 · Reveal Math Fluency Edition.</strong> Diagnostic checks, prerequisite foundations, worked practice, and interactive workshops for Units 2–9 (54 lessons).</p>
+        <p><strong>EduWonderLab · Grade 6 · Reveal Math Fluency Edition.</strong> Diagnostic checks, prerequisite foundations, worked practice, and interactive workshops for Units {{UNIT_RANGE}} ({{LESSONS}} lessons).</p>
       </div>
       <div class="footer-meta">
         <span>Reveal Math aligned supplemental fluency</span>
@@ -178,7 +171,7 @@
             backNav.className = 'studio-nav-bar';
             backNav.innerHTML = `
               <a href="#view=lessons" class="btn btn-sm btn-back" id="btnBackToLessons">
-                ← Back to Lessons Index (54 Lessons)
+                ← Back to Lessons Index ({{LESSONS}} Lessons)
               </a>
               <span style="font-size:12.5px;color:var(--ink-3);font-weight:600">
                 Interactive Practice Studio · Reveal Math Grade 6

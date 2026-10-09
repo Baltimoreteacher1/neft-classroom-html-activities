@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Tomorrow's Groups · Neft Teacher</title>
+    <meta
+      name="description"
+      content="For the next paced lesson: which students to pull into Small Group 1, Small Group 2 or Catch-Up, the misconception driving each, and the matching small-group lesson."
+    />
+    <link rel="icon" href="/assets/favicon.svg" />
+    <link rel="stylesheet" href="/teacher-tools/evidence-groups/evidence-groups.css" />
+    <link rel="stylesheet" href="tomorrow-groups.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#plan">Skip to the plan</a>
+
+    <header class="eg-header">
+      <nav aria-label="Breadcrumb">
+        <ol class="crumbs">
+          <li><a href="/teacher-tools/">Teacher Tools</a></li>
+          <li aria-current="page">Tomorrow's Groups</li>
+        </ol>
+      </nav>
+      <h1>Tomorrow's Groups</h1>
+      <p class="lede">
+        For the next lesson on the pacing plan: who to pull into Small Group 1, Small Group 2 or
+        Catch-Up, the misconception that puts each student there, and the small-group lesson to
+        open. Built from the lesson evidence the other teacher tools already read.
+      </p>
+    </header>
+
+    <main>
+      <section class="eg-gate" id="gate" hidden>
+        <h2>Teacher key</h2>
+        <p>
+          Student names come from the teacher-gated progress API. Enter your teacher key once —
+          it stays on this device.
+        </p>
+        <form id="gate-form">
+          <label for="gate-key">Teacher key</label>
+          <input id="gate-key" type="password" autocomplete="off" required />
+          <button class="btn btn-primary" type="submit">Save key</button>
+        </form>
+      </section>
+
+      <section class="eg-controls" aria-labelledby="controls-h">
+        <h2 id="controls-h" class="sr-only">Plan tomorrow</h2>
+        <p class="tg-next" id="next-lesson" aria-live="polite">Finding the next paced lesson…</p>
+        <div class="ctl-row">
+          <div class="ctl">
+            <label for="ctl-lesson">Lesson</label>
+            <input id="ctl-lesson" type="text" placeholder="e.g. 4-1" pattern="\d{1,2}-\d{1,2}" />
+          </div>
+          <div class="ctl">
+            <label for="ctl-section">Class period</label>
+            <input id="ctl-section" type="text" placeholder="all periods" inputmode="numeric" />
+          </div>
+          <div class="ctl">
+            <label for="ctl-days">Look back</label>
+            <select id="ctl-days">
+              <option value="3">3 days</option>
+              <option value="7" selected>7 days</option>
+              <option value="14">14 days</option>
+            </select>
+          </div>
+          <div class="ctl ctl-actions">
+            <button class="btn btn-primary" id="btn-build" type="button">Plan tomorrow</button>
+            <button class="btn" id="btn-demo" type="button">Show me an example</button>
+            <button class="btn" id="btn-print" type="button">Print</button>
+          </div>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section id="plan" class="eg-plan" aria-labelledby="plan-h" tabindex="-1">
+        <h2 id="plan-h" class="sr-only">Tomorrow's groups</h2>
+        <div id="plan-body">
+          <p class="empty">
+            Press <strong>Plan tomorrow</strong> to place students for the next paced lesson — or
+            <strong>Show me an example</strong> to see the shape of the plan with sample data.
+          </p>
+        </div>
+      </section>
+
+      <section class="tg-rules" aria-labelledby="rules-h">
+        <h2 id="rules-h" class="section-h">How students are placed</h2>
+        <ul>
+          <li><strong>Catch-Up</strong> — the same misconception 3 or more times in the window, or under 50% correct on 4+ graded answers.</li>
+          <li><strong>Small Group 1</strong> — a named misconception once or twice.</li>
+          <li><strong>Small Group 2</strong> — no named misconception, 50–79% correct on 4+ graded answers.</li>
+          <li><strong>Whole group</strong> — everyone else with evidence. Each student is placed once.</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="eg-footer">
+      <p>
+        Placement runs entirely in this browser from existing lesson evidence. Nothing is written
+        back. Your judgement overrides it — move anyone you know better.
+      </p>
+    </footer>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

@@ -389,7 +389,9 @@ function generateMathVisualSvg(lessonId, data) {
 function generateInteractiveWidgetHtml(_lessonId, standard) {
   const std = (standard || "").toUpperCase();
   const isRatio = std.includes("6.AT.1") || std.includes("6.AT.2") || std.includes("6.AT.3");
-  const isCoord = std.includes("6.NOS.6") || std.includes("6.NOS.9");
+  // 6.NOS.5 (integers in context, 7-1) and 6.GR.3 (coordinate polygons, 7-7)
+  // keep the coordinate widget they had under 6.NOS.6 / 6.NOS.9.
+  const isCoord = ["6.NOS.5", "6.NOS.6", "6.NOS.9", "6.GR.3"].some((c) => std.includes(c));
   const isBalance = std.includes("6.AT.8") || std.includes("6.AT.8");
 
   if (isRatio) {
@@ -3602,7 +3604,7 @@ ${deck.thumbnailsHtml}
     function updateActiveWidget() {
       const std = "${standard}".toUpperCase();
       const isRatio = std.includes('6.AT.1') || std.includes('6.AT.2') || std.includes('6.AT.3');
-      const isCoord = std.includes('6.NOS.6') || std.includes('6.NOS.9');
+      const isCoord = ['6.NOS.5', '6.NOS.6', '6.NOS.9', '6.GR.3'].some((c) => std.includes(c));
       const isBalance = std.includes('6.AT.8') || std.includes('6.AT.8');
       
       if (isRatio) {

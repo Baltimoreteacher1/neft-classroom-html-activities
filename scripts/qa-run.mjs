@@ -443,6 +443,7 @@ const COVERAGE = [
   [/^curriculum\/class-boss\//, ["validate:class-boss"]],
   [/^curriculum\/teach-the-machine\//, ["validate:teach-machine"]],
   [/^curriculum\/family-connections\//, ["validate:family-broadcast"]],
+  [/^curriculum\/about\//, ["validate:about", "audit:links"]],
   [
     /^curriculum\/projects\//,
     [

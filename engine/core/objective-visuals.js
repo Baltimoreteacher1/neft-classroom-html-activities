@@ -125,6 +125,7 @@ const BY_STANDARD = {
     ],
   },
   "6.NOS.4": { topic: "factors" },
+  "6.NOS.5": { topic: "rationalNumberLine" },
   "6.NOS.6": { topic: "coordinatePlane", rules: [[/\bnumber line\b/i, "rationalNumberLine"]] },
   "6.NOS.7": { topic: "quadrants" },
   "6.NOS.8": { topic: "integers" },
@@ -152,6 +153,8 @@ const BY_STANDARD = {
   // picture — a prism beside its unfolded net with SA = 2(lw + lh + wh) — so a
   // volume lesson opened on the next lesson's formula. Separated 2026-08-16.
   "6.GR.2": { topic: "prismVolume" },
+  // 6.GR.3: side lengths of a coordinate polygon are distances between vertices.
+  "6.GR.3": { topic: "distance" },
   "6.GR.4": { topic: "solids" },
 };
 

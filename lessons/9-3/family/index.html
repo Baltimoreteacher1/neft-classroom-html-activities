@@ -42,6 +42,22 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 .muted-note{color:var(--muted);font-size:14px;margin:6px 0 0;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
+
+ol.choices{margin:6px 0 4px;}
+.lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
+.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
+  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
+.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
+.lang-panel{display:none;margin-top:6px;}
+#family-lang-en:checked ~ .lang-panels [data-lang="en"],
+#family-lang-es:checked ~ .lang-panels [data-lang="es"],
+#family-lang-ar:checked ~ .lang-panels [data-lang="ar"],
+#family-lang-fr:checked ~ .lang-panels [data-lang="fr"],
+#family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
+.lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
+.auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
+  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -59,7 +75,20 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 <section>
   <h2>What students are learning</h2>
   <p>A table can only list some values. An equation captures the whole pattern at once, so it works for any number of months or hours.</p>
-  <p class="callout"><strong>Key idea:</strong> Writing Two-Variable Equations. Formula: y = kx | Dependent = (Unit Rate) × Independent. 1. Identify the independent variable (x) and dependent variable (y). 2. Find the constant unit rate (k = y ÷ x). 3. Write the equation relating the two variables: y = kx (or y = x + c)</p>
+  <p class="callout"><strong>Key idea:</strong> An equation can show a whole pattern at once. First decide what each letter stands for, then find the amount for one. If each ticket costs $5, the total cost c for t tickets is c = 5t.<br><span class="es-text" lang="es">Idea clave: Una ecuación puede mostrar todo un patrón de una vez. Primero decide qué representa cada letra y luego encuentra la cantidad para uno. Si cada boleto cuesta $5, el costo total c de t boletos es c = 5t.</span></p>
+</section>
+
+<section class="lang-section">
+  <h2>Read this in your language <span class="es">· Lea esto en su idioma</span></h2>
+  <div class="lang-picker"><input type="radio" class="lang-radio" name="family-lang" id="family-lang-en" value="en" checked><label for="family-lang-en" lang="en">English</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-es" value="es"><label for="family-lang-es" lang="es">Español</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-ar" value="ar"><label for="family-lang-ar" lang="ar">العربية</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-fr" value="fr"><label for="family-lang-fr" lang="fr">Français</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-prs" value="prs"><label for="family-lang-prs" lang="prs">دری</label>
+  <div class="lang-panels">
+  <div class="lang-panel" data-lang="en" lang="en"><p class="callout">An equation can show a whole pattern at once. First decide what each letter stands for, then find the amount for one. If each ticket costs $5, the total cost c for t tickets is c = 5t.</p><ul><li><span class="kw"><bdi>equation</bdi></span> — A mathematical sentence with an equals sign that shows two amounts are the same.</li><li><span class="kw"><bdi>variable</bdi></span> — A letter that represents a quantity that can change, or vary.</li><li><span class="kw"><bdi>rate</bdi></span> — A fixed amount of one quantity for every one unit of the other quantity.</li><li><span class="kw"><bdi>represent</bdi></span> — To show a relationship using a tool such as a table, a graph, or an equation.</li><li><span class="kw"><bdi>define the variables</bdi></span> — To state exactly what quantity each letter in an equation stands for.</li><li><span class="kw"><bdi>Constant</bdi></span> — A number in an equation that never changes.</li></ul></div>
+  <div class="lang-panel" data-lang="es" lang="es"><p class="callout">Una ecuación puede mostrar todo un patrón de una vez. Primero decide qué representa cada letra y luego encuentra la cantidad para uno. Si cada boleto cuesta $5, el costo total c de t boletos es c = 5t.</p><ul><li><span class="kw"><bdi>ecuación</bdi></span> — Una oración matemática con un signo igual que muestra que dos cantidades son iguales.</li><li><span class="kw"><bdi>variable</bdi></span> — Una letra que representa una cantidad que puede cambiar o variar.</li><li><span class="kw"><bdi>tasa</bdi></span> — Una cantidad fija de una cantidad por cada unidad de la otra cantidad.</li><li><span class="kw"><bdi>representar</bdi></span> — Mostrar una relación usando una herramienta como una tabla, una gráfica o una ecuación.</li><li><span class="kw"><bdi>definir las variables</bdi></span> — Decir exactamente qué cantidad representa cada letra de una ecuación.</li><li><span class="kw"><bdi>Constante</bdi></span> — Un número en una ecuación que nunca cambia.</li></ul></div>
+  <div class="lang-panel" data-lang="ar" lang="ar" dir="rtl"><p class="auto-label">ترجمة آلية · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">يمكن للمعادلة أن تعرض النمط كله مرة واحدة. أولًا حدّد ماذا يمثّل كل حرف، ثم جد المقدار لواحد. إذا كان ثمن كل تذكرة $5، فإن الثمن الكلي c لعدد t من التذاكر هو c = 5t.</p><ul><li><span class="kw"><bdi>معادلة</bdi></span> (<bdi lang="en">equation</bdi>) — جملة رياضية فيها إشارة يساوي تبيّن أن مقدارين متساويان.</li><li><span class="kw"><bdi>متغيّر</bdi></span> (<bdi lang="en">variable</bdi>) — حرف يمثّل كمية يمكن أن تتغيّر.</li><li><span class="kw"><bdi>معدّل</bdi></span> (<bdi lang="en">rate</bdi>) — مقدار ثابت من كمية لكل وحدة واحدة من الكمية الأخرى.</li><li><span class="kw"><bdi>يمثّل</bdi></span> (<bdi lang="en">represent</bdi>) — أن تعرض علاقة باستخدام أداة مثل جدول أو تمثيل بياني أو معادلة.</li><li><span class="kw"><bdi>تعريف المتغيّرات</bdi></span> (<bdi lang="en">define the variables</bdi>) — أن تذكر بالضبط ما الكمية التي يمثّلها كل حرف في المعادلة.</li><li><span class="kw"><bdi>ثابت</bdi></span> (<bdi lang="en">Constant</bdi>) — عدد في المعادلة لا يتغيّر أبدًا.</li></ul></div>
+  <div class="lang-panel" data-lang="fr" lang="fr"><p class="auto-label">Traduction automatique · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">Une équation peut montrer toute une régularité d'un seul coup. D'abord, décide ce que représente chaque lettre, puis trouve la quantité pour un. Si chaque billet coûte 5 $, le coût total c pour t billets est c = 5t.</p><ul><li><span class="kw"><bdi>équation</bdi></span> (<bdi lang="en">equation</bdi>) — Phrase mathématique avec un signe égal qui montre que deux quantités sont pareilles.</li><li><span class="kw"><bdi>variable</bdi></span> (<bdi lang="en">variable</bdi>) — Lettre qui représente une quantité qui peut changer, ou varier.</li><li><span class="kw"><bdi>taux</bdi></span> (<bdi lang="en">rate</bdi>) — Une quantité fixe d'une grandeur pour chaque unité de l'autre grandeur.</li><li><span class="kw"><bdi>représenter</bdi></span> (<bdi lang="en">represent</bdi>) — Montrer une relation avec un outil comme un tableau, un graphique ou une équation.</li><li><span class="kw"><bdi>définir les variables</bdi></span> (<bdi lang="en">define the variables</bdi>) — Dire exactement quelle quantité représente chaque lettre d'une équation.</li><li><span class="kw"><bdi>constante</bdi></span> (<bdi lang="en">Constant</bdi>) — Un nombre dans une équation qui ne change jamais.</li></ul></div>
+  <div class="lang-panel" data-lang="prs" lang="prs" dir="rtl"><p class="auto-label">ترجمه ماشینی · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">یک معادله می‌تواند یک الگوی کامل را یک‌جا نشان دهد. اول تعیین کنید هر حرف نمایندهٔ چیست، بعد مقدار را برای یک دانه پیدا کنید. اگر قیمت هر تکت $5 باشد، قیمت مجموعی c برای t تکت می‌شود c = 5t.</p><ul><li><span class="kw"><bdi>معادله</bdi></span> (<bdi lang="en">equation</bdi>) — جملهٔ ریاضی با علامهٔ مساوی که نشان می‌دهد دو مقدار برابر اند.</li><li><span class="kw"><bdi>متحول</bdi></span> (<bdi lang="en">variable</bdi>) — حرفی که نمایندهٔ مقداری است که می‌تواند تغییر کند.</li><li><span class="kw"><bdi>نرخ</bdi></span> (<bdi lang="en">rate</bdi>) — مقدار ثابتی از یک چیز برای هر یک واحد از چیز دیگر.</li><li><span class="kw"><bdi>نشان دادن</bdi></span> (<bdi lang="en">represent</bdi>) — نمایش یک رابطه با وسیله‌ای مانند جدول، گراف یا معادله.</li><li><span class="kw"><bdi>تعریف متحول‌ها</bdi></span> (<bdi lang="en">define the variables</bdi>) — گفتن دقیق اینکه هر حرف در معادله نمایندهٔ کدام مقدار است.</li><li><span class="kw"><bdi>ثابت</bdi></span> (<bdi lang="en">Constant</bdi>) — عددی در معادله که هرگز تغییر نمی‌کند.</li></ul></div>
+  </div>
+  </div>
 </section>
 <section>
   <h2>Key words</h2>
@@ -71,7 +100,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Practice at home</h2>
-  <ol><li>Recreation World charges $24.95 per month. Let m = number of months and c = total cost. Which equation represents the relationship?</li></ol>
+  <ol><li>A music streaming plan costs $8.99 per month. Let m = number of months and c = total cost. Which equation represents the relationship?<ol class="choices" type="A"><li>c = 8.99 + m</li><li>m = 8.99c</li><li>c = 8.99m</li><li>c = m ÷ 8.99</li></ol></li></ol>
 </section>
 
 <section class="tool-section">
@@ -83,7 +112,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Answer check</h2>
-  <ol><li>Recreation World charges $24.95 per month. Let m = number of months and c = total cost. Which equation represents the relationship? → <span class="answer">c = 24.95m</span></li></ol>
+  <ol><li>A music streaming plan costs $8.99 per month. Let m = number of months and c = total cost. Which equation represents the relationship? → <span class="answer">c = 8.99m</span></li></ol>
 </section>
 <section>
   <h2>Common mistake</h2>

@@ -7,6 +7,11 @@
  *   src/data/enrich-unit-*.json     standard, vocabulary, quick checks B and C, error table,
  *                                   reteach script, sentence frame, extension
  *   src/data/enrich-spine.json      grade progression and a six-item drill per spine skill
+ *   src/data/workshops-extended.json  authored workshops for lessons added after the
+ *                                   original 54 (loaded by workshop-bank.mjs)
+ *
+ * Coverage: every lesson in data/curriculum-manifest.json outside Unit 10 (not taught)
+ * must have a studio entry; a missing or unknown lesson fails the build.
  *
  * The merged dataset, the stylesheet, and the app are inlined into one HTML file so the
  * guide opens from a Desktop, a USB stick, or Google Drive with no server and no network.
@@ -26,7 +31,9 @@ const target = join(siteRoot, "curriculum/fluency");
 const read = (p) => readFileSync(join(root, p), "utf8");
 const readJSON = (p) => JSON.parse(read(p));
 
-const UNITS = [2, 3, 4, 5, 6, 7, 8, 9];
+const UNITS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+// Unit 10 is not taught (Joel, 2026-10-07), so it has no studio coverage.
+const UNTAUGHT_UNITS = new Set([10]);
 const REQUIRED_LESSON_KEYS = [
   "standard",
   "vocabulary",
@@ -52,10 +59,34 @@ const lessonEnrich = Object.assign(
   ...UNITS.map((n) => readJSON(`src/data/enrich-unit-${n}.json`)),
 );
 
+const manifest = JSON.parse(readFileSync(join(siteRoot, "data/curriculum-manifest.json"), "utf8"));
+const manifestIds = manifest.lessons
+  .filter((l) => !UNTAUGHT_UNITS.has(Number(l.unit)))
+  .map((l) => l.id);
+const studioIds = core.units.flatMap((u) => u.lessons.map((l) => l.id));
+for (const id of manifestIds)
+  if (!studioIds.includes(id))
+    fail(`lesson ${id}: in the curriculum manifest but has no studio coverage`);
+for (const id of studioIds)
+  if (!manifestIds.includes(id)) fail(`lesson ${id}: studio entry is not a taught manifest lesson`);
+for (const id of studioIds.filter((id) => manifestIds.includes(id))) {
+  const title = core.units.flatMap((u) => u.lessons).find((l) => l.id === id).title;
+  if (!title) fail(`lesson ${id}: missing title`);
+}
+// Grade 6 lessons cite the CCSS Grade 6 code; Unit 1 lessons review Grade 5 content or a
+// mathematical practice, so they cite the code their own lesson config uses.
+const GRADE_SIX_CODE = /^6\.(RP|NS|EE|G|SP)\./;
+const UNIT_ONE_CODE = /^(5\.(NF|NBT|MD|OA)\.[A-C]\.\d+|MP\.[1-8])$/;
+
 core.units.forEach((unit) => {
   unit.lessons.forEach((lesson) => {
     lesson.practice = practice[lesson.id];
-    lesson.workshop = workshops[lesson.id];
+    // The authoring check expressions stay in the source bank; pages do not need them.
+    const workshop = workshops[lesson.id];
+    lesson.workshop = workshop && {
+      ...workshop,
+      tasks: workshop.tasks.map(({ check, ...task }) => task),
+    };
     if (!Array.isArray(lesson.practice) || lesson.practice.length !== 4)
       fail(`lesson ${lesson.id}: expected 4 prerequisite practice tasks`);
     (lesson.practice || []).forEach((p, i) => {
@@ -91,7 +122,10 @@ core.units.forEach((unit) => {
       if (!v.prompt || !v.answer)
         fail(`lesson ${lesson.id} version ${v.form}: prompt or answer is empty`);
     });
-    if (!/^6\.(RP|NS|EE|G|SP)\./.test(lesson.standard.code))
+    if (
+      !GRADE_SIX_CODE.test(lesson.standard.code) &&
+      !(unit.number === 1 && UNIT_ONE_CODE.test(lesson.standard.code))
+    )
       fail(`lesson ${lesson.id}: "${lesson.standard.code}" is not a Grade 6 standard code`);
     if ((lesson.vocabulary || []).length < 3)
       fail(`lesson ${lesson.id}: fewer than 3 vocabulary terms`);
@@ -168,18 +202,51 @@ Object.entries(stats).forEach(([k, v]) => console.log(`    ${k.padEnd(14)} ${v}`
 
 if (process.argv.includes("--check")) process.exit(0);
 
+const escapeHTML = (s) =>
+  String(s == null ? "" : s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+
 /* ---------------------------------------------------------------- inline */
+const unitNumbers = core.units.map((u) => u.number);
+const tokens = {
+  LESSONS: stats.lessons,
+  PREREQS: stats.prerequisites,
+  TASKS: stats.workshopTasks,
+  UNITS: core.units.length,
+  UNIT_RANGE: `${Math.min(...unitNumbers)}–${Math.max(...unitNumbers)}`,
+  STUDENT_UNIT_OPTIONS: core.units
+    .map(
+      (u) =>
+        `              <option value="${u.number}">Unit ${u.number}: ${escapeHTML(u.title)}</option>`,
+    )
+    .join("\n"),
+  PRINT_UNIT_OPTIONS: core.units
+    .map(
+      (u) =>
+        `<option value="${u.number}">Unit ${u.number}: ${escapeHTML(u.title)} (${u.lessons.length} lessons)</option>`,
+    )
+    .join("\n                "),
+};
+const fillTokens = (template) =>
+  template.replace(/\{\{([A-Z_]+)\}\}/g, (match, key) => {
+    if (!(key in tokens)) throw new Error(`Unknown template token ${match}`);
+    return String(tokens[key]);
+  });
 // Both editions use the same practice engine; the data allowlist below
 // controls which lesson fields are available in public practice.
 const studio = read("src/studio.js");
 const styles = ["styles.css", "studio.css", "labs.css", "workshop.css"]
   .map((file) => read(`src/${file}`))
   .join("\n");
-const html = read("src/template.html.template")
+const html = fillTokens(read("src/template.html.template"))
   .replace(
     "<!--__ORIGIN__-->",
     () =>
-      '<div class="origin"><div class="origin-head"><span>Where the 216 prerequisite skills come from</span></div><p>' +
+      `<div class="origin"><div class="origin-head"><span>Where the ${stats.prerequisites} prerequisite skills come from</span></div><p>` +
       Object.entries(core.grade_origin_counts)
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([k, v]) => k + ": " + v)
@@ -197,14 +264,6 @@ mkdirSync(join(target, "teacher"), { recursive: true });
 writeFileSync(join(target, "teacher/index.html"), html);
 const kb = (Buffer.byteLength(html) / 1024).toFixed(0);
 console.log(`\n✓ index.html written — ${kb} KB, self-contained`);
-
-const escapeHTML = (s) =>
-  String(s == null ? "" : s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 
 function renderLessonsIndex(units) {
   return units
@@ -349,7 +408,7 @@ const studentData = {
 };
 
 const lessonsIndexHTML = renderLessonsIndex(core.units);
-const studentHTML = read("src/student-template.html.template")
+const studentHTML = fillTokens(read("src/student-template.html.template"))
   .replace("<!--__LESSONS_INDEX__-->", () => lessonsIndexHTML)
   .replace("/*__STYLES__*/", () => styles)
   .replace("/*__DATA__*/", () => JSON.stringify(studentData).replace(/<\/script/gi, "<\\/script"))
@@ -357,4 +416,67 @@ const studentHTML = read("src/student-template.html.template")
 const studentWithModels = studentHTML.replace("/*__MODELS__*/", () => read("src/models.js"));
 const studentFinal = withCurriculumShell(studentWithModels, "fluency");
 writeFileSync(join(target, "index.html"), studentFinal);
-console.log("✓ index.html written — 54-lesson Reveal Math fluency index and practice studio");
+
+/* ------------------------------------------------- site lesson mappings */
+// The hub and lesson pages link each lesson to its studio entry through these two files.
+// They are generated here so they can never list a different set of lessons than the studio.
+const siteTitles = Object.fromEntries(manifest.lessons.map((l) => [l.id, l.title]));
+const resources = Object.fromEntries(
+  lessons.map((l) => [
+    l.id,
+    {
+      id: l.id,
+      unit: Number(l.id.split("-")[0]),
+      title: l.title,
+      siteTitle: siteTitles[l.id],
+      teacher: `/curriculum/fluency/teacher/#view=studio&lesson=${l.id}&mode=worksheet&level=core`,
+      student: `/curriculum/fluency/#view=studio&lesson=${l.id}&mode=practice&level=workshop`,
+      siteLesson: `/lessons/${l.id}/`,
+    },
+  ]),
+);
+writeFileSync(
+  join(siteRoot, "data/fluency-resources.json"),
+  `${JSON.stringify(
+    {
+      schemaVersion: 1,
+      coverage: `${lessons.length} lessons in district Units ${tokens.UNIT_RANGE}; Unit 10 is not taught`,
+      resources,
+    },
+    null,
+    2,
+  )}\n`,
+);
+const jsString = (v) => JSON.stringify(v);
+const resourceSource = Object.values(resources)
+  .map(
+    (r) =>
+      `    ${jsString(r.id)}: {\n${Object.entries(r)
+        .map(([k, v]) => `      ${k}: ${jsString(v)},`)
+        .join("\n")}\n    },`,
+  )
+  .join("\n");
+writeFileSync(
+  join(siteRoot, "assets/curriculum-fluency.js"),
+  `/* Generated by tools/fluency-guide/build.mjs. No student data or teacher answers. */
+(function () {
+  "use strict";
+  const resources = {
+${resourceSource}
+  };
+  Object.values(resources).forEach(Object.freeze);
+  Object.freeze(resources);
+  window.NT_FLUENCY = Object.freeze({
+    resourcesFor(id) {
+      return Object.prototype.hasOwnProperty.call(resources, id) ? resources[id] : null;
+    },
+  });
+})();
+`,
+);
+console.log(
+  `✓ fluency-resources.json and curriculum-fluency.js written — ${lessons.length} lesson mappings`,
+);
+console.log(
+  `✓ index.html written — ${stats.lessons}-lesson Reveal Math fluency index and practice studio`,
+);

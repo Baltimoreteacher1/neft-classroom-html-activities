@@ -367,8 +367,11 @@ t("answering persists immediately — the old onAnswer was a no-op", () => {
   );
   const radios = p2Panel.querySelectorAll('input[name="warmup_q_p0_0"]');
   assert.ok(radios.length >= 2, `Q1 rendered ${radios.length} choices`);
-  radios[0].checked = true;
-  radios[0].dispatchEvent(new p2.win.Event("change", { bubbles: true }));
+  // Choices render in display order (engine/core/choice-order.js); the radio's
+  // value is the AUTHORED index, which is what gets saved.
+  const first = [...radios].find((r) => r.value === "0");
+  first.checked = true;
+  first.dispatchEvent(new p2.win.Event("change", { bubbles: true }));
   const after = savedResponses(p2.win)["0_warmup_answers"];
   assert.ok(
     after && after[0] === 0,
@@ -384,10 +387,10 @@ t("submitting GRADES the warm-up and persists the attempt", () => {
   const wrong = q0.choices.findIndex((_, i) => i !== q0.correctIndex);
   const picks = p2Warmup.questions.map((q, i) => (i === 0 ? wrong : q.correctIndex));
   picks.forEach((choice, qIdx) => {
-    const radios = p2Panel.querySelectorAll(`input[name="warmup_q_p0_${qIdx}"]`);
-    assert.ok(radios[choice], `Q${qIdx + 1} has no choice at index ${choice}`);
-    radios[choice].checked = true;
-    radios[choice].dispatchEvent(new p2.win.Event("change", { bubbles: true }));
+    const radio = p2Panel.querySelector(`input[name="warmup_q_p0_${qIdx}"][value="${choice}"]`);
+    assert.ok(radio, `Q${qIdx + 1} has no choice at authored index ${choice}`);
+    radio.checked = true;
+    radio.dispatchEvent(new p2.win.Event("change", { bubbles: true }));
   });
 
   submitControls(p2Panel)[0].click();

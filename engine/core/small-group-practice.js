@@ -40,6 +40,7 @@
 
 import { attachRegenPractice } from "../components/regen-practice.js";
 import { isRight, numberOf } from "./answer-match.js";
+import { isOrderSensitive, seededOrder } from "./choice-order.js";
 import { detectConceptTool } from "./concept-tool.js";
 import { hasConversionFacts, renderConversionChip } from "./conversion-chart.js";
 import { extractDivisionDiagram } from "./division-helper.js";
@@ -346,24 +347,6 @@ function appendHints(card, item, events = {}) {
   };
 }
 
-// Deterministic per-problem choice order so the correct answer is not always
-// choice A (authored data almost always lists it first), while staying stable
-// across re-renders and Save/Resume for a given problem.
-function seededOrder(length, seed) {
-  let hash = 2166136261;
-  for (let i = 0; i < seed.length; i++) {
-    hash ^= seed.charCodeAt(i);
-    hash = Math.imul(hash, 16777619);
-  }
-  const order = Array.from({ length }, (_, i) => i);
-  for (let i = length - 1; i > 0; i--) {
-    hash = (Math.imul(hash, 48271) + 1) & 0x7fffffff;
-    const j = hash % (i + 1);
-    [order[i], order[j]] = [order[j], order[i]];
-  }
-  return order;
-}
-
 /**
  * The "compare your written work" line, for a card that asked for a notebook.
  *
@@ -403,7 +386,11 @@ function multipleChoiceCard(item, index, onSolved, events = {}) {
   // Present choices in a shuffled order keyed to the problem text; map each
   // rendered slot back to its authored index so correctIndex/choiceFeedback
   // still line up.
-  const order = seededOrder(item.choices.length, itemStem(item) || String(index));
+  // Lists whose order carries meaning ("All of the above", ascending numbers)
+  // keep their authored order — engine/core/choice-order.js owns that rule.
+  const order = isOrderSensitive(item.choices)
+    ? item.choices.map((_, i) => i)
+    : seededOrder(item.choices.length, itemStem(item) || String(index));
   order.forEach((sourceIndex, slotIndex) => {
     const choice = item.choices[sourceIndex];
     const button = el(

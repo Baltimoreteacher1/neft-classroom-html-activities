@@ -42,6 +42,22 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 .muted-note{color:var(--muted);font-size:14px;margin:6px 0 0;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
+
+ol.choices{margin:6px 0 4px;}
+.lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
+.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
+  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
+.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
+.lang-panel{display:none;margin-top:6px;}
+#family-lang-en:checked ~ .lang-panels [data-lang="en"],
+#family-lang-es:checked ~ .lang-panels [data-lang="es"],
+#family-lang-ar:checked ~ .lang-panels [data-lang="ar"],
+#family-lang-fr:checked ~ .lang-panels [data-lang="fr"],
+#family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
+.lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
+.auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
+  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -59,7 +75,20 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 <section>
   <h2>What students are learning</h2>
   <p>I solve an inequality the same way as an equation: use inverse operations to get the variable alone. But the answer is a range of values, so I show all of them on a number line.</p>
-  <p class="callout"><strong>Key idea:</strong> Solving &amp; Graphing One-Step Inequalities. 1. Isolate the variable using inverse operations on both sides (same as equations). 2. Write the simplified inequality with the variable on the left (e.g. x &gt; 5). 3. Graph the solution set on a number line with open/closed circle and arrow shading</p>
+  <p class="callout"><strong>Key idea:</strong> Solve an inequality the same way as an equation: undo the steps to get the letter alone. For x + 3 &lt; 10, subtract 3 from both sides to get x &lt; 7. Then show all the answers on a number line with an open circle at 7 and shading to the left.<br><span class="es-text" lang="es">Idea clave: Resuelve una desigualdad igual que una ecuación: deshaz los pasos para dejar la letra sola. Para x + 3 &lt; 10, resta 3 en los dos lados y queda x &lt; 7. Luego muestra todas las respuestas en una recta numérica con un círculo abierto en 7 y sombreado hacia la izquierda.</span></p>
+</section>
+
+<section class="lang-section">
+  <h2>Read this in your language <span class="es">· Lea esto en su idioma</span></h2>
+  <div class="lang-picker"><input type="radio" class="lang-radio" name="family-lang" id="family-lang-en" value="en" checked><label for="family-lang-en" lang="en">English</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-es" value="es"><label for="family-lang-es" lang="es">Español</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-ar" value="ar"><label for="family-lang-ar" lang="ar">العربية</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-fr" value="fr"><label for="family-lang-fr" lang="fr">Français</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-prs" value="prs"><label for="family-lang-prs" lang="prs">دری</label>
+  <div class="lang-panels">
+  <div class="lang-panel" data-lang="en" lang="en"><p class="callout">Solve an inequality the same way as an equation: undo the steps to get the letter alone. For x + 3 &lt; 10, subtract 3 from both sides to get x &lt; 7. Then show all the answers on a number line with an open circle at 7 and shading to the left.</p><ul><li><span class="kw"><bdi>Solve and Graph Inequalities</bdi></span> — Isolate the variable, then show the complete solution set on a number line.</li><li><span class="kw"><bdi>Solve</bdi></span> — To find the number that makes it true.</li><li><span class="kw"><bdi>Graph</bdi></span> — To show answers on a number line with circles and shading.</li><li><span class="kw"><bdi>Solution</bdi></span> — A number that makes the equation or inequality true.</li><li><span class="kw"><bdi>Substitute</bdi></span> — To put a number in place of a letter.</li><li><span class="kw"><bdi>Solution set</bdi></span> — All the numbers that make the inequality true.</li><li><span class="kw"><bdi>Inverse operation</bdi></span> — Two math actions that undo each other, like × and ÷.</li></ul></div>
+  <div class="lang-panel" data-lang="es" lang="es"><p class="callout">Resuelve una desigualdad igual que una ecuación: deshaz los pasos para dejar la letra sola. Para x + 3 &lt; 10, resta 3 en los dos lados y queda x &lt; 7. Luego muestra todas las respuestas en una recta numérica con un círculo abierto en 7 y sombreado hacia la izquierda.</p><ul><li><span class="kw"><bdi>Resolver y representar desigualdades</bdi></span> — Aislar la variable y luego mostrar el conjunto completo de soluciones en una recta numérica.</li><li><span class="kw"><bdi>Resolver</bdi></span> — Encontrar el número que la hace verdadera.</li><li><span class="kw"><bdi>Graficar</bdi></span> — Mostrar respuestas en una recta numérica con círculos y sombreado.</li><li><span class="kw"><bdi>Solución</bdi></span> — Un número que hace verdadera la ecuación o desigualdad.</li><li><span class="kw"><bdi>Sustituir</bdi></span> — Poner un número en lugar de una letra.</li><li><span class="kw"><bdi>Conjunto solución</bdi></span> — Todos los números que hacen verdadera la desigualdad.</li><li><span class="kw"><bdi>Operación inversa</bdi></span> — Dos operaciones que se deshacen entre sí, como × y ÷.</li></ul></div>
+  <div class="lang-panel" data-lang="ar" lang="ar" dir="rtl"><p class="auto-label">ترجمة آلية · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">حُلّ المتباينة بالطريقة نفسها التي تحلّ بها المعادلة: اعكس الخطوات حتى يبقى الحرف وحده. في x + 3 &lt; 10، اطرح 3 من الطرفين فتحصل على x &lt; 7. ثم اعرض كل الحلول على خط الأعداد بدائرة مفتوحة عند 7 وتظليل نحو اليسار.</p><ul><li><span class="kw"><bdi>حلّ المتباينات وتمثيلها بيانيًا</bdi></span> (<bdi lang="en">Solve and Graph Inequalities</bdi>) — اعزل المتغيّر، ثم اعرض مجموعة الحل كاملة على خط الأعداد.</li><li><span class="kw"><bdi>يحلّ</bdi></span> (<bdi lang="en">Solve</bdi>) — أن تجد العدد الذي يجعل الجملة صحيحة.</li><li><span class="kw"><bdi>يمثّل بيانيًا</bdi></span> (<bdi lang="en">Graph</bdi>) — أن تعرض الحلول على خط الأعداد بدوائر وتظليل.</li><li><span class="kw"><bdi>حلّ</bdi></span> (<bdi lang="en">Solution</bdi>) — عدد يجعل المعادلة أو المتباينة صحيحة.</li><li><span class="kw"><bdi>يعوّض</bdi></span> (<bdi lang="en">Substitute</bdi>) — أن تضع عددًا مكان الحرف.</li><li><span class="kw"><bdi>مجموعة الحل</bdi></span> (<bdi lang="en">Solution set</bdi>) — كل الأعداد التي تجعل المتباينة صحيحة.</li><li><span class="kw"><bdi>عملية عكسية</bdi></span> (<bdi lang="en">Inverse operation</bdi>) — عمليتان حسابيتان تلغي إحداهما الأخرى، مثل × و ÷.</li></ul></div>
+  <div class="lang-panel" data-lang="fr" lang="fr"><p class="auto-label">Traduction automatique · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">Résous une inéquation comme une équation : défais les étapes pour laisser la lettre seule. Pour x + 3 &lt; 10, soustrais 3 des deux côtés pour obtenir x &lt; 7. Ensuite, montre toutes les réponses sur une droite numérique avec un cercle vide à 7 et en coloriant vers la gauche.</p><ul><li><span class="kw"><bdi>résoudre et représenter des inéquations</bdi></span> (<bdi lang="en">Solve and Graph Inequalities</bdi>) — Isoler la variable, puis montrer tout l'ensemble des solutions sur une droite numérique.</li><li><span class="kw"><bdi>résoudre</bdi></span> (<bdi lang="en">Solve</bdi>) — Trouver le nombre qui la rend vraie.</li><li><span class="kw"><bdi>représenter graphiquement</bdi></span> (<bdi lang="en">Graph</bdi>) — Montrer les réponses sur une droite numérique avec des cercles et du coloriage.</li><li><span class="kw"><bdi>solution</bdi></span> (<bdi lang="en">Solution</bdi>) — Nombre qui rend l'équation ou l'inéquation vraie.</li><li><span class="kw"><bdi>substituer</bdi></span> (<bdi lang="en">Substitute</bdi>) — Mettre un nombre à la place d'une lettre.</li><li><span class="kw"><bdi>ensemble des solutions</bdi></span> (<bdi lang="en">Solution set</bdi>) — Tous les nombres qui rendent l'inéquation vraie.</li><li><span class="kw"><bdi>opération inverse</bdi></span> (<bdi lang="en">Inverse operation</bdi>) — Deux opérations qui s'annulent l'une l'autre, comme × et ÷.</li></ul></div>
+  <div class="lang-panel" data-lang="prs" lang="prs" dir="rtl"><p class="auto-label">ترجمه ماشینی · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">نامساوات را مانند معادله حل کنید: مرحله‌ها را برعکس کنید تا حرف تنها بماند. در x + 3 &lt; 10، از هر دو طرف 3 را تفریق کنید تا x &lt; 7 به دست آید. بعد همهٔ جواب‌ها را روی محور اعداد با یک دایرهٔ خالی روی 7 و رنگ کردن به طرف چپ نشان دهید.</p><ul><li><span class="kw"><bdi>حل و رسم نامساوات‌ها</bdi></span> (<bdi lang="en">Solve and Graph Inequalities</bdi>) — متحول را تنها بسازید، بعد ست حل کامل را روی محور اعداد نشان دهید.</li><li><span class="kw"><bdi>حل کردن</bdi></span> (<bdi lang="en">Solve</bdi>) — پیدا کردن عددی که جمله را درست می‌سازد.</li><li><span class="kw"><bdi>رسم کردن</bdi></span> (<bdi lang="en">Graph</bdi>) — نشان دادن جواب‌ها روی محور اعداد با دایره و رنگ.</li><li><span class="kw"><bdi>حل</bdi></span> (<bdi lang="en">Solution</bdi>) — عددی که معادله یا نامساوات را درست می‌سازد.</li><li><span class="kw"><bdi>تعویض کردن</bdi></span> (<bdi lang="en">Substitute</bdi>) — گذاشتن یک عدد به جای حرف.</li><li><span class="kw"><bdi>ست حل</bdi></span> (<bdi lang="en">Solution set</bdi>) — همهٔ اعدادی که نامساوات را درست می‌سازند.</li><li><span class="kw"><bdi>عملیهٔ معکوس</bdi></span> (<bdi lang="en">Inverse operation</bdi>) — دو عملیه که یکدیگر را خنثی می‌کنند، مانند × و ÷.</li></ul></div>
+  </div>
+  </div>
 </section>
 <section>
   <h2>Key words</h2>
@@ -71,7 +100,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Practice at home</h2>
-  <ol><li>Solve and describe the graph: x + 5 &lt; 11</li></ol>
+  <ol><li>Solve and describe the graph: x + 8 &gt; 15<ol class="choices" type="A"><li>x &gt; 23; open circle at 23, shade right</li><li>x &lt; 7; open circle at 7, shade left</li><li>x ≥ 7; closed circle at 7, shade right</li><li>x &gt; 7; open circle at 7, shade right</li></ol></li></ol>
 </section>
 
 <section class="tool-section">
@@ -83,7 +112,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Answer check</h2>
-  <ol><li>Solve and describe the graph: x + 5 &lt; 11 → <span class="answer">x &lt; 6; open circle at 6, shade left</span></li></ol>
+  <ol><li>Solve and describe the graph: x + 8 &gt; 15 → <span class="answer">x &gt; 7; open circle at 7, shade right</span></li></ol>
 </section>
 <section>
   <h2>Common mistake</h2>

@@ -2,6 +2,8 @@
 // from the SAME JSON data files as the HTML generator.
 // Input:  scripts/readiness/data/<id>.json
 // Output: lessons/<id>/readiness/practice.docx
+// Title/standard come from the launch manifest (scripts/readiness/lesson-identity.mjs);
+// optional *_es fields print as a Spanish line under their English.
 //
 // Run: node scripts/generate-readiness-docx.mjs            (all data files)
 //      node scripts/generate-readiness-docx.mjs 1-2 3-4    (specific lessons)
@@ -9,6 +11,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Document, Packer, PageBreak, Paragraph, TextRun } from "docx";
+import { lessonIdentity } from "./readiness/lesson-identity.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -59,14 +62,20 @@ function answerText(item) {
   return String(item.ans);
 }
 
+// Spanish sibling paragraph, only when authored.
+function esLine(s, opts = {}) {
+  return s ? [p(plain(s), { italics: true, color: "3F4D5C", size: 20, after: 60, ...opts })] : [];
+}
+
 function buildDoc(d) {
   const id = d.lessonId;
+  const who = lessonIdentity(id);
   const tiers = [...d.tiers].sort((a, b) => a.level - b.level);
   const kids = [];
 
-  kids.push(p(`Get Ready: ${plain(d.title)}`, { bold: true, size: 36, color: NAVY, after: 60 }));
+  kids.push(p(`Get Ready: ${plain(who.title)}`, { bold: true, size: 36, color: NAVY, after: 60 }));
   kids.push(
-    p(`Readiness practice for Lesson ${id}  ·  Builds toward ${d.standard}`, {
+    p(`Readiness practice for Lesson ${id} (${who.unitLabel})  ·  Builds toward ${who.standard}`, {
       italics: true,
       color: BLUE,
       size: 20,
@@ -81,7 +90,8 @@ function buildDoc(d) {
   );
 
   kids.push(p("Why this matters", { bold: true, size: 24, color: GOLD, after: 60 }));
-  kids.push(p(plain(d.why), { size: 22, after: 100 }));
+  kids.push(p(plain(d.why), { size: 22, after: d.why_es ? 40 : 100 }));
+  kids.push(...esLine(d.why_es, { after: 100 }));
   if (Array.isArray(d.skills) && d.skills.length) {
     kids.push(
       p(`Skills you'll warm up: ${d.skills.join("  ·  ")}`, {
@@ -105,9 +115,11 @@ function buildDoc(d) {
       p(TIER_LABEL[tier.level], { bold: true, size: 24, color: NAVY, before: 160, after: 40 }),
     );
     if (tier.intro) kids.push(p(plain(tier.intro), { italics: true, size: 20, after: 100 }));
+    kids.push(...esLine(tier.intro_es));
     tier.items.forEach((it, i) => {
       const q = plain(it.q).replace(/^[A-Z]\.\s*/, "");
       kids.push(p(`${i + 1}.  ${q}`, { size: 22, after: 40 }));
+      kids.push(...esLine(it.q_es));
       if (it.type === "mc") {
         kids.push(
           p(`     choices: ${(it.opts || []).map((o) => plain(o.t)).join("   /   ")}`, {
@@ -133,6 +145,7 @@ function buildDoc(d) {
   d.exit.forEach((it, i) => {
     const q = plain(it.q).replace(/^\d+\.\s*/, "");
     kids.push(p(`${i + 1}.  ${q}`, { size: 22, after: 40 }));
+    kids.push(...esLine(it.q_es));
     if (it.type === "mc") {
       kids.push(
         p(`     choices: ${(it.opts || []).map((o) => plain(o.t)).join("   /   ")}`, {
@@ -171,7 +184,7 @@ function buildDoc(d) {
 
   return new Document({
     creator: "Neft Teacher",
-    title: `Readiness — Lesson ${id} — ${plain(d.title)}`,
+    title: `Readiness — Lesson ${id} — ${plain(who.title)}`,
     sections: [{ properties: {}, children: kids }],
   });
 }

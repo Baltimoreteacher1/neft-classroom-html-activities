@@ -15,7 +15,7 @@ for (const width of [360, 768, 1366, 1920]) {
       await expect(page.locator('h1').first()).toBeVisible();
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
       expect(overflow, route).toBeLessThanOrEqual(1);
-      const targets = await page.locator('.ewl-course-nav li a').evaluateAll(links => links.map(link => link.getBoundingClientRect().height));
+      const targets = await page.locator('.ewl-course-nav :is(li a, summary)').evaluateAll(links => links.filter(link => link.checkVisibility()).map(link => link.getBoundingClientRect().height));
       expect(targets.every(height => height >= 44), route).toBe(true);
       const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
       expect(audit.violations, route).toEqual([]);

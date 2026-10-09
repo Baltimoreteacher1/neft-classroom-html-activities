@@ -42,6 +42,22 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 .muted-note{color:var(--muted);font-size:14px;margin:6px 0 0;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
+
+ol.choices{margin:6px 0 4px;}
+.lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
+.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
+  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
+.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
+.lang-panel{display:none;margin-top:6px;}
+#family-lang-en:checked ~ .lang-panels [data-lang="en"],
+#family-lang-es:checked ~ .lang-panels [data-lang="es"],
+#family-lang-ar:checked ~ .lang-panels [data-lang="ar"],
+#family-lang-fr:checked ~ .lang-panels [data-lang="fr"],
+#family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
+.lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
+.auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
+  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -53,13 +69,26 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 <body>
 <div class="wrap">
 <p class="eyebrow">Family Lesson Support</p>
-<h1>Unit 7, Lesson 7: Represent Polygons on the Coordinate Plane<span class="std">6.NOS.9</span></h1>
+<h1>Unit 7, Lesson 7: Represent Polygons on the Coordinate Plane<span class="std">6.GR.3</span></h1>
 <p class="sub">A quick guide for families and for any student who missed class.</p>
 
 <section>
   <h2>What students are learning</h2>
   <p>Graph the points, connect them in order, and the polygon appears. Then the same coordinates that placed the corners tell you exactly how long each side is.</p>
-  <p class="callout"><strong>Key idea:</strong> Polygons on the Coordinate Plane. 1. Plot all given vertices and connect them in order to form the polygon. 2. Find side lengths by counting grid units or using coordinate distance formulas. 3. Perimeter = Sum of all side lengths; Area = Use standard polygon formulas</p>
+  <p class="callout"><strong>Key idea:</strong> You can draw a shape on a graph by plotting its corner points and connecting them in order. The corner numbers also tell you how long each side is. For example, from (-2, 3) to (4, 3) is 6 units. Add all the sides to get the perimeter.<br><span class="es-text" lang="es">Idea clave: Puedes dibujar una figura en una gráfica marcando sus esquinas y uniéndolas en orden. Los números de las esquinas también te dicen cuánto mide cada lado. Por ejemplo, de (-2, 3) a (4, 3) hay 6 unidades. Suma todos los lados para obtener el perímetro.</span></p>
+</section>
+
+<section class="lang-section">
+  <h2>Read this in your language <span class="es">· Lea esto en su idioma</span></h2>
+  <div class="lang-picker"><input type="radio" class="lang-radio" name="family-lang" id="family-lang-en" value="en" checked><label for="family-lang-en" lang="en">English</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-es" value="es"><label for="family-lang-es" lang="es">Español</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-ar" value="ar"><label for="family-lang-ar" lang="ar">العربية</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-fr" value="fr"><label for="family-lang-fr" lang="fr">Français</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-prs" value="prs"><label for="family-lang-prs" lang="prs">دری</label>
+  <div class="lang-panels">
+  <div class="lang-panel" data-lang="en" lang="en"><p class="callout">You can draw a shape on a graph by plotting its corner points and connecting them in order. The corner numbers also tell you how long each side is. For example, from (-2, 3) to (4, 3) is 6 units. Add all the sides to get the perimeter.</p><ul><li><span class="kw"><bdi>vertex</bdi></span> — A corner point of a polygon, named by an ordered pair on the coordinate plane.</li><li><span class="kw"><bdi>polygon</bdi></span> — A closed figure made of line segments; on the plane you draw it by plotting the vertices and connecting them in order.</li><li><span class="kw"><bdi>perimeter</bdi></span> — The total distance around a polygon — the sum of all its side lengths.</li><li><span class="kw"><bdi>distance between vertices</bdi></span> — When two vertices share an x- or y-coordinate, the distance between them is the absolute difference of the other coordinates.</li><li><span class="kw"><bdi>scale</bdi></span> — What one grid unit stands for in the real situation.</li><li><span class="kw"><bdi>Side length</bdi></span> — The distance between two vertices that are joined by a side.</li></ul></div>
+  <div class="lang-panel" data-lang="es" lang="es"><p class="callout">Puedes dibujar una figura en una gráfica marcando sus esquinas y uniéndolas en orden. Los números de las esquinas también te dicen cuánto mide cada lado. Por ejemplo, de (-2, 3) a (4, 3) hay 6 unidades. Suma todos los lados para obtener el perímetro.</p><ul><li><span class="kw"><bdi>vértice</bdi></span> — Un punto de esquina de un polígono, nombrado por un par ordenado en el plano de coordenadas.</li><li><span class="kw"><bdi>polígono</bdi></span> — Una figura cerrada hecha de segmentos; en el plano se dibuja marcando los vértices y conectándolos en orden.</li><li><span class="kw"><bdi>perímetro</bdi></span> — La distancia total alrededor de un polígono: la suma de todos sus lados.</li><li><span class="kw"><bdi>distancia entre vértices</bdi></span> — Cuando dos vértices comparten una coordenada x o y, la distancia es la diferencia absoluta de las otras coordenadas.</li><li><span class="kw"><bdi>escala</bdi></span> — Lo que representa una unidad de la cuadrícula en la situación real.</li><li><span class="kw"><bdi>Longitud del lado</bdi></span> — La distancia entre dos vértices unidos por un lado.</li></ul></div>
+  <div class="lang-panel" data-lang="ar" lang="ar" dir="rtl"><p class="auto-label">ترجمة آلية · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">يمكنك رسم شكل على المستوى الإحداثي بتعيين رؤوسه ثم وصلها بالترتيب. أعداد الرؤوس تخبرك أيضًا بطول كل ضلع. مثلًا، من (-2، 3) إلى (4، 3) طولها 6 وحدات. اجمع أطوال كل الأضلاع لتحصل على المحيط.</p><ul><li><span class="kw"><bdi>رأس</bdi></span> (<bdi lang="en">vertex</bdi>) — نقطة ركن في المضلع، تُسمّى بزوج مرتّب على المستوى الإحداثي.</li><li><span class="kw"><bdi>مضلّع</bdi></span> (<bdi lang="en">polygon</bdi>) — شكل مغلق مكوّن من قطع مستقيمة؛ نرسمه على المستوى بتعيين رؤوسه ووصلها بالترتيب.</li><li><span class="kw"><bdi>المحيط</bdi></span> (<bdi lang="en">perimeter</bdi>) — المسافة الكلية حول المضلع، أي مجموع أطوال كل أضلاعه.</li><li><span class="kw"><bdi>المسافة بين الرؤوس</bdi></span> (<bdi lang="en">distance between vertices</bdi>) — عندما يشترك رأسان في الإحداثي السيني أو الصادي، تكون المسافة بينهما القيمة المطلقة للفرق بين الإحداثيين الآخرين.</li><li><span class="kw"><bdi>مقياس الرسم</bdi></span> (<bdi lang="en">scale</bdi>) — ما تمثّله وحدة واحدة من الشبكة في الموقف الحقيقي.</li><li><span class="kw"><bdi>طول الضلع</bdi></span> (<bdi lang="en">Side length</bdi>) — المسافة بين رأسين يصل بينهما ضلع.</li></ul></div>
+  <div class="lang-panel" data-lang="fr" lang="fr"><p class="auto-label">Traduction automatique · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">On peut tracer une figure dans un repère en plaçant ses sommets et en les reliant dans l'ordre. Les coordonnées des sommets donnent aussi la longueur de chaque côté. Par exemple, de (-2 ; 3) à (4 ; 3), il y a 6 unités. On additionne tous les côtés pour obtenir le périmètre.</p><ul><li><span class="kw"><bdi>sommet</bdi></span> (<bdi lang="en">vertex</bdi>) — Un coin d'un polygone, nommé par un couple de coordonnées dans le repère.</li><li><span class="kw"><bdi>polygone</bdi></span> (<bdi lang="en">polygon</bdi>) — Une figure fermée faite de segments ; dans un repère, on la trace en plaçant les sommets et en les reliant dans l'ordre.</li><li><span class="kw"><bdi>périmètre</bdi></span> (<bdi lang="en">perimeter</bdi>) — La longueur totale autour d'un polygone : la somme de tous ses côtés.</li><li><span class="kw"><bdi>distance entre deux sommets</bdi></span> (<bdi lang="en">distance between vertices</bdi>) — Quand deux sommets ont la même abscisse ou la même ordonnée, leur distance est la valeur absolue de la différence des autres coordonnées.</li><li><span class="kw"><bdi>échelle</bdi></span> (<bdi lang="en">scale</bdi>) — Ce que représente une unité du quadrillage dans la situation réelle.</li><li><span class="kw"><bdi>longueur d'un côté</bdi></span> (<bdi lang="en">Side length</bdi>) — La distance entre deux sommets reliés par un côté.</li></ul></div>
+  <div class="lang-panel" data-lang="prs" lang="prs" dir="rtl"><p class="auto-label">ترجمه ماشینی · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">می‌توانید یک شکل را روی گراف با رسم نقاط کنج‌های آن و وصل کردن آن‌ها به ترتیب بکشید. اعداد کنج‌ها طول هر ضلع را هم نشان می‌دهند. به طور مثال، از (-2، 3) تا (4، 3) شش واحد است. همهٔ ضلع‌ها را جمع کنید تا محیط به دست آید.</p><ul><li><span class="kw"><bdi>رأس</bdi></span> (<bdi lang="en">vertex</bdi>) — نقطهٔ کنج یک چندضلعی که با یک جفت مرتب در مستوی مختصات نام‌گذاری می‌شود.</li><li><span class="kw"><bdi>چندضلعی</bdi></span> (<bdi lang="en">polygon</bdi>) — شکل بسته‌ای که از پارچه‌خط‌ها ساخته شده؛ در مستوی آن را با رسم رأس‌ها و وصل کردن آن‌ها به ترتیب می‌کشیم.</li><li><span class="kw"><bdi>محیط</bdi></span> (<bdi lang="en">perimeter</bdi>) — مجموع فاصلهٔ دور یک چندضلعی؛ یعنی جمع طول همهٔ ضلع‌های آن.</li><li><span class="kw"><bdi>فاصله بین رأس‌ها</bdi></span> (<bdi lang="en">distance between vertices</bdi>) — وقتی دو رأس مختصهٔ x یا y یکسان دارند، فاصلهٔ بین آن‌ها قیمت مطلق تفاضل مختصه‌های دیگر است.</li><li><span class="kw"><bdi>مقیاس</bdi></span> (<bdi lang="en">scale</bdi>) — آنچه یک واحد شبکه در وضعیت واقعی نشان می‌دهد.</li><li><span class="kw"><bdi>طول ضلع</bdi></span> (<bdi lang="en">Side length</bdi>) — فاصلهٔ بین دو رأسی که با یک ضلع به هم وصل شده‌اند.</li></ul></div>
+  </div>
+  </div>
 </section>
 <section>
   <h2>Key words</h2>
@@ -71,7 +100,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Practice at home</h2>
-  <ol><li>A rectangle has vertices (-1, 4), (5, 4), (5, 1), (-1, 1). What is its perimeter?</li></ol>
+  <ol><li>A rectangle has vertices (-3, 2), (4, 2), (4, -3), (-3, -3). What is its perimeter?<ol class="choices" type="A"><li>5 units</li><li>7 units</li><li>24 square units</li><li>24 units</li></ol></li></ol>
 </section>
 
 <section class="tool-section">
@@ -83,7 +112,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Answer check</h2>
-  <ol><li>A rectangle has vertices (-1, 4), (5, 4), (5, 1), (-1, 1). What is its perimeter? → <span class="answer">18 units</span></li></ol>
+  <ol><li>A rectangle has vertices (-3, 2), (4, 2), (4, -3), (-3, -3). What is its perimeter? → <span class="answer">24 units</span></li></ol>
 </section>
 <section>
   <h2>Common mistake</h2>

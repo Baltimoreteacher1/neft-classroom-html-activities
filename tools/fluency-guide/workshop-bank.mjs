@@ -1,4 +1,6 @@
 /** Original, deterministic lesson workshops. Source quantities stay inspectable. */
+import { readFileSync } from "node:fs";
+
 const bank = {};
 const singular = (unit) =>
   ({ feet: "foot", inches: "inch", miles: "mile", pounds: "pound", yards: "yard" })[unit] ||
@@ -2343,10 +2345,23 @@ for (const id of Object.keys(ratioTransfers)) {
   });
 }
 
+// Lessons added after the original 54 are authored as data (src/data/workshops-extended.json).
+// Each skill task carries a `check` expression over the numbers it shows; the workshop audit
+// recomputes every answer from it.
+const extended = JSON.parse(
+  readFileSync(new URL("./src/data/workshops-extended.json", import.meta.url), "utf8"),
+);
+for (const [id, w] of Object.entries(extended)) {
+  if (bank[id]) throw new Error(`${id}: authored twice`);
+  add(id, w.goal, w.strategy, w.example, w.tasks, w.claim, w.repair, w.transfer, w.transferAnswer);
+}
+export const extendedWorkshopIds = Object.keys(extended);
+
 export const workshops = bank;
 export function validateWorkshops(ids) {
   const errors = [];
-  if (Object.keys(bank).length !== 54) errors.push("Expected exactly 54 workshops");
+  if (Object.keys(bank).length !== ids.length)
+    errors.push(`Expected ${ids.length} workshops; found ${Object.keys(bank).length}`);
   for (const id of ids) {
     const w = bank[id];
     if (!w) {

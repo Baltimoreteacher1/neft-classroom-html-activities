@@ -33,8 +33,10 @@ function answer(opts, choiceIndex) {
     ...opts,
   });
   const inputs = host.querySelectorAll('input[type="radio"]');
-  inputs[choiceIndex].checked = true;
-  inputs[choiceIndex].dispatchEvent(new dom.window.Event("change", { bubbles: true }));
+  // By authored index (the radio's value) — choices render in display order.
+  const input = [...inputs].find((i) => i.value === String(choiceIndex));
+  input.checked = true;
+  input.dispatchEvent(new dom.window.Event("change", { bubbles: true }));
   const check = [...host.querySelectorAll("button")].find((b) => /check/i.test(b.textContent));
   check?.click();
   return host;

@@ -130,15 +130,16 @@
 .units-lesson-options > summary { min-height: 46px; padding: 12px 0; font-size: 16px; font-weight: 700; color: #175da0; cursor: pointer; }
 .curriculum-product .units-lesson-options .phase-selectors { padding: 0; }
 @media (max-width: 1050px) {
-  .ewl-course-nav__inner { flex-direction: column; align-items: flex-start; gap: 6px; }
+  /* Brand and page tools share the first row; the destinations take the second. */
+  .ewl-course-nav__inner { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 6px 12px; }
+  .ewl-course-menu { grid-column: 1 / -1; grid-row: 2; }
+  .ewl-course-tools { grid-column: 2; grid-row: 1; }
   .course-unit-list { grid-template-columns: repeat(3,minmax(0,1fr)); }
 }
 @media (max-width: 780px) {
   .curriculum-product #curriculum-navigator .cn-layout { grid-template-columns: minmax(0,1fr); }
   .curriculum-product #curriculum-navigator #nav-preview { margin-top: 0; }
   .ewl-course-nav__inner { padding: 12px 16px 8px; }
-  .ewl-course-nav ul { width: 100%; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 4px; }
-  .ewl-course-nav li a { padding: 10px 4px; font-size: 15px; }
   .course-unit-list { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .course-unit-list a { min-height: 106px; padding: 12px; }
   .course-overview { padding: 20px 0; }
@@ -255,19 +256,44 @@
 .curriculum-units-page #unit-9 .unit-card-header { box-shadow: inset 0 4px 0 var(--unit-9); }
 .curriculum-units-page #unit-10 .unit-card-header { box-shadow: inset 0 4px 0 var(--unit-10); }
 
-/* Phones: the six destinations stay on one scrollable row instead of
-   wrapping into a two-row grid that pushes the page down. */
-@media (max-width: 780px) {
-  .ewl-course-nav ul {
-    display: flex; flex-wrap: nowrap; gap: 2px; overflow-x: auto;
-    scroll-snap-type: x proximity; scrollbar-width: none; margin-inline: -16px; padding-inline: 12px 40px;
-    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 40px), transparent);
-    mask-image: linear-gradient(90deg, #000 calc(100% - 40px), transparent);
-  }
-  .ewl-course-nav ul::-webkit-scrollbar { display: none; }
-  .ewl-course-nav li { flex: none; scroll-snap-align: start; }
-  .ewl-course-nav li a { padding: 10px 12px; white-space: nowrap; }
+/* Phones: the first destinations stay inline and the rest sit behind a native
+   "More" disclosure (tools/lib/curriculum-shell.mjs renders both copies; CSS
+   shows exactly one). This replaced a sideways-scrolling row whose last three
+   links were off-screen at 390px with nothing but a fade to say so. */
+.ewl-course-menu { display: flex; align-items: center; min-width: 0; }
+.ewl-course-more { display: none; position: relative; }
+.ewl-course-more > summary {
+  display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 10px 12px;
+  border-radius: 4px; color: var(--course-muted); font-weight: 600; cursor: pointer; list-style: none;
 }
+.ewl-course-more > summary::-webkit-details-marker { display: none; }
+.ewl-course-more > summary::after { content: "▾"; font-size: .85em; }
+.ewl-course-more[open] > summary::after { content: "▴"; }
+.ewl-course-more > summary:hover,
+.ewl-course-more[open] > summary { background: #edf3f9; color: var(--course-blue); }
+.ewl-course-more--current > summary { color: #174e46; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 6px; }
+.ewl-course-nav .ewl-course-more > ul {
+  position: absolute; right: 0; top: calc(100% + 4px); z-index: 40;
+  display: grid; gap: 2px; min-width: 210px; padding: 6px;
+  background: #fff; border: 1px solid var(--course-border); border-radius: 8px;
+  box-shadow: 0 12px 30px rgb(15 23 42 / 18%);
+}
+.ewl-course-nav .ewl-course-more li a { justify-content: flex-start; white-space: nowrap; }
+.ewl-course-tools { flex-shrink: 0; }
+@media (max-width: 780px) {
+  .ewl-course-nav .ewl-course-links { flex-wrap: nowrap; gap: 2px; }
+  .ewl-course-links > li:nth-child(n+5) { display: none; }
+  .ewl-course-more { display: block; }
+  .ewl-course-more > ul > li:first-child { display: none; }
+  .ewl-course-nav .ewl-course-links li a,
+  .ewl-course-more > summary { padding: 10px 8px; font-size: 15px; white-space: nowrap; }
+}
+/* Narrow phones: Games moves into More too. */
+@media (max-width: 400px) {
+  .ewl-course-links > li:nth-child(n+4) { display: none; }
+  .ewl-course-more > ul > li:first-child { display: list-item; }
+}
+@media print { .ewl-course-more, .ewl-course-tools { display: none !important; } }
 
 /* Type floor for the dashboard: nothing a student or teacher has to read is
    set below 13px. Tags, tile captions and the footer were 11-12px. The
@@ -311,4 +337,10 @@
 .curriculum-product footer a,
 .curriculum-product .wrap > nav:not(.ewl-course-nav) a {
   display: inline-flex; align-items: center; min-height: 44px;
+}
+/* Desktop: brand, eight destinations and the page tools fit one row at the
+   1180px course width. */
+@media (min-width: 1051px) {
+  .ewl-course-nav__inner { gap: 16px; }
+  .ewl-course-nav .ewl-course-links li a { padding: 10px 8px; }
 }

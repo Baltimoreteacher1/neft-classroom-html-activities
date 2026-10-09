@@ -214,6 +214,31 @@ check(
   "Progress import only accepts known skill keys",
 );
 assert.throws(() => parseBackup({ version: 2 }), /Choose a Fluency Lab/);
+// The retired 60-second sprint stored `sprintBest`. Old profiles and backup files that carry it
+// must still load: the field is dropped, everything else survives, and the new `streakBest` round-trips.
+const legacyBackup = {
+  ...makeBackup({ tutor: support, progress: {}, settings: {}, grade: 4 }),
+  progress: {
+    "4:division": {
+      attempts: 12,
+      correct: 9,
+      bestStreak: 5,
+      sprintBest: 14,
+      lastPracticed: "2026-09-01T12:00:00.000Z",
+    },
+  },
+};
+const legacyRestored = parseBackup(JSON.parse(JSON.stringify(legacyBackup)));
+check(legacyRestored.progress["4:division"].attempts === 12, "Legacy backups keep practice counts");
+check(
+  !Object.hasOwn(legacyRestored.progress["4:division"], "sprintBest"),
+  "Legacy sprintBest is dropped on import",
+);
+check(
+  cleanProgress({ "4:division": { attempts: 3, correct: 3, streakBest: 7 } })["4:division"]
+    .streakBest === 7,
+  "streakBest survives a backup round-trip",
+);
 check(
   !validateAnswer("1/2/3", { kind: "fraction", answers: ["1/2"] }),
   "Malformed fractions are rejected",

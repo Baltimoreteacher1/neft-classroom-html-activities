@@ -13,7 +13,8 @@
  *                     to a unit hub, the games catalog, or the curriculum hub.
  *                     The runtime "← Games" button from assets/game-studio.js is
  *                     not in page source and is allowed by that decision.
- *   COUNTDOWN         no countdown timers or beat-the-clock language.
+ *   COUNTDOWN         no countdown timers or beat-the-clock language. Also swept
+ *                     over COUNTDOWN_ONLY_DIRS (non-game practice surfaces).
  *   SOLUTION_ON_MISS  a wrong pick must not print the worked solution. NARROW BY
  *                     DESIGN: it matches the exact shapes that shipped (a "Review: "
  *                     + explanation concatenation, and a pick wrapper that reports
@@ -60,8 +61,17 @@ const GAME_DIRS = [
   "curriculum/ratio-rate-review-mission",
   "curriculum/unit-3-test-review",
   "curriculum/teach-the-machine",
+  "games/3d/boss-battle-3d",
+  "games/3d/boss-battle-3d/play",
 ];
 const GAME_FILES = ["math/games/practice-arcade/index.html"];
+/**
+ * Student practice surfaces that are not games but fall under the same no-timer
+ * decision. Swept for COUNTDOWN only: their navigation back to a hub is normal
+ * site chrome, so HUB_LINK does not apply. math/fluency-lab shipped a
+ * "60-second sprint" mode on every skill until 2026-10-08.
+ */
+const COUNTDOWN_ONLY_DIRS = ["math/fluency-lab"];
 /** Every math/unit-N/games/ folder, discovered so a new unit game is covered. */
 function unitGameDirs() {
   const base = join(ROOT, "math");
@@ -87,6 +97,7 @@ const HUB_PATTERNS = [
 const COUNTDOWN_PATTERNS = [
   /\b(?:timeLeft|timeRemaining|secondsLeft|secsLeft|countdown|countDown|timesUp|timeIsUp)\b/g,
   /\b(?:time'?s up|seconds? left|time left|beat the clock|before time runs out)\b/gi,
+  /\b\d+[- ](?:second|minute) (?:sprint|challenge|round|blitz|dash)\b/gi,
 ];
 const SOLUTION_PATTERNS = [
   /["']Review: ["']\s*\+\s*\(?\s*[\w.?]*explain/g,
@@ -116,17 +127,20 @@ function negated(text, hit) {
   const before = line.slice(Math.max(0, at - 24), at).toLowerCase();
   return /\b(no|never|without|not)\b[^.]*$/.test(before);
 }
-export function scan(text) {
+export function scan(text, { countdownOnly = false } = {}) {
   const out = [];
-  for (const h of findAll(text, HUB_PATTERNS)) out.push({ detector: "HUB_LINK", ...h });
+  if (!countdownOnly)
+    for (const h of findAll(text, HUB_PATTERNS)) out.push({ detector: "HUB_LINK", ...h });
   for (const h of findAll(text, COUNTDOWN_PATTERNS))
     if (!negated(text, h)) out.push({ detector: "COUNTDOWN", ...h });
-  for (const h of findAll(text, SOLUTION_PATTERNS))
-    out.push({ detector: "SOLUTION_ON_MISS", ...h });
+  if (!countdownOnly)
+    for (const h of findAll(text, SOLUTION_PATTERNS))
+      out.push({ detector: "SOLUTION_ON_MISS", ...h });
   return out;
 }
 
 // ── self-test (runs before the sweep) ──────────────────────────────────────
+let selfTestCount = 0;
 function selfTest() {
   const bad = [
     ["HUB_LINK", '<a class="back" href="/curriculum/">← Back</a>'],
@@ -134,6 +148,7 @@ function selfTest() {
     ["HUB_LINK", "location.href = '/math/games/';"],
     ["COUNTDOWN", "let timeLeft = 30;"],
     ["COUNTDOWN", "<p>Beat the clock!</p>"],
+    ["COUNTDOWN", '["sprint", "60-second sprint"],'],
     ["SOLUTION_ON_MISS", "track(ok, ok ? 'Correct. ' : 'Review: '+(q.explain||'x'))"],
     ["SOLUTION_ON_MISS", "track(!!this.current.choices[i].correct,this.current.explain);"],
   ];
@@ -148,6 +163,14 @@ function selfTest() {
   for (const [det, src] of bad)
     if (!scan(src).some((f) => f.detector === det)) failures.push(`missed ${det}: ${src}`);
   for (const src of good) if (scan(src).length) failures.push(`false positive: ${src}`);
+  // COUNTDOWN-only scope: still catches a clock, ignores ordinary hub navigation.
+  if (
+    !scan("state.timeLeft -= 1;", { countdownOnly: true }).some((f) => f.detector === "COUNTDOWN")
+  )
+    failures.push("countdown-only scope missed COUNTDOWN");
+  if (scan('<a href="/math/">Math</a>', { countdownOnly: true }).length)
+    failures.push("countdown-only scope reported a hub link");
+  selfTestCount = bad.length + good.length + 2;
   return failures;
 }
 
@@ -177,6 +200,15 @@ function main() {
     ...[...GAME_DIRS, ...unitGameDirs(), ...missionDirs()].flatMap(filesIn),
     ...GAME_FILES.map((f) => join(ROOT, f)).filter(existsSync),
   ];
+  const countdownOnlyFiles = COUNTDOWN_ONLY_DIRS.flatMap(filesIn);
+  if (countdownOnlyFiles.length === 0) {
+    console.error(
+      "validate-game-rules: FAIL — the countdown-only practice scope swept zero files; the list is stale.",
+    );
+    process.exit(1);
+  }
+  const countdownOnly = new Set(countdownOnlyFiles);
+  files.push(...countdownOnlyFiles);
   if (!files.length) {
     console.error("validate-game-rules: FAIL — swept zero game files; the scope list is stale.");
     process.exit(1);
@@ -190,7 +222,7 @@ function main() {
   const findings = [];
   for (const abs of files) {
     const rel = relative(ROOT, abs);
-    for (const f of scan(readFileSync(abs, "utf8"))) {
+    for (const f of scan(readFileSync(abs, "utf8"), { countdownOnly: countdownOnly.has(abs) })) {
       const idx = review.findIndex(
         (e) => e.file === rel && e.detector === f.detector && f.match.includes(e.match),
       );
@@ -215,7 +247,7 @@ function main() {
     process.exit(1);
   }
   console.log(
-    `validate-game-rules: ${files.length} game files clean — no hub links, no countdowns, no solution-on-miss (${review.length} reviewed exceptions, 12 self-tests).`,
+    `validate-game-rules: ${files.length} game files clean — no hub links, no countdowns, no solution-on-miss (${review.length} reviewed exceptions, ${selfTestCount} self-tests; ${countdownOnlyFiles.length} practice files swept for countdowns only).`,
   );
 }
 

@@ -13,7 +13,8 @@ Teacher studio creates shareable assignments for selected skills, a problem coun
 - A skill is remembered after at least eight recent independent checks, at least 85% success, and successful practice on two days. Recent unsuccessful work removes that status.
 - Review intervals grow from one to fourteen days. A short checkup recommends topics; it does not assign a grade level.
 - Two fresh independent successes in a row during repair practice resolve that skill’s notebook entries.
-- Untimed sessions save on each response and navigation. Timed sprints do not resume.
+- Every mode is untimed. Sessions save on each response and navigation, including Streak (10 correct in a row at any pace).
+- Older progress or backup files that carry the retired `sprintBest` field still load; the field is ignored.
 
 No analytics, student names, central database, or network submission is added. Share assignment links through the school’s existing classroom system. Use downloaded reports there if collection is needed.
 

@@ -10,8 +10,10 @@ const registry = read("data/learning-labs.json");
 const mapped = learningLabResources(registry, catalog.lessons);
 assert.equal(mapped.size, catalog.lessons.length, "every current core lesson has an authored lab");
 const expectedReadiness = catalog.lessons.filter((lesson) => lesson.resources.readiness?.exists);
-assert.equal(expectedReadiness.length, 64);
-assert.equal(launch.lessons.filter((lesson) => lesson.resources.readiness).length, 64);
+// 78 = every core lesson except Unit 10 (not taught) — Get Ready added for
+// 1-1..1-6, 2-8, 4-3, 7-1, 7-7 and 9-1..9-4 on 2026-10-08.
+assert.equal(expectedReadiness.length, 78);
+assert.equal(launch.lessons.filter((lesson) => lesson.resources.readiness).length, 78);
 for (const lesson of launch.lessons) {
   const canonical = catalog.lessons.find((item) => item.id === lesson.id);
   assert.equal(lesson.resources.learningLab, mapped.get(lesson.id));
@@ -68,5 +70,5 @@ assert.throws(
   /Missing/,
 );
 console.log(
-  "✓ launch resources: all 84 lab mappings, 64 available readiness pages, strict paths, existence, and assignment validation",
+  "✓ launch resources: all 84 lab mappings, 78 available readiness pages, strict paths, existence, and assignment validation",
 );

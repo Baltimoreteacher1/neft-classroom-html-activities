@@ -42,6 +42,22 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 .muted-note{color:var(--muted);font-size:14px;margin:6px 0 0;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
+
+ol.choices{margin:6px 0 4px;}
+.lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
+.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
+  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
+.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
+.lang-panel{display:none;margin-top:6px;}
+#family-lang-en:checked ~ .lang-panels [data-lang="en"],
+#family-lang-es:checked ~ .lang-panels [data-lang="es"],
+#family-lang-ar:checked ~ .lang-panels [data-lang="ar"],
+#family-lang-fr:checked ~ .lang-panels [data-lang="fr"],
+#family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
+.lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
+.auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
+  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -59,7 +75,20 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 <section>
   <h2>What students are learning</h2>
   <p>A statistical question is one you answer by collecting data, and the answers are different for different people or cases. A non-statistical question has just one fixed answer.</p>
-  <p class="callout"><strong>Key idea:</strong> Statistical Questions &amp; Variability. 1. Statistical Question: Expects answers that vary across people, trials, or items. 2. Non-Statistical Question: Has one single fixed answer. 3. Data Collection: Gather varied data points to create a distribution</p>
+  <p class="callout"><strong>Key idea:</strong> A statistical question has answers that change from person to person, so you collect data to answer it. A question with only one fixed answer is not a statistical question. For example, &quot;How tall is each student in the class?&quot; is statistical, but &quot;How many days are in a week?&quot; is not.<br><span class="es-text" lang="es">Idea clave: Una pregunta estadística tiene respuestas que cambian de una persona a otra, así que reúnes datos para responderla. Una pregunta con una sola respuesta fija no es estadística. Por ejemplo, «¿Cuánto mide cada estudiante de la clase?» es estadística, pero «¿Cuántos días tiene una semana?» no lo es.</span></p>
+</section>
+
+<section class="lang-section">
+  <h2>Read this in your language <span class="es">· Lea esto en su idioma</span></h2>
+  <div class="lang-picker"><input type="radio" class="lang-radio" name="family-lang" id="family-lang-en" value="en" checked><label for="family-lang-en" lang="en">English</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-es" value="es"><label for="family-lang-es" lang="es">Español</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-ar" value="ar"><label for="family-lang-ar" lang="ar">العربية</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-fr" value="fr"><label for="family-lang-fr" lang="fr">Français</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-prs" value="prs"><label for="family-lang-prs" lang="prs">دری</label>
+  <div class="lang-panels">
+  <div class="lang-panel" data-lang="en" lang="en"><p class="callout">A statistical question has answers that change from person to person, so you collect data to answer it. A question with only one fixed answer is not a statistical question. For example, &quot;How tall is each student in the class?&quot; is statistical, but &quot;How many days are in a week?&quot; is not.</p><ul><li><span class="kw"><bdi>Statistical Questions and Data</bdi></span> — A statistical question expects varied answers that can be collected as data.</li><li><span class="kw"><bdi>Statistical Question</bdi></span> — A question answered with data that are expected to vary.</li><li><span class="kw"><bdi>Non-statistical Question</bdi></span> — A question that does not anticipate variability in the data used to answer it. It may ask for one fact or measurement.</li><li><span class="kw"><bdi>Data</bdi></span> — Facts and numbers you collect, like answers to a survey.</li><li><span class="kw"><bdi>Variability</bdi></span> — How spread out the numbers are.</li><li><span class="kw"><bdi>Survey</bdi></span> — Collecting facts by asking people questions.</li><li><span class="kw"><bdi>Data distribution</bdi></span> — How the data looks: where it sits and how spread out it is.</li><li><span class="kw"><bdi>Dot plot</bdi></span> — A number line with one dot for each data value.</li></ul></div>
+  <div class="lang-panel" data-lang="es" lang="es"><p class="callout">Una pregunta estadística tiene respuestas que cambian de una persona a otra, así que reúnes datos para responderla. Una pregunta con una sola respuesta fija no es estadística. Por ejemplo, «¿Cuánto mide cada estudiante de la clase?» es estadística, pero «¿Cuántos días tiene una semana?» no lo es.</p><ul><li><span class="kw"><bdi>Preguntas estadísticas y datos</bdi></span> — Una pregunta estadística espera respuestas variadas que se pueden recopilar como datos.</li><li><span class="kw"><bdi>Pregunta estadística</bdi></span> — Una pregunta que se responde con datos que se espera que varíen.</li><li><span class="kw"><bdi>Pregunta no estadística</bdi></span> — Una pregunta que no anticipa variabilidad en los datos usados para responderla. Puede pedir un solo dato o una medición.</li><li><span class="kw"><bdi>Datos</bdi></span> — Datos y números que recoges, como respuestas a una encuesta.</li><li><span class="kw"><bdi>Variabilidad</bdi></span> — Qué tan separados están los números.</li><li><span class="kw"><bdi>Encuesta</bdi></span> — Recoger datos haciendo preguntas a las personas.</li><li><span class="kw"><bdi>Distribución de datos</bdi></span> — Cómo se ven los datos: dónde están y qué tan separados están.</li><li><span class="kw"><bdi>Diagrama de puntos</bdi></span> — Una recta numérica con un punto por cada valor de los datos.</li></ul></div>
+  <div class="lang-panel" data-lang="ar" lang="ar" dir="rtl"><p class="auto-label">ترجمة آلية · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">السؤال الإحصائي له إجابات تختلف من شخص إلى آخر، لذلك نجمع البيانات للإجابة عنه. السؤال الذي له إجابة واحدة ثابتة فقط ليس سؤالًا إحصائيًا. مثلًا، «ما طول كل طالب في الصف؟» سؤال إحصائي، لكن «كم يومًا في الأسبوع؟» ليس كذلك.</p><ul><li><span class="kw"><bdi>الأسئلة الإحصائية والبيانات</bdi></span> (<bdi lang="en">Statistical Questions and Data</bdi>) — السؤال الإحصائي يتوقع إجابات متنوعة يمكن جمعها كبيانات.</li><li><span class="kw"><bdi>سؤال إحصائي</bdi></span> (<bdi lang="en">Statistical Question</bdi>) — سؤال يُجاب عنه ببيانات يُتوقع أن تختلف.</li><li><span class="kw"><bdi>سؤال غير إحصائي</bdi></span> (<bdi lang="en">Non-statistical Question</bdi>) — سؤال لا يُتوقع فيه اختلاف في البيانات المستخدمة للإجابة عنه. قد يطلب حقيقة واحدة أو قياسًا واحدًا.</li><li><span class="kw"><bdi>البيانات</bdi></span> (<bdi lang="en">Data</bdi>) — حقائق وأعداد تجمعها، مثل الإجابات عن استطلاع.</li><li><span class="kw"><bdi>التباين</bdi></span> (<bdi lang="en">Variability</bdi>) — مدى تباعد الأعداد بعضها عن بعض.</li><li><span class="kw"><bdi>استطلاع</bdi></span> (<bdi lang="en">Survey</bdi>) — جمع المعلومات بطرح أسئلة على الناس.</li><li><span class="kw"><bdi>توزيع البيانات</bdi></span> (<bdi lang="en">Data distribution</bdi>) — شكل البيانات: أين تقع ومدى تباعدها.</li><li><span class="kw"><bdi>مخطط النقاط</bdi></span> (<bdi lang="en">Dot plot</bdi>) — خط أعداد عليه نقطة واحدة لكل قيمة من البيانات.</li></ul></div>
+  <div class="lang-panel" data-lang="fr" lang="fr"><p class="auto-label">Traduction automatique · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">Une question statistique a des réponses qui changent d'une personne à l'autre, donc on recueille des données pour y répondre. Une question qui n'a qu'une seule réponse fixe n'est pas statistique. Par exemple, « Quelle est la taille de chaque élève de la classe ? » est statistique, mais « Combien de jours y a-t-il dans une semaine ? » ne l'est pas.</p><ul><li><span class="kw"><bdi>Questions statistiques et données</bdi></span> (<bdi lang="en">Statistical Questions and Data</bdi>) — Une question statistique attend des réponses variées que l'on peut recueillir sous forme de données.</li><li><span class="kw"><bdi>Question statistique</bdi></span> (<bdi lang="en">Statistical Question</bdi>) — Une question à laquelle on répond avec des données qui devraient varier.</li><li><span class="kw"><bdi>Question non statistique</bdi></span> (<bdi lang="en">Non-statistical Question</bdi>) — Une question qui ne prévoit pas de variation dans les données utilisées pour y répondre. Elle peut demander un seul fait ou une seule mesure.</li><li><span class="kw"><bdi>Données</bdi></span> (<bdi lang="en">Data</bdi>) — Des faits et des nombres que l'on recueille, comme les réponses à un sondage.</li><li><span class="kw"><bdi>Variabilité</bdi></span> (<bdi lang="en">Variability</bdi>) — À quel point les nombres sont dispersés.</li><li><span class="kw"><bdi>Sondage</bdi></span> (<bdi lang="en">Survey</bdi>) — Recueillir des informations en posant des questions aux gens.</li><li><span class="kw"><bdi>Distribution des données</bdi></span> (<bdi lang="en">Data distribution</bdi>) — L'allure des données : où elles se situent et à quel point elles sont dispersées.</li><li><span class="kw"><bdi>Diagramme à points</bdi></span> (<bdi lang="en">Dot plot</bdi>) — Une droite numérique avec un point pour chaque valeur des données.</li></ul></div>
+  <div class="lang-panel" data-lang="prs" lang="prs" dir="rtl"><p class="auto-label">ترجمه ماشینی · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">سوال احصائیوی جواب‌هایی دارد که از یک شخص تا شخص دیگر فرق می‌کند، پس برای جواب دادن به آن معلومات جمع می‌کنیم. سوالی که فقط یک جواب ثابت دارد، سوال احصائیوی نیست. مثلاً «قد هر شاگرد صنف چقدر است؟» احصائیوی است، اما «یک هفته چند روز دارد؟» احصائیوی نیست.</p><ul><li><span class="kw"><bdi>سوال‌های احصائیوی و معلومات</bdi></span> (<bdi lang="en">Statistical Questions and Data</bdi>) — سوال احصائیوی جواب‌های مختلف را انتظار دارد که می‌توان آن‌ها را به حیث معلومات جمع کرد.</li><li><span class="kw"><bdi>سوال احصائیوی</bdi></span> (<bdi lang="en">Statistical Question</bdi>) — سوالی که با معلوماتی جواب داده می‌شود که انتظار می‌رود با هم فرق کنند.</li><li><span class="kw"><bdi>سوال غیر احصائیوی</bdi></span> (<bdi lang="en">Non-statistical Question</bdi>) — سوالی که انتظار تفاوت در معلوماتِ جواب آن را ندارد. ممکن است یک واقعیت یا یک اندازه را بپرسد.</li><li><span class="kw"><bdi>معلومات (داده‌ها)</bdi></span> (<bdi lang="en">Data</bdi>) — واقعیت‌ها و اعدادی که جمع می‌کنید، مانند جواب‌های یک سروی.</li><li><span class="kw"><bdi>تغییرپذیری</bdi></span> (<bdi lang="en">Variability</bdi>) — اعداد چقدر از هم پراکنده هستند.</li><li><span class="kw"><bdi>سروی (نظرسنجی)</bdi></span> (<bdi lang="en">Survey</bdi>) — جمع کردن معلومات با پرسیدن سوال از مردم.</li><li><span class="kw"><bdi>توزیع معلومات</bdi></span> (<bdi lang="en">Data distribution</bdi>) — معلومات چگونه به نظر می‌رسد: کجا قرار دارد و چقدر پراکنده است.</li><li><span class="kw"><bdi>نمودار نقطه‌ای</bdi></span> (<bdi lang="en">Dot plot</bdi>) — یک خط اعداد که برای هر قیمت معلومات یک نقطه دارد.</li></ul></div>
+  </div>
+  </div>
 </section>
 <section>
   <h2>Key words</h2>
@@ -71,11 +100,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Practice at home</h2>
-  <ol><li>Which question is a statistical question?
-A) How many students are in the school?
-B) How many hours does each student in 6th grade exercise per week?
-C) What time does school start?
-D) How many days are in a week?</li></ol>
+  <ol><li>Maya wants to learn about the families on her street. Which of these is a statistical question?<ol class="choices" type="A"><li>How many legs does a dog have?</li><li>How many pets does each family on Maya's street have?</li><li>What time does the library close on Saturdays?</li><li>How many houses are on Maya's street?</li></ol></li></ol>
 </section>
 
 <section class="tool-section">
@@ -87,11 +112,7 @@ D) How many days are in a week?</li></ol>
 </section>
 <section>
   <h2>Answer check</h2>
-  <ol><li>Which question is a statistical question?
-A) How many students are in the school?
-B) How many hours does each student in 6th grade exercise per week?
-C) What time does school start?
-D) How many days are in a week? → <span class="answer">B) How many hours does each student exercise per week?</span></li></ol>
+  <ol><li>Maya wants to learn about the families on her street. Which of these is a statistical question? → <span class="answer">How many pets does each family on Maya's street have?</span></li></ol>
 </section>
 <section>
   <h2>Common mistake</h2>

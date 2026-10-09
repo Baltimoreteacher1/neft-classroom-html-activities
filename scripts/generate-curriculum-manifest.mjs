@@ -197,7 +197,7 @@ function resourcesFor(id) {
     },
   };
 
-  /* The tabbed Get Ready pre-lesson (scripts/readiness/generate-readiness.mjs).
+  /* The Get Ready pre-lesson (scripts/generate-readiness-html.mjs).
      64 of 84 lessons ship one; the hub used to link every lesson to it and
      served 24 dead links. Listed only when it exists so the hub can ask. */
   if (present(`lessons/${id}/readiness/index.html`)) {

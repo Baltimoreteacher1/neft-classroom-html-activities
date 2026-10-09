@@ -1,15 +1,15 @@
 // Generates per-lesson READINESS pre-lesson pages (index.html) from JSON data.
 // Output: lessons/<id>/readiness/index.html
 //
-// Data files live in scripts/readiness/data/<id>.json. One per lesson.
+// Data files live in scripts/readiness/data/<id>.json, one per lesson, keyed by
+// the lesson's CURRENT id. The lesson's title, standard and "Unit N · Lesson M"
+// label are read from data/curriculum-launch-manifest.json
+// (scripts/readiness/lesson-identity.mjs) and must NOT appear in the data file.
 //
-// JSON schema (see scripts/readiness/data/1-2.json for a full example):
+// JSON schema (see scripts/readiness/data/3-1.json for a full example):
 // {
-//   "lessonId": "1-2",
-//   "title": "Greatest Common Factor",
-//   "standard": "6.NOS.4",
+//   "lessonId": "3-1",
 //   "emoji": "🚀",
-//   "unitName": "Unit 1 · Lesson 2",
 //   "why": "Plain-text sentence (may contain <strong>/<em>).",
 //   "skills": ["Multiplication facts", "Listing factors", ...],
 //   "diagnostic": [            // exactly 3 multiple-choice items; scoring routes tier
@@ -27,12 +27,21 @@
 //   "exit": [ {"type":"mc"|"num", "q":"…","ans":...,"opts"?:[...],"hint":"…"} ]   // ~2 items
 // }
 //
+// Spanish (optional per field, required for newly authored files): a sibling
+// key with an "_es" suffix — why_es, q_es, hint_es, intro_es, heading_es,
+// examples_es[] (same order as examples), and t_es on an option whose text has
+// words. Each renders directly under its English as <span class="es" lang="es">.
+//
+// --check: exit 1 if any committed page differs from what this would write
+// (tools/generated-pages-fresh.test.mjs).
+//
 // Run: node scripts/generate-readiness-html.mjs            (all data files)
 //      node scripts/generate-readiness-html.mjs 1-2 3-4    (specific lessons)
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { writeGenerated } from "./lib/preserve-injected.mjs";
+import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
+import { lessonIdentity } from "./readiness/lesson-identity.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -51,9 +60,14 @@ function html(s) {
   return String(s ?? "");
 }
 
+// Spanish sibling line, rendered only when the data supplies one.
+function es(s, tag = "span") {
+  return s ? ` <${tag} class="es" lang="es">${html(s)}</${tag}>` : "";
+}
+
 function renderOpts(_mcKey, opts) {
   return opts
-    .map((o) => `<button class="opt" data-v="${esc(o.v)}">${html(o.t)}</button>`)
+    .map((o) => `<button class="opt" data-v="${esc(o.v)}">${html(o.t)}${es(o.t_es)}</button>`)
     .join("\n            ");
 }
 
@@ -61,22 +75,22 @@ function renderItem(item, idPrefix, idx) {
   const id = `${idPrefix}${idx}`;
   if (item.type === "mc") {
     return `<div class="q">
-          <p class="prompt">${html(item.q)}</p>
+          <p class="prompt">${html(item.q)}${es(item.q_es)}</p>
           <div class="opts" data-mc="${id}" data-ans="${esc(item.ans)}">
             ${renderOpts(id, item.opts)}
           </div>
           <button class="btn" onclick="checkMC('${id}')">Check</button>
           <div class="fb" id="fb-${id}"></div>
-          ${item.hint ? `<details><summary>Hint</summary><p>${html(item.hint)}</p></details>` : ""}
+          ${item.hint ? `<details><summary>Hint${item.hint_es ? `<span class="es" lang="es"> · Pista</span>` : ""}</summary><p>${html(item.hint)}${es(item.hint_es)}</p></details>` : ""}
         </div>`;
   }
   // numeric
   return `<div class="q">
-          <p class="prompt">${html(item.q)}</p>
+          <p class="prompt">${html(item.q)}${es(item.q_es)}</p>
           <input type="number" id="${id}" placeholder="?" />
           <button class="btn" onclick="checkNum('${id}', ${Number(item.ans)})">Check</button>
           <div class="fb" id="fb-${id}"></div>
-          ${item.hint ? `<details><summary>Hint</summary><p>${html(item.hint)}</p></details>` : ""}
+          ${item.hint ? `<details><summary>Hint${item.hint_es ? `<span class="es" lang="es"> · Pista</span>` : ""}</summary><p>${html(item.hint)}${es(item.hint_es)}</p></details>` : ""}
         </div>`;
 }
 
@@ -84,7 +98,7 @@ function renderDiagnostic(diag) {
   return diag
     .map(
       (d, i) => `<div class="q">
-          <p class="prompt">${i + 1}. ${html(d.q)}</p>
+          <p class="prompt">${i + 1}. ${html(d.q)}${es(d.q_es)}</p>
           <div class="opts" data-mc="d${i + 1}" data-ans="${esc(d.ans)}">
             ${renderOpts(`d${i + 1}`, d.opts)}
           </div>
@@ -106,21 +120,28 @@ function tierChip(level) {
 
 function buildHtml(d) {
   const id = d.lessonId;
+  for (const stale of ["title", "unitName", "standard"]) {
+    if (stale in d) {
+      throw new Error(
+        `readiness data ${id}.json has "${stale}" — lesson identity comes from the launch manifest; delete the field`,
+      );
+    }
+  }
+  const who = lessonIdentity(id);
   const emoji = d.emoji || "🚀";
-  const unitName = d.unitName || `Lesson ${id}`;
   const tiers = [...d.tiers].sort((a, b) => a.level - b.level);
 
   const tracks = tiers
     .map(
       (t) => `<div class="track" id="track-${t.level}">
-          <p>${tierChip(t.level)} ${html(t.intro)}</p>
+          <p>${tierChip(t.level)} ${html(t.intro)}${es(t.intro_es)}</p>
           ${t.items.map((it, i) => renderItem(it, `t${t.level}`, i)).join("\n          ")}
         </div>`,
     )
     .join("\n\n        ");
 
   const learnExamples = (d.learn.examples || [])
-    .map((e) => `<div class="example">${html(e)}</div>`)
+    .map((e, i) => `<div class="example">${html(e)}${es((d.learn.examples_es || [])[i])}</div>`)
     .join("\n        ");
 
   return `<!doctype html>
@@ -128,8 +149,8 @@ function buildHtml(d) {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Get Ready · Lesson ${esc(id)}: ${esc(d.title)} — Neft Teacher</title>
-    <meta name="description" content="Readiness pre-lesson for ${esc(d.title)} (${esc(d.standard)}): a quick check that routes you to the right level, then targeted practice so you walk into the lesson ready." />
+    <title>Get Ready · Lesson ${esc(id)}: ${esc(who.title)} — Neft Teacher</title>
+    <meta name="description" content="Readiness pre-lesson for ${esc(who.title)} (${esc(who.standard)}): a quick check that routes you to the right level, then targeted practice so you walk into the lesson ready." />
     <style>
 ${STYLE}
     </style>
@@ -137,12 +158,12 @@ ${STYLE}
   <body>
     <header class="phero">
       <div class="deco">${emoji}</div>
-      <h1>Get Ready: ${esc(d.title)}</h1>
-      <p>${html(d.why)}</p>
+      <h1>Get Ready: ${esc(who.title)}</h1>
+      <p>${html(d.why)}${es(d.why_es)}</p>
       <div class="tags">
         <span class="tag gold">Readiness Pre-Lesson</span>
-        <span class="tag">${esc(unitName)}</span>
-        <span class="tag">Builds toward ${esc(d.standard)}</span>
+        <span class="tag">${esc(who.unitLabel)}</span>
+        <span class="tag">Builds toward ${esc(who.standard)}</span>
       </div>
     </header>
 
@@ -158,7 +179,7 @@ ${STYLE}
       </div>
 
       <div class="why">
-        <strong>Why this matters for Lesson ${esc(id)}:</strong> ${html(d.why)}
+        <strong>Why this matters for Lesson ${esc(id)}:</strong> ${html(d.why)}${es(d.why_es)}
       </div>
 
       <!-- DIAGNOSTIC -->
@@ -177,8 +198,8 @@ ${STYLE}
 
       <!-- LEARN IT -->
       <section class="sec">
-        <div class="sec-head"><div class="badge b-learn">1</div><div><div class="kicker">Learn It</div><h2>${esc(d.learn.heading)}</h2></div></div>
-        ${html(d.learn.intro)}
+        <div class="sec-head"><div class="badge b-learn">1</div><div><div class="kicker">Learn It</div><h2>${esc(d.learn.heading)}${es(d.learn.heading_es)}</h2></div></div>
+        ${html(d.learn.intro)}${es(d.learn.intro_es, "div")}
         ${learnExamples}
       </section>
 
@@ -391,25 +412,52 @@ ${STYLE}
 }
 
 // ---------- run ----------
-const args = process.argv.slice(2);
+const CHECK = process.argv.includes("--check");
+const args = process.argv.slice(2).filter((a) => !a.startsWith("--"));
 const files = args.length
   ? args.map((a) => `${a}.json`)
   : readdirSync(dataDir).filter((f) => f.endsWith(".json"));
 
 let count = 0;
+let failed = false;
+const stale = [];
 for (const f of files) {
   const path = join(dataDir, f);
   if (!existsSync(path)) {
     console.error(`Missing data file: ${f}`);
+    failed = true;
     continue;
   }
   const d = JSON.parse(readFileSync(path, "utf8"));
+  if (`${d.lessonId}.json` !== f) {
+    console.error(`${f}: lessonId "${d.lessonId}" does not match its file name`);
+    failed = true;
+    continue;
+  }
+  const html = buildHtml(d);
   const outDir = join(root, "lessons", d.lessonId, "readiness");
+  const file = join(outDir, "index.html");
+  if (CHECK) {
+    if (!isGeneratedFresh(file, html)) stale.push(`lessons/${d.lessonId}/readiness/index.html`);
+    count++;
+    continue;
+  }
   if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
   // writeGenerated, not writeFileSync — see tools/generators-preserve-injected.test.mjs.
   // All 74 lessons/<id>/readiness/index.html pages carry injected sentinel blocks;
   // a full-render overwrite deletes them and no gate notices.
-  writeGenerated(join(outDir, "index.html"), buildHtml(d));
+  writeGenerated(file, html);
   count++;
 }
-console.log(`Generated ${count} readiness HTML page(s).`);
+if (CHECK) {
+  if (stale.length) {
+    console.error(
+      `${stale.length} readiness page(s) differ from scripts/readiness/data — run \`npm run generate-readiness\`:\n  ${stale.join("\n  ")}`,
+    );
+    process.exit(1);
+  }
+  console.log(`Readiness pages fresh: ${count} page(s) match their data.`);
+} else {
+  console.log(`Generated ${count} readiness HTML page(s).`);
+}
+if (failed) process.exit(1);

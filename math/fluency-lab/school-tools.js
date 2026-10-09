@@ -32,7 +32,7 @@ export function cleanProgress(value) {
   for (const skill of ALL_SKILLS) {
     const record = value[skillKey(skill)]; if (!record || typeof record !== "object") continue;
     const safe = {};
-    for (const key of ["attempts", "correct", "completedSets", "bestStreak", "sprintBest", "guidedProblems", "guidedCorrect", "guidedSets"]) safe[key] = Math.min(10000000, Math.max(0, Math.floor(Number(record[key]) || 0)));
+    for (const key of ["attempts", "correct", "completedSets", "bestStreak", "streakBest", "guidedProblems", "guidedCorrect", "guidedSets"]) safe[key] = Math.min(10000000, Math.max(0, Math.floor(Number(record[key]) || 0)));
     safe.correct = Math.min(safe.correct, safe.attempts);
     safe.lastPracticed = typeof record.lastPracticed === "string" ? record.lastPracticed.slice(0, 40) : null;
     clean[skillKey(skill)] = safe;

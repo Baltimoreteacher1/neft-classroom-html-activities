@@ -37,7 +37,7 @@ export function getActivityPlan(unit, standard, lessonId) {
       std.includes("6.AT.5") || std.includes("6.AT.6") ? "power-match" : "expression-simplify";
     secondary = "error-analysis";
     explore = "think-write";
-  } else if (std.includes("6.GR.") || u === 5 || u === 10) {
+  } else if ((std.includes("6.GR.") && std !== "6.GR.3") || u === 5 || u === 10) {
     primary = u === 10 ? "net-fold" : "area-grid";
     secondary = "drag-sort-ratios";
     explore = "choice-board";
@@ -45,7 +45,7 @@ export function getActivityPlan(unit, standard, lessonId) {
     primary = "stat-sort";
     secondary = "error-analysis";
     explore = "think-write";
-  } else if (std.includes("6.NOS.6") || std.includes("6.NOS.9") || u === 9) {
+  } else if (["6.NOS.5", "6.NOS.6", "6.NOS.9", "6.GR.3"].some((c) => std.includes(c)) || u === 9) {
     primary = "treasure-hunt";
     secondary = "vocab-match";
     explore = "choice-board";

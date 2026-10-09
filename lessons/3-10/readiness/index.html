@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Get Ready · Lesson 4-6: Convert Measurement Units — Neft Teacher</title>
+    <title>Get Ready · Lesson 3-10: Convert Measurement Units — Neft Teacher</title>
     <meta name="description" content="Readiness pre-lesson for Convert Measurement Units (6.AT.3c): a quick check that routes you to the right level, then targeted practice so you walk into the lesson ready." />
     <style>
       :root {
@@ -425,6 +425,18 @@
         text-decoration: none;
         margin-top: 10px;
       }
+      /* Spanish sibling line under its English (rendered only when authored). */
+      .es {
+        display: block;
+        color: #3f4d5c;
+        font-style: italic;
+        font-weight: 400;
+        font-size: 0.92em;
+        margin-top: 2px;
+      }
+      summary .es {
+        display: inline;
+      }
       @media print {
         .progress-wrap,
         .btn,
@@ -460,7 +472,7 @@
       <p>Converting units (feet to inches, meters to centimeters) is just <strong>multiplying</strong> or <strong>dividing</strong> by the right number. Knowing your facts and how to multiply by <strong>10 and 100</strong> makes conversions fast.</p>
       <div class="tags">
         <span class="tag gold">Readiness Pre-Lesson</span>
-        <span class="tag">Unit 4 · Lesson 6</span>
+        <span class="tag">Unit 3 · Lesson 10</span>
         <span class="tag">Builds toward 6.AT.3c</span>
       </div>
     </header>
@@ -468,7 +480,7 @@
     <div class="wrap">
       <nav class="breadcrumb">
         <a href="/">Home</a> / <a href="/math/">Math</a> /
-        <a href="/lessons/3-10/">Lesson 4-6</a> / Get Ready
+        <a href="/lessons/3-10/">Lesson 3-10</a> / Get Ready
       </nav>
 
       <div class="progress-wrap">
@@ -477,7 +489,7 @@
       </div>
 
       <div class="why">
-        <strong>Why this matters for Lesson 4-6:</strong> Converting units (feet to inches, meters to centimeters) is just <strong>multiplying</strong> or <strong>dividing</strong> by the right number. Knowing your facts and how to multiply by <strong>10 and 100</strong> makes conversions fast.
+        <strong>Why this matters for Lesson 3-10:</strong> Converting units (feet to inches, meters to centimeters) is just <strong>multiplying</strong> or <strong>dividing</strong> by the right number. Knowing your facts and how to multiply by <strong>10 and 100</strong> makes conversions fast.
       </div>
 
       <!-- DIAGNOSTIC -->
@@ -628,10 +640,14 @@
         </div>
       </section>
 
-      <div class="handoff">
+      <div class="handoff" id="handoff">
         <h2>🎉 You're warmed up!</h2>
-        <p>You've practiced exactly what Lesson 4-6 uses. Time to dive in.</p>
-        <a class="go" href="/lessons/3-10/">Start Lesson 4-6 →</a>
+        <p>You've practiced exactly what Lesson 3-10 uses. Time to dive in.</p>
+        <a class="go" href="/lessons/3-10/">Start Lesson 3-10 →</a>
+        <!-- Shown only when this page runs inside the lesson shell's Get Ready
+             tab: finishing here hands off to the Warm-Up on the SAME screen
+             instead of navigating to the lesson URL. -->
+        <button class="go" id="toWarmup" type="button" style="display:none; border:0; cursor:pointer; font-size:1rem;">Continue to Warm-Up ⚡ →</button>
       </div>
 
       <div style="text-align:center;">
@@ -639,11 +655,11 @@
       </div>
 
       <div class="nav-links">
-        <a href="/lessons/3-10/">← Lesson 4-6</a>
+        <a href="/lessons/3-10/">← Lesson 3-10</a>
         <a href="/lessons/3-10/readiness/practice.docx" download>📄 Practice packet (Word) →</a>
       </div>
 
-      <p class="footer">Neft Teacher · Readiness Pre-Lesson · Lesson 4-6 · <span id="yr"></span></p>
+      <p class="footer">Neft Teacher · Readiness Pre-Lesson · Lesson 3-10 · <span id="yr"></span></p>
     </div>
 
     <script>
@@ -691,6 +707,46 @@
         var pct = Math.min(100, Math.round((Object.keys(done).length / TOTAL_ITEMS) * 100));
         document.getElementById("pfill").style.width = pct + "%";
         document.getElementById("pct").textContent = pct;
+        checkExitComplete();
+      }
+
+      // ---- hand-off to the lesson Warm-Up -------------------------------
+      // When this page is embedded in the lesson shell's "Get Ready" tab, a
+      // student who finishes the exit ticket should slide straight into the
+      // Warm-Up on the same screen — not be told to "Start Lesson" (a link
+      // that, inside the iframe, would load a whole second lesson shell).
+      var EXIT_KEYS = ["x1","x2"];
+      var EMBEDDED = window.parent !== window;
+      var handedOff = false;
+
+      function handOffToWarmup() {
+        if (handedOff) return;
+        handedOff = true;
+        try {
+          window.parent.postMessage(
+            { type: "nt-readiness-complete", lessonId: "3-10" },
+            window.location.origin,
+          );
+        } catch (e) {}
+      }
+
+      function checkExitComplete() {
+        if (!EMBEDDED || handedOff) return;
+        if (!EXIT_KEYS.every(function (k) { return done[k]; })) return;
+        var h = document.getElementById("handoff");
+        if (h) h.scrollIntoView({ behavior: "smooth", block: "center" });
+        // Give the student a beat to read the ✅ before the screen changes.
+        setTimeout(handOffToWarmup, 1200);
+      }
+
+      if (EMBEDDED) {
+        var goLink = document.querySelector(".handoff .go[href]");
+        if (goLink) goLink.style.display = "none";
+        var warmBtn = document.getElementById("toWarmup");
+        if (warmBtn) {
+          warmBtn.style.display = "inline-block";
+          warmBtn.addEventListener("click", handOffToWarmup);
+        }
       }
 
       function scorePath() {

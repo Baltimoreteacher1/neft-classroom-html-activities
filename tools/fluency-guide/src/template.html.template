@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Grade 6 readiness and fluency resources for 54 lessons: diagnostic checks, reteach support, guided investigations, and printable practice with separate keys.">
+<meta name="description" content="Grade 6 readiness and fluency resources for {{LESSONS}} lessons: diagnostic checks, reteach support, guided investigations, and printable practice with separate keys.">
 <meta name="color-scheme" content="light dark">
 <title>Fluency &amp; Readiness · EduWonderLab</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2213%22 fill=%22%231a56c4%22/%3E%3Ctext x=%229%22 y=%2244%22 font-family=%22Georgia,serif%22 font-size=%2234%22 fill=%22white%22%3ER6%3C/text%3E%3C/svg%3E">
@@ -69,7 +69,7 @@
     <div class="cmd-left">
       <span class="cmd-badge">Today's Lesson</span>
       <select id="cmdLessonSelect" class="cmd-select" aria-label="Select today's lesson">
-        <!-- populated dynamically with all 54 lessons -->
+        <!-- populated dynamically with all {{LESSONS}} lessons -->
       </select>
       <button class="btn btn-sm btn-pin" id="cmdPinBtn" type="button" title="Pin this lesson as your default daily focus">📌 Pin</button>
     </div>
@@ -85,9 +85,9 @@
 
 <nav class="viewbar" aria-label="Guide sections" role="navigation">
   <div class="wrap viewbar-inner" role="tablist" aria-orientation="horizontal" id="viewTablist">
-    <button class="viewtab" role="tab" type="button" id="tab-lessons" aria-controls="view-lessons" data-act="view" data-view="lessons" aria-selected="true" tabindex="0">Lessons <span class="count">54</span></button>
+    <button class="viewtab" role="tab" type="button" id="tab-lessons" aria-controls="view-lessons" data-act="view" data-view="lessons" aria-selected="true" tabindex="0">Lessons <span class="count">{{LESSONS}}</span></button>
     <button class="viewtab" role="tab" type="button" id="tab-studio" aria-controls="view-studio" data-act="view" data-view="studio" aria-selected="false" tabindex="-1">Practice Studio <span class="count count-featured">PRACTICE</span></button>
-    <button class="viewtab teacher-only" role="tab" type="button" id="tab-table" aria-controls="view-table" data-act="view" data-view="table" aria-selected="false" tabindex="-1">One-page table <span class="count">54</span></button>
+    <button class="viewtab teacher-only" role="tab" type="button" id="tab-table" aria-controls="view-table" data-act="view" data-view="table" aria-selected="false" tabindex="-1">One-page table <span class="count">{{LESSONS}}</span></button>
     <button class="viewtab teacher-only" role="tab" type="button" id="tab-spine" aria-controls="view-spine" data-act="view" data-view="spine" aria-selected="false" tabindex="-1">Fluency spine <span class="count">12</span></button>
     <button class="viewtab teacher-only" role="tab" type="button" id="tab-planner" aria-controls="view-planner" data-act="view" data-view="planner" aria-selected="false" tabindex="-1">Week planner <span class="count">5</span></button>
     <button class="viewtab teacher-only" role="tab" type="button" id="tab-reference" aria-controls="view-reference" data-act="view" data-view="reference" aria-selected="false" tabindex="-1">Standards &amp; glossary</button>
@@ -97,14 +97,14 @@
 <section class="hero teacher-only" id="heroSection" aria-labelledby="teacherHeroTitle">
   <div class="wrap teacher-hero-grid">
     <div class="teacher-hero-copy">
-      <span class="eyebrow">Grade 6 / Teacher field guide / Units 2–9</span>
+      <span class="eyebrow">Grade 6 / Teacher field guide / Units {{UNIT_RANGE}}</span>
       <h1 id="teacherHeroTitle">Build fluency.<br><em>Make thinking visible.</em></h1>
       <p class="hero-lead">Start with what students know. Use a quick check to listen for their strategies, choose a focused next step, and return to the idea in tomorrow’s learning.</p>
       <div class="hero-actions">
         <button class="btn btn-primary btn-lg" type="button" data-act="view" data-view="studio">Open Practice Studio <span aria-hidden="true">↗</span></button>
         <button class="btn btn-lg" type="button" data-act="find-lesson">Find today’s lesson <span aria-hidden="true">↓</span></button>
       </div>
-      <p class="teacher-hero-note">54 lessons · 216 prerequisite tasks · Worked teaching notes</p>
+      <p class="teacher-hero-note">{{LESSONS}} lessons · {{PREREQS}} prerequisite tasks · Worked teaching notes</p>
     </div>
     <figure class="teacher-model" aria-labelledby="teacherModelTitle">
       <figcaption><span class="teacher-model-kicker">A model worth talking about</span><strong id="teacherModelTitle">Same relationship. New scale.</strong></figcaption>
@@ -217,7 +217,7 @@
   <div class="wrap">
     <div class="footer-grid">
       <div>
-        <p><strong>Reveal Math · Grade 6 · Fluency &amp; Diagnostic Guide.</strong> Complete curriculum coverage for Units 2 through 9 (54 lessons in district sequence). 100% self-contained offline architecture.</p>
+        <p><strong>Reveal Math · Grade 6 · Fluency &amp; Diagnostic Guide.</strong> Complete curriculum coverage for Units {{UNIT_RANGE}} ({{LESSONS}} lessons in district sequence). 100% self-contained offline architecture.</p>
         <p style="margin-top:8px">Saved lessons, class tallies, and week plans stay in this browser. Practice work stays in its browser tab. Press <span class="kbd">?</span> for keyboard shortcuts.</p>
       </div>
       <div class="footer-meta">
@@ -600,14 +600,7 @@
             <div class="print-card-actions">
               <label class="sr-only" for="printUnitSelect">Select unit to print</label>
               <select class="select select-sm" id="printUnitSelect">
-                <option value="2">Unit 2: Statistics and Data Displays (10 lessons)</option>
-                <option value="3">Unit 3: Ratios and Rates (7 lessons)</option>
-                <option value="4">Unit 4: Percent (5 lessons)</option>
-                <option value="5">Unit 5: Area, Volume, and Surface Area (8 lessons)</option>
-                <option value="6">Unit 6: Expressions (8 lessons)</option>
-                <option value="7">Unit 7: Integers, Rational Numbers, and the Coordinate Plane (7 lessons)</option>
-                <option value="8">Unit 8: Equations and Inequalities (5 lessons)</option>
-                <option value="9">Unit 9: Relationships Between Two Variables (4 lessons)</option>
+                {{PRINT_UNIT_OPTIONS}}
               </select>
               <button class="btn btn-primary btn-sm" type="button" data-act="print-unit-pack">Print Unit Student Pack</button>
               <button class="btn btn-sm" type="button" data-act="print-unit-keys">Print Unit Key Pack</button>

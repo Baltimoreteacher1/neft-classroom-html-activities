@@ -185,8 +185,11 @@ const textOf = (el) => (el ? el.textContent.trim() : "");
 
   const radios = [...host.querySelectorAll("input[type=radio]")];
   assert.ok(radios.length, "the retry re-mounts the original question");
-  radios[0].checked = true; // a wrong choice — correctIndex is 1
-  radios[0].dispatchEvent(new dom.window.Event("change", { bubbles: true }));
+  // Authored choice 0 is wrong (correctIndex is 1). Choices render in display
+  // order, so pick it by its value — the authored index — not its position.
+  const wrong = radios.find((r) => r.value === "0");
+  wrong.checked = true;
+  wrong.dispatchEvent(new dom.window.Event("change", { bubbles: true }));
   const submit = [...host.querySelectorAll("button")].find((b) =>
     /check|submit/i.test(b.textContent),
   );

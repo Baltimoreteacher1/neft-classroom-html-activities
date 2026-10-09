@@ -46,7 +46,7 @@
         answer: sh.answer,
         hints: [
           'Count each kind of item. Which item does the question name first?',
-          `There are ${a} ${n1} and ${b} ${n2}. A ratio of ${n1} to ${n2} puts the ${n1} count first.`,
+          `Point to each of the ${n1} as you count them, then do the same for the ${n2}. The question names ${n1} first, so that count goes first.`,
           `Write the count of ${n1}, then a colon, then the count of ${n2}. Read it as "${n1} for every ${n2}."`,
         ],
         hintEs: 'Cuenta cada tipo de objeto. ¿Qué objeto nombra primero la pregunta? Ese número va primero en la razón.',
@@ -62,11 +62,12 @@
     const [a, b, c] = r.pickN([2, 3, 4, 5, 6, 7], 3);
     const T = a + b + c;
     const mode = r.pick(['skip', 'whole']);
-    let opts, ask, ansText, steps;
+    let opts, ask, ansText, steps, stepHint;
     if (mode === 'skip') {
       ask = `${hl(n3)} to ${hl(n1)}`;
       ansText = `${c} : ${a}`;
       steps = `There are ${c} ${n3} and ${a} ${n1}. The ${n2} are not part of this comparison.`;
+      stepHint = `Count only the ${n3} and the ${n1}. The ${n2} are not part of this comparison.`;
       opts = [
         { html: `${c} : ${a}`, ok: true },
         { html: `${a} : ${c}`, why: `Order matters. The question names ${n3} first, so the ${c} ${n3} come first.` },
@@ -77,6 +78,7 @@
       ask = `${hl(n2)} to <b>all the items</b> in the crate`;
       ansText = `${b} : ${T}`;
       steps = `There are ${b} ${n2}. All the items together: ${a} + ${b} + ${c}.`;
+      stepHint = `Count the ${n2}. Then count every item in the crate, all three kinds together, to get the whole.`;
       opts = [
         { html: `${b} : ${T}`, ok: true },
         { html: `${b} : ${a + c}`, why: `${a + c} counts only the other items. "All the items" includes the ${n2} too, so the whole is ${T}.` },
@@ -97,7 +99,7 @@
       answer: sh.answer,
       hints: [
         'Decide which two amounts the question compares. Is it one part to another part, or one part to the whole crate?',
-        steps,
+        stepHint,
         'Write the amount the question names first, then a colon, then the second amount.',
       ],
       hintEs: 'Decide qué dos cantidades compara la pregunta. ¿Es una parte con otra parte, o una parte con el total de la caja?',
@@ -334,7 +336,7 @@
           ]
         : [
             'A ratio in simplest form describes a relationship that repeats. It does not tell you the exact counts.',
-            `${p} goes with ${g1} and ${q} goes with ${g2}, in that order.`,
+            `The ratio was given as ${g1} to ${g2}. The first number goes with the group named first, and the second number goes with the group named second.`,
             `Say it with "for every": for every ${p} in ${g1}, there are ___ in ${g2}.`,
           ],
       hintEs: hard
@@ -2464,7 +2466,7 @@
       answer: sh.answer,
       hints: [
         'Read the axis labels. The first number in the pair is on the horizontal axis.',
-        `(${x}, ${k * x}): ${x} is a number of ${c.many}; ${k * x} is a number of ${c.thing}.`,
+        `Find the first number of the pair on the horizontal axis and read that axis label. Then read the vertical axis label for the second number.`,
         `So the first number tells how many ${c.many}, and the second tells how many ${c.thing}.`,
       ],
       hintEs: 'Lee los nombres de los ejes. El primer número del par ordenado está en el eje horizontal (eje x).',

@@ -42,6 +42,22 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 .muted-note{color:var(--muted);font-size:14px;margin:6px 0 0;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
+
+ol.choices{margin:6px 0 4px;}
+.lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
+.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
+  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
+.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
+.lang-panel{display:none;margin-top:6px;}
+#family-lang-en:checked ~ .lang-panels [data-lang="en"],
+#family-lang-es:checked ~ .lang-panels [data-lang="es"],
+#family-lang-ar:checked ~ .lang-panels [data-lang="ar"],
+#family-lang-fr:checked ~ .lang-panels [data-lang="fr"],
+#family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
+.lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
+.auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
+  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -59,7 +75,20 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 <section>
   <h2>What students are learning</h2>
   <p>To model means to write a real situation as math. I use an equation when there is one exact total, and an inequality when there is a limit or a range of allowed values.</p>
-  <p class="callout"><strong>Key idea:</strong> Modeling Real-World Scenarios with Equations &amp; Inequalities. 1. Define the variable and units in the scenario. 2. Look for keywords: 'equals/is' (=) vs 'at least/limit' (≥, ≤, &gt;, &lt;). 3. Write the algebraic model, solve with inverse operations, and check in context</p>
+  <p class="callout"><strong>Key idea:</strong> Turn a real story into math: use an equation (=) when there is one exact answer, and an inequality (&lt;, &gt;, ≤, ≥) when there is a limit like &quot;at least&quot; or &quot;at most.&quot; Then solve it and check that the answer makes sense in the story.<br><span class="es-text" lang="es">Idea clave: Convierte una situación real en matemáticas: usa una ecuación (=) cuando hay una sola respuesta exacta, y una desigualdad (&lt;, &gt;, ≤, ≥) cuando hay un límite como «por lo menos» o «como máximo». Luego resuélvela y comprueba que la respuesta tenga sentido en la situación.</span></p>
+</section>
+
+<section class="lang-section">
+  <h2>Read this in your language <span class="es">· Lea esto en su idioma</span></h2>
+  <div class="lang-picker"><input type="radio" class="lang-radio" name="family-lang" id="family-lang-en" value="en" checked><label for="family-lang-en" lang="en">English</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-es" value="es"><label for="family-lang-es" lang="es">Español</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-ar" value="ar"><label for="family-lang-ar" lang="ar">العربية</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-fr" value="fr"><label for="family-lang-fr" lang="fr">Français</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-prs" value="prs"><label for="family-lang-prs" lang="prs">دری</label>
+  <div class="lang-panels">
+  <div class="lang-panel" data-lang="en" lang="en"><p class="callout">Turn a real story into math: use an equation (=) when there is one exact answer, and an inequality (&lt;, &gt;, ≤, ≥) when there is a limit like &quot;at least&quot; or &quot;at most.&quot; Then solve it and check that the answer makes sense in the story.</p><ul><li><span class="kw"><bdi>Equations and Inequalities Problem Solving</bdi></span> — Use an equation for one exact value or an inequality for a range of values in a real situation.</li><li><span class="kw"><bdi>Model</bdi></span> — To show a real-life situation with an equation or inequality.</li><li><span class="kw"><bdi>Equation</bdi></span> — A math sentence with an equal sign showing both sides are the same.</li><li><span class="kw"><bdi>Inequality</bdi></span> — A math sentence that compares two sides with &lt;, &gt;, ≤, or ≥.</li><li><span class="kw"><bdi>Reasonableness</bdi></span> — Checking if your answer makes sense.</li><li><span class="kw"><bdi>Variable</bdi></span> — A letter that stands for a number that is unknown or can change.</li><li><span class="kw"><bdi>Constraint</bdi></span> — A limit in a problem that tells what values are allowed.</li></ul></div>
+  <div class="lang-panel" data-lang="es" lang="es"><p class="callout">Convierte una situación real en matemáticas: usa una ecuación (=) cuando hay una sola respuesta exacta, y una desigualdad (&lt;, &gt;, ≤, ≥) cuando hay un límite como «por lo menos» o «como máximo». Luego resuélvela y comprueba que la respuesta tenga sentido en la situación.</p><ul><li><span class="kw"><bdi>Resolución de problemas con ecuaciones y desigualdades</bdi></span> — Usar una ecuación para un valor exacto o una desigualdad para un rango de valores en una situación real.</li><li><span class="kw"><bdi>Modelar</bdi></span> — Mostrar una situación real con una ecuación o desigualdad.</li><li><span class="kw"><bdi>Ecuación</bdi></span> — Una oración matemática con un signo igual que muestra que ambos lados son iguales.</li><li><span class="kw"><bdi>Desigualdad</bdi></span> — Una oración matemática que compara dos lados con &lt;, &gt;, ≤ o ≥.</li><li><span class="kw"><bdi>Razonabilidad</bdi></span> — Revisar si tu respuesta tiene sentido.</li><li><span class="kw"><bdi>Variable</bdi></span> — Una letra que representa un número desconocido o que puede cambiar.</li><li><span class="kw"><bdi>Restricción</bdi></span> — Un límite en un problema que indica qué valores se permiten.</li></ul></div>
+  <div class="lang-panel" data-lang="ar" lang="ar" dir="rtl"><p class="auto-label">ترجمة آلية · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">حوّل القصة الحقيقية إلى رياضيات: استخدم معادلة (=) عندما يكون هناك جواب واحد دقيق، ومتباينة (&lt;، &gt;، ≤، ≥) عندما يكون هناك حدّ مثل «على الأقل» أو «على الأكثر». ثم حُلّها وتحقق أن الجواب منطقي في القصة.</p><ul><li><span class="kw"><bdi>حلّ المسائل بالمعادلات والمتباينات</bdi></span> (<bdi lang="en">Equations and Inequalities Problem Solving</bdi>) — استخدام معادلة لقيمة واحدة دقيقة أو متباينة لمجموعة من القيم في موقف حقيقي.</li><li><span class="kw"><bdi>نمذجة</bdi></span> (<bdi lang="en">Model</bdi>) — عرض موقف من الحياة الواقعية بمعادلة أو متباينة.</li><li><span class="kw"><bdi>معادلة</bdi></span> (<bdi lang="en">Equation</bdi>) — جملة رياضية فيها إشارة يساوي، تبيّن أن الطرفين متساويان.</li><li><span class="kw"><bdi>متباينة</bdi></span> (<bdi lang="en">Inequality</bdi>) — جملة رياضية تقارن بين طرفين باستخدام &lt; أو &gt; أو ≤ أو ≥.</li><li><span class="kw"><bdi>معقولية الجواب</bdi></span> (<bdi lang="en">Reasonableness</bdi>) — التحقق من أن جوابك منطقي.</li><li><span class="kw"><bdi>متغيّر</bdi></span> (<bdi lang="en">Variable</bdi>) — حرف يمثّل عددًا مجهولًا أو عددًا يمكن أن يتغيّر.</li><li><span class="kw"><bdi>قيد</bdi></span> (<bdi lang="en">Constraint</bdi>) — حدّ في المسألة يبيّن القيم المسموح بها.</li></ul></div>
+  <div class="lang-panel" data-lang="fr" lang="fr"><p class="auto-label">Traduction automatique · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">Transforme une situation réelle en mathématiques : utilise une équation (=) quand il y a une seule réponse exacte, et une inéquation (&lt;, &gt;, ≤, ≥) quand il y a une limite comme « au moins » ou « au plus ». Ensuite, résous-la et vérifie que la réponse a du sens dans la situation.</p><ul><li><span class="kw"><bdi>résolution de problèmes avec équations et inéquations</bdi></span> (<bdi lang="en">Equations and Inequalities Problem Solving</bdi>) — Utiliser une équation pour une valeur exacte ou une inéquation pour un ensemble de valeurs dans une situation réelle.</li><li><span class="kw"><bdi>modéliser</bdi></span> (<bdi lang="en">Model</bdi>) — Montrer une situation de la vie réelle avec une équation ou une inéquation.</li><li><span class="kw"><bdi>équation</bdi></span> (<bdi lang="en">Equation</bdi>) — Phrase mathématique avec un signe égal qui montre que les deux côtés sont pareils.</li><li><span class="kw"><bdi>inéquation</bdi></span> (<bdi lang="en">Inequality</bdi>) — Phrase mathématique qui compare deux côtés avec &lt;, &gt;, ≤ ou ≥.</li><li><span class="kw"><bdi>vraisemblance</bdi></span> (<bdi lang="en">Reasonableness</bdi>) — Vérifier si ta réponse a du sens.</li><li><span class="kw"><bdi>variable</bdi></span> (<bdi lang="en">Variable</bdi>) — Lettre qui représente un nombre inconnu ou qui peut changer.</li><li><span class="kw"><bdi>contrainte</bdi></span> (<bdi lang="en">Constraint</bdi>) — Une limite dans un problème qui dit quelles valeurs sont permises.</li></ul></div>
+  <div class="lang-panel" data-lang="prs" lang="prs" dir="rtl"><p class="auto-label">ترجمه ماشینی · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">یک موضوع واقعی را به ریاضی تبدیل کنید: وقتی یک جواب دقیق وجود دارد معادله (=) بنویسید، و وقتی محدودیتی مانند «دست‌کم» یا «حداکثر» وجود دارد نامساوات (&lt; ، &gt; ، ≤ ، ≥) بنویسید. بعد آن را حل کنید و ببینید که جواب در آن موضوع معنا دارد.</p><ul><li><span class="kw"><bdi>حل مسئله با معادله و نامساوات</bdi></span> (<bdi lang="en">Equations and Inequalities Problem Solving</bdi>) — استفاده از معادله برای یک قیمت دقیق یا نامساوات برای چند قیمت در یک موضوع واقعی.</li><li><span class="kw"><bdi>مدل‌سازی</bdi></span> (<bdi lang="en">Model</bdi>) — نشان دادن یک موضوع واقعی با معادله یا نامساوات.</li><li><span class="kw"><bdi>معادله</bdi></span> (<bdi lang="en">Equation</bdi>) — جملهٔ ریاضی با علامهٔ مساوی که نشان می‌دهد هر دو طرف برابر اند.</li><li><span class="kw"><bdi>نامساوات</bdi></span> (<bdi lang="en">Inequality</bdi>) — جملهٔ ریاضی که دو طرف را با &lt; ، &gt; ، ≤ یا ≥ مقایسه می‌کند.</li><li><span class="kw"><bdi>معقول بودن</bdi></span> (<bdi lang="en">Reasonableness</bdi>) — امتحان اینکه آیا جواب شما معنا دارد.</li><li><span class="kw"><bdi>متحول</bdi></span> (<bdi lang="en">Variable</bdi>) — حرفی که به جای عددی نامعلوم یا عددی که تغییر می‌کند می‌آید.</li><li><span class="kw"><bdi>قید</bdi></span> (<bdi lang="en">Constraint</bdi>) — محدودیتی در مسئله که نشان می‌دهد کدام قیمت‌ها مجاز اند.</li></ul></div>
+  </div>
+  </div>
 </section>
 <section>
   <h2>Key words</h2>
@@ -71,7 +100,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Practice at home</h2>
-  <ol><li>A box of donuts has some donuts. After giving away 7, there are fewer than 5 left. Which inequality represents the starting number of donuts d?</li></ol>
+  <ol><li>Ana has a pack of stickers. After using 9 stickers, she has more than 4 left. Which inequality represents the starting number of stickers s?<ol class="choices" type="A"><li>s + 9 &gt; 4</li><li>s − 9 &lt; 4</li><li>s − 9 = 4</li><li>s − 9 &gt; 4</li></ol></li></ol>
 </section>
 
 <section class="tool-section">
@@ -83,7 +112,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Answer check</h2>
-  <ol><li>A box of donuts has some donuts. After giving away 7, there are fewer than 5 left. Which inequality represents the starting number of donuts d? → <span class="answer">d − 7 &lt; 5</span></li></ol>
+  <ol><li>Ana has a pack of stickers. After using 9 stickers, she has more than 4 left. Which inequality represents the starting number of stickers s? → <span class="answer">s − 9 &gt; 4</span></li></ol>
 </section>
 <section>
   <h2>Common mistake</h2>

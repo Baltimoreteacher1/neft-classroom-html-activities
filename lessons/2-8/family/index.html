@@ -42,6 +42,22 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 .muted-note{color:var(--muted);font-size:14px;margin:6px 0 0;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
+
+ol.choices{margin:6px 0 4px;}
+.lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
+.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
+  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
+.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
+.lang-panel{display:none;margin-top:6px;}
+#family-lang-en:checked ~ .lang-panels [data-lang="en"],
+#family-lang-es:checked ~ .lang-panels [data-lang="es"],
+#family-lang-ar:checked ~ .lang-panels [data-lang="ar"],
+#family-lang-fr:checked ~ .lang-panels [data-lang="fr"],
+#family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
+.lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
+.auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
+  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -59,7 +75,20 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 <section>
   <h2>What students are learning</h2>
   <p>The mean, or average, is a measure of center that describes a whole data set with one number. It is what every value would be if the total were leveled out and shared equally.</p>
-  <p class="callout"><strong>Key idea:</strong> Measures of Center: Mean. Formula: Mean = (Sum of all values) ÷ (Total number of values). 1. Add all data values together to find the total sum. 2. Divide the sum by the count of data values. 3. Concept: The mean represents the fair share or balance point of the data</p>
+  <p class="callout"><strong>Key idea:</strong> The mean (or average) is what each value would be if the total were shared equally. To find it, add all the numbers, then divide by how many numbers there are: mean = total ÷ how many numbers.<br><span class="es-text" lang="es">Idea clave: La media (o promedio) es lo que valdría cada dato si el total se repartiera en partes iguales. Para hallarla, suma todos los números y luego divide entre cuántos números hay: media = total ÷ cuántos números hay.</span></p>
+</section>
+
+<section class="lang-section">
+  <h2>Read this in your language <span class="es">· Lea esto en su idioma</span></h2>
+  <div class="lang-picker"><input type="radio" class="lang-radio" name="family-lang" id="family-lang-en" value="en" checked><label for="family-lang-en" lang="en">English</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-es" value="es"><label for="family-lang-es" lang="es">Español</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-ar" value="ar"><label for="family-lang-ar" lang="ar">العربية</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-fr" value="fr"><label for="family-lang-fr" lang="fr">Français</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-prs" value="prs"><label for="family-lang-prs" lang="prs">دری</label>
+  <div class="lang-panels">
+  <div class="lang-panel" data-lang="en" lang="en"><p class="callout">The mean (or average) is what each value would be if the total were shared equally. To find it, add all the numbers, then divide by how many numbers there are: mean = total ÷ how many numbers.</p><ul><li><span class="kw"><bdi>Mean</bdi></span> — The average of a data set. Add all the values, then divide by how many values there are.</li><li><span class="kw"><bdi>Average</bdi></span> — Another word for the mean — the amount each value would be if the total were shared equally.</li><li><span class="kw"><bdi>Measure of center</bdi></span> — A single number used to describe the middle, or typical value, of a whole data set.</li><li><span class="kw"><bdi>Balance point</bdi></span> — The value where the total distance of the data above it equals the total distance below it. The mean is the balance point.</li><li><span class="kw"><bdi>Data set</bdi></span> — The whole collection of values that were gathered or measured.</li><li><span class="kw"><bdi>Target mean</bdi></span> — The mean a person is trying to reach.</li><li><span class="kw"><bdi>Target total</bdi></span> — The target mean times the number of values.</li></ul></div>
+  <div class="lang-panel" data-lang="es" lang="es"><p class="callout">La media (o promedio) es lo que valdría cada dato si el total se repartiera en partes iguales. Para hallarla, suma todos los números y luego divide entre cuántos números hay: media = total ÷ cuántos números hay.</p><ul><li><span class="kw"><bdi>Media</bdi></span> — El promedio de un conjunto de datos. Suma todos los valores y divide entre cuántos valores hay.</li><li><span class="kw"><bdi>Promedio</bdi></span> — Otra palabra para la media: la cantidad que tendría cada valor si el total se repartiera en partes iguales.</li><li><span class="kw"><bdi>Medida de centro</bdi></span> — Un solo número que se usa para describir el centro, o valor típico, de todo un conjunto de datos.</li><li><span class="kw"><bdi>Punto de equilibrio</bdi></span> — El valor donde la distancia total de los datos por encima es igual a la distancia total por debajo. La media es el punto de equilibrio.</li><li><span class="kw"><bdi>Conjunto de datos</bdi></span> — Toda la colección de valores que se recopilaron o midieron.</li><li><span class="kw"><bdi>Media objetivo</bdi></span> — La media que una persona intenta alcanzar.</li><li><span class="kw"><bdi>Total objetivo</bdi></span> — La media objetivo multiplicada por la cantidad de valores.</li></ul></div>
+  <div class="lang-panel" data-lang="ar" lang="ar" dir="rtl"><p class="auto-label">ترجمة آلية · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">المتوسط هو ما ستكون عليه كل قيمة لو وُزّع المجموع بالتساوي. لإيجاده، اجمع كل الأعداد ثم اقسم على عددها: المتوسط = المجموع ÷ عدد القيم.</p><ul><li><span class="kw"><bdi>المتوسط الحسابي</bdi></span> (<bdi lang="en">Mean</bdi>) — معدّل مجموعة البيانات. اجمع كل القيم، ثم اقسم على عددها.</li><li><span class="kw"><bdi>المعدّل</bdi></span> (<bdi lang="en">Average</bdi>) — كلمة أخرى للمتوسط: المقدار الذي ستكون عليه كل قيمة لو وُزّع المجموع بالتساوي.</li><li><span class="kw"><bdi>مقياس النزعة المركزية</bdi></span> (<bdi lang="en">Measure of center</bdi>) — عدد واحد يُستخدم لوصف وسط مجموعة بيانات كاملة، أو قيمتها المعتادة.</li><li><span class="kw"><bdi>نقطة الاتزان</bdi></span> (<bdi lang="en">Balance point</bdi>) — القيمة التي يكون عندها مجموع مسافات البيانات فوقها مساويًا لمجموع مسافاتها تحتها. المتوسط هو نقطة الاتزان.</li><li><span class="kw"><bdi>مجموعة البيانات</bdi></span> (<bdi lang="en">Data set</bdi>) — كل القيم التي جُمعت أو قيست.</li><li><span class="kw"><bdi>المتوسط المستهدف</bdi></span> (<bdi lang="en">Target mean</bdi>) — المتوسط الذي يحاول الشخص الوصول إليه.</li><li><span class="kw"><bdi>المجموع المستهدف</bdi></span> (<bdi lang="en">Target total</bdi>) — المتوسط المستهدف مضروبًا في عدد القيم.</li></ul></div>
+  <div class="lang-panel" data-lang="fr" lang="fr"><p class="auto-label">Traduction automatique · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">La moyenne est ce que vaudrait chaque valeur si le total était partagé également. Pour la trouver, on additionne tous les nombres, puis on divise par le nombre de valeurs : moyenne = total ÷ nombre de valeurs.</p><ul><li><span class="kw"><bdi>Moyenne</bdi></span> (<bdi lang="en">Mean</bdi>) — La moyenne d'un ensemble de données. On additionne toutes les valeurs, puis on divise par le nombre de valeurs.</li><li><span class="kw"><bdi>Valeur moyenne</bdi></span> (<bdi lang="en">Average</bdi>) — Un autre mot pour la moyenne : la quantité que vaudrait chaque valeur si le total était partagé également.</li><li><span class="kw"><bdi>Mesure de tendance centrale</bdi></span> (<bdi lang="en">Measure of center</bdi>) — Un seul nombre utilisé pour décrire le milieu, ou la valeur typique, de tout un ensemble de données.</li><li><span class="kw"><bdi>Point d'équilibre</bdi></span> (<bdi lang="en">Balance point</bdi>) — La valeur pour laquelle la distance totale des données au-dessus est égale à la distance totale en dessous. La moyenne est le point d'équilibre.</li><li><span class="kw"><bdi>Ensemble de données</bdi></span> (<bdi lang="en">Data set</bdi>) — Toute la collection de valeurs qui ont été recueillies ou mesurées.</li><li><span class="kw"><bdi>Moyenne visée</bdi></span> (<bdi lang="en">Target mean</bdi>) — La moyenne qu'une personne essaie d'atteindre.</li><li><span class="kw"><bdi>Total visé</bdi></span> (<bdi lang="en">Target total</bdi>) — La moyenne visée multipliée par le nombre de valeurs.</li></ul></div>
+  <div class="lang-panel" data-lang="prs" lang="prs" dir="rtl"><p class="auto-label">ترجمه ماشینی · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">اوسط این است که اگر مجموع به طور مساوی تقسیم شود، هر قیمت چقدر می‌شود. برای پیدا کردن آن، همهٔ اعداد را جمع کنید و بعد بر تعداد اعداد تقسیم کنید: اوسط = مجموع ÷ تعداد اعداد.</p><ul><li><span class="kw"><bdi>اوسط</bdi></span> (<bdi lang="en">Mean</bdi>) — اوسط یک مجموعهٔ معلومات. همهٔ قیمت‌ها را جمع کنید، بعد بر تعداد قیمت‌ها تقسیم کنید.</li><li><span class="kw"><bdi>میانگین</bdi></span> (<bdi lang="en">Average</bdi>) — کلمهٔ دیگری برای اوسط — مقداری که هر قیمت می‌شد اگر مجموع به طور مساوی تقسیم می‌شد.</li><li><span class="kw"><bdi>معیار مرکزی</bdi></span> (<bdi lang="en">Measure of center</bdi>) — یک عدد واحد که برای توضیح وسط، یا قیمت معمول، تمام یک مجموعهٔ معلومات به کار می‌رود.</li><li><span class="kw"><bdi>نقطهٔ تعادل</bdi></span> (<bdi lang="en">Balance point</bdi>) — قیمتی که مجموع فاصلهٔ معلومات بالای آن با مجموع فاصلهٔ پایین آن برابر است. اوسط نقطهٔ تعادل است.</li><li><span class="kw"><bdi>مجموعهٔ معلومات</bdi></span> (<bdi lang="en">Data set</bdi>) — تمام قیمت‌هایی که جمع‌آوری یا اندازه‌گیری شده‌اند.</li><li><span class="kw"><bdi>اوسط هدف</bdi></span> (<bdi lang="en">Target mean</bdi>) — اوسطی که یک شخص می‌خواهد به آن برسد.</li><li><span class="kw"><bdi>مجموع هدف</bdi></span> (<bdi lang="en">Target total</bdi>) — اوسط هدف ضرب در تعداد قیمت‌ها.</li></ul></div>
+  </div>
+  </div>
 </section>
 <section>
   <h2>Key words</h2>
@@ -71,7 +100,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Practice at home</h2>
-  <ol><li>Data set: 8, 12, 10, 14. What is the mean?</li></ol>
+  <ol><li>Leo read 9, 15, 11, and 17 pages on four nights. What is the mean number of pages he read each night?<ol class="choices" type="A"><li>11</li><li>13</li><li>15</li><li>52</li></ol></li></ol>
 </section>
 
 <section class="tool-section">
@@ -83,7 +112,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Answer check</h2>
-  <ol><li>Data set: 8, 12, 10, 14. What is the mean? → <span class="answer">11</span></li></ol>
+  <ol><li>Leo read 9, 15, 11, and 17 pages on four nights. What is the mean number of pages he read each night? → <span class="answer">13</span></li></ol>
 </section>
 <section>
   <h2>Common mistake</h2>

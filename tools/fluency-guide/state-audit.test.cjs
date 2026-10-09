@@ -46,11 +46,11 @@ function harness({url='file:///tmp/guide/index.html', raw='', data=DATA, blocked
 for(const value of ['__proto__','constructor','toString']) {
   test(`prototype fragment ${value} is not a valid lesson, tier or mode`,()=>{
     const h=harness({url:`file:///tmp/guide/index.html#lesson=${value}&level=${value}&mode=${value}`});
-    h.api.route();assert.equal(h.api.state().lessonId,'2-1');assert.equal(h.api.state().level,'foundation');assert.equal(h.api.state().mode,'practice');assert.equal(h.api.first().scratchOpen,false);
+    h.api.route();assert.equal(h.api.state().lessonId,'1-1');assert.equal(h.api.state().level,'foundation');assert.equal(h.api.state().mode,'practice');assert.equal(h.api.first().scratchOpen,false);
   });
   test(`prototype metadata ${value} does not corrupt restored route`,()=>{
     const h=harness({raw:JSON.stringify({version:4,lesson:value,level:value,mode:value,sets:{}})});
-    h.api.restore();assert.equal(h.api.state().lessonId,'2-1');assert.equal(h.api.state().level,'foundation');assert.equal(h.api.state().mode,'practice');
+    h.api.restore();assert.equal(h.api.state().lessonId,'1-1');assert.equal(h.api.state().level,'foundation');assert.equal(h.api.state().mode,'practice');
   });
 }
 test('oversized new session preserves prior stored work and reports unsaved changes',()=>{

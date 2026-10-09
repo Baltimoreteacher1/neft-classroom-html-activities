@@ -542,9 +542,13 @@ export function buildTogetherLadder(config = {}) {
   const shownKeys = new Set(
     shown.map((x) => ladderKey(x?.stem || x?.question || x?.prompt)).filter(Boolean),
   );
+  // `familyCheck`, never `reflect.exitTicket`: this page is the family's, it
+  // prints answers, and the exit ticket is the lesson's own end-of-class check.
+  // A lesson without a familyCheck simply contributes no item here.
+  // validate:family-exit-ticket pins it (scripts/lib/family-content.mjs).
   const extra = [
     ...(Array.isArray(config.connect?.check) ? config.connect.check : []),
-    ...(config.reflect?.exitTicket ? [config.reflect.exitTicket] : []),
+    ...(config.familyCheck ? [config.familyCheck] : []),
   ];
   const family = FAMILY_LADDER[config.lessonId] || {};
   // Difficulty ladder: 1★ approaching (scaffolded), 2★ on-level / optional /

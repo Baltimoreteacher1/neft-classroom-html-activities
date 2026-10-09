@@ -100,6 +100,10 @@ const GENERATORS = [
     "../scripts/generate-mstar-worksheets.mjs",
     [],
   ],
+  // readiness/index.html is a committed copy of scripts/readiness/data/<id>.json
+  // plus the launch manifest's title/number. On 2026-10-08 all 64 pages still
+  // carried pre-renumber lesson numbers because nothing checked them.
+  ["readiness/index.html", "../scripts/generate-readiness-html.mjs", []],
 ];
 
 const stale = [];

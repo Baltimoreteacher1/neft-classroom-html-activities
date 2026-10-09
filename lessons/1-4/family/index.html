@@ -42,6 +42,22 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 .muted-note{color:var(--muted);font-size:14px;margin:6px 0 0;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
+
+ol.choices{margin:6px 0 4px;}
+.lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
+.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
+  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
+.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
+.lang-panel{display:none;margin-top:6px;}
+#family-lang-en:checked ~ .lang-panels [data-lang="en"],
+#family-lang-es:checked ~ .lang-panels [data-lang="es"],
+#family-lang-ar:checked ~ .lang-panels [data-lang="ar"],
+#family-lang-fr:checked ~ .lang-panels [data-lang="fr"],
+#family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
+.lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
+.auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
+  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -59,7 +75,20 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 <section>
   <h2>What students are learning</h2>
   <p>Getting an answer is only half the work. The other half is explaining it so clearly — with conjectures, examples, and counterexamples — that someone else can decide whether your argument is convincing.</p>
-  <p class="callout"><strong>Key idea:</strong> Math Practices: Mathematical Arguments &amp; Justification. 1. State a clear claim or conjecture supported by calculations. 2. Use accurate units and vocabulary (e.g. cubic units for volume). 3. Test with counterexamples to verify that the rule holds true every time</p>
+  <p class="callout"><strong>Key idea:</strong> Make a clear claim and back it up with math. Use the right units and words, like cubic units for volume. Then test your idea with more examples, and look for one example that would show it is not always true.<br><span class="es-text" lang="es">Idea clave: Hay que hacer una afirmación clara y respaldarla con cálculos. Se usan las unidades y palabras correctas, como unidades cúbicas para el volumen. Luego se pone a prueba la idea con más ejemplos y se busca un ejemplo que muestre que no siempre es verdad.</span></p>
+</section>
+
+<section class="lang-section">
+  <h2>Read this in your language <span class="es">· Lea esto en su idioma</span></h2>
+  <div class="lang-picker"><input type="radio" class="lang-radio" name="family-lang" id="family-lang-en" value="en" checked><label for="family-lang-en" lang="en">English</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-es" value="es"><label for="family-lang-es" lang="es">Español</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-ar" value="ar"><label for="family-lang-ar" lang="ar">العربية</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-fr" value="fr"><label for="family-lang-fr" lang="fr">Français</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-prs" value="prs"><label for="family-lang-prs" lang="prs">دری</label>
+  <div class="lang-panels">
+  <div class="lang-panel" data-lang="en" lang="en"><p class="callout">Make a clear claim and back it up with math. Use the right units and words, like cubic units for volume. Then test your idea with more examples, and look for one example that would show it is not always true.</p><ul><li><span class="kw"><bdi>argument</bdi></span> — A chain of reasons — equations, drawings, or words — used to defend your thinking.</li><li><span class="kw"><bdi>conjecture</bdi></span> — A mathematical statement you believe is true but have not yet proven.</li><li><span class="kw"><bdi>counterexample</bdi></span> — A single example that shows a statement is not always true.</li><li><span class="kw"><bdi>volume</bdi></span> — The amount of space a solid figure takes up, measured in cubic units.</li><li><span class="kw"><bdi>cubic unit</bdi></span> — A cube with edges 1 unit long — the unit used to measure volume.</li></ul></div>
+  <div class="lang-panel" data-lang="es" lang="es"><p class="callout">Hay que hacer una afirmación clara y respaldarla con cálculos. Se usan las unidades y palabras correctas, como unidades cúbicas para el volumen. Luego se pone a prueba la idea con más ejemplos y se busca un ejemplo que muestre que no siempre es verdad.</p><ul><li><span class="kw"><bdi>argumento</bdi></span> — Una cadena de razones — ecuaciones, dibujos o palabras — que usas para defender tu pensamiento.</li><li><span class="kw"><bdi>conjetura</bdi></span> — Una afirmación matemática que crees verdadera pero que aún no has probado.</li><li><span class="kw"><bdi>contraejemplo</bdi></span> — Un solo ejemplo que muestra que una afirmación no siempre es verdadera.</li><li><span class="kw"><bdi>volumen</bdi></span> — La cantidad de espacio que ocupa una figura sólida, medida en unidades cúbicas.</li><li><span class="kw"><bdi>unidad cúbica</bdi></span> — Un cubo cuyas aristas miden 1 unidad — la unidad que se usa para medir el volumen.</li></ul></div>
+  <div class="lang-panel" data-lang="ar" lang="ar" dir="rtl"><p class="auto-label">ترجمة آلية · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">قدّم ادّعاءً واضحًا وادعمه بالحساب. استخدم الوحدات والكلمات الصحيحة، مثل الوحدات المكعبة للحجم. ثم اختبر فكرتك بأمثلة أخرى، وابحث عن مثال واحد قد يُظهر أنها ليست صحيحة دائمًا.</p><ul><li><span class="kw"><bdi>حُجّة</bdi></span> (<bdi lang="en">argument</bdi>) — سلسلة من الأسباب — معادلات أو رسوم أو كلمات — تستخدمها للدفاع عن تفكيرك.</li><li><span class="kw"><bdi>حَدْسِيّة</bdi></span> (<bdi lang="en">conjecture</bdi>) — عبارة رياضية تعتقد أنها صحيحة لكنك لم تُثبتها بعد.</li><li><span class="kw"><bdi>مثال مضاد</bdi></span> (<bdi lang="en">counterexample</bdi>) — مثال واحد يُظهر أن العبارة ليست صحيحة دائمًا.</li><li><span class="kw"><bdi>الحجم</bdi></span> (<bdi lang="en">volume</bdi>) — مقدار الفراغ الذي يشغله المجسّم، ويُقاس بالوحدات المكعبة.</li><li><span class="kw"><bdi>وحدة مكعبة</bdi></span> (<bdi lang="en">cubic unit</bdi>) — مكعب طول كل حرف من أحرفه 1 وحدة، وهي الوحدة المستخدمة لقياس الحجم.</li></ul></div>
+  <div class="lang-panel" data-lang="fr" lang="fr"><p class="auto-label">Traduction automatique · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">On fait une affirmation claire et on l'appuie par des calculs. On utilise les bonnes unités et les bons mots, comme les unités cubes pour le volume. Ensuite, on teste son idée avec d'autres exemples et on cherche un exemple qui montrerait qu'elle n'est pas toujours vraie.</p><ul><li><span class="kw"><bdi>argument</bdi></span> (<bdi lang="en">argument</bdi>) — Une suite de raisons — des équations, des dessins ou des mots — pour défendre sa façon de penser.</li><li><span class="kw"><bdi>conjecture</bdi></span> (<bdi lang="en">conjecture</bdi>) — Un énoncé mathématique que l'on croit vrai mais qu'on n'a pas encore prouvé.</li><li><span class="kw"><bdi>contre-exemple</bdi></span> (<bdi lang="en">counterexample</bdi>) — Un seul exemple qui montre qu'un énoncé n'est pas toujours vrai.</li><li><span class="kw"><bdi>volume</bdi></span> (<bdi lang="en">volume</bdi>) — La quantité d'espace qu'occupe un solide, mesurée en unités cubes.</li><li><span class="kw"><bdi>unité cube</bdi></span> (<bdi lang="en">cubic unit</bdi>) — Un cube dont les arêtes mesurent 1 unité — l'unité qui sert à mesurer le volume.</li></ul></div>
+  <div class="lang-panel" data-lang="prs" lang="prs" dir="rtl"><p class="auto-label">ترجمه ماشینی · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">یک ادعای روشن بیان کنید و آن را با حساب ثابت کنید. از واحدها و کلمات درست استفاده کنید، مانند واحدهای مکعب برای حجم. بعد نظر خود را با مثال‌های بیشتر امتحان کنید و دنبال مثالی بگردید که نشان دهد همیشه درست نیست.</p><ul><li><span class="kw"><bdi>استدلال</bdi></span> (<bdi lang="en">argument</bdi>) — زنجیره‌ای از دلیل‌ها — معادله‌ها، تصویرها یا کلمات — که برای دفاع از فکر خود به کار می‌برید.</li><li><span class="kw"><bdi>حدس</bdi></span> (<bdi lang="en">conjecture</bdi>) — یک گفته ریاضی که فکر می‌کنید درست است، اما هنوز آن را ثابت نکرده‌اید.</li><li><span class="kw"><bdi>مثال نقض</bdi></span> (<bdi lang="en">counterexample</bdi>) — تنها یک مثال که نشان می‌دهد یک گفته همیشه درست نیست.</li><li><span class="kw"><bdi>حجم</bdi></span> (<bdi lang="en">volume</bdi>) — مقدار فضایی که یک جسم جامد اشغال می‌کند و با واحدهای مکعب اندازه گرفته می‌شود.</li><li><span class="kw"><bdi>واحد مکعب</bdi></span> (<bdi lang="en">cubic unit</bdi>) — مکعبی که طول هر یال آن 1 واحد است — واحدی که برای اندازه‌گیری حجم به کار می‌رود.</li></ul></div>
+  </div>
+  </div>
 </section>
 <section>
   <h2>Key words</h2>
@@ -71,7 +100,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Practice at home</h2>
-  <ol><li>Which statement best captures what this lesson means by 'Math is Explaining and Sharing'?</li></ol>
+  <ol><li>Two brothers disagree about which of two phone plans is the better deal. Which way of settling it best fits the idea that math is explaining and sharing?<ol class="choices" type="A"><li>Each brother keeps his work hidden so the other one can't borrow his idea</li><li>Each brother explains his reasoning, listens to the other, decides if the other's argument is convincing, and double-checks the math</li><li>Only the brother who wrote an equation gets to count his reasons</li><li>Whoever finishes first wins, and checking the math again would just waste time</li></ol></li></ol>
 </section>
 
 <section class="tool-section">
@@ -83,7 +112,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Answer check</h2>
-  <ol><li>Which statement best captures what this lesson means by 'Math is Explaining and Sharing'? → <span class="answer">We communicate our reasoning, listen to classmates' arguments, decide whether they are convincing, and check our calculations for accuracy</span></li></ol>
+  <ol><li>Two brothers disagree about which of two phone plans is the better deal. Which way of settling it best fits the idea that math is explaining and sharing? → <span class="answer">Each brother explains his reasoning, listens to the other, decides if the other's argument is convincing, and double-checks the math</span></li></ol>
 </section>
 <section>
   <h2>Common mistake</h2>

@@ -42,6 +42,22 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 .muted-note{color:var(--muted);font-size:14px;margin:6px 0 0;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
+
+ol.choices{margin:6px 0 4px;}
+.lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
+.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
+  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
+.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
+.lang-panel{display:none;margin-top:6px;}
+#family-lang-en:checked ~ .lang-panels [data-lang="en"],
+#family-lang-es:checked ~ .lang-panels [data-lang="es"],
+#family-lang-ar:checked ~ .lang-panels [data-lang="ar"],
+#family-lang-fr:checked ~ .lang-panels [data-lang="fr"],
+#family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
+.lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
+.auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
+  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -59,7 +75,20 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 <section>
   <h2>What students are learning</h2>
   <p>Equivalent ratios are ratios that mean the same thing. You make one by multiplying or dividing BOTH numbers by the same amount.</p>
-  <p class="callout"><strong>Key idea:</strong> Proportions &amp; Equivalent Ratios. Formula: a/b = c/d. 1. Two ratios are equivalent if their simplified forms or cross products are equal. 2. Find the scale factor between corresponding terms. 3. Multiply or divide to solve for the missing term in the proportion</p>
+  <p class="callout"><strong>Key idea:</strong> Equivalent ratios are equal ratios, like 1:2 and 3:6. To find a missing number, find what one number was multiplied or divided by, then do the same thing to the other number.<br><span class="es-text" lang="es">Idea clave: Las razones equivalentes son razones iguales, como 1:2 y 3:6. Para hallar un número que falta, busca por cuánto se multiplicó o dividió uno de los números, y luego haz lo mismo con el otro número.</span></p>
+</section>
+
+<section class="lang-section">
+  <h2>Read this in your language <span class="es">· Lea esto en su idioma</span></h2>
+  <div class="lang-picker"><input type="radio" class="lang-radio" name="family-lang" id="family-lang-en" value="en" checked><label for="family-lang-en" lang="en">English</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-es" value="es"><label for="family-lang-es" lang="es">Español</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-ar" value="ar"><label for="family-lang-ar" lang="ar">العربية</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-fr" value="fr"><label for="family-lang-fr" lang="fr">Français</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-prs" value="prs"><label for="family-lang-prs" lang="prs">دری</label>
+  <div class="lang-panels">
+  <div class="lang-panel" data-lang="en" lang="en"><p class="callout">Equivalent ratios are equal ratios, like 1:2 and 3:6. To find a missing number, find what one number was multiplied or divided by, then do the same thing to the other number.</p><ul><li><span class="kw"><bdi>Equivalent Ratios</bdi></span> — Ratios that compare quantities in the same relationship.</li><li><span class="kw"><bdi>Ratio</bdi></span> — A way to compare two amounts, like 3 to 2.</li><li><span class="kw"><bdi>Rate</bdi></span> — A ratio comparing two amounts with different units, like miles per hour.</li><li><span class="kw"><bdi>Proportion</bdi></span> — A math sentence saying two ratios are equal.</li><li><span class="kw"><bdi>Simplify</bdi></span> — To write a ratio with smaller numbers that still compares the same way. 6:8 and 3:4 are the same ratio.</li><li><span class="kw"><bdi>Ratio table</bdi></span> — A table of equal ratios that shows a pattern.</li></ul></div>
+  <div class="lang-panel" data-lang="es" lang="es"><p class="callout">Las razones equivalentes son razones iguales, como 1:2 y 3:6. Para hallar un número que falta, busca por cuánto se multiplicó o dividió uno de los números, y luego haz lo mismo con el otro número.</p><ul><li><span class="kw"><bdi>Razones equivalentes</bdi></span> — Razones que comparan cantidades en la misma relación.</li><li><span class="kw"><bdi>Razón</bdi></span> — Una manera de comparar dos cantidades, como 3 a 2.</li><li><span class="kw"><bdi>Tasa</bdi></span> — Una razón que compara dos cantidades con unidades distintas, como millas por hora.</li><li><span class="kw"><bdi>Proporción</bdi></span> — Una oración matemática que dice que dos razones son iguales.</li><li><span class="kw"><bdi>Simplificar</bdi></span> — Escribir una razón con números más pequeños que compara igual. 6:8 y 3:4 son la misma razón.</li><li><span class="kw"><bdi>Tabla de razones</bdi></span> — Una tabla de razones iguales que muestra un patrón.</li></ul></div>
+  <div class="lang-panel" data-lang="ar" lang="ar" dir="rtl"><p class="auto-label">ترجمة آلية · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">النسب المتكافئة هي نسب متساوية، مثل 1:2 و 3:6. لإيجاد عدد ناقص، اعرف العدد الذي ضُرب فيه أحد العددين أو قُسم عليه، ثم افعل الشيء نفسه بالعدد الآخر.</p><ul><li><span class="kw"><bdi>النسب المتكافئة</bdi></span> (<bdi lang="en">Equivalent Ratios</bdi>) — نسب تقارن بين كميات بالعلاقة نفسها.</li><li><span class="kw"><bdi>النسبة</bdi></span> (<bdi lang="en">Ratio</bdi>) — طريقة لمقارنة كميتين، مثل 3 إلى 2.</li><li><span class="kw"><bdi>المعدل</bdi></span> (<bdi lang="en">Rate</bdi>) — نسبة تقارن بين كميتين لهما وحدتان مختلفتان، مثل الأميال في الساعة.</li><li><span class="kw"><bdi>التناسب</bdi></span> (<bdi lang="en">Proportion</bdi>) — جملة رياضية تقول إن نسبتين متساويتان.</li><li><span class="kw"><bdi>التبسيط</bdi></span> (<bdi lang="en">Simplify</bdi>) — كتابة النسبة بأعداد أصغر تقارن بالطريقة نفسها. 6:8 و 3:4 هما النسبة نفسها.</li><li><span class="kw"><bdi>جدول النسب</bdi></span> (<bdi lang="en">Ratio table</bdi>) — جدول من النسب المتساوية يُظهر نمطًا.</li></ul></div>
+  <div class="lang-panel" data-lang="fr" lang="fr"><p class="auto-label">Traduction automatique · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">Des rapports équivalents sont des rapports égaux, comme 1:2 et 3:6. Pour trouver un nombre manquant, cherchez par quoi un des nombres a été multiplié ou divisé, puis faites la même chose avec l'autre nombre.</p><ul><li><span class="kw"><bdi>Rapports équivalents</bdi></span> (<bdi lang="en">Equivalent Ratios</bdi>) — Des rapports qui comparent des quantités avec la même relation.</li><li><span class="kw"><bdi>Rapport</bdi></span> (<bdi lang="en">Ratio</bdi>) — Une façon de comparer deux quantités, comme 3 pour 2.</li><li><span class="kw"><bdi>Taux</bdi></span> (<bdi lang="en">Rate</bdi>) — Un rapport qui compare deux quantités avec des unités différentes, comme des milles à l'heure.</li><li><span class="kw"><bdi>Proportion</bdi></span> (<bdi lang="en">Proportion</bdi>) — Une phrase mathématique qui dit que deux rapports sont égaux.</li><li><span class="kw"><bdi>Simplifier</bdi></span> (<bdi lang="en">Simplify</bdi>) — Écrire un rapport avec des nombres plus petits qui comparent toujours de la même façon. 6:8 et 3:4 sont le même rapport.</li><li><span class="kw"><bdi>Table de rapports</bdi></span> (<bdi lang="en">Ratio table</bdi>) — Un tableau de rapports égaux qui montre une régularité.</li></ul></div>
+  <div class="lang-panel" data-lang="prs" lang="prs" dir="rtl"><p class="auto-label">ترجمه ماشینی · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">نسبت‌های معادل نسبت‌های برابر هستند، مانند 1:2 و 3:6. برای پیدا کردن یک عدد گم‌شده، ببینید یکی از اعداد در چه عددی ضرب یا بر چه عددی تقسیم شده، بعد همان کار را با عدد دیگر انجام دهید.</p><ul><li><span class="kw"><bdi>نسبت‌های معادل</bdi></span> (<bdi lang="en">Equivalent Ratios</bdi>) — نسبت‌هایی که مقدارها را با یک رابطهٔ یکسان مقایسه می‌کنند.</li><li><span class="kw"><bdi>نسبت</bdi></span> (<bdi lang="en">Ratio</bdi>) — راهی برای مقایسهٔ دو مقدار، مانند 3 به 2.</li><li><span class="kw"><bdi>نرخ</bdi></span> (<bdi lang="en">Rate</bdi>) — نسبتی که دو مقدار با واحدهای مختلف را مقایسه می‌کند، مانند میل فی ساعت.</li><li><span class="kw"><bdi>تناسب</bdi></span> (<bdi lang="en">Proportion</bdi>) — یک جملهٔ ریاضی که می‌گوید دو نسبت برابر هستند.</li><li><span class="kw"><bdi>ساده کردن</bdi></span> (<bdi lang="en">Simplify</bdi>) — نوشتن یک نسبت با اعداد کوچکتر که هنوز به همان شکل مقایسه می‌کند. 6:8 و 3:4 یک نسبت هستند.</li><li><span class="kw"><bdi>جدول نسبت</bdi></span> (<bdi lang="en">Ratio table</bdi>) — جدولی از نسبت‌های برابر که یک الگو را نشان می‌دهد.</li></ul></div>
+  </div>
+  </div>
 </section>
 <section>
   <h2>Key words</h2>
@@ -71,19 +100,19 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 </section>
 <section>
   <h2>Practice at home</h2>
-  <ol><li>A store sells 5 notebooks for $8. At this rate, how much would 15 notebooks cost?</li></ol>
+  <ol><li>At a farm stand, 3 pounds of apples cost $5. If every pound costs the same, what is the price of 12 pounds of apples?<ol class="choices" type="A"><li>$14</li><li>$15</li><li>$20</li><li>$60</li></ol></li></ol>
 </section>
 
 <section class="tool-section">
   <h2>Try the tool together <span class="es">· Prueben la herramienta</span></h2>
   <p><strong>Lesson Tool</strong> — This is the same model your student used in class. Change it and watch what happens.</p>
   <p class="es-text">Herramienta de la lección — Este es el mismo modelo que su estudiante usó en clase. Cámbielo y observe qué sucede.</p>
-  <div class="tool-host" data-lesson-model-host><div class="interactive-visual" data-visual="ratio-table-builder" data-config="{&quot;kind&quot;:&quot;ratio-table-builder&quot;,&quot;a&quot;:3,&quot;b&quot;:4,&quot;labelA&quot;:&quot;Cups&quot;,&quot;labelB&quot;:&quot;Servings&quot;,&quot;predict&quot;:{&quot;stem&quot;:&quot;Before you build the table — the soup uses 3 cups of tomatoes to 2 cups of broth. Scaled by a factor of 4, how many cups of tomatoes?&quot;,&quot;choices&quot;:[&quot;7 cups&quot;,&quot;12 cups&quot;,&quot;6 cups&quot;,&quot;3 cups&quot;],&quot;correctIndex&quot;:1,&quot;explanation&quot;:&quot;Multiply both terms by the scale factor: 3 × 4 = 12 cups of tomatoes, and 2 × 4 = 8 cups of broth.&quot;,&quot;choiceFeedback&quot;:[&quot;That ADDS the scale factor to the tomatoes. Equivalent ratios MULTIPLY both parts by it.&quot;,&quot;&quot;,&quot;That scales by 2 instead of 4.&quot;,&quot;That leaves the tomatoes unscaled while the broth changes — both parts scale together.&quot;]}}" role="group" aria-label="Interactive Equivalent Ratios" style="margin:var(--sp-3) 0;"><noscript><div class="interactive-visual-fallback">Turn on JavaScript to use this tool. The steps above work on paper too.</div></noscript></div></div>
+  <div class="tool-host" data-lesson-model-host><div class="interactive-visual" data-visual="ratio-table-builder" data-config="{&quot;kind&quot;:&quot;ratio-table-builder&quot;,&quot;a&quot;:3,&quot;b&quot;:4,&quot;labelA&quot;:&quot;Cups&quot;,&quot;labelB&quot;:&quot;Servings&quot;,&quot;predict&quot;:{&quot;stem&quot;:&quot;Before you build the table — the soup uses 3 cups of tomatoes to 2 cups of broth. Scaled by a factor of 4, how many cups of tomatoes?&quot;,&quot;choices&quot;:[&quot;7 cups&quot;,&quot;12 cups&quot;,&quot;6 cups&quot;,&quot;3 cups&quot;],&quot;correctIndex&quot;:1,&quot;explanation&quot;:&quot;Multiply both terms by the scale factor: 3 × 4 = 12 cups of tomatoes, and 2 × 4 = 8 cups of broth.&quot;,&quot;choiceFeedback&quot;:[&quot;That ADDS the scale factor to the tomatoes. Equivalent ratios MULTIPLY both parts by it.&quot;,&quot;&quot;,&quot;That scales by 2 instead of 4.&quot;,&quot;That leaves the tomatoes unscaled while the broth changes — both parts scale together.&quot;],&quot;misconceptionTags&quot;:[&quot;op-added-instead-of-multiplied&quot;,null,null,null]}}" role="group" aria-label="Interactive Equivalent Ratios" style="margin:var(--sp-3) 0;"><noscript><div class="interactive-visual-fallback">Turn on JavaScript to use this tool. The steps above work on paper too.</div></noscript></div></div>
   <p class="muted-note">Works on a phone, a tablet, or a computer. Nothing to install, nothing to sign in to.</p>
 </section>
 <section>
   <h2>Answer check</h2>
-  <ol><li>A store sells 5 notebooks for $8. At this rate, how much would 15 notebooks cost? → <span class="answer">$24</span></li></ol>
+  <ol><li>At a farm stand, 3 pounds of apples cost $5. If every pound costs the same, what is the price of 12 pounds of apples? → <span class="answer">$20</span></li></ol>
 </section>
 <section>
   <h2>Common mistake</h2>

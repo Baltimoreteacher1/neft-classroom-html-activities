@@ -20,6 +20,21 @@
     const search = /** @type {HTMLInputElement} */ (api.searchBox);
     const units = api.unitsData;
     const selections = new Map();
+    // District pacing (assets/curriculum-units-pacing.js). Every unit is
+    // resolved through its curriculum unit number, never the sequence key.
+    const pacing = window.NTUnitsPacing;
+    const ranges = pacing ? pacing.unitRanges(window.__NT_PACING_DATES) : new Map();
+    const pacingDays = Array.isArray(window.__NT_PACING_DAYS) ? window.__NT_PACING_DAYS : [];
+    const todayIso = pacing ? pacing.isoDate(new Date()) : "";
+    const currentUnit = ranges.size ? pacing.currentUnit(ranges, pacingDays, todayIso) : null;
+    const ordered = pacing
+      ? pacing
+          .teachingOrder(
+            units.map((unit) => Number(unit.unitIndex)),
+            ranges,
+          )
+          .map((number) => units.find((unit) => Number(unit.unitIndex) === number))
+      : units.slice();
     let active = String(units[0].unitIndex);
     let restoring = false;
     let previousSelectionUrl = "";
@@ -272,63 +287,103 @@
     }
 
     // "Aug 24 – Sep 8 · 11 school days" under the unit title, from the same
-    // generated pacing dates the dashboard's course cards use. The unit being
-    // taught today is marked. Decorative colour never carries the meaning.
-    const MONTHS = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    function pacingDate(text) {
-      const m = /^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/.exec(String(text || "").trim());
-      if (!m) return null;
-      const year = m[3].length === 2 ? 2000 + Number(m[3]) : Number(m[3]);
-      return new Date(year, Number(m[1]) - 1, Number(m[2]));
-    }
-    function shortDate(d) {
-      return `${MONTHS[d.getMonth()]} ${d.getDate()}`;
-    }
+    // generated pacing dates the dashboard's course cards use, resolved by
+    // curriculum unit (the generated map is keyed by district sequence). The
+    // unit being taught today is marked; earlier units are de-emphasised.
+    // Decorative colour never carries the meaning.
+    const STATUS_BADGE = {
+      now: ["Now", "Ahora"],
+      next: ["Next", "Sigue"],
+      past: ["Done", "Terminada"],
+    };
     function decorateUnitHeaders() {
-      const dates = window.__NT_PACING_DATES;
-      if (!dates || typeof dates !== "object") return;
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      if (!ranges.size) return;
       cards().forEach((card, index) => {
         const unit = units[index];
-        const range = unit && dates[unit.unitIndex];
+        const range = unit && ranges.get(Number(unit.unitIndex));
         const meta = card.querySelector(".unit-card-meta");
         if (!range || !meta || meta.querySelector(".unit-card-dates")) return;
-        const start = pacingDate(range.start_date);
-        const end = pacingDate(range.end_date);
-        if (!start || !end) return;
+        const status = pacing.unitStatus(range, currentUnit, ranges);
         const line = document.createElement("p");
         line.className = "unit-card-dates";
-        const days = Number(range.instructional_days);
+        line.dataset.start = range.start;
+        line.dataset.end = range.end;
         line.textContent =
-          `Taught ${shortDate(start)} – ${shortDate(end)}` +
-          (days > 0 ? ` · ${days} school day${days === 1 ? "" : "s"}` : "");
-        if (start <= today && today <= end) {
-          const now = document.createElement("span");
-          now.className = "unit-card-now";
-          now.textContent = "Now";
-          line.prepend(now, " ");
-          card.classList.add("is-current-unit");
+          `Taught ${pacing.shortDate(range.start)} – ${pacing.shortDate(range.end)}` +
+          (range.days > 0 ? ` · ${range.days} school day${range.days === 1 ? "" : "s"}` : "");
+        const badge = STATUS_BADGE[status];
+        if (badge) {
+          const chip = document.createElement("span");
+          chip.className = "unit-card-now unit-card-status--" + status;
+          chip.textContent = badge[0] + " · ";
+          const es = document.createElement("span");
+          es.lang = "es";
+          es.textContent = badge[1];
+          chip.appendChild(es);
+          line.prepend(chip, " ");
         }
+        card.classList.toggle("is-current-unit", status === "now");
+        card.classList.toggle("is-past-unit", status === "past");
         meta.appendChild(line);
+      });
+    }
+
+    // Links to teacher surfaces (the same predicate as isTeacherSurface in
+    // functions/_lib/teacher-surface.js) answer 401 to a student. They keep
+    // the hub's existing treatment: hidden unless Teacher Mode is on.
+    function isTeacherHref(href) {
+      let url;
+      try {
+        url = new URL(href, location.origin);
+      } catch {
+        return false;
+      }
+      if (url.origin !== location.origin) return false;
+      let path = url.pathname;
+      try {
+        path = decodeURIComponent(path);
+      } catch {
+        /* keep the raw path */
+      }
+      path = path.toLowerCase();
+      if (/^\/(?:assets|data|api)\//.test(path)) return false;
+      return (
+        path.includes("teacher") ||
+        path.includes("dashboard") ||
+        path.includes("answer-key") ||
+        path.startsWith("/curriculum/plan-notes") ||
+        path.startsWith("/curriculum/planning") ||
+        path.startsWith("/admin")
+      );
+    }
+    function markTeacherOnly() {
+      if (!hub.isConnected) return;
+      const teacherMode = hub.ownerDocument.body.classList.contains("teacher-mode");
+      hub.querySelectorAll("a[href]").forEach((link) => {
+        if (!isTeacherHref(link.getAttribute("href"))) return;
+        const holder = link.closest(".lesson-outline-item") || link;
+        holder.classList.add("hub-teacher-only");
+      });
+      hub.querySelectorAll(".lesson-outline-group").forEach((group) => {
+        const items = group.querySelectorAll(".lesson-outline-item");
+        const teacherItems = group.querySelectorAll(".lesson-outline-item.hub-teacher-only");
+        group.classList.toggle(
+          "hub-teacher-only",
+          items.length > 0 && items.length === teacherItems.length,
+        );
+      });
+      // CSS cannot hide an <option> in every browser; the attribute can.
+      hub.querySelectorAll("option[value]").forEach((option) => {
+        const value = /** @type {HTMLOptionElement} */ (option).value;
+        if (!value || !isTeacherHref(value)) return;
+        option.classList.add("hub-teacher-only");
+        /** @type {HTMLOptionElement} */ (option).hidden = !teacherMode;
       });
     }
 
     function compactUnitCards() {
       decorateUnitHeaders();
+      markTeacherOnly();
       cards().forEach((card) => {
         const resources = card.querySelector(".unit-resources-row");
         if (!resources || resources.closest(".units-resource-drawer")) return;
@@ -459,6 +514,56 @@
       panel.append(resultStatus, grid, more);
     }
 
+    // Quick-jump pills follow the teaching order too; each keeps its #unit-N
+    // anchor. They sit in a closed disclosure, so moving them shifts nothing.
+    function orderUnitPills() {
+      document.querySelectorAll(".unit-jump-pills").forEach((row) => {
+        const pills = Array.from(row.querySelectorAll(':scope > .unit-jump-pill[href^="#unit-"]'));
+        const tail = pills.length ? pills[pills.length - 1].nextSibling : null;
+        ordered.forEach((unit) => {
+          const pill = pills.find(
+            (link) => link.getAttribute("href") === "#unit-" + unit.unitIndex,
+          );
+          if (!pill) return;
+          const status = pacing
+            ? pacing.unitStatus(ranges.get(Number(unit.unitIndex)), currentUnit, ranges)
+            : "";
+          pill.classList.toggle("is-past", status === "past");
+          pill.classList.toggle("is-now", status === "now");
+          row.insertBefore(pill, tail);
+        });
+      });
+    }
+
+    // A scheduled catch-up day opens its own lesson (/lessons/<id>-catchup/,
+    // which validate:planning proves exists) under its core lesson's title.
+    function findLesson(lessonId) {
+      const coreId = lessonId.replace(/-catchup$/, "");
+      for (const unit of units) {
+        const exact = unit.lessons.find((item) => item.lessonId === lessonId);
+        if (exact) return exact;
+        const core = unit.lessons.find((item) => item.lessonId === coreId);
+        if (core) return { ...core, lessonId };
+      }
+      return null;
+    }
+
+    function renderTodayStrip() {
+      const strip = document.getElementById("units-today");
+      if (!strip) return;
+      if (!pacing || !pacingDays.length) {
+        strip.hidden = true;
+        return;
+      }
+      pacing.renderToday(strip, {
+        days: pacingDays,
+        ranges,
+        today: todayIso,
+        findLesson,
+        lessonHref: (lesson) => studentUrl("/lessons/" + lesson.lessonId + "/"),
+      });
+    }
+
     function remember() {
       cards().forEach((card, index) => {
         const lesson = units[index]?.lessons[getSelect(card)?.selectedIndex];
@@ -540,8 +645,8 @@
           : "Filter resources & view options";
       document.querySelectorAll("[data-unit-step]").forEach((button) => {
         const index =
-          units.indexOf(unit) + Number(/** @type {HTMLElement} */ (button).dataset.unitStep);
-        /** @type {HTMLButtonElement} */ (button).disabled = index < 0 || index >= units.length;
+          ordered.indexOf(unit) + Number(/** @type {HTMLElement} */ (button).dataset.unitStep);
+        /** @type {HTMLButtonElement} */ (button).disabled = index < 0 || index >= ordered.length;
       });
       document.querySelectorAll('.unit-jump-pill[href^="#unit-"]').forEach((link) => {
         const selected = !browsingAll && link.getAttribute("href") === "#unit-" + active;
@@ -592,11 +697,19 @@
       const params = new URLSearchParams(location.search);
       const hash = /^#unit-(\d+)$/.exec(location.hash);
       const number = hash?.[1] || params.get("u") || params.get("l")?.split("-")[0];
-      active = unitFor(number) ? String(number) : String(units[0].unitIndex);
-      const requestedLesson = params.get("l");
+      // A bare URL opens the unit being taught today on its current lesson;
+      // without pacing data it is the first unit/lesson, as before.
+      const fallback = unitFor(currentUnit) ? String(currentUnit) : String(units[0].unitIndex);
+      active = unitFor(number) ? String(number) : fallback;
+      const requestedLesson =
+        params.get("l") ||
+        (!unitFor(number) && unitFor(currentUnit)
+          ? pacing.currentLessonId(pacingDays, todayIso, currentUnit)
+          : "");
       const lesson = unitFor(active).lessons.find((item) => item.lessonId === requestedLesson);
-      // A bare URL is the first unit/lesson, even after visiting other units.
-      // Resolve exact IDs so small-group and catch-up deep links stay distinct.
+      // A bare URL is always today's unit/lesson, even after visiting other
+      // units. Resolve exact IDs so small-group and catch-up deep links stay
+      // distinct.
       const requestedState = {
         lesson: lesson?.lessonId || unitFor(active).lessons[0].lessonId,
         activity: lesson ? params.get("a") || "" : "",
@@ -611,7 +724,7 @@
       search.dispatchEvent(new Event("input", { bubbles: true }));
     }
 
-    units.forEach((unit) => {
+    ordered.forEach((unit) => {
       const option = document.createElement("option");
       option.value = String(unit.unitIndex);
       option.textContent = unit.num + " · " + unit.name;
@@ -667,6 +780,7 @@
       remember();
       const result = renderSearch.apply(this, arguments);
       compactResults();
+      markTeacherOnly();
       sync();
       return result;
     };
@@ -684,9 +798,9 @@
       const step = target?.closest("[data-unit-step]");
       if (step) {
         const index =
-          units.indexOf(unitFor(active)) +
+          ordered.indexOf(unitFor(active)) +
           Number(/** @type {HTMLElement} */ (step).dataset.unitStep);
-        if (units[index]) choose(units[index].unitIndex);
+        if (ordered[index]) choose(ordered[index].unitIndex);
       }
       const jump = target?.closest('.unit-jump-pill[href^="#unit-"]');
       if (jump) {
@@ -775,7 +889,15 @@
       changed.forEach((card) => {
         if (card?.isConnected) compactLessonActions(card);
       });
+      if (records.some((record) => record.addedNodes.length)) markTeacherOnly();
     }).observe(hub, { childList: true, subtree: true });
+    // Teacher Mode toggles body.teacher-mode; keep hidden <option>s in step.
+    new MutationObserver(markTeacherOnly).observe(document.body, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    orderUnitPills();
+    renderTodayStrip();
     compactControls();
     applyLocation();
     compactUnitCards();

@@ -338,3 +338,47 @@
 /* When the unit is taught, under its title. */
 .curriculum-units-page .unit-card-dates { margin: 8px 0 0; color: var(--course-muted, #506662); font-size: 15px; line-height: 1.4; }
 .curriculum-units-page .unit-card-now { display: inline-block; margin-right: 2px; padding: 1px 9px; border-radius: 999px; background: #b5562b; color: #fff; font-size: 13px; font-weight: 700; vertical-align: 1px; }
+.curriculum-units-page .unit-card-status--next { background: #1d5f8a; }
+.curriculum-units-page .unit-card-status--past { background: #e3e8ec; color: #3d4f5c; }
+.units-nav-ready #interactive-hub .unit-card.is-past-unit { background: #f6f8f9; }
+.units-nav-ready .unit-card.is-past-unit .unit-card-name { color: #3d566a; }
+.units-overview .unit-jump-pill.is-past { opacity: 0.72; }
+.units-overview .unit-jump-pill.is-now { font-weight: 800; box-shadow: inset 4px 0 0 #b5562b; }
+/* Today / Next strip. Space is reserved in the HTML (min-height per width) so
+   filling it after the deferred scripts run does not move the page. */
+.units-today { margin: 16px 0 4px; padding: 12px 16px; min-height: 154px; border: 1px solid #c5d4df; border-left: 5px solid #b5562b; border-radius: 12px; background: #fff; box-sizing: border-box; }
+.units-today[hidden] { display: none; }
+.units-today__title { margin: 0 0 6px; font-size: 15px; font-weight: 800; letter-spacing: 0.02em; text-transform: uppercase; color: #41627a; }
+.units-today__es { color: #506662; font-weight: 600; }
+.units-today__title .units-today__es { text-transform: none; letter-spacing: 0; }
+.units-today__list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 24px; margin: 0; padding: 0; list-style: none; }
+.units-today__item { min-width: 0; }
+.units-today__item + .units-today__item { border-left: 1px solid #dbe5ec; padding-left: 24px; }
+.units-today__when { margin: 0; color: #354f64; font-size: 15px; }
+.units-today__when strong { color: #8a3d1c; }
+.units-today__what { margin: 2px 0 0; font-size: 18px; font-weight: 700; line-height: 1.35; color: #183d5b; overflow-wrap: anywhere; }
+.units-today__link { color: #164a75; text-underline-offset: 3px; }
+.units-today__link:focus-visible { outline: 3px solid #176d9c; outline-offset: 3px; }
+.units-today__what-es { margin: 0; font-size: 15px; font-weight: 400; overflow-wrap: anywhere; }
+/* The workbench preset gallery is injected before <main> and then moved into
+   the "Explore visual math tools" disclosure. Never paint it in transit: that
+   round trip pushed the whole page down and back (CLS ~1.0). */
+.curriculum-units-page > #ewl-workbench-preset-bar { display: none; }
+@media (max-width: 700px) {
+  .units-today { min-height: 252px; }
+  .units-today__list { grid-template-columns: minmax(0, 1fr); }
+  .units-today__item + .units-today__item { border-left: 0; padding-left: 0; border-top: 1px solid #dbe5ec; padding-top: 8px; }
+}
+@media print {
+  .units-today { display: none !important; }
+}
+/* While the deferred scripts build the browser (html.units-js, set inline in
+   the head), keep <main>'s height and hide what is about to be rebuilt, so
+   nothing is painted and then pushed. The inline script removes .units-js at
+   load if the browser never became ready, restoring the static list. */
+@media screen {
+  .units-js .curriculum-units-page:not(.units-nav-ready) #main-content { min-height: 100vh; }
+  .units-js .curriculum-units-page:not(.units-nav-ready) #main-content > :not(.units-today) { visibility: hidden; }
+  /* No script, or the browser failed: the strip has nothing to say. */
+  html:not(.units-js) .curriculum-units-page:not(.units-nav-ready) .units-today { display: none; }
+}
