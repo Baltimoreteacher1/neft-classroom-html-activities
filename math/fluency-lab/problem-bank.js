@@ -359,6 +359,7 @@ const generators = {
       kind: "text",
       hint: "Add the minutes first. Regroup 60 minutes as 1 hour if needed.",
       explanation: `${elapsed} minutes after ${timeText(start)} is ${timeText(start + elapsed)}.`,
+      model: { type: "chain", picture: "clock", hour: Math.floor(start / 60), minute: start % 60, prompt: `The clock shows ${timeText(start)}. Move the minute hand ${elapsed} minutes: count by 5s.` },
     });
   },
 
@@ -512,7 +513,19 @@ const generators = {
             ? "Multiply as whole numbers, then place the decimal using the total decimal places."
             : "Make the divisor a whole number by moving both decimal points the same distance.",
       explanation: `${shownA} ${symbol} ${shownB} = ${shownAnswer}.`,
-      model: op === "add" || op === "sub" ? { type: "numberline", start: Number(shownA), jumps: [op === "add" ? Number(shownB) : -Number(shownB)] } : null,
+      model:
+        op === "add" || op === "sub"
+          ? { type: "numberline", start: Number(shownA), jumps: [op === "add" ? Number(shownB) : -Number(shownB)] }
+          : op === "mul"
+            ? {
+                type: "chain",
+                prompt: "Multiply like whole numbers. Then count the decimal places in both factors.",
+                rows: [
+                  { text: `${shownA.replace(".", "")} × ${shownB.replace(".", "")} =`, expect: Number(shownA.replace(".", "")) * Number(shownB.replace(".", "")) },
+                  { text: "Decimal places in both factors:", expect: (shownA.split(".")[1] || "").length + (shownB.split(".")[1] || "").length },
+                ],
+              }
+            : null,
     });
   },
 
@@ -579,6 +592,7 @@ const generators = {
       {
         hint: `Find ${percent}% of ${original}, then ${decrease ? "subtract" : "add"} that change.`,
         explanation: `${percent}% of ${original} is ${change}; the new amount is ${answer}.`,
+        model: { type: "percentBar", whole: original, percent, change, decrease },
       },
     );
   },
@@ -603,7 +617,10 @@ const generators = {
           : op === "sub"
             ? [`Subtracting ${b} is adding ${-b}.`, `${a} + ${-b < 0 ? `(${-b})` : -b} = ${answer}`]
             : [`Start at ${a}. Move ${Math.abs(b)} ${b < 0 ? "left" : "right"}.`, `${a} + ${b < 0 ? `(${b})` : b} = ${answer}`],
-      model: (op === "add" || op === "sub") && b !== 0 ? { type: "numberline", start: a, jumps: [op === "add" ? b : -b], caption: op === "add" ? `Start at ${a}. Adding ${b} moves ${b < 0 ? "left" : "right"}.` : `Start at ${a}. Subtracting ${b} moves ${b < 0 ? "right" : "left"}.` } : null,
+      model:
+        op === "mul" || op === "div"
+          ? { type: "chain", prompt: "Find the size first, then choose the sign.", rows: [{ text: `Size: ${Math.abs(a)} ${symbol} ${Math.abs(b)} =`, expect: Math.abs(answer) }, ...(answer ? [{ text: "Sign:", sign: answer > 0 ? "+" : "-" }] : [])] }
+          : (op === "add" || op === "sub") && b !== 0 ? { type: "numberline", start: a, jumps: [op === "add" ? b : -b], caption: op === "add" ? `Start at ${a}. Adding ${b} moves ${b < 0 ? "left" : "right"}.` : `Start at ${a}. Subtracting ${b} moves ${b < 0 ? "right" : "left"}.` } : null,
     });
   },
 
@@ -660,6 +677,7 @@ const generators = {
       choices: ["yes", "no"],
       hint: `Replace x with ${test} and read the comparison.`,
       explanation: `${test} ${symbol} ${boundary} is ${trueValue ? "true" : "false"}.`,
+        model: { type: "chain", picture: "inequality", boundary, test, symbol, prompt: `Find ${test} and ${boundary} on the line. Is ${test} ${symbol} ${boundary} true?` },
     });
   },
 
@@ -681,6 +699,10 @@ const generators = {
     return problem(`${decimalText(coefficient, 1)} × 10^${power} = ?`, decimalText(answer, 8), {
       hint: `A power of 10 moves the decimal ${Math.abs(power)} places ${power >= 0 ? "right" : "left"}.`,
       explanation: `${decimalText(coefficient, 1)} × 10^${power} = ${decimalText(answer, 8)}.`,
+      model:
+        power >= 1 && power <= 4
+          ? { type: "chain", prompt: `10^${power} means multiply by 10, ${power} time${power === 1 ? "" : "s"}. Each × 10 moves every digit one place left.`, rows: Array.from({ length: power }, (_, i) => ({ text: `${decimalText(coefficient * 10 ** i, 8)} × 10 =`, expect: Number(decimalText(coefficient * 10 ** (i + 1), 8)) })) }
+          : null,
     });
   },
 
@@ -703,6 +725,7 @@ const generators = {
     return problem(`Find the slope through (${x1}, ${y1}) and (${x2}, ${y2}).`, slope, {
       hint: "Slope = change in y ÷ change in x.",
       explanation: `(${y2} − ${y1}) ÷ (${x2} − ${x1}) = ${slope}.`,
+        model: { type: "chain", picture: "grid", points: [[x1, y1, `(${x1}, ${y1})`], [x2, y2, `(${x2}, ${y2})`]], rise: [[x1, y1], [x2, y2]], prompt: "Count the rise (up or down) and the run (across). Slope = rise ÷ run.", rows: [{ text: "Rise (change in y):", expect: y2 - y1 }, { text: "Run (change in x):", expect: x2 - x1 }] },
     });
   },
 
@@ -725,6 +748,7 @@ const generators = {
     return problem(`x + y = ${sum} and x − y = ${difference}. Find x.`, x, {
       hint: "Add the equations. The y terms cancel, leaving 2x.",
       explanation: `Adding gives 2x = ${sum + difference}, so x = ${x}.`,
+        model: { type: "chain", prompt: "Add the two equations. The y terms cancel.", rows: [{ text: `(x + y) + (x − y) = ${sum} + ${difference}, so 2x =`, expect: sum + difference }] },
     });
   },
 
@@ -752,6 +776,7 @@ const generators = {
       displayAnswer: `(${result[0]}, ${result[1]})`,
       hint: axis === "x-axis" ? "Keep x; change the sign of y." : axis === "y-axis" ? "Change the sign of x; keep y." : "Change both signs.",
       explanation: `The image is (${result[0]}, ${result[1]}).`,
+        model: { type: "chain", picture: "grid", points: [[x, y, `(${x}, ${y})`]], prompt: `Reflect across the ${axis}. Find each new coordinate.`, rows: [{ text: "New x:", expect: result[0] }, { text: "New y:", expect: result[1] }] },
     });
   },
 
@@ -773,7 +798,7 @@ const generators = {
     if (shape === "circle") {
       const radius = randInt(1, 12, rng);
       const answer = radius * radius;
-      return problem(`A circle has radius ${radius}. What number multiplies π to give its area?`, answer, { hint: "Area = πr². Square the radius.", explanation: `r² = ${radius}² = ${answer}, so the area is ${answer}π.`, unit: "π square units" });
+      return problem(`A circle has radius ${radius}. What number multiplies π to give its area?`, answer, { hint: "Area = πr². Square the radius.", explanation: `r² = ${radius}² = ${answer}, so the area is ${answer}π.`, unit: "π square units", model: { type: "chain", picture: "circle", r: radius, prompt: "Area = π × r × r. Square the radius." } });
     }
     const leg = randInt(2, 12, rng);
     const target = config.target || 180;
@@ -840,6 +865,7 @@ const generators = {
             : type === "negative"
               ? "As x increases, y decreases, so the association is negative."
               : "As x increases, y moves up and down without a steady direction, so there is no association.",
+        model: { type: "chain", picture: "scatter", xs: xValues, ys: yValues, prompt: "Read the points from left to right. Do they go up, go down, or neither?" },
       },
     );
   },
@@ -852,6 +878,7 @@ const generators = {
       kind: "fraction",
       hint: "Probability = favorable outcomes ÷ total outcomes.",
       explanation: `P(win) = ${favorable}/${total} = ${answer}.`,
+        model: { type: "chain", picture: "spinner", total, favorable, prompt: "Count the winning (shaded) sections and all the sections." },
     });
   },
 
@@ -871,6 +898,7 @@ const generators = {
     return problem(`A right triangle has legs ${a} and ${b}. Find the hypotenuse.`, c, {
       hint: "Use a² + b² = c², then take the square root.",
       explanation: `${a}² + ${b}² = ${a * a + b * b}; √${a * a + b * b} = ${c}.`,
+        model: { type: "chain", picture: "triangle", a, b, prompt: "Square each leg, add, then find the square root.", rows: [{ text: `${a}² =`, expect: a * a }, { text: `${b}² =`, expect: b * b }, { text: `${a}² + ${b}² =`, expect: a * a + b * b }] },
     });
   },
 };

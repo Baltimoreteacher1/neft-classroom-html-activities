@@ -341,7 +341,8 @@ function percentBar(model) {
   ).join("");
   return `<div class="tp-live" data-live="percent" data-parts="${parts}" data-each="${each}">
     <p class="tp-prompt">The whole bar is ${fmtN(model.whole)}. It has ${parts} equal parts. One part is worth ${box(each, "the value of one part", 'data-then="percent"')}</p>
-    <div class="tp-percent">${cells}</div><p class="tp-readout">Shaded: <b data-shaded>0%</b></p></div>`;
+    <div class="tp-percent">${cells}</div><p class="tp-readout">Shaded: <b data-shaded>0%</b></p>
+    ${model.change !== undefined ? `<p class="tp-chain">The ${model.percent}% change is ${box(model.change, "the amount of change")} Then ${model.decrease ? "subtract it from" : "add it to"} ${fmtN(model.whole)}.</p>` : ""}</div>`;
 }
 
 // Ratio table: pick ×n or ÷n, then type the new column; the next step waits until both are right.
@@ -420,6 +421,86 @@ function stackLayers(model) {
     <p class="tp-readout">Layers: <b data-layer-count>0</b></p></div>`;
 }
 
+
+// ---------- Grades 5–8: short chains of boxes the student fills in, with a picture when one helps.
+// A grid zoomed to the points (always showing the axes), with one square per unit so rise
+// and run can be counted.
+function gridSvg(points, { rise = null } = {}) {
+  const xs = [0, ...points.map((p) => p[0])];
+  const ys = [0, ...points.map((p) => p[1])];
+  const span = Math.max(6, Math.max(...xs) - Math.min(...xs) + 2, Math.max(...ys) - Math.min(...ys) + 2);
+  const lo = [Math.min(...xs) - 1, Math.min(...ys) - 1];
+  const unit = 260 / span;
+  const x = (v) => 20 + (v - lo[0]) * unit;
+  const y = (v) => 280 - (v - lo[1]) * unit;
+  let body = "";
+  for (let i = 0; i <= span; i += 1) {
+    const gx = lo[0] + i;
+    const gy = lo[1] + i;
+    body += `<path class="tp-grid${gx === 0 ? " axis" : ""}" d="M${x(gx)},${y(lo[1])} V${y(lo[1] + span)}"/><path class="tp-grid${gy === 0 ? " axis" : ""}" d="M${x(lo[0])},${y(gy)} H${x(lo[0] + span)}"/>`;
+  }
+  if (rise) {
+    const [[x1, y1], [x2, y2]] = rise;
+    body += `<path class="tp-run" d="M${x(x1)},${y(y1)} H${x(x2)}"/><path class="tp-rise" d="M${x(x2)},${y(y1)} V${y(y2)}"/>`;
+  }
+  body += points.map(([px, py, label]) => `<circle class="tp-pt" cx="${x(px)}" cy="${y(py)}" r="6"/><text class="tp-pt-label" x="${x(px) + 8}" y="${y(py) - 9}">${esc(label)}</text>`).join("");
+  return `<svg class="tp-gridsvg" viewBox="0 0 300 300" role="img" aria-label="Coordinate grid">${body}</svg>`;
+}
+
+function picture(kind, model) {
+  if (kind === "grid") return gridSvg(model.points, { rise: model.rise });
+  if (kind === "triangle")
+    return `<svg class="tp-shape" viewBox="0 0 220 150" role="img" aria-label="Right triangle with legs ${model.a} and ${model.b}"><path class="tp-tri" d="M30,130 H190 V20 Z"/><path class="tp-tick" d="M178,130 v-12 h12"/><text x="110" y="146">${model.b}</text><text x="204" y="80">${model.a}</text><text x="92" y="66">?</text></svg>`;
+  if (kind === "circle")
+    return `<svg class="tp-shape" viewBox="0 0 220 150" role="img" aria-label="Circle with radius ${model.r}"><circle class="tp-circ" cx="110" cy="75" r="62"/><path class="tp-radius" d="M110,75 H172"/><circle cx="110" cy="75" r="3"/><text x="141" y="68">r = ${model.r}</text></svg>`;
+  if (kind === "spinner") {
+    const n = model.total;
+    const slice = (i) => {
+      const a0 = (i / n) * 2 * Math.PI - Math.PI / 2;
+      const a1 = ((i + 1) / n) * 2 * Math.PI - Math.PI / 2;
+      return `<path class="${i < model.favorable ? "win" : ""}" d="M75,75 L${75 + 65 * Math.cos(a0)},${75 + 65 * Math.sin(a0)} A65,65 0 0,1 ${75 + 65 * Math.cos(a1)},${75 + 65 * Math.sin(a1)} Z"/>`;
+    };
+    return `<svg class="tp-spinner" viewBox="0 0 150 150" role="img" aria-label="Spinner with ${n} equal sections">${Array.from({ length: n }, (_, i) => slice(i)).join("")}</svg>`;
+  }
+  if (kind === "scatter") {
+    const xs = model.xs;
+    const ys = model.ys;
+    const [lo, hi] = [Math.min(...ys), Math.max(...ys)];
+    const px = (i) => 30 + (i / Math.max(1, xs.length - 1)) * 220;
+    const py = (v) => 130 - ((v - lo) / Math.max(1, hi - lo)) * 100;
+    return `<svg class="tp-shape" viewBox="0 0 280 150" role="img" aria-label="Scatter plot of the data"><path class="tp-grid axis" d="M20,140 H270 M20,140 V10"/>${xs.map((_, i) => `<circle class="tp-pt" cx="${px(i)}" cy="${py(ys[i])}" r="5"/>`).join("")}<text x="262" y="134">x</text><text x="26" y="18">y</text></svg>`;
+  }
+  if (kind === "clock") {
+    const minuteAngle = (model.minute / 60) * 2 * Math.PI;
+    const hourAngle = (((model.hour % 12) + model.minute / 60) / 12) * 2 * Math.PI;
+    const hand = (angle, len) => `M75,75 L${75 + len * Math.sin(angle)},${75 - len * Math.cos(angle)}`;
+    const numbers = Array.from({ length: 12 }, (_, i) => {
+      const a = ((i + 1) / 12) * 2 * Math.PI;
+      return `<text x="${75 + 52 * Math.sin(a)}" y="${80 - 52 * Math.cos(a)}">${i + 1}</text>`;
+    }).join("");
+    return `<svg class="tp-spinner tp-clock" viewBox="0 0 150 150" role="img" aria-label="Clock showing the start time"><circle cx="75" cy="75" r="68"/>${numbers}<path class="hour" d="${hand(hourAngle, 32)}"/><path class="minute" d="${hand(minuteAngle, 50)}"/></svg>`;
+  }
+  if (kind === "inequality") {
+    const lo = Math.min(model.boundary, model.test) - 3;
+    const hi = Math.max(model.boundary, model.test) + 3;
+    const x = (v) => 30 + ((v - lo) / (hi - lo)) * 440;
+    const closed = model.symbol === "≥" || model.symbol === "≤";
+    return `<svg class="tp-line" viewBox="0 0 500 120" role="img" aria-label="Number line with ${model.boundary} and ${model.test}"><path class="tp-axis" d="M10,60 H490"/><circle class="tp-bound${closed ? " closed" : ""}" cx="${x(model.boundary)}" cy="60" r="8"/><text x="${x(model.boundary)}" y="92">${model.boundary}</text><circle class="tp-marker" cx="${x(model.test)}" cy="60" r="7"/><text class="tp-here" x="${x(model.test)}" y="38">${model.test}</text></svg>`;
+  }
+  return "";
+}
+
+function chainModel(model) {
+  const rows = (model.rows || [])
+    .map((row) =>
+      row.sign !== undefined
+        ? `<p class="tp-chain">${esc(row.text)} <button type="button" class="tp-hop-btn" data-sign-pick="+" data-sign-right="${row.sign}">Positive</button><button type="button" class="tp-hop-btn" data-sign-pick="-" data-sign-right="${row.sign}">Negative</button></p>`
+        : `<p class="tp-chain">${esc(row.text)} ${box(row.expect, row.text)}</p>`,
+    )
+    .join("");
+  return `<div class="tp-live" data-live="chain"><p class="tp-prompt">${esc(model.prompt)}</p>${model.picture ? picture(model.picture, model) : ""}${rows}</div>`;
+}
+
 export function interactivePicture(model) {
   if (!model) return "";
   if (model.type === "counters" && model.kind) return countFrames(model);
@@ -437,6 +518,7 @@ export function interactivePicture(model) {
   if (model.type === "shape" && model.shape === "rectangle" && model.allSides)
     return tapPerimeter(model);
   if (model.type === "layers") return stackLayers(model);
+  if (model.type === "chain") return chainModel(model);
   return "";
 }
 
@@ -738,6 +820,13 @@ export function handleModelTap(target) {
       () => "<span></span>",
     ).join("");
     live.querySelector("[data-layer-count]").textContent = count;
+    return true;
+  }
+  const sign = target.closest("[data-sign-pick]");
+  if (sign) {
+    const right = sign.dataset.signPick === sign.dataset.signRight;
+    sign.parentElement.querySelectorAll("[data-sign-pick]").forEach((b) => b.classList.remove("ok", "no"));
+    sign.classList.add(right ? "ok" : "no");
     return true;
   }
   return false;
