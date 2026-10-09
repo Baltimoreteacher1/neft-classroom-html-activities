@@ -350,6 +350,8 @@ function tryTogetherActivity(config) {
       titleEs: exact.titleEs,
       scenarioEn: story?.en || "",
       scenarioEs: story?.es || "",
+      answerEn: exact.equation || exact.capEn,
+      answerEs: exact.capEs,
       steps: [
         {
           en: story?.taskEn || familyGuidance(config).question.en,
@@ -3279,6 +3281,19 @@ export function renderTryTogether(config, lessonId = "") {
           })
           .join("")}
       </ol>
+      ${
+        activity.answerEn
+          ? `
+      <div class="together-answer-reveal" style="margin-top: 16px;">
+        ${helpButton("✅ Check Answer / Comprobar respuesta", {
+          titleEn: "Correct Answer",
+          titleEs: "Respuesta correcta",
+          en: activity.answerEn,
+          es: activity.answerEs || activity.answerEn,
+        })}
+      </div>`
+          : ""
+      }
       <details class="family-extra-ladder"><summary><span class="lang-en">Optional: try another together</span><span class="lang-es" lang="es">Opcional: intenta otro acompañado</span></summary>${renderTogetherLadder(config)}</details>
     </section>`;
 }
