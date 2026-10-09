@@ -10,6 +10,12 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { acquireGateLock, isStale, STALE_MS } from "../scripts/lib/qa-lock.mjs";
 
+// This test runs INSIDE a gate (npm test), whose own lock marks its children
+// with QA_GATE_LOCK_HELD=1 and may carry QA_NO_LOCK. Either would make every
+// acquire below return at once, so start from a clean environment.
+delete process.env.QA_GATE_LOCK_HELD;
+delete process.env.QA_NO_LOCK;
+
 const root = mkdtempSync(join(tmpdir(), "qa-lock-test-"));
 let n = 0;
 const fresh = () => join(root, `lock-${n++}`);
