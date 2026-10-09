@@ -252,7 +252,7 @@ export function mountTrail(container, { grade, onShowSkills }) {
             ${round.miss ? "" : liveModel(item)}
             ${
               round.miss
-                ? `<div class="tr-help"><p class="tr-miss-title">${esc(words.miss)}</p><div class="tr-help-body">${trailPicture(item.model, { reveal: true })}${stepsBlock(steps, steps.length, { id: "miss-steps" })}</div><p class="tr-retype">${esc(words.retype)}</p></div>`
+                ? `<div class="tr-help"><p class="tr-miss-title">${esc(words.miss)}</p><div class="tr-help-body">${stepsBlock(steps, steps.length, { id: "miss-steps" })}</div><p class="tr-retype">${esc(words.retype)}</p></div>`
                 : ""
             }
           </div>

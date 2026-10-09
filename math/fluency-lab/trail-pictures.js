@@ -227,8 +227,96 @@ export const mathText = (text) => esc(text).replace(/\^(-?\d+)/g, "<sup>$1</sup>
 // Super-simple guided steps: one short number sentence at a time, revealed by tapping "Next step".
 export function stepsBlock(steps, shown, { id, cap = steps.length } = {}) {
   const visible = steps.slice(0, Math.min(shown, cap));
+  // A step only gets a picture when it shows something the step above did not.
+  let previous = "";
+  const pictures = visible.map((line) => {
+    const html = stepVisual(line);
+    const same = html.replace(/>[^<]*</g, "><") === previous.replace(/>[^<]*</g, "><") && html.includes("sv-array");
+    previous = html;
+    return same ? "" : html;
+  });
   const more = shown < cap;
-  return `<ol class="tr-steps" id="${id}">${visible.map((line, i) => `<li${i === visible.length - 1 ? ' class="latest"' : ""}><span>${i + 1}</span>${mathText(line)}</li>`).join("")}</ol>
+  return `<ol class="tr-steps" id="${id}">${visible.map((line, i) => `<li${i === visible.length - 1 ? ' class="latest"' : ""}><span class="tr-step-num">${i + 1}</span><span class="tr-step-text">${mathText(line)}</span>${pictures[i]}</li>`).join("")}</ol>
     ${more ? `<button type="button" class="tr-step-next" data-step="${id}">Next step</button>` : ""}`;
 }
 
+// ---------- a small picture for every guided step ----------
+// Each step is a short number sentence; its picture is drawn from that sentence's own numbers.
+const num = (text) => Number(String(text).replace("−", "-"));
+const dots = (count, cls = "") =>
+  Array.from({ length: count }, () => `<i class="sv-dot ${cls}"></i>`).join("");
+const small = (value) => Number.isInteger(value) && value >= 1 && value <= 10;
+
+function miniArray(rows, cols, cls = "") {
+  return `<span class="sv sv-array" style="--cols:${cols}" aria-hidden="true">${Array.from({ length: rows }, () => dots(cols, cls)).join("")}</span>`;
+}
+
+function miniBar(parts, take) {
+  const total = parts.reduce((sum, value) => sum + Math.abs(value), 0) || 1;
+  return `<span class="sv sv-bar${take ? " take" : ""}" aria-hidden="true">${parts.map((value, i) => `<b style="flex:${Math.max(0.15, Math.abs(value) / total)}" class="p${i}">${Math.abs(value).toLocaleString("en-US")}</b>`).join("")}</span>`;
+}
+
+function miniHops(values) {
+  const shown = values.slice(0, 12);
+  return `<span class="sv sv-hops" aria-hidden="true">${shown.map((value, i) => `<b class="${i === shown.length - 1 ? "last" : ""}">${value.toLocaleString("en-US")}</b>`).join("")}</span>`;
+}
+
+export function stepVisual(line) {
+  // Drop thousands commas (not list commas) and lead-ins such as "So" or "Size:".
+  const text = String(line)
+    .replace(/(\d),(\d{3})/g, "$1$2")
+    .replace(/^(?:So|Size:|Check:)\s+/, "")
+    .replace(/\.$/, "");
+  const start = text.match(/^Start at (-?\d+)$/);
+  if (start) return miniHops([Number(start[1])]);
+  const move = text.match(/^Start at (-?\d+)\. Move (\d+) (left|right)$/);
+  if (move)
+    return miniHops([
+      Number(move[1]),
+      Number(move[1]) + (move[3] === "right" ? 1 : -1) * Number(move[2]),
+    ]);
+  const missing = text.match(/^(\d+) \+ \? = (\d+)$/);
+  if (missing && Number(missing[2]) <= 20)
+    return `<span class="sv sv-count" aria-hidden="true">${dots(Number(missing[1]))}${dots(Number(missing[2]) - Number(missing[1]), "ghost")}</span>`;
+  // "Count on 3: 8, 9, 10", "Count back 2: 6, 5", "10, 20, 30, 40", "Count the empty spaces: 3"
+  const list = text.match(
+    /(?:^|:\s*)((?:-?\d+(?:\.\d+)?,\s*)*-?\d+(?:\.\d+)?)$/,
+  );
+  if (list) return miniHops(list[1].split(/,\s*/).map(Number));
+  const eq = text.match(
+    /^(-?\d+(?:\.\d+)?) ([+−×÷]) \(?(-?\d+(?:\.\d+)?|\?)\)? = (-?\d+(?:\.\d+)?|\?)$/,
+  );
+  if (!eq) return "";
+  const a = num(eq[1]);
+  const op = eq[2];
+  const b = eq[3] === "?" ? null : num(eq[3]);
+  const c = eq[4] === "?" ? null : num(eq[4]);
+  if (op === "×" && b !== null && small(a) && small(b)) return miniArray(a, b);
+  if (op === "×" && b === null && c !== null && small(a) && small(c / a))
+    return miniArray(a, c / a, "ghost");
+  if (op === "÷" && c !== null && small(b) && small(c)) return miniArray(b, c);
+  // Bigger products: an area rectangle labelled with the two factors and the product.
+  if (
+    op === "×" &&
+    b !== null &&
+    Number.isInteger(a) &&
+    Number.isInteger(b) &&
+    a > 0 &&
+    b > 0
+  )
+    return `<span class="sv sv-rect" aria-hidden="true"><em class="top">${a.toLocaleString("en-US")}</em><em class="side">${b.toLocaleString("en-US")}</em><b>${c === null ? "?" : c.toLocaleString("en-US")}</b></span>`;
+  if (
+    (op === "+" || op === "−") &&
+    b !== null &&
+    Number.isInteger(a) &&
+    Number.isInteger(b) &&
+    a >= 0 &&
+    b >= 0
+  ) {
+    const whole = op === "+" ? a + b : a;
+    if (whole <= 20)
+      return `<span class="sv sv-count" aria-hidden="true">${op === "+" ? `${dots(a)}${dots(b, "add")}` : `${dots(a - b)}${dots(b, "gone")}`}</span>`;
+    return miniBar(op === "+" ? [a, b] : [a - b, b], op === "−");
+  }
+  return "";
+}

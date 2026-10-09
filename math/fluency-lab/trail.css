@@ -1179,7 +1179,7 @@ body.trail-playing .trail {
   box-shadow: inset 4px 0 0 var(--trail);
 }
 
-.tr-steps li > span {
+.tr-steps li > .tr-step-num {
   display: grid;
   flex: none;
   width: 1.8rem;
@@ -1632,4 +1632,198 @@ body.working-on-skill .hub-tabs {
     padding-top: 6px;
     padding-bottom: 6px;
   }
+}
+/* ---------- a small picture beside every guided step ---------- */
+.tr-steps li {
+  flex-wrap: wrap;
+}
+
+.tr-step-text {
+  flex: 1 1 auto;
+}
+
+.sv {
+  display: inline-flex;
+  flex: none;
+  margin-left: auto;
+}
+
+.sv-dot {
+  display: block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--trail);
+}
+
+.sv-dot.add {
+  background: var(--t-gold);
+}
+
+.sv-dot.gone {
+  background: transparent;
+  box-shadow: inset 0 0 0 2px var(--t-practice);
+}
+
+.sv-dot.ghost {
+  background: transparent;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--trail) 55%, #fff);
+}
+
+.sv-array {
+  display: inline-grid;
+  grid-template-columns: repeat(var(--cols), 9px);
+  gap: 2px;
+  padding: 4px;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.sv-count {
+  flex-wrap: wrap;
+  max-width: 120px;
+  gap: 3px;
+  padding: 4px;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.sv-hops {
+  align-items: center;
+  gap: 0;
+  font-size: 0.85rem;
+}
+
+.sv-hops b {
+  position: relative;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--t-ink-soft);
+}
+
+.sv-hops b + b::before {
+  content: "";
+  position: absolute;
+  left: -0.5rem;
+  top: 50%;
+  width: 0.5rem;
+  border-top: 2px solid var(--trail);
+}
+
+.sv-hops b + b {
+  margin-left: 0.5rem;
+}
+
+.sv-hops b.last {
+  background: var(--trail);
+  color: #fff;
+}
+
+.sv-bar {
+  width: 150px;
+  height: 26px;
+  border-radius: 6px;
+  overflow: hidden;
+  font-size: 0.72rem;
+}
+
+.sv-bar b {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  overflow: hidden;
+  color: #fff;
+  background: var(--trail);
+}
+
+.sv-bar b.p1 {
+  background: var(--t-gold);
+  color: var(--t-ink);
+}
+
+.sv-bar.take b.p1 {
+  background: #fff;
+  color: var(--t-practice);
+  box-shadow: inset 0 0 0 2px var(--t-practice);
+}
+
+.sv-rect {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 96px;
+  height: 46px;
+  margin: 0.9rem 0 0 1.4rem;
+  border: 2px solid var(--trail);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--trail) 12%, #fff);
+  font-size: 0.85rem;
+}
+
+.sv-rect em {
+  position: absolute;
+  font-style: normal;
+  font-size: 0.75rem;
+  color: var(--t-ink-soft);
+}
+
+.sv-rect em.top {
+  top: -1.2rem;
+}
+
+.sv-rect em.side {
+  left: -1.3rem;
+}
+
+.guided-step-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  width: 100%;
+}
+
+.tr-help .tr-help-body > .tr-steps {
+  flex: 1 1 100%;
+  max-width: 520px;
+}
+
+.sv-dot {
+  width: 7px;
+  height: 7px;
+}
+
+.sv-array {
+  grid-template-columns: repeat(var(--cols), 7px);
+  gap: 2px;
+  padding: 3px;
+}
+
+.tr-steps li {
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+}
+
+.sv-rect {
+  min-width: 84px;
+  height: 32px;
+  margin: 0.8rem 0 0 1.2rem;
+}
+
+.tr-feedback:empty {
+  min-height: 0;
+  margin: 0;
+}
+
+.tr-help {
+  padding: 0.75rem 1rem;
+}
+
+.tr-miss-title {
+  margin-bottom: 0.5rem;
+}
+
+.tr-steps {
+  gap: 0.35rem;
 }

@@ -10,7 +10,7 @@ import {
 import { adaptiveProblem, dailyPlan, diagnosticPlan, difficulty, emptyTutor, evidence, feedbackFor, findSkill, localDay, prerequisites, recommendations, recordAnswer, rememberMistake, sanitizeTutor, skillKey as tutorSkillKey } from "./tutor-engine.js";
 import { mountVisualLesson, renderModel, renderInlineProblemModel } from "./visual-lab.js";
 import { transferPrompt } from "./lesson-content.js";
-import { handleModelTap, interactivePicture, mathText, stepsBlock, trailPicture } from "./trail-pictures.js";
+import { handleModelTap, interactivePicture, mathText, stepVisual, stepsBlock, trailPicture } from "./trail-pictures.js";
 import { PROFILE_NAMES, assignmentQueue, cleanProgress, decodeAssignment, downloadFile, makeBackup, mountTeacherStudio, parseBackup, profileKey, profiles, progressReport, readLocal, selectProfile, writeLocal } from "./school-tools.js";
 import { mountWorkbench } from "./workbench.js";
 import { mountTrail } from "./trail-view.js";
@@ -558,7 +558,7 @@ function mountProblemModel(show) {
     return;
   }
   const picture = interactivePicture(state.item.model);
-  host.style.setProperty("--trail", getGrade(state.item.skill.grade).color);
+  els.drillPanel.style.setProperty("--trail", getGrade(state.item.skill.grade).color);
   if (picture) host.innerHTML = `<div class="tr-model">${picture}</div>`;
   else mountWorkbench(host, { skill: state.item.skill, item: state.item });
   els.toggleProblemVisual.setAttribute("aria-expanded", "true");
@@ -579,7 +579,7 @@ function renderGuidedCoach() {
       (step, index) => `
         <li class="${index === state.guidedStepsShown - 1 ? "current" : "complete"}">
           <span>${index + 1}</span>
-          <div><p>${mathText(step.copy)}</p></div>
+          <div class="guided-step-body"><p>${mathText(step.copy)}</p>${stepVisual(step.copy)}</div>
         </li>`,
     )
     .join("");
