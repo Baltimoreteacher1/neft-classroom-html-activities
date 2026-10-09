@@ -19,7 +19,9 @@ cd "$ROOT" || exit 1
 # when coverage is provable. The full sweep still runs on push (qa:loop) and in
 # CI, which is where it belongs.
 if node -e "const p=require('./package.json'); process.exit(p.scripts && p.scripts['qa:fast'] ? 0 : 1)" 2>/dev/null; then
-  npm run qa:fast
+  # --commit: an escalated (FULL) run skips the serial browser checks here;
+  # pre-push runs them on every deploy. See COMMIT_MODE in scripts/qa-run.mjs.
+  npm run qa:fast -- --commit
 elif [[ -x scripts/codex/codex-verify.sh ]]; then
   scripts/codex/codex-verify.sh
 else

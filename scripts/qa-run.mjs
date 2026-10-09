@@ -508,6 +508,13 @@ const optVal = (n) => {
 };
 const MODE_CHANGED = flag("--changed");
 const LIST_ONLY = flag("--list");
+/* --commit (passed by .githooks/pre-commit): when --changed escalates to the
+ * full set, leave out the EXCLUSIVE browser checks. They are the serial
+ * critical path (~4 of the gate's ~5 min) and 75% of the last 200 commits on
+ * main escalated, so every commit was paying for them. Nothing is dropped from
+ * a deploy: pre-push runs the plain full gate, browsers included. Scoped runs
+ * that name a browser check (e.g. the flow-walk rule) still run it. */
+const COMMIT_MODE = flag("--commit");
 const ONLY = optVal("--only");
 const JOBS = Number(optVal("--jobs")) || Math.max(2, Math.min(8, cpus().length - 1));
 
@@ -612,6 +619,17 @@ async function main() {
         paths.length === 0
           ? "FULL (no changes detected)"
           : "FULL (a changed path has no coverage rule)";
+      // Name the paths that escalated: the evidence for the next COVERAGE rule.
+      const uncovered = paths.filter((p) => !COVERAGE.some(([re]) => re.test(p)));
+      if (uncovered.length) {
+        const shown = uncovered.slice(0, 10).join(", ");
+        const more = uncovered.length > 10 ? ` (+${uncovered.length - 10} more)` : "";
+        console.log(`qa-run: no coverage rule for: ${shown}${more}`);
+      }
+      if (COMMIT_MODE) {
+        checks = checks.filter((c) => !EXCLUSIVE.has(c));
+        label += " — browser checks deferred to pre-push";
+      }
     }
   } else {
     checks = resolveSet(GATE);
