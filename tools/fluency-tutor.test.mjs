@@ -137,6 +137,28 @@ for (const current of ALL_SKILLS) {
         !validateAnswer("definitely not an answer", item),
         `${current.id}: invalid answer rejected`,
       );
+      const model = item.model;
+      if (model && current.generator === "fact" && !/÷|shared equally/.test(item.question)) {
+        const answer = Number(item.answers[0]);
+        if (model.type === "numberline")
+          check(
+            model.start + model.jumps.reduce((x, y) => x + y, 0) === answer,
+            `${current.id}: number line lands on the answer`,
+          );
+        if (model.type === "counters")
+          check(model.shown === answer, `${current.id}: counters show the answer`);
+        if (model.type === "array")
+          check(
+            model.a * model.b * (model.unit || 1) === answer,
+            `${current.id}: array shows the product`,
+          );
+      }
+      if (model?.type === "array" && /÷|shared equally/.test(item.question)) {
+        check(
+          model.a * model.b === Number(item.question.replaceAll(",", "").match(/\d+/)[0]),
+          `${current.id}: division array shows the dividend`,
+        );
+      }
       if (current.generator === "fact") {
         const question = item.question.replaceAll(",", "");
         const missing = question.match(/^(\d+) × □ = (\d+)\./);

@@ -22,7 +22,7 @@ export function createLesson(skill, variant = 0) {
     }
     if (op === "mul" && config.tens) {
       const a = 3 + (k % 5); const t = 2 + k;
-      return lesson("Count in tens", "Each square is 10. Solve the basic fact first, then say the answer in tens.", { type: "array", a, b: t, split: a, caption: `${a} × ${t * 10}` }, [step(`Cover the zero: what is the basic fact ${a} × ${t}?`, a * t, "Count the squares in the rows, or use a fact you know.", `${a} × ${t} = ${a * t}.`), step(`Each square is 10, so ${a * t} squares are ${a * t} tens. How much is that?`, a * t * 10, `${a * t} tens means ${a * t} × 10.`, `${a * t} tens = ${a * t * 10}.`), step(`Check: what is ${a} × ${t * 10}?`, a * t * 10, "It matches the number of tens you found.", `${a} × ${t * 10} = ${a * t * 10}. The zero shows the answer is in tens.`)]);
+      return lesson("Count in tens", "Each square is 10. Solve the basic fact first, then say the answer in tens.", { type: "array", a, b: t, split: a, unit: 10, caption: `${a} × ${t * 10}` }, [step(`Cover the zero: what is the basic fact ${a} × ${t}?`, a * t, "Count the squares in the rows, or use a fact you know.", `${a} × ${t} = ${a * t}.`), step(`Each square is 10, so ${a * t} squares are ${a * t} tens. How much is that?`, a * t * 10, `${a * t} tens means ${a * t} × 10.`, `${a * t} tens = ${a * t * 10}.`), step(`Check: what is ${a} × ${t * 10}?`, a * t * 10, "It matches the number of tens you found.", `${a} × ${t * 10} = ${a * t * 10}. The zero shows the answer is in tens.`)]);
     }
     if (op === "mul" && grade === 3) {
       const early = Math.max(...(config.factors || [9])) <= 5;

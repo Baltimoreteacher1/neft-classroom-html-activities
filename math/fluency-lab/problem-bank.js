@@ -38,10 +38,41 @@ function problem(question, answer, options = {}) {
     kind: options.kind || "number",
     choices: options.choices || null,
     unit: options.unit || "",
+    model: options.model || null,
   };
 }
 
 const FACT_SYMBOL = { add: "+", sub: "−", mul: "×", div: "÷" };
+
+// Nonzero jumps that land on a friendly number: a leading-place chunk, or the next ten for small steps.
+function friendlyJumps(start, amount, direction) {
+  let part = amount >= 10 ? Math.floor(amount / 10 ** (String(amount).length - 1)) * 10 ** (String(amount).length - 1) : 0;
+  if (!part) {
+    const toTen = direction > 0 ? (10 - (start % 10)) % 10 : start % 10;
+    part = toTen > 0 && toTen < amount ? toTen : amount;
+  }
+  return [part, amount - part].filter(Boolean).map((jump) => jump * direction);
+}
+
+function factModel(op, a, b, answer, config) {
+  if (op === "add" && a + b <= 20) return { type: "counters", total: 20, filled: a, target: a + b, shown: a + b, caption: `${a} + ${b} on a double ten-frame` };
+  if (op === "sub" && a <= 20) return { type: "counters", total: 20, filled: Math.max(0, a - b), target: a, shown: Math.max(0, a - b), caption: `Start with ${a}, take away ${b}` };
+  if (op === "add" || op === "sub") {
+    const jumps = friendlyJumps(a, b, op === "add" ? 1 : -1);
+    return { type: "numberline", start: a, jumps, caption: `${whole.format(a)} ${FACT_SYMBOL[op]} ${whole.format(b)} in friendly jumps` };
+  }
+  if (op === "mul") {
+    if (config.tens && a <= 12 && b / 10 <= 12) return { type: "array", a, b: b / 10, split: a, unit: 10, caption: `${a} rows of ${b / 10} tens` };
+    if (a >= 1 && b >= 1 && a <= 12 && b <= 12) return { type: "array", a, b, split: a > 5 ? 5 : a, caption: `${a} rows of ${b}` };
+    if (a > 12) {
+      const split = a >= 100 ? Math.floor(a / 100) * 100 : Math.floor(a / 10) * 10;
+      return { type: "array", a, b, split, caption: `Area model: ${whole.format(a)} = ${whole.format(split)} + ${whole.format(a - split)}, each times ${b}` };
+    }
+    return null;
+  }
+  if (b >= 2 && b <= 12 && answer >= 1 && answer <= 12) return { type: "array", a: b, b: answer, split: b, caption: `${whole.format(a)} shared equally into ${b} rows` };
+  return null;
+}
 
 const GROUP_SCENES = [
   ["bag", "apples"],
@@ -74,21 +105,21 @@ function coachedFact(op, a, b, answer, config, rng) {
       hint = f === 9 ? `Start with 10 × ${o} = ${10 * o}. Then take away one group of ${o}.` : `Start with 5 × ${o} = ${5 * o}. Then add ${f - 5} more group${f - 5 === 1 ? "" : "s"} of ${o}.`;
     }
     if (format === "story") {
-      return problem(`${plural(a, container)} with ${b} ${thing} in each ${container}. How many ${thing} in all?`, answer, { hint, explanation: `${a} groups of ${b} is ${a} × ${b}. ${sentence}` });
+      return problem(`${plural(a, container)} with ${b} ${thing} in each ${container}. How many ${thing} in all?`, answer, { hint, explanation: `${a} groups of ${b} is ${a} × ${b}. ${sentence}`, model: factModel(op, a, b, answer, config) });
     }
     if (format === "missing") {
       return problem(`${a} × □ = ${whole.format(answer)}. What number belongs in the box?`, b, { hint: `Ask: how many groups of ${a} make ${whole.format(answer)}? Skip-count by ${a}.`, explanation: `${sentence} The missing factor is ${b}.` });
     }
-    return problem(`${whole.format(a)} × ${whole.format(b)} = ?`, answer, { hint, explanation: sentence });
+    return problem(`${whole.format(a)} × ${whole.format(b)} = ?`, answer, { hint, explanation: sentence, model: factModel(op, a, b, answer, config) });
   }
   const hint = `Think: ${b} × ? = ${whole.format(a)}. Skip-count by ${b} until you reach ${whole.format(a)}.`;
   if (format === "story") {
-    return problem(`${whole.format(a)} ${thing} are shared equally into ${plural(b, container)}. How many ${thing} go in each ${container}?`, answer, { hint, explanation: `${whole.format(a)} ÷ ${b} = ${answer} because ${b} × ${answer} = ${whole.format(a)}.` });
+    return problem(`${whole.format(a)} ${thing} are shared equally into ${plural(b, container)}. How many ${thing} go in each ${container}?`, answer, { hint, explanation: `${whole.format(a)} ÷ ${b} = ${answer} because ${b} × ${answer} = ${whole.format(a)}.`, model: factModel(op, a, b, answer, config) });
   }
   if (format === "missing") {
     return problem(`${b} × □ = ${whole.format(a)}. What number belongs in the box?`, answer, { hint, explanation: `${b} × ${answer} = ${whole.format(a)}, so ${whole.format(a)} ÷ ${b} = ${answer}.` });
   }
-  return problem(`${whole.format(a)} ÷ ${whole.format(b)} = ?`, answer, { hint, explanation: `${whole.format(a)} ÷ ${whole.format(b)} = ${answer} because ${b} × ${answer} = ${whole.format(a)}.` });
+  return problem(`${whole.format(a)} ÷ ${whole.format(b)} = ?`, answer, { hint, explanation: `${whole.format(a)} ÷ ${whole.format(b)} = ${answer} because ${b} × ${answer} = ${whole.format(a)}.`, model: factModel(op, a, b, answer, config) });
 }
 
 const generators = {
@@ -132,6 +163,7 @@ const generators = {
               ? "Think in equal groups or use a fact you already know."
               : "Ask: what number times the divisor makes the dividend?",
       explanation: `${whole.format(a)} ${symbol} ${whole.format(b)} = ${whole.format(answer)}.`,
+      model: factModel(op, a, b, answer, config),
     });
   },
 
@@ -261,6 +293,7 @@ const generators = {
     return problem(question, answer, {
       hint: `The known part was multiplied by ${factor}. Multiply the other part by the same number.`,
       explanation: `${n}/${d} × ${factor}/${factor} = ${n * factor}/${d * factor}.`,
+      model: { type: "fractions", fractions: [[n, d]], caption: `${n}/${d}: split each part into equal smaller parts and the shaded amount stays the same` },
     });
   },
 
@@ -278,6 +311,7 @@ const generators = {
       choices: ["<", "=", ">"],
       hint: "Use a common denominator, a benchmark, or cross products.",
       explanation: `${n1} × ${d2} = ${n1 * d2} and ${n2} × ${d1} = ${n2 * d1}, so ${n1}/${d1} ${answer} ${n2}/${d2}.`,
+      model: { type: "fractions", fractions: [[n1, d1], [n2, d2]], caption: `Compare ${n1}/${d1} and ${n2}/${d2} on bars with the same whole` },
     });
   },
 
@@ -612,9 +646,9 @@ const generators = {
     const b = randInt(2, config.max ?? 20, rng);
     const c = randInt(2, config.max ?? 12, rng);
     if (shape === "rectangleArea")
-      return problem(`Area of a rectangle with length ${a} and width ${b}?`, a * b, { hint: "Area = length × width.", explanation: `${a} × ${b} = ${a * b} square units.`, unit: "square units" });
+      return problem(`Area of a rectangle with length ${a} and width ${b}?`, a * b, { hint: "Area = length × width.", explanation: `${a} × ${b} = ${a * b} square units.`, unit: "square units", model: a <= 12 && b <= 12 ? { type: "array", a: b, b: a, split: b, caption: `${a} by ${b} rectangle: ${b} rows of ${a} square units` } : { type: "shape", shape: "rectangle", a, b, caption: `Rectangle ${a} by ${b}` } });
     if (shape === "perimeter")
-      return problem(`Perimeter of a rectangle with length ${a} and width ${b}?`, 2 * (a + b), { hint: "Add all four sides, or use 2(length + width).", explanation: `2(${a} + ${b}) = ${2 * (a + b)} units.`, unit: "units" });
+      return problem(`Perimeter of a rectangle with length ${a} and width ${b}?`, 2 * (a + b), { hint: "Add all four sides, or use 2(length + width).", explanation: `2(${a} + ${b}) = ${2 * (a + b)} units.`, unit: "units", model: { type: "shape", shape: "rectangle", a, b, allSides: true, caption: `Rectangle ${a} by ${b}: add all four sides` } });
     if (shape === "triangleArea") {
       const base = a % 2 === 0 ? a : a + 1;
       return problem(`Area of a triangle with base ${base} and height ${b}?`, (base * b) / 2, { hint: "Area = 1/2 × base × height.", explanation: `1/2 × ${base} × ${b} = ${(base * b) / 2} square units.`, unit: "square units" });

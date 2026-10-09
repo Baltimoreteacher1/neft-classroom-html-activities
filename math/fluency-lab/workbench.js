@@ -106,7 +106,7 @@ export function mountWorkbench(container, { skill, item, onSelectTool } = {}) {
     return `
       <div class="tool-canvas tool-model-canvas">
         <p class="tool-instruction">Target visual model for <strong>${esc(item?.question || "")}</strong>:</p>
-        <div class="tool-render-area">${modelHtml || "<p>Think of the problem using an open number line or friendly groups.</p>"}</div>
+        <div class="tool-render-area">${modelHtml || "<p>No picture is drawn for this problem. Try the number line, counters, or array tools to build your own.</p>"}</div>
       </div>
     `;
   }

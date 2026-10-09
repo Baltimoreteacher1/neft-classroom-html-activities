@@ -29,7 +29,7 @@ export function renderModel(model, { counters, counterPositions, partitions = 1,
   }
   if (model.type === "place") return `${caption}<div class="place-model">${model.numbers.map((n) => `<div class="place-row" aria-label="${esc(n)}">${[...n].map((digit) => `<span class="${digit === '.' ? 'decimal-point' : ''}">${digit}</span>`).join("")}</div>`).join("")}</div>`;
   if (model.type === "array") {
-    if (model.a <= 12 && model.b <= 12) return `${caption}<div class="array-model" style="--cols:${model.b}" role="img" aria-label="${model.a} rows with ${model.b} squares in each row">${Array.from({ length: model.a * model.b }, (_, i) => `<span class="${Math.floor(i / model.b) < model.split ? 'part-one' : 'part-two'}"></span>`).join("")}</div><p>${model.a} rows × ${model.b} per row</p>`;
+    if (model.a <= 12 && model.b <= 12) return `${caption}<div class="array-model" style="--cols:${model.b}" role="img" aria-label="${model.a} rows with ${model.b} squares in each row">${Array.from({ length: model.a * model.b }, (_, i) => `<span class="${Math.floor(i / model.b) < model.split ? 'part-one' : 'part-two'}"></span>`).join("")}</div><p>${model.a} rows × ${model.b} per row${model.unit ? `. Each square is worth ${model.unit}.` : ""}</p>`;
     return caption + svg(`<rect class="model-fill" x="45" y="55" width="330" height="130"/><rect class="model-fill-alt" x="375" y="55" width="115" height="130"/>${text(210, 35, model.split)}${text(433, 35, model.a - model.split)}${text(20, 130, model.b)}${text(210, 125, `${model.split} × ${model.b}`)}${text(433, 125, `${model.a - model.split} × ${model.b}`)}`, `${model.a} × ${model.b}, split into ${model.split} × ${model.b} and ${model.a - model.split} × ${model.b}. Diagram not to scale.`);
   }
   if (model.type === "partition" || model.type === "bars") return `${caption}<div class="partition-model">${model.labels.map((label, i) => `<div style="flex:${model.values[i] || 1}"><span>${esc(label)}</span></div>`).join("")}</div><p>Keep both parts. Each is divided by the same divisor.</p>`;
@@ -55,144 +55,22 @@ export function renderModel(model, { counters, counterPositions, partitions = 1,
     let body;
     if (model.shape === "circle") body = `<circle cx="270" cy="120" r="85" class="model-fill"/><path d="M270,120 H355"/>${text(310, 107, `r = ${model.a}`)}`;
     else if (model.shape === "rightTriangle") body = `<path class="model-fill" d="M120,40 V200 H430 Z"/><path d="M120,175 H145 V200"/>${text(90, 130, model.a)}${text(280, 230, model.b)}${text(290, 100, 'c = ?')}`;
-    else body = `<rect class="model-fill" x="140" y="65" width="260" height="135"/>${text(270, 225, model.a)}${text(115, 145, model.b)}${model.shape === 'volume' ? `<path class="model-fill-alt" d="M140,65 L190,25 H450 L400,65 Z M400,65 L450,25 V160 L400,200 Z"/>${text(465, 110, `${model.height} layers`)}` : ''}`;
+    else body = `<rect class="model-fill" x="140" y="65" width="260" height="135"/>${text(270, 225, model.a)}${text(115, 145, model.b)}${model.allSides ? `${text(270, 55, model.a)}${text(425, 145, model.b)}` : ''}${model.shape === 'volume' ? `<path class="model-fill-alt" d="M140,65 L190,25 H450 L400,65 Z M400,65 L450,25 V160 L400,200 Z"/>${text(465, 110, `${model.height} layers`)}` : ''}`;
     return caption + svg(body, `${model.caption}. Diagram not to scale.`);
   }
   return caption;
 }
 
+// The model travels with the problem (built where the numbers are chosen), so the picture always
+// shows exactly the quantities in the question. Problems without an exact model show none.
 export function renderInlineProblemModel(skill, item) {
-  if (!item?.question) return "";
-  const q = item.question.replace(/\s+/g, " ").trim();
-
-  // 1. Addition: a + b = ?
-  const addMatch = q.match(/^([\d,]+)\s*\+\s*([\d,]+)\s*=\s*\?$/);
-  if (addMatch) {
-    const a = Number(addMatch[1].replace(/,/g, ""));
-    const b = Number(addMatch[2].replace(/,/g, ""));
-    if (Number.isFinite(a) && Number.isFinite(b)) {
-      if (a + b <= 20) {
-        return renderModel({
-          type: "counters",
-          total: 20,
-          filled: a,
-          target: a + b,
-          caption: `${a} + ${b} on a double ten-frame`
-        }, { counters: a + b });
-      }
-      const part = b >= 1000 ? Math.floor(b / 1000) * 1000 : b >= 100 ? Math.floor(b / 100) * 100 : Math.floor(b / 10) * 10;
-      return renderModel({
-        type: "numberline",
-        start: a,
-        jumps: [part, b - part],
-        caption: `Add on an open number line: start at ${a.toLocaleString()}, jump +${part.toLocaleString()}, then +${(b - part).toLocaleString()}`
-      });
-    }
+  if (item?.model) return renderModel(item.model, { counters: item.model.shown });
+  const point = item?.question?.match(/\((-?\d+),\s*(-?\d+)\)/);
+  if (point && ["coordinate", "transform"].includes(skill?.generator)) {
+    const [x, y] = [Number(point[1]), Number(point[2])];
+    return renderModel({ type: "coordinate", points: [[x, y]], caption: `Coordinate plane showing point (${x}, ${y})` });
   }
-
-  // 2. Subtraction: a - b = ?
-  const subMatch = q.match(/^([\d,]+)\s*[−-]\s*([\d,]+)\s*=\s*\?$/);
-  if (subMatch) {
-    const a = Number(subMatch[1].replace(/,/g, ""));
-    const b = Number(subMatch[2].replace(/,/g, ""));
-    if (Number.isFinite(a) && Number.isFinite(b)) {
-      if (a <= 20) {
-        return renderModel({
-          type: "counters",
-          total: 20,
-          filled: Math.max(0, a - b),
-          target: a,
-          caption: `Start with ${a}, take away ${b} to leave ${a - b}`
-        }, { counters: Math.max(0, a - b) });
-      }
-      const part = b >= 1000 ? Math.floor(b / 1000) * 1000 : b >= 100 ? Math.floor(b / 100) * 100 : Math.floor(b / 10) * 10;
-      return renderModel({
-        type: "numberline",
-        start: a,
-        jumps: [-part, -(b - part)],
-        caption: `Subtract in friendly jumps: ${a.toLocaleString()} − ${part.toLocaleString()} − ${(b - part).toLocaleString()}`
-      });
-    }
-  }
-
-  // 3. Multiplication: a × b = ?
-  const mulMatch = q.match(/^([\d,]+)\s*[×*x]\s*([\d,]+)\s*=\s*\?$/);
-  if (mulMatch) {
-    const a = Number(mulMatch[1].replace(/,/g, ""));
-    const b = Number(mulMatch[2].replace(/,/g, ""));
-    if (Number.isFinite(a) && Number.isFinite(b)) {
-      if (a <= 12 && b <= 12) {
-        return renderModel({
-          type: "array",
-          a,
-          b,
-          split: Math.min(a, 5),
-          caption: `Array model: ${a} rows of ${b}`
-        });
-      }
-      const splitA = a >= 100 ? Math.floor(a / 100) * 100 : Math.floor(a / 10) * 10;
-      return renderModel({
-        type: "array",
-        a,
-        b,
-        split: splitA,
-        caption: `Area model: split ${a} into ${splitA} + ${a - splitA}, then multiply each by ${b}`
-      });
-    }
-  }
-
-  // 4. Division: a ÷ b = ?
-  const divMatch = q.match(/^([\d,]+)\s*[÷/]\s*([\d,]+)\s*=\s*\?$/);
-  if (divMatch) {
-    const a = Number(divMatch[1].replace(/,/g, ""));
-    const b = Number(divMatch[2].replace(/,/g, ""));
-    if (Number.isFinite(a) && Number.isFinite(b) && b !== 0) {
-      const qVal = Math.floor(a / b);
-      const splitQ = qVal >= 10 ? Math.floor(qVal / 10) * 10 : Math.floor(qVal / 2);
-      const leftVal = splitQ * b;
-      const rightVal = a - leftVal;
-      return renderModel({
-        type: "partition",
-        labels: [`${leftVal} ÷ ${b} (${splitQ})`, `${rightVal} ÷ ${b} (${qVal - splitQ})`],
-        values: [leftVal, Math.max(1, rightVal)],
-        caption: `Partition division: split ${a} into friendly multiples of ${b} (${leftVal} + ${rightVal})`
-      });
-    }
-  }
-
-  // 5. Fractions
-  const fracMatch = q.match(/(\d+)\/(\d+)/g);
-  if (fracMatch && fracMatch.length >= 1) {
-    const fractions = fracMatch.slice(0, 2).map((f) => {
-      const [n, d] = f.split("/").map(Number);
-      return [n, d];
-    });
-    return renderModel({
-      type: "fractions",
-      fractions,
-      caption: `Fraction visual model: comparing ${fractions.map(([n, d]) => `${n}/${d}`).join(" and ")}`
-    });
-  }
-
-  // 6. Coordinates
-  const coordMatch = q.match(/\((-?\d+),\s*(-?\d+)\)/);
-  if (coordMatch) {
-    const x = Number(coordMatch[1]);
-    const y = Number(coordMatch[2]);
-    return renderModel({
-      type: "coordinate",
-      points: [[x, y]],
-      caption: `Coordinate plane showing point (${x}, ${y})`
-    });
-  }
-
-  // Fallback: create default lesson model for the skill
-  try {
-    const fallbackLesson = createLesson(skill, 0);
-    return renderModel(fallbackLesson.model);
-  } catch {
-    return "";
-  }
+  return "";
 }
 
 export function mountVisualLesson(container, skill, { onComplete, onPractice, variant = 0 } = {}) {
