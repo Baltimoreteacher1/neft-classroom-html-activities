@@ -85,6 +85,17 @@ const dirtyTracked = () =>
 
 console.log("build steps do not modify committed source");
 
+// Set by scripts/qa-run.mjs for the `test` check of a gate run that includes
+// `build`: that build plus `build:generated-fresh` already prove this property
+// (see testEnv there), and re-running the chain cost ~125s on the gate's
+// critical path. Standalone `npm test` and CI do not set it and run in full.
+if (process.env.QA_BUILD_VERIFIED === "1") {
+  console.log(
+    "   ✓ covered by this gate run's own `build` + `build:generated-fresh` (QA_BUILD_VERIFIED=1)",
+  );
+  process.exit(0);
+}
+
 const before = dirtyTracked();
 if (before.length) {
   // Running the injectors would mix their output with the user's edits, and the

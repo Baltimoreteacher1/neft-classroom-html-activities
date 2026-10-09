@@ -33,11 +33,13 @@
  * ========================================================================== */
 
 import { execFile, execFileSync } from "node:child_process";
-import { appendFileSync, mkdirSync, readFileSync } from "node:fs";
-import { cpus } from "node:os";
-import { dirname, join } from "node:path";
+import { appendFileSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpus, tmpdir } from "node:os";
+import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { SKIP_EXIT } from "../tools/lib/skip-exit.mjs";
+import { acquireGateLock } from "./lib/qa-lock.mjs";
+import { execGroup } from "./lib/run-group.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
@@ -515,6 +517,14 @@ const LIST_ONLY = flag("--list");
  * a deploy: pre-push runs the plain full gate, browsers included. Scoped runs
  * that name a browser check (e.g. the flow-walk rule) still run it. */
 const COMMIT_MODE = flag("--commit");
+/* How many EXCLUSIVE browser checks may run at once (each still runs with no
+ * non-exclusive check beside it). The lane was fully serial (1) and is the
+ * longest stretch of a gate. Measured 2026-10-09, six browser checks, 8 rounds
+ * at 2 vs 3 rounds at 1, load average 3-34: 98-140s vs 150-200s, and zero
+ * failures or per-check slowdowns at 2. The documented races (EXCLUSIVE, above)
+ * came from ~100 other checks saturating the CPU beside a browser; two browsers
+ * alone do not do that. QA_EXCLUSIVE_JOBS=1 restores the serial lane. */
+const EXCLUSIVE_JOBS = Math.max(1, Number(process.env.QA_EXCLUSIVE_JOBS) || 2);
 const ONLY = optVal("--only");
 const JOBS = Number(optVal("--jobs")) || Math.max(2, Math.min(8, cpus().length - 1));
 
@@ -588,6 +598,24 @@ function scopeFor(paths) {
  * checks the old serial loop ran. A scheduler that quietly stops running a
  * gate is worse than a slow one.
  * ------------------------------------------------------------------------ */
+/** Env for one check. `test` is told the build already ran in this gate.
+ *
+ * tools/build-injectors-idempotent.test.mjs re-runs the whole `build` chain
+ * (~125s) to prove a build leaves the tree unchanged. In the full gate that is
+ * already proved by `build` itself plus `build:generated-fresh`, which FAILS the
+ * gate if the build changed a tracked file; on a clean tree a second run is the
+ * same run. The re-run also made `test` the slowest non-browser check — which
+ * matters because EXCLUSIVE checks wait for everything else to finish — and it
+ * rewrote source and dist/ while other checks read them. Standalone `npm test`
+ * (and CI) still run it. Only set when `build` is part of THIS run. */
+function testEnv(name, checks) {
+  // Strip first: this process may itself be running inside a gate's `test`
+  // check (qa-run.test.mjs imports this), and a leaked flag would otherwise
+  // reach checks that must not have it.
+  const { QA_BUILD_VERIFIED: _inherited, ...env } = process.env;
+  return name === "test" && checks.includes("build") ? { ...env, QA_BUILD_VERIFIED: "1" } : env;
+}
+
 export {
   CARRIES_SCRIPT,
   COVERAGE,
@@ -597,6 +625,7 @@ export {
   needsOf,
   resolveSet,
   scopeFor,
+  testEnv,
   UNIVERSAL,
 };
 
@@ -670,6 +699,15 @@ async function main() {
   } catch {
     console.error("\nqa-run: preflight failed — not running the gate against a stale tree.");
     process.exit(2);
+  }
+
+  /* --- One browser gate at a time per machine --------------------------------
+   * Sessions and worktrees share this Mac; concurrent gates drove the load
+   * average to 30-60 and doubled everyone's wall time (see scripts/lib/qa-lock.mjs).
+   * Only runs that include a browser check queue — scoped runs of plain
+   * validators stay instant — and the wait is bounded and loud. Released on exit. */
+  if (checks.some((c) => EXCLUSIVE.has(c))) {
+    await acquireGateLock({ label: `${basename(ROOT)} · ${label}`, log: console.log });
   }
 
   /* --- Run ------------------------------------------------------------------ */
@@ -746,10 +784,15 @@ async function main() {
     const driftBefore = name === "build" ? trackedDrift() : null;
     return new Promise((resolve) => {
       const t0 = Date.now();
-      execFile(
+      execGroup(
         "npm",
         ["run", name],
-        { cwd: ROOT, maxBuffer: 64 * 1024 * 1024, timeout: TIMEOUT_MS, killSignal: "SIGKILL" },
+        {
+          cwd: ROOT,
+          env: testEnv(name, checks),
+          maxBuffer: 64 * 1024 * 1024,
+          timeout: TIMEOUT_MS,
+        },
         (err, stdout, stderr) => {
           const secs = ((Date.now() - t0) / 1000).toFixed(1);
           // Exit 3 is the repo-wide SKIP code (tools/lib/skip-exit.mjs): the
@@ -842,7 +885,8 @@ async function main() {
         // tree is worse than a slow one — it is the reason people reach for
         // --no-verify. Costs ~11s on a full run.
         if (EXCLUSIVE.has(c)) {
-          if (exclusiveBusy || running.size > 0) continue;
+          const exclusiveRunning = [...running].filter((r) => EXCLUSIVE.has(r)).length;
+          if (running.size > exclusiveRunning || exclusiveRunning >= EXCLUSIVE_JOBS) continue;
           exclusiveBusy = true;
         } else if (exclusiveBusy) {
           continue;
@@ -852,7 +896,7 @@ async function main() {
         launched = true;
         runOne(c).then(() => {
           running.delete(c);
-          if (EXCLUSIVE.has(c)) exclusiveBusy = false;
+          if (EXCLUSIVE.has(c)) exclusiveBusy = [...running].some((r) => EXCLUSIVE.has(r));
         });
       }
       if (!launched && running.size === 0 && pending.size) {

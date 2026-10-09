@@ -90,6 +90,11 @@
       "file": "tools/gen-solve-along.test.mjs",
       "targets": "tmpdir",
       "reason": "copies three sidecars into mkdtempSync(join(tmpdir(), 'gen-solve-along-')) fixtures and mutates/removes only those; the real-tree run is --check, which writes nothing"
+    },
+    {
+      "file": "tools/qa-lock.test.mjs",
+      "targets": "tmpdir",
+      "reason": "writes only a fake lock owner file under mkdtempSync(join(tmpdir(), 'qa-lock-test-')); the lock directory is passed in, never the real one"
     }
   ]
 }

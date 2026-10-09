@@ -16,7 +16,15 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { COVERAGE, expand, GATE, needsOf, resolveSet, scopeFor } from "../scripts/qa-run.mjs";
+import {
+  COVERAGE,
+  expand,
+  GATE,
+  needsOf,
+  resolveSet,
+  scopeFor,
+  testEnv,
+} from "../scripts/qa-run.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
@@ -119,6 +127,28 @@ for (const [re, checks] of COVERAGE) {
 check(
   expand("build").join() === "build",
   "`build` is not a pure npm-run chain and must stay atomic",
+);
+
+/* --- 6. The build-idempotency test is skipped only when this run built ----- */
+/* tools/build-injectors-idempotent.test.mjs re-runs the whole build (~125s) and
+ * is redundant ONLY when `build` + `build:generated-fresh` ran in the same gate.
+ * Handing the flag to any other check, or to `test` in a run with no build,
+ * would silently drop that property. */
+check(
+  testEnv("test", ["build", "test"]).QA_BUILD_VERIFIED === "1",
+  "test must be told the build ran when `build` is in the same run",
+);
+check(
+  testEnv("test", ["test"]).QA_BUILD_VERIFIED !== "1",
+  "test must NOT be told the build ran when `build` is not part of the run",
+);
+check(
+  testEnv("validate:hub", ["build", "validate:hub"]).QA_BUILD_VERIFIED !== "1",
+  "only `test` may receive QA_BUILD_VERIFIED",
+);
+check(
+  fullSet.has("build") && fullSet.has("test"),
+  "the full gate must contain both `build` and `test` (test relies on build ran)",
 );
 
 /* -------------------------------------------------------------------------- */
