@@ -171,3 +171,334 @@ export function transferPrompt(skill) {
   };
   return prompts[skill.generator] || `Explain “${skill.learn.rule}” to someone at home. Make a new example and show how to check it.`;
 }
+
+export function getPublisherExplanation(skill) {
+  const lesson = createLesson(skill, 0);
+  const gen = skill.generator;
+  const standard = skill.standard || "";
+  const rule = skill.learn?.rule || "";
+  const steps = skill.learn?.steps || [];
+  const rawExample = skill.learn?.example || "";
+  const watch = skill.learn?.watch || "";
+
+  let problemStem = "";
+  let solutionSteps = [];
+  let whyItWorks = "";
+  let commonMistake = {
+    wrong: watch,
+    fix: "Slow down, check your place value or sign, and verify using an inverse operation."
+  };
+  let mathTalk = [
+    "To begin solving, I first noticed that...",
+    "I chose this strategy because...",
+    "I can justify my answer because..."
+  ];
+
+  if (gen === "fact") {
+    const op = skill.config?.op || "add";
+    if (op === "add") {
+      problemStem = rawExample.includes("=") ? `Find the sum: ${rawExample.split("=")[0].trim()} = ?` : `Find the sum: ${rawExample}`;
+      solutionSteps = [
+        { label: "Step 1 · Decompose & Align", action: steps[0] || "Identify the addends and break them into place-value parts (tens and ones).", math: "Deconstruct into friendly parts" },
+        { label: "Step 2 · Combine Like Units", action: steps[1] || "Add like units together. Regroup 10 units to the next place value when a column reaches 10 or more.", math: "Add place by place" },
+        { label: "Step 3 · Verify with Subtraction", action: steps[2] || "Add partial sums. Check your answer: Sum − Addend = Other Addend.", math: "Check with subtraction" }
+      ];
+      whyItWorks = "Addition joins amounts. Place value lets us combine groups of the same size (hundreds with hundreds, tens with tens, ones with ones), regrouping when any place reaches 10.";
+      commonMistake = {
+        wrong: "Forgetting to record or add the regrouped ten when the ones total 10 or more.",
+        fix: "Always write the regrouped 10 in the tens place and add it to the other tens."
+      };
+      mathTalk = [
+        "I broke apart the smaller number so I could make a friendly ten.",
+        "When the ones digits totaled 10 or more, I regrouped 10 ones as 1 ten.",
+        "I checked my total by taking away one addend to verify the other addend."
+      ];
+    } else if (op === "sub") {
+      problemStem = rawExample.includes("=") ? `Find the difference: ${rawExample.split("=")[0].trim()} = ?` : `Calculate: ${rawExample}`;
+      solutionSteps = [
+        { label: "Step 1 · Identify Whole & Part", action: steps[0] || "Start with the starting whole and identify how much is being subtracted.", math: "Whole − Part = Difference" },
+        { label: "Step 2 · Subtract in Friendly Jumps", action: steps[1] || "Subtract the larger place value first, or count up from the smaller number on a number line.", math: "Friendly jumps" },
+        { label: "Step 3 · Check with Addition", action: steps[2] || "Check your answer using addition: Difference + Part = Whole.", math: "Check: Diff + Part = Whole" }
+      ];
+      whyItWorks = "Subtraction finds the distance between two quantities or the remaining amount after removal. Addition and subtraction undo each other.";
+      commonMistake = {
+        wrong: "Subtracting the smaller digit from the larger digit regardless of whether it is on top or bottom.",
+        fix: "Always subtract from the top number. If there are not enough ones, regroup 1 ten into 10 ones first."
+      };
+      mathTalk = [
+        "I thought of subtraction as finding the distance between the two numbers.",
+        "I jumped back in friendly chunks (tens first, then ones).",
+        "I checked my difference by adding it back to the subtracted number."
+      ];
+    } else if (op === "mul") {
+      problemStem = rawExample.includes("=") ? `Find the product: ${rawExample.split("=")[0].trim()} = ?` : `Multiply: ${rawExample}`;
+      solutionSteps = [
+        { label: "Step 1 · Identify Equal Groups", action: steps[0] || "Identify the number of groups and the size of each group.", math: "Factor × Factor = Product" },
+        { label: "Step 2 · Decompose One Factor", action: steps[1] || "Break one factor into easier parts (e.g. tens and ones) and multiply each part.", math: "Partial Products" },
+        { label: "Step 3 · Combine & Check", action: steps[2] || "Combine the partial products. Verify using the related division fact or an area model.", math: "Check with division or estimation" }
+      ];
+      whyItWorks = "The distributive property allows us to split a multi-digit multiplication into smaller, friendlier rectangles or groups that add up to the exact same total.";
+      commonMistake = {
+        wrong: "Multiplying only one part of the decomposed number and forgetting to multiply the other part.",
+        fix: "Ensure every part of the split factor gets multiplied by the other factor."
+      };
+      mathTalk = [
+        "I split one factor into friendlier numbers (like 10 and ones).",
+        "An area model helps me see each partial product clearly.",
+        "I know my answer makes sense because I estimated the product first."
+      ];
+    } else if (op === "div") {
+      problemStem = rawExample.includes("=") ? `Find the quotient: ${rawExample.split("=")[0].trim()} = ?` : `Divide: ${rawExample}`;
+      solutionSteps = [
+        { label: "Step 1 · Think Related Multiplication", action: steps[0] || "Ask: What number times the divisor equals the dividend?", math: "Divisor × ? = Dividend" },
+        { label: "Step 2 · Partition into Friendly Multiples", action: steps[1] || "Break the dividend into friendly multiples of the divisor and divide each part.", math: "Partial Quotients" },
+        { label: "Step 3 · Combine & Verify", action: steps[2] || "Add the partial quotients together. Check by multiplying quotient × divisor.", math: "Check: Quotient × Divisor = Dividend" }
+      ];
+      whyItWorks = "Division partitions a total amount into equal groups or finds how many equal groups can be made. Partitioning into friendly multiples lets us divide in manageable pieces.";
+      commonMistake = {
+        wrong: "Reversing the dividend and divisor, or losing place value when writing quotient digits.",
+        fix: "Keep the total (dividend) in the numerator and divide by the group size, watching place value."
+      };
+      mathTalk = [
+        "I asked myself: how many groups of the divisor fit inside the total?",
+        "I partitioned the dividend into friendly multiples I know well.",
+        "I checked my quotient by multiplying it by the divisor."
+      ];
+    }
+  } else if (gen === "compare") {
+    problemStem = `Compare: ${rawExample}`;
+    solutionSteps = [
+      { label: "Step 1 · Align by Place Value", action: steps[0] || "Look at both numbers starting with the greatest place value.", math: "Compare greatest places" },
+      { label: "Step 2 · Find the First Unequal Digit", action: steps[1] || "If the greatest places match, move one place right until the digits differ.", math: "Move right to next place" },
+      { label: "Step 3 · State the Comparison", action: steps[2] || "Use >, <, or = to write the relationship. The open side faces the greater value.", math: "Write >, <, or =" }
+    ];
+    whyItWorks = "Place value is based on powers of ten. A single unit in a higher place value is always greater than all units in lower place values combined.";
+    commonMistake = {
+      wrong: "Comparing the ones place first, or assuming a longer number with larger ending digits is automatically greater.",
+      fix: "Always compare from left to right, starting with the greatest place value column."
+    };
+    mathTalk = [
+      "I started by comparing the highest place value column.",
+      "Because the highest place values tied, I moved one column to the right.",
+      "The symbol opens toward the greater quantity."
+    ];
+  } else if (gen === "fractionEquivalent" || gen === "fractionCompare" || gen === "fractionOp" || gen === "fractionOf") {
+    problemStem = `Solve: ${rawExample}`;
+    solutionSteps = [
+      { label: "Step 1 · Inspect the Denominators", action: steps[0] || "Notice whether the pieces are the same size (common denominators).", math: "Examine piece sizes" },
+      { label: "Step 2 · Rename or Scale", action: steps[1] || "Multiply or divide numerator and denominator by the same factor to create equivalent pieces.", math: "Scale numerator and denominator" },
+      { label: "Step 3 · Calculate & Simplify", action: steps[2] || "Combine numerators or compare shaded lengths, keeping the denominator the same.", math: "Simplify if possible" }
+    ];
+    whyItWorks = "A fraction's denominator names the size of each equal slice, while the numerator counts how many slices you have. You can only combine or compare slices directly when they are the exact same size.";
+    commonMistake = {
+      wrong: "Adding the denominators together (e.g. 1/3 + 1/4 = 2/7).",
+      fix: "Never add denominators! The denominator tells the size of the piece, not how many there are."
+    };
+    mathTalk = [
+      "I found a common denominator so the pieces would be the exact same size.",
+      "I multiplied numerator and denominator by the same number to keep the value equal.",
+      "I kept the denominator the same and combined the numerators."
+    ];
+  } else if (gen === "solve" || gen === "one-step" || gen === "linear-equations") {
+    problemStem = `Solve the equation: ${rawExample}`;
+    solutionSteps = [
+      { label: "Step 1 · Identify Operations", action: steps[0] || "Find what operations are being applied to the variable x.", math: "Locate variable and operations" },
+      { label: "Step 2 · Apply Inverse Operations", action: steps[1] || "Undo operations in reverse order, performing the exact same action to both sides of the equals sign.", math: "Keep both sides balanced" },
+      { label: "Step 3 · Substitute & Check", action: steps[2] || "Substitute your answer back into the original equation to verify both sides balance.", math: "Check: Left side = Right side" }
+    ];
+    whyItWorks = "An equation is like a balanced scale. Doing the exact same operation to both sides preserves equality until the variable stands alone.";
+    commonMistake = {
+      wrong: "Doing an operation to only one side of the equation, or using the wrong inverse operation.",
+      fix: "Whatever operation you perform on one side, you MUST perform on the opposite side to maintain balance."
+    };
+    mathTalk = [
+      "To isolate the variable, I used inverse operations.",
+      "I kept the equation balanced by doing the same thing to both sides.",
+      "I plugged my answer back into the original equation to prove it works."
+    ];
+  } else if (gen === "ratio" || gen === "unitRate" || gen === "proportion" || gen === "percent" || gen === "percentChange") {
+    problemStem = `Solve: ${rawExample}`;
+    solutionSteps = [
+      { label: "Step 1 · Identify the Comparison", action: steps[0] || "Write down what two quantities are being compared and their units.", math: "Set up ratio or rate" },
+      { label: "Step 2 · Scale by a Constant Factor", action: steps[1] || "Find the scale factor or unit rate by multiplying or dividing both quantities by the same number.", math: "Scale both terms together" },
+      { label: "Step 3 · Interpret with Units", action: steps[2] || "State the final value and make sure units are clearly attached.", math: "Label with units" }
+    ];
+    whyItWorks = "Ratios represent multiplicative relationships. Scaling both quantities by the same non-zero factor preserves the exact same proportional relationship.";
+    commonMistake = {
+      wrong: "Adding the same amount to both terms instead of multiplying/dividing by a scale factor.",
+      fix: "Ratios are multiplicative comparisons. Always scale using multiplication or division, never addition."
+    };
+    mathTalk = [
+      "I set up a ratio table to track both quantities.",
+      "I found the scale factor by dividing the new quantity by the original.",
+      "Multiplying both quantities by the same factor kept the ratio in proportion."
+    ];
+  } else {
+    problemStem = `Example: ${rawExample}`;
+    solutionSteps = [
+      { label: "Step 1 · Notice & Set Up", action: steps[0] || "Examine the problem and identify key mathematical relationships.", math: "Understand the question" },
+      { label: "Step 2 · Execute Strategy", action: steps[1] || "Apply the mathematical rule carefully step-by-step.", math: "Apply strategy" },
+      { label: "Step 3 · Verify & Check", action: steps[2] || "Check the result's reasonableness and justify your solution.", math: "Verify reasonableness" }
+    ];
+    whyItWorks = `Mathematics is built on patterns and logical structures. ${rule}`;
+    commonMistake = {
+      wrong: watch,
+      fix: "Slow down, review the core rule, and test your solution."
+    };
+    mathTalk = [
+      "The first thing I looked for was...",
+      "This strategy helped me because...",
+      "I know my answer makes sense because..."
+    ];
+  }
+
+  return {
+    standard,
+    grade: skill.grade || 1,
+    strand: skill.strand || "",
+    title: skill.title || "",
+    rule,
+    coreConcept: rule.endsWith(".") ? rule : rule + ".",
+    visualTitle: lesson.title,
+    visualIdea: lesson.idea,
+    anchorModel: lesson.model,
+    problemStem,
+    solutionSteps,
+    whyItWorks,
+    commonMistake,
+    mathTalk,
+    quickSample: lesson.steps[0] ? {
+      prompt: lesson.steps[0].prompt,
+      answer: lesson.steps[0].answers[0],
+      hint: lesson.steps[0].hint,
+      explanation: lesson.steps[0].explanation,
+      kind: lesson.steps[0].kind,
+      choices: lesson.steps[0].choices
+    } : null
+  };
+}
+
+export function getDynamicGuidedSteps(skill, item) {
+  if (!item?.question) {
+    return [
+      { label: "Notice", copy: skill.learn?.steps?.[0] || "Examine what the question asks." },
+      { label: "Plan", copy: item?.hint || "Choose a strategy." },
+      { label: "Solve and check", copy: skill.learn?.steps?.[2] || "Calculate and check." }
+    ];
+  }
+
+  const q = item.question.replace(/\s+/g, " ").trim();
+
+  // Pattern 1: Addition a + b = ?
+  const addMatch = q.match(/^([\d,]+)\s*\+\s*([\d,]+)\s*=\s*\?$/);
+  if (addMatch) {
+    const a = Number(addMatch[1].replace(/,/g, ""));
+    const b = Number(addMatch[2].replace(/,/g, ""));
+    if (Number.isFinite(a) && Number.isFinite(b)) {
+      if (a + b <= 20) {
+        const big = Math.max(a, b);
+        const small = Math.min(a, b);
+        const makeTen = 10 - big;
+        return [
+          { label: "Notice", copy: `We are joining ${a} and ${b}. Start with the larger number: ${big}.` },
+          { label: "Plan", copy: makeTen > 0 && makeTen <= small ? `Break ${small} into ${makeTen} and ${small - makeTen}. Add ${big} + ${makeTen} = 10, then add the leftover ${small - makeTen}.` : `Count on ${small} from ${big}, or use a doubles fact.` },
+          { label: "Solve and check", copy: `Combine to find ${a} + ${b}. Check: your sum minus ${b} should equal ${a}.` }
+        ];
+      }
+      return [
+        { label: "Notice", copy: `We are adding ${a.toLocaleString()} and ${b.toLocaleString()}. Align like place values.` },
+        { label: "Plan", copy: `Add each place value. If a column totals 10 or more, regroup 10 units into the next place to the left.` },
+        { label: "Solve and check", copy: `Combine all places for the total. Check your work: sum − ${b.toLocaleString()} = ${a.toLocaleString()}.` }
+      ];
+    }
+  }
+
+  // Pattern 2: Subtraction a − b = ?
+  const subMatch = q.match(/^([\d,]+)\s*[−-]\s*([\d,]+)\s*=\s*\?$/);
+  if (subMatch) {
+    const a = Number(subMatch[1].replace(/,/g, ""));
+    const b = Number(subMatch[2].replace(/,/g, ""));
+    if (Number.isFinite(a) && Number.isFinite(b)) {
+      if (a <= 20) {
+        return [
+          { label: "Notice", copy: `Start with the whole: ${a}. We need to take away ${b}.` },
+          { label: "Plan", copy: `Think of subtraction as a missing addend: ${b} + ? = ${a}. Or jump back in friendly steps.` },
+          { label: "Solve and check", copy: `Find the difference. Check: your answer + ${b} should equal ${a}.` }
+        ];
+      }
+      return [
+        { label: "Notice", copy: `Start with ${a.toLocaleString()} and subtract ${b.toLocaleString()}.` },
+        { label: "Plan", copy: `Subtract friendly chunks (tens first, then ones), or count up from ${b.toLocaleString()} to ${a.toLocaleString()}.` },
+        { label: "Solve and check", copy: `Find the difference. Check with addition: difference + ${b.toLocaleString()} = ${a.toLocaleString()}.` }
+      ];
+    }
+  }
+
+  // Pattern 3: Multiplication a × b = ?
+  const mulMatch = q.match(/^([\d,]+)\s*[×*x]\s*([\d,]+)\s*=\s*\?$/);
+  if (mulMatch) {
+    const a = Number(mulMatch[1].replace(/,/g, ""));
+    const b = Number(mulMatch[2].replace(/,/g, ""));
+    if (Number.isFinite(a) && Number.isFinite(b)) {
+      if (a <= 12 && b <= 12) {
+        return [
+          { label: "Notice", copy: `Multiplication means ${a} equal groups of ${b}.` },
+          { label: "Plan", copy: `Use an anchor fact: e.g. break ${a} into friendly parts (like 5 and ${a - 5}), or use skip-counting.` },
+          { label: "Solve and check", copy: `Multiply to find ${a} × ${b}. Check using division: product ÷ ${b} = ${a}.` }
+        ];
+      }
+      const splitA = a >= 100 ? Math.floor(a / 100) * 100 : Math.floor(a / 10) * 10;
+      const remA = a - splitA;
+      return [
+        { label: "Notice", copy: `We need ${a.toLocaleString()} × ${b.toLocaleString()}. Think of an area rectangle with width ${a.toLocaleString()} and height ${b.toLocaleString()}.` },
+        { label: "Plan", copy: `Split ${a.toLocaleString()} into ${splitA.toLocaleString()} + ${remA.toLocaleString()}. Find partial products: (${splitA.toLocaleString()} × ${b.toLocaleString()}) and (${remA.toLocaleString()} × ${b.toLocaleString()}).` },
+        { label: "Solve and check", copy: `Add your partial products together. Check that the answer is reasonable compared to an estimate.` }
+      ];
+    }
+  }
+
+  // Pattern 4: Division a ÷ b = ?
+  const divMatch = q.match(/^([\d,]+)\s*[÷/]\s*([\d,]+)\s*=\s*\?$/);
+  if (divMatch) {
+    const a = Number(divMatch[1].replace(/,/g, ""));
+    const b = Number(divMatch[2].replace(/,/g, ""));
+    if (Number.isFinite(a) && Number.isFinite(b)) {
+      return [
+        { label: "Notice", copy: `We are dividing ${a.toLocaleString()} by ${b.toLocaleString()}. Think: ${b.toLocaleString()} × ? = ${a.toLocaleString()}.` },
+        { label: "Plan", copy: a > b * 10 ? `Find friendly multiples of ${b.toLocaleString()} that fit in ${a.toLocaleString()} (like ${b * 10}, ${b * 20}, etc.) and subtract them.` : `Recall the related multiplication fact for ${b.toLocaleString()}.` },
+        { label: "Solve and check", copy: `Find the quotient. Check by multiplying: your quotient × ${b.toLocaleString()} must equal ${a.toLocaleString()}.` }
+      ];
+    }
+  }
+
+  // Pattern 5: Missing Addend a + □ = c or a + ? = c
+  const missingMatch = q.match(/^([\d,]+)\s*\+\s*[□?]\s*=\s*([\d,]+)/);
+  if (missingMatch) {
+    const a = Number(missingMatch[1].replace(/,/g, ""));
+    const c = Number(missingMatch[2].replace(/,/g, ""));
+    return [
+      { label: "Notice", copy: `We know one part is ${a} and the whole is ${c}. We need the missing part.` },
+      { label: "Plan", copy: `Count on from ${a} up to ${c}, or subtract the known part from the whole: ${c} − ${a}.` },
+      { label: "Solve and check", copy: `Find the missing amount in the box. Check: ${a} + your answer should equal ${c}.` }
+    ];
+  }
+
+  // Pattern 6: Comparison a ___ b
+  const compMatch = q.match(/^([\d.,]+)\s*___\s*([\d.,]+)/);
+  if (compMatch) {
+    const a = compMatch[1];
+    const b = compMatch[2];
+    return [
+      { label: "Notice", copy: `Compare ${a} and ${b}. Start by lining up equal place values from left to right.` },
+      { label: "Plan", copy: `Look at the greatest place value where the digits differ. The number with more in that place is greater.` },
+      { label: "Solve and check", copy: `Choose >, <, or =. The open mouth of the symbol faces the greater number.` }
+    ];
+  }
+
+  // Default fallback to skill steps and item hint
+  return [
+    { label: "Notice", copy: skill.learn?.steps?.[0] || "Examine what the question asks." },
+    { label: "Plan", copy: item.hint || skill.learn?.steps?.[1] || "Choose a strategy." },
+    { label: "Solve and check", copy: skill.learn?.steps?.[2] || "Calculate and check." }
+  ];
+}

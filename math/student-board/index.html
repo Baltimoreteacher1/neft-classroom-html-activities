@@ -4300,7 +4300,7 @@
         const stored = store.get("nt-teacher-mode") === "on";
         if (!stored) {
           const pin = prompt("Teacher PIN to edit the board:");
-          if (pin !== TEACHER_PIN) {
+          if (!isTeacherPinValid(pin)) {
             if (pin !== null) alert("That PIN didn't match.");
             return;
           }

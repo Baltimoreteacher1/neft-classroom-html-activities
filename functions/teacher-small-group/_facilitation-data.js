@@ -2363,7 +2363,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides; Divided fractions without inverting; Divided numerators and denominators straight across. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides; Divided in the wrong order; Divided fractions without inverting. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Should the answer be bigger or smaller than what you started with? Say why first.",
       lookFor:
@@ -2410,12 +2410,12 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides; Divided in the wrong order; Divided fractions without inverting. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides; Divided fractions without inverting; Divided in the wrong order. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
-      ask: "Which number is being shared out, and which says how many shares?",
+      ask: "Should the answer be bigger or smaller than what you started with? Say why first.",
       lookFor:
-        "Watch for the “Divided in the wrong order” error — that is the one this lesson's check diagnoses.",
-      ifStuck: "Ask “what is being split, and into how many?” before they write it.",
+        "Watch for the “Multiplied when the problem divides” error — that is the one this lesson's check diagnoses.",
+      ifStuck: "Estimate first — should the answer be bigger or smaller than you started?.",
     },
     frames: [
       "My first step is ___ , because the problem asks for ___ .",
@@ -2423,7 +2423,7 @@ export const FACILITATION_BY_LESSON = {
       "I know my answer makes sense because ___ .",
     ],
     listenFor: [
-      "Students explain that the mixed number must be converted to an improper fraction (7/2) before applying Keep, Change, Flip.",
+      "Students explain that the mixed number must be converted to an improper fraction (7/2) before applying the reciprocal shortcut.",
       "Students correctly convert (multiply whole by denominator, add numerator) before flipping the divisor and simplifying.",
       "Students give a realistic project scenario and recognize the mixed-number amount must be converted first.",
       'Listen for students naming a specific strategy tied to 6.NOS.1 — not just "I multiplied." They should connect steps to the key idea.',
@@ -2435,10 +2435,10 @@ export const FACILITATION_BY_LESSON = {
     duration: "15–20 min",
     who: "Pull students who showed mastery on the formative check and are ready to extend.",
     teacherMoves: {
-      ask: "Is division ever order-independent? Show a case or prove it never is.",
+      ask: "When does dividing make a number BIGGER? Give a case and explain it.",
       lookFor:
-        "A student who can explain why the “Divided in the wrong order” error fails in every case, not just this one.",
-      ifStuck: "Ask them to state which quantity is being shared before computing.",
+        "A student who can explain why the “Multiplied when the problem divides” error fails in every case, not just this one.",
+      ifStuck: "Ask whether the answer should grow or shrink, and why.",
       extend: "Ask them to state the rule as always / sometimes / never, and defend it.",
     },
     frames: [
@@ -2447,7 +2447,7 @@ export const FACILITATION_BY_LESSON = {
       "I can check my answer by ___ .",
     ],
     listenFor: [
-      "Students explain that the mixed number must be converted to an improper fraction (7/2) before applying Keep, Change, Flip.",
+      "Students explain that the mixed number must be converted to an improper fraction (7/2) before applying the reciprocal shortcut.",
       "Students correctly convert (multiply whole by denominator, add numerator) before flipping the divisor and simplifying.",
       "Students give a realistic project scenario and recognize the mixed-number amount must be converted first.",
       'Listen for students naming a specific strategy tied to 6.NOS.1 — not just "I multiplied." They should connect steps to the key idea.',
@@ -2457,7 +2457,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides; Divided in the wrong order; Divided fractions without inverting. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Divided in the wrong order; Multiplied when the problem divides; Divided fractions without inverting. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Which number is being shared out, and which says how many shares?",
       lookFor:
@@ -2696,7 +2696,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Divided fractions without inverting; Divided in the wrong order. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Divided fractions without inverting; Divided in the wrong order; Multiplied when the problem divides. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "How many halves fit in one whole? Does dividing here make it bigger or smaller?",
       lookFor:
@@ -3027,7 +3027,7 @@ export const FACILITATION_BY_LESSON = {
     group: 1,
     label: "Extra Support",
     duration: "15–20 min",
-    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides; Divided in the wrong order. Group students who made the SAME error; they need different repairs.",
+    who: "Pull 3–5 students by the error they actually made on this lesson's check — this one diagnoses: Multiplied when the problem divides; Added when the problem multiplies; Divided in the wrong order. Group students who made the SAME error; they need different repairs.",
     teacherMoves: {
       ask: "Should the answer be bigger or smaller than what you started with? Say why first.",
       lookFor:

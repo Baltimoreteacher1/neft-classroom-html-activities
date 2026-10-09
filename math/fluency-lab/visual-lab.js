@@ -61,6 +61,140 @@ export function renderModel(model, { counters, counterPositions, partitions = 1,
   return caption;
 }
 
+export function renderInlineProblemModel(skill, item) {
+  if (!item?.question) return "";
+  const q = item.question.replace(/\s+/g, " ").trim();
+
+  // 1. Addition: a + b = ?
+  const addMatch = q.match(/^([\d,]+)\s*\+\s*([\d,]+)\s*=\s*\?$/);
+  if (addMatch) {
+    const a = Number(addMatch[1].replace(/,/g, ""));
+    const b = Number(addMatch[2].replace(/,/g, ""));
+    if (Number.isFinite(a) && Number.isFinite(b)) {
+      if (a + b <= 20) {
+        return renderModel({
+          type: "counters",
+          total: 20,
+          filled: a,
+          target: a + b,
+          caption: `${a} + ${b} on a double ten-frame`
+        }, { counters: a + b });
+      }
+      const part = b >= 1000 ? Math.floor(b / 1000) * 1000 : b >= 100 ? Math.floor(b / 100) * 100 : Math.floor(b / 10) * 10;
+      return renderModel({
+        type: "numberline",
+        start: a,
+        jumps: [part, b - part],
+        caption: `Add on an open number line: start at ${a.toLocaleString()}, jump +${part.toLocaleString()}, then +${(b - part).toLocaleString()}`
+      });
+    }
+  }
+
+  // 2. Subtraction: a - b = ?
+  const subMatch = q.match(/^([\d,]+)\s*[−-]\s*([\d,]+)\s*=\s*\?$/);
+  if (subMatch) {
+    const a = Number(subMatch[1].replace(/,/g, ""));
+    const b = Number(subMatch[2].replace(/,/g, ""));
+    if (Number.isFinite(a) && Number.isFinite(b)) {
+      if (a <= 20) {
+        return renderModel({
+          type: "counters",
+          total: 20,
+          filled: Math.max(0, a - b),
+          target: a,
+          caption: `Start with ${a}, take away ${b} to leave ${a - b}`
+        }, { counters: Math.max(0, a - b) });
+      }
+      const part = b >= 1000 ? Math.floor(b / 1000) * 1000 : b >= 100 ? Math.floor(b / 100) * 100 : Math.floor(b / 10) * 10;
+      return renderModel({
+        type: "numberline",
+        start: a,
+        jumps: [-part, -(b - part)],
+        caption: `Subtract in friendly jumps: ${a.toLocaleString()} − ${part.toLocaleString()} − ${(b - part).toLocaleString()}`
+      });
+    }
+  }
+
+  // 3. Multiplication: a × b = ?
+  const mulMatch = q.match(/^([\d,]+)\s*[×*x]\s*([\d,]+)\s*=\s*\?$/);
+  if (mulMatch) {
+    const a = Number(mulMatch[1].replace(/,/g, ""));
+    const b = Number(mulMatch[2].replace(/,/g, ""));
+    if (Number.isFinite(a) && Number.isFinite(b)) {
+      if (a <= 12 && b <= 12) {
+        return renderModel({
+          type: "array",
+          a,
+          b,
+          split: Math.min(a, 5),
+          caption: `Array model: ${a} rows of ${b}`
+        });
+      }
+      const splitA = a >= 100 ? Math.floor(a / 100) * 100 : Math.floor(a / 10) * 10;
+      return renderModel({
+        type: "array",
+        a,
+        b,
+        split: splitA,
+        caption: `Area model: split ${a} into ${splitA} + ${a - splitA}, then multiply each by ${b}`
+      });
+    }
+  }
+
+  // 4. Division: a ÷ b = ?
+  const divMatch = q.match(/^([\d,]+)\s*[÷/]\s*([\d,]+)\s*=\s*\?$/);
+  if (divMatch) {
+    const a = Number(divMatch[1].replace(/,/g, ""));
+    const b = Number(divMatch[2].replace(/,/g, ""));
+    if (Number.isFinite(a) && Number.isFinite(b) && b !== 0) {
+      const qVal = Math.floor(a / b);
+      const splitQ = qVal >= 10 ? Math.floor(qVal / 10) * 10 : Math.floor(qVal / 2);
+      const leftVal = splitQ * b;
+      const rightVal = a - leftVal;
+      return renderModel({
+        type: "partition",
+        labels: [`${leftVal} ÷ ${b} (${splitQ})`, `${rightVal} ÷ ${b} (${qVal - splitQ})`],
+        values: [leftVal, Math.max(1, rightVal)],
+        caption: `Partition division: split ${a} into friendly multiples of ${b} (${leftVal} + ${rightVal})`
+      });
+    }
+  }
+
+  // 5. Fractions
+  const fracMatch = q.match(/(\d+)\/(\d+)/g);
+  if (fracMatch && fracMatch.length >= 1) {
+    const fractions = fracMatch.slice(0, 2).map((f) => {
+      const [n, d] = f.split("/").map(Number);
+      return [n, d];
+    });
+    return renderModel({
+      type: "fractions",
+      fractions,
+      caption: `Fraction visual model: comparing ${fractions.map(([n, d]) => `${n}/${d}`).join(" and ")}`
+    });
+  }
+
+  // 6. Coordinates
+  const coordMatch = q.match(/\((-?\d+),\s*(-?\d+)\)/);
+  if (coordMatch) {
+    const x = Number(coordMatch[1]);
+    const y = Number(coordMatch[2]);
+    return renderModel({
+      type: "coordinate",
+      points: [[x, y]],
+      caption: `Coordinate plane showing point (${x}, ${y})`
+    });
+  }
+
+  // Fallback: create default lesson model for the skill
+  try {
+    const fallbackLesson = createLesson(skill, 0);
+    return renderModel(fallbackLesson.model);
+  } catch {
+    return "";
+  }
+}
+
 export function mountVisualLesson(container, skill, { onComplete, onPractice, variant = 0 } = {}) {
   let currentVariant = variant;
   let content = createLesson(skill, currentVariant);
@@ -71,15 +205,74 @@ export function mountVisualLesson(container, skill, { onComplete, onPractice, va
   let counters = content.model.filled;
   let counterPositions = new Set(Array.from({ length: counters || 0 }, (_, i) => i));
   let supported = false;
+  let solvedSteps = [];
+  let currentStepAnswer = "";
 
   function render() {
     const done = index >= content.steps.length;
     const item = content.steps[index];
     const freshExample = JSON.stringify(createLesson(skill, currentVariant + 1)) !== JSON.stringify(content);
+
+    const completedStepsHtml = solvedSteps.length > 0 ? `
+      <div class="visual-completed-steps" aria-label="Completed steps in this model">
+        <div class="completed-steps-header">
+          <span class="completed-steps-tag">✓ Your work so far</span>
+          <span class="completed-steps-note">Prior answers stay visible:</span>
+        </div>
+        <ul class="completed-steps-list">
+          ${solvedSteps.map((s) => `
+            <li class="completed-step-item">
+              <span class="step-pill">Step ${s.stepNumber}</span>
+              <span class="step-prev-prompt">${esc(s.prompt)}</span>
+              <strong class="step-prev-answer">→ ${esc(s.answer)}</strong>
+            </li>
+          `).join("")}
+        </ul>
+      </div>
+    ` : "";
+
     container.innerHTML = `<div class="visual-lesson-heading"><div><p class="section-label">See it. Build it. Explain it.</p><h3>${esc(content.title)}</h3><p>${esc(content.idea)}</p></div><button type="button" class="outline-action" data-new-visual>${freshExample ? 'Try another example' : 'Restart this model'}</button></div>
       <div class="visual-lesson-layout"><div class="visual-model">${renderModel(content.model, { counters, counterPositions, partitions, step: index })}</div><div class="visual-step-panel">
       <ol class="visual-step-dots" aria-label="Lesson steps">${content.steps.map((_, i) => `<li class="${i < index ? 'complete' : i === index ? 'current' : ''}" ${i === index ? 'aria-current="step"' : ''}>${i < index ? '✓' : i + 1}<span>${i < index ? ' complete' : i === index ? ' current' : ' next'}</span></li>`).join("")}</ol>
-      ${done ? `<h4>You built the idea.</h4><p>${esc(transferPrompt(skill))}</p><p class="lesson-evidence">Visual lesson completed${supported ? ' with a worked step' : ''}. Independent practice will check what you remember.</p><button type="button" class="primary-action" data-visual-practice>Try adaptive practice</button>` : `<form data-visual-form novalidate><label for="visual-answer"><strong>Step ${index + 1} of ${content.steps.length}</strong><span>${esc(item.prompt)}</span></label>${item.choices ? `<div class="choice-answers">${item.choices.map((choice) => `<button type="button" class="choice-answer" data-visual-answer="${esc(choice)}">${esc(choice)}</button>`).join("")}</div>` : `<input id="visual-answer" class="answer-input" type="text" inputmode="${item.kind === 'text' ? 'text' : 'decimal'}" autocomplete="off" placeholder="${item.kind === 'fraction' ? 'Example: 3/4' : 'Your answer'}"/><button class="primary-action" type="submit">Check this step</button>`}</form><div class="visual-help-actions"><button type="button" class="text-action" data-visual-hint>Help with this step</button><button type="button" class="text-action" data-visual-worked hidden>Show a worked step</button></div><div class="visual-feedback" role="status" hidden></div><button type="button" class="primary-action" data-visual-next hidden>Next step</button>`}</div></div>`;
+      ${done ? `
+        <div class="visual-conclusion-card">
+          <div class="conclusion-header">
+            <span class="conclusion-badge">✓ Concept built</span>
+            <h4>You connected each piece of the strategy!</h4>
+          </div>
+          <div class="conclusion-steps-recap">
+            <p class="recap-title">Summary of your calculations:</p>
+            <ul class="recap-list">
+              ${solvedSteps.map((s) => `
+                <li>
+                  <span class="recap-step-num">Step ${s.stepNumber}:</span>
+                  <span class="recap-prompt">${esc(s.prompt)}</span>
+                  <strong class="recap-answer">= ${esc(s.answer)}</strong>
+                </li>
+              `).join("")}
+            </ul>
+          </div>
+          <div class="conclusion-rule-box">
+            <p class="transfer-copy">${esc(transferPrompt(skill))}</p>
+          </div>
+          <p class="lesson-evidence">Visual lesson completed${supported ? ' with a worked step' : ''}. Independent practice will check what you remember.</p>
+          <div class="conclusion-actions">
+            <button type="button" class="primary-action" data-visual-practice>Try adaptive practice</button>
+          </div>
+        </div>
+      ` : `
+        ${completedStepsHtml}
+        <form data-visual-form novalidate>
+          <label for="visual-answer"><strong>Step ${index + 1} of ${content.steps.length}</strong><span>${esc(item.prompt)}</span></label>
+          ${item.choices ? `<div class="choice-answers">${item.choices.map((choice) => `<button type="button" class="choice-answer" data-visual-answer="${esc(choice)}">${esc(choice)}</button>`).join("")}</div>` : `<input id="visual-answer" class="answer-input" type="text" inputmode="${item.kind === 'text' ? 'text' : 'decimal'}" autocomplete="off" placeholder="${item.kind === 'fraction' ? 'Example: 3/4' : 'Your answer'}"/><button class="primary-action" type="submit">Check this step</button>`}
+        </form>
+        <div class="visual-help-actions">
+          <button type="button" class="text-action" data-visual-hint>Help with this step</button>
+          <button type="button" class="text-action" data-visual-worked hidden>Show a worked step</button>
+        </div>
+        <div class="visual-feedback" role="status" hidden></div>
+        <button type="button" class="primary-action" data-visual-next hidden>Next step</button>
+      `}</div></div>`;
   }
 
   function feedback(copy, correct = false) {
@@ -94,6 +287,7 @@ export function mountVisualLesson(container, skill, { onComplete, onPractice, va
     const item = content.steps[index];
     if (validateAnswer(value, item)) {
       solved = true;
+      currentStepAnswer = String(value).trim();
       feedback(item.explanation, true);
       container.querySelectorAll("[data-visual-form] input, [data-visual-form] button").forEach((el) => { el.disabled = true; });
       container.querySelector("[data-visual-next]").hidden = false;
@@ -111,17 +305,24 @@ export function mountVisualLesson(container, skill, { onComplete, onPractice, va
     if (button.hasAttribute("data-visual-answer")) check(button.dataset.visualAnswer);
     if (button.hasAttribute("data-visual-hint")) feedback(content.steps[index].hint);
     if (button.hasAttribute("data-visual-worked")) {
-      supported = true; solved = true; feedback(content.steps[index].explanation);
+      supported = true; solved = true; currentStepAnswer = String(content.steps[index].answers[0]);
+      feedback(content.steps[index].explanation);
       container.querySelector("[data-visual-next]").hidden = false;
       container.querySelectorAll("[data-visual-form] input, [data-visual-form] button").forEach((el) => { el.disabled = true; });
     }
     if (button.hasAttribute("data-visual-next") && solved) {
-      index++; solved = false; attempts = 0;
+      solvedSteps.push({
+        stepNumber: index + 1,
+        prompt: content.steps[index].prompt,
+        answer: currentStepAnswer || String(content.steps[index].answers[0]),
+        explanation: content.steps[index].explanation
+      });
+      index++; solved = false; attempts = 0; currentStepAnswer = "";
       if (index === content.steps.length) onComplete?.({ supported });
       render(); container.querySelector("#visual-answer, [data-visual-answer], [data-visual-practice]")?.focus();
     }
     if (button.hasAttribute("data-new-visual")) {
-      currentVariant++; content = createLesson(skill, currentVariant); index = 0; solved = false; attempts = 0; partitions = 1; counters = content.model.filled; counterPositions = new Set(Array.from({ length: counters || 0 }, (_, i) => i)); supported = false; render();
+      currentVariant++; content = createLesson(skill, currentVariant); index = 0; solved = false; attempts = 0; partitions = 1; counters = content.model.filled; counterPositions = new Set(Array.from({ length: counters || 0 }, (_, i) => i)); supported = false; solvedSteps = []; currentStepAnswer = ""; render();
     }
     if (button.hasAttribute("data-visual-practice")) onPractice?.();
     if (button.hasAttribute("data-partition")) { partitions = Number(button.dataset.partition); container.querySelector(".visual-model").innerHTML = renderModel(content.model, { partitions, counters, step: index }); container.querySelector(`[data-partition="${partitions}"]`)?.focus(); }

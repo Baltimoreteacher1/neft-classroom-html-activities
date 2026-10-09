@@ -555,15 +555,17 @@ function teacherNotesPage(id, cfg, unit, lesson) {
 function studentHelpPage(id, cfg, _unit, lesson) {
   const v = vocab(cfg);
   const steps = workedExampleLines(cfg);
-  const et = cfg.reflect?.exitTicket;
+  const check = cfg.familyCheck;
   const stdBadge = cfg.standard ? `<span class="std">${esc(cfg.standard)}</span>` : "";
 
   const kwList = v.length
     ? `<ul>${v.map((w) => `<li><span class="kw">${esc(w.term)}</span> — ${esc(w.definition || "")}</li>`).join("")}</ul>`
     : `<p>See the lesson for key words.</p>`;
 
-  const tryIt = et?.stem || cfg.launch?.conceptIntro?.youDo?.lines?.[0] || "";
-  const tryAns = et?.choices?.[et?.correctIndex];
+  const tryIt = check?.stem || cfg.launch?.conceptIntro?.youDo?.lines?.[0] || "";
+  const tryAns =
+    check?.choices?.[check?.correctIndex] ?? (check?.answer != null ? check.answer : null);
+  const tryExpl = check?.explanation || "";
 
   const head = `<p class="eyebrow">Student Help Card</p>
 <h1>Lesson ${lesson}: ${esc(cfg.title || id)}${stdBadge}</h1>
@@ -591,7 +593,7 @@ ${
 <section>
   <h2>Check your answer</h2>
   ${tryAns != null ? `<p><span class="answer">${esc(tryAns)}</span></p>` : "<p>Check with your guided notes.</p>"}
-  ${et?.explanation ? `<p class="es-text">${esc(et.explanation)}</p>` : ""}
+  ${tryExpl ? `<p class="es-text">${esc(tryExpl)}</p>` : ""}
 </section>`
     : ""
 }

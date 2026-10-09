@@ -21,17 +21,17 @@
     <a class="skip-link" href="#main">Skip to practice</a>
 
     <header class="site-header">
-      <a class="brand" href="/math/" aria-label="EduWonderLab math home">
+      <div class="brand" aria-label="EduWonderLab Math Fluency Lab">
         <span class="brand-mark" aria-hidden="true">8×</span>
         <span><strong>Math Fluency Lab</strong><small>EduWonderLab</small></span>
-      </a>
+      </div>
       <nav aria-label="Page controls">
+        <label class="profile-control skill-nav-control" for="quick-skill-select">Skill<select id="quick-skill-select"><option value="">Jump to any skill (Grades 1–8)...</option></select></label>
         <label class="profile-control" for="profile-select">Learner<select id="profile-select"></select></label>
         <button id="add-profile" class="quiet-button" type="button">Add learner</button>
         <button id="text-size" class="quiet-button" type="button" aria-pressed="false">
           Text size: Standard
         </button>
-        <a class="quiet-button" href="/math/">Math home</a>
         <button id="focus-mode" class="quiet-button" type="button" aria-pressed="false">Focus view</button>
       </nav>
     </header>
@@ -171,10 +171,13 @@
               <div class="answer-actions">
                 <button id="check-answer" class="primary-action" type="submit">Check answer</button>
                 <button id="show-hint" class="outline-action" type="button">Show a strategy hint</button>
+                <button id="toggle-problem-visual" class="outline-action" type="button" aria-expanded="false">💡 Visual model</button>
                 <button id="skip-checkup" class="outline-action" type="button" hidden>I’m not sure yet</button>
                 <button id="next-problem" class="primary-action" type="button" hidden>Next problem</button>
               </div>
             </form>
+
+            <div id="problem-visual-scaffold" class="problem-visual-scaffold" hidden></div>
 
             <div id="feedback" class="feedback" role="status" aria-live="polite" hidden>
               <strong id="feedback-title"></strong>

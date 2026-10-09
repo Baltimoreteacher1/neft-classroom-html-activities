@@ -169,7 +169,7 @@ ${STYLE}
 
     <div class="wrap">
       <nav class="breadcrumb">
-        <a href="/">Home</a> / <a href="/math/">Math</a> /
+        <a href="/curriculum/">Curriculum</a> /
         <a href="/lessons/${esc(id)}/">Lesson ${esc(id)}</a> / Get Ready
       </nav>
 

@@ -8,8 +8,8 @@ import {
   validateAnswer,
 } from "./problem-bank.js";
 import { adaptiveProblem, dailyPlan, diagnosticPlan, difficulty, emptyTutor, evidence, feedbackFor, findSkill, localDay, prerequisites, recommendations, recordAnswer, rememberMistake, sanitizeTutor, skillKey as tutorSkillKey } from "./tutor-engine.js";
-import { mountVisualLesson } from "./visual-lab.js";
-import { transferPrompt } from "./lesson-content.js";
+import { mountVisualLesson, renderModel, renderInlineProblemModel } from "./visual-lab.js";
+import { transferPrompt, getPublisherExplanation, getDynamicGuidedSteps } from "./lesson-content.js";
 import { PROFILE_NAMES, assignmentQueue, cleanProgress, decodeAssignment, downloadFile, makeBackup, mountTeacherStudio, parseBackup, profileKey, profiles, progressReport, readLocal, selectProfile, writeLocal } from "./school-tools.js";
 
 const STORAGE_KEY = "ewl-fluency-progress-v1";
@@ -89,6 +89,9 @@ const els = {
   skip: document.querySelector("#skip-checkup"),
   repair: document.querySelector("#repair-actions"),
   summaryNext: document.querySelector("#summary-next"),
+  quickSkillSelect: document.querySelector("#quick-skill-select"),
+  problemVisualScaffold: document.querySelector("#problem-visual-scaffold"),
+  toggleProblemVisual: document.querySelector("#toggle-problem-visual"),
 };
 
 const state = {
@@ -257,7 +260,40 @@ function renderOverallStats() {
     <span><strong>${fluent}</strong> skills remembered</span>`;
 }
 
-function openSkill(skillId, mode = "learn") {
+function populateQuickSkillDropdown() {
+  if (!els.quickSkillSelect) return;
+  els.quickSkillSelect.innerHTML = '<option value="">Jump to any skill (Grades 1–8)...</option>' +
+    GRADES.map((grade) => `
+      <optgroup label="${escapeHtml(grade.label)} (${escapeHtml(grade.focus)})">
+        ${grade.skills.map((s) => `
+          <option value="${grade.grade}:${s.id}">
+            Grade ${grade.grade} · ${escapeHtml(s.title)} (${escapeHtml(s.strand)})
+          </option>
+        `).join("")}
+      </optgroup>
+    `).join("");
+}
+
+function updateQuickSkillDropdown() {
+  if (!els.quickSkillSelect) return;
+  if (state.skill) {
+    els.quickSkillSelect.value = `${state.skill.grade || state.grade}:${state.skill.id}`;
+  } else {
+    els.quickSkillSelect.value = "";
+  }
+}
+
+function openSkill(skillId, mode = "learn", targetGrade = null) {
+  if (typeof skillId === "string" && skillId.includes(":")) {
+    const [gStr, sId] = skillId.split(":");
+    targetGrade = Number(gStr);
+    skillId = sId;
+  }
+  if (targetGrade && GRADES.some((g) => g.grade === targetGrade)) {
+    state.grade = targetGrade;
+    saveSettings();
+    renderGradeTabs();
+  }
   saveActiveSession();
   state.session = null;
   state.item = null;
@@ -278,6 +314,7 @@ function openSkill(skillId, mode = "learn") {
   renderLearn();
   setMode(mode);
   setUrl();
+  updateQuickSkillDropdown();
   document.title = `${state.skill.title} | ${grade.label} Fluency Lab`;
   document.querySelector("#workspace-view").scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -333,7 +370,9 @@ function renderModeTabs(mixed = false) {
 }
 
 function renderLearn() {
-  const { learn } = state.skill;
+  const exp = getPublisherExplanation(state.skill);
+  const visualAnchorHtml = exp.anchorModel ? renderModel(exp.anchorModel) : "";
+
   els.learnPanel.innerHTML = `
     <nav class="learning-path" aria-label="Learning path">
       <p class="section-label">Your learning path</p>
@@ -346,28 +385,131 @@ function renderLearn() {
     </nav>
     <div class="learn-rule">
       <span class="rule-mark" aria-hidden="true">✦</span>
-      <div><p class="section-label">Mini lesson · The useful idea</p><h3>${escapeHtml(learn.rule)}</h3></div>
+      <div>
+        <p class="section-label">Mini lesson · ${escapeHtml(exp.strand)} (${escapeHtml(exp.standard)})</p>
+        <h3>${escapeHtml(exp.coreConcept)}</h3>
+      </div>
     </div>
-    <ol class="learn-steps">
-      ${learn.steps.map((step, index) => `<li><span>${index + 1}</span><p>${escapeHtml(step)}</p></li>`).join("")}
-    </ol>
-    <div class="worked-example">
-      <p class="section-label">Worked example</p>
-      <p>${escapeHtml(learn.example)}</p>
+    <div class="learn-visual-anchor">
+      <div class="visual-anchor-header">
+        <span class="anchor-badge">Visual Anchor Model</span>
+        <h4>${escapeHtml(exp.visualTitle)}</h4>
+        <p>${escapeHtml(exp.visualIdea)}</p>
+      </div>
+      <div class="visual-anchor-body">
+        ${visualAnchorHtml}
+      </div>
+      <div class="visual-anchor-footer">
+        <button type="button" class="primary-action" data-start-visual>Step-by-step visual builder →</button>
+      </div>
     </div>
-    <div class="watch-out">
-      <strong>Watch for this</strong>
-      <p>${escapeHtml(learn.watch)}</p>
+    <div class="method-steps-container">
+      <p class="section-label">The 3-Step Strategy</p>
+      <div class="method-steps-grid">
+        ${exp.solutionSteps.map((step) => `
+          <div class="method-step-card">
+            <span class="step-num-pill">${escapeHtml(step.title)}</span>
+            <p class="step-action"><strong>${escapeHtml(step.action)}</strong></p>
+            <p class="step-desc">${escapeHtml(step.prompt)}</p>
+            <div class="step-calc-box"><code>${escapeHtml(step.calc)}</code></div>
+          </div>
+        `).join("")}
+      </div>
     </div>
-    <div class="teach-back">
-      <strong>Teach it back</strong>
-      <p>Without looking at the steps, say the first move out loud. Then explain why that move fits this kind of problem.</p>
+    <div class="publisher-example">
+      <div class="example-header">
+        <span class="example-badge">Worked Example Breakdown</span>
+        <h4 class="example-stem">${escapeHtml(exp.problemStem)}</h4>
+      </div>
+      <div class="example-breakdown">
+        ${exp.solutionSteps.map((step) => `
+          <div class="breakdown-row">
+            <span class="row-step">${escapeHtml(step.title)}</span>
+            <span class="row-desc">${escapeHtml(step.action)}: ${escapeHtml(step.prompt)}</span>
+            <strong class="row-calc">${escapeHtml(step.calc)}</strong>
+          </div>
+        `).join("")}
+      </div>
     </div>
+    <div class="math-callout-grid">
+      <div class="why-it-works-card">
+        <div class="callout-header">
+          <span class="callout-icon" aria-hidden="true">💡</span>
+          <strong>Why this works mathematically</strong>
+        </div>
+        <p>${escapeHtml(exp.whyItWorks)}</p>
+      </div>
+      <div class="watch-out-card">
+        <div class="callout-header">
+          <span class="callout-icon" aria-hidden="true">⚠️</span>
+          <strong>Common misconception to watch</strong>
+        </div>
+        <p class="mistake-wrong"><span class="tag-wrong">Flawed thinking:</span> ${escapeHtml(exp.commonMistake.wrong)}</p>
+        <p class="mistake-fix"><span class="tag-fix">Teacher fix:</span> ${escapeHtml(exp.commonMistake.fix)}</p>
+      </div>
+    </div>
+    <div class="math-talk-card">
+      <div class="callout-header">
+        <span class="callout-icon" aria-hidden="true">💬</span>
+        <strong>Math talk: explain your reasoning</strong>
+      </div>
+      <p>Use these sentence frames when sharing your strategy:</p>
+      <ul class="math-talk-stems">
+        ${exp.mathTalk.map((stem) => `<li><em>"${escapeHtml(stem)}"</em></li>`).join("")}
+      </ul>
+    </div>
+    ${exp.quickSample ? `
+      <div class="quick-check-card" data-quick-check>
+        <div class="check-header">
+          <span class="check-badge">Formative Check</span>
+          <h4>Quick Try-It: Test your understanding</h4>
+          <p>${escapeHtml(exp.quickSample.prompt)}</p>
+        </div>
+        <div class="check-interactive">
+          ${exp.quickSample.choices ? `
+            <div class="choice-answers">
+              ${exp.quickSample.choices.map((c) => `<button type="button" class="choice-answer" data-check-answer="${escapeHtml(c)}">${escapeHtml(c)}</button>`).join("")}
+            </div>
+          ` : `
+            <div class="check-input-row">
+              <input class="answer-input" id="quick-check-input" type="text" placeholder="${exp.quickSample.kind === 'fraction' ? 'Example: 3/4' : 'Your answer'}" />
+              <button type="button" class="primary-action" id="quick-check-submit">Check</button>
+            </div>
+          `}
+          <div class="quick-check-feedback" hidden role="status"></div>
+        </div>
+      </div>
+    ` : ""}
     <div class="learn-actions">
       <button class="primary-action" data-start-visual>See it &amp; build it</button>
       <button class="primary-action" data-start-guided>Try 5 with coaching</button>
       <button class="outline-action" data-start-independent>Skip to Practice 10</button>
     </div>`;
+
+  const checkCard = els.learnPanel.querySelector("[data-quick-check]");
+  if (checkCard && exp.quickSample) {
+    const feedbackEl = checkCard.querySelector(".quick-check-feedback");
+    const checkFn = (val) => {
+      const correct = String(val).trim().toLowerCase() === String(exp.quickSample.answer).trim().toLowerCase();
+      feedbackEl.hidden = false;
+      feedbackEl.className = `quick-check-feedback ${correct ? 'correct' : 'incorrect'}`;
+      feedbackEl.textContent = correct
+        ? `✓ Excellent! ${exp.quickSample.explanation}`
+        : `Try again! Hint: ${exp.quickSample.hint}`;
+    };
+    checkCard.querySelectorAll("[data-check-answer]").forEach((btn) => {
+      btn.addEventListener("click", () => checkFn(btn.dataset.checkAnswer));
+    });
+    checkCard.querySelector("#quick-check-submit")?.addEventListener("click", () => {
+      checkFn(checkCard.querySelector("#quick-check-input")?.value);
+    });
+    checkCard.querySelector("#quick-check-input")?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        checkFn(e.target.value);
+      }
+    });
+  }
 }
 
 function setMode(mode) {
@@ -492,6 +634,14 @@ function nextProblem(restoredItem = null) {
   els.nextButton.textContent = "Next problem";
   els.hintButton.hidden = state.initialSupport || state.session.mode === "diagnostic";
   els.skip.hidden = state.session.mode !== "diagnostic";
+  if (els.problemVisualScaffold) {
+    els.problemVisualScaffold.hidden = true;
+    els.problemVisualScaffold.innerHTML = "";
+  }
+  if (els.toggleProblemVisual) {
+    els.toggleProblemVisual.setAttribute("aria-expanded", "false");
+    els.toggleProblemVisual.hidden = state.session.mode === "diagnostic";
+  }
   els.repair.hidden = !adapting;
   els.checkButton.hidden = false;
   els.answerInput.value = "";
@@ -512,11 +662,7 @@ function nextProblem(restoredItem = null) {
 
 function guidedStepContent() {
   if (!state.item?.skill) return [];
-  return [
-    { label: "Notice", copy: state.item.skill.learn.steps[0] },
-    { label: "Plan", copy: state.item.hint },
-    { label: "Solve and check", copy: state.item.skill.learn.steps[2] },
-  ];
+  return getDynamicGuidedSteps(state.item.skill, state.item);
 }
 
 function renderGuidedCoach() {
@@ -1116,8 +1262,37 @@ for (const tablist of [els.gradeTabs, els.modeTabs]) tablist.addEventListener("k
   const next = event.key === "Home" ? 0 : event.key === "End" ? tabs.length - 1 : (index + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
   tabs[next].click(); tablist.querySelectorAll('[role="tab"]')[next]?.focus();
 });
-window.addEventListener("popstate", renderLibrary);
+els.toggleProblemVisual?.addEventListener("click", () => {
+  if (!els.problemVisualScaffold || !state.item) return;
+  const isHidden = els.problemVisualScaffold.hidden;
+  els.problemVisualScaffold.hidden = !isHidden;
+  els.toggleProblemVisual.setAttribute("aria-expanded", String(isHidden));
+  if (isHidden) {
+    const visualContent = renderInlineProblemModel(state.item.skill, state.item);
+    els.problemVisualScaffold.innerHTML = `
+      <div class="problem-visual-card">
+        <div class="problem-visual-header">
+          <span class="problem-visual-badge">Visual Scaffold</span>
+          <p>Model for: <strong>${escapeHtml(state.item.question)}</strong></p>
+        </div>
+        <div class="problem-visual-body">${visualContent || "<p>Think of the numbers on an open number line or in friendly chunks.</p>"}</div>
+      </div>
+    `;
+    els.problemVisualScaffold.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+});
 
+els.quickSkillSelect?.addEventListener("change", (event) => {
+  const val = event.target.value;
+  if (!val) return;
+  const [gStr, sId] = val.split(":");
+  const g = Number(gStr);
+  if (g && sId) {
+    openSkill(sId, "learn", g);
+  }
+});
+
+populateQuickSkillDropdown();
 applySettings();
 renderLibrary();
 if (document.readyState === "loading") {
