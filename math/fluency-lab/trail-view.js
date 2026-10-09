@@ -13,7 +13,7 @@ import {
   recordRound,
   saveTrail,
 } from "./fact-trail.js";
-import { handleModelTap, interactivePicture, mathText, stepsBlock, trailPicture } from "./trail-pictures.js";
+import { handleModelInput, handleModelTap, interactivePicture, mathText, stepsBlock, trailPicture } from "./trail-pictures.js";
 
 const ROUND = 10;
 const esc = (value) =>
@@ -378,6 +378,7 @@ export function mountTrail(container, { grade, onShowSkills }) {
             : input.value + key;
     }
   });
+  on("input", (event) => handleModelInput(event.target));
   on("submit", (event) => {
     event.preventDefault();
     if (round && !container.querySelector(".tr-answer.good"))

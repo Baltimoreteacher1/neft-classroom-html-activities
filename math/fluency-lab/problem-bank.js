@@ -128,6 +128,7 @@ function factModel(op, a, b, answer, config) {
     return null;
   }
   if (b >= 2 && b <= 12 && answer >= 1 && answer <= 12) return { type: "array", a: b, b: answer, split: b, caption: `${whole.format(a)} shared equally into ${b} rows` };
+  if (op === "div" && b >= 2 && b <= 99 && answer > 12 && answer <= 999) return { type: "numberline", start: 0, jumps: [a], group: b, caption: `Groups of ${b} up to ${whole.format(a)}` };
   return null;
 }
 
@@ -267,6 +268,7 @@ const generators = {
       choices: ["<", "=", ">"],
       hint: "Compare the greatest place value first.",
       explanation: `${whole.format(a)} ${answer} ${whole.format(b)}.`,
+      model: Math.max(a, b) >= 10 ? { type: "placeChart", rows: [String(a), String(b)] } : null,
     });
   },
 
@@ -277,6 +279,7 @@ const generators = {
     return problem(`${known} + □ = ${total}. What belongs in the box?`, answer, {
       hint: `Count on from ${known} until you reach ${total}.`,
       explanation: `${known} + ${answer} = ${total}.`,
+      model: total <= 20 ? { type: "counters", kind: "missing", total: total <= 10 ? 10 : 20, filled: known, target: total, shown: known } : null,
     });
   },
 
@@ -309,6 +312,7 @@ const generators = {
       {
         hint: `Find the ${placeName} place before answering.`,
         explanation: `The ${placeName} digit is ${digit}, so its value is ${whole.format(digit * place)}.`,
+      model: { type: "placeChart", rows: [String(n)] },
       },
     );
   },
@@ -320,6 +324,7 @@ const generators = {
     return problem(`${terms.join(", ")}, ___`, start + step * 4, {
       hint: `The pattern changes by ${step} each time.`,
       explanation: `Add ${step} to ${terms[3]} to get ${start + step * 4}.`,
+      model: { type: "numberline", start: terms[3], jumps: [step], caption: `Count on by ${step}` },
     });
   },
 
@@ -331,6 +336,7 @@ const generators = {
     return problem(`Round ${whole.format(n)} to the ${placeName}.`, answer, {
       hint: `Look at the digit immediately to the right of the ${placeName.replace("nearest ", "")} place.`,
       explanation: `${whole.format(n)} rounds to ${whole.format(answer)}.`,
+      model: { type: "roundLine", value: n, low: Math.floor(n / place) * place, high: Math.floor(n / place) * place + place },
     });
   },
 
@@ -342,6 +348,7 @@ const generators = {
       choices: ["even", "odd"],
       hint: "Even numbers can be split into pairs with none left over.",
       explanation: `${n} is ${answer}.`,
+      model: n <= 40 ? { type: "pairs", total: n } : null,
     });
   },
 
@@ -367,6 +374,7 @@ const generators = {
       {
         hint: "Use 25¢, 10¢, 5¢, and 1¢, then add the values.",
         explanation: `${quarters * 25} + ${dimes * 10} + ${nickels * 5} + ${pennies} = ${answer} cents.`,
+      model: { type: "coins", counts: [quarters, dimes, nickels, pennies] },
         unit: "¢",
       },
     );
@@ -467,6 +475,7 @@ const generators = {
     return problem(`What digit is in the ${names[place - 1]} place of ${n.toFixed(places)}?`, digit, {
       hint: "The first digit after the decimal is tenths, then hundredths, then thousandths.",
       explanation: `The digit in the ${names[place - 1]} place is ${digit}.`,
+      model: { type: "placeChart", rows: [n.toFixed(places)] },
     });
   },
 
@@ -503,6 +512,7 @@ const generators = {
             ? "Multiply as whole numbers, then place the decimal using the total decimal places."
             : "Make the divisor a whole number by moving both decimal points the same distance.",
       explanation: `${shownA} ${symbol} ${shownB} = ${shownAnswer}.`,
+      model: op === "add" || op === "sub" ? { type: "numberline", start: Number(shownA), jumps: [op === "add" ? Number(shownB) : -Number(shownB)] } : null,
     });
   },
 
@@ -515,6 +525,7 @@ const generators = {
     return problem(`Find the ${find.toUpperCase()} of ${a} and ${b}.`, answer, {
       hint: find === "gcf" ? "List factor pairs and find the greatest shared factor." : "List multiples until both lists meet.",
       explanation: `The ${find.toUpperCase()} of ${a} and ${b} is ${answer}.`,
+      model: { type: "lists", a, b, find },
     });
   },
 
@@ -528,6 +539,7 @@ const generators = {
     return problem(question, answer, {
       hint: `One quantity was multiplied by ${factor}. Use the same scale factor on the other quantity.`,
       explanation: `${a}:${b} scaled by ×${factor} is ${a * factor}:${b * factor}.`,
+      model: { type: "ratioTable", a, b, labels: ["First", "Second"] },
     });
   },
 
@@ -538,6 +550,7 @@ const generators = {
     return problem(`${whole.format(total)} for ${count} items. How much for 1 item?`, decimalText(rate, 2), {
       hint: `Divide the total by ${count}.`,
       explanation: `${whole.format(total)} ÷ ${count} = ${decimalText(rate, 2)} per item.`,
+      model: { type: "ratioTable", a: count, b: total, labels: ["Items", "Total"] },
     });
   },
 
@@ -549,6 +562,7 @@ const generators = {
     return problem(`What is ${percent}% of ${wholeAmount}?`, decimalText(answer, 2), {
       hint: "Rewrite the percent as a fraction or decimal, then multiply.",
       explanation: `${percent}% of ${wholeAmount} is ${answer}.`,
+      model: { type: "percentBar", whole: wholeAmount, percent },
     });
   },
 
@@ -598,6 +612,7 @@ const generators = {
     return problem(`|${n}| = ?`, Math.abs(n), {
       hint: "Absolute value is distance from zero, so it is never negative.",
       explanation: `${n} is ${Math.abs(n)} units from zero.`,
+      model: n ? { type: "numberline", start: n, jumps: [-n], caption: `${n} to 0` } : null,
     });
   },
 
@@ -655,6 +670,7 @@ const generators = {
     return problem(`${base}^${exponent} = ?`, answer, {
       hint: `Multiply ${base} by itself ${exponent} times.`,
       explanation: `${base}^${exponent} = ${Array(exponent).fill(base).join(" × ")} = ${answer}.`,
+      model: { type: "power", base, exponent },
     });
   },
 
@@ -673,6 +689,7 @@ const generators = {
     return problem(`√${root * root} = ?`, root, {
       hint: "Find the positive number that multiplies by itself to make the radicand.",
       explanation: `${root} × ${root} = ${root * root}, so √${root * root} = ${root}.`,
+      model: root <= 15 ? { type: "square", square: root * root } : null,
     });
   },
 
@@ -752,7 +769,7 @@ const generators = {
       return problem(`Area of a triangle with base ${base} and height ${b}?`, (base * b) / 2, { hint: "Area = 1/2 × base × height.", explanation: `1/2 × ${base} × ${b} = ${(base * b) / 2} square units.`, unit: "square units" });
     }
     if (shape === "volume")
-      return problem(`Volume of a rectangular prism: ${a} × ${b} × ${c}?`, a * b * c, { hint: "Volume = length × width × height.", explanation: `${a} × ${b} × ${c} = ${a * b * c} cubic units.`, unit: "cubic units" });
+      return problem(`Volume of a rectangular prism: ${a} × ${b} × ${c}?`, a * b * c, { hint: "Volume = length × width × height.", explanation: `${a} × ${b} × ${c} = ${a * b * c} cubic units.`, model: c <= 12 ? { type: "layers", a, b, height: c } : null, unit: "cubic units" });
     if (shape === "circle") {
       const radius = randInt(1, 12, rng);
       const answer = radius * radius;

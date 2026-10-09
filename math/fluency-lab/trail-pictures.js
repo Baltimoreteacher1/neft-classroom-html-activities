@@ -92,98 +92,333 @@ export function trailPicture(model, { reveal = false } = {}) {
 }
 
 // ---------- interactive models used while answering ----------
-// Students act on the model (tap rows, counters, jumps, parts); the model reports what they built.
+// The model shows the structure; the student does the math. Every number the model needs
+// from the student is a checked box (✓ when right) — the model never fills in an answer.
+
+const tidy = (value) => Math.round(value * 1e6) / 1e6;
+const decimalsOf = (value) => (String(value).split(".")[1] || "").length;
+const fmtN = (value) =>
+  Number(value).toLocaleString("en-US", { maximumFractionDigits: 6 });
+const box = (expect, label, extra = "") =>
+  `<input class="tp-in" data-expect="${expect}" aria-label="${esc(label)}" inputmode="decimal" autocomplete="off" spellcheck="false" ${extra}>`;
 
 function countFrames(model) {
-  // join: a dots then b dots, tap to count all. takeAway: a dots, tap to cross out. missing: tap empties to fill.
+  // join: tap every counter to count them all. takeAway: tap to cross some out.
+  // missing: tap the empty spaces to fill the frame. The student does the counting.
   const kind = model.kind;
-  const start = kind === "takeAway" ? model.target : model.filled;
-  const total = kind === "join" ? model.target : kind === "takeAway" ? model.target : model.filled;
-  const frames = Math.max(1, Math.ceil(Math.max(model.target, total, 1) / 10));
+  const shown = kind === "takeAway" ? model.target : model.filled;
+  const frames = Math.max(1, Math.ceil(Math.max(model.target, shown, 1) / 10));
   const cells = Array.from({ length: frames * 10 }, (_, i) => {
     let cls = "empty";
-    if (kind === "join") cls = i < model.filled ? "dot" : i < model.target ? "dot-add" : "empty";
-    else if (kind === "takeAway") cls = i < start ? "dot" : "empty";
+    if (kind === "join")
+      cls = i < model.filled ? "dot" : i < model.target ? "dot-add" : "empty";
+    else if (kind === "takeAway") cls = i < shown ? "dot" : "empty";
     else cls = i < model.filled ? "dot" : i < model.target ? "slot" : "empty";
-    const tappable = cls !== "empty";
-    return tappable ? `<button type="button" class="tp-cell ${cls}" data-cell="${i}" aria-label="Counter ${i + 1}"></button>` : `<span class="tp-cell empty"></span>`;
+    return cls === "empty"
+      ? `<span class="tp-cell empty"></span>`
+      : `<button type="button" class="tp-cell ${cls}" data-cell="${i}" aria-label="Counter ${i + 1}"></button>`;
   });
-  const groups = Array.from({ length: frames }, (_, f) => `<div class="tp-frame">${cells.slice(f * 10, f * 10 + 10).join("")}</div>`).join("");
-  const prompt = kind === "join" ? "Tap each counter to count them all." : kind === "takeAway" ? `Tap ${model.target - model.filled} counters to take them away.` : "Tap the empty spaces to fill the ten-frame.";
-  const label = kind === "join" ? "Counted" : kind === "takeAway" ? "Left" : "Added";
-  const startValue = kind === "takeAway" ? model.target : 0;
-  return `<div class="tp-live" data-live="frames" data-kind="${kind}"><p class="tp-prompt">${prompt}</p><div class="tp-frames">${groups}</div><p class="tp-readout">${label}: <b data-readout>${startValue}</b></p></div>`;
+  const groups = Array.from(
+    { length: frames },
+    (_, f) =>
+      `<div class="tp-frame">${cells.slice(f * 10, f * 10 + 10).join("")}</div>`,
+  ).join("");
+  const prompt =
+    kind === "join"
+      ? "Tap each counter to count them all."
+      : kind === "takeAway"
+        ? `Tap ${model.target - model.filled} counters to take them away. Count what is left.`
+        : "Tap the empty spaces to fill the frame. Count how many you added.";
+  return `<div class="tp-live" data-live="frames" data-kind="${kind}"><p class="tp-prompt">${prompt}</p><div class="tp-frames">${groups}</div></div>`;
 }
 
 function tapArray(model) {
   if (model.a > 12 || model.b > 12) return tapArea(model);
   const rows = Array.from({ length: model.a }, (_, r) => {
     const tone = r < model.split ? "row-a" : "row-b";
-    return `<button type="button" class="tp-row ${tone}" data-row="${r}" aria-label="Row ${r + 1}">${Array.from({ length: model.b }, () => `<span class="tp-dot">${model.unit ? model.unit : ""}</span>`).join("")}<b class="tp-run" aria-hidden="true"></b></button>`;
+    return `<button type="button" class="tp-row ${tone}" data-row="${r}" aria-label="Row ${r + 1}">${Array.from({ length: model.b }, () => `<span class="tp-dot">${model.unit ? model.unit : ""}</span>`).join("")}</button>`;
   }).join("");
   const each = model.unit ? `${model.b} tens` : model.b;
-  return `<div class="tp-live" data-live="array" data-size="${model.b * (model.unit || 1)}"><p class="tp-prompt">Tap each row to count by ${model.unit ? `${model.b * model.unit}s` : `${model.b}s`}.</p><div class="tp-array${model.unit ? " tens" : ""}">${rows}</div><p class="tp-readout">${model.a} rows of ${esc(each)}. Total so far: <b data-readout>0</b></p></div>`;
+  return `<div class="tp-live" data-live="array"><p class="tp-prompt">${model.a} rows of ${esc(each)}. Tap each row as you count it.</p><div class="tp-array${model.unit ? " tens" : ""}">${rows}</div><p class="tp-readout">Rows counted: <b data-rows>0</b> of ${model.a}</p></div>`;
 }
 
+// Area model: the student multiplies each part and adds the parts.
 function tapArea(model) {
   const left = model.split;
   const right = model.a - model.split;
-  const leftWidth = Math.max(25, Math.min(80, Math.round((left / model.a) * 100)));
-  const part = (size, flex) => `<button type="button" class="tp-part" data-part="${size * model.b}" style="flex:${flex}"><b>${size.toLocaleString("en-US")} × ${model.b}</b><i data-product></i></button>`;
-  return `<div class="tp-live" data-live="area"><p class="tp-prompt">Tap each part to multiply it.</p><div class="tp-area"><span class="tp-area-side">${model.b}</span><div class="tp-area-box">${part(left, leftWidth)}${right ? part(right, 100 - leftWidth) : ""}</div></div><p class="tp-readout">Parts added: <b data-readout>0</b></p></div>`;
+  const leftWidth = Math.max(
+    25,
+    Math.min(80, Math.round((left / model.a) * 100)),
+  );
+  const part = (size, flex) =>
+    `<div class="tp-part" style="flex:${flex}"><b>${fmtN(size)} × ${model.b}</b>${box(size * model.b, `${size} times ${model.b}`)}</div>`;
+  return `<div class="tp-live" data-live="area"><p class="tp-prompt">Multiply each part. Then add the parts.</p>
+    <div class="tp-area"><span class="tp-area-side">${model.b}</span><div class="tp-area-box">${part(left, leftWidth)}${right ? part(right, 100 - leftWidth) : ""}</div></div>
+    ${right ? `<p class="tp-sum">Add the parts: ${box(model.a * model.b, "the total of both parts")}</p>` : ""}</div>`;
 }
 
-// Open number line the student builds: jump buttons sized to the problem move a marker,
-// each jump draws an arc, and Undo takes the last jump back.
-function lineSvg(start, hops, end) {
+// Open number line: jump buttons sized to the problem; after each jump the student types
+// where they landed, and the next jump unlocks only when that landing is right.
+function lineSvg(start, hops, end, confirmed) {
   const points = [start];
-  for (const hop of hops) points.push(points.at(-1) + hop);
+  for (const hop of hops) points.push(tidy(points.at(-1) + hop));
   const min = Math.min(...points, end);
   const max = Math.max(...points, end);
-  const x = (v) => 34 + ((v - min) / Math.max(1, max - min)) * 432;
-  const fmt = (v) => v.toLocaleString("en-US");
+  const x = (v) => 34 + ((v - min) / Math.max(1e-9, max - min)) * 432;
   const arcs = hops
     .map((hop, i) => {
       const from = x(points[i]);
       const to = x(points[i + 1]);
       const lift = Math.max(18, Math.min(60, Math.abs(to - from) / 2));
-      return `<path class="tp-jump" d="M${from},92 Q${(from + to) / 2},${92 - lift * 1.6} ${to},92"/><text class="tp-hop-label" x="${(from + to) / 2}" y="${86 - lift * 0.85}">${hop > 0 ? "+" : "−"}${fmt(Math.abs(hop))}</text>`;
+      return `<path class="tp-jump" d="M${from},92 Q${(from + to) / 2},${92 - lift * 1.6} ${to},92"/><text class="tp-hop-label" x="${(from + to) / 2}" y="${86 - lift * 0.85}">${hop > 0 ? "+" : "−"}${fmtN(Math.abs(hop))}</text>`;
     })
     .join("");
   const here = points.at(-1);
-  // Label the start and where the marker is now; stops in between keep their ticks.
-  const ticks = points.map((v) => `<path class="tp-tick" d="M${x(v)},86 v14"/>`).join("");
-  return `<svg class="tp-line" viewBox="0 0 500 140" role="img" aria-label="Number line from ${fmt(start)}, now at ${fmt(here)}">
+  const hereLabel = hops.length
+    ? confirmed === hops.length
+      ? fmtN(here)
+      : "?"
+    : "";
+  const ticks = points
+    .map((v) => `<path class="tp-tick" d="M${x(v)},86 v14"/>`)
+    .join("");
+  return `<svg class="tp-line" viewBox="0 0 500 140" role="img" aria-label="Number line starting at ${fmtN(start)}">
     <path class="tp-axis" d="M10,93 H490"/>${ticks}${arcs}
-    ${min < 0 && max > 0 && ![start, end, points.at(-1)].includes(0) ? `<path class="tp-tick zero" d="M${x(0)},84 v18"/><text class="tp-zero" x="${x(0)}" y="122">0</text>` : ""}
-    <text class="tp-start" x="${x(start)}" y="122">${fmt(start)}</text>
-    ${here === end ? "" : `<path class="tp-tick goal" d="M${x(end)},84 v18"/><text class="tp-goal" x="${x(end)}" y="122">?</text>`}
-    ${hops.length ? `<circle class="tp-marker" cx="${x(here)}" cy="93" r="9"/><text class="tp-here" x="${x(here)}" y="132">${fmt(here)}</text>` : `<circle class="tp-marker" cx="${x(start)}" cy="93" r="9"/>`}
+    ${min < 0 && max > 0 && ![start, end, here].includes(0) ? `<path class="tp-tick zero" d="M${x(0)},84 v18"/><text class="tp-zero" x="${x(0)}" y="122">0</text>` : ""}
+    <text class="tp-start" x="${x(start)}" y="122">${fmtN(start)}</text>
+    ${here === end ? "" : `<path class="tp-tick goal" d="M${x(end)},84 v18"/>`}
+    <circle class="tp-marker" cx="${x(here)}" cy="93" r="9"/>${hereLabel ? `<text class="tp-here" x="${x(here)}" y="132">${hereLabel}</text>` : ""}
   </svg>`;
 }
 
-function jumpSizes(total) {
+// Jump sizes from the biggest place in the move down to its smallest (…, 10, 1, 0.1, 0.01).
+function jumpSizes(total, decimals) {
   const size = Math.abs(total);
   const sizes = [];
-  for (let p = 10 ** Math.max(0, String(Math.floor(size)).length - 1); p >= 1; p /= 10) sizes.push(p);
-  return sizes.slice(0, 4);
+  for (
+    let p = 10 ** Math.max(0, String(Math.floor(size)).length - 1);
+    p > 10 ** -decimals / 2;
+    p /= 10
+  )
+    sizes.push(tidy(p));
+  return sizes.slice(0, 5);
 }
 
+// With `group` (division) the jumps are equal groups: +100 groups, +10 groups, +1 group.
 function tapLine(model) {
-  if (!model.jumps.every(Number.isInteger) || !Number.isInteger(model.start)) return "";
-  const total = model.jumps.reduce((sum, jump) => sum + jump, 0);
+  if (![model.start, ...model.jumps].every(Number.isFinite)) return "";
+  const total = tidy(model.jumps.reduce((sum, jump) => sum + jump, 0));
+  if (!total) return "";
   const sign = total < 0 ? -1 : 1;
-  const buttons = jumpSizes(total)
-    .map((size) => `<button type="button" class="tp-hop-btn" data-hop-size="${sign * size}">${sign > 0 ? "+" : "−"}${size.toLocaleString("en-US")}</button>`)
+  const group = model.group || 0;
+  const decimals = Math.max(
+    decimalsOf(model.start),
+    ...model.jumps.map(decimalsOf),
+  );
+  const sizes = group
+    ? [100, 10, 1]
+        .filter((n) => n <= Math.abs(total) / group)
+        .map((n) => n * group)
+    : jumpSizes(total, decimals);
+  const buttons = sizes
+    .map((size) => {
+      const label = group
+        ? `+${fmtN(size / group)} group${size === group ? "" : "s"} of ${fmtN(group)}`
+        : `${sign > 0 ? "+" : "−"}${fmtN(size)}`;
+      return `<button type="button" class="tp-hop-btn" data-hop-size="${sign * size}">${label}</button>`;
+    })
     .join("");
-  const goal = `${sign > 0 ? "+" : "−"}${Math.abs(total).toLocaleString("en-US")}`;
-  return `<div class="tp-live" data-live="line" data-start="${model.start}" data-end="${model.start + total}" data-hops="[]">
-    <p class="tp-prompt">Start at ${model.start.toLocaleString("en-US")}. Make jumps that add up to ${goal}.</p>
-    <div data-line>${lineSvg(model.start, [], model.start + total)}</div>
+  const end = tidy(model.start + total);
+  const prompt = group
+    ? `Jump from 0 in equal groups of ${fmtN(group)} until you reach ${fmtN(Math.abs(total))}. Keep track of how many groups.`
+    : `Start at ${fmtN(model.start)}. Jump ${sign > 0 ? "forward" : "back"} ${fmtN(Math.abs(total))} in friendly jumps.`;
+  return `<div class="tp-live" data-live="line" data-start="${model.start}" data-end="${end}" data-hops="[]" data-confirmed="0">
+    <p class="tp-prompt">${prompt}</p>
+    <div data-line>${lineSvg(model.start, [], end, 0)}</div>
+    <p class="tp-landing" data-landing hidden></p>
     <div class="tp-hop-row">${buttons}<button type="button" class="tp-hop-btn undo" data-hop-undo disabled>Undo</button></div>
-    <p class="tp-readout">Moved so far: <b data-readout>0</b> of ${goal}</p>
-    <p class="tp-landed" data-landed hidden>You made the whole jump. Where did you land?</p>
   </div>`;
+}
+
+// ---------- more models: place value, rounding, coins, pairs, percent, ratios, factors and
+// multiples, powers, square roots, perimeter, and volume. Each is built from the problem's numbers.
+const PLACE_NAMES = [
+  "ones",
+  "tens",
+  "hundreds",
+  "thousands",
+  "ten-thousands",
+  "hundred-thousands",
+  "millions",
+];
+const DECIMAL_NAMES = ["tenths", "hundredths", "thousandths"];
+
+function placeChart(model) {
+  const split = model.rows.map((text) => {
+    const [int, dec = ""] = String(text).replaceAll(",", "").split(".");
+    return { int, dec };
+  });
+  const intCols = Math.max(...split.map((row) => row.int.length));
+  const decCols = Math.max(...split.map((row) => row.dec.length));
+  const heads = [
+    ...Array.from(
+      { length: intCols },
+      (_, i) => PLACE_NAMES[intCols - 1 - i] || "",
+    ),
+    ...(decCols ? ["."] : []),
+    ...DECIMAL_NAMES.slice(0, decCols),
+  ];
+  const cell = (digit, name) =>
+    digit === undefined || digit === " "
+      ? "<td></td>"
+      : `<td><button type="button" class="tp-digit" data-digit="${digit}" data-digit-name="${name}">${digit}</button></td>`;
+  const body = split
+    .map(({ int, dec }) => {
+      const cells = [...int.padStart(intCols, " ")].map((digit, i) =>
+        cell(digit, PLACE_NAMES[intCols - 1 - i]),
+      );
+      if (decCols) cells.push('<td class="tp-point">.</td>');
+      for (let i = 0; i < decCols; i += 1)
+        cells.push(cell(dec[i], DECIMAL_NAMES[i]));
+      return `<tr>${cells.join("")}</tr>`;
+    })
+    .join("");
+  return `<div class="tp-live" data-live="place"><p class="tp-prompt">Each digit sits in a place. Tap a digit to name its place.</p>
+    <table class="tp-place"><thead><tr>${heads.map((head) => `<th scope="col">${head}</th>`).join("")}</tr></thead><tbody>${body}</tbody></table>
+    <p class="tp-readout" data-place-readout>Each place is worth 10 times the place to its right.</p></div>`;
+}
+
+function roundLine(model) {
+  const { value, low, high } = model;
+  const x = (v) => 40 + ((v - low) / Math.max(1, high - low)) * 420;
+  const mid = (low + high) / 2;
+  return `<div class="tp-live" data-live="round"><p class="tp-prompt">Is ${fmtN(value)} before or after the halfway mark?</p>
+    <svg class="tp-line" viewBox="0 0 500 150" role="img" aria-label="${fmtN(value)} between ${fmtN(low)} and ${fmtN(high)}">
+      <path class="tp-axis" d="M20,93 H480"/>
+      <path class="tp-tick" d="M${x(low)},84 v18"/><text x="${x(low)}" y="124">${fmtN(low)}</text>
+      <path class="tp-tick" d="M${x(high)},84 v18"/><text x="${x(high)}" y="124">${fmtN(high)}</text>
+      <path class="tp-tick goal" d="M${x(mid)},78 v28"/><text class="tp-goal" x="${x(mid)}" y="142">halfway</text>
+      <circle class="tp-marker" cx="${x(value)}" cy="93" r="9"/><text class="tp-here" x="${x(value)}" y="70">${fmtN(value)}</text>
+    </svg></div>`;
+}
+
+function coinCounter(model) {
+  const values = [25, 10, 5, 1];
+  const names = ["quarter", "dime", "nickel", "penny"];
+  const coins = model.counts
+    .flatMap((count, i) =>
+      Array.from(
+        { length: count },
+        () =>
+          `<button type="button" class="tp-coin c${values[i]}" data-coin="${values[i]}" aria-label="${names[i]}">${values[i]}¢</button>`,
+      ),
+    )
+    .join("");
+  return `<div class="tp-live" data-live="coins"><p class="tp-prompt">Count up, starting with the biggest coins. Tap each coin as you count it.</p>
+    <div class="tp-coins">${coins || "<span>No coins</span>"}</div><p class="tp-readout">Coins counted: <b data-coins>0</b></p></div>`;
+}
+
+function pairUp(model) {
+  return `<div class="tp-live" data-live="pairs"><p class="tp-prompt">Can every dot get a partner?</p>
+    <div class="tp-pairs">${dots(model.total)}</div>
+    <div class="tp-hop-row"><button type="button" class="tp-hop-btn" data-make-pairs>Make pairs</button></div></div>`;
+}
+
+function gcdSmall(a, b) {
+  let x = Math.abs(a);
+  let y = Math.abs(b);
+  while (y) [x, y] = [y, x % y];
+  return x || 1;
+}
+
+// Percent bar: the student first works out what one part is worth, then shades parts.
+function percentBar(model) {
+  const parts = Math.min(10, 100 / gcdSmall(model.percent, 100));
+  const each = model.whole / parts;
+  const cells = Array.from(
+    { length: parts },
+    (_, i) =>
+      `<button type="button" class="tp-part-cell" data-cell-index="${i}" disabled><small>${fmtN(100 / parts)}%</small><b data-each>?</b></button>`,
+  ).join("");
+  return `<div class="tp-live" data-live="percent" data-parts="${parts}" data-each="${each}">
+    <p class="tp-prompt">The whole bar is ${fmtN(model.whole)}. It has ${parts} equal parts. One part is worth ${box(each, "the value of one part", 'data-then="percent"')}</p>
+    <div class="tp-percent">${cells}</div><p class="tp-readout">Shaded: <b data-shaded>0%</b></p></div>`;
+}
+
+// Ratio table: pick ×n or ÷n, then type the new column; the next step waits until both are right.
+function ratioTable(model) {
+  const divisors = [...new Set([2, 3, 5, 10, model.a])]
+    .filter((n) => n > 1)
+    .sort((x, y) => x - y);
+  const buttons = [
+    ...[2, 3, 4, 5, 6, 7, 8, 9, 10].map(
+      (n) =>
+        `<button type="button" class="tp-hop-btn" data-scale="${n}">× ${n}</button>`,
+    ),
+    ...divisors.map(
+      (n) =>
+        `<button type="button" class="tp-hop-btn" data-scale="${1 / n}" data-scale-label="÷ ${n}">÷ ${n}</button>`,
+    ),
+  ].join("");
+  return `<div class="tp-live" data-live="ratio" data-cols='${JSON.stringify([[model.a, model.b]])}' data-labels='${JSON.stringify(model.labels)}'>
+    <p class="tp-prompt">Pick ×  or ÷. Do the same thing to both rows and type the new column.</p>
+    <div data-ratio-table>${ratioTableHtml([[model.a, model.b]], model.labels)}</div>
+    <div class="tp-hop-row tp-scale-row">${buttons}<button type="button" class="tp-hop-btn undo" data-ratio-undo>Undo</button></div>
+    <p class="tp-readout" data-ratio-note></p></div>`;
+}
+
+function ratioTableHtml(cols, labels, pending = null) {
+  const row = (r) =>
+    `<tr><th scope="row">${labels[r]}</th>${cols.map((col) => `<td>${fmtN(col[r])}</td>`).join("")}${pending ? `<td class="latest">${box(pending.values[r], `${labels[r]} ${pending.label}`, 'data-then="ratio"')}</td>` : ""}</tr>`;
+  return `<table class="tp-ratio">${pending ? `<caption>${esc(pending.label)}</caption>` : ""}${row(0)}${row(1)}</table>`;
+}
+
+// GCF: the student types factors (each one brings its partner). LCM: the student types the next multiple.
+function factorLists(model) {
+  const row = (n) =>
+    model.find === "gcf"
+      ? `<div class="tp-list-row"><span class="tp-list-name">Factors of ${n}</span><span class="tp-chips" data-chips="${n}"></span><input class="tp-in wide" data-factor-of="${n}" aria-label="A factor of ${n}" inputmode="numeric" autocomplete="off"><button type="button" class="tp-hop-btn" data-add-factor="${n}">Add</button></div>`
+      : `<div class="tp-list-row"><span class="tp-list-name">Multiples of ${n}</span><span class="tp-chips" data-chips="${n}"></span>${box(n, `the first multiple of ${n}`, `data-then="multiple" data-multiple-of="${n}"`)}</div>`;
+  return `<div class="tp-live" data-live="lists" data-find="${model.find}"><p class="tp-prompt">${model.find === "gcf" ? "Type factors of each number. Factors both numbers share light up." : "Type the multiples of each number in order. Multiples both share light up."}</p>${row(model.a)}${row(model.b)}<p class="tp-readout" data-list-note></p></div>`;
+}
+
+// Powers: the student types each running product.
+function powerChain(model) {
+  return `<div class="tp-live" data-live="power" data-base="${model.base}" data-exponent="${model.exponent}">
+    <p class="tp-prompt">${model.base}<sup>${model.exponent}</sup> uses ${model.base} as a factor ${model.exponent} times. Multiply one step at a time.</p>
+    <div class="tp-chain-rows" data-chain>${powerRow(model.base, 2)}</div></div>`;
+}
+
+function powerRow(base, used) {
+  return `<p class="tp-chain">${Array(used).fill(base).join(" × ")} = ${box(base ** used, `${base} to the power ${used}`, `data-then="power" data-used="${used}"`)}</p>`;
+}
+
+function squareGrow(model) {
+  return `<div class="tp-live" data-live="square" data-side="1">
+    <p class="tp-prompt">Grow the square until it has ${fmtN(model.square)} dots. What is the side length?</p>
+    <div data-square>${squareHtml(1)}</div>
+    <div class="tp-hop-row"><button type="button" class="tp-hop-btn" data-square-step="-1">Smaller</button><button type="button" class="tp-hop-btn" data-square-step="1">Bigger</button></div>
+    <p class="tp-readout" data-square-readout>Side: 1</p></div>`;
+}
+
+function squareHtml(side) {
+  return `<span class="sv sv-array square" style="--cols:${side}">${dots(side * side)}</span>`;
+}
+
+function tapPerimeter(model) {
+  const side = (len, cls, label) =>
+    `<button type="button" class="tp-side ${cls}" data-side="${len}" aria-label="${label} side, ${len}">${len}</button>`;
+  return `<div class="tp-live" data-live="perimeter"><p class="tp-prompt">Walk all the way around. Tap each side as you add it.</p>
+    <div class="tp-rect-sides">${side(model.a, "top", "Top")}${side(model.b, "left", "Left")}<span class="tp-rect-inside"></span>${side(model.b, "right", "Right")}${side(model.a, "bottom", "Bottom")}</div>
+    <p class="tp-readout">Sides added: <b data-sides>0</b> of 4</p></div>`;
+}
+
+function stackLayers(model) {
+  return `<div class="tp-live" data-live="layers" data-height="${model.height}" data-count="0">
+    <p class="tp-prompt">The bottom layer is ${model.a} × ${model.b} cubes. Stack ${model.height} layers like it.</p>
+    <div class="tp-layers" data-layers></div>
+    <div class="tp-hop-row"><button type="button" class="tp-hop-btn" data-layer="1">Add a layer</button><button type="button" class="tp-hop-btn undo" data-layer="-1">Take one off</button></div>
+    <p class="tp-readout">Layers: <b data-layer-count>0</b></p></div>`;
 }
 
 export function interactivePicture(model) {
@@ -191,77 +426,323 @@ export function interactivePicture(model) {
   if (model.type === "counters" && model.kind) return countFrames(model);
   if (model.type === "array") return tapArray(model);
   if (model.type === "numberline") return tapLine(model);
+  if (model.type === "placeChart") return placeChart(model);
+  if (model.type === "roundLine") return roundLine(model);
+  if (model.type === "coins") return coinCounter(model);
+  if (model.type === "pairs") return pairUp(model);
+  if (model.type === "percentBar") return percentBar(model);
+  if (model.type === "ratioTable") return ratioTable(model);
+  if (model.type === "lists") return factorLists(model);
+  if (model.type === "power") return powerChain(model);
+  if (model.type === "square") return squareGrow(model);
+  if (model.type === "shape" && model.shape === "rectangle" && model.allSides)
+    return tapPerimeter(model);
+  if (model.type === "layers") return stackLayers(model);
   return "";
 }
 
-// One delegated handler for every interactive model. Returns true when it handled the tap.
+function redrawLine(live) {
+  const hops = JSON.parse(live.dataset.hops || "[]");
+  const confirmed = Number(live.dataset.confirmed);
+  const start = Number(live.dataset.start);
+  const end = Number(live.dataset.end);
+  live.querySelector("[data-line]").innerHTML = lineSvg(
+    start,
+    hops,
+    end,
+    confirmed,
+  );
+  const waiting = hops.length > confirmed;
+  const landing = live.querySelector("[data-landing]");
+  landing.hidden = !waiting;
+  if (waiting) {
+    const at = tidy(start + hops.reduce((sum, hop) => sum + hop, 0));
+    landing.innerHTML = `Where did you land? ${box(at, "where the jump landed", 'data-then="landing"')}`;
+    landing.querySelector("input").focus();
+  }
+  live.querySelectorAll("[data-hop-size]").forEach((button) => {
+    button.disabled = waiting;
+  });
+  live.querySelector("[data-hop-undo]").disabled = hops.length === 0;
+}
+
+// Checked boxes: mark right (✓) or not yet, then let the model take its next step.
+export function handleModelInput(target) {
+  const input = target.closest?.(".tp-in[data-expect]");
+  if (!input || input.readOnly) return false;
+  const raw = input.value.replaceAll(",", "").replace("−", "-").trim();
+  const expect = Number(input.dataset.expect);
+  const right =
+    raw !== "" &&
+    Number.isFinite(Number(raw)) &&
+    Math.abs(Number(raw) - expect) < 1e-9;
+  const digits = (text) => String(text).replace(/[-.]/g, "").length;
+  input.classList.toggle("ok", right);
+  input.classList.toggle(
+    "no",
+    !right && digits(raw) >= digits(fmtN(expect).replaceAll(",", "")),
+  );
+  if (!right) return true;
+  input.readOnly = true;
+  const live = input.closest(".tp-live");
+  const then = input.dataset.then;
+  if (then === "landing") {
+    live.dataset.confirmed = Number(live.dataset.confirmed) + 1;
+    redrawLine(live);
+    live.querySelector("[data-hop-size]")?.focus();
+  } else if (then === "percent") {
+    live.querySelectorAll("[data-each]").forEach((label) => {
+      label.textContent = fmtN(expect);
+    });
+    live.querySelectorAll("[data-cell-index]").forEach((cell) => {
+      cell.disabled = false;
+    });
+  } else if (then === "ratio") {
+    const pending = [...live.querySelectorAll('[data-then="ratio"]')];
+    if (pending.every((box) => box.readOnly)) {
+      const cols = JSON.parse(live.dataset.cols);
+      cols.push(pending.map((box) => Number(box.dataset.expect)));
+      live.dataset.cols = JSON.stringify(cols);
+      live.querySelector("[data-ratio-table]").innerHTML = ratioTableHtml(
+        cols,
+        JSON.parse(live.dataset.labels),
+      );
+      live.querySelectorAll("[data-scale]").forEach((button) => {
+        button.disabled = false;
+      });
+    } else pending.find((box) => !box.readOnly)?.focus();
+  } else if (then === "multiple") {
+    const n = Number(input.dataset.multipleOf);
+    const chips = live.querySelector(`[data-chips="${n}"]`);
+    chips.insertAdjacentHTML(
+      "beforeend",
+      `<b data-chip="${expect}">${fmtN(expect)}</b>`,
+    );
+    if (chips.children.length < 12) {
+      input.insertAdjacentHTML(
+        "afterend",
+        box(
+          expect + n,
+          `the next multiple of ${n}`,
+          `data-then="multiple" data-multiple-of="${n}"`,
+        ),
+      );
+      input.nextElementSibling.focus();
+    }
+    input.remove();
+    markShared(live);
+  } else if (then === "power") {
+    const used = Number(input.dataset.used);
+    const base = Number(live.dataset.base);
+    if (used < Number(live.dataset.exponent)) {
+      live
+        .querySelector("[data-chain]")
+        .insertAdjacentHTML("beforeend", powerRow(base, used + 1));
+      live.querySelector("[data-chain] .tp-chain:last-child input").focus();
+    }
+  }
+  return true;
+}
+
+function markShared(live) {
+  const lists = [...live.querySelectorAll("[data-chips]")].map(
+    (list) =>
+      new Set([...list.querySelectorAll("b")].map((b) => b.dataset.chip)),
+  );
+  live.querySelectorAll("[data-chip]").forEach((chip) =>
+    chip.classList.toggle(
+      "shared",
+      lists.every((set) => set.has(chip.dataset.chip)),
+    ),
+  );
+}
+
+// One delegated handler for every model's buttons. Returns true when it handled the tap.
 export function handleModelTap(target) {
   const live = target.closest(".tp-live");
   if (!live) return false;
-  const readout = live.querySelector("[data-readout]");
   const cell = target.closest("[data-cell]");
   if (cell) {
     const kind = live.dataset.kind;
     if (kind === "join") {
-      if (cell.dataset.n) return true;
-      const n = live.querySelectorAll("[data-n]").length + 1;
-      cell.dataset.n = n;
-      cell.textContent = n;
-      readout.textContent = n;
-    } else if (kind === "takeAway") {
-      cell.classList.toggle("gone");
-      readout.textContent = live.querySelectorAll(".tp-cell.dot:not(.gone)").length;
-    } else if (cell.classList.contains("slot") || cell.classList.contains("filled")) {
+      if (!cell.dataset.n) {
+        cell.dataset.n = live.querySelectorAll("[data-n]").length + 1;
+        cell.textContent = cell.dataset.n;
+      }
+    } else if (kind === "takeAway") cell.classList.toggle("gone");
+    else if (
+      cell.classList.contains("slot") ||
+      cell.classList.contains("filled")
+    )
       cell.classList.toggle("filled");
-      readout.textContent = live.querySelectorAll(".tp-cell.filled").length;
-    }
     return true;
   }
   const row = target.closest("[data-row]");
   if (row) {
     const rows = [...live.querySelectorAll("[data-row]")];
-    const size = Number(live.dataset.size);
     const counted = rows.filter((r) => r.classList.contains("counted")).length;
-    // Rows count in order: tapping counts the next row; tapping the last counted row undoes it.
-    if (row.classList.contains("counted") && rows.indexOf(row) === counted - 1) {
+    if (row.classList.contains("counted") && rows.indexOf(row) === counted - 1)
       row.classList.remove("counted");
-      row.querySelector(".tp-run").textContent = "";
-    } else if (!row.classList.contains("counted")) {
-      const next = rows[counted];
-      next.classList.add("counted");
-      next.querySelector(".tp-run").textContent = ((counted + 1) * size).toLocaleString("en-US");
-    }
-    readout.textContent = (rows.filter((r) => r.classList.contains("counted")).length * size).toLocaleString("en-US");
+    else if (!row.classList.contains("counted"))
+      rows[counted].classList.add("counted");
+    live.querySelector("[data-rows]").textContent = rows.filter((r) =>
+      r.classList.contains("counted"),
+    ).length;
     return true;
   }
-  const part = target.closest("[data-part]");
-  if (part) {
-    part.classList.add("done");
-    part.querySelector("[data-product]").textContent = `= ${Number(part.dataset.part).toLocaleString("en-US")}`;
-    const sum = [...live.querySelectorAll(".tp-part.done")].reduce((total, p) => total + Number(p.dataset.part), 0);
-    readout.textContent = sum.toLocaleString("en-US");
-    return true;
-  }
-  const sizeButton = target.closest("[data-hop-size], [data-hop-undo]");
-  if (sizeButton && live.dataset.live === "line") {
+  const hop = target.closest("[data-hop-size], [data-hop-undo]");
+  if (hop && live.dataset.live === "line") {
     const hops = JSON.parse(live.dataset.hops || "[]");
-    if (sizeButton.hasAttribute("data-hop-undo")) hops.pop();
-    else if (hops.length < 30) hops.push(Number(sizeButton.dataset.hopSize));
+    if (hop.hasAttribute("data-hop-undo")) {
+      hops.pop();
+      live.dataset.confirmed = Math.min(
+        Number(live.dataset.confirmed),
+        hops.length,
+      );
+    } else if (hops.length < 30) hops.push(Number(hop.dataset.hopSize));
     live.dataset.hops = JSON.stringify(hops);
-    const start = Number(live.dataset.start);
-    live.querySelector("[data-line]").innerHTML = lineSvg(start, hops, Number(live.dataset.end));
-    const moved = hops.reduce((sum, hop) => sum + hop, 0);
-    readout.textContent = `${moved > 0 ? "+" : moved < 0 ? "−" : ""}${Math.abs(moved).toLocaleString("en-US")}`;
-    live.querySelector("[data-hop-undo]").disabled = hops.length === 0;
-    const goal = Number(live.dataset.end) - start;
-    live.classList.toggle("landed", moved === goal);
-    const note = live.querySelector("[data-landed]");
-    if (note) note.hidden = moved !== goal;
+    redrawLine(live);
+    return true;
+  }
+  const digit = target.closest("[data-digit]");
+  if (digit) {
+    live
+      .querySelectorAll(".tp-digit.on")
+      .forEach((d) => d.classList.remove("on"));
+    digit.classList.add("on");
+    live.querySelector("[data-place-readout]").textContent =
+      `This ${digit.dataset.digit} is in the ${digit.dataset.digitName} place.`;
+    return true;
+  }
+  const coin = target.closest("[data-coin]");
+  if (coin) {
+    coin.classList.toggle("counted");
+    live.querySelector("[data-coins]").textContent =
+      live.querySelectorAll(".tp-coin.counted").length;
+    return true;
+  }
+  if (target.closest("[data-make-pairs]")) {
+    live.querySelector(".tp-pairs").classList.add("paired");
+    target.closest("button").disabled = true;
+    return true;
+  }
+  const percentCell = target.closest("[data-cell-index]");
+  if (percentCell) {
+    percentCell.classList.toggle("on");
+    const shaded = live.querySelectorAll(".tp-part-cell.on").length;
+    live.querySelector("[data-shaded]").textContent =
+      `${fmtN((shaded * 100) / Number(live.dataset.parts))}%`;
+    return true;
+  }
+  const scale = target.closest("[data-scale], [data-ratio-undo]");
+  if (scale) {
+    const cols = JSON.parse(live.dataset.cols);
+    const labels = JSON.parse(live.dataset.labels);
+    const note = live.querySelector("[data-ratio-note]");
+    note.textContent = "";
+    if (scale.hasAttribute("data-ratio-undo")) {
+      if (cols.length > 1 && !live.querySelector('[data-then="ratio"]'))
+        cols.pop();
+      live.dataset.cols = JSON.stringify(cols);
+      live.querySelector("[data-ratio-table]").innerHTML = ratioTableHtml(
+        cols,
+        labels,
+      );
+      live.querySelectorAll("[data-scale]").forEach((button) => {
+        button.disabled = false;
+      });
+      return true;
+    }
+    const factor = Number(scale.dataset.scale);
+    const values = cols.at(-1).map((value) => tidy(value * factor));
+    if (
+      values.some(
+        (value) => Math.abs(value * 100 - Math.round(value * 100)) > 1e-6,
+      )
+    ) {
+      note.textContent =
+        "That would make a tiny fraction. Try a different number.";
+      return true;
+    }
+    if (cols.length >= 6) {
+      note.textContent = "The table is full. Use Undo to try another step.";
+      return true;
+    }
+    const label = scale.dataset.scaleLabel || scale.textContent.trim();
+    live.querySelector("[data-ratio-table]").innerHTML = ratioTableHtml(
+      cols,
+      labels,
+      { values, label },
+    );
+    live.querySelectorAll("[data-scale]").forEach((button) => {
+      button.disabled = true;
+    });
+    live.querySelector('[data-then="ratio"]').focus();
+    return true;
+  }
+  const addFactor = target.closest("[data-add-factor]");
+  if (addFactor) {
+    const n = Number(addFactor.dataset.addFactor);
+    const input = live.querySelector(`[data-factor-of="${n}"]`);
+    const f = Number(input.value.trim());
+    const note = live.querySelector("[data-list-note]");
+    const chips = live.querySelector(`[data-chips="${n}"]`);
+    if (!Number.isInteger(f) || f < 1 || n % f !== 0) {
+      note.textContent = `${input.value.trim() || "That"} is not a factor of ${n}. A factor divides ${n} with nothing left over.`;
+      return true;
+    }
+    note.textContent = `${f} × ${n / f} = ${n}`;
+    for (const value of [f, n / f])
+      if (!chips.querySelector(`[data-chip="${value}"]`))
+        chips.insertAdjacentHTML(
+          "beforeend",
+          `<b data-chip="${value}">${value}</b>`,
+        );
+    [...chips.children]
+      .sort((a, b) => Number(a.dataset.chip) - Number(b.dataset.chip))
+      .forEach((chip) => chips.append(chip));
+    input.value = "";
+    input.focus();
+    markShared(live);
+    return true;
+  }
+  const grow = target.closest("[data-square-step]");
+  if (grow) {
+    const side = Math.max(
+      1,
+      Math.min(20, Number(live.dataset.side) + Number(grow.dataset.squareStep)),
+    );
+    live.dataset.side = side;
+    live.querySelector("[data-square]").innerHTML = squareHtml(side);
+    live.querySelector("[data-square-readout]").textContent = `Side: ${side}`;
+    return true;
+  }
+  const sideBtn = target.closest("[data-side]");
+  if (sideBtn) {
+    sideBtn.classList.toggle("walked");
+    live.querySelector("[data-sides]").textContent =
+      live.querySelectorAll(".tp-side.walked").length;
+    return true;
+  }
+  const layer = target.closest("[data-layer]");
+  if (layer) {
+    const count = Math.max(
+      0,
+      Math.min(
+        Number(live.dataset.height) + 2,
+        Number(live.dataset.count) + Number(layer.dataset.layer),
+      ),
+    );
+    live.dataset.count = count;
+    live.querySelector("[data-layers]").innerHTML = Array.from(
+      { length: count },
+      () => "<span></span>",
+    ).join("");
+    live.querySelector("[data-layer-count]").textContent = count;
     return true;
   }
   return false;
 }
-
 // Exponents print as superscripts; everything else stays plain text.
 export const mathText = (text) => esc(text).replace(/\^(-?\d+)/g, "<sup>$1</sup>");
 

@@ -10,7 +10,7 @@ import {
 import { adaptiveProblem, dailyPlan, diagnosticPlan, difficulty, emptyTutor, evidence, feedbackFor, findSkill, localDay, prerequisites, recommendations, recordAnswer, rememberMistake, sanitizeTutor, skillKey as tutorSkillKey } from "./tutor-engine.js";
 import { mountVisualLesson, renderModel, renderInlineProblemModel } from "./visual-lab.js";
 import { transferPrompt } from "./lesson-content.js";
-import { handleModelTap, interactivePicture, mathText, stepVisual, stepsBlock, trailPicture } from "./trail-pictures.js";
+import { handleModelInput, handleModelTap, interactivePicture, mathText, stepVisual, stepsBlock, trailPicture } from "./trail-pictures.js";
 import { PROFILE_NAMES, assignmentQueue, cleanProgress, decodeAssignment, downloadFile, makeBackup, mountTeacherStudio, parseBackup, profileKey, profiles, progressReport, readLocal, selectProfile, writeLocal } from "./school-tools.js";
 import { mountWorkbench } from "./workbench.js";
 import { createWorkbenchState } from "./workbench-state.js";
@@ -1197,6 +1197,8 @@ els.toggleProblemVisual?.addEventListener("click", () => {
   els.toggleProblemVisual.textContent = host.hidden ? "Show the model" : "Hide the model";
 });
 els.problemVisualScaffold?.addEventListener("click", (event) => handleModelTap(event.target));
+els.problemVisualScaffold?.addEventListener("input", (event) => handleModelInput(event.target));
+els.learnPanel.addEventListener("input", (event) => handleModelInput(event.target));
 
 document.querySelector("#brand-home")?.addEventListener("click", () => {
   renderLibrary();

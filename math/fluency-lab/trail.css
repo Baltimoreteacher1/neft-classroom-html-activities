@@ -1877,3 +1877,381 @@ body.working-on-skill .hub-tabs {
 .tp-live.landed .tp-readout b {
   color: var(--t-good);
 }
+
+/* ---------- more interactive models ---------- */
+.tp-place {
+  margin: 0 auto;
+  border-collapse: separate;
+  border-spacing: 4px;
+}
+
+.tp-place th {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--t-ink-soft);
+  padding: 0 0.2rem;
+}
+
+.tp-place td.tp-point {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.tp-digit {
+  width: 2.6rem;
+  height: 2.8rem;
+  border: 2px solid var(--t-rule);
+  border-radius: 10px;
+  background: #fff;
+  font: inherit;
+  font-size: 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tp-digit.on {
+  border-color: var(--trail);
+  background: color-mix(in srgb, var(--trail) 14%, #fff);
+}
+
+.tp-jump.alt {
+  stroke: var(--t-gold);
+}
+
+.tp-coins {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.tp-coin {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border: 3px solid #b8862d;
+  border-radius: 50%;
+  background: #f6d98a;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tp-coin.c1 {
+  border-color: #a5612f;
+  background: #e2a57a;
+  width: 40px;
+  height: 40px;
+  font-size: 0.8rem;
+}
+
+.tp-coin.c10 {
+  width: 42px;
+  height: 42px;
+  border-color: #8b97a8;
+  background: #e3e8ef;
+}
+
+.tp-coin.c5 {
+  border-color: #8b97a8;
+  background: #d5dce5;
+}
+
+.tp-coin.counted {
+  opacity: 0.45;
+  position: relative;
+}
+
+.tp-coin.counted::after {
+  content: attr(data-running);
+  position: absolute;
+  top: -0.9rem;
+  font-size: 0.75rem;
+  color: var(--trail);
+}
+
+.tp-pairs {
+  display: inline-grid;
+  grid-auto-flow: row;
+  grid-template-columns: repeat(10, 14px);
+  gap: 6px;
+  padding: 8px;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.tp-pairs .sv-dot {
+  width: 14px;
+  height: 14px;
+}
+
+.tp-pairs.paired {
+  grid-template-rows: repeat(2, 14px);
+  grid-template-columns: none;
+  grid-auto-flow: column;
+}
+
+.tp-percent {
+  display: flex;
+  max-width: 560px;
+  margin: 0 auto;
+  border: 3px solid var(--t-ink);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tp-part-cell {
+  flex: 1;
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.5rem 0.2rem;
+  border: 0;
+  border-right: 2px dashed var(--t-rule);
+  background: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.tp-part-cell:last-child {
+  border-right: 0;
+}
+
+.tp-part-cell small {
+  font-size: 0.7rem;
+  color: var(--t-ink-soft);
+}
+
+.tp-part-cell.on {
+  background: color-mix(in srgb, var(--trail) 30%, #fff);
+}
+
+.tp-ratio {
+  margin: 0 auto 0.6rem;
+  border-collapse: collapse;
+}
+
+.tp-ratio th,
+.tp-ratio td {
+  min-width: 3rem;
+  padding: 0.35rem 0.6rem;
+  border: 2px solid var(--t-rule);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.tp-ratio th {
+  background: #f4f6f9;
+  font-size: 0.85rem;
+}
+
+.tp-ratio td.latest {
+  background: color-mix(in srgb, var(--trail) 14%, #fff);
+}
+
+.tp-scale-row .tp-hop-btn {
+  min-height: 38px;
+  padding: 0.25rem 0.65rem;
+}
+
+.tp-list-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.4rem 0;
+}
+
+.tp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.tp-chips b {
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: #f1f4f8;
+}
+
+.tp-chips b.shared {
+  background: var(--trail);
+  color: #fff;
+}
+
+.tp-chain {
+  margin: 0.4rem 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.sv-array.square {
+  margin: 0 auto;
+}
+
+.tp-rect-sides {
+  display: grid;
+  grid-template-columns: auto 200px auto;
+  grid-template-rows: auto 110px auto;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+
+.tp-rect-sides .top {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.tp-rect-sides .left {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.tp-rect-inside {
+  grid-column: 2;
+  grid-row: 2;
+  height: 100%;
+  border: 3px solid var(--t-ink);
+  background: color-mix(in srgb, var(--trail) 8%, #fff);
+}
+
+.tp-rect-sides .right {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.tp-rect-sides .bottom {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.tp-side {
+  min-width: 44px;
+  min-height: 36px;
+  border: 2px dashed var(--trail);
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tp-side.walked {
+  border-style: solid;
+  background: var(--trail);
+  color: #fff;
+}
+
+.tp-layers {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 3px;
+  min-height: 24px;
+}
+
+.tp-layers span {
+  width: 160px;
+  height: 14px;
+  border-radius: 3px;
+  background: var(--trail);
+  box-shadow: 4px -4px 0 color-mix(in srgb, var(--trail) 55%, #fff);
+}
+
+/* ---------- boxes students fill in inside a model ---------- */
+.tp-in {
+  width: 5.2rem;
+  min-height: 40px;
+  padding: 0.2rem 0.4rem;
+  border: 2px solid var(--t-rule);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--t-ink);
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.tp-in:focus {
+  border-color: var(--trail);
+  outline: none;
+}
+
+.tp-in.ok {
+  border-color: var(--t-good);
+  background: var(--t-good-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3 3 7-7' fill='none' stroke='%231e8a5a' stroke-width='2.5'/%3E%3C/svg%3E") no-repeat right 0.3rem center / 0.9rem;
+  padding-right: 1.3rem;
+}
+
+.tp-in.no {
+  border-color: var(--t-practice);
+  background: var(--t-practice-soft);
+}
+
+.tp-in.wide {
+  width: 4rem;
+}
+
+.tp-part {
+  display: grid;
+  gap: 0.35rem;
+  place-items: center;
+  padding: 0.5rem 0.3rem;
+  background: color-mix(in srgb, var(--trail) 16%, #fff);
+}
+
+.tp-part + .tp-part {
+  border-left: 3px dashed var(--t-ink);
+  background: color-mix(in srgb, var(--t-gold) 22%, #fff);
+}
+
+.tp-sum,
+.tp-landing {
+  margin: 0.6rem 0 0;
+  font-weight: 600;
+}
+
+.tp-landing {
+  margin-bottom: 0.5rem;
+}
+
+.tp-list-name {
+  min-width: 8.5rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.tp-ratio caption {
+  caption-side: top;
+  padding-bottom: 0.25rem;
+  font-weight: 700;
+  color: var(--trail);
+}
+
+.tp-ratio td.latest {
+  padding: 0.2rem;
+}
+
+.tp-ratio .tp-in {
+  width: 4.5rem;
+}
+
+.tp-chain {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1.25rem;
+}
+
+.tp-percent .tp-part-cell:disabled {
+  cursor: default;
+  opacity: 0.75;
+}
+
+.tp-hop-btn:disabled {
+  opacity: 0.45;
+}

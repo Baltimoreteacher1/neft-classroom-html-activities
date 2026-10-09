@@ -64,7 +64,7 @@ for (const grade of [1, 2, 3, 4, 5, 6, 7, 8]) {
       if (model?.type === "numberline") {
         const end = model.start + model.jumps.reduce((sum, jump) => sum + jump, 0);
         check(
-          end === number(answer),
+          Math.abs((model.group ? (end - model.start) / model.group : end) - number(answer)) < 1e-9,
           `${grade}/${station.id}: number line does not land on the answer for ${item.question}.`,
         );
         check(
