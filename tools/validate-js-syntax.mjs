@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { execFileSync } from "node:child_process";
+import { execFile } from "node:child_process";
 /**
  * validate-js-syntax — parse every shipped .js/.mjs file and every inline
  * <script> block in every .html page, and fail on any SyntaxError.
@@ -17,6 +17,7 @@ import { execFileSync } from "node:child_process";
  * enough to sit inside `npm run validate` on every push.
  */
 import fs from "node:fs";
+import { availableParallelism } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
@@ -59,35 +60,52 @@ function walk(dir, out = []) {
 
 const isEsm = (src) => /^\s*(?:import|export)\s/m.test(src);
 
-/** Parse `src`; return null when fine, else a short message. */
-function parseError(src, { esm }) {
-  if (esm) {
-    // vm can't parse ESM without an experimental flag, so shell out to
-    // `node --check`, which understands .mjs. Only ESM pays this cost.
-    // Per-process temp name: two concurrent runs sharing one fixed path race on
-    // the write/unlink and report bogus "Cannot find module" errors against
-    // whichever unrelated file happened to be mid-check.
-    const tmp = path.join(ROOT, `.js-syntax-check.${process.pid}.mjs`);
-    try {
-      fs.writeFileSync(tmp, src);
-      execFileSync(process.execPath, ["--check", tmp], { stdio: "pipe" });
-      return null;
-    } catch (e) {
-      const out = String(e.stderr || e.message || "");
-      const line = out.split("\n").find((l) => /Error/.test(l));
-      return (line || "parse error").trim().slice(0, 120);
-    } finally {
-      try {
-        fs.unlinkSync(tmp);
-      } catch {}
-    }
-  }
+/** Parse classic script `src` in-process; null when fine, else a short message. */
+function scriptError(src) {
   try {
     new vm.Script(src);
     return null;
   } catch (e) {
     return String(e.message).slice(0, 120);
   }
+}
+
+/** Parse ESM `src`; resolves null when fine, else a short message.
+ * vm can't parse ESM without an experimental flag, so this shells out to
+ * `node --check`, which understands .mjs. Those spawns are the cost of this
+ * gate (~1,000 of them), so they run in a pool — see checkAll(). Each call
+ * gets its own temp name: a shared path races on write/unlink and reports
+ * bogus "Cannot find module" errors against an unrelated file. */
+let tmpSeq = 0;
+function moduleError(src) {
+  const tmp = path.join(ROOT, `.js-syntax-check.${process.pid}.${tmpSeq++}.mjs`);
+  fs.writeFileSync(tmp, src);
+  return new Promise((resolve) => {
+    execFile(process.execPath, ["--check", tmp], (err, _stdout, stderr) => {
+      try {
+        fs.unlinkSync(tmp);
+      } catch {}
+      if (!err) return resolve(null);
+      const out = String(stderr || err.message || "");
+      const line = out.split("\n").find((l) => /Error/.test(l));
+      resolve((line || "parse error").trim().slice(0, 120));
+    });
+  });
+}
+
+/** Check every item; failures come back in item order. */
+async function checkAll(items, jobs) {
+  const errors = new Array(items.length).fill(null);
+  let next = 0;
+  const worker = async () => {
+    while (next < items.length) {
+      const i = next++;
+      const { src, esm } = items[i];
+      errors[i] = esm ? await moduleError(src) : scriptError(src);
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(jobs, items.length) }, worker));
+  return items.flatMap((item, i) => (errors[i] ? [`${item.label}: ${errors[i]}`] : []));
 }
 
 const files = walk(ROOT);
@@ -103,7 +121,7 @@ assertSweptEnough(
   "Discovery for validate:js-syntax returned far fewer items than this gate's pinned floor — see data/sweep-floors.json.",
 );
 
-const failures = [];
+const items = [];
 let jsCount = 0;
 let htmlCount = 0;
 let inlineCount = 0;
@@ -115,8 +133,7 @@ for (const abs of files) {
   if (/\.(?:js|mjs)$/.test(rel)) {
     jsCount++;
     const src = fs.readFileSync(abs, "utf8");
-    const err = parseError(src, { esm: rel.endsWith(".mjs") || isEsm(src) });
-    if (err) failures.push(`${rel}: ${err}`);
+    items.push({ label: rel, src, esm: rel.endsWith(".mjs") || isEsm(src) });
     continue;
   }
 
@@ -136,10 +153,15 @@ for (const abs of files) {
     if (type && !/javascript|module/i.test(type)) continue;
     if (!body.trim()) continue;
     inlineCount++;
-    const err = parseError(body, { esm: /module/i.test(type) || isEsm(body) });
-    if (err) failures.push(`${rel} [inline script #${n}]: ${err}`);
+    items.push({
+      label: `${rel} [inline script #${n}]`,
+      src: body,
+      esm: /module/i.test(type) || isEsm(body),
+    });
   }
 }
+
+const failures = await checkAll(items, Math.max(1, availableParallelism() - 1));
 
 console.log(
   `JS syntax validation — ${jsCount} script file(s), ${inlineCount} inline block(s) across ${htmlCount} page(s)`,
