@@ -312,6 +312,9 @@
       .card h4 { font-family: "Nunito", system-ui, sans-serif; font-size: 1.1rem; font-weight: 800; margin: 0; }
       [hidden] { display: none !important; }
       .arcade-discovery .grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); }
+      .continue-shelf { margin: 0 0 18px; }
+      .continue-shelf h2 { font-family: "Nunito", system-ui, sans-serif; font-size: 1.25rem; margin: 0 0 10px; }
+      .play-mark { display: inline-block; margin-top: 6px; font-size: 0.82rem; font-weight: 800; color: #1d5549; }
       @media (prefers-reduced-motion: reduce) {
         .btn,
         .card {
@@ -469,6 +472,39 @@
     <script>
       // Progressive enhancement: every card is a plain link without this.
       (function () {
+        var records = {};
+        try { records = JSON.parse(localStorage.getItem("ewl-studio-play-record") || "{}"); } catch (e) {}
+        function recordFor(href) {
+          try {
+            var path = new URL(href, location.origin).pathname;
+            return records[path] || records[path.replace(/\/$/, "")] || records[path.endsWith("/") ? path : path + "/"] || null;
+          } catch (e) { return null; }
+        }
+        var played = [];
+        document.querySelectorAll(".card[href]").forEach(function (card) {
+          var rec = recordFor(card.getAttribute("href"));
+          if (!rec) return;
+          var mark = document.createElement("span");
+          mark.className = "play-mark";
+          var stars = Math.max(0, Math.min(3, Number(rec.bestStars) || 0));
+          mark.textContent = "Played " + (rec.completed || 1) + (stars ? " · " + "★★★".slice(0, stars) + "☆☆☆".slice(stars) : "");
+          card.appendChild(mark);
+          played.push({ card: card, rec: rec });
+        });
+        played.sort(function (a, b) { return (b.rec.lastPlayed || 0) - (a.rec.lastPlayed || 0); });
+        if (played.length) {
+          var shelf = document.createElement("section");
+          shelf.className = "continue-shelf";
+          shelf.setAttribute("aria-label", "Continue a game");
+          var heading = document.createElement("h2");
+          heading.textContent = "Continue";
+          var row = document.createElement("div");
+          row.className = "grid";
+          played.slice(0, 3).forEach(function (item) { row.appendChild(item.card.cloneNode(true)); });
+          shelf.append(heading, row);
+          var start = document.querySelector(".start-here");
+          if (start) start.after(shelf);
+        }
         var input = document.getElementById("arcade-find");
         var buttons = Array.prototype.slice.call(document.querySelectorAll(".unit-filter"));
         var blocks = Array.prototype.slice.call(document.querySelectorAll(".unit-block"));

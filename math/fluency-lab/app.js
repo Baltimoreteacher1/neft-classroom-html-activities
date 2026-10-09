@@ -11,6 +11,7 @@ import { adaptiveProblem, dailyPlan, diagnosticPlan, difficulty, emptyTutor, evi
 import { mountVisualLesson, renderModel, renderInlineProblemModel } from "./visual-lab.js";
 import { transferPrompt, getPublisherExplanation, getDynamicGuidedSteps } from "./lesson-content.js";
 import { PROFILE_NAMES, assignmentQueue, cleanProgress, decodeAssignment, downloadFile, makeBackup, mountTeacherStudio, parseBackup, profileKey, profiles, progressReport, readLocal, selectProfile, writeLocal } from "./school-tools.js";
+import { mountWorkbench } from "./workbench.js";
 
 const STORAGE_KEY = "ewl-fluency-progress-v1";
 const SETTINGS_KEY = "ewl-fluency-settings-v1";
@@ -227,10 +228,29 @@ function renderLibrary() {
   document.title = `${grade.label} Math Fluency Lab | EduWonderLab`;
 }
 
+function getSkillModelBadge(skill) {
+  const g = skill.grade || 1;
+  const gen = skill.generator;
+  const op = skill.config?.op;
+  if (gen === "fact" && op === "mul") return "🔲 Area / Array Model";
+  if (gen === "fact" && op === "div") return "📦 Partition / Equal Groups";
+  if (gen === "fact" && (g <= 2 && (skill.config?.max <= 10 || skill.config?.maxResult <= 20))) return "🔵 Ten-Frames";
+  if (gen === "fact" || gen === "sequence") return "📏 Open Number Line";
+  if (gen === "fraction" || gen === "equivalentFractions" || gen === "fractionArithmetic") return "🍰 Fraction Strips";
+  if (gen === "solve" || gen === "linear-equations" || gen === "one-step") return "⚖️ Balance Scale";
+  if (gen === "integers" || gen === "signedNumbers") return "➕➖ Zero-Pair Chips";
+  if (gen === "ratio" || gen === "unitRate" || gen === "proportion" || gen === "percent") return "📊 Ratio Table";
+  if (gen === "coordinate") return "📈 Coordinate Grid";
+  if (g <= 2) return "🔵 Counters & Frames";
+  if (g <= 5) return "📏 Number Line & Models";
+  return "💡 Visual Model";
+}
+
 function renderSkillCard(skill) {
   const record = recordFor(skill);
   const status = evidence(state.tutor, skill);
   const level = { label: status.label, level: status.secure ? 3 : status.independent >= 4 ? 2 : status.recent.length || status.lessonCompleted ? 1 : 0 };
+  const modelBadge = getSkillModelBadge(skill);
   return `
     <article class="skill-card" data-level="${level.level}">
       <div class="skill-card-top">
@@ -238,13 +258,16 @@ function renderSkillCard(skill) {
         <span class="mastery-pill level-${level.level}">${level.label}</span>
       </div>
       <h3>${escapeHtml(skill.title)}</h3>
+      <span class="manipulative-badge">${modelBadge}</span>
       <p>${escapeHtml(skill.learn.rule)}</p>
       <div class="skill-stats" aria-label="Skill progress">
         <span><strong>${status.independent ? `${status.successes}/${status.independent}` : "—"}</strong> recent independent</span>
         ${record.guidedProblems ? `<span><strong>${record.guidedProblems}</strong> guided</span>` : ""}
       </div>
-      <button class="open-skill" data-skill="${skill.id}">Open skill</button>
-      <button class="text-action" data-visual-skill="${skill.id}">See it &amp; build it</button>
+      <div class="skill-card-actions">
+        <button class="open-skill" data-skill="${skill.id}">Practice 10</button>
+        <button class="text-action visual-action" data-visual-skill="${skill.id}">🎨 See it &amp; build it</button>
+      </div>
     </article>`;
 }
 
@@ -635,12 +658,19 @@ function nextProblem(restoredItem = null) {
   els.hintButton.hidden = state.initialSupport || state.session.mode === "diagnostic";
   els.skip.hidden = state.session.mode !== "diagnostic";
   if (els.problemVisualScaffold) {
-    els.problemVisualScaffold.hidden = true;
-    els.problemVisualScaffold.innerHTML = "";
+    if (state.session.mode !== "diagnostic") {
+      els.problemVisualScaffold.hidden = false;
+      mountWorkbench(els.problemVisualScaffold, { skill: state.item.skill, item: state.item });
+    } else {
+      els.problemVisualScaffold.hidden = true;
+      els.problemVisualScaffold.innerHTML = "";
+    }
   }
   if (els.toggleProblemVisual) {
-    els.toggleProblemVisual.setAttribute("aria-expanded", "false");
+    const isOpen = Boolean(els.problemVisualScaffold && !els.problemVisualScaffold.hidden);
+    els.toggleProblemVisual.setAttribute("aria-expanded", String(isOpen));
     els.toggleProblemVisual.hidden = state.session.mode === "diagnostic";
+    els.toggleProblemVisual.textContent = isOpen ? "Hide visual tools" : "💡 Open visual tools";
   }
   els.repair.hidden = !adapting;
   els.checkButton.hidden = false;
@@ -1263,23 +1293,18 @@ for (const tablist of [els.gradeTabs, els.modeTabs]) tablist.addEventListener("k
   tabs[next].click(); tablist.querySelectorAll('[role="tab"]')[next]?.focus();
 });
 els.toggleProblemVisual?.addEventListener("click", () => {
-  if (!els.problemVisualScaffold || !state.item) return;
+  if (!els.problemVisualScaffold) return;
   const isHidden = els.problemVisualScaffold.hidden;
   els.problemVisualScaffold.hidden = !isHidden;
   els.toggleProblemVisual.setAttribute("aria-expanded", String(isHidden));
-  if (isHidden) {
-    const visualContent = renderInlineProblemModel(state.item.skill, state.item);
-    els.problemVisualScaffold.innerHTML = `
-      <div class="problem-visual-card">
-        <div class="problem-visual-header">
-          <span class="problem-visual-badge">Visual Scaffold</span>
-          <p>Model for: <strong>${escapeHtml(state.item.question)}</strong></p>
-        </div>
-        <div class="problem-visual-body">${visualContent || "<p>Think of the numbers on an open number line or in friendly chunks.</p>"}</div>
-      </div>
-    `;
-    els.problemVisualScaffold.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  els.toggleProblemVisual.textContent = isHidden ? "Hide visual tools" : "💡 Open visual tools";
+  if (isHidden && (!els.problemVisualScaffold.hasChildNodes() || !els.problemVisualScaffold.querySelector(".workbench-bar")) && state.item) {
+    mountWorkbench(els.problemVisualScaffold, { skill: state.item.skill, item: state.item });
   }
+});
+
+document.querySelector("#brand-home")?.addEventListener("click", () => {
+  renderLibrary();
 });
 
 els.quickSkillSelect?.addEventListener("change", (event) => {

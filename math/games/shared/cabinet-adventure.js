@@ -243,7 +243,24 @@
     function click(event){const button=event.target.closest('button');if(!button)return;if(button.dataset.view)show(button.dataset.view==='mission');else if(button.dataset.missionAction)handle(button.dataset.missionAction);}
     nav.addEventListener('click',click);root.addEventListener('click',click);
     root.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();show(false);}});
-    function reward(){state.supplies=Math.min(99999,state.supplies+4);state.earned=Math.min(99999,state.earned+1);message='Challenge solved! +4 supplies. Your mission is ready when you are.';save();render();nav.classList.remove('mission-reward');void nav.offsetWidth;nav.classList.add('mission-reward');document.dispatchEvent(new CustomEvent('cabinet:supplies',{detail:{id,supplies:state.supplies}}));}
+    let bonusStreak=0;
+    function reward(){
+      state.supplies=Math.min(99999,state.supplies+4);state.earned=Math.min(99999,state.earned+1);
+      message='Challenge solved! +4 supplies. Your mission is ready when you are.';
+      save();render();nav.classList.remove('mission-reward');void nav.offsetWidth;nav.classList.add('mission-reward');
+      document.dispatchEvent(new CustomEvent('cabinet:supplies',{detail:{id,supplies:state.supplies}}));
+      queueMicrotask(() => {
+        const streak=window.GameStudio?.session?.streak||0;
+        if(streak<bonusStreak)bonusStreak=0;
+        if(streak>=3 && streak%3===0 && streak!==bonusStreak){
+          bonusStreak=streak;
+          state.supplies=Math.min(99999,state.supplies+2);
+          message=`Streak of ${streak}. +2 bonus supplies on top of the 4 you earned.`;
+          save();render();
+          document.dispatchEvent(new CustomEvent('cabinet:supplies',{detail:{id,supplies:state.supplies,bonus:2}}));
+        }
+      });
+    }
     render();
     return {reward,show,resetCounter(){lastSolved=0;},observeSolved(value){if(Number.isFinite(value)&&value>lastSolved){const count=Math.min(value-lastSolved,1);lastSolved=value;if(count)reward();}},getState(){return structuredClone(state);},get open(){return isOpen;},decorate(scene){
       const textureKey='cabinet-world-'+artId;

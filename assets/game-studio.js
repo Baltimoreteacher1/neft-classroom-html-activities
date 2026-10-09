@@ -18,7 +18,9 @@
   let adapter = {};
   let paused = false;
   let dialogPaused = false;
-  let toolbar, dialog, soundButton, motionButton, pauseButton, notice;
+  let toolbar, dialog, soundButton, motionButton, pauseButton, notice, sessionRail, ceremony;
+  let audioCtx;
+  const session = { correct: 0, attempts: 0, streak: 0, bestStreak: 0, mastered: false };
   let notificationTimer;
   let previousFocus;
   const listeners = new EventTarget();
@@ -112,6 +114,114 @@
     dialog.append(button("Back to game", () => dialog.close()));
     dialog.showModal();
   }
+  function tone(kind) {
+    if (preferences.muted) return;
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
+      const now = audioCtx.currentTime + 0.01;
+      const notes =
+        kind === "good" ? [523, 659] : kind === "complete" ? [392, 523, 659] : [220, 196];
+      notes.forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = kind === "coach" ? "sine" : "triangle";
+        osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(0.0001, now + i * 0.07);
+        gain.gain.exponentialRampToValueAtTime(0.05, now + i * 0.07 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.07 + 0.18);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now + i * 0.07);
+        osc.stop(now + i * 0.07 + 0.2);
+      });
+    } catch {}
+  }
+  function stars() {
+    return [
+      session.correct >= 3,
+      session.bestStreak >= 3 || session.correct >= 8,
+      session.mastered,
+    ];
+  }
+  function renderSession() {
+    if (!sessionRail) return;
+    const earned = stars();
+    const mark = Math.floor(session.correct / 5) * 5;
+    const goal = mark + 5;
+    const into = session.correct - mark;
+    sessionRail.querySelector("[data-count]").textContent = `${session.correct} / ${goal} solved`;
+    sessionRail.querySelector(".studio-meter i").style.width = `${(into / 5) * 100}%`;
+    sessionRail.querySelector("[data-streak]").textContent =
+      session.streak > 1 ? `Streak ${session.streak}` : "Streak ready";
+    const starNode = sessionRail.querySelector("[data-stars]");
+    starNode.textContent = earned.map((on) => (on ? "★" : "☆")).join("");
+    starNode.setAttribute("aria-label", `${earned.filter(Boolean).length} of 3 stars`);
+  }
+  function noteFeedback(detail) {
+    if (typeof detail?.correct !== "boolean") return false;
+    session.attempts += 1;
+    if (detail.correct) {
+      session.correct += 1;
+      session.streak += 1;
+      session.bestStreak = Math.max(session.bestStreak, session.streak);
+      tone("good");
+    } else {
+      session.streak = 0;
+      tone("coach");
+    }
+    renderSession();
+    return detail.correct && session.correct > 0 && session.correct % 5 === 0;
+  }
+  function noteComplete(detail) {
+    const total = Number(detail?.total);
+    const correct = Number(detail?.correct);
+    const accuracy = Number(detail?.accuracy);
+    const ratio = Number.isFinite(accuracy)
+      ? accuracy / 100
+      : Number.isFinite(total) && total > 0 && Number.isFinite(correct)
+        ? correct / total
+        : session.attempts
+          ? session.correct / session.attempts
+          : 0;
+    const sample = Number.isFinite(total) && total > 0 ? total : session.attempts;
+    if (sample >= 4 && ratio >= 0.8) session.mastered = true;
+    renderSession();
+    tone("complete");
+    if (!ceremony) return;
+    const earned = stars();
+    const lines = [
+      earned[0] ? "Star 1: three correct answers." : "Star 1 opens after three correct answers.",
+      earned[1]
+        ? "Star 2: a streak of three, or eight correct."
+        : "Star 2 opens with a streak of three, or eight correct.",
+      earned[2]
+        ? "Star 3: at least 80% on a finished round."
+        : "Star 3 opens at 80% on a finished round of four or more.",
+    ];
+    ceremony.replaceChildren();
+    const title = document.createElement("h2");
+    title.id = "studio-ceremony-title";
+    title.textContent = earned.filter(Boolean).length
+      ? `${earned.filter(Boolean).length} of 3 stars`
+      : "Round complete";
+    const score = document.createElement("p");
+    score.textContent =
+      detail?.message || "Round complete. Your stars stay with this game on this device.";
+    const list = document.createElement("ul");
+    lines.forEach((line) => {
+      const li = document.createElement("li");
+      li.textContent = line;
+      list.append(li);
+    });
+    ceremony.append(
+      title,
+      score,
+      list,
+      button("Back to the game", () => ceremony.close()),
+    );
+    if (!ceremony.open) ceremony.showModal();
+  }
   function announce(text, kind = "info") {
     if (!notice || !text) return;
     clearTimeout(notificationTimer);
@@ -132,6 +242,7 @@
         completed: Math.min(100000, (Number(previous.completed) || 0) + 1),
         lastPlayed: Date.now(),
         bestScore: Math.max(Number(previous.bestScore) || 0, Number(detail.score) || 0),
+        bestStars: Math.max(Number(previous.bestStars) || 0, stars().filter(Boolean).length),
       };
       localStorage.setItem("ewl-studio-play-record", JSON.stringify(raw));
     } catch {}
@@ -179,8 +290,19 @@
     notice.setAttribute("role", "status");
     notice.setAttribute("aria-live", "polite");
     notice.hidden = true;
+    sessionRail = document.createElement("section");
+    sessionRail.className = "studio-session";
+    sessionRail.setAttribute("aria-label", "This round");
+    sessionRail.innerHTML =
+      '<p class="studio-objective"><span>Objective</span> <strong data-count>0 / 5 solved</strong><span class="studio-meter" aria-hidden="true"><i></i></span></p><p data-streak>Streak ready</p><p data-stars aria-label="0 of 3 stars">☆☆☆</p>';
+    ceremony = document.createElement("dialog");
+    ceremony.className = "studio-dialog studio-ceremony";
+    ceremony.setAttribute("aria-labelledby", "studio-ceremony-title");
+    ceremony.setAttribute("closedby", "closerequest");
     document.body.prepend(toolbar);
-    document.body.append(dialog, notice);
+    toolbar.after(sessionRail);
+    document.body.append(dialog, ceremony, notice);
+    renderSession();
     apply();
   }
   const api = {
@@ -194,6 +316,9 @@
     },
     get paused() {
       return paused;
+    },
+    get session() {
+      return { ...session, stars: stars().filter(Boolean).length };
     },
     emit(name, detail = {}) {
       document.dispatchEvent(new CustomEvent(`game:${name}`, { detail }));
@@ -230,11 +355,18 @@
     if (value !== preferences.muted) api.setMuted(value);
   });
   document.addEventListener("game:feedback", (event) => {
-    const { correct, message } = /** @type {CustomEvent} */ (event).detail || {};
-    if (message) announce(message, correct ? "good" : "coach");
+    const detail = /** @type {CustomEvent} */ (event).detail || {};
+    const objective = noteFeedback(detail);
+    if (detail.message) announce(detail.message, detail.correct ? "good" : "coach");
+    if (objective)
+      announce(
+        `Objective complete: ${session.correct} solved. The next mark is ${session.correct + 5}.`,
+        "good",
+      );
   });
   document.addEventListener("game:complete", (event) => {
     const detail = /** @type {CustomEvent} */ (event).detail || {};
+    noteComplete(detail);
     recordComplete(detail);
     const count =
       Number.isFinite(detail.correct) && Number.isFinite(detail.total) && detail.total > 0

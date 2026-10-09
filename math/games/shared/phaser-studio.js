@@ -81,7 +81,8 @@
       feedback.textContent = value || '';
       const readout = current.readout && current.readout.text;
       const solved = current.solved || 0;
-      progress.textContent = current.sys.settings.key === 'Game' ? 'Solved ' + solved + (Number.isFinite(current.target) ? ' / ' + current.target : '') + ' · Score ' + (current.score || 0) + (readout ? ' · ' + readout : '') : 'Take your time. Your expedition is self paced.';
+      const streak = window.GameStudio?.session?.streak || 0;
+      progress.textContent = current.sys.settings.key === 'Game' ? 'Solved ' + solved + (Number.isFinite(current.target) ? ' / ' + current.target : '') + ' · Score ' + (current.score || 0) + (streak > 1 ? ' · Streak ' + streak : '') + (readout ? ' · ' + readout : '') : 'Take your time. Your expedition is self paced.';
       const texts = current.children.list.filter(obj => obj.type === 'Text' && obj.visible && obj.alpha > 0).map(obj => obj.text);
       root.querySelector('.cabinet-screen-text').textContent = [...new Set(texts)].join('\n');
     }

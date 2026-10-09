@@ -687,3 +687,428 @@ button:disabled { cursor: default; opacity: .65; }
   overflow-x: auto;
   padding: 0.5rem 0;
 }
+
+/* Interactive Math Manipulatives Workbench */
+.interactive-math-workbench {
+  background: white;
+  border: 2px solid var(--navy);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(23, 52, 95, 0.1);
+  margin: 1.5rem 0;
+}
+.workbench-bar {
+  background: #f0f6ff;
+  border-bottom: 2px solid #b8d4f8;
+  padding: 0.9rem 1.1rem 0.5rem;
+}
+.workbench-header-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+}
+.workbench-title {
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--navy);
+}
+.workbench-subtitle {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+.workbench-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.tool-tab {
+  background: white;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  padding: 0.45rem 0.8rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.tool-tab:hover {
+  background: var(--blue-soft);
+  border-color: var(--navy);
+}
+.tool-tab.active {
+  background: var(--navy);
+  color: white;
+  border-color: var(--navy);
+  box-shadow: 0 2px 6px rgba(23, 52, 95, 0.25);
+}
+.workbench-body {
+  padding: 1.25rem;
+}
+.tool-canvas {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.tool-instruction {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--ink);
+}
+.tool-controls-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: var(--paper);
+  padding: 0.65rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.92rem;
+}
+.tool-button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.mini-tool-btn {
+  background: white;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--navy);
+  cursor: pointer;
+}
+.mini-tool-btn:hover {
+  background: var(--blue-soft);
+}
+.mini-tool-btn.danger {
+  color: var(--bad);
+  border-color: #fca5a5;
+}
+.mini-tool-btn.danger:hover {
+  background: var(--bad-soft);
+}
+.interactive-counter-board {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(36px, 48px));
+  gap: 6px;
+  margin: 0.75rem auto;
+  max-width: 540px;
+}
+.interactive-counter-cell {
+  aspect-ratio: 1;
+  background: white;
+  border: 2px solid var(--navy);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.15s;
+}
+.interactive-counter-cell:hover {
+  transform: scale(1.08);
+  border-color: #2563eb;
+}
+.interactive-counter-cell.filled {
+  background: #2563eb;
+  color: white;
+  border-color: #1d4ed8;
+}
+.counter-tally-readout {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--ink);
+  text-align: center;
+}
+.tally-num {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--good);
+}
+.numberline-svg-wrap {
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.5rem;
+  overflow-x: auto;
+}
+.numberline-svg {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  display: block;
+  margin: auto;
+}
+.numberline-readout {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  background: var(--paper);
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+}
+.fraction-strips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+.fraction-strip-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.strip-label {
+  min-width: 110px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--navy);
+}
+.interactive-fraction-strip {
+  flex: 1;
+  display: flex;
+  height: 38px;
+  border: 2px solid var(--navy);
+  border-radius: 6px;
+  overflow: hidden;
+  background: white;
+}
+.fraction-strip-piece {
+  flex: 1;
+  border: none;
+  border-right: 1px solid var(--navy);
+  background: white;
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.fraction-strip-piece:last-child {
+  border-right: none;
+}
+.fraction-strip-piece.shaded {
+  background: #38bdf8;
+  color: #0c4a6e;
+  font-weight: 700;
+}
+.fraction-strip-piece.filled {
+  background: #e2e8f0;
+  color: #334155;
+  font-weight: 700;
+}
+.array-inputs {
+  display: flex;
+  gap: 0.75rem;
+}
+.mini-num-input {
+  width: 50px;
+  padding: 2px 4px;
+  font-size: 0.9rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+}
+.array-visual-split-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1rem;
+}
+.array-split-header p {
+  margin: 0 0 0.35rem 0;
+}
+.array-equation-breakdown {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 1.05rem;
+  color: var(--navy);
+  font-weight: 700;
+}
+.array-split-boxes {
+  display: flex;
+  height: 80px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 2px solid var(--navy);
+  margin-top: 0.75rem;
+}
+.array-part {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+}
+.part-a {
+  background: #bfdbfe;
+  color: #1e3a8a;
+  border-right: 2px dashed var(--navy);
+}
+.part-b {
+  background: #fed7aa;
+  color: #7c2d12;
+}
+
+/* Copy to answer button */
+.mini-tool-btn.copy-btn {
+  background: #ecfdf5;
+  color: #065f46;
+  border-color: #a7f3d0;
+  font-weight: 700;
+}
+.mini-tool-btn.copy-btn:hover {
+  background: #d1fae5;
+  border-color: #34d399;
+}
+
+/* Two-color integer counters */
+.integer-chips-stage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1rem;
+}
+.chip-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.chip-label {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.pos-chips .chip-label { color: #854d0e; }
+.neg-chips .chip-label { color: #991b1b; }
+.chip-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  min-height: 40px;
+}
+.math-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: 0.85rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.15s ease;
+}
+.math-chip.pos-chip {
+  background: #fef08a;
+  color: #713f12;
+  border: 2px solid #ca8a04;
+}
+.math-chip.neg-chip {
+  background: #fca5a5;
+  color: #7f1d1d;
+  border: 2px solid #dc2626;
+}
+.math-chip.paired {
+  opacity: 0.45;
+  transform: scale(0.9);
+  border-style: dashed;
+}
+.integers-readout {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+}
+.pos-num { color: #15803d; font-weight: 700; }
+.neg-num { color: #b91c1c; font-weight: 700; }
+
+/* Balance Scale */
+.balance-scale-stage {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1rem 0;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+.balance-pan {
+  flex: 1;
+  background: white;
+  border: 2px solid var(--navy);
+  border-radius: 8px;
+  padding: 0.75rem;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+.pan-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 0.4rem;
+}
+.pan-contents {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 45px;
+}
+.var-badge {
+  background: #dbeafe;
+  color: #1e40af;
+  font-weight: 800;
+  font-size: 1.2rem;
+  padding: 4px 12px;
+  border-radius: 6px;
+}
+.const-badge {
+  background: #f3e8ff;
+  color: #6b21a8;
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+.value-badge {
+  background: #dcfce7;
+  color: #166534;
+  font-weight: 800;
+  font-size: 1.3rem;
+  padding: 4px 14px;
+  border-radius: 6px;
+}
+.balance-fulcrum {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 0.5rem;
+}
+.balance-fulcrum .beam {
+  width: 60px;
+  height: 4px;
+  background: var(--navy);
+  border-radius: 2px;
+  margin-bottom: 4px;
+}
+.balance-fulcrum .pivot {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--navy);
+}
+.balance-readout {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+}
+

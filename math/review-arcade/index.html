@@ -917,6 +917,7 @@
         <h2 id="result-heading"></h2>
         <p class="tier-msg" id="tier-msg"></p>
         <p class="best-line" id="best-line" aria-live="polite"></p>
+        <p class="best-line" id="result-stars" aria-live="polite"></p>
       </div>
 
       <div class="stats-grid">
@@ -2233,10 +2234,17 @@
           const explanation = document.createElement("p"); explanation.textContent = "Answer: " + locChoices(entry.q)[entry.q.answer] + ". " + loc(entry.q,"why");
           item.append(title, explanation); history.appendChild(item);
         });
+        const starCount = acc >= 90 ? 3 : acc >= 75 ? 2 : acc >= 50 ? 1 : 0;
+        const starLine = document.getElementById("result-stars");
+        if (starLine) starLine.textContent = "★★★".slice(0, starCount) + "☆☆☆".slice(starCount) + (starCount === 3 ? " Mastery stars" : starCount ? " Stars earned this adventure" : "Stars open at 50%, 75%, and 90%");
         const retry = document.getElementById("review-retry"); retry.hidden = !state.missed.length;
-        retry.textContent = "Practice " + state.missed.length + " questions to revisit";
+        const freshCount = state.unitMode === "boss" ? 0 : Math.min(2, Math.max(0, (BANK[state.unitMode] || []).length - state.history.length));
+        retry.textContent = "Sharpen round: revisit " + state.missed.length + (freshCount ? " and add " + freshCount + " new problems" : " problems");
         retry.onclick = () => {
-          const pool = state.missed.slice(); state = {...state,queue:shuffle(pool),idx:0,score:0,correct:0,lives:3,streak:0,maxStreak:0,answered:false,history:[],missed:[],challenge:false};
+          const seen = new Set(state.history.map((entry) => entry.q.q));
+          const fresh = state.unitMode === "boss" ? [] : shuffle((BANK[state.unitMode] || []).filter((q) => !seen.has(q.q))).slice(0, 2);
+          const pool = shuffle(state.missed.slice().concat(fresh));
+          state = {...state,queue:pool,idx:0,score:0,correct:0,lives:3,streak:0,maxStreak:0,answered:false,history:[],missed:[],challenge:false};
           showScreen("screen-play"); renderQuestion();
         };
         window.GameStudio?.emit("complete", {score:state.score,correct:state.correct,total,message:"Adventure complete. Review explanations or try a fresh round."});

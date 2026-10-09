@@ -162,7 +162,8 @@
     if(game?.scene.getScenes(true).some(s=>['Result','Results'].includes(s.scene.key)))complete(lastScore);
     const score=Number(scene?.score ?? window.__flagshipState?.score ?? lastScore)||0;
     const percent=session.total?Math.round(session.correct/session.total*100):0;
-    panel.querySelector('.fm-stats').textContent=`Score ${score}  ·  Accuracy ${percent}%  ·  Streak ${session.streak}  ·  Personal best ${best}`;
+    const studioStars = window.GameStudio?.session?.stars;
+    panel.querySelector('.fm-stats').textContent=`Score ${score}  ·  Accuracy ${percent}%  ·  Streak ${session.streak}  ·  Personal best ${best}` + (Number.isFinite(studioStars) ? `  ·  Stars ${studioStars}` : '');
     const q=scene?currentQuestion(scene):null;
     let text=q?.prompt||q?.text||scene?.promptText?.text||'';
     if(q?.data)text+=' Data: '+q.data;
