@@ -1722,7 +1722,55 @@
           transition-duration: 0.01ms !important;
         }
       }
-    </style>
+    
+      /* ---------- v5 coach dock, progress track, reactions ---------- */
+      .dock { margin: 0 0 12px; }
+      .dock-bar { display: flex; flex-wrap: wrap; gap: 8px; }
+      .dock-btn { border: 2px solid color-mix(in srgb, var(--c) 45%, white); background: #fff; color: var(--ink); font-weight: 900; font-size: 0.95rem; padding: 8px 14px; border-radius: 999px; min-height: 44px; }
+      .dock-btn:hover, .dock-btn.on { background: color-mix(in srgb, var(--c) 16%, white); }
+      .dock-btn.pulse { animation: dockPulse 1s ease-in-out 3; border-color: var(--gold); }
+      @keyframes dockPulse { 50% { transform: scale(1.07); box-shadow: 0 0 0 6px rgba(255, 196, 71, 0.45); } }
+      .dock-panel { margin-top: 10px; background: #f4f9ff; border: 2px solid #b5d4f8; border-radius: 16px; padding: 12px 16px 14px; }
+      .dock-panel h3 { margin: 0 0 4px; font-size: 1.1rem; }
+      .dock-panel .sub { margin: 0 0 8px; color: var(--muted); font-weight: 700; font-size: 0.95rem; }
+      .dock-steps { display: grid; gap: 6px; margin: 8px 0; }
+      .dock-steps label { display: flex; gap: 10px; align-items: flex-start; background: #fff; border: 2px solid #dbe9fb; border-radius: 12px; padding: 8px 12px; font-weight: 700; cursor: pointer; }
+      .dock-steps input { width: 22px; height: 22px; margin-top: 2px; flex: none; accent-color: var(--good); }
+      .dock-steps label:has(input:checked) { background: #e9f9ef; border-color: #a7e3bf; }
+      .dock-steps label:has(input:checked) b { text-decoration: line-through; opacity: 0.7; }
+      .nudge { margin-top: 8px; background: #fff7dc; border: 2px dashed var(--gold); border-radius: 12px; padding: 8px 12px; font-weight: 800; }
+      .scratch { overflow-x: auto; }
+      .scratch table { border-collapse: separate; border-spacing: 6px; margin: 6px 0; }
+      .scratch input { width: 5.2em; text-align: center; font-weight: 800; border: 2px solid #c9d8ec; border-radius: 10px; padding: 7px 4px; background: #fff; }
+      .scratch input.lbl { width: 9em; text-align: left; background: #eef5ff; }
+      .scratch input.arr { width: 4.2em; border-style: dashed; background: #fffbe9; font-size: 0.9rem; }
+      .scratch input.bad { border-color: var(--bad); background: #ffeef0; }
+      .scratch input.good { border-color: var(--good); background: #e9f9ef; }
+      .scratch-msg { font-weight: 900; min-height: 1.4em; margin-top: 4px; }
+      .dock-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+      .mini-btn { border: 0; border-radius: 10px; padding: 8px 14px; font-weight: 900; background: #3d9be9; color: #fff; min-height: 40px; }
+      .mini-btn.quiet { background: #e7ecf5; color: var(--ink); }
+      .ex-step { background: #fff; border-left: 6px solid #3d9be9; border-radius: 10px; padding: 8px 12px; margin: 6px 0; font-weight: 700; animation: exIn 0.3s ease-out; }
+      @keyframes exIn { from { opacity: 0; transform: translateY(6px); } }
+      .ex-table { border-collapse: collapse; margin: 6px 0; font-weight: 800; }
+      .ex-table td { border: 2px solid #b5d4f8; padding: 4px 12px; text-align: center; background: #fff; }
+      .ex-table td.h { background: #eef5ff; text-align: left; }
+      .ex-table tr.ar td { border: 0; background: none; color: #a36f00; font-size: 0.9rem; }
+      .track { display: inline-flex; gap: 6px; align-items: center; }
+      .track i { font-style: normal; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 0.8rem; font-weight: 900; background: #e7e2d4; color: #8a8270; border: 2px solid transparent; }
+      .track i.done { background: #ffe39a; color: #8a5a00; border-color: var(--gold); }
+      .track i.done.s3 { background: #ffc447; color: #3a2a00; }
+      .track i.cur { background: #fff; color: var(--ink); border-color: var(--c); animation: trackPulse 1.2s ease-in-out infinite; }
+      @keyframes trackPulse { 50% { transform: scale(1.18); } }
+      .customer .face { display: inline-block; font-size: 1.4em; transition: transform 0.2s; }
+      .customer .face.react { animation: faceBounce 0.7s ease-out; }
+      @keyframes faceBounce { 30% { transform: scale(1.7) rotate(-8deg); } 60% { transform: scale(0.9) rotate(6deg); } }
+      .flash-banner { position: fixed; left: 50%; top: 18%; transform: translateX(-50%); z-index: 90; background: linear-gradient(#ffd66b, #ff9f1c); color: #3a2a00; font-weight: 900; font-size: 1.8rem; padding: 12px 28px; border-radius: 999px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); pointer-events: none; animation: flashBanner 1.8s ease-out forwards; }
+      @keyframes flashBanner { 0% { opacity: 0; transform: translateX(-50%) scale(0.5); } 15% { opacity: 1; transform: translateX(-50%) scale(1.1); } 80% { opacity: 1; } 100% { opacity: 0; transform: translateX(-50%) translateY(-40px); } }
+      input.num.ok-lock { animation: lockPop 0.35s ease-out; }
+      @keyframes lockPop { 40% { transform: scale(1.15); } }
+      @media (prefers-reduced-motion: reduce) { .dock-btn.pulse, .track i.cur, .customer .face.react, .flash-banner, input.num.ok-lock, .ex-step { animation: none; } }
+</style>
     <link rel="stylesheet" href="/curriculum/review-expeditions/campaign.css?v=20261007" />
     <script src="/curriculum/review-expeditions/basecamp.js?v=20261007"></script>
     <script src="./caravan-road.js?v=20261007"></script>
@@ -1760,6 +1808,12 @@
             <div class="w">unit rate</div>
             <div class="d">A rate where the second amount is <b>1</b>.</div>
             <div class="ex">$3 per pound · 60 words per minute</div>
+          </div>
+          <div class="word">
+            <div class="pic">🧠 📋 📘</div>
+            <div class="w">coach tools</div>
+            <div class="d">Stuck? Use <b>Think it through</b> for steps, the <b>Scratch table</b> to test a ratio table, or <b>A similar one</b> to see a worked example. They never give the answer.</div>
+            <div class="ex">Free to use. They do not cost stars.</div>
           </div>
           <div class="word">
             <div class="pic">➗</div>
@@ -2453,6 +2507,7 @@
           SFX.bad();
           if (window.NeftScore) NeftScore.attempt(false);
           r.refresh();
+          document.dispatchEvent(new CustomEvent("rq:miss", { detail: r.misses }));
         };
         r.refresh = () => {
           const box = $("#hintBox");
@@ -2478,6 +2533,18 @@
             (inp.className =
               inp.className.replace(/ (ok|no)/g, "") + (ok ? " ok" : " no")),
         );
+      // A right answer locks green the moment it is typed (a small reward); a wrong one stays
+      // neutral until the student presses the check button, so it is never a guessing meter.
+      const lockIn = (inp, isRight) =>
+        inp.addEventListener("change", () => {
+          const ok = isRight(parseNum(inp.value));
+          inp.classList.remove("no", "ok-lock");
+          inp.classList.toggle("ok", ok);
+          if (ok) {
+            inp.classList.add("ok-lock");
+            SFX.pop();
+          }
+        });
       const onEnter = (root, btnSel) =>
         $$("input", root).forEach((i) =>
           i.addEventListener(
@@ -2819,6 +2886,7 @@
             S.level1 || round.misses > 0 ? "visible" : "hidden");
         arrows();
         round.refresh();
+        $$("input", board).forEach((inp) => lockIn(inp, (v) => v === (Number(inp.dataset.row) ? b : a) * Number(inp.dataset.col)));
         $("#check").onclick = () => {
           const checks = $$("input", board).map((inp) => [
             inp,
@@ -3231,6 +3299,7 @@
     <div class="actions"><button class="btn" id="check">🪧 Hang the sign</button></div>`;
         round.refresh();
         $("#ans").focus();
+        lockIn($("#ans"), (v) => v !== null && near(v, ans));
         $("#check").onclick = () => {
           const v = parseNum($("#ans").value);
           if (v === null) return fb("bad", "Type a number first.");
@@ -3297,6 +3366,7 @@
     <div class="actions"><button class="btn" id="check">🛒 Buy here</button><span class="muted" id="pickNote">Tap a stall to choose it.</span></div>`;
         round.refresh();
         $("input", board).focus();
+        stalls.forEach((s) => lockIn($(`input[data-s="${s.id}"]`, board), (v) => v !== null && near(v, s.u)));
         $$(".stall", board).forEach(
           (st) =>
             (st.onclick = (e) => {
@@ -5110,6 +5180,259 @@
       }
 
       /* ============================================================
+   COACH DOCK (v5) — every order gets three helpers that guide without answering:
+   Think it through (checklist + nudge questions) · Scratch table (a free ratio table
+   that only checks whether its columns are equivalent) · A similar one (worked example
+   with different numbers). None of them knows the order's answer.
+   ============================================================ */
+      const tbl = (rows, arrow) =>
+        `<table class="ex-table">${arrow ? `<tr class="ar"><td></td>${arrow.map((a) => `<td>${a}</td>`).join("")}</tr>` : ""}${rows.map((r) => `<tr><td class="h">${r[0]}</td>${r.slice(1).map((c) => `<td>${c}</td>`).join("")}</tr>`).join("")}</table>`;
+      const COACH = {
+        ratio: {
+          title: "Ratios compare two amounts",
+          labels: ["first amount", "second amount"],
+          steps: [
+            ["Read", "What two amounts is the order comparing?"],
+            ["Order", "Which one is named <u>first</u>? Its number goes first."],
+            ["Count", "Find each amount. For part-to-whole, add the parts to get the whole."],
+            ["Say it", "Read it back: “___ for every ___.” Does it match the words?"],
+          ],
+          nudges: [
+            "Point to the first thing named in the question. Which amount is that?",
+            "Part-to-part compares two groups. Part-to-whole compares one group to everything. Which is this?",
+            "If you swapped your two numbers, would the sentence still be true?",
+            "Try: “for every ___ of the first, there are ___ of the second.”",
+          ],
+          example: [
+            "A mix has <b>7 red</b> tiles and <b>4 blue</b> tiles.",
+            "Red is named first, so red's number goes first: <b>7 : 4</b>.",
+            "Red to <u>all</u> tiles? All tiles = 7 + 4 = 11, so <b>7 : 11</b>.",
+            "Three ways to write it: <b>7 : 4</b> · <b>7 to 4</b> · <b>7/4</b>.",
+          ],
+        },
+        equiv: {
+          title: "Equivalent ratios: do the same thing to both",
+          labels: ["first amount", "second amount"],
+          steps: [
+            ["Spot the link", "Find two numbers in the same row. What do you multiply (or divide) to get from one to the other?"],
+            ["Do it to both", "Whatever you did to one row, do to the other row."],
+            ["Fill in", "Write the new number where the blank is."],
+            ["Check", "Does the new column shrink back down to the recipe?"],
+          ],
+          nudges: [
+            "Which row already has two numbers you can compare?",
+            "Is the new batch bigger or smaller? So do you multiply or divide?",
+            "If you double one amount, what must happen to the other?",
+            "Simplify your new column. Do you land on the original recipe?",
+          ],
+          example: [
+            "Recipe: <b>3 flour : 5 eggs</b>. An order needs <b>21 flour</b>. How many eggs?",
+            tbl([["flour", "3", "21"], ["eggs", "5", "?"]], ["", "×7"]) + "3 × <b>7</b> = 21, so this is a <b>×7</b> batch.",
+            "Do the same to the eggs row: 5 × 7 = <b>35</b>.",
+            "Check: 21 : 35 shrinks (÷7) back to 3 : 5 ✓",
+          ],
+        },
+        classify: {
+          title: "Ratio, rate, or unit rate?",
+          labels: ["first amount", "second amount"],
+          steps: [
+            ["Units", "Are both amounts the same kind of thing, or different units (like miles and hours)?"],
+            ["Look for “per”", "Does it say per, each, or every? Is the second amount exactly <b>1</b>?"],
+            ["Stamp it", "Same units: RATIO. Different units: RATE. Different units and per 1: UNIT RATE."],
+            ["Test it", "Say it out loud with the unit words. Does the stamp still fit?"],
+          ],
+          nudges: [
+            "Cover the numbers. What are the two unit words?",
+            "A rate has two different units. Do these?",
+            "For a unit rate, what number should be after the “per”?",
+            "Could you simplify it to “per 1”? That would make it a unit rate.",
+          ],
+          example: [
+            "<b>$9 for 3 notebooks</b>: dollars and notebooks are different units, so it is a rate.",
+            "The second amount is 3, not 1, so it is a <b>RATE</b>, not a unit rate.",
+            "<b>$3 per notebook</b> has different units and the second amount is 1: a <b>UNIT RATE</b>.",
+            "<b>3 notebooks to 5 pens</b> compares things measured the same way: a <b>RATIO</b>.",
+          ],
+        },
+        unit: {
+          title: "Unit rate: how much for just 1?",
+          labels: ["total", "number of items"],
+          steps: [
+            ["Name the 1", "What is the order asking “per 1” of? That is what you divide by."],
+            ["Divide", "Divide the total by the number of items."],
+            ["Say it", "Write it with units: ___ per 1 ___."],
+            ["Check", "Multiply your answer by the number of items. Do you get the total back?"],
+          ],
+          nudges: [
+            "What does the question want “per”?",
+            "If 4 items cost 12, what would 1 item cost? Make the same move here.",
+            "Should one item cost more or less than the whole group?",
+            "Multiply back: unit rate × number of items = total?",
+          ],
+          example: [
+            "<b>$15 for 6 muffins.</b> Price for 1 muffin?",
+            tbl([["dollars", "15", "?"], ["muffins", "6", "1"]], ["", "÷6"]) + "To get 6 down to 1, divide by 6.",
+            "15 ÷ 6 = <b>2.5</b>, so <b>$2.50 per muffin</b>.",
+            "Check: 2.50 × 6 = 15 ✓",
+          ],
+        },
+        buy: {
+          title: "Compare deals: make every one “per 1”",
+          labels: ["price or distance", "amount or time"],
+          steps: [
+            ["Same size", "Deals come in different sizes. Turn every one into “per 1” so they can be compared fairly."],
+            ["Divide each", "Price ÷ amount for each stall (or distance ÷ time for speed)."],
+            ["Compare", "Line the unit rates up. For prices, lower is the better buy. For speed, higher is faster."],
+            ["Say why", "Finish: “___ is the best because it costs ___ per 1.”"],
+          ],
+          nudges: [
+            "Can you compare $9 for 4 with $14 for 7 as they stand? What would make them comparable?",
+            "Do all three stalls, not just two. Which tag is still empty?",
+            "Is the biggest pack always the cheapest per 1?",
+            "Do you want the smallest or the largest number here? Why?",
+          ],
+          example: [
+            "Stall A: <b>$9 for 4</b>. Stall B: <b>$14 for 7</b>. Which costs less per 1?",
+            "A: 9 ÷ 4 = <b>$2.25</b> each. B: 14 ÷ 7 = <b>$2.00</b> each.",
+            "Lower is the better buy: <b>B</b> wins, even though its total price is bigger.",
+            "Saying why: “B costs $0.25 less per item.”",
+          ],
+        },
+      };
+      function coachGroup(skill) {
+        const k = String(skill || "");
+        if (/compare unit prices|better deal|who is faster/i.test(k)) return "buy";
+        if (/ratio, rate, or unit|rates and unit rates|rate statements/i.test(k)) return "classify";
+        if (/scale|ratio table|equivalent|simplify/i.test(k)) return "equiv";
+        if (/unit rate|unit price|cost|budget/i.test(k)) return "unit";
+        return "ratio";
+      }
+
+      // A free ratio table. It never knows the order's answer: it only reports whether the
+      // columns the student filled in are equivalent to each other.
+      function scratchTable(host, group) {
+        const cfg = COACH[group];
+        let cols = 4;
+        const draw = (keep) => {
+          const old = keep || { a: [], b: [], op: [] };
+          host.innerHTML = `<div class="scratch"><table>
+            <tr><td></td>${Array.from({ length: cols - 1 }, (_, i) => `<td><input class="arr" data-k="op" data-i="${i}" placeholder="× ?" aria-label="what you multiplied or divided by"></td>`).join("")}</tr>
+            <tr><td><input class="lbl" value="${cfg.labels[0]}" aria-label="top row name"></td>${Array.from({ length: cols }, (_, i) => `<td><input data-k="a" data-i="${i}" inputmode="decimal" aria-label="top number ${i + 1}"></td>`).join("")}</tr>
+            <tr><td><input class="lbl" value="${cfg.labels[1]}" aria-label="bottom row name"></td>${Array.from({ length: cols }, (_, i) => `<td><input data-k="b" data-i="${i}" inputmode="decimal" aria-label="bottom number ${i + 1}"></td>`).join("")}</tr>
+          </table></div>
+          <div class="scratch-msg" id="scratchMsg"></div>
+          <div class="dock-actions"><button class="mini-btn" id="scratchCheck">Do my columns match?</button><button class="mini-btn quiet" id="scratchAdd">＋ column</button><button class="mini-btn quiet" id="scratchClear">Clear</button></div>`;
+          ["a", "b", "op"].forEach((k) => (old[k] || []).forEach((v, i) => { const el = $(`input[data-k="${k}"][data-i="${i}"]`, host); if (el) el.value = v; }));
+        };
+        const snap = () => ({ a: $$('input[data-k="a"]', host).map((x) => x.value), b: $$('input[data-k="b"]', host).map((x) => x.value), op: $$('input[data-k="op"]', host).map((x) => x.value) });
+        draw();
+        host.onclick = (e) => {
+          const id = e.target.id;
+          if (id === "scratchAdd") { if (cols < 7) { cols++; draw(snap()); } }
+          else if (id === "scratchClear") { cols = 4; draw(); }
+          else if (id === "scratchCheck") {
+            const msg = $("#scratchMsg", host), ins = $$('input[data-k="a"], input[data-k="b"]', host);
+            ins.forEach((x) => x.classList.remove("bad", "good"));
+            const full = [];
+            let half = 0;
+            for (let i = 0; i < cols; i++) {
+              const ia = $(`input[data-k="a"][data-i="${i}"]`, host), ib = $(`input[data-k="b"][data-i="${i}"]`, host);
+              const a = parseNum(ia.value), b = parseNum(ib.value);
+              if (a !== null && b !== null) full.push({ i, a, b, ia, ib });
+              else if (a !== null || b !== null) half++;
+            }
+            if (full.length < 2) { msg.className = "scratch-msg"; msg.textContent = "Fill in at least two full columns, then I can tell you if they match."; return; }
+            if (full.some((c) => c.a === 0 && c.b === 0)) { msg.textContent = "A column of 0 and 0 matches everything — try other numbers."; return; }
+            const base = full[0], bad = full.filter((c) => !near(c.a * base.b, c.b * base.a));
+            if (bad.length === 0) {
+              full.forEach((c) => { c.ia.classList.add("good"); c.ib.classList.add("good"); });
+              msg.style.color = "#1f8f4e"; SFX.pop();
+              msg.textContent = `✓ Every column is the same ratio${half ? ` — and ${half} column${half > 1 ? "s are" : " is"} still half-filled. What number would keep it equivalent?` : ". Now use your table on the order."}`;
+            } else {
+              bad.forEach((c) => { c.ia.classList.add("bad"); c.ib.classList.add("bad"); });
+              msg.style.color = "#d5323f"; SFX.bad();
+              msg.textContent = `Column ${bad[0].i + 1} does not match column ${base.i + 1}. Did you do the same thing to both numbers?`;
+            }
+          }
+        };
+        host.onkeydown = (e) => { if (e.key === "Enter" && e.target.matches("input")) $("#scratchCheck", host)?.click(); };
+      }
+
+      function thinkPanel(host, group) {
+        const cfg = COACH[group];
+        let nudge = -1;
+        host.innerHTML = `<h3>🧠 ${cfg.title}</h3><p class="sub">Tick each step as you go. These steps never give the answer — they help you find it.</p>
+          <div class="dock-steps">${cfg.steps.map((st, i) => `<label><input type="checkbox" aria-label="step ${i + 1}"><span><b>${i + 1}. ${st[0]}:</b> ${st[1]}</span></label>`).join("")}</div>
+          <div class="dock-actions"><button class="mini-btn" id="nudgeBtn">💬 Give me a nudge</button></div><div class="nudge" id="nudgeBox" hidden></div>`;
+        $("#nudgeBtn", host).onclick = () => {
+          nudge = (nudge + 1) % cfg.nudges.length;
+          const box = $("#nudgeBox", host);
+          box.hidden = false;
+          box.textContent = cfg.nudges[nudge];
+          SFX.pop();
+        };
+      }
+
+      function exampleStep(host, group) {
+        const cfg = COACH[group];
+        let shown = 0;
+        host.innerHTML = `<h3>📘 A similar one — with different numbers</h3><p class="sub">Watch the thinking, then do your own order.</p><div id="exSteps"></div><div class="dock-actions"><button class="mini-btn" id="exNext">Show the first step</button></div>`;
+        $("#exNext", host).onclick = () => {
+          if (shown >= cfg.example.length) return;
+          const d = document.createElement("div");
+          d.className = "ex-step";
+          d.innerHTML = `<small>Step ${shown + 1}</small><br>${cfg.example[shown]}`;
+          $("#exSteps", host).appendChild(d);
+          shown++;
+          SFX.pop();
+          $("#exNext", host).textContent = shown >= cfg.example.length ? "That's the whole example ✓" : "Show the next step";
+          $("#exNext", host).disabled = shown >= cfg.example.length;
+        };
+      }
+
+      // Mounts the dock above an order. Returns a cleanup that detaches the miss listener.
+      function mountDock(host, skill, { openThink = false } = {}) {
+        const group = coachGroup(skill);
+        host.innerHTML = `<div class="dock-bar" role="group" aria-label="Coach tools">
+            <button class="dock-btn" data-p="think">🧠 Think it through</button>
+            <button class="dock-btn" data-p="table">📋 Scratch table</button>
+            <button class="dock-btn" data-p="ex">📘 A similar one</button></div>
+          <div class="dock-panel" id="dockPanel" hidden></div>`;
+        const panel = $("#dockPanel", host), btns = $$(".dock-btn", host);
+        let open = "";
+        const show = (p) => {
+          open = open === p ? "" : p;
+          btns.forEach((b) => { b.classList.toggle("on", b.dataset.p === open); b.classList.remove("pulse"); });
+          panel.hidden = !open;
+          if (!open) return;
+          panel.dataset.p = open;
+          (open === "think" ? thinkPanel : open === "table" ? scratchTable : exampleStep)(panel, group);
+        };
+        btns.forEach((b) => (b.onclick = () => { SFX.click(); show(b.dataset.p); }));
+        const onMiss = (e) => {
+          if (e.detail === 1) $('.dock-btn[data-p="think"]', host)?.classList.add("pulse");
+          if (e.detail >= 2 && !open) show("think");
+        };
+        document.addEventListener("rq:miss", onMiss);
+        if (openThink) show("think");
+        return () => document.removeEventListener("rq:miss", onMiss);
+      }
+
+      let bannerTimer = 0;
+      function flashBanner(text) {
+        document.querySelectorAll(".flash-banner").forEach((x) => x.remove());
+        const b = document.createElement("div");
+        b.className = "flash-banner";
+        b.setAttribute("role", "status");
+        b.textContent = text;
+        document.body.appendChild(b);
+        clearTimeout(bannerTimer);
+        bannerTimer = setTimeout(() => b.remove(), 1900);
+      }
+      const STREAK_BANNER = { 3: "🔥 HOT STREAK ×3!", 5: "⚡ UNSTOPPABLE ×5!", 8: "🌟 LEGEND ×8!", 12: "👑 MARKET MASTER ×12!" };
+      const REACTIONS = { 3: ["🤩", "Perfect!"], 2: ["😊", "Nice work!"], 1: ["😅", "Phew, got there!"] };
+
+      /* ============================================================
    SCREENS
    ============================================================ */
       const app = $("#app");
@@ -5405,6 +5728,7 @@
         let n = 0,
           earned = [],
           skills = [];
+        let dockCleanup = null;
         const cratesBefore = isShop ? caravanCrates() : 0;
         const s = screen(`${hud()}<div class="scene" style="--c:${npc.color}">
       <div class="scene-art">${ART.sceneBanner(id)}</div>
@@ -5422,9 +5746,13 @@
           if (n >= total) return finishShop();
           const big = isShop && n === total - 1;
           const cust = pick(CUSTOMERS);
-          board.innerHTML = `<div class="board-head"><h2>${npc.title}</h2><span class="pill">Order ${n + 1} of ${total}</span>${isChallenge() ? `<span class="pill" style="background:#fff4dc;color:#a36f00">⚡ Challenge</span>` : ""}${big ? `<span class="pill big">⭐ BIG ORDER · 2× coins</span>` : ""}${id === "merchant" ? `<span class="pill big">🎒 5× coins</span>` : ""}<span class="stars" id="roundStars"></span></div>
-    <div class="customer">${cust[0]} <b>${cust[1]}</b> ${pick(CUSTOMER_LINES)}</div><div id="orderBody"></div>`;
+          if (dockCleanup) dockCleanup();
+          const track = Array.from({ length: total }, (_, i) => `<i class="${i < n ? "done s" + earned[i] : i === n ? "cur" : ""}" data-i="${i}" title="Order ${i + 1}">${i < n ? earned[i] + "★" : i + 1}</i>`).join("");
+          board.innerHTML = `<div class="board-head"><h2>${npc.title}</h2><span class="pill">Order ${n + 1} of ${total}</span><span class="track" aria-hidden="true">${track}</span>${isChallenge() ? `<span class="pill" style="background:#fff4dc;color:#a36f00">⚡ Challenge</span>` : ""}${big ? `<span class="pill big">⭐ BIG ORDER · 2× coins</span>` : ""}${id === "merchant" ? `<span class="pill big">🎒 5× coins</span>` : ""}<span class="stars" id="roundStars"></span></div>
+    <div class="customer"><span class="face" id="face">${cust[0]}</span> <b>${cust[1]}</b> ${pick(CUSTOMER_LINES)}</div><div class="dock" id="dock"></div><div id="orderBody"></div>`;
           const body = $("#orderBody", board);
+          const skillNow = orderSkill(orders[n]);
+          dockCleanup = mountDock($("#dock", board), skillNow, { openThink: isShop && n === 0 && P().shops[id].visits === 0 });
           const api = {
             finish(stars) {
               earned.push(stars);
@@ -5434,6 +5762,17 @@
                 S.streak++;
                 S.bestStreak = Math.max(S.bestStreak, S.streak);
               } else S.streak = 0;
+              if (STREAK_BANNER[S.streak] && stars === 3) flashBanner(STREAK_BANNER[S.streak]);
+              const face = $("#face");
+              if (face) {
+                face.textContent = REACTIONS[stars][0];
+                face.classList.add("react");
+              }
+              const dot = $(`.track i[data-i="${n}"]`);
+              if (dot) {
+                dot.className = "done s" + stars;
+                dot.textContent = stars + "★";
+              }
               const mult = streakMult();
               const coins = stars * (isChallenge() ? 15 : 10) * mult * (big ? 2 : 1) * (id === "merchant" ? 5 : 1);
               S.coins += coins;
@@ -5484,6 +5823,7 @@
           orders[n](body, api);
         }
         function finishShop() {
+          if (dockCleanup) dockCleanup();
           const stars = earned.reduce((a, b) => a + b, 0);
           if (window.NeftScore) NeftScore.finish();
           if (id === "finale") {
