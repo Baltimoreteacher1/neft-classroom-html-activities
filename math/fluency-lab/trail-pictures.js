@@ -318,7 +318,9 @@ function coinCounter(model) {
 }
 
 function pairUp(model) {
-  return `<div class="tp-live" data-live="pairs"><p class="tp-prompt">Can every dot get a partner?</p>
+  const note = model.note ? `<p class="tp-prompt">${esc(model.note)}</p>` : "";
+  if (!model.total) return `<div class="tp-live" data-live="pairs">${note}<p class="tp-prompt">There are no ones to pair.</p></div>`;
+  return `<div class="tp-live" data-live="pairs">${note}<p class="tp-prompt">${model.note ? "Pair up the ones." : "Can every dot get a partner?"}</p>
     <div class="tp-pairs">${dots(model.total)}</div>
     <div class="tp-hop-row"><button type="button" class="tp-hop-btn" data-make-pairs>Make pairs</button></div></div>`;
 }
@@ -875,7 +877,7 @@ export function stepVisual(line) {
   // Drop thousands commas (not list commas) and lead-ins such as "So" or "Size:".
   const text = String(line)
     .replace(/(\d),(\d{3})/g, "$1$2")
-    .replace(/^(?:So|Size:|Check:)\s+/, "")
+    .replace(/^(?:So|Check:)\s+/, "")
     .replace(/\.$/, "");
   const start = text.match(/^Start at (-?\d+)$/);
   if (start) return miniHops([Number(start[1])]);

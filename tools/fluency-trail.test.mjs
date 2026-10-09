@@ -40,8 +40,8 @@ for (const grade of [1, 2, 3, 4, 5, 6, 7, 8]) {
         `${grade}/${station.id}: canonical answer rejected for ${item.question}`,
       );
       check(
-        Array.isArray(item.steps) && item.steps.length >= 1 && item.steps.length <= 3,
-        `${grade}/${station.id}: needs 1–3 guided steps (${item.question}).`,
+        Array.isArray(item.steps) && item.steps.length >= 1 && item.steps.length <= 4,
+        `${grade}/${station.id}: needs 1–4 guided steps (${item.question}).`,
       );
       const last = item.steps.at(-1) || "";
       const lastNumbers = (last.replaceAll(",", "").match(/-?\d+(?:\.\d+)?/g) || []).map(Number);

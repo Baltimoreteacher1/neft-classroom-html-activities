@@ -82,12 +82,21 @@ function factSteps(op, a, b, answer, strategy) {
   if (op === "mul") {
     if (small === 0) return [`Times 0 is always 0.`, `${a} × ${b} = 0`];
     if (small === 1) return [`1 group of ${big} is ${big}.`, `${a} × ${b} = ${big}`];
-    if (strategy === "zeros" || (big % 10 === 0 && big > 10)) {
-      const zerosA = String(a).match(/0*$/)[0].length;
-      const zerosB = String(b).match(/0*$/)[0].length;
-      const basicA = a / 10 ** zerosA;
-      const basicB = b / 10 ** zerosB;
+    const zerosA = String(a).match(/0*$/)[0].length;
+    const zerosB = String(b).match(/0*$/)[0].length;
+    const basicA = a / 10 ** zerosA;
+    const basicB = b / 10 ** zerosB;
+    // "Basic fact, then add the zeros" only when both numbers are a basic fact with zeros (6 × 300, 40 × 30).
+    if (zerosA + zerosB > 0 && basicA <= 12 && basicB <= 12 && (strategy === "zeros" || big > 10)) {
       return [`${basicA} × ${basicB} = ${basicA * basicB}`, `Add ${zerosA + zerosB} zero${zerosA + zerosB === 1 ? "" : "s"}: ${fmt(answer)}`];
+    }
+    // Match the area model: split the first factor by every place, multiply each part, add.
+    if (a > 12 && b <= 99) {
+      const digits = String(a);
+      const parts = [...digits].map((digit, i) => Number(digit) * 10 ** (digits.length - 1 - i)).filter(Boolean);
+      const lines = parts.map((part) => `${fmt(part)} × ${fmt(b)} = ${fmt(part * b)}`);
+      if (parts.length > 1) lines.push(`${parts.map((part) => fmt(part * b)).join(" + ")} = ${fmt(answer)}`);
+      return lines;
     }
     if (big > 12) {
       const split = big >= 100 ? Math.floor(big / 100) * 100 : Math.floor(big / 10) * 10;
@@ -348,7 +357,7 @@ const generators = {
       choices: ["even", "odd"],
       hint: "Even numbers can be split into pairs with none left over.",
       explanation: `${n} is ${answer}.`,
-      model: n <= 40 ? { type: "pairs", total: n } : null,
+      model: n <= 40 ? { type: "pairs", total: n } : { type: "pairs", total: n % 10, note: `${n} = ${Math.floor(n / 10)} tens and ${n % 10} ones. Every ten pairs up, so only the ones matter.` },
     });
   },
 
