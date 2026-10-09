@@ -142,19 +142,18 @@ function tapArray(model) {
   return `<div class="tp-live" data-live="array"><p class="tp-prompt">${model.a} rows of ${esc(each)}. Tap each row as you count it.</p><div class="tp-array${model.unit ? " tens" : ""}">${rows}</div><p class="tp-readout">Rows counted: <b data-rows>0</b> of ${model.a}</p></div>`;
 }
 
-// Area model: the student multiplies each part and adds the parts.
+// Area model: the big factor is split by place value (882 = 800 + 80 + 2) so each part is a
+// friendly product; the student multiplies each part and adds the parts.
 function tapArea(model) {
-  const left = model.split;
-  const right = model.a - model.split;
-  const leftWidth = Math.max(
-    25,
-    Math.min(80, Math.round((left / model.a) * 100)),
-  );
-  const part = (size, flex) =>
-    `<div class="tp-part" style="flex:${flex}"><b>${fmtN(size)} × ${model.b}</b>${box(size * model.b, `${size} times ${model.b}`)}</div>`;
-  return `<div class="tp-live" data-live="area"><p class="tp-prompt">Multiply each part. Then add the parts.</p>
-    <div class="tp-area"><span class="tp-area-side">${model.b}</span><div class="tp-area-box">${part(left, leftWidth)}${right ? part(right, 100 - leftWidth) : ""}</div></div>
-    ${right ? `<p class="tp-sum">Add the parts: ${box(model.a * model.b, "the total of both parts")}</p>` : ""}</div>`;
+  const digits = String(model.a);
+  const parts = [...digits]
+    .map((digit, i) => Number(digit) * 10 ** (digits.length - 1 - i))
+    .filter(Boolean);
+  const part = (size) =>
+    `<div class="tp-part" style="flex:${Math.max(1, Math.log10(size) + 1)}"><b>${fmtN(size)} × ${model.b}</b>${box(size * model.b, `${size} times ${model.b}`)}</div>`;
+  return `<div class="tp-live" data-live="area"><p class="tp-prompt">${fmtN(model.a)} = ${parts.map(fmtN).join(" + ")}. Multiply each part. Then add the parts.</p>
+    <div class="tp-area"><span class="tp-area-side">${model.b}</span><div class="tp-area-box">${parts.map(part).join("")}</div></div>
+    ${parts.length > 1 ? `<p class="tp-sum">Add the parts: ${box(model.a * model.b, "the total of all the parts")}</p>` : ""}</div>`;
 }
 
 // Open number line: jump buttons sized to the problem; after each jump the student types
