@@ -380,147 +380,16 @@ function initFamilyGames() {
   resetWyrGame();
 }
 
-/* ── Family route chooser ───────────────────────────────────────────────
-   A route is a real contract, not decorative copy: it controls which stops
-   are in the path, how many practice problems count, the remaining-time
-   display, and every Continue button. */
-var HOMEWORK_ROUTES = {
-  quick: { tabs: ['learn', 'check', 'done'], total: 10, problemLimit: 2, minutes: { learn: 3, check: 5, done: 2 } },
-  core: { tabs: ['learn', 'together', 'check', 'done'], total: 20, problemLimit: 6, minutes: { learn: 5, together: 6, check: 7, done: 2 } },
-  full: { tabs: ['learn', 'words', 'together', 'check', 'play', 'done'], total: 30, problemLimit: 6, minutes: { learn: 5, words: 3, together: 6, check: 8, play: 5, done: 3 } }
-};
-
-function routeStorageKey() {
-  return 'hw_route_' + (window.LESSON_ID || location.pathname);
-}
+/* ── Homework path ─────────────────────────────────────────────────────
+   One path for every family: every stop and every problem. */
+var HOMEWORK_PATH = { tabs: ['learn', 'words', 'check', 'play', 'done'], problemLimit: 6 };
 
 function activeHomeworkRoute() {
-  var id = document.body.dataset.homeworkRoute || 'core';
-  return HOMEWORK_ROUTES[id] || HOMEWORK_ROUTES.core;
-}
-
-function setHomeworkRoute(mode, options) {
-  options = options || {};
-  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'core';
-  var route = HOMEWORK_ROUTES[mode];
-  document.body.dataset.homeworkRoute = mode;
-
-  document.querySelectorAll('[data-route-mode]').forEach(function (btn) {
-    var active = btn.dataset.routeMode === mode;
-    btn.classList.toggle('is-active', active);
-    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-  });
-
-  var visibleIndex = 0;
-  document.querySelectorAll('.homework-tab-btn').forEach(function (btn) {
-    var included = route.tabs.indexOf(btn.dataset.tab) !== -1;
-    btn.hidden = !included;
-    if (!included) {
-      btn.setAttribute('aria-selected', 'false');
-      btn.removeAttribute('aria-current');
-      return;
-    }
-    visibleIndex++;
-    var step = btn.querySelector('.tab-step');
-    if (step) step.textContent = String(visibleIndex);
-    // The tab's minutes are the ROUTE's minutes; the static label said 8 for
-    // Check while the 20-minute route budgets 7 and the Check intro said 7.
-    var mins = route.minutes[btn.dataset.tab];
-    var minEl = btn.querySelector('.tab-min');
-    if (mins && minEl) minEl.textContent = mins + ' min';
-    if (mins) btn.dataset.min = String(mins);
-    var label = btn.querySelector('.tab-en');
-    var labelEs = btn.querySelector('.tab-es');
-    btn.dataset.ariaEn = (label ? label.textContent : btn.dataset.tab) + ' — stop ' + visibleIndex + ' of ' + route.tabs.length;
-    btn.dataset.ariaEs = (labelEs ? labelEs.textContent : btn.dataset.tab) + ' — parada ' + visibleIndex + ' de ' + route.tabs.length;
-    btn.setAttribute('aria-label', document.documentElement.lang === 'es' ? btn.dataset.ariaEs : btn.dataset.ariaEn);
-  });
-  document.querySelectorAll('.homework-tab-extra').forEach(function (btn) {
-    btn.hidden = mode !== 'full';
-  });
-  var shell = document.querySelector('.homework-tabs-shell');
-  if (shell) shell.dataset.tabCount = String(route.tabs.length);
-  ['hw_hero_stop_count', 'hw_hero_stop_count_es'].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = String(route.tabs.length);
-  });
-  ['hw_hero_minutes', 'hw_hero_minutes_es'].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = String(route.total);
-  });
-
-  var warmups = document.querySelectorAll('.practice-tier-warmup .problem-section');
-  warmups.forEach(function (problem, index) { problem.hidden = index >= route.problemLimit; });
-  var challenge = document.querySelector('.practice-tier-challenge');
-  if (challenge) challenge.hidden = mode === 'quick';
-  var more = document.querySelector('.more-practice');
-  if (more) more.hidden = mode === 'quick';
-  ['hw_goal_count', 'hw_goal_count_es'].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = String(route.problemLimit);
-  });
-  ['hw_check_problem_count', 'hw_check_problem_count_es'].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = String(route.problemLimit);
-  });
-  ['hw_check_minutes', 'hw_check_minutes_es'].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = String(route.minutes.check);
-  });
-  var progress = document.getElementById('progress_text');
-  if (progress) {
-    var completed = Array.from(document.querySelectorAll('.problem-section.correct, .problem-section.reviewed'))
-      .filter(function (problem) { return !problem.hidden && !problem.closest('[hidden]') && !problem.closest('.more-practice'); })
-      .length;
-    progress.textContent = completed + ' / ' + route.problemLimit;
-  }
-  if (typeof updateProgress === 'function') updateProgress();
-
-  var note = document.getElementById('hw_route_note');
-  if (note) {
-    var copy = {
-      quick: ['Quick practice: read one example, try 2 problems, explain one answer, and stop. About 5–10 minutes; no Together or Play stop.', 'Práctica breve: lee un ejemplo, intenta 2 problemas, explica una respuesta y termina. Unos 5–10 minutos; sin las paradas Juntos ni Jugar.'],
-      core: ['Learn & practice: read, try one together, complete 6 problems, and explain. Then stop. About 20 minutes.', 'Ruta de aprendizaje: 4 paradas y los 6 problemas, unos 20 minutos.'],
-      full: ['Family math night: 6 problems, key words, one home activity, and one game. Explain and stop. About 30 minutes.', 'Noche familiar: 6 problemas, palabras clave, una actividad en casa y un juego. Explica y termina. Unos 30 minutos.']
-    }[mode];
-    setBiText(note, copy[0], copy[1]);
-  }
-
-  try { localStorage.setItem(routeStorageKey(), mode); } catch (e) {}
-  initHomeworkShareLinks();
-
-  var current = document.body.dataset.activeTab;
-  if (current && route.tabs.indexOf(current) === -1 && !options.keepTab) {
-    switchHomeworkTab(route.tabs[0]);
-  } else if (current) {
-    switchHomeworkTab(current);
-  } else {
-    updateHomeworkRouteTime(route.total);
-  }
-  if (!options.silent) {
-    var chooser = document.querySelector('.hw-route-chooser');
-    if (chooser) chooser.classList.add('route-just-changed');
-    setTimeout(function () { if (chooser) chooser.classList.remove('route-just-changed'); }, 500);
-  }
-}
-
-function updateHomeworkRouteTime(minutes) {
-  var timeEl = document.getElementById('hw_time_remaining');
-  if (!timeEl) return;
-  timeEl.innerHTML = '⏱️ <span class="lang-en">~' + minutes + ' min left</span><span class="lang-es" lang="es">~' + minutes + ' min restantes</span>';
-}
-
-function restoreHomeworkRoute() {
-  var mode = 'core';
-  try { mode = localStorage.getItem(routeStorageKey()) || 'core'; } catch (e) {}
-  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'core';
-  var requested = new URLSearchParams(location.search).get('route');
-  if (Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, requested)) mode = requested;
-  setHomeworkRoute(mode, { silent: true, keepTab: true });
+  return HOMEWORK_PATH;
 }
 
 function goNextHomeworkStop(current) {
-  var tabs = activeHomeworkRoute().tabs;
+  var tabs = HOMEWORK_PATH.tabs;
   var index = tabs.indexOf(current);
   var next = tabs[Math.min(index + 1, tabs.length - 1)] || tabs[0];
   switchHomeworkTab(next);
@@ -758,16 +627,6 @@ function switchHomeworkTab(tabId) {
     const fill = document.getElementById('tab_progress_fill');
     if (fill) fill.style.width = ((idx / parseInt(total, 10)) * 100) + '%';
 
-    // Dynamic time remaining calculation
-    var minsLeft = 0;
-    var route = activeHomeworkRoute();
-    for (var k = idx - 1; k < tabs.length; k++) {
-      minsLeft += route.minutes[tabs[k].dataset.tab] || parseInt(tabs[k].dataset.min || '5', 10);
-    }
-    var timeEl = document.getElementById('hw_time_remaining');
-    if (timeEl) {
-      timeEl.innerHTML = '⏱️ <span class="lang-en">~' + minsLeft + ' min left</span><span class="lang-es" lang="es">~' + minsLeft + ' min restantes</span>';
-    }
   }
 
   if (typeof updateJourneyMap === 'function') updateJourneyMap(tabId, leaving !== tabId ? leaving : '');
@@ -775,6 +634,7 @@ function switchHomeworkTab(tabId) {
   if (tabId === 'done' && typeof updateCelebrationTab === 'function') {
     updateCelebrationTab();
   }
+  if (tabId === 'words' && !window.hwVocabQuizReady && typeof startVocabQuiz === 'function') { startVocabQuiz(); window.hwVocabQuizReady = true; }
   if (tabId === 'play' && !window.hwFamilyGamesReady) { initFamilyGames(); window.hwFamilyGamesReady = true; }
   if (tabId === 'photobooth' && typeof initPhotobooth === 'function') {
     initPhotobooth();
@@ -991,8 +851,7 @@ function toggleSignoffSubmitBtn() {
 
 function homeworkShareUrl() {
   var url = new URL(window.location.href);
-  var route = document.body.dataset.homeworkRoute || 'core';
-  url.searchParams.set('route', Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, route) ? route : 'core');
+  url.searchParams.delete('route');
   url.searchParams.set('lang', document.body.dataset.homeworkLanguage || preferredLanguageMode());
   return url.href;
 }
@@ -1370,7 +1229,6 @@ function initHomeworkPage() {
   document.querySelectorAll('[data-tab-panel]').forEach(function(p, i) {
     p.hidden = i > 0;
   });
-  restoreHomeworkRoute();
   try {
     localStorage.removeItem('hw_last_tab');
     const last = localStorage.getItem(lastTabStorageKey());
@@ -3154,26 +3012,135 @@ function resetVocabMatchGame() {
   });
 }
 
-function toggleVocabCardMastery(idx) {
-  const btn = document.querySelector('.vocab-master-toggle[data-term-idx="' + idx + '"]');
-  if (!btn) return;
-  const isMastered = btn.classList.toggle("is-mastered");
-  if (isMastered && typeof playTabSwitchSound === "function") playTabSwitchSound();
+// Word Quiz: a picture and a meaning, then three words to choose from.
+const vocabQuiz = { items: [], order: [], step: 0, firstTry: 0, tried: false };
+
+function vocabQuizBilingual(parent, en, es) {
+  const a = document.createElement("span");
+  a.className = "lang-en";
+  a.textContent = en;
+  const b = document.createElement("span");
+  b.className = "lang-es";
+  b.lang = "es";
+  b.textContent = es || en;
+  parent.appendChild(a);
+  parent.appendChild(b);
+}
+
+function vocabQuizShuffle(list) {
+  const out = list.slice();
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = out[i];
+    out[i] = out[j];
+    out[j] = tmp;
+  }
+  return out;
+}
+
+function startVocabQuiz() {
+  const data = document.getElementById("vocab_quiz_data");
+  if (!data) return;
   try {
-    localStorage.setItem(STORAGE_KEY + "_vocab_mastered_" + idx, isMastered ? "1" : "0");
+    vocabQuiz.items = JSON.parse(data.textContent);
+  } catch (e) {
+    vocabQuiz.items = [];
+  }
+  if (vocabQuiz.items.length < 2) return;
+  vocabQuiz.order = vocabQuizShuffle(vocabQuiz.items.map((_, i) => i));
+  vocabQuiz.step = 0;
+  vocabQuiz.firstTry = 0;
+  const stars = document.getElementById("vocab_quiz_stars");
+  stars.textContent = "";
+  vocabQuiz.order.forEach(() => {
+    const star = document.createElement("span");
+    star.className = "vq-star";
+    star.textContent = "★";
+    stars.appendChild(star);
+  });
+  document.getElementById("vocab_quiz_done").hidden = true;
+  document.getElementById("vocab_quiz_play").hidden = false;
+  showVocabQuizQuestion();
+}
+
+function showVocabQuizQuestion() {
+  const index = vocabQuiz.order[vocabQuiz.step];
+  const q = vocabQuiz.items[index];
+  vocabQuiz.tried = false;
+  const img = document.getElementById("vocab_quiz_img");
+  img.hidden = !q.img;
+  img.src = q.img || "";
+  img.alt = q.alt || "";
+  const prompt = document.getElementById("vocab_quiz_prompt");
+  prompt.textContent = "";
+  vocabQuizBilingual(prompt, q.def, q.defEs);
+  const others = vocabQuizShuffle(vocabQuiz.items.map((_, i) => i).filter((i) => i !== index)).slice(0, 2);
+  const box = document.getElementById("vocab_quiz_choices");
+  box.textContent = "";
+  vocabQuizShuffle([index].concat(others)).forEach((i) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "vq-choice";
+    btn.dataset.correct = i === index ? "1" : "0";
+    btn.onclick = () => answerVocabQuiz(btn);
+    vocabQuizBilingual(btn, vocabQuiz.items[i].term, vocabQuiz.items[i].termEs);
+    box.appendChild(btn);
+  });
+  document.getElementById("vocab_quiz_feedback").textContent = "";
+  document.getElementById("vocab_quiz_next").hidden = true;
+}
+
+function answerVocabQuiz(btn) {
+  if (btn.disabled) return;
+  const feedback = document.getElementById("vocab_quiz_feedback");
+  feedback.textContent = "";
+  if (btn.dataset.correct !== "1") {
+    vocabQuiz.tried = true;
+    btn.disabled = true;
+    btn.classList.add("is-wrong");
+    vocabQuizBilingual(feedback, "Not quite. Look at the picture and try another word.", "Casi. Mira el dibujo y prueba otra palabra.");
+    if (typeof playFailureSound === "function") playFailureSound();
+    return;
+  }
+  document.querySelectorAll("#vocab_quiz_choices .vq-choice").forEach((c) => {
+    c.disabled = true;
+  });
+  btn.classList.add("is-right");
+  const star = document.querySelectorAll("#vocab_quiz_stars .vq-star")[vocabQuiz.step];
+  if (!vocabQuiz.tried) {
+    vocabQuiz.firstTry++;
+    if (star) star.classList.add("is-earned");
+  }
+  vocabQuizBilingual(feedback, "Yes! That is it.", "¡Sí! Esa es.");
+  if (typeof playMatchSound === "function") playMatchSound();
+  document.getElementById("vocab_quiz_next").hidden = false;
+}
+
+function nextVocabQuiz() {
+  vocabQuiz.step++;
+  if (vocabQuiz.step < vocabQuiz.order.length) {
+    showVocabQuizQuestion();
+    return;
+  }
+  document.getElementById("vocab_quiz_play").hidden = true;
+  document.getElementById("vocab_quiz_done").hidden = false;
+  document.getElementById("vocab_quiz_score").textContent = vocabQuiz.firstTry + " / " + vocabQuiz.order.length;
+  const badge = document.getElementById("tab_badge_words");
+  if (badge) badge.textContent = "★";
+  if (typeof triggerConfettiBurst === "function") triggerConfettiBurst(null, null, 70);
+  if (typeof playSuccessArpeggio === "function") playSuccessArpeggio();
+  try {
+    localStorage.setItem(STORAGE_KEY + "_vocab_won", "1");
   } catch (e) {}
 }
 
 function markVocabCardKnown(idx, known) {
   const card = document.getElementById("vocab_card_" + idx);
-  const toggle = document.querySelector('.vocab-master-toggle[data-term-idx="' + idx + '"]');
   if (known) {
     if (card) card.classList.add("is-known");
-    if (toggle) toggle.classList.add("is-mastered");
     if (typeof playMatchSound === "function") playMatchSound();
   } else {
     if (card) card.classList.remove("is-known");
-    if (toggle) toggle.classList.remove("is-mastered");
   }
   try {
     localStorage.setItem(STORAGE_KEY + "_vocab_known_" + idx, known ? "1" : "0");
@@ -3775,13 +3742,9 @@ function loadState() {
         const badge = document.getElementById("tab_badge_words");
         if (badge) badge.textContent = "★";
       }
-      document.querySelectorAll(".vocab-master-toggle").forEach((btn) => {
-        const idx = btn.dataset.termIdx;
-        if (localStorage.getItem(STORAGE_KEY + "_vocab_mastered_" + idx) === "1" || localStorage.getItem(STORAGE_KEY + "_vocab_known_" + idx) === "1") {
-          btn.classList.add("is-mastered");
-          const card = document.getElementById("vocab_card_" + idx);
-          if (card) card.classList.add("is-known");
-        }
+      document.querySelectorAll(".vocab-card").forEach((card) => {
+        const idx = card.id.replace("vocab_card_", "");
+        if (localStorage.getItem(STORAGE_KEY + "_vocab_known_" + idx) === "1") card.classList.add("is-known");
       });
     } catch(e) {}
 
@@ -4384,26 +4347,9 @@ function spinMathTalkPrompt() {
   }
 }
 
-// Vocabulary Filter Engine
-function filterVocabCards(filter, btn) {
-  document.querySelectorAll(".btn-filter").forEach(b => b.classList.remove("is-active"));
-  if (btn) btn.classList.add("is-active");
-  const cards = document.querySelectorAll(".vocab-card");
-  cards.forEach(card => {
-    const isMastered = card.querySelector(".vocab-master-toggle.is-mastered") !== null;
-    if (filter === "all") {
-      card.style.display = "";
-    } else if (filter === "mastered") {
-      card.style.display = isMastered ? "" : "none";
-    } else if (filter === "review") {
-      card.style.display = isMastered ? "none" : "";
-    }
-  });
-}
-
 // In-Page Workbench Tools
-function openTogetherWorkbench(tool) {
-  if (typeof switchHomeworkTab === "function") switchHomeworkTab("together");
+function openWorkbench(tool) {
+  if (typeof switchHomeworkTab === "function") switchHomeworkTab("learn");
   const drawer = document.querySelector(".workbench-drawer");
   if (!drawer) return;
   if (drawer) {
@@ -4418,7 +4364,7 @@ function openTogetherWorkbench(tool) {
 
 function workbenchActionButton(labelEn, labelEs) {
   if (!document.querySelector(".workbench-drawer")) return "";
-  return '<button type="button" class="btn btn-sm btn-outline-secondary" onclick="openTogetherWorkbench()">' +
+  return '<button type="button" class="btn btn-sm btn-outline-secondary" onclick="openWorkbench()">' +
     '🧮 <span class="lang-en">' + labelEn + '</span><span class="lang-es" lang="es">' + labelEs + '</span></button>';
 }
 

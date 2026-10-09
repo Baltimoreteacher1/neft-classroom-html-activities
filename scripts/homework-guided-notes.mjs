@@ -283,159 +283,6 @@ function watchForCues(config) {
   return cues.slice(0, 3);
 }
 
-function togetherStepHints(config, isLast) {
-  const topic = detectVisualTopic(config);
-  const byTopic = {
-    exponents: {
-      en: isLast
-        ? "Count how many times the base is multiplied — that is the exponent."
-        : "Write the repeated multiplication first, then the power.",
-      es: isLast
-        ? "Cuenten cuántas veces se multiplica la base — eso es el exponente."
-        : "Escriban primero la multiplicación repetida, luego la potencia.",
-    },
-    equations: {
-      en: isLast
-        ? "Check: does your equation match every word in the clue?"
-        : "Name the unknown with a letter before you write symbols.",
-      es: isLast
-        ? "Verifiquen: ¿su ecuación coincide con cada palabra de la pista?"
-        : "Nombren la incógnita con una letra antes de escribir símbolos.",
-    },
-    inequalities: {
-      en: isLast
-        ? "Test one value from your shaded region to verify it works."
-        : "Open circle for < or >; closed circle for ≤ or ≥.",
-      es: isLast
-        ? "Prueben un valor de la región sombreada para verificar."
-        : "Círculo abierto para < o >; cerrado para ≤ o ≥.",
-    },
-    ratios: {
-      en: isLast
-        ? "Both columns must change by the same multiplier."
-        : "Point to each row as you compare the two quantities.",
-      es: isLast
-        ? "Ambas columnas deben cambiar con el mismo multiplicador."
-        : "Señalen cada fila mientras comparan las dos cantidades.",
-    },
-    fractions: {
-      en: isLast
-        ? "Draw a picture or use a number line to justify your answer."
-        : "Say the units out loud — what does each number represent?",
-      es: isLast
-        ? "Dibujen o usen una recta numérica para justificar."
-        : "Digan las unidades en voz alta — ¿qué representa cada número?",
-    },
-  };
-  const pick = byTopic[topic] || {
-    en: isLast
-      ? "Ask your student to explain why each step makes sense."
-      : "Point to each number or symbol as you talk.",
-    es: isLast
-      ? "Pídele que explique por qué tiene sentido cada paso."
-      : "Señalen cada número o símbolo mientras hablan.",
-  };
-  return pick;
-}
-
-function tryTogetherActivity(config) {
-  const custom = config.familyNotes?.tryTogether;
-  if (custom) return custom;
-
-  const exact = exactFamilySupport(config || {});
-  const story = FAMILY_SCENARIOS[config?.lessonId];
-  if (exact)
-    return {
-      titleEn: exact.titleEn,
-      titleEs: exact.titleEs,
-      scenarioEn: story?.en || "",
-      scenarioEs: story?.es || "",
-      answerEn: exact.equation || exact.capEn,
-      answerEs: exact.capEs,
-      steps: [
-        {
-          en: story?.taskEn || familyGuidance(config).question.en,
-          es: story?.taskEs || familyGuidance(config).question.es,
-          hint: exact.steps[0].en,
-          hintEs: exact.steps[0].es,
-        },
-        {
-          en: "Write an equation, proportion, or explanation to find the solution. Keep the units visible.",
-          es: "Escribe una ecuación, proporción o explicación para hallar la solución. Mantén visibles las unidades.",
-          hint: exact.steps[1].en,
-          hintEs: exact.steps[1].es,
-        },
-        {
-          en: "Check your result another way and explain why it makes sense.",
-          es: "Comprueba tu resultado de otra manera y explica por qué tiene sentido.",
-          hint: exact.steps[2].en,
-          hintEs: exact.steps[2].es,
-        },
-      ],
-    };
-
-  const intro = conceptIntro(config);
-  const weDo = intro?.weDo;
-  const explore = config.explore;
-  const narrative = config.launch?.narrative || config.explore?.narrative || "";
-
-  const steps = [];
-  const vocab = config.vocabulary || [];
-  if (weDo?.lines?.length) {
-    weDo.lines.forEach((line, i) => {
-      const hints = togetherStepHints(config, i === weDo.lines.length - 1);
-      steps.push({
-        en: line,
-        es: weDo.linesEs?.[i] || translateConceptLine(line, vocab),
-        hint: hints.en,
-        hintEs: hints.es,
-        helpEn: `Simpler: ${line.split(".")[0]}. Take it one phrase at a time.`,
-        helpEs: `Más simple: ${translateConceptLine(line.split(".")[0], vocab)}. Vayan frase por frase.`,
-      });
-    });
-  } else if (explore?.instructions) {
-    steps.push({
-      en: explore.instructions,
-      es:
-        translateConceptLine(explore.instructions, vocab) ||
-        "Completen la tabla o el diagrama juntos, una fila a la vez.",
-      hint: "Use pencil and paper if the screen feels crowded.",
-      hintEs: "Usen lápiz y papel si la pantalla se siente llena.",
-    });
-    steps.push({
-      en: "Check: did BOTH parts change the same way?",
-      es: "Verifiquen: ¿cambiaron AMBAS partes de la misma manera?",
-      hint: "This is the big idea of the lesson.",
-      hintEs: "Esta es la idea principal de la lección.",
-    });
-  } else {
-    const talk = firstTurnAndTalk(config);
-    steps.push({
-      en: talk?.question || "Ask your student to explain today's idea using one vocabulary word.",
-      es: "Pídele a tu estudiante que explique la idea de hoy usando una palabra del vocabulario.",
-      hint: "A complete sentence is enough — perfection is not the goal.",
-      hintEs: "Una oración completa es suficiente — no busquen perfección.",
-    });
-    steps.push({
-      en: "Sketch or act out the situation together (measuring cups, blocks, coins — anything at home).",
-      es: "Dibujen o actúen la situación juntos (tazas, bloques, monedas — lo que tengan en casa).",
-      hint: "Hands-on beats memorizing steps.",
-      hintEs: "Hacerlo con las manos es mejor que memorizar pasos.",
-    });
-  }
-
-  return {
-    titleEn: weDo?.title || "Try this together",
-    titleEs: weDo?.titleEs || "Inténtenlo juntos",
-    scenarioEn: narrative ? narrative.split(".")[0] + "." : "",
-    scenarioEs: narrative
-      ? translateConceptLine(narrative.split(".")[0], config.vocabulary || []) ||
-        "Usen la historia de la lección para conectar la matemática con la vida real."
-      : "",
-    steps: steps.slice(0, 6),
-  };
-}
-
 // Compact, graduated practice ladder for the "Try Together" tab: real problems
 // drawn from the lesson's practice tiers, ordered EASIEST → HARDEST so families
 // build confidence first, then stretch. We only keep problem shapes that compact
@@ -515,7 +362,6 @@ const readFamilyData = (name) => {
   return existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : {};
 };
 const FAMILY_LADDER = readFamilyData("family-homework-ladder.json");
-const FAMILY_SCENARIOS = readFamilyData("family-homework-scenarios.json");
 
 const ladderKey = (q) =>
   String(q || "")
@@ -2983,14 +2829,12 @@ export function renderWelcomeBanner(config, lessonId) {
         }
 
         <p class="hw-hero-lead">
-          <span class="lang-en">Optional, ungraded practice. Choose ONE plan below. Work with someone or on your own; no adult signature is needed.</span>
-          <span class="lang-es" lang="es">Práctica opcional, sin calificación. Elige UN plan abajo. Trabaja con alguien o a solas; no necesitas la firma de un adulto.</span>
+          <span class="lang-en">Optional, ungraded practice. Work with someone or on your own; no adult signature is needed.</span>
+          <span class="lang-es" lang="es">Práctica opcional, sin calificación. Trabaja con alguien o a solas; no necesitas la firma de un adulto.</span>
         </p>
 
         <ul class="hw-hero-stats" aria-label="What tonight looks like">
-          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en"><span id="hw_hero_stop_count">4</span> stops</span><span class="lang-es" lang="es"><span id="hw_hero_stop_count_es">4</span> paradas</span></li>
-          <li class="hw-stat"><span aria-hidden="true">⏱️</span><span class="lang-en">About <span id="hw_hero_minutes">20</span> minutes</span><span class="lang-es" lang="es">Unos <span id="hw_hero_minutes_es">20</span> minutos</span></li>
-          <li class="hw-stat"><span aria-hidden="true">👪</span><span class="lang-en">Better together</span><span class="lang-es" lang="es">Mejor en familia</span></li>
+          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en"><span id="hw_hero_stop_count">${HOMEWORK_STOP_COUNT}</span> stops</span><span class="lang-es" lang="es"><span id="hw_hero_stop_count_es">${HOMEWORK_STOP_COUNT}</span> paradas</span></li>
         </ul>
 
         ${renderQuickPlan()}
@@ -3014,36 +2858,10 @@ export function renderWelcomeBanner(config, lessonId) {
     </header>`;
 }
 
-/* The route chooser lives inside the hero, before secondary controls. */
+/* The start panel lives inside the hero, before secondary controls. */
 export function renderQuickPlan() {
-  /* Tabs, practice count, time remaining, and every Continue button follow the choice. */
   return `
-      <section class="hw-route-chooser" aria-labelledby="hw_route_title">
-        <div class="hw-route-heading">
-          <span class="hw-route-icon" aria-hidden="true">🧭</span>
-          <div>
-            <h2 id="hw_route_title"><span class="lang-en">Choose tonight's homework</span><span class="lang-es" lang="es">Elige la tarea de hoy</span></h2>
-            <p><span class="lang-en">Choose one plan, not all three. Each plan tells you what to do and when to stop. Switching keeps your answers.</span><span class="lang-es" lang="es">Elige un plan, no los tres. Cada plan indica qué hacer y cuándo terminar. Al cambiar, conservas tus respuestas.</span></p>
-          </div>
-        </div>
-        <div class="hw-route-options" role="group" aria-label="Choose homework time" data-aria-en="Choose homework time" data-aria-es="Elegir el tiempo de práctica">
-          <button type="button" class="hw-route-option" data-route-mode="quick" aria-pressed="false" onclick="setHomeworkRoute('quick')">
-            <span class="hw-route-time">5–10 <small>min</small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Quick practice</span><span class="lang-es" lang="es">Práctica breve</span></strong><small><span class="lang-en">Read one example → try 2 problems → explain one answer. Then stop.</span><span class="lang-es" lang="es">Lee un ejemplo → intenta 2 problemas → explica una respuesta. Luego termina.</span></small></span>
-          </button>
-          <button type="button" class="hw-route-option is-active" data-route-mode="core" aria-pressed="true" onclick="setHomeworkRoute('core')">
-            <span class="hw-route-time">20 <small>min</small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Read the example → try one together → complete 6 problems → explain. Then stop.</span><span class="lang-es" lang="es">Lee el ejemplo → intenta uno acompañado → completa 6 problemas → explica. Luego termina.</span></small></span>
-          </button>
-          <button type="button" class="hw-route-option" data-route-mode="full" aria-pressed="false" onclick="setHomeworkRoute('full')">
-            <span class="hw-route-time">30 <small>min</small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Family math night</span><span class="lang-es" lang="es">Noche de matemáticas en familia</span></strong><small><span class="lang-en">Do the 20-minute plan, plus key words, ONE home activity, and ONE game.</span><span class="lang-es" lang="es">Haz el plan de 20 minutos, más palabras clave, UNA actividad en casa y UN juego.</span></small></span>
-          </button>
-        </div>
-        <p class="hw-route-note" id="hw_route_note" aria-live="polite">
-          <span class="lang-en">Learn &amp; practice selected: 4 focused stops and all 6 core problems, about 20 minutes.</span>
-          <span class="lang-es" lang="es">Ruta de aprendizaje: 4 paradas y los 6 problemas, unos 20 minutos.</span>
-        </p>
+      <section class="hw-start-panel">
         <p id="hw_resume_note" role="status" aria-live="polite"></p>
         <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start homework</span><span class="lang-es" lang="es">Empezar la tarea</span></button>
       </section>`;
@@ -3174,215 +2992,6 @@ export function renderConceptExplainer(config) {
       </ul>
       </div>
     </section>`;
-}
-
-export function renderTryTogether(config, lessonId = "") {
-  const activity = tryTogetherActivity(config);
-  const unitNum = parseInt(config.unit || 1, 10);
-  const lessonMatch = String(lessonId).match(/(\d+)-(\d+)/);
-  const lessonNum = lessonMatch ? parseInt(lessonMatch[2], 10) : 1;
-  const hookIndex = (unitNum * 7 + lessonNum) % 3;
-
-  let hookBanner = "";
-  if (hookIndex === 0) {
-    hookBanner = `
-      <div class="huddle-hook-banner hook-debate">
-        <span class="huddle-hook-icon" aria-hidden="true">🗣️</span>
-        <div class="huddle-hook-titles">
-          <strong><span class="lang-en">Show Your Reasoning</span><span class="lang-es" lang="es">Muestra tu razonamiento</span></strong>
-          <span><span class="lang-en">Student: explain your first step. Partner: ask why it makes sense, then switch roles.</span><span class="lang-es" lang="es">Estudiante: explica tu primer paso. Acompañante: pregunta por qué tiene sentido; luego cambien de rol.</span></span>
-        </div>
-      </div>
-      <div class="parent-coach-prompt">
-        <strong>💬 <span class="lang-en">Parent Coach:</span><span class="lang-es" lang="es">Guía para familias:</span></strong>
-        <span class="lang-en">Ask: "How do your numbers match your picture or explanation?"</span>
-        <span class="lang-es" lang="es">Pregunta: "¿Cómo corresponden los números a tu dibujo o explicación?"</span>
-      </div>`;
-  } else if (hookIndex === 1) {
-    hookBanner = `
-      <div class="huddle-hook-banner hook-detective">
-        <span class="huddle-hook-icon" aria-hidden="true">🕵️‍♂️</span>
-        <div class="huddle-hook-titles">
-          <strong><span class="lang-en">Check Your Strategy</span><span class="lang-es" lang="es">Revisa tu estrategia</span></strong>
-          <span><span class="lang-en">Solve the task below. Then check one step using a picture, an estimate, or the original question.</span><span class="lang-es" lang="es">Resuelve la actividad de abajo. Luego revisa un paso con un dibujo, una estimación o la pregunta original.</span></span>
-        </div>
-      </div>
-      <div class="parent-coach-prompt">
-        <strong>💬 <span class="lang-en">Parent Coach:</span><span class="lang-es" lang="es">Guía para familias:</span></strong>
-        <span class="lang-en">Ask: "Which step can you verify another way?"</span>
-        <span class="lang-es" lang="es">Pregunta: "¿Qué paso puedes comprobar de otra manera?"</span>
-      </div>`;
-  } else {
-    hookBanner = `
-      <div class="huddle-hook-banner hook-teacher">
-        <span class="huddle-hook-icon" aria-hidden="true">🎓</span>
-        <div class="huddle-hook-titles">
-          <strong><span class="lang-en">Student as Teacher</span><span class="lang-es" lang="es">Estudiante como profe</span></strong>
-          <span><span class="lang-en">Student: explain one idea. Partner: ask for an example, then switch roles.</span><span class="lang-es" lang="es">Estudiante: explica una idea. Acompañante: pide un ejemplo; luego cambien de rol.</span></span>
-        </div>
-      </div>
-      <div class="parent-coach-prompt">
-        <strong>💬 <span class="lang-en">Family role:</span><span class="lang-es" lang="es">Rol de la familia:</span></strong>
-        <span class="lang-en">Listen, then ask: "Can you show me one example?"</span>
-        <span class="lang-es" lang="es">Escuchen y luego pregunten: "¿Puedes mostrarme un ejemplo?"</span>
-      </div>`;
-  }
-
-  return `
-    <section class="guided-section card section-together" aria-label="Try this together">
-      <h2 class="section-title">🤝 Try this together / Inténtenlo juntos</h2>
-      <p class="family-roles"><span class="lang-en">Student: explain. Partner: ask “How do you know?” Then switch. Working solo? Say or write your explanation; bring a question to a trusted adult at school.</span><span class="lang-es" lang="es">Estudiante: explica. Acompañante: pregunta «¿Cómo lo sabes?» Luego cambien. ¿Trabajas a solas? Di o escribe tu explicación; lleva una pregunta a un adulto de confianza en la escuela.</span></p>
-      ${hookBanner}
-      ${
-        activity.scenarioEn
-          ? `<p class="try-scenario lang-en">${esc(activity.scenarioEn)}</p>
-             <p class="try-scenario lang-es" lang="es">${esc(activity.scenarioEs)}</p>`
-          : ""
-      }
-      <p class="try-together-note bilingual-block">
-        <span class="lang-en">Work side by side. You ask questions; your student does the thinking.</span>
-        <span class="lang-es" lang="es">Trabajen juntos. Tú haces preguntas; tu estudiante piensa.</span>
-      </p>
-      <ol class="together-steps">
-        ${activity.steps
-          .map((step, i) => {
-            const hintEn = step.hint || "Read it again slowly. What is the first small step?";
-            const hintEs =
-              step.hintEs || "Léanlo de nuevo despacio. ¿Cuál es el primer paso pequeño?";
-            const hintBtn = helpButton("💡 Hint / Pista", {
-              titleEn: `Step ${i + 1} hint`,
-              titleEs: `Pista del paso ${i + 1}`,
-              en: hintEn,
-              es: hintEs,
-            });
-            const helpBtn = step.helpEn
-              ? helpButton("🤝 More help / Más ayuda", {
-                  titleEn: `Step ${i + 1} — more help`,
-                  titleEs: `Paso ${i + 1} — más ayuda`,
-                  en: step.helpEn,
-                  es: step.helpEs || hintEs,
-                })
-              : "";
-            return `
-          <li class="together-step together-step--compact step-color-${(i % 4) + 1}">
-            <div class="together-step-head">
-              <span class="step-badge">Step ${i + 1} / Paso ${i + 1}</span>
-              <div class="together-step-actions">
-                ${hintBtn}
-                ${helpBtn}
-              </div>
-            </div>
-            <p class="lang-en">${esc(step.en)}</p>
-            <p class="lang-es" lang="es">${esc(step.es)}</p>
-            <div class="together-fill">
-              <textarea id="together_${i}" name="together_${i}" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step ${i + 1}"></textarea>
-            </div>
-          </li>`;
-          })
-          .join("")}
-      </ol>
-      ${
-        activity.answerEn
-          ? `
-      <div class="together-answer-reveal" style="margin-top: 16px;">
-        ${helpButton("✅ Check Answer / Comprobar respuesta", {
-          titleEn: "Correct Answer",
-          titleEs: "Respuesta correcta",
-          en: activity.answerEn,
-          es: activity.answerEs || activity.answerEn,
-        })}
-      </div>`
-          : ""
-      }
-      <details class="family-extra-ladder"><summary><span class="lang-en">Optional: try another together</span><span class="lang-es" lang="es">Opcional: intenta otro acompañado</span></summary>${renderTogetherLadder(config)}</details>
-    </section>`;
-}
-
-// Graduated practice ladder rendered under the guided steps — compact problems
-// families do side by side, easiest first, with a no-JS reveal for each answer.
-function renderTogetherLadder(config) {
-  const ladder = buildTogetherLadder(config);
-  if (!ladder.length) return "";
-
-  const letters = "ABCDEFGH";
-  const items = ladder
-    .map((item, i) => {
-      const hasChoices = Array.isArray(item.choices) && item.choices.length > 0;
-      /* Tappable choices that answer back. The ladder used to print A–D as a
-         plain list beside a blank text box nothing checked, so a family could
-         only compare by opening the answer. Radios named ladder_<i> are saved
-         and restored by saveState/loadState like every other choice. */
-      const choicesHtml = hasChoices
-        ? `<div class="ladder-choices" role="radiogroup" aria-label="Answer choices">${item.choices
-            .map((c, idx) => {
-              const cEs = item.choicesEs?.[idx];
-              // The right choice explains itself; a wrong one names its mistake.
-              const isRight = idx === item.correctIndex;
-              const fb = (isRight ? item.explanation : "") || item.feedback?.[idx] || "";
-              const fbEs =
-                (isRight ? item.explanationEs : "") ||
-                item.feedbackEs?.[idx] ||
-                choiceFeedbackSpanish(fb);
-              return `<label class="ladder-choice"><input type="radio" name="ladder_${i}" value="${idx}" data-correct="${idx === item.correctIndex}" data-fb="${esc(fb)}" data-fb-es="${esc(fbEs)}" onchange="checkLadderChoice(this)" /><span class="ladder-choice-letter" aria-hidden="true">${letters[idx] || ""}</span><span class="ladder-choice-text">${
-                cEs
-                  ? `<span class="lang-en">${esc(c)}</span><span class="lang-es" lang="es">${esc(cEs)}</span>`
-                  : esc(c)
-              }</span></label>`;
-            })
-            .join("")}</div><p class="ladder-feedback" role="status" aria-live="polite"></p>`
-        : "";
-      // For multiple-choice, reveal the correct option with its letter (e.g. "A. …")
-      // so it lines up with the rendered choices; open-response just shows the sample.
-      const answerTextEn =
-        hasChoices && Number.isInteger(item.correctIndex)
-          ? `${letters[item.correctIndex] ? `${letters[item.correctIndex]}. ` : ""}${item.a}`
-          : item.a;
-      const answerTextEs = item.aEs
-        ? hasChoices && Number.isInteger(item.correctIndex)
-          ? `${letters[item.correctIndex] ? `${letters[item.correctIndex]}. ` : ""}${item.aEs}`
-          : item.aEs
-        : "";
-      const answerBody = answerTextEs
-        ? `<p class="ladder-answer-text"><span class="lang-en">${esc(answerTextEn)}</span><span class="lang-es" lang="es">${esc(answerTextEs)}</span></p>`
-        : `<p class="ladder-answer-text">${esc(answerTextEn)}</p>`;
-      const answer = item.a
-        ? `<details class="ladder-answer">
-             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
-             ${answerBody}
-           </details>`
-        : "";
-      const questionHtml = item.qEs
-        ? `<p class="ladder-q"><span class="lang-en">${esc(item.q)}</span><span class="lang-es" lang="es">${esc(item.qEs)}</span></p>`
-        : `<p class="ladder-q">${esc(item.q)}</p>`;
-      return `
-        <li class="ladder-item">
-          <div class="ladder-head">
-            <span class="ladder-stars" aria-hidden="true">${item.stars}</span>
-            <span class="ladder-tier"><span class="lang-en">${esc(item.tierEn)}</span><span class="lang-es" lang="es">${esc(item.tierEs)}</span></span>
-          </div>
-          ${questionHtml}
-          ${
-            hasChoices
-              ? choicesHtml
-              : `<textarea id="ladder_${i}" name="ladder_${i}" class="ladder-input custom-textarea" rows="2" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem ${i + 1}"></textarea>`
-          }
-          ${answer}
-        </li>`;
-    })
-    .join("");
-
-  return `
-    <div class="together-ladder">
-      <h3 class="ladder-title">
-        <span class="lang-en">📈 Practice ladder — easiest first</span>
-        <span class="lang-es" lang="es">📈 Escalera de práctica — del más fácil al más difícil</span>
-      </h3>
-      <p class="ladder-note bilingual-block">
-        <span class="lang-en">Do these together. Start at ★ and climb to ★★★ when ready.</span>
-        <span class="lang-es" lang="es">Háganlos juntos. Empiecen en ★ y suban a ★★★ cuando estén listos.</span>
-      </p>
-      <ol class="ladder-list">${items}</ol>
-    </div>`;
 }
 
 export function renderStuckSection(config) {
@@ -3698,7 +3307,6 @@ export function renderCelebration(config = null, _lessonId = "") {
    promised 25 minutes across 5 stops, the rail billed Check at 10, and this
    paragraph asked for 15-20 — three numbers for one stop, on one screen. */
 export function renderQuickCheckIntro(coreCount = 6, hasMore = true) {
-  const mins = HOMEWORK_TABS.find((t) => t.id === "check")?.min ?? 8;
   /* A Part 2 with authored session practice ships exactly its core set and no
      bonus accordion, so "the extra practice at the bottom" pointed at nothing.
      Only promise it when the page renders it. */
@@ -3708,8 +3316,8 @@ export function renderQuickCheckIntro(coreCount = 6, hasMore = true) {
     <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
       <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
       <p class="quick-check-time bilingual-block">
-        <span class="lang-en">⏱️ About <strong><span id="hw_check_minutes">${mins}</span> minutes</strong> for the <span id="hw_check_problem_count">${coreCount}</span> problems below.<span class="quick-check-extra-copy">${extraEn}</span></span>
-        <span class="lang-es" lang="es">⏱️ Unos <strong><span id="hw_check_minutes_es">${mins}</span> minutos</strong> para los <span id="hw_check_problem_count_es">${coreCount}</span> problemas de abajo.<span class="quick-check-extra-copy">${extraEs}</span></span>
+        <span class="lang-en">Complete the <span id="hw_check_problem_count">${coreCount}</span> problems below.<span class="quick-check-extra-copy">${extraEn}</span></span>
+        <span class="lang-es" lang="es">Completa los <span id="hw_check_problem_count_es">${coreCount}</span> problemas de abajo.<span class="quick-check-extra-copy">${extraEs}</span></span>
       </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
@@ -8138,8 +7746,8 @@ export function renderVocabMatchChallenge(vocabList) {
           <span class="vocab-game-icon" aria-hidden="true">⚡</span>
           <div>
             <h3 class="vocab-game-h3">
-              <span class="lang-en">Match &amp; Master Challenge</span>
-              <span class="lang-es" lang="es">Desafío: Empareja y Domina</span>
+              <span class="lang-en">Match the Words</span>
+              <span class="lang-es" lang="es">Empareja las palabras</span>
             </h3>
             <p class="vocab-game-sub bilingual-block">
               <span class="lang-en">Tap a word on the left, then tap its matching definition on the right!</span>
@@ -8193,26 +7801,59 @@ export function renderVocabMatchChallenge(vocabList) {
     </div>`;
 }
 
+/**
+ * Word Quiz — the practice that sits between reading a card and matching long
+ * definitions: a picture and one short meaning, three words to choose from.
+ * Questions are built in the browser from a JSON island, so the page carries
+ * the words once.
+ */
+export function renderVocabQuiz(vocabList, resolveVocabImage, vocabImageAlt) {
+  if (!Array.isArray(vocabList) || vocabList.length < 2) return "";
+  const items = vocabList.map((v) => ({
+    term: v.term || "",
+    termEs: v.termEs || v.term || "",
+    def: v.definition || "",
+    defEs: v.definitionEs || v.definition || "",
+    img: resolveVocabImage(v.term || "", v.image) || "",
+    alt: vocabImageAlt(v.term || "", v.definition || ""),
+  }));
+  const island = JSON.stringify(items).replace(/</g, "\\u003c");
+  return `
+    <div class="vocab-quiz card-ish" id="vocab_quiz">
+      <h3 class="vq-title">🎯 <span class="lang-en">Word Quiz</span><span class="lang-es" lang="es">Quiz de palabras</span></h3>
+      <div class="vq-stars" id="vocab_quiz_stars" aria-hidden="true"></div>
+      <div id="vocab_quiz_play">
+        <p class="vq-ask"><span class="lang-en">Which word fits?</span><span class="lang-es" lang="es">¿Qué palabra encaja?</span></p>
+        <div class="vq-card">
+          <img class="vq-img" id="vocab_quiz_img" alt="" width="96" height="96" hidden />
+          <p class="vq-prompt" id="vocab_quiz_prompt"></p>
+        </div>
+        <div class="vq-choices" id="vocab_quiz_choices"></div>
+        <p class="vq-feedback" id="vocab_quiz_feedback" role="status" aria-live="polite"></p>
+        <button type="button" class="btn btn-primary vq-next" id="vocab_quiz_next" onclick="nextVocabQuiz()" hidden><span class="lang-en">Next ➔</span><span class="lang-es" lang="es">Siguiente ➔</span></button>
+      </div>
+      <div class="vq-done" id="vocab_quiz_done" hidden>
+        <p class="vq-done-title">🎉 <span class="lang-en">Quiz done!</span><span class="lang-es" lang="es">¡Quiz terminado!</span></p>
+        <p class="vq-done-score"><span class="lang-en">First-try stars:</span><span class="lang-es" lang="es">Estrellas al primer intento:</span> <strong id="vocab_quiz_score"></strong></p>
+        <button type="button" class="btn btn-secondary" onclick="startVocabQuiz()"><span class="lang-en">Play again 🔄</span><span class="lang-es" lang="es">Jugar de nuevo 🔄</span></button>
+      </div>
+      <script type="application/json" id="vocab_quiz_data">${island}</script>
+    </div>`;
+}
+
 export function renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt) {
   if (!Array.isArray(vocabList) || vocabList.length === 0) return "";
 
   const hasVocabGame = vocabList.length >= 2;
-  const gameHtml = hasVocabGame ? renderVocabMatchChallenge(vocabList) : "";
+  const quizHtml = hasVocabGame ? renderVocabQuiz(vocabList, resolveVocabImage, vocabImageAlt) : "";
+  const matchHtml = hasVocabGame ? renderVocabMatchChallenge(vocabList) : "";
 
   return `
     <section class="guided-section card section-vocab vocab-section" aria-label="Words to know">
       <h2 class="section-title">📚 Words to know / Palabras clave</h2>
-      ${gameHtml}
-      <div class="vocab-toolbar">
-        <div class="vocab-filter-group" role="radiogroup" aria-label="Filter vocabulary cards">
-          <button type="button" class="btn btn-sm btn-filter is-active" data-filter="all" onclick="filterVocabCards('all', this)"><span class="lang-en">All words</span><span class="lang-es" lang="es">Todas</span></button>
-          <button type="button" class="btn btn-sm btn-filter" data-filter="review" onclick="filterVocabCards('review', this)"><span class="lang-en">Needs review</span><span class="lang-es" lang="es">Por repasar</span></button>
-          <button type="button" class="btn btn-sm btn-filter" data-filter="mastered" onclick="filterVocabCards('mastered', this)">⭐ <span class="lang-en">Mastered</span><span class="lang-es" lang="es">Dominadas</span></button>
-        </div>
-      </div>
       <p class="vocab-family-note bilingual-block">
-        <span class="lang-en">Tap any card to flip and explore its definition and example.</span>
-        <span class="lang-es" lang="es">Toca cualquier tarjeta para voltearla y explorar su definición y ejemplo.</span>
+        <span class="lang-en">1. Tap a card to flip it. 2. Play the quiz. 3. Match the words.</span>
+        <span class="lang-es" lang="es">1. Toca una tarjeta para voltearla. 2. Juega el quiz. 3. Empareja las palabras.</span>
       </p>
       <div class="vocab-container">
         ${vocabList
@@ -8230,7 +7871,6 @@ export function renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt) {
                 <div class="vocab-card-front">
                   <div class="vocab-card-top-bar">
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(${escAttr(JSON.stringify(term))}, ${escAttr(JSON.stringify(termEs))})" title="Listen / Escuchar" aria-label="Pronounce ${esc(term)}">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
-                    <button type="button" class="vocab-master-toggle" data-term-idx="${vIdx}" onclick="event.stopPropagation(); toggleVocabCardMastery(${vIdx})" title="Mark Mastered / Marcar Dominado" aria-label="Mark ${esc(term)} mastered">★ <span class="vocab-btn-label lang-en">Mastered</span><span class="vocab-btn-label lang-es" lang="es">Dominada</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
                     <img class="vocab-thumb" src="${esc(imgSrc)}" alt="${esc(imgAlt)}" loading="lazy" width="76" height="76" />
@@ -8277,6 +7917,8 @@ export function renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt) {
           })
           .join("")}
       </div>
+      ${quizHtml}
+      ${matchHtml}
       <div class="tab-flow-nav">
         <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('words')">
           <span class="lang-en">Continue ➔</span>
@@ -8326,7 +7968,7 @@ function workbenchSpec(config) {
   return id ? { id, ...WORKBENCH_TOOL_COPY[id] } : null;
 }
 
-export function renderLearnTab(config, visualLabHtml = "") {
+export function renderLearnTab(config, visualLabHtml = "", workbenchHtml = "") {
   const learning = renderLearningTonight(config).replace(/<section[^>]*>|<\/section>/g, "");
   let concept = renderConceptExplainer(config).replace(/<section[^>]*>|<\/section>/g, "");
   const keyEn = keyIdea(config);
@@ -8415,7 +8057,7 @@ export function renderLearnTab(config, visualLabHtml = "") {
             <p><span class="lang-en">${workbench.actionEn}</span><span class="lang-es" lang="es">${workbench.actionEs}</span></p>
           </div>
         </div>
-        <button type="button" class="btn btn-sm btn-outline-primary wb-launch-btn" onclick="openTogetherWorkbench('${workbench.id}')">
+        <button type="button" class="btn btn-sm btn-outline-primary wb-launch-btn" onclick="openWorkbench('${workbench.id}')">
           <span class="lang-en">Open ${workbench.en} ➔</span>
           <span class="lang-es" lang="es">Abrir ${workbench.es} ➔</span>
         </button>
@@ -8428,6 +8070,7 @@ export function renderLearnTab(config, visualLabHtml = "") {
       <div class="learn-big-idea-block">${concept}</div>
       <div class="learn-extended-block">${visualLabHtml}</div>
 ${workbenchLaunchHtml}
+${workbenchHtml}
       <div class="learn-extended-block">${parentDrawerHtml}${powerUpHtml}</div>
       <p class="tab-help-row learn-extended-block">${helpButton("💡 Need more help? / ¿Más ayuda?", { titleEn: "The big idea", titleEs: "La idea principal", en: keyEn, es: keyEs })}</p>
       <div class="tab-flow-nav">
@@ -8445,51 +8088,6 @@ export function renderWordsTab(vocabList, resolveVocabImage, vocabImageAlt) {
     return `<div ${tabPanelAttrs("words", true)}><p class="lang-en">No vocabulary listed for this lesson.</p><p class="lang-es" lang="es">No hay vocabulario listado para esta lección.</p></div>`;
   }
   return `<div ${tabPanelAttrs("words", true)}>${inner.replace(/<section[^>]*>|<\/section>/g, "")}</div>`;
-}
-
-export function renderTogetherTab(config, lessonId = "", workbenchHtml = "") {
-  const inner = renderTryTogether(config, lessonId).replace(/<section[^>]*>|<\/section>/g, "");
-  const mathTalkHtml = `
-    <div class="math-talk-hub card-ish" id="math_talk_card">
-      <div class="math-talk-header">
-        <div class="math-talk-badge">💬 MATH TALK GENERATOR / PREGUNTAS DE DIÁLOGO</div>
-        <button type="button" class="btn btn-sm btn-secondary spin-btn" onclick="spinMathTalkPrompt()">🎲 <span class="lang-en">Spin New Question</span><span class="lang-es" lang="es">Girar otra pregunta</span></button>
-      </div>
-      <div class="math-talk-body" id="math_talk_body">
-        <p class="math-talk-q">
-          <span class="lang-en" id="math_talk_en">"Can you show me how you see that in your work or a quick sketch?"</span>
-          <span class="lang-es" lang="es" id="math_talk_es">"¿Puedes mostrarme cómo ves eso en tu trabajo o en un dibujo rápido?"</span>
-        </p>
-        <p class="math-talk-follow">
-          <span class="lang-en" id="math_talk_follow_en">Follow-up: Point to where each number from the problem shows up.</span>
-          <span class="lang-es" lang="es" id="math_talk_follow_es">Seguimiento: Señala dónde aparece cada número del problema.</span>
-        </p>
-      </div>
-    </div>`;
-
-  return `
-    <div ${tabPanelAttrs("together", true)}>
-      ${inner}
-      <details class="family-reasoning-support"><summary><span class="lang-en">Help me explain</span><span class="lang-es" lang="es">Ayúdame a explicar</span></summary>
-        <p><span class="lang-en">Point and name → finish the sentence → explain in your own words.</span><span class="lang-es" lang="es">Señala y nombra → completa la oración → explica con tus propias palabras.</span></p>
-        <p><span class="lang-en">${esc(familyGuidance(config).frame.en)}</span><span class="lang-es" lang="es">${esc(familyGuidance(config).frame.es)}</span></p>
-        <p><span class="lang-en">Check: I answered the question, showed my thinking, labeled units, and explained why.</span><span class="lang-es" lang="es">Reviso: respondí la pregunta, mostré mi razonamiento, indiqué las unidades y expliqué por qué.</span></p>
-      </details>
-      ${mathTalkHtml}
-      ${renderFamilyActivityCorner(config)}
-      <div class="scratchpad-inline-toggle">
-        <button type="button" class="btn btn-secondary scratchpad-toggle-btn" onclick="toggleScratchpad()">
-          ✏️ <span class="lang-en">Open Scratchpad Whiteboard</span><span class="lang-es" lang="es">Abrir Pizarra de Dibujo</span>
-        </button>
-      </div>
-${workbenchHtml}
-      <div class="tab-flow-nav">
-        <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('together')">
-          <span class="lang-en">Continue ➔</span>
-          <span class="lang-es" lang="es">Continuar ➔</span>
-        </button>
-      </div>
-    </div>`;
 }
 
 export function renderCheckTab(
@@ -8932,7 +8530,7 @@ export function renderPlayTabPanel(config, lessonId = "") {
     : "";
   return `
     <div ${tabPanelAttrs("play", true)}>
-      <h2 class="section-title">🎮 <span class="lang-en">Play together</span><span class="lang-es" lang="es">Juguemos juntos</span></h2>
+      <h2 class="section-title">🎮 <span class="lang-en">Play</span><span class="lang-es" lang="es">Jugar</span></h2>
       <p class="bilingual-block play-intro">
         <span class="lang-en">Pick a game and play as a team. Nothing here is timed, and every game can be replayed as many times as you like.</span>
         <span class="lang-es" lang="es">Escojan un juego y jueguen en equipo. Nada aquí tiene cronómetro, y pueden repetir cada juego cuantas veces quieran.</span>
@@ -8955,6 +8553,7 @@ export function renderPlayTabPanel(config, lessonId = "") {
           <span class="lang-en">Turn On Co-Op</span><span class="lang-es" lang="es">Activar Co-Op</span>
         </button>
       </div>
+      ${renderFamilyActivityCorner(config)}
       ${renderFamilyGameBreak(familyGameKey(config), { quizHtml, arcadeUrl }, detectVisualTopic(config))}
       <div class="tab-flow-nav">
         <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('play')">
@@ -9299,12 +8898,11 @@ export function renderRefrigeratorSheet(config = {}, lessonId = "") {
  * single source of truth for how long tonight takes.
  */
 const HOMEWORK_TABS = [
-  { id: "learn", icon: "📖", en: "Learn", es: "Aprender", min: 5 },
-  { id: "words", icon: "📚", en: "Words", es: "Palabras", min: 3 },
-  { id: "together", icon: "🤝", en: "Together", es: "Juntos", min: 6 },
-  { id: "check", icon: "✅", en: "Check", es: "Repaso", min: 8 },
-  { id: "play", icon: "🎮", en: "Play", es: "Jugar", min: 5 },
-  { id: "done", icon: "🎉", en: "Done", es: "Listo", min: 3 },
+  { id: "learn", icon: "📖", en: "Learn", es: "Aprender" },
+  { id: "words", icon: "📚", en: "Words", es: "Palabras" },
+  { id: "check", icon: "✅", en: "Check", es: "Repaso" },
+  { id: "play", icon: "🎮", en: "Play", es: "Jugar" },
+  { id: "done", icon: "🎉", en: "Done", es: "Listo" },
 ];
 
 /**
@@ -9330,8 +8928,6 @@ const HOMEWORK_EXTRA_TABS = [
   },
 ];
 
-/** Minutes the hero advertises. Derived, so the two can never disagree. */
-export const HOMEWORK_TOTAL_MINUTES = HOMEWORK_TABS.reduce((n, t) => n + t.min, 0);
 export const HOMEWORK_STOP_COUNT = HOMEWORK_TABS.length;
 
 export function renderScratchpadHtml() {
@@ -9378,12 +8974,12 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "") {
   const tabBtn = (t, i) => `
             <button type="button" role="tab" id="hw_tab_${t.id}" class="homework-tab-btn${i === 0 ? " is-active" : ""}"
               aria-selected="${i === 0 ? "true" : "false"}"${i === 0 ? ' aria-current="step"' : ""} aria-controls="hw_panel_${t.id}"
-              aria-label="${esc(t.en)} — stop ${i + 1} of ${tabCount}, about ${t.min} minutes"
-              data-tab="${t.id}" data-stop="${i + 1}" data-min="${t.min}" onclick="switchHomeworkTab('${t.id}')">
+              aria-label="${esc(t.en)} — stop ${i + 1} of ${tabCount}"
+              data-aria-en="${esc(t.en)} — stop ${i + 1} of ${tabCount}" data-aria-es="${esc(t.es)} — parada ${i + 1} de ${tabCount}"
+              data-tab="${t.id}" data-stop="${i + 1}" onclick="switchHomeworkTab('${t.id}')">
               <span class="tab-step" aria-hidden="true">${i + 1}</span>
               <span class="tab-icon" aria-hidden="true">${t.icon}</span>
               <span class="tab-label"><span class="tab-en">${t.en}</span><span class="tab-es" lang="es">${t.es}</span></span>
-              <span class="tab-min" aria-hidden="true">${t.min} min</span>
               <span class="tab-done" aria-hidden="true">✓</span>
             </button>`;
   const extraBtn = (t) => `
@@ -9400,7 +8996,6 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "") {
     <div class="homework-tabs-shell" data-tab-count="${tabCount}">
       <div class="homework-tab-chrome">
         <div class="hw-tab-meta-row"><div id="hw_utility_controls" class="hw-utility-controls"></div>
-          <span class="hw-time-remaining" id="hw_time_remaining" aria-live="polite">⏱️ <span class="lang-en">~${HOMEWORK_TOTAL_MINUTES} min left</span><span class="lang-es" lang="es">~${HOMEWORK_TOTAL_MINUTES} min restantes</span></span>
         </div>
         <nav class="homework-tab-bar" role="tablist" aria-label="Tonight's path" data-aria-en="Tonight's path" data-aria-es="Ruta de hoy">
           ${HOMEWORK_TABS.map(tabBtn).join("")}
@@ -9852,147 +9447,16 @@ function initFamilyGames() {
   resetWyrGame();
 }
 
-/* ── Family route chooser ───────────────────────────────────────────────
-   A route is a real contract, not decorative copy: it controls which stops
-   are in the path, how many practice problems count, the remaining-time
-   display, and every Continue button. */
-var HOMEWORK_ROUTES = {
-  quick: { tabs: ['learn', 'check', 'done'], total: 10, problemLimit: 2, minutes: { learn: 3, check: 5, done: 2 } },
-  core: { tabs: ['learn', 'together', 'check', 'done'], total: 20, problemLimit: 6, minutes: { learn: 5, together: 6, check: 7, done: 2 } },
-  full: { tabs: ['learn', 'words', 'together', 'check', 'play', 'done'], total: 30, problemLimit: 6, minutes: { learn: 5, words: 3, together: 6, check: 8, play: 5, done: 3 } }
-};
-
-function routeStorageKey() {
-  return 'hw_route_' + (window.LESSON_ID || location.pathname);
-}
+/* ── Homework path ─────────────────────────────────────────────────────
+   One path for every family: every stop and every problem. */
+var HOMEWORK_PATH = { tabs: ['learn', 'words', 'check', 'play', 'done'], problemLimit: 6 };
 
 function activeHomeworkRoute() {
-  var id = document.body.dataset.homeworkRoute || 'core';
-  return HOMEWORK_ROUTES[id] || HOMEWORK_ROUTES.core;
-}
-
-function setHomeworkRoute(mode, options) {
-  options = options || {};
-  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'core';
-  var route = HOMEWORK_ROUTES[mode];
-  document.body.dataset.homeworkRoute = mode;
-
-  document.querySelectorAll('[data-route-mode]').forEach(function (btn) {
-    var active = btn.dataset.routeMode === mode;
-    btn.classList.toggle('is-active', active);
-    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-  });
-
-  var visibleIndex = 0;
-  document.querySelectorAll('.homework-tab-btn').forEach(function (btn) {
-    var included = route.tabs.indexOf(btn.dataset.tab) !== -1;
-    btn.hidden = !included;
-    if (!included) {
-      btn.setAttribute('aria-selected', 'false');
-      btn.removeAttribute('aria-current');
-      return;
-    }
-    visibleIndex++;
-    var step = btn.querySelector('.tab-step');
-    if (step) step.textContent = String(visibleIndex);
-    // The tab's minutes are the ROUTE's minutes; the static label said 8 for
-    // Check while the 20-minute route budgets 7 and the Check intro said 7.
-    var mins = route.minutes[btn.dataset.tab];
-    var minEl = btn.querySelector('.tab-min');
-    if (mins && minEl) minEl.textContent = mins + ' min';
-    if (mins) btn.dataset.min = String(mins);
-    var label = btn.querySelector('.tab-en');
-    var labelEs = btn.querySelector('.tab-es');
-    btn.dataset.ariaEn = (label ? label.textContent : btn.dataset.tab) + ' — stop ' + visibleIndex + ' of ' + route.tabs.length;
-    btn.dataset.ariaEs = (labelEs ? labelEs.textContent : btn.dataset.tab) + ' — parada ' + visibleIndex + ' de ' + route.tabs.length;
-    btn.setAttribute('aria-label', document.documentElement.lang === 'es' ? btn.dataset.ariaEs : btn.dataset.ariaEn);
-  });
-  document.querySelectorAll('.homework-tab-extra').forEach(function (btn) {
-    btn.hidden = mode !== 'full';
-  });
-  var shell = document.querySelector('.homework-tabs-shell');
-  if (shell) shell.dataset.tabCount = String(route.tabs.length);
-  ['hw_hero_stop_count', 'hw_hero_stop_count_es'].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = String(route.tabs.length);
-  });
-  ['hw_hero_minutes', 'hw_hero_minutes_es'].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = String(route.total);
-  });
-
-  var warmups = document.querySelectorAll('.practice-tier-warmup .problem-section');
-  warmups.forEach(function (problem, index) { problem.hidden = index >= route.problemLimit; });
-  var challenge = document.querySelector('.practice-tier-challenge');
-  if (challenge) challenge.hidden = mode === 'quick';
-  var more = document.querySelector('.more-practice');
-  if (more) more.hidden = mode === 'quick';
-  ['hw_goal_count', 'hw_goal_count_es'].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = String(route.problemLimit);
-  });
-  ['hw_check_problem_count', 'hw_check_problem_count_es'].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = String(route.problemLimit);
-  });
-  ['hw_check_minutes', 'hw_check_minutes_es'].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = String(route.minutes.check);
-  });
-  var progress = document.getElementById('progress_text');
-  if (progress) {
-    var completed = Array.from(document.querySelectorAll('.problem-section.correct, .problem-section.reviewed'))
-      .filter(function (problem) { return !problem.hidden && !problem.closest('[hidden]') && !problem.closest('.more-practice'); })
-      .length;
-    progress.textContent = completed + ' / ' + route.problemLimit;
-  }
-  if (typeof updateProgress === 'function') updateProgress();
-
-  var note = document.getElementById('hw_route_note');
-  if (note) {
-    var copy = {
-      quick: ['Quick practice: read one example, try 2 problems, explain one answer, and stop. About 5–10 minutes; no Together or Play stop.', 'Práctica breve: lee un ejemplo, intenta 2 problemas, explica una respuesta y termina. Unos 5–10 minutos; sin las paradas Juntos ni Jugar.'],
-      core: ['Learn & practice: read, try one together, complete 6 problems, and explain. Then stop. About 20 minutes.', 'Ruta de aprendizaje: 4 paradas y los 6 problemas, unos 20 minutos.'],
-      full: ['Family math night: 6 problems, key words, one home activity, and one game. Explain and stop. About 30 minutes.', 'Noche familiar: 6 problemas, palabras clave, una actividad en casa y un juego. Explica y termina. Unos 30 minutos.']
-    }[mode];
-    setBiText(note, copy[0], copy[1]);
-  }
-
-  try { localStorage.setItem(routeStorageKey(), mode); } catch (e) {}
-  initHomeworkShareLinks();
-
-  var current = document.body.dataset.activeTab;
-  if (current && route.tabs.indexOf(current) === -1 && !options.keepTab) {
-    switchHomeworkTab(route.tabs[0]);
-  } else if (current) {
-    switchHomeworkTab(current);
-  } else {
-    updateHomeworkRouteTime(route.total);
-  }
-  if (!options.silent) {
-    var chooser = document.querySelector('.hw-route-chooser');
-    if (chooser) chooser.classList.add('route-just-changed');
-    setTimeout(function () { if (chooser) chooser.classList.remove('route-just-changed'); }, 500);
-  }
-}
-
-function updateHomeworkRouteTime(minutes) {
-  var timeEl = document.getElementById('hw_time_remaining');
-  if (!timeEl) return;
-  timeEl.innerHTML = '⏱️ <span class="lang-en">~' + minutes + ' min left</span><span class="lang-es" lang="es">~' + minutes + ' min restantes</span>';
-}
-
-function restoreHomeworkRoute() {
-  var mode = 'core';
-  try { mode = localStorage.getItem(routeStorageKey()) || 'core'; } catch (e) {}
-  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'core';
-  var requested = new URLSearchParams(location.search).get('route');
-  if (Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, requested)) mode = requested;
-  setHomeworkRoute(mode, { silent: true, keepTab: true });
+  return HOMEWORK_PATH;
 }
 
 function goNextHomeworkStop(current) {
-  var tabs = activeHomeworkRoute().tabs;
+  var tabs = HOMEWORK_PATH.tabs;
   var index = tabs.indexOf(current);
   var next = tabs[Math.min(index + 1, tabs.length - 1)] || tabs[0];
   switchHomeworkTab(next);
@@ -10230,16 +9694,6 @@ function switchHomeworkTab(tabId) {
     const fill = document.getElementById('tab_progress_fill');
     if (fill) fill.style.width = ((idx / parseInt(total, 10)) * 100) + '%';
 
-    // Dynamic time remaining calculation
-    var minsLeft = 0;
-    var route = activeHomeworkRoute();
-    for (var k = idx - 1; k < tabs.length; k++) {
-      minsLeft += route.minutes[tabs[k].dataset.tab] || parseInt(tabs[k].dataset.min || '5', 10);
-    }
-    var timeEl = document.getElementById('hw_time_remaining');
-    if (timeEl) {
-      timeEl.innerHTML = '⏱️ <span class="lang-en">~' + minsLeft + ' min left</span><span class="lang-es" lang="es">~' + minsLeft + ' min restantes</span>';
-    }
   }
 
   if (typeof updateJourneyMap === 'function') updateJourneyMap(tabId, leaving !== tabId ? leaving : '');
@@ -10247,6 +9701,7 @@ function switchHomeworkTab(tabId) {
   if (tabId === 'done' && typeof updateCelebrationTab === 'function') {
     updateCelebrationTab();
   }
+  if (tabId === 'words' && !window.hwVocabQuizReady && typeof startVocabQuiz === 'function') { startVocabQuiz(); window.hwVocabQuizReady = true; }
   if (tabId === 'play' && !window.hwFamilyGamesReady) { initFamilyGames(); window.hwFamilyGamesReady = true; }
   if (tabId === 'photobooth' && typeof initPhotobooth === 'function') {
     initPhotobooth();
@@ -10463,8 +9918,7 @@ function toggleSignoffSubmitBtn() {
 
 function homeworkShareUrl() {
   var url = new URL(window.location.href);
-  var route = document.body.dataset.homeworkRoute || 'core';
-  url.searchParams.set('route', Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, route) ? route : 'core');
+  url.searchParams.delete('route');
   url.searchParams.set('lang', document.body.dataset.homeworkLanguage || preferredLanguageMode());
   return url.href;
 }
@@ -10842,7 +10296,6 @@ function initHomeworkPage() {
   document.querySelectorAll('[data-tab-panel]').forEach(function(p, i) {
     p.hidden = i > 0;
   });
-  restoreHomeworkRoute();
   try {
     localStorage.removeItem('hw_last_tab');
     const last = localStorage.getItem(lastTabStorageKey());
@@ -12436,7 +11889,6 @@ body:not(.lang-mode-bilingual) .lang-label { display: none; }
 .tab-icon { font-size: 17px; line-height: 1; }
 .tab-label { display: block; text-align: center; }
 .tab-es { font-size: 11px; font-weight: 600; }
-.tab-min { font-size: 10px; font-weight: 600; opacity: .72; }
 .tab-done { display: none; }
 body.lang-mode-es .tab-en { display: none; }
 body:not(.lang-mode-es) .tab-es { display: none; }
@@ -12460,9 +11912,6 @@ body:not(.lang-mode-es) .tab-es { display: none; }
 @media (max-width: 560px) {
   .homework-tab-btn { min-height: 56px; padding: 6px 1px 5px; font-size: 11px; }
   .tab-icon { font-size: 15px; }
-  /* Minutes are the first thing to go: the stop number, the name and the tick
-     all still fit, and the hero states the total. */
-  .tab-min { display: none; }
   /* A stop's name is one word, and a sixth of a phone is narrower than the
      longest of them: "Together" broke mid-word and set "Togeth / er" under the
      handshake. The name shrinks to fit its column rather than splitting — it
@@ -13193,6 +12642,39 @@ body.lang-mode-es .bilingual-grid {
   border-radius: 99px;
   border: 1px solid var(--line);
   color: var(--navy);
+}
+.vocab-quiz {
+  background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%);
+  border: 2px solid #f59e0b;
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  margin: 20px 0;
+}
+.vq-title { margin: 0 0 6px; font-family: var(--font-display); font-size: 20px; color: var(--navy); }
+.vq-stars { display: flex; gap: 6px; margin-bottom: 10px; font-size: 24px; line-height: 1; }
+.vq-star { color: #d6d3d1; }
+.vq-star.is-earned { color: #f59e0b; transform: scale(1.15); }
+.vq-ask { margin: 0 0 8px; font-weight: 800; font-size: 17px; color: var(--navy); }
+.vq-card { display: flex; align-items: center; gap: 14px; background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+.vq-img { width: 96px; height: 96px; object-fit: contain; flex: none; }
+.vq-prompt { margin: 0; font-size: 18px; line-height: 1.45; color: var(--ink, #1e293b); }
+.vq-choices { display: grid; gap: 10px; margin: 12px 0 8px; }
+.vq-choice {
+  min-height: 56px; padding: 10px 16px; border: 2px solid #cbd5e1; border-radius: 14px;
+  background: var(--white); font: 800 19px/1.2 var(--font-display); color: var(--navy);
+  cursor: pointer; text-align: left;
+}
+.vq-choice:hover:not(:disabled) { border-color: #f59e0b; background: #fffbeb; }
+.vq-choice:focus-visible { outline: 3px solid #1fa6a2; outline-offset: 2px; }
+.vq-choice.is-right { border-color: #16a34a; background: #dcfce7; color: #14532d; }
+.vq-choice.is-wrong { border-color: #ef4444; background: #fee2e2; opacity: .75; }
+.vq-feedback { min-height: 24px; margin: 4px 0; font-weight: 700; font-size: 16px; color: var(--navy); }
+.vq-done { text-align: center; padding: 8px 0; }
+.vq-done-title { font: 800 22px/1.2 var(--font-display); margin: 0 0 6px; color: var(--navy); }
+.vq-done-score { font-size: 18px; margin: 0 0 12px; }
+@media (max-width: 640px) {
+  .vq-card { flex-direction: column; text-align: center; }
+  .vq-img { width: 80px; height: 80px; }
 }
 .vocab-match-board {
   display: grid;
@@ -15492,7 +14974,6 @@ export const ARENA_CSS = `
   color: #fff;
   box-shadow: 0 6px 15px rgba(16,47,79,.28);
 }
-.homework-tab-btn.is-active .tab-min { opacity: .82; }
 .homework-tab-btn:hover:not(.is-active) {
   background: #eef4f8;
   border-color: #cddbe8;
@@ -16264,79 +15745,6 @@ export const ARENA_CSS = `
    One strong navigation decision, then quiet instructional support.
    ============================================================ */
 html [hidden] { display: none !important; }
-.hw-route-chooser {
-  margin-top: 16px;
-  padding: 16px;
-  color: #102a43;
-  background: #f8fbff;
-  border: 1px solid #bfd7ee;
-  border-radius: 16px;
-}
-.hw-route-heading {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-.hw-route-icon { font-size: 25px; line-height: 1; }
-.hw-route-heading h2 { margin: 0 0 2px; font-size: 18px; color: #12355b; }
-.hw-route-heading p { margin: 0; color: #486581; font-size: 13.5px; }
-.hw-route-options {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-}
-.hw-route-option {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 76px;
-  padding: 10px 12px;
-  text-align: left;
-  color: #243b53;
-  background: #fff;
-  border: 1.5px solid #b8c9d9;
-  border-radius: 12px;
-  cursor: pointer;
-}
-.hw-route-option:hover { border-color: #1fa6a2; background: #f0fdfa; }
-.hw-route-option:focus-visible,
-.family-mission-picker:focus-visible,
-.fam-mission-complete:focus-visible,
-.coach-ladder-step > button:focus-visible,
-.coach-scratchpad-btn:focus-visible {
-  outline: 3px solid #f2c15b;
-  outline-offset: 2px;
-}
-.hw-route-option.is-active {
-  color: #0f4f4d;
-  background: #e7f7f3;
-  border-color: #138a86;
-  box-shadow: inset 0 0 0 1px #138a86;
-}
-.hw-route-time {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  flex: 0 0 48px;
-  min-height: 48px;
-  font: 800 22px/1 var(--font-display);
-  color: #fff;
-  background: #12355b;
-  border-radius: 50%;
-}
-.hw-route-option.is-active .hw-route-time { background: #0f766e; }
-.hw-route-time small { display: block; margin-top: 2px; font-size: 9px; font-weight: 700; }
-.hw-route-copy { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.hw-route-copy strong { font: 800 14px/1.2 var(--font-display); }
-.hw-route-copy small { color: #5d7285; font-size: 11.5px; line-height: 1.3; }
-.hw-route-note { margin: 10px 2px 0; font-size: 12.5px; color: #486581; }
-.hw-route-chooser.route-just-changed { box-shadow: 0 0 0 4px rgba(31,166,162,.2); }
-
-body[data-homework-route]:not([data-homework-route="full"]) .homework-tab-extra-note {
-  display: none !important;
-}
 .homework-tab-btn[hidden],
 .homework-tab-extra[hidden],
 .problem-section[hidden],
@@ -16440,21 +15848,16 @@ body[data-homework-route]:not([data-homework-route="full"]) .homework-tab-extra-
 .achievement-shelf { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 
 @media (max-width: 760px) {
-  .hw-route-options { grid-template-columns: 1fr; }
-  .hw-route-option { min-height: 64px; }
   .fam-act-head { display: block; }
   .family-mission-picker { width: 100%; margin-top: 12px; }
   .achievement-shelf { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@media (prefers-reduced-motion: reduce) {
-  .hw-route-chooser.route-just-changed { box-shadow: 0 0 0 3px #1fa6a2; }
-}
 @media print {
-  .hw-route-chooser,
-  .problem-coach-ladder,
-  .family-mission-picker,
-  .fam-mission-complete,
-  .family-mission-status { display: none !important; }
+  body.print-problems-only .hw-answer-key,
+  body.print-problems-only .feedback,
+  body.print-problems-only .problem-check-result,
+  body.print-problems-only .solution-explanation,
+  body.print-problems-only .problem-feedback { display:none !important; }
 }
 
 /* A short finish and tools that stay out of the reading column. */
@@ -16476,21 +15879,11 @@ body[data-homework-route]:not([data-homework-route="full"]) .homework-tab-extra-
 .hw-utility-controls #nsr-panel { position:fixed; top:16px; bottom:auto; right:16px; max-height:calc(100dvh - 32px); }
 @media(max-width:600px) { .homework-tab-chrome { position:static; } .hw-tab-meta-row { flex-wrap:wrap; gap:8px; } .hw-hero-share-bar { gap:8px; } }
 @media print { .hw-tools-menu, .hw-utility-controls, .homework-message-action, .homework-optional-extras { display:none !important; } }
-
-/* Family plans: one explicit contract at every viewport and on paper. */
-.hw-route-options { grid-template-columns:repeat(3,minmax(0,1fr)); }
-.hw-route-option { align-items:flex-start; min-height:48px; }
-.hw-route-copy strong, .hw-route-copy small, .hw-route-note { font-size:16px; line-height:1.45; }
-.hw-route-time { min-width:60px; width:60px; height:auto; border-radius:12px; white-space:nowrap; font-size:20px; padding:8px 4px; }
-.hw-route-time small { font-size:12px; }
 .hw-hero { padding:20px !important; }
 .hw-hero-stats { display:none; }
 .family-reasoning-support, .family-extra-ladder { margin:16px 0; padding:14px; border:1px solid #cbd5e1; border-radius:12px; }
 .family-reasoning-support summary, .family-extra-ladder summary { min-height:44px; cursor:pointer; font-weight:700; }
-body[data-homework-route="quick"] .learn-extended-block,
-body:not([data-homework-route="full"]) .fam-act-corner { display:none; }
 @media(max-width:700px) {
-  .hw-route-options { grid-template-columns:1fr; }
   .hw-hero { padding:14px !important; }
   .hw-hero-head { margin:0; }
   .hw-hero-emoji, .hw-hero-kicker { display:none; }
@@ -16500,14 +15893,6 @@ body:not([data-homework-route="full"]) .fam-act-corner { display:none; }
   .lang-toggle-btn { min-height:44px; }
 }
 @media print {
-  body[data-homework-route="quick"] .practice-tier-challenge,
-  body[data-homework-route="quick"] .practice-tier-warmup .problem-section:nth-child(n+3),
-  body[data-homework-route="quick"] .hw-answer-sheet > ol > li:nth-child(n+3),
-  body.print-problems-only .hw-answer-key,
-  body.print-problems-only .feedback,
-  body.print-problems-only .problem-check-result,
-  body.print-problems-only .solution-explanation,
-  body.print-problems-only .problem-feedback { display:none !important; }
   /* A whole card can be taller than the page left on it; avoiding a break
      there pushed slivers and empty pages into the packet. Keep the header and
      question together and let the work space flow. */

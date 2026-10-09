@@ -329,7 +329,7 @@ test("photobooth initializes independently of drawing-grid setup", () => {
   dom.window.close();
 });
 
-test("saved answers survive reload and route changes, including hidden longer-route work", async () => {
+test("saved answers survive reload and a state save", async () => {
   const { dom, w, d } = await homework("3-6", {
     inputs: {
       q_0: "0",
@@ -340,17 +340,13 @@ test("saved answers survive reload and route changes, including hidden longer-ro
   try {
     assert.equal(d.querySelector('input[name="q_0"]:checked')?.value, "0");
     assert.match(d.getElementById("open_response_3").value, /same unit/);
-    w.setHomeworkRoute("quick");
     w.switchHomeworkTab("check");
-    assert.equal(w.activeCoreProblems().length, 2);
-    assert.equal(d.querySelector(".practice-tier-challenge").hidden, true);
+    assert.equal(w.activeCoreProblems().length, 6);
     w.saveState();
     assert.match(
       JSON.parse(w.localStorage.getItem("hw_state_lesson_3-6")).inputs.open_response_3,
       /same unit/,
     );
-    w.setHomeworkRoute("core");
-    assert.equal(w.activeCoreProblems().length, 6);
     assert.match(d.getElementById("open_response_3").value, /same unit/);
   } finally {
     dom.window.close();

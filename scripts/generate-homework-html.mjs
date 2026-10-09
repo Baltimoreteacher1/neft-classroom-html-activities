@@ -37,7 +37,6 @@ import {
   renderProblemHintButton,
   renderQuickCheckIntro,
   renderRefrigeratorSheet,
-  renderTogetherTab,
   renderWelcomeBanner,
   renderWordsTab,
   renderWorkbenchTools,
@@ -1193,13 +1192,16 @@ function generateHtml(lessonId, config) {
 
   // Panel order IS tab order (HOMEWORK_TABS), and both are the order a family
   // is asked to walk. Four panels that used to be tabs now sit where they get
-  // used: the manipulatives inside Together, the two orphan games inside the
+  // used: the manipulatives inside Learn, the two orphan games inside the
   // Play arcade, and help + the online links behind a button that floats over
   // every stop.
   const tabPanels = [
-    renderLearnTab(config, renderVisualMathLab(topic, config, lessonModel)),
+    renderLearnTab(
+      config,
+      renderVisualMathLab(topic, config, lessonModel),
+      renderWorkbenchTools(config),
+    ),
     renderWordsTab(vocab, resolveVocabImage, vocabImageAlt),
-    renderTogetherTab(config, lessonId, renderWorkbenchTools(config)),
     renderCheckTab(
       quickCheckIntroHtml,
       warmupHtml,
@@ -1683,45 +1685,6 @@ header.homework-header h1 {
   line-height: 1.45;
 }
 
-.vocab-toolbar {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  margin: 4px 0 16px 0;
-  gap: 12px;
-}
-
-.vocab-filter-group {
-  display: inline-flex;
-  background: #edf2f7;
-  padding: 3px;
-  border-radius: 999px;
-  gap: 3px;
-  border: 1px solid #e2e8f0;
-}
-
-.vocab-filter-group .btn-filter {
-  background: transparent;
-  border: none;
-  padding: 6px 14px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--muted, #64748b);
-  cursor: pointer;
-  box-shadow: none;
-  transition: all 0.15s ease;
-}
-
-.vocab-filter-group .btn-filter:hover {
-  color: var(--navy, #12355b);
-}
-
-.vocab-filter-group .btn-filter.is-active {
-  background: var(--white, #ffffff);
-  color: var(--navy, #12355b);
-  box-shadow: 0 1px 4px rgba(18, 53, 91, 0.12);
-}
 
 .vocab-container {
   display: grid;
@@ -4372,26 +4335,135 @@ function resetVocabMatchGame() {
   });
 }
 
-function toggleVocabCardMastery(idx) {
-  const btn = document.querySelector('.vocab-master-toggle[data-term-idx="' + idx + '"]');
-  if (!btn) return;
-  const isMastered = btn.classList.toggle("is-mastered");
-  if (isMastered && typeof playTabSwitchSound === "function") playTabSwitchSound();
+// Word Quiz: a picture and a meaning, then three words to choose from.
+const vocabQuiz = { items: [], order: [], step: 0, firstTry: 0, tried: false };
+
+function vocabQuizBilingual(parent, en, es) {
+  const a = document.createElement("span");
+  a.className = "lang-en";
+  a.textContent = en;
+  const b = document.createElement("span");
+  b.className = "lang-es";
+  b.lang = "es";
+  b.textContent = es || en;
+  parent.appendChild(a);
+  parent.appendChild(b);
+}
+
+function vocabQuizShuffle(list) {
+  const out = list.slice();
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = out[i];
+    out[i] = out[j];
+    out[j] = tmp;
+  }
+  return out;
+}
+
+function startVocabQuiz() {
+  const data = document.getElementById("vocab_quiz_data");
+  if (!data) return;
   try {
-    localStorage.setItem(STORAGE_KEY + "_vocab_mastered_" + idx, isMastered ? "1" : "0");
+    vocabQuiz.items = JSON.parse(data.textContent);
+  } catch (e) {
+    vocabQuiz.items = [];
+  }
+  if (vocabQuiz.items.length < 2) return;
+  vocabQuiz.order = vocabQuizShuffle(vocabQuiz.items.map((_, i) => i));
+  vocabQuiz.step = 0;
+  vocabQuiz.firstTry = 0;
+  const stars = document.getElementById("vocab_quiz_stars");
+  stars.textContent = "";
+  vocabQuiz.order.forEach(() => {
+    const star = document.createElement("span");
+    star.className = "vq-star";
+    star.textContent = "\u2605";
+    stars.appendChild(star);
+  });
+  document.getElementById("vocab_quiz_done").hidden = true;
+  document.getElementById("vocab_quiz_play").hidden = false;
+  showVocabQuizQuestion();
+}
+
+function showVocabQuizQuestion() {
+  const index = vocabQuiz.order[vocabQuiz.step];
+  const q = vocabQuiz.items[index];
+  vocabQuiz.tried = false;
+  const img = document.getElementById("vocab_quiz_img");
+  img.hidden = !q.img;
+  img.src = q.img || "";
+  img.alt = q.alt || "";
+  const prompt = document.getElementById("vocab_quiz_prompt");
+  prompt.textContent = "";
+  vocabQuizBilingual(prompt, q.def, q.defEs);
+  const others = vocabQuizShuffle(vocabQuiz.items.map((_, i) => i).filter((i) => i !== index)).slice(0, 2);
+  const box = document.getElementById("vocab_quiz_choices");
+  box.textContent = "";
+  vocabQuizShuffle([index].concat(others)).forEach((i) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "vq-choice";
+    btn.dataset.correct = i === index ? "1" : "0";
+    btn.onclick = () => answerVocabQuiz(btn);
+    vocabQuizBilingual(btn, vocabQuiz.items[i].term, vocabQuiz.items[i].termEs);
+    box.appendChild(btn);
+  });
+  document.getElementById("vocab_quiz_feedback").textContent = "";
+  document.getElementById("vocab_quiz_next").hidden = true;
+}
+
+function answerVocabQuiz(btn) {
+  if (btn.disabled) return;
+  const feedback = document.getElementById("vocab_quiz_feedback");
+  feedback.textContent = "";
+  if (btn.dataset.correct !== "1") {
+    vocabQuiz.tried = true;
+    btn.disabled = true;
+    btn.classList.add("is-wrong");
+    vocabQuizBilingual(feedback, "Not quite. Look at the picture and try another word.", "Casi. Mira el dibujo y prueba otra palabra.");
+    if (typeof playFailureSound === "function") playFailureSound();
+    return;
+  }
+  document.querySelectorAll("#vocab_quiz_choices .vq-choice").forEach((c) => {
+    c.disabled = true;
+  });
+  btn.classList.add("is-right");
+  const star = document.querySelectorAll("#vocab_quiz_stars .vq-star")[vocabQuiz.step];
+  if (!vocabQuiz.tried) {
+    vocabQuiz.firstTry++;
+    if (star) star.classList.add("is-earned");
+  }
+  vocabQuizBilingual(feedback, "Yes! That is it.", "\u00a1S\u00ed! Esa es.");
+  if (typeof playMatchSound === "function") playMatchSound();
+  document.getElementById("vocab_quiz_next").hidden = false;
+}
+
+function nextVocabQuiz() {
+  vocabQuiz.step++;
+  if (vocabQuiz.step < vocabQuiz.order.length) {
+    showVocabQuizQuestion();
+    return;
+  }
+  document.getElementById("vocab_quiz_play").hidden = true;
+  document.getElementById("vocab_quiz_done").hidden = false;
+  document.getElementById("vocab_quiz_score").textContent = vocabQuiz.firstTry + " / " + vocabQuiz.order.length;
+  const badge = document.getElementById("tab_badge_words");
+  if (badge) badge.textContent = "\u2605";
+  if (typeof triggerConfettiBurst === "function") triggerConfettiBurst(null, null, 70);
+  if (typeof playSuccessArpeggio === "function") playSuccessArpeggio();
+  try {
+    localStorage.setItem(STORAGE_KEY + "_vocab_won", "1");
   } catch (e) {}
 }
 
 function markVocabCardKnown(idx, known) {
   const card = document.getElementById("vocab_card_" + idx);
-  const toggle = document.querySelector('.vocab-master-toggle[data-term-idx="' + idx + '"]');
   if (known) {
     if (card) card.classList.add("is-known");
-    if (toggle) toggle.classList.add("is-mastered");
     if (typeof playMatchSound === "function") playMatchSound();
   } else {
     if (card) card.classList.remove("is-known");
-    if (toggle) toggle.classList.remove("is-mastered");
   }
   try {
     localStorage.setItem(STORAGE_KEY + "_vocab_known_" + idx, known ? "1" : "0");
@@ -4993,13 +5065,9 @@ function loadState() {
         const badge = document.getElementById("tab_badge_words");
         if (badge) badge.textContent = "★";
       }
-      document.querySelectorAll(".vocab-master-toggle").forEach((btn) => {
-        const idx = btn.dataset.termIdx;
-        if (localStorage.getItem(STORAGE_KEY + "_vocab_mastered_" + idx) === "1" || localStorage.getItem(STORAGE_KEY + "_vocab_known_" + idx) === "1") {
-          btn.classList.add("is-mastered");
-          const card = document.getElementById("vocab_card_" + idx);
-          if (card) card.classList.add("is-known");
-        }
+      document.querySelectorAll(".vocab-card").forEach((card) => {
+        const idx = card.id.replace("vocab_card_", "");
+        if (localStorage.getItem(STORAGE_KEY + "_vocab_known_" + idx) === "1") card.classList.add("is-known");
       });
     } catch(e) {}
 
@@ -5277,26 +5345,9 @@ function spinMathTalkPrompt() {
   }
 }
 
-// Vocabulary Filter Engine
-function filterVocabCards(filter, btn) {
-  document.querySelectorAll(".btn-filter").forEach(b => b.classList.remove("is-active"));
-  if (btn) btn.classList.add("is-active");
-  const cards = document.querySelectorAll(".vocab-card");
-  cards.forEach(card => {
-    const isMastered = card.querySelector(".vocab-master-toggle.is-mastered") !== null;
-    if (filter === "all") {
-      card.style.display = "";
-    } else if (filter === "mastered") {
-      card.style.display = isMastered ? "" : "none";
-    } else if (filter === "review") {
-      card.style.display = isMastered ? "none" : "";
-    }
-  });
-}
-
 // In-Page Workbench Tools
-function openTogetherWorkbench(tool) {
-  if (typeof switchHomeworkTab === "function") switchHomeworkTab("together");
+function openWorkbench(tool) {
+  if (typeof switchHomeworkTab === "function") switchHomeworkTab("learn");
   const drawer = document.querySelector(".workbench-drawer");
   if (!drawer) return;
   if (drawer) {
@@ -5311,7 +5362,7 @@ function openTogetherWorkbench(tool) {
 
 function workbenchActionButton(labelEn, labelEs) {
   if (!document.querySelector(".workbench-drawer")) return "";
-  return '<button type="button" class="btn btn-sm btn-outline-secondary" onclick="openTogetherWorkbench()">' +
+  return '<button type="button" class="btn btn-sm btn-outline-secondary" onclick="openWorkbench()">' +
     '🧮 <span class="lang-en">' + labelEn + '</span><span class="lang-es" lang="es">' + labelEs + '</span></button>';
 }
 

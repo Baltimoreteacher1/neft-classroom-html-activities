@@ -116,8 +116,6 @@ const REQUIRED_MARKERS = [
   "La idea principal",
   "In one sentence",
   "En una frase",
-  "Try this together",
-  "Inténtenlo juntos",
   "Words to know",
   "Palabras clave",
   "If your student gets stuck",
@@ -154,15 +152,9 @@ const REQUIRED_MARKERS = [
   "switchHomeworkTab",
   "initHomeworkGame",
   "Learn more online",
-  "Play together",
-  // 2026 family experience: time choice must change the real path, hints must
-  // be graduated without revealing answers, and the no-device activity must
-  // be pickable and trackable on every generated page.
-  'class="hw-route-chooser"',
-  'data-route-mode="quick"',
-  'data-route-mode="core"',
-  'data-route-mode="full"',
-  "setHomeworkRoute",
+  // 2026 family experience: hints must be graduated without revealing
+  // answers, and the no-device activity must be pickable and trackable on
+  // every generated page.
   "goNextHomeworkStop",
   'class="problem-coach-ladder"',
   "revealCoachStep",

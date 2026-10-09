@@ -396,45 +396,6 @@ header.homework-header h1 {
   line-height: 1.45;
 }
 
-.vocab-toolbar {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  margin: 4px 0 16px 0;
-  gap: 12px;
-}
-
-.vocab-filter-group {
-  display: inline-flex;
-  background: #edf2f7;
-  padding: 3px;
-  border-radius: 999px;
-  gap: 3px;
-  border: 1px solid #e2e8f0;
-}
-
-.vocab-filter-group .btn-filter {
-  background: transparent;
-  border: none;
-  padding: 6px 14px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--muted, #64748b);
-  cursor: pointer;
-  box-shadow: none;
-  transition: all 0.15s ease;
-}
-
-.vocab-filter-group .btn-filter:hover {
-  color: var(--navy, #12355b);
-}
-
-.vocab-filter-group .btn-filter.is-active {
-  background: var(--white, #ffffff);
-  color: var(--navy, #12355b);
-  box-shadow: 0 1px 4px rgba(18, 53, 91, 0.12);
-}
 
 .vocab-container {
   display: grid;
@@ -2691,7 +2652,6 @@ body:not(.lang-mode-bilingual) .lang-label { display: none; }
 .tab-icon { font-size: 17px; line-height: 1; }
 .tab-label { display: block; text-align: center; }
 .tab-es { font-size: 11px; font-weight: 600; }
-.tab-min { font-size: 10px; font-weight: 600; opacity: .72; }
 .tab-done { display: none; }
 body.lang-mode-es .tab-en { display: none; }
 body:not(.lang-mode-es) .tab-es { display: none; }
@@ -2715,9 +2675,6 @@ body:not(.lang-mode-es) .tab-es { display: none; }
 @media (max-width: 560px) {
   .homework-tab-btn { min-height: 56px; padding: 6px 1px 5px; font-size: 11px; }
   .tab-icon { font-size: 15px; }
-  /* Minutes are the first thing to go: the stop number, the name and the tick
-     all still fit, and the hero states the total. */
-  .tab-min { display: none; }
   /* A stop's name is one word, and a sixth of a phone is narrower than the
      longest of them: "Together" broke mid-word and set "Togeth / er" under the
      handshake. The name shrinks to fit its column rather than splitting — it
@@ -3448,6 +3405,39 @@ body.lang-mode-es .bilingual-grid {
   border-radius: 99px;
   border: 1px solid var(--line);
   color: var(--navy);
+}
+.vocab-quiz {
+  background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%);
+  border: 2px solid #f59e0b;
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  margin: 20px 0;
+}
+.vq-title { margin: 0 0 6px; font-family: var(--font-display); font-size: 20px; color: var(--navy); }
+.vq-stars { display: flex; gap: 6px; margin-bottom: 10px; font-size: 24px; line-height: 1; }
+.vq-star { color: #d6d3d1; }
+.vq-star.is-earned { color: #f59e0b; transform: scale(1.15); }
+.vq-ask { margin: 0 0 8px; font-weight: 800; font-size: 17px; color: var(--navy); }
+.vq-card { display: flex; align-items: center; gap: 14px; background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+.vq-img { width: 96px; height: 96px; object-fit: contain; flex: none; }
+.vq-prompt { margin: 0; font-size: 18px; line-height: 1.45; color: var(--ink, #1e293b); }
+.vq-choices { display: grid; gap: 10px; margin: 12px 0 8px; }
+.vq-choice {
+  min-height: 56px; padding: 10px 16px; border: 2px solid #cbd5e1; border-radius: 14px;
+  background: var(--white); font: 800 19px/1.2 var(--font-display); color: var(--navy);
+  cursor: pointer; text-align: left;
+}
+.vq-choice:hover:not(:disabled) { border-color: #f59e0b; background: #fffbeb; }
+.vq-choice:focus-visible { outline: 3px solid #1fa6a2; outline-offset: 2px; }
+.vq-choice.is-right { border-color: #16a34a; background: #dcfce7; color: #14532d; }
+.vq-choice.is-wrong { border-color: #ef4444; background: #fee2e2; opacity: .75; }
+.vq-feedback { min-height: 24px; margin: 4px 0; font-weight: 700; font-size: 16px; color: var(--navy); }
+.vq-done { text-align: center; padding: 8px 0; }
+.vq-done-title { font: 800 22px/1.2 var(--font-display); margin: 0 0 6px; color: var(--navy); }
+.vq-done-score { font-size: 18px; margin: 0 0 12px; }
+@media (max-width: 640px) {
+  .vq-card { flex-direction: column; text-align: center; }
+  .vq-img { width: 80px; height: 80px; }
 }
 .vocab-match-board {
   display: grid;
@@ -6260,7 +6250,6 @@ body.lang-mode-es .concept-title-es { display: inline; }
   color: #fff;
   box-shadow: 0 6px 15px rgba(16,47,79,.28);
 }
-.homework-tab-btn.is-active .tab-min { opacity: .82; }
 .homework-tab-btn:hover:not(.is-active) {
   background: #eef4f8;
   border-color: #cddbe8;
@@ -7032,79 +7021,6 @@ body.lang-mode-es .concept-title-es { display: inline; }
    One strong navigation decision, then quiet instructional support.
    ============================================================ */
 html [hidden] { display: none !important; }
-.hw-route-chooser {
-  margin-top: 16px;
-  padding: 16px;
-  color: #102a43;
-  background: #f8fbff;
-  border: 1px solid #bfd7ee;
-  border-radius: 16px;
-}
-.hw-route-heading {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-.hw-route-icon { font-size: 25px; line-height: 1; }
-.hw-route-heading h2 { margin: 0 0 2px; font-size: 18px; color: #12355b; }
-.hw-route-heading p { margin: 0; color: #486581; font-size: 13.5px; }
-.hw-route-options {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-}
-.hw-route-option {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 76px;
-  padding: 10px 12px;
-  text-align: left;
-  color: #243b53;
-  background: #fff;
-  border: 1.5px solid #b8c9d9;
-  border-radius: 12px;
-  cursor: pointer;
-}
-.hw-route-option:hover { border-color: #1fa6a2; background: #f0fdfa; }
-.hw-route-option:focus-visible,
-.family-mission-picker:focus-visible,
-.fam-mission-complete:focus-visible,
-.coach-ladder-step > button:focus-visible,
-.coach-scratchpad-btn:focus-visible {
-  outline: 3px solid #f2c15b;
-  outline-offset: 2px;
-}
-.hw-route-option.is-active {
-  color: #0f4f4d;
-  background: #e7f7f3;
-  border-color: #138a86;
-  box-shadow: inset 0 0 0 1px #138a86;
-}
-.hw-route-time {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  flex: 0 0 48px;
-  min-height: 48px;
-  font: 800 22px/1 var(--font-display);
-  color: #fff;
-  background: #12355b;
-  border-radius: 50%;
-}
-.hw-route-option.is-active .hw-route-time { background: #0f766e; }
-.hw-route-time small { display: block; margin-top: 2px; font-size: 9px; font-weight: 700; }
-.hw-route-copy { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.hw-route-copy strong { font: 800 14px/1.2 var(--font-display); }
-.hw-route-copy small { color: #5d7285; font-size: 11.5px; line-height: 1.3; }
-.hw-route-note { margin: 10px 2px 0; font-size: 12.5px; color: #486581; }
-.hw-route-chooser.route-just-changed { box-shadow: 0 0 0 4px rgba(31,166,162,.2); }
-
-body[data-homework-route]:not([data-homework-route="full"]) .homework-tab-extra-note {
-  display: none !important;
-}
 .homework-tab-btn[hidden],
 .homework-tab-extra[hidden],
 .problem-section[hidden],
@@ -7208,21 +7124,16 @@ body[data-homework-route]:not([data-homework-route="full"]) .homework-tab-extra-
 .achievement-shelf { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 
 @media (max-width: 760px) {
-  .hw-route-options { grid-template-columns: 1fr; }
-  .hw-route-option { min-height: 64px; }
   .fam-act-head { display: block; }
   .family-mission-picker { width: 100%; margin-top: 12px; }
   .achievement-shelf { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@media (prefers-reduced-motion: reduce) {
-  .hw-route-chooser.route-just-changed { box-shadow: 0 0 0 3px #1fa6a2; }
-}
 @media print {
-  .hw-route-chooser,
-  .problem-coach-ladder,
-  .family-mission-picker,
-  .fam-mission-complete,
-  .family-mission-status { display: none !important; }
+  body.print-problems-only .hw-answer-key,
+  body.print-problems-only .feedback,
+  body.print-problems-only .problem-check-result,
+  body.print-problems-only .solution-explanation,
+  body.print-problems-only .problem-feedback { display:none !important; }
 }
 
 /* A short finish and tools that stay out of the reading column. */
@@ -7244,21 +7155,11 @@ body[data-homework-route]:not([data-homework-route="full"]) .homework-tab-extra-
 .hw-utility-controls #nsr-panel { position:fixed; top:16px; bottom:auto; right:16px; max-height:calc(100dvh - 32px); }
 @media(max-width:600px) { .homework-tab-chrome { position:static; } .hw-tab-meta-row { flex-wrap:wrap; gap:8px; } .hw-hero-share-bar { gap:8px; } }
 @media print { .hw-tools-menu, .hw-utility-controls, .homework-message-action, .homework-optional-extras { display:none !important; } }
-
-/* Family plans: one explicit contract at every viewport and on paper. */
-.hw-route-options { grid-template-columns:repeat(3,minmax(0,1fr)); }
-.hw-route-option { align-items:flex-start; min-height:48px; }
-.hw-route-copy strong, .hw-route-copy small, .hw-route-note { font-size:16px; line-height:1.45; }
-.hw-route-time { min-width:60px; width:60px; height:auto; border-radius:12px; white-space:nowrap; font-size:20px; padding:8px 4px; }
-.hw-route-time small { font-size:12px; }
 .hw-hero { padding:20px !important; }
 .hw-hero-stats { display:none; }
 .family-reasoning-support, .family-extra-ladder { margin:16px 0; padding:14px; border:1px solid #cbd5e1; border-radius:12px; }
 .family-reasoning-support summary, .family-extra-ladder summary { min-height:44px; cursor:pointer; font-weight:700; }
-body[data-homework-route="quick"] .learn-extended-block,
-body:not([data-homework-route="full"]) .fam-act-corner { display:none; }
 @media(max-width:700px) {
-  .hw-route-options { grid-template-columns:1fr; }
   .hw-hero { padding:14px !important; }
   .hw-hero-head { margin:0; }
   .hw-hero-emoji, .hw-hero-kicker { display:none; }
@@ -7268,14 +7169,6 @@ body:not([data-homework-route="full"]) .fam-act-corner { display:none; }
   .lang-toggle-btn { min-height:44px; }
 }
 @media print {
-  body[data-homework-route="quick"] .practice-tier-challenge,
-  body[data-homework-route="quick"] .practice-tier-warmup .problem-section:nth-child(n+3),
-  body[data-homework-route="quick"] .hw-answer-sheet > ol > li:nth-child(n+3),
-  body.print-problems-only .hw-answer-key,
-  body.print-problems-only .feedback,
-  body.print-problems-only .problem-check-result,
-  body.print-problems-only .solution-explanation,
-  body.print-problems-only .problem-feedback { display:none !important; }
   /* A whole card can be taller than the page left on it; avoiding a break
      there pushed slivers and empty pages into the packet. Keep the header and
      question together and let the work space flow. */

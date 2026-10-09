@@ -43,9 +43,11 @@ const REQUIRED_MARKERS = [
     // reachability instead of tab-ness.
     id: "all-tabs",
     test: (h) =>
-      ["learn", "words", "together", "check", "play", "done"].every((t) =>
+      ["learn", "words", "check", "play", "done"].every((t) =>
         h.includes(`data-tab-panel="${t}"`),
-      ) && !h.includes('data-tab-panel="help"'),
+      ) &&
+      !h.includes('data-tab-panel="help"') &&
+      !h.includes('data-tab-panel="together"'),
   },
   {
     // Help still exists, still carries the say / do-not-say coaching, and now
@@ -102,12 +104,14 @@ const REQUIRED_MARKERS = [
     test: (h) => h.includes("help_modal_overlay") && h.includes("openHelpModalFromBtn"),
   },
   {
-    id: "family-route",
+    id: "family-single-path",
     test: (h) =>
-      h.includes('class="hw-route-chooser"') &&
-      // Decision "family-homework-three-routes" in data/product-decisions.json.
-      ["quick", "core", "full"].every((mode) => h.includes(`data-route-mode="${mode}"`)) &&
-      h.includes("setHomeworkRoute") &&
+      // Decision "family-homework-single-path" in data/product-decisions.json:
+      // one path, no time choice, no minute labels, no Together stop.
+      !h.includes("hw-route-chooser") &&
+      !h.includes("data-route-mode") &&
+      !h.includes('class="tab-min"') &&
+      !h.includes("hw_time_remaining") &&
       h.includes("goNextHomeworkStop"),
   },
   {
