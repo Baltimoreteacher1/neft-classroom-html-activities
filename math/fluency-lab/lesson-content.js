@@ -20,6 +20,18 @@ export function createLesson(skill, variant = 0) {
         type: "partition", labels: [`${divisor * a} ÷ ${divisor}`, `${divisor * b} ÷ ${divisor}`], values: [divisor * a, divisor * b], caption: `${divisor * quotient} ÷ ${divisor}`,
       }, [step(`Start with ${divisor * a}. What is ${divisor * a} ÷ ${divisor}?`, a, `Think: ${divisor} × ? = ${divisor * a}.`, `This part contributes ${a} to the quotient.`), step(`Now divide the remaining ${divisor * b} by ${divisor}.`, b, `Use the related multiplication fact.`, `${divisor * b} ÷ ${divisor} = ${b}.`), step(`Combine both parts. What is ${divisor * quotient} ÷ ${divisor}?`, quotient, `Add your two partial quotients.`, `${a} + ${b} = ${quotient}. Check: ${quotient} × ${divisor} = ${divisor * quotient}.`)]);
     }
+    if (op === "mul" && config.tens) {
+      const a = 3 + (k % 5); const t = 2 + k;
+      return lesson("Count in tens", "Each square is 10. Solve the basic fact first, then say the answer in tens.", { type: "array", a, b: t, split: a, caption: `${a} × ${t * 10}` }, [step(`Cover the zero: what is the basic fact ${a} × ${t}?`, a * t, "Count the squares in the rows, or use a fact you know.", `${a} × ${t} = ${a * t}.`), step(`Each square is 10, so ${a * t} squares are ${a * t} tens. How much is that?`, a * t * 10, `${a * t} tens means ${a * t} × 10.`, `${a * t} tens = ${a * t * 10}.`), step(`Check: what is ${a} × ${t * 10}?`, a * t * 10, "It matches the number of tens you found.", `${a} × ${t * 10} = ${a * t * 10}. The zero shows the answer is in tens.`)]);
+    }
+    if (op === "mul" && grade === 3) {
+      const early = Math.max(...(config.factors || [9])) <= 5;
+      const a = early ? [3, 4, 5, 4, 5][k] : 6 + (k % 4);
+      const b = early ? 3 + k : 4 + (k % 4);
+      const left = early ? 2 : 5;
+      const known = early ? "two groups" : "a 5-fact";
+      return lesson(early ? "See equal groups" : "Break a hard fact into easy facts", early ? "Rows are equal groups. Split the rows into smaller sets you know." : "Use a 5-fact you know, then add the leftover rows.", { type: "array", a, b, split: left, caption: `${a} × ${b}` }, [step(`The first color shows ${known}: ${left} × ${b}. How many squares?`, left * b, early ? "Skip-count by the row size, or double it." : "Count by 5s, or think of half of 10 × the row size.", `${left} rows of ${b} make ${left * b}.`), step(`The other color is ${a - left} more row${a - left === 1 ? "" : "s"} of ${b}. How many squares?`, (a - left) * b, "The row size stays the same.", `${a - left} × ${b} = ${(a - left) * b}.`), step(`Put both colors together. What is ${a} × ${b}?`, a * b, "Add the two parts.", `${left * b} + ${(a - left) * b} = ${a * b}.`)]);
+    }
     if (op === "mul") {
       const b = config.minB >= 10 ? 12 + k : grade >= 4 ? 6 + k : 4 + k;
       const a = grade >= 5 ? 124 : grade === 4 ? (config.minA >= 100 ? 124 : 24) : (config.factors?.[2] ?? 7);

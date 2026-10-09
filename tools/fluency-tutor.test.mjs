@@ -138,11 +138,18 @@ for (const current of ALL_SKILLS) {
         `${current.id}: invalid answer rejected`,
       );
       if (current.generator === "fact") {
-        const parts = item.question.replaceAll(",", "").match(/^(\d+) ([+−×÷]) (\d+)/);
-        const a = Number(parts[1]);
-        const b = Number(parts[3]);
-        const result =
-          parts[2] === "+" ? a + b : parts[2] === "−" ? a - b : parts[2] === "×" ? a * b : a / b;
+        const question = item.question.replaceAll(",", "");
+        const missing = question.match(/^(\d+) × □ = (\d+)\./);
+        const sharing = question.match(/^(\d+) \D+ are shared equally into (\d+) /);
+        const groups = question.match(/^(\d+) \D+ with (\d+) \D+ in each /);
+        const parts = question.match(/^(\d+) ([+−×÷]) (\d+)/);
+        const [a, b] = missing
+          ? [Number(missing[2]), Number(missing[1])]
+          : sharing || groups
+            ? [Number((sharing || groups)[1]), Number((sharing || groups)[2])]
+            : [Number(parts[1]), Number(parts[3])];
+        const op = missing || sharing ? "÷" : groups ? "×" : parts[2];
+        const result = op === "+" ? a + b : op === "−" ? a - b : op === "×" ? a * b : a / b;
         check(
           result === Number(item.answers[0]),
           `${current.id}: independently recomputed arithmetic`,

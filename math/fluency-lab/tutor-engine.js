@@ -13,7 +13,7 @@ const FOUNDATIONS = {
   "1:add-20": ["1:make-10"], "1:subtract-20": ["1:missing-addend"],
   "2:add-100": ["1:tens-ones", "1:add-20"], "2:subtract-100": ["1:subtract-20"],
   "2:add-1000": ["2:place-1000", "2:add-100"],
-  "3:division-facts": ["3:mul-0-5"], "4:division": ["3:division-facts"],
+  "3:mul-6-9": ["3:mul-0-5"], "3:mul-10-12": ["3:mul-0-5"], "3:division-facts": ["3:mul-0-5"], "3:area": ["3:mul-0-5"], "4:division": ["3:division-facts"],
   "4:multiply-1digit": ["3:mul-6-9"], "4:multiply-2digit": ["3:mul-6-9"],
   "5:fraction-add": ["4:fraction-equiv"], "5:fraction-mul": ["3:mul-0-5"],
   "6:divide-fractions": ["5:fraction-mul"], "6:ratios": ["3:mul-0-5"],
@@ -70,7 +70,7 @@ export function adaptiveProblem(skill, rng = Math.random, level = 1) {
         config.max = Math.max(floor, Math.min(config.max ?? 10, floor >= 100 ? 120 : 20));
         if (config.op === "add") config.maxResult = Math.min(config.maxResult ?? config.max * 2, config.max * 2);
       } else if (config.op === "div") {
-        config.maxDivisor = 6; config.maxQuotient = 12;
+        config.maxDivisor = Math.min(config.maxDivisor ?? 6, 6); config.maxQuotient = Math.min(config.maxQuotient ?? 12, 12);
       } else {
         config.maxB = Math.max(config.minB ?? 0, 5);
         if (!config.factors) config.maxA = Math.max(config.minA ?? 0, Math.min(config.maxA ?? 10, 12));

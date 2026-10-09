@@ -43,6 +43,54 @@ function problem(question, answer, options = {}) {
 
 const FACT_SYMBOL = { add: "+", sub: "−", mul: "×", div: "÷" };
 
+const GROUP_SCENES = [
+  ["bag", "apples"],
+  ["plate", "cookies"],
+  ["row", "chairs"],
+  ["box", "crayons"],
+  ["shelf", "books"],
+  ["vase", "flowers"],
+];
+const plural = (count, noun) => `${count} ${count === 1 ? noun : `${noun}s`}`;
+
+// Early multiplication and division: vary the picture of the fact (symbols, equal groups,
+// missing factor) and give a hint built from the actual numbers without revealing the answer.
+function coachedFact(op, a, b, answer, config, rng) {
+  const [container, thing] = pick(GROUP_SCENES, rng);
+  const symbol = FACT_SYMBOL[op];
+  const canSpeak = op === "mul" ? a >= 2 && b >= 2 && !config.tens : b >= 2 && answer >= 2;
+  const format = canSpeak ? pick(["symbol", "symbol", "story", "missing"], rng) : "symbol";
+  const sentence = `${whole.format(a)} ${symbol} ${whole.format(b)} = ${whole.format(answer)}.`;
+  if (op === "mul") {
+    const small = Math.min(a, b);
+    const big = Math.max(a, b);
+    let hint;
+    if (config.tens) hint = `Solve the basic fact ${a} × ${b / 10} first. Then count that many tens.`;
+    else if (small <= 1) hint = small === 0 ? "Zero equal groups, or zero in each group, means nothing at all." : "One group of any size stays that size.";
+    else if (small <= 5) hint = `Skip-count by ${big}, ${small} times: ${Array.from({ length: small - 1 }, (_, i) => big * (i + 1)).join(", ")}, ... What comes next?`;
+    else {
+      const f = a >= 6 ? a : b;
+      const o = f === a ? b : a;
+      hint = f === 9 ? `Start with 10 × ${o} = ${10 * o}. Then take away one group of ${o}.` : `Start with 5 × ${o} = ${5 * o}. Then add ${f - 5} more group${f - 5 === 1 ? "" : "s"} of ${o}.`;
+    }
+    if (format === "story") {
+      return problem(`${plural(a, container)} with ${b} ${thing} in each ${container}. How many ${thing} in all?`, answer, { hint, explanation: `${a} groups of ${b} is ${a} × ${b}. ${sentence}` });
+    }
+    if (format === "missing") {
+      return problem(`${a} × □ = ${whole.format(answer)}. What number belongs in the box?`, b, { hint: `Ask: how many groups of ${a} make ${whole.format(answer)}? Skip-count by ${a}.`, explanation: `${sentence} The missing factor is ${b}.` });
+    }
+    return problem(`${whole.format(a)} × ${whole.format(b)} = ?`, answer, { hint, explanation: sentence });
+  }
+  const hint = `Think: ${b} × ? = ${whole.format(a)}. Skip-count by ${b} until you reach ${whole.format(a)}.`;
+  if (format === "story") {
+    return problem(`${whole.format(a)} ${thing} are shared equally into ${plural(b, container)}. How many ${thing} go in each ${container}?`, answer, { hint, explanation: `${whole.format(a)} ÷ ${b} = ${answer} because ${b} × ${answer} = ${whole.format(a)}.` });
+  }
+  if (format === "missing") {
+    return problem(`${b} × □ = ${whole.format(a)}. What number belongs in the box?`, answer, { hint, explanation: `${b} × ${answer} = ${whole.format(a)}, so ${whole.format(a)} ÷ ${b} = ${answer}.` });
+  }
+  return problem(`${whole.format(a)} ÷ ${whole.format(b)} = ?`, answer, { hint, explanation: `${whole.format(a)} ÷ ${whole.format(b)} = ${answer} because ${b} × ${answer} = ${whole.format(a)}.` });
+}
+
 const generators = {
   fact(config, rng) {
     const op = config.op || "add";
@@ -65,12 +113,14 @@ const generators = {
       const pool = config.factors || null;
       a = pool ? pick(pool, rng) : randInt(config.minA ?? min, config.maxA ?? max, rng);
       b = randInt(config.minB ?? min, config.maxB ?? max, rng);
+      if (config.tens) b *= 10;
       answer = a * b;
     } else {
       b = randInt(config.minDivisor ?? 1, config.maxDivisor ?? max, rng);
       answer = randInt(config.minQuotient ?? 1, config.maxQuotient ?? max, rng);
       a = b * answer;
     }
+    if (config.coach) return coachedFact(op, a, b, answer, config, rng);
     const symbol = FACT_SYMBOL[op];
     return problem(`${whole.format(a)} ${symbol} ${whole.format(b)} = ?`, answer, {
       hint:
@@ -730,15 +780,17 @@ export const GRADES = [
     label: "Grade 3",
     promise: "Master multiplication and division while growing fraction and measurement sense.",
     skills: [
-      S("mul-0-5", "Multiplication facts ×0–5", "Multiplication", "fact", { op: "mul", factors: [0, 1, 2, 3, 4, 5], maxB: 12 }, "3.OA.C.7", L("Multiplication describes equal groups.", ["Name the number of groups.", "Use skip-counting, an array, or a known fact.", "Check with repeated addition."], "4 × 6 means 4 groups of 6, which is 24.", "The factors can switch order without changing the product.")),
-      S("mul-6-9", "Multiplication facts ×6–9", "Multiplication", "fact", { op: "mul", factors: [6, 7, 8, 9], maxB: 12 }, "3.OA.C.7", L("Break harder facts into easier facts.", ["Use a 5-fact or 10-fact.", "Add or subtract one group.", "Check with the related division fact."], "7 × 8 = 5 × 8 + 2 × 8 = 56", "Keep the group size the same when decomposing.")),
-      S("mul-10-12", "Multiplication facts ×10–12", "Multiplication", "fact", { op: "mul", factors: [10, 11, 12], maxB: 12 }, "3.OA.C.7", L("Use place-value patterns and break-apart strategies.", ["Use ×10 as an anchor.", "Add one or two more groups.", "Check the product's size."], "12 × 7 = 10 × 7 + 2 × 7 = 84", "Multiplying by 10 adds place value; it is not just writing a random zero.")),
-      S("division-facts", "Division facts", "Division", "fact", { op: "div", maxDivisor: 12, maxQuotient: 12 }, "3.OA.C.7", L("Division asks how many equal groups or how many in each group.", ["Identify divisor and dividend.", "Recall the related multiplication fact.", "Check by multiplying quotient × divisor."], "56 ÷ 7 = 8 because 7 × 8 = 56.", "Do not reverse the dividend and divisor.")),
+      S("mul-0-5", "Multiplication facts ×0–5", "Multiplication", "fact", { op: "mul", factors: [0, 1, 2, 3, 4, 5], minB: 2, maxB: 10, coach: true }, "3.OA.C.7", L("Multiplication describes equal groups.", ["Name the number of groups.", "Use skip-counting, an array, or a known fact.", "Check with repeated addition."], "4 × 6 means 4 groups of 6, which is 24.", "The factors can switch order without changing the product.")),
+      S("mul-6-9", "Multiplication facts ×6–9", "Multiplication", "fact", { op: "mul", factors: [6, 7, 8, 9], minB: 2, maxB: 9, coach: true }, "3.OA.C.7", L("Break harder facts into easier facts.", ["Use a 5-fact or 10-fact.", "Add or subtract one group.", "Check with the related division fact."], "7 × 8 = 5 × 8 + 2 × 8 = 56", "Keep the group size the same when decomposing.")),
+      // Legacy id kept so saved progress and assignment links still resolve. Grade 3 stops at products within 100;
+      // ×10–12 facts belong to Grade 4, so this skill teaches 3.NBT.A.3 (one-digit × multiples of 10).
+      S("mul-10-12", "Multiply by multiples of 10", "Multiplication", "fact", { op: "mul", minA: 2, maxA: 9, minB: 1, maxB: 9, tens: true, coach: true }, "3.NBT.A.3", L("Multiplying by a multiple of 10 is a basic fact with tens.", ["Cover the zero and solve the basic fact.", "Say the answer in tens.", "Write the zero back."], "7 × 40 is 7 × 4 tens = 28 tens = 280.", "The zero is not a trick. It shows the answer is counted in tens.")),
+      S("division-facts", "Division facts", "Division", "fact", { op: "div", minDivisor: 2, maxDivisor: 9, minQuotient: 2, maxQuotient: 9, coach: true }, "3.OA.C.7", L("Division asks how many equal groups or how many in each group.", ["Identify divisor and dividend.", "Recall the related multiplication fact.", "Check by multiplying quotient × divisor."], "56 ÷ 7 = 8 because 7 × 8 = 56.", "Do not reverse the dividend and divisor.")),
       S("add-sub-1000", "Add within 1,000", "Operations", "fact", { op: "add", min: 100, max: 499, maxResult: 999 }, "3.NBT.A.2", L("Add equal place values and regroup when a place reaches 10.", ["Line up ones, tens, and hundreds.", "Add from right to left.", "Estimate to check."], "368 + 247 = 615", "A carried ten belongs in the next place to the left.")),
       S("round", "Round to tens and hundreds", "Place value", "round", { places: [10, 100], max: 999 }, "3.NBT.A.1", L("Rounding names the closest benchmark number.", ["Find the rounding place.", "Check the digit to its right.", "Keep or increase, then replace later digits with zeros."], "347 rounds to 300 to the nearest hundred.", "A 5 rounds up because it is halfway to the next benchmark.")),
       S("fraction-equivalence", "Equivalent fractions", "Fractions", "fractionEquivalent", { maxDenominator: 10, maxFactor: 5 }, "3.NF.A.3", L("Equivalent fractions name the same amount with different-sized parts.", ["Choose one scale factor.", "Multiply numerator and denominator by it.", "Check with a model or cross products."], "2/3 = 4/6 by multiplying both parts by 2.", "Never scale only the numerator or only the denominator.")),
       S("fraction-compare", "Compare fractions", "Fractions", "fractionCompare", { maxDenominator: 10 }, "3.NF.A.3", L("Compare fractions using common parts, benchmarks, or cross products.", ["Notice whether denominators or numerators match.", "Choose a comparison strategy.", "State <, =, or >."], "3/4 > 2/3 because 9/12 > 8/12.", "A larger denominator means smaller pieces when numerators match.")),
-      S("area", "Rectangle area", "Geometry", "geometry", { shape: "rectangleArea", max: 15 }, "3.MD.C.7", L("Area counts square units covering a surface.", ["Identify length and width.", "Multiply the side lengths.", "Label square units."], "A 7 by 4 rectangle has area 28 square units.", "Area uses multiplication; perimeter adds side lengths.")),
+      S("area", "Rectangle area", "Geometry", "geometry", { shape: "rectangleArea", max: 10 }, "3.MD.C.7", L("Area counts square units covering a surface.", ["Identify length and width.", "Multiply the side lengths.", "Label square units."], "A 7 by 4 rectangle has area 28 square units.", "Area uses multiplication; perimeter adds side lengths.")),
       S("perimeter", "Rectangle perimeter", "Geometry", "geometry", { shape: "perimeter", max: 20 }, "3.MD.D.8", L("Perimeter is the distance around a shape.", ["List every outside side.", "Add the side lengths.", "Label linear units."], "A 7 by 4 rectangle has perimeter 22 units.", "Do not multiply length × width when finding perimeter.")),
     ],
   },
@@ -754,7 +806,7 @@ export const GRADES = [
       S("subtract-large", "Multi-digit subtraction", "Operations", "fact", { op: "sub", min: 1000, max: 50000, maxResult: 99999 }, "4.NBT.B.4", L("Regroup one unit from the next place when needed.", ["Align place values.", "Regroup across zeros carefully.", "Subtract and check with addition."], "8,000 − 2,675 = 5,325", "When regrouping, reduce the place you borrowed from.")),
       S("multiply-1digit", "Multiply by one digit", "Multiplication", "fact", { op: "mul", minA: 100, maxA: 999, minB: 2, maxB: 9 }, "4.NBT.B.5", L("Use place value and partial products.", ["Multiply each place by the one-digit factor.", "Regroup as needed.", "Add partial products or use the standard algorithm."], "326 × 4 = 1,304", "Regrouped tens must be added to the next partial product.")),
       S("multiply-2digit", "Multiply two-digit numbers", "Multiplication", "fact", { op: "mul", minA: 10, maxA: 99, minB: 10, maxB: 99 }, "4.NBT.B.5", L("Break one factor into tens and ones.", ["Multiply by the ones part.", "Multiply by the tens part.", "Add the partial products."], "23 × 14 = 23 × 10 + 23 × 4 = 322", "The tens partial product is ten times its digit product.")),
-      S("division", "Whole-number division", "Division", "fact", { op: "div", maxDivisor: 12, maxQuotient: 99 }, "4.NBT.B.6", L("Division undoes multiplication.", ["Estimate the quotient.", "Use multiplication facts for each place.", "Multiply to check."], "384 ÷ 6 = 64 because 64 × 6 = 384.", "A quotient digit must match its place value.")),
+      S("division", "Whole-number division", "Division", "fact", { op: "div", minDivisor: 2, maxDivisor: 9, minQuotient: 10, maxQuotient: 99 }, "4.NBT.B.6", L("Division undoes multiplication.", ["Estimate the quotient.", "Use multiplication facts for each place.", "Multiply to check."], "384 ÷ 6 = 64 because 64 × 6 = 384.", "A quotient digit must match its place value.")),
       S("factors", "Factors and multiples", "Number theory", "gcfLcm", { find: "gcf", max: 50 }, "4.OA.B.4", L("Factors divide a number evenly; multiples come from repeated multiplication.", ["List factor pairs.", "Circle shared factors.", "Choose the greatest one when finding GCF."], "Factors shared by 18 and 24 include 1, 2, 3, and 6; GCF = 6.", "A factor is not the same as a multiple.")),
       S("fraction-equiv", "Generate equivalent fractions", "Fractions", "fractionEquivalent", { maxDenominator: 12, maxFactor: 8 }, "4.NF.A.1", L("Scale numerator and denominator by the same nonzero number.", ["Find the scale factor.", "Apply it to both parts.", "Check that the value stayed equal."], "3/5 = 12/20 using ×4.", "Adding the same number to both parts does not preserve a fraction.")),
       S("fraction-compare", "Compare fractions", "Fractions", "fractionCompare", { maxDenominator: 12 }, "4.NF.A.2", L("Fractions need a common whole before they can be compared.", ["Use a benchmark or common denominator.", "Compare equal-sized parts.", "Write the correct symbol."], "5/8 > 3/5 because 25/40 > 24/40.", "Do not compare denominators by themselves.")),
