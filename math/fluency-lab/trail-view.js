@@ -13,7 +13,7 @@ import {
   recordRound,
   saveTrail,
 } from "./fact-trail.js";
-import { handleModelTap, interactivePicture, trailPicture } from "./trail-pictures.js";
+import { handleModelTap, interactivePicture, mathText, stepsBlock, trailPicture } from "./trail-pictures.js";
 
 const ROUND = 10;
 const esc = (value) =>
@@ -22,8 +22,6 @@ const esc = (value) =>
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
-// Exponents print as superscripts; everything else stays plain text.
-const mathText = (text) => esc(text).replace(/\^(-?\d+)/g, "<sup>$1</sup>");
 const starRow = (count, size = "") =>
   `<span class="tr-stars ${size}" aria-label="${count} of 3 stars">${[1, 2, 3].map((n) => `<span class="tr-star${n <= count ? " on" : ""}" aria-hidden="true">★</span>`).join("")}</span>`;
 const spoken = (text) =>
@@ -34,14 +32,6 @@ const spoken = (text) =>
     .replaceAll("= ?", " equals what?")
     .replace(/\^(\d+)/g, " to the power of $1")
     .replaceAll("√", "the square root of ");
-
-// Super-simple guided steps: one short number sentence at a time, revealed by tapping "Next step".
-function stepsBlock(steps, shown, { id, cap = steps.length } = {}) {
-  const visible = steps.slice(0, Math.min(shown, cap));
-  const more = shown < cap;
-  return `<ol class="tr-steps" id="${id}">${visible.map((line, i) => `<li${i === visible.length - 1 ? ' class="latest"' : ""}><span>${i + 1}</span>${mathText(line)}</li>`).join("")}</ol>
-    ${more ? `<button type="button" class="tr-step-next" data-step="${id}">Next step</button>` : ""}`;
-}
 
 export function mountTrail(container, { grade, onShowSkills }) {
   const trail = TRAILS[grade];

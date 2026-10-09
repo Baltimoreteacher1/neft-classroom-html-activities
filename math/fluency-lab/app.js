@@ -9,7 +9,8 @@ import {
 } from "./problem-bank.js";
 import { adaptiveProblem, dailyPlan, diagnosticPlan, difficulty, emptyTutor, evidence, feedbackFor, findSkill, localDay, prerequisites, recommendations, recordAnswer, rememberMistake, sanitizeTutor, skillKey as tutorSkillKey } from "./tutor-engine.js";
 import { mountVisualLesson, renderModel, renderInlineProblemModel } from "./visual-lab.js";
-import { transferPrompt, getPublisherExplanation, getDynamicGuidedSteps } from "./lesson-content.js";
+import { transferPrompt } from "./lesson-content.js";
+import { handleModelTap, interactivePicture, mathText, stepsBlock, trailPicture } from "./trail-pictures.js";
 import { PROFILE_NAMES, assignmentQueue, cleanProgress, decodeAssignment, downloadFile, makeBackup, mountTeacherStudio, parseBackup, profileKey, profiles, progressReport, readLocal, selectProfile, writeLocal } from "./school-tools.js";
 import { mountWorkbench } from "./workbench.js";
 import { mountTrail } from "./trail-view.js";
@@ -237,45 +238,20 @@ function renderLibrary() {
   document.title = `${grade.label} Math Fluency Lab | EduWonderLab`;
 }
 
-function getSkillModelBadge(skill) {
-  const g = skill.grade || 1;
-  const gen = skill.generator;
-  const op = skill.config?.op;
-  if (gen === "fact" && op === "mul") return "🔲 Area / Array Model";
-  if (gen === "fact" && op === "div") return "📦 Partition / Equal Groups";
-  if (gen === "fact" && (g <= 2 && (skill.config?.max <= 10 || skill.config?.maxResult <= 20))) return "🔵 Ten-Frames";
-  if (gen === "fact" || gen === "sequence") return "📏 Open Number Line";
-  if (gen === "fraction" || gen === "equivalentFractions" || gen === "fractionArithmetic") return "🍰 Fraction Strips";
-  if (gen === "solve" || gen === "linear-equations" || gen === "one-step") return "⚖️ Balance Scale";
-  if (gen === "integers" || gen === "signedNumbers") return "➕➖ Zero-Pair Chips";
-  if (gen === "ratio" || gen === "unitRate" || gen === "proportion" || gen === "percent") return "📊 Ratio Table";
-  if (gen === "coordinate") return "📈 Coordinate Grid";
-  if (g <= 2) return "🔵 Counters & Frames";
-  if (g <= 5) return "📏 Number Line & Models";
-  return "💡 Visual Model";
-}
-
 function renderSkillCard(skill) {
-  const record = recordFor(skill);
   const status = evidence(state.tutor, skill);
-  const level = { label: status.label, level: status.secure ? 3 : status.independent >= 4 ? 2 : status.recent.length || status.lessonCompleted ? 1 : 0 };
-  const modelBadge = getSkillModelBadge(skill);
+  const level = status.secure ? 3 : status.independent >= 4 ? 2 : status.recent.length || status.lessonCompleted ? 1 : 0;
+  const label = ["New", "Practicing", "Getting strong", "I know it"][level];
   return `
-    <article class="skill-card" data-level="${level.level}">
+    <article class="skill-card" data-level="${level}">
       <div class="skill-card-top">
         <span class="strand-label">${escapeHtml(skill.strand)}</span>
-        <span class="mastery-pill level-${level.level}">${level.label}</span>
+        <span class="mastery-pill level-${level}">${label}</span>
       </div>
       <h3>${escapeHtml(skill.title)}</h3>
-      <span class="manipulative-badge">${modelBadge}</span>
       <p>${escapeHtml(skill.learn.rule)}</p>
-      <div class="skill-stats" aria-label="Skill progress">
-        <span><strong>${status.independent ? `${status.successes}/${status.independent}` : "—"}</strong> recent independent</span>
-        ${record.guidedProblems ? `<span><strong>${record.guidedProblems}</strong> guided</span>` : ""}
-      </div>
       <div class="skill-card-actions">
-        <button class="open-skill" data-skill="${skill.id}">Practice 10</button>
-        <button class="text-action visual-action" data-visual-skill="${skill.id}">🎨 See it &amp; build it</button>
+        <button class="open-skill" data-skill="${skill.id}">Learn and practice</button>
       </div>
     </article>`;
 }
@@ -388,11 +364,10 @@ function renderModeTabs(mixed = false) {
     ? `<button role="tab" aria-selected="true" data-mode="${state.mode}">${state.mode === "daily" ? "Today's 10" : "Mixed review"}</button>`
     : [
         ["learn", "Learn it"],
-        ["visual", "See it & build it"],
+        ["visual", "Build it"],
         ["guided", "Guided practice"],
-        ["adaptive", "Adaptive practice"],
         ["practice", "Practice 10"],
-        ["streak", "Streak: 10 in a row"],
+        ["streak", "10 in a row"],
       ]
         .map(
           ([mode, label]) =>
@@ -401,147 +376,33 @@ function renderModeTabs(mixed = false) {
         .join("");
 }
 
+// Learn it: one sentence, one interactive model, and "Watch me solve it" steps revealed one tap at a time.
 function renderLearn() {
-  const exp = getPublisherExplanation(state.skill);
-  const visualAnchorHtml = exp.anchorModel ? renderModel(exp.anchorModel) : "";
-
+  const skill = state.skill;
+  const rng = seededRandom(skill.id.length * 97 + skill.grade * 13);
+  const example = Array.from({ length: 12 }, () => generateProblem(skill, rng)).reduce((best, item) => (item.steps.length > best.steps.length ? item : best));
+  state.learnExample = { item: example, shown: 1 };
+  const picture = interactivePicture(example.model) || trailPicture(example.model);
   els.learnPanel.innerHTML = `
-    <nav class="learning-path" aria-label="Learning path">
-      <p class="section-label">Your learning path</p>
-      <ol>
-        <li class="current"><span>1</span>Learn the idea</li>
-        <li><span>2</span>Build it visually</li>
-        <li><span>3</span>Practice with help</li>
-        <li><span>4</span>Remember it later</li>
-      </ol>
-    </nav>
-    <div class="learn-rule">
-      <span class="rule-mark" aria-hidden="true">✦</span>
-      <div>
-        <p class="section-label">Mini lesson · ${escapeHtml(exp.strand)} (${escapeHtml(exp.standard)})</p>
-        <h3>${escapeHtml(exp.coreConcept)}</h3>
-      </div>
-    </div>
-    <div class="learn-visual-anchor">
-      <div class="visual-anchor-header">
-        <span class="anchor-badge">Visual Anchor Model</span>
-        <h4>${escapeHtml(exp.visualTitle)}</h4>
-        <p>${escapeHtml(exp.visualIdea)}</p>
-      </div>
-      <div class="visual-anchor-body">
-        ${visualAnchorHtml}
-      </div>
-      <div class="visual-anchor-footer">
-        <button type="button" class="primary-action" data-start-visual>Step-by-step visual builder →</button>
-      </div>
-    </div>
-    <div class="method-steps-container">
-      <p class="section-label">The 3-Step Strategy</p>
-      <div class="method-steps-grid">
-        ${exp.solutionSteps.map((step) => `
-          <div class="method-step-card">
-            <span class="step-num-pill">${escapeHtml(step.title)}</span>
-            <p class="step-action"><strong>${escapeHtml(step.action)}</strong></p>
-            <p class="step-desc">${escapeHtml(step.prompt)}</p>
-            <div class="step-calc-box"><code>${escapeHtml(step.calc)}</code></div>
-          </div>
-        `).join("")}
-      </div>
-    </div>
-    <div class="publisher-example">
-      <div class="example-header">
-        <span class="example-badge">Worked Example Breakdown</span>
-        <h4 class="example-stem">${escapeHtml(exp.problemStem)}</h4>
-      </div>
-      <div class="example-breakdown">
-        ${exp.solutionSteps.map((step) => `
-          <div class="breakdown-row">
-            <span class="row-step">${escapeHtml(step.title)}</span>
-            <span class="row-desc">${escapeHtml(step.action)}: ${escapeHtml(step.prompt)}</span>
-            <strong class="row-calc">${escapeHtml(step.calc)}</strong>
-          </div>
-        `).join("")}
-      </div>
-    </div>
-    <div class="math-callout-grid">
-      <div class="why-it-works-card">
-        <div class="callout-header">
-          <span class="callout-icon" aria-hidden="true">💡</span>
-          <strong>Why this works mathematically</strong>
+    <div class="learn-simple" style="--trail:${getGrade(skill.grade).color}">
+      <h3 class="tr-idea">${escapeHtml(skill.learn.rule)}</h3>
+      <div class="tr-lesson">
+        <div class="tr-example">
+          <p class="tr-example-fact">${mathText(example.question)}</p>
+          ${picture}
         </div>
-        <p>${escapeHtml(exp.whyItWorks)}</p>
-      </div>
-      <div class="watch-out-card">
-        <div class="callout-header">
-          <span class="callout-icon" aria-hidden="true">⚠️</span>
-          <strong>Common misconception to watch</strong>
-        </div>
-        <p class="mistake-wrong"><span class="tag-wrong">Flawed thinking:</span> ${escapeHtml(exp.commonMistake.wrong)}</p>
-        <p class="mistake-fix"><span class="tag-fix">Teacher fix:</span> ${escapeHtml(exp.commonMistake.fix)}</p>
-      </div>
-    </div>
-    <div class="math-talk-card">
-      <div class="callout-header">
-        <span class="callout-icon" aria-hidden="true">💬</span>
-        <strong>Math talk: explain your reasoning</strong>
-      </div>
-      <p>Use these sentence frames when sharing your strategy:</p>
-      <ul class="math-talk-stems">
-        ${exp.mathTalk.map((stem) => `<li><em>"${escapeHtml(stem)}"</em></li>`).join("")}
-      </ul>
-    </div>
-    ${exp.quickSample ? `
-      <div class="quick-check-card" data-quick-check>
-        <div class="check-header">
-          <span class="check-badge">Formative Check</span>
-          <h4>Quick Try-It: Test your understanding</h4>
-          <p>${escapeHtml(exp.quickSample.prompt)}</p>
-        </div>
-        <div class="check-interactive">
-          ${exp.quickSample.choices ? `
-            <div class="choice-answers">
-              ${exp.quickSample.choices.map((c) => `<button type="button" class="choice-answer" data-check-answer="${escapeHtml(c)}">${escapeHtml(c)}</button>`).join("")}
-            </div>
-          ` : `
-            <div class="check-input-row">
-              <input class="answer-input" id="quick-check-input" type="text" placeholder="${exp.quickSample.kind === 'fraction' ? 'Example: 3/4' : 'Your answer'}" />
-              <button type="button" class="primary-action" id="quick-check-submit">Check</button>
-            </div>
-          `}
-          <div class="quick-check-feedback" hidden role="status"></div>
+        <div class="tr-guide">
+          <p class="tr-guide-title">Watch me solve it</p>
+          <div data-learn-steps>${stepsBlock(example.steps, 1, { id: "learn-steps" })}</div>
         </div>
       </div>
-    ` : ""}
-    <div class="learn-actions">
-      <button class="primary-action" data-start-visual>See it &amp; build it</button>
-      <button class="primary-action" data-start-guided>Try 5 with coaching</button>
-      <button class="outline-action" data-start-independent>Skip to Practice 10</button>
+      <p class="learn-watch"><strong>Watch out:</strong> ${escapeHtml(skill.learn.watch)}</p>
+      <div class="learn-actions">
+        <button class="primary-action" data-start-guided>Try 5 with help</button>
+        <button class="primary-action" data-start-independent>Practice 10</button>
+        <button class="outline-action" data-start-visual>Build it step by step</button>
+      </div>
     </div>`;
-
-  const checkCard = els.learnPanel.querySelector("[data-quick-check]");
-  if (checkCard && exp.quickSample) {
-    const feedbackEl = checkCard.querySelector(".quick-check-feedback");
-    const checkFn = (val) => {
-      const correct = String(val).trim().toLowerCase() === String(exp.quickSample.answer).trim().toLowerCase();
-      feedbackEl.hidden = false;
-      feedbackEl.className = `quick-check-feedback ${correct ? 'correct' : 'incorrect'}`;
-      feedbackEl.textContent = correct
-        ? `✓ Excellent! ${exp.quickSample.explanation}`
-        : `Try again! Hint: ${exp.quickSample.hint}`;
-    };
-    checkCard.querySelectorAll("[data-check-answer]").forEach((btn) => {
-      btn.addEventListener("click", () => checkFn(btn.dataset.checkAnswer));
-    });
-    checkCard.querySelector("#quick-check-submit")?.addEventListener("click", () => {
-      checkFn(checkCard.querySelector("#quick-check-input")?.value);
-    });
-    checkCard.querySelector("#quick-check-input")?.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        checkFn(e.target.value);
-      }
-    });
-  }
 }
 
 function setMode(mode) {
@@ -666,21 +527,7 @@ function nextProblem(restoredItem = null) {
   els.nextButton.textContent = "Next problem";
   els.hintButton.hidden = state.initialSupport || state.session.mode === "diagnostic";
   els.skip.hidden = state.session.mode !== "diagnostic";
-  if (els.problemVisualScaffold) {
-    if (state.session.mode !== "diagnostic") {
-      els.problemVisualScaffold.hidden = false;
-      mountWorkbench(els.problemVisualScaffold, { skill: state.item.skill, item: state.item });
-    } else {
-      els.problemVisualScaffold.hidden = true;
-      els.problemVisualScaffold.innerHTML = "";
-    }
-  }
-  if (els.toggleProblemVisual) {
-    const isOpen = Boolean(els.problemVisualScaffold && !els.problemVisualScaffold.hidden);
-    els.toggleProblemVisual.setAttribute("aria-expanded", String(isOpen));
-    els.toggleProblemVisual.hidden = state.session.mode === "diagnostic";
-    els.toggleProblemVisual.textContent = isOpen ? "Hide visual tools" : "💡 Open visual tools";
-  }
+  mountProblemModel(state.session.mode !== "diagnostic");
   els.repair.hidden = !adapting;
   els.checkButton.hidden = false;
   els.answerInput.value = "";
@@ -699,9 +546,28 @@ function nextProblem(restoredItem = null) {
   else els.answerInput.focus();
 }
 
+// Every practice problem carries its own model: the interactive picture of these numbers, or,
+// when no picture fits, the workbench limited to the one tool that suits the problem.
+function mountProblemModel(show) {
+  const host = els.problemVisualScaffold;
+  if (!host) return;
+  host.hidden = !show;
+  els.toggleProblemVisual.hidden = !show;
+  if (!show) {
+    host.innerHTML = "";
+    return;
+  }
+  const picture = interactivePicture(state.item.model);
+  host.style.setProperty("--trail", getGrade(state.item.skill.grade).color);
+  if (picture) host.innerHTML = `<div class="tr-model">${picture}</div>`;
+  else mountWorkbench(host, { skill: state.item.skill, item: state.item });
+  els.toggleProblemVisual.setAttribute("aria-expanded", "true");
+  els.toggleProblemVisual.textContent = "Hide the model";
+}
+
 function guidedStepContent() {
   if (!state.item?.skill) return [];
-  return getDynamicGuidedSteps(state.item.skill, state.item);
+  return (state.item.steps || [state.item.hint]).map((copy, index) => ({ label: `Step ${index + 1}`, copy }));
 }
 
 function renderGuidedCoach() {
@@ -713,7 +579,7 @@ function renderGuidedCoach() {
       (step, index) => `
         <li class="${index === state.guidedStepsShown - 1 ? "current" : "complete"}">
           <span>${index + 1}</span>
-          <div><strong>${escapeHtml(step.label)}</strong><p>${escapeHtml(step.copy)}</p></div>
+          <div><p>${mathText(step.copy)}</p></div>
         </li>`,
     )
     .join("");
@@ -1186,6 +1052,14 @@ els.modeTabs.addEventListener("click", (event) => {
 });
 
 els.learnPanel.addEventListener("click", (event) => {
+  if (handleModelTap(event.target)) return;
+  if (event.target.closest('[data-step="learn-steps"]') && state.learnExample) {
+    state.learnExample.shown += 1;
+    const host = els.learnPanel.querySelector("[data-learn-steps]");
+    host.innerHTML = stepsBlock(state.learnExample.item.steps, state.learnExample.shown, { id: "learn-steps" });
+    host.querySelector("[data-step]")?.focus();
+    return;
+  }
   if (event.target.closest("[data-start-visual]")) setMode("visual");
   if (event.target.closest("[data-start-guided]")) setMode("guided");
   if (event.target.closest("[data-start-independent]")) setMode("practice");
@@ -1302,15 +1176,13 @@ for (const tablist of [els.gradeTabs, els.modeTabs]) tablist.addEventListener("k
   tabs[next].click(); tablist.querySelectorAll('[role="tab"]')[next]?.focus();
 });
 els.toggleProblemVisual?.addEventListener("click", () => {
-  if (!els.problemVisualScaffold) return;
-  const isHidden = els.problemVisualScaffold.hidden;
-  els.problemVisualScaffold.hidden = !isHidden;
-  els.toggleProblemVisual.setAttribute("aria-expanded", String(isHidden));
-  els.toggleProblemVisual.textContent = isHidden ? "Hide visual tools" : "💡 Open visual tools";
-  if (isHidden && (!els.problemVisualScaffold.hasChildNodes() || !els.problemVisualScaffold.querySelector(".workbench-bar")) && state.item) {
-    mountWorkbench(els.problemVisualScaffold, { skill: state.item.skill, item: state.item });
-  }
+  const host = els.problemVisualScaffold;
+  if (!host || !state.item) return;
+  host.hidden = !host.hidden;
+  els.toggleProblemVisual.setAttribute("aria-expanded", String(!host.hidden));
+  els.toggleProblemVisual.textContent = host.hidden ? "Show the model" : "Hide the model";
 });
+els.problemVisualScaffold?.addEventListener("click", (event) => handleModelTap(event.target));
 
 document.querySelector("#brand-home")?.addEventListener("click", () => {
   renderLibrary();

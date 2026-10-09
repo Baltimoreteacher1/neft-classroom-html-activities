@@ -220,3 +220,15 @@ export function handleModelTap(target) {
   }
   return false;
 }
+
+// Exponents print as superscripts; everything else stays plain text.
+export const mathText = (text) => esc(text).replace(/\^(-?\d+)/g, "<sup>$1</sup>");
+
+// Super-simple guided steps: one short number sentence at a time, revealed by tapping "Next step".
+export function stepsBlock(steps, shown, { id, cap = steps.length } = {}) {
+  const visible = steps.slice(0, Math.min(shown, cap));
+  const more = shown < cap;
+  return `<ol class="tr-steps" id="${id}">${visible.map((line, i) => `<li${i === visible.length - 1 ? ' class="latest"' : ""}><span>${i + 1}</span>${mathText(line)}</li>`).join("")}</ol>
+    ${more ? `<button type="button" class="tr-step-next" data-step="${id}">Next step</button>` : ""}`;
+}
+

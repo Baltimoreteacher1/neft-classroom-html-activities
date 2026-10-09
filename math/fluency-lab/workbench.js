@@ -31,6 +31,8 @@ export function mountWorkbench(container, { skill, item, onSelectTool } = {}) {
   let hint = "";
 
   wb.resetToItem(item);
+  // Students see only the tool that fits this problem (plus any tool their own typed problem needs).
+  const fitTool = wb.state.tool;
 
   function setAnswerInput(val) {
     const input = document.querySelector("#answer-input");
@@ -57,8 +59,8 @@ export function mountWorkbench(container, { skill, item, onSelectTool } = {}) {
       <div class="workbench-bar">
         <div class="workbench-header-row">
           <div class="workbench-titles">
-            <span class="workbench-title">✨ Interactive Visual Manipulatives</span>
-            <span class="workbench-subtitle">Experiment, build models, and test your thinking:</span>
+            <span class="workbench-title">Build it with a model</span>
+            <span class="workbench-subtitle">Use the model to help you solve.</span>
           </div>
         </div>
         <div class="workbench-entry">
@@ -71,7 +73,7 @@ export function mountWorkbench(container, { skill, item, onSelectTool } = {}) {
           <p class="workbench-entry-msg" role="status" aria-live="polite">${esc(entryMsg)}</p>
         </div>
         <div class="workbench-tabs" role="tablist" aria-label="Interactive math tools">
-          ${TOOLS.map(([id, label]) => `<button type="button" class="tool-tab ${tool === id ? "active" : ""}" data-tool="${id}" data-focus-key="tab-${id}" role="tab" aria-selected="${tool === id}">${label}</button>`).join("")}
+          ${TOOLS.filter(([id]) => id === fitTool || id === tool).map(([id, label]) => `<button type="button" class="tool-tab ${tool === id ? "active" : ""}" data-tool="${id}" data-focus-key="tab-${id}" role="tab" aria-selected="${tool === id}">${label}</button>`).join("")}
         </div>
       </div>
       <div class="workbench-body">
