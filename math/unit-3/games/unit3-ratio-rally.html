@@ -31,9 +31,7 @@
       // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
       // (document.write blocks parsing so the mirror is ready before the game script runs).
       if (typeof Phaser === "undefined") {
-        document.write(
-          '<script src="/games/vendor/phaser/phaser-3.80.1.min.js"><\/script>',
-        );
+        document.write('<script src="/games/vendor/phaser/phaser-3.80.1.min.js"><\/script>');
       }
       // If both CDNs are unreachable, show a clear message instead of a blank page.
       window.addEventListener("load", function () {
@@ -52,33 +50,71 @@
     <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
     <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
     <!-- ghl-injected:end -->
-      <link rel="stylesheet" href="/assets/game-topbar.css" />
+    <link rel="stylesheet" href="/assets/game-topbar.css" />
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-  <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
-  <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
-<link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007">
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+    <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />
+    <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/assets/game-studio.css?v=20261002" />
+    <link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007" />
+  </head>
   <body>
-
-            <!-- EWL Universal Arcade Enhancements Header -->
-      <div class="ewl-arcade-header-bar">
-        <div class="ewl-arcade-title-group">
-          <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
-          <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
-        </div>
-        <div class="ewl-arcade-controls">
-          <button type="button" class="ewl-btn-toggle active" id="ewl-btn-l1" onclick="if(window.ewlSetLevel) window.ewlSetLevel(1)">L1 Support</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-l2" onclick="if(window.ewlSetLevel) window.ewlSetLevel(2)">L2 Challenge</button>
-          <button type="button" class="ewl-sound-toggle-btn" id="ewl-btn-sound" onclick="if(window.GameFX && window.GameFX.AudioSynth){ window.GameFX.AudioSynth.muted = !window.GameFX.AudioSynth.muted; this.innerText = window.GameFX.AudioSynth.muted ? '🔇 Muted' : '🔊 Sound On'; }">🔊 Sound On</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-lang" onclick="if(window.ewlToggleLang) window.ewlToggleLang()">🌐 EN / ES</button>
-        </div>
+    <!-- EWL Universal Arcade Enhancements Header -->
+    <div class="ewl-arcade-header-bar">
+      <div class="ewl-arcade-title-group">
+        <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge"
+          >⭐ Level 1: Guided Support</span
+        >
+        <span style="font-size: 13px; font-weight: 600; opacity: 0.85"
+          >| EduWonderLab Interactive Arcade</span
+        >
       </div>
-  
+      <div class="ewl-arcade-controls">
+        <button
+          type="button"
+          class="ewl-btn-toggle active"
+          id="ewl-btn-l1"
+          onclick="if (window.ewlSetLevel) window.ewlSetLevel(1);"
+        >
+          L1 Support
+        </button>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-l2"
+          onclick="if (window.ewlSetLevel) window.ewlSetLevel(2);"
+        >
+          L2 Challenge
+        </button>
+        <button
+          type="button"
+          class="ewl-sound-toggle-btn"
+          id="ewl-btn-sound"
+          onclick="
+            if (window.GameFX && window.GameFX.AudioSynth) {
+              window.GameFX.AudioSynth.muted = !window.GameFX.AudioSynth.muted;
+              this.innerText = window.GameFX.AudioSynth.muted ? '🔇 Muted' : '🔊 Sound On';
+            }
+          "
+        >
+          🔊 Sound On
+        </button>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-lang"
+          onclick="if (window.ewlToggleLang) window.ewlToggleLang();"
+        >
+          🌐 EN / ES
+        </button>
+      </div>
+    </div>
+
     <!-- nt-game-topbar-injected:begin (tools/inject-game-topbar.js) -->
-    <header class="nt-game-topbar" role="banner"><span class="ngt-title">Ratio Rally — Road Trip Checkpoints</span></header>
+    <header class="nt-game-topbar" role="banner">
+      <span class="ngt-title">Ratio Rally — Road Trip Checkpoints</span>
+    </header>
     <!-- nt-game-topbar-injected:end -->
     <!-- Visually-hidden live region: mirrors each checkpoint question for
          assistive tech and the shared hint ladder. Additive only. -->
@@ -106,8 +142,7 @@
         ctx: null,
         init() {
           if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
-          if (!this.ctx)
-            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+          if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
         },
         play(t, f, d, v = 0.2) {
           if (window.__flagshipMuted) return;
@@ -310,11 +345,15 @@
           prompt = `A bag has ${a} red and ${b} blue marbles. What is the ratio of red to blue?`;
           answer = `${a}:${b}`;
           wrong = {
-            [`${b}:${a}`]: "That ratio is blue to red. The order of the words sets the order of the numbers.",
-            [`${a + 1}:${b}`]: "Check the count of red marbles again. Use the numbers from the story exactly.",
-            [`${a}:${b + 2}`]: "Check the count of blue marbles again. Use the numbers from the story exactly.",
+            [`${b}:${a}`]:
+              "That ratio is blue to red. The order of the words sets the order of the numbers.",
+            [`${a + 1}:${b}`]:
+              "Check the count of red marbles again. Use the numbers from the story exactly.",
+            [`${a}:${b + 2}`]:
+              "Check the count of blue marbles again. Use the numbers from the story exactly.",
           };
-          hint1 = "Read the question: which color is named FIRST? That amount goes first in the ratio.";
+          hint1 =
+            "Read the question: which color is named FIRST? That amount goes first in the ratio.";
           hint2 = `Red comes first, so start with the red count (${a}). Then write a colon and the blue count.`;
           explain = `Red to blue means red first: ${a} red : ${b} blue = ${answer}.`;
         } else if (type === 1) {
@@ -325,11 +364,15 @@
           prompt = `Which ratio is equivalent to ${a}:${b}?`;
           answer = `${a * m}:${b * m}`;
           wrong = {
-            [`${a * m + 1}:${b * m}`]: "The first part was not multiplied by the same number as the second part.",
-            [`${a * m}:${b * m + 2}`]: "The second part was not multiplied by the same number as the first part.",
-            [`${a + b}:${b * 2}`]: "Adding does not keep a ratio equal. Multiply BOTH parts by the same number.",
+            [`${a * m + 1}:${b * m}`]:
+              "The first part was not multiplied by the same number as the second part.",
+            [`${a * m}:${b * m + 2}`]:
+              "The second part was not multiplied by the same number as the first part.",
+            [`${a + b}:${b * 2}`]:
+              "Adding does not keep a ratio equal. Multiply BOTH parts by the same number.",
           };
-          hint1 = "Equivalent ratios multiply BOTH parts by the same number. For each choice, divide each part by the original part.";
+          hint1 =
+            "Equivalent ratios multiply BOTH parts by the same number. For each choice, divide each part by the original part.";
           hint2 = `Try ×${m}: ${a} × ${m} = ${a * m}. Which choice has ${a * m} first AND the second part ${b} × ${m}?`;
           explain = `${a} × ${m} = ${a * m} and ${b} × ${m} = ${b * m}, so ${a}:${b} = ${answer}.`;
         } else if (type === 2) {
@@ -339,7 +382,8 @@
           prompt = `Ratio table: ${a} → ${b}. If the first column is ${a * m}, what is the second column?`;
           answer = String(b * m);
           wrong = {
-            [String(b * m + a)]: "It looks like you added. In a ratio table you MULTIPLY both columns by the same factor.",
+            [String(b * m + a)]:
+              "It looks like you added. In a ratio table you MULTIPLY both columns by the same factor.",
             [String(b * m - 1)]: "Close! Re-check your multiplication.",
             [String(a * m)]: "That is the first-column value. Find what the SECOND column becomes.",
           };
@@ -355,10 +399,13 @@
           wrong = {
             [`$${rate + 1}`]: "Check your division: total cost ÷ number of items.",
             [`$${rate - 1}`]: "Check your division: total cost ÷ number of items.",
-            [`$${items}`]: "That is the number of items, not the price. Divide the cost by the number of items.",
-            [`$${cost - items}`]: "Subtracting does not find a unit rate. Divide the cost by the number of items.",
+            [`$${items}`]:
+              "That is the number of items, not the price. Divide the cost by the number of items.",
+            [`$${cost - items}`]:
+              "Subtracting does not find a unit rate. Divide the cost by the number of items.",
           };
-          hint1 = "A unit rate is the amount for ONE. Divide the total cost by the number of items.";
+          hint1 =
+            "A unit rate is the amount for ONE. Divide the total cost by the number of items.";
           hint2 = `Divide: $${cost} ÷ ${items} = ?  Check: the answer × ${items} should equal ${cost}.`;
           explain = `$${cost} ÷ ${items} = $${rate} for each item. Check: ${items} × $${rate} = $${cost}.`;
         } else if (type === 4) {
@@ -369,10 +416,13 @@
           prompt = `Fill in the missing number: ${a}/${b} = ${a * m}/?`;
           answer = String(b * m);
           wrong = {
-            [String(b * m + 2)]: "Re-check: the denominator must be multiplied by the same number as the numerator.",
-            [String(a * m)]: "That is the new numerator. Multiply the DENOMINATOR by the same factor.",
+            [String(b * m + 2)]:
+              "Re-check: the denominator must be multiplied by the same number as the numerator.",
+            [String(a * m)]:
+              "That is the new numerator. Multiply the DENOMINATOR by the same factor.",
             [String(b * m - 1)]: "Close! Re-check your multiplication.",
-            [String(b + a * m - a)]: "It looks like you added. Equivalent fractions multiply top and bottom by the same number.",
+            [String(b + a * m - a)]:
+              "It looks like you added. Equivalent fractions multiply top and bottom by the same number.",
           };
           hint1 = `What number times ${a} gives ${a * m}? Multiply the bottom by that same number.`;
           hint2 = `${a} × ${m} = ${a * m}, so multiply the denominator: ${b} × ${m}.`;
@@ -385,8 +435,10 @@
           answer = String(part);
           wrong = {
             [String((total * pct) / 10)]: "Percent means per 100. Divide by 100, not by 10.",
-            [String(part + 5)]: "Close. Find 10% first (divide by 10), then build up to the percent you need.",
-            [String(part - 5)]: "Close. Find 10% first (divide by 10), then build up to the percent you need.",
+            [String(part + 5)]:
+              "Close. Find 10% first (divide by 10), then build up to the percent you need.",
+            [String(part - 5)]:
+              "Close. Find 10% first (divide by 10), then build up to the percent you need.",
             [String(total - part)]: `That is the part that is NOT ${pct}%. Find ${pct}% itself.`,
           };
           hint1 = "Percent means 'out of 100'. Find 10% or 1% of the number first, then scale up.";
@@ -395,10 +447,7 @@
         }
         // Build 4 distinct choices; no distractor may equal (or be equivalent
         // to) the answer, and none may be zero/negative.
-        const ok = (c) =>
-          c !== answer &&
-          !ratioEquiv(c, answer) &&
-          !/^\$?-|^\$?0$|^0:|:0$/.test(c);
+        const ok = (c) => c !== answer && !ratioEquiv(c, answer) && !/^\$?-|^\$?0$|^0:|:0$/.test(c);
         let pool = Object.keys(wrong).filter(ok);
         pool = [...new Set(pool)];
         let guard = 0;
@@ -406,8 +455,7 @@
           guard++;
           let fill;
           if (answer[0] === "$") fill = `$${randInt(1, 30)}`;
-          else if (answer.includes(":"))
-            fill = `${randInt(1, 20)}:${randInt(1, 20)}`;
+          else if (answer.includes(":")) fill = `${randInt(1, 20)}:${randInt(1, 20)}`;
           else fill = String(randInt(1, 60));
           if (ok(fill) && !pool.includes(fill)) {
             pool.push(fill);
@@ -787,10 +835,15 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 248, "Solve a ratio problem at each checkpoint to drive on. No timer — take your time.", {
-            fontSize: "14px",
-            color: "#558877",
-          })
+          .text(
+            cx,
+            248,
+            "Solve a ratio problem at each checkpoint to drive on. No timer — take your time.",
+            {
+              fontSize: "14px",
+              color: "#558877",
+            },
+          )
           .setOrigin(0.5);
 
         // High score display
@@ -922,9 +975,7 @@
           const btn = this.add
             .rectangle(cx, d.y, 380, 95, d.color, 0.85)
             .setInteractive({ useHandCursor: true });
-          this.add
-            .text(cx - 150, d.y - 10, d.emoji, { fontSize: "40px" })
-            .setOrigin(0, 0.5);
+          this.add.text(cx - 150, d.y - 10, d.emoji, { fontSize: "40px" }).setOrigin(0, 0.5);
           this.add
             .text(cx + 10, d.y - 14, d.label, {
               fontSize: "26px",
@@ -956,15 +1007,10 @@
           const go = () => {
             SFX.tap();
             this.cameras.main.fadeOut(300);
-            this.time.delayedCall(300, () =>
-              this.scene.start("Game", { difficulty: d.key }),
-            );
+            this.time.delayedCall(300, () => this.scene.start("Game", { difficulty: d.key }));
           };
           btn.on("pointerdown", go);
-          this.input.keyboard.once(
-            "keydown-" + ["ONE", "TWO", "THREE"][idx],
-            go,
-          );
+          this.input.keyboard.once("keydown-" + ["ONE", "TWO", "THREE"][idx], go);
           this.add
             .text(cx + 170, d.y - 30, `Key ${idx + 1}`, {
               fontSize: "13px",
@@ -1003,7 +1049,12 @@
 
       GameScene.prototype.init = function (data) {
         this.difficulty = (data && data.difficulty) || "easy";
-        this.questions = generateQuestions(this.difficulty, TRIP_LEN);
+        const replay = data && data.replay;
+        this.questions =
+          replay && replay.length
+            ? replay.map((q) => JSON.parse(JSON.stringify(q)))
+            : generateQuestions(this.difficulty, TRIP_LEN);
+        this.missed = [];
         this.currentQ = 0;
         this.score = 0;
         this.combo = 0;
@@ -1027,7 +1078,7 @@
               ? { grass: 0x334455, road: 0x555555 }
               : { grass: 0x1a0a33, road: 0x333344 };
         this.questionStartTime = 0;
-        this.race = RRPro.createRace(this.difficulty, TRIP_LEN);
+        this.race = RRPro.createRace(this.difficulty, this.questions.length);
         this.coins = 0;
         this.needBounce = false;
         this.bounceRun = 0;
@@ -1041,10 +1092,7 @@
       function gfxReducedMotion() {
         try {
           if (window.__flagshipReduced) return true;
-          return (
-            window.matchMedia &&
-            window.matchMedia("(prefers-reduced-motion: reduce)").matches
-          );
+          return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         } catch (e) {
           return false;
         }
@@ -1065,7 +1113,9 @@
         }
         // Rumble strips along both road edges scroll with the drive.
         this.rumble = [-1, 1].map((side) =>
-          this.add.tileSprite(W / 2 + side * (ROAD_W / 2 + 15), H / 2, 10, H, "rumble").setAlpha(0.8),
+          this.add
+            .tileSprite(W / 2 + side * (ROAD_W / 2 + 15), H / 2, 10, H, "rumble")
+            .setAlpha(0.8),
         );
         // Biome scenery: cacti and rocks, city lights and towers, crystals and asteroids.
         this.scenery = [];
@@ -1073,33 +1123,55 @@
         for (let i = 0; i < 16; i++) {
           const side = i % 2 === 0 ? -1 : 1;
           const t = this.add
-            .image(W / 2 + side * (ROAD_W / 2 + randInt(40, 160)), randInt(-50, H + 50), props[i % props.length])
+            .image(
+              W / 2 + side * (ROAD_W / 2 + randInt(40, 160)),
+              randInt(-50, H + 50),
+              props[i % props.length],
+            )
             .setScale(randInt(9, 16) / 10)
             .setAlpha(0.9);
           this.scenery.push(t);
         }
         // Rival racers: placed by their lead over the player, off screen when far away.
         this.rivalCars = ["car_rival1", "car_rival2"].map((key, i) =>
-          this.add.image(ROAD_LEFT + LANE_W * (i ? 3.5 : 0.5), -80, key).setScale(1.2).setDepth(2),
+          this.add
+            .image(ROAD_LEFT + LANE_W * (i ? 3.5 : 0.5), -80, key)
+            .setScale(1.2)
+            .setDepth(2),
         );
 
         // Player car (parked until a checkpoint is solved)
-        this.carShadow = this.add.image(W / 2, H - 98, "carShadow").setDepth(2).setAlpha(0.55);
-        this.player = this.add.image(W / 2, H - 120, RRPro.carKey()).setScale(1.3).setDepth(3);
+        this.carShadow = this.add
+          .image(W / 2, H - 98, "carShadow")
+          .setDepth(2)
+          .setAlpha(0.55);
+        this.player = this.add
+          .image(W / 2, H - 120, RRPro.carKey())
+          .setScale(1.3)
+          .setDepth(3);
         this.flames = [-7, 7].map((dx) =>
-          this.add.image(W / 2 + dx, H - 84, "flame").setDepth(2).setAlpha(0).setScale(0.8),
+          this.add
+            .image(W / 2 + dx, H - 84, "flame")
+            .setDepth(2)
+            .setAlpha(0)
+            .setScale(0.8),
         );
-        this.speedLines = this.add.particles(0, 0, "speedline", {
-          x: { min: ROAD_LEFT - 120, max: ROAD_LEFT + ROAD_W + 120 },
-          y: -40,
-          speedY: { min: 900, max: 1400 },
-          lifespan: 600,
-          frequency: 25,
-          emitting: false,
-        }).setDepth(6);
+        this.speedLines = this.add
+          .particles(0, 0, "speedline", {
+            x: { min: ROAD_LEFT - 120, max: ROAD_LEFT + ROAD_W + 120 },
+            y: -40,
+            speedY: { min: 900, max: 1400 },
+            lifespan: 600,
+            frequency: 25,
+            emitting: false,
+          })
+          .setDepth(6);
 
         // HUD: trip map (one flag per checkpoint) + score
-        this.add.rectangle(W / 2, 0, W, 64, 0x000000, 0.75).setOrigin(0.5, 0).setDepth(20);
+        this.add
+          .rectangle(W / 2, 0, W, 64, 0x000000, 0.75)
+          .setOrigin(0.5, 0)
+          .setDepth(20);
         this.scoreText = this.add
           .text(16, 34, "Score: 0", { fontSize: "18px", color: "#7fe0ff", fontStyle: "bold" })
           .setDepth(21);
@@ -1113,12 +1185,18 @@
         this.add.rectangle(W / 2, 16, x1 - x0, 4, 0x445566).setDepth(21);
         for (let i = 0; i < this.totalCheckpoints; i++) {
           const fx = x0 + ((x1 - x0) * i) / Math.max(1, this.totalCheckpoints - 1);
-          this.flags.push(this.add.circle(fx, 16, 7, 0x445566).setStrokeStyle(2, 0xaaccee).setDepth(22));
+          this.flags.push(
+            this.add.circle(fx, 16, 7, 0x445566).setStrokeStyle(2, 0xaaccee).setDepth(22),
+          );
         }
         this.rivalDots = [0xff4444, 0xffaa00].map((color) =>
           this.add.circle(x0, 16, 5, color).setStrokeStyle(1, 0xffffff).setDepth(22.5),
         );
-        this.mapCar = this.add.image(x0, 16, RRPro.carKey()).setScale(0.45).setAngle(90).setDepth(23);
+        this.mapCar = this.add
+          .image(x0, 16, RRPro.carKey())
+          .setScale(0.45)
+          .setAngle(90)
+          .setDepth(23);
         this.coinText = this.add
           .text(140, 34, "0", { fontSize: "18px", color: "#ffd23d", fontStyle: "bold" })
           .setDepth(21);
@@ -1128,16 +1206,18 @@
           .setOrigin(0.5, 0)
           .setDepth(21);
 
-        this.confettiEmitter = this.add.particles(0, 0, "confetti", {
-          speed: { min: 80, max: 220 },
-          scale: { start: 1.2, end: 0 },
-          lifespan: 800,
-          emitting: false,
-          quantity: this.reducedMotion ? 0 : 18,
-          tint: [0xff4488, 0x44ff88, 0x4488ff, 0xffdd00, 0xff8800],
-          angle: { min: 0, max: 360 },
-          gravityY: 200,
-        }).setDepth(30);
+        this.confettiEmitter = this.add
+          .particles(0, 0, "confetti", {
+            speed: { min: 80, max: 220 },
+            scale: { start: 1.2, end: 0 },
+            lifespan: 800,
+            emitting: false,
+            quantity: this.reducedMotion ? 0 : 18,
+            tint: [0xff4488, 0x44ff88, 0x4488ff, 0xffdd00, 0xff8800],
+            angle: { min: 0, max: 360 },
+            gravityY: 200,
+          })
+          .setDepth(30);
 
         // Keyboard: 1-4 / A-D pick a choice. Bound once per scene.
         const keyPick = (i) => {
@@ -1160,7 +1240,11 @@
       GameScene.prototype.buildParallaxBackground = function () {
         this.parallaxLayers = [];
         const horizonColor =
-          this.difficulty === "easy" ? 0xe8b878 : this.difficulty === "medium" ? 0x4a5a72 : 0x2a1a55;
+          this.difficulty === "easy"
+            ? 0xe8b878
+            : this.difficulty === "medium"
+              ? 0x4a5a72
+              : 0x2a1a55;
         this.add.rectangle(W / 2, 70, W, 140, horizonColor, 0.35).setDepth(0);
         const farTint =
           this.difficulty === "hard"
@@ -1182,13 +1266,19 @@
         this.parallaxLayers.push({ items: farDots, factor: 0.12, wrap: 150 });
         const midItems = [];
         const midColor =
-          this.difficulty === "easy" ? 0xb07840 : this.difficulty === "medium" ? 0x2c3850 : 0x1a0e3a;
+          this.difficulty === "easy"
+            ? 0xb07840
+            : this.difficulty === "medium"
+              ? 0x2c3850
+              : 0x1a0e3a;
         for (let i = 0; i < 9; i++) {
           const isCity = this.difficulty === "medium";
           const bw = isCity ? randInt(40, 70) : randInt(90, 150);
           const bh = isCity ? randInt(60, 150) : randInt(50, 100);
           midItems.push(
-            this.add.rectangle(i * (W / 8) + randInt(-20, 20), 150 - bh / 2, bw, bh, midColor, 0.5).setDepth(0),
+            this.add
+              .rectangle(i * (W / 8) + randInt(-20, 20), 150 - bh / 2, bw, bh, midColor, 0.5)
+              .setDepth(0),
           );
         }
         this.parallaxLayers.push({ items: midItems, factor: 0.28, wrap: W });
@@ -1218,11 +1308,15 @@
         );
         const tier = RRPro.tierFor(this.combo);
         this.streakLabel
-          .setText(tier ? `${tier.name} x${tier.mult}` : this.combo >= 2 ? `Streak x${this.combo}` : "")
+          .setText(
+            tier ? `${tier.name} x${tier.mult}` : this.combo >= 2 ? `Streak x${this.combo}` : "",
+          )
           .setColor(tier ? tier.color : "#ffdd00");
         this.coinText.setText(String(this.coins));
         this.flags.forEach((f, i) => {
-          f.setFillStyle(i < this.checkpointsHit ? 0x22cc66 : i === this.currentQ ? 0xffaa00 : 0x445566);
+          f.setFillStyle(
+            i < this.checkpointsHit ? 0x22cc66 : i === this.currentQ ? 0xffaa00 : 0x445566,
+          );
         });
         const x0 = 150,
           x1 = W - 150;
@@ -1237,7 +1331,8 @@
       GameScene.prototype.placeRivals = function (snap, animate) {
         this.rivalCars.forEach((car, i) => {
           const y = Phaser.Math.Clamp(H - 120 - (snap.rivals[i] - snap.player) * 110, -90, H + 90);
-          if (animate) this.tweens.add({ targets: car, y, duration: this.driveMs, ease: "Sine.easeInOut" });
+          if (animate)
+            this.tweens.add({ targets: car, y, duration: this.driveMs, ease: "Sine.easeInOut" });
           else car.y = y;
         });
       };
@@ -1264,19 +1359,46 @@
           SFX.nitro();
           RRPro.shake(this, 700, 0.003);
           this.speedLines.start();
-          this.flames.forEach((f) => this.tweens.add({ targets: f, alpha: 1, scaleY: { from: 0.8, to: 1.3 }, duration: 90, yoyo: true, repeat: 7 }));
-          this.tweens.add({ targets: this.cameras.main, zoom: 1.05, duration: 500, yoyo: true, hold: 400 });
+          this.flames.forEach((f) =>
+            this.tweens.add({
+              targets: f,
+              alpha: 1,
+              scaleY: { from: 0.8, to: 1.3 },
+              duration: 90,
+              yoyo: true,
+              repeat: 7,
+            }),
+          );
+          this.tweens.add({
+            targets: this.cameras.main,
+            zoom: 1.05,
+            duration: 500,
+            yoyo: true,
+            hold: 400,
+          });
         }
         // The checkpoint gate sweeps over the car as you drive through it.
         const gate = this.add
           .container(W / 2, -40, [
             this.add.rectangle(0, 0, ROAD_W + 50, 22, 0xff8800),
-            this.add.text(0, 0, `CHECKPOINT ${this.checkpointsHit}`, { fontSize: "14px", fontStyle: "bold", color: "#ffffff" }).setOrigin(0.5),
+            this.add
+              .text(0, 0, `CHECKPOINT ${this.checkpointsHit}`, {
+                fontSize: "14px",
+                fontStyle: "bold",
+                color: "#ffffff",
+              })
+              .setOrigin(0.5),
             this.add.rectangle(-(ROAD_W / 2 + 25), 40, 8, 80, 0xffffff),
             this.add.rectangle(ROAD_W / 2 + 25, 40, 8, 80, 0xffffff),
           ])
           .setDepth(5);
-        this.tweens.add({ targets: gate, y: H + 100, duration: this.driveMs, ease: "Sine.easeIn", onComplete: () => gate.destroy() });
+        this.tweens.add({
+          targets: gate,
+          y: H + 100,
+          duration: this.driveMs,
+          ease: "Sine.easeIn",
+          onComplete: () => gate.destroy(),
+        });
         this.updateHUD();
         this.tweens.add({
           targets: dist,
@@ -1329,18 +1451,30 @@
         this.questionStartTime = Date.now();
         this.skillSeen[q.type] = true;
         // Mirror into the live region (screen readers + shared hint ladder).
-        this.say(`Checkpoint question ${this.currentQ + 1} of ${this.totalCheckpoints}: ${q.prompt}`);
+        this.say(
+          `Checkpoint question ${this.currentQ + 1} of ${this.totalCheckpoints}: ${q.prompt}`,
+        );
 
         const E = this.panelElems;
         const cy = 300;
-        E.push(this.add.rectangle(W / 2, cy, 640, 400, 0x0d1b33, 0.94).setStrokeStyle(3, 0x00ccff).setDepth(16));
         E.push(
           this.add
-            .text(W / 2, cy - 172, `CHECKPOINT ${this.currentQ + 1} OF ${this.totalCheckpoints}  ·  ${SKILLS[q.type]}`, {
-              fontSize: "16px",
-              color: "#7fe0ff",
-              fontStyle: "bold",
-            })
+            .rectangle(W / 2, cy, 640, 400, 0x0d1b33, 0.94)
+            .setStrokeStyle(3, 0x00ccff)
+            .setDepth(16),
+        );
+        E.push(
+          this.add
+            .text(
+              W / 2,
+              cy - 172,
+              `CHECKPOINT ${this.currentQ + 1} OF ${this.totalCheckpoints}  ·  ${SKILLS[q.type]}`,
+              {
+                fontSize: "16px",
+                color: "#7fe0ff",
+                fontStyle: "bold",
+              },
+            )
             .setOrigin(0.5)
             .setDepth(17),
         );
@@ -1428,24 +1562,36 @@
             this.needBounce = true;
             this.bounceRun = 0;
           }
-          const pts = RRPro.points(POINTS[Math.min(this.tries, POINTS.length - 1)], this.tries, this.combo);
+          const pts = RRPro.points(
+            POINTS[Math.min(this.tries, POINTS.length - 1)],
+            this.tries,
+            this.combo,
+          );
           this.score += pts;
           const tier = RRPro.tierFor(this.combo);
           this.nitro = this.tries === 0 && !!tier;
           const gained = RRPro.coinsFor(this.tries, this.nitro);
           RRPro.popup(this, entry.rect.x, entry.rect.y - 40, `+${pts}`, "#7dffb0", 26);
-          RRPro.coinFly(this, { x: entry.rect.x, y: entry.rect.y }, { x: 128, y: 44 }, gained, () => {
-            this.coins++;
-            this.coinText.setText(String(this.coins));
-            SFX.coin();
-          });
+          RRPro.coinFly(
+            this,
+            { x: entry.rect.x, y: entry.rect.y },
+            { x: 128, y: 44 },
+            gained,
+            () => {
+              this.coins++;
+              this.coinText.setText(String(this.coins));
+              SFX.coin();
+            },
+          );
           if (this.reducedMotion) this.coins += gained;
           if (tier && this.tries === 0 && this.combo === tier.min) {
             RRPro.flair(this, `${tier.name}! x${tier.mult} points`, tier.color);
             SFX.badge();
           }
-          if (this.totalCorrect === 1 && this.tries === 0) RRPro.toast(this, "First try!", "Solved without a hint. Keep it going.");
-          if (this.combo === 5 && this.tries === 0) RRPro.toast(this, "Five Alive", "5 first tries in a row.", 0xff8a4a);
+          if (this.totalCorrect === 1 && this.tries === 0)
+            RRPro.toast(this, "First try!", "Solved without a hint. Keep it going.");
+          if (this.combo === 5 && this.tries === 0)
+            RRPro.toast(this, "Five Alive", "5 first tries in a row.", 0xff8a4a);
           this.checkpointsHit++;
           SFX.correct();
           entry.rect.setFillStyle(0x1f9d55);
@@ -1453,7 +1599,9 @@
           const msg =
             (this.tries === 0 ? `Correct! +${pts}. ` : `You got it! +${pts}. `) + q.explain;
           this.fbText.setColor("#7dffb0").setText(msg);
-          document.dispatchEvent(new CustomEvent("flagship:answer", { detail: { correct: true, message: msg } }));
+          document.dispatchEvent(
+            new CustomEvent("flagship:answer", { detail: { correct: true, message: msg } }),
+          );
           this.say(msg);
           this.confettiEmitter.emitParticleAt(entry.rect.x, entry.rect.y);
           if (this.combo === 3) SFX.streak3();
@@ -1475,6 +1623,7 @@
         }
         // Wrong try: eliminate the choice and coach. No penalty but fewer points.
         this.tries++;
+        if (this.tries === 1) this.missed.push(JSON.parse(JSON.stringify(q)));
         this.totalWrong++;
         this.combo = 0;
         this.skillMiss[q.type] = (this.skillMiss[q.type] || 0) + 1;
@@ -1482,16 +1631,24 @@
         entry.rect.setFillStyle(0x5a2330).disableInteractive();
         this.nitro = false;
         if (!this.reducedMotion)
-          this.tweens.add({ targets: [entry.rect, entry.val], x: "+=6", duration: 50, yoyo: true, repeat: 3 });
+          this.tweens.add({
+            targets: [entry.rect, entry.val],
+            x: "+=6",
+            duration: 50,
+            yoyo: true,
+            repeat: 3,
+          });
         entry.val.setAlpha(0.45);
         SFX.wrong();
         const why = q.wrong[c] || "Not quite.";
         let msg;
         if (this.tries === 1) msg = `${why}  Hint: ${q.hint1}`;
         else if (this.tries === 2) msg = `${why}  Step: ${q.hint2}`;
-        else msg = `${why}  Here is how: ${q.explain} Tap ${q.answer} to drive on.`;
+        else msg = `${why}  Step: ${q.hint2} Missed questions can be replayed from the results screen.`;
         this.fbText.setColor("#ffd27a").setText(msg);
-        document.dispatchEvent(new CustomEvent("flagship:answer", { detail: { correct: false, message: msg } }));
+        document.dispatchEvent(
+          new CustomEvent("flagship:answer", { detail: { correct: false, message: msg } }),
+        );
         this.say(msg);
         this.updateHUD();
       };
@@ -1518,6 +1675,7 @@
             coins: this.coins,
             position: this.race.snapshot().position,
             recovered: this.recovered,
+            missed: this.missed,
           });
         });
       };
@@ -1539,7 +1697,13 @@
         const total = Math.max(1, d.questions || d.totalCorrect + d.helped);
         // Accuracy = checkpoints solved on the first try, without help.
         const pct = (d.totalCorrect / total) * 100;
-        const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
+        const solved = (d.totalCorrect || 0) + (d.helped || 0);
+        const attempts = solved + (d.totalWrong || 0);
+        const accuracy = attempts ? solved / attempts : 0;
+        const stars =
+          (solved >= 3 ? 1 : 0) +
+          (d.maxCombo >= 3 || solved >= 8 ? 1 : 0) +
+          (total >= 4 && accuracy >= 0.8 ? 1 : 0);
 
         try {
           window.EduPulse &&
@@ -1591,7 +1755,10 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 72, `You reached all ${d.checkpointsHit} checkpoints.`, { fontSize: "18px", color: "#b8d4ee" })
+          .text(cx, 72, `You reached all ${d.checkpointsHit} checkpoints.`, {
+            fontSize: "18px",
+            color: "#b8d4ee",
+          })
           .setOrigin(0.5);
         for (let i = 0; i < 3; i++) {
           this.add.image(570 + i * 45, 116, i < stars ? "bigstar" : "emptystar").setScale(0.8);
@@ -1599,7 +1766,11 @@
         if (isNewHighScore && d.score > 0) {
           SFX.newRecord();
           this.add
-            .text(230, 110, "NEW PERSONAL BEST!", { fontSize: "20px", fontStyle: "bold", color: "#ffdd00" })
+            .text(230, 110, "NEW PERSONAL BEST!", {
+              fontSize: "20px",
+              fontStyle: "bold",
+              color: "#ffdd00",
+            })
             .setOrigin(0.5);
         }
 
@@ -1626,34 +1797,77 @@
           const y = 140 + i * 28;
           this.add.rectangle(230, y, 400, 25, 0x1a2a4a, 0.9);
           this.add.text(40, y, s[0], { fontSize: "15px", color: "#b8d4ee" }).setOrigin(0, 0.5);
-          this.add.text(420, y, s[1], { fontSize: "16px", fontStyle: "bold", color: s[2] }).setOrigin(1, 0.5);
+          this.add
+            .text(420, y, s[1], { fontSize: "16px", fontStyle: "bold", color: s[2] })
+            .setOrigin(1, 0.5);
         });
         // Rank stamp + race finish
         const rankColor = { S: "#ffdd00", A: "#22cc66", B: "#4fb3ff", C: "#ffb347" }[rank];
         const stamp = this.add
-          .text(615, 190, rank, { fontSize: "96px", fontStyle: "bold", color: rankColor, stroke: "#000", strokeThickness: 6 })
+          .text(615, 190, rank, {
+            fontSize: "96px",
+            fontStyle: "bold",
+            color: rankColor,
+            stroke: "#000",
+            strokeThickness: 6,
+          })
           .setOrigin(0.5);
-        this.add.text(615, 246, `RANK ${rank}`, { fontSize: "14px", fontStyle: "bold", color: "#b8d4ee" }).setOrigin(0.5);
         this.add
-          .text(615, 270, `Finished ${RRPro.ordinal(position)} in the race`, { fontSize: "16px", fontStyle: "bold", color: position === 1 ? "#ffdd00" : "#d6e6f5" })
+          .text(615, 246, `RANK ${rank}`, { fontSize: "14px", fontStyle: "bold", color: "#b8d4ee" })
+          .setOrigin(0.5);
+        this.add
+          .text(615, 270, `Finished ${RRPro.ordinal(position)} in the race`, {
+            fontSize: "16px",
+            fontStyle: "bold",
+            color: position === 1 ? "#ffdd00" : "#d6e6f5",
+          })
           .setOrigin(0.5);
         if (!reduced) {
           stamp.setScale(3).setAlpha(0);
-          this.tweens.add({ targets: stamp, scale: 1, alpha: 1, duration: 350, delay: 400, ease: "Back.easeIn", onComplete: () => { SFX.stamp(); this.cameras.main.shake(120, 0.004); } });
+          this.tweens.add({
+            targets: stamp,
+            scale: 1,
+            alpha: 1,
+            duration: 350,
+            delay: 400,
+            ease: "Back.easeIn",
+            onComplete: () => {
+              SFX.stamp();
+              this.cameras.main.shake(120, 0.004);
+            },
+          });
         }
         // Badges
-        this.add.text(40, 272, `BADGES  ${Object.keys(res.owned).length} of ${RRPro.BADGES.length}`, { fontSize: "13px", fontStyle: "bold", color: "#9fc3e6" });
+        this.add.text(
+          40,
+          272,
+          `BADGES  ${Object.keys(res.owned).length} of ${RRPro.BADGES.length}`,
+          { fontSize: "13px", fontStyle: "bold", color: "#9fc3e6" },
+        );
         RRPro.BADGES.forEach((b, i) => {
           const bx = 40 + (i % 3) * 245,
             by = 304 + Math.floor(i / 3) * 34;
           const isNew = res.fresh.includes(b),
             has = res.earned.includes(b) || res.owned[b.id];
-          this.add.rectangle(bx + 115, by, 232, 28, isNew ? 0x3a3210 : 0x1a2a4a, 0.95).setStrokeStyle(isNew ? 2 : 1, isNew ? 0xffdd00 : 0x35507a);
-          this.add.text(bx + 8, by, `${has ? "★" : "☆"} ${b.name}${isNew ? "  NEW" : ""}`, { fontSize: "13px", fontStyle: "bold", color: has ? "#ffe9a0" : "#6f86a3" }).setOrigin(0, 0.5);
+          this.add
+            .rectangle(bx + 115, by, 232, 28, isNew ? 0x3a3210 : 0x1a2a4a, 0.95)
+            .setStrokeStyle(isNew ? 2 : 1, isNew ? 0xffdd00 : 0x35507a);
+          this.add
+            .text(bx + 8, by, `${has ? "★" : "☆"} ${b.name}${isNew ? "  NEW" : ""}`, {
+              fontSize: "13px",
+              fontStyle: "bold",
+              color: has ? "#ffe9a0" : "#6f86a3",
+            })
+            .setOrigin(0, 0.5);
         });
         if (res.fresh.length) SFX.badge();
-        const unlock = res.unlockedSkins.length ? `NEW CAR UNLOCKED: ${res.unlockedSkins.map((k) => k.name).join(", ")}! Pick it on the title screen.` : "";
-        if (unlock) this.add.text(cx, 366, unlock, { fontSize: "15px", fontStyle: "bold", color: "#7dffb0" }).setOrigin(0.5);
+        const unlock = res.unlockedSkins.length
+          ? `NEW CAR UNLOCKED: ${res.unlockedSkins.map((k) => k.name).join(", ")}! Pick it on the title screen.`
+          : "";
+        if (unlock)
+          this.add
+            .text(cx, 366, unlock, { fontSize: "15px", fontStyle: "bold", color: "#7dffb0" })
+            .setOrigin(0.5);
 
         // Skills practiced + what to practice next
         const seen = (d.skillSeen || []).map((t) => SKILLS[t]).filter(Boolean);
@@ -1688,8 +1902,12 @@
 
         const btnY = 520;
         const mk = (x, label, fill, color, fn) => {
-          const r = this.add.rectangle(x, btnY, 230, 52, fill).setInteractive({ useHandCursor: true });
-          this.add.text(x, btnY, label, { fontSize: "18px", fontStyle: "bold", color }).setOrigin(0.5);
+          const r = this.add
+            .rectangle(x, btnY, 230, 52, fill)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(x, btnY, label, { fontSize: "18px", fontStyle: "bold", color })
+            .setOrigin(0.5);
           r.on("pointerdown", fn);
           return r;
         };
@@ -1697,15 +1915,31 @@
         const menu = () => this.scene.start("DiffSelect");
         mk(cx - 125, "DRIVE AGAIN (Enter)", 0x00ccff, "#002244", again);
         mk(cx + 125, "CHOOSE TRACK (T)", 0x2a3a5a, "#d6e6f5", menu);
-        this.add
-          .text(cx, 566, "New numbers every trip.", { fontSize: "14px", color: "#9fb6cc" })
-          .setOrigin(0.5);
+        if (d.missed && d.missed.length) {
+          const practice = this.add
+            .rectangle(cx, 572, 280, 36, 0xffaa00)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(cx, 572, "PRACTICE THE MISSES", {
+              fontSize: "16px",
+              fontStyle: "bold",
+              color: "#1a1206",
+            })
+            .setOrigin(0.5);
+          practice.on("pointerdown", () =>
+            this.scene.start("Game", { difficulty: d.difficulty, replay: d.missed }),
+          );
+        } else {
+          this.add
+            .text(cx, 566, "New numbers every trip.", { fontSize: "14px", color: "#9fb6cc" })
+            .setOrigin(0.5);
+        }
         this.input.keyboard.once("keydown-ENTER", again);
         this.input.keyboard.once("keydown-T", menu);
         this.cameras.main.fadeIn(300);
       };
 
-      var rrGame = window.__flagshipGame = new Phaser.Game(config);
+      var rrGame = (window.__flagshipGame = new Phaser.Game(config));
       // Keyboard accessibility: make the game canvas focusable.
       rrGame.events.once("ready", function () {
         var c = rrGame.canvas;
@@ -1728,7 +1962,7 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <!-- gfx-injected:end -->
     <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-    
+
     <!-- mwb-injected:end -->
     <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
     <script src="/assets/game-hint-ladder.js" defer></script>
@@ -1748,21 +1982,31 @@
       });
     </script>
     <!-- ghl-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
-  
-      <!-- EWL Diagnostic Misconception Coach -->
-      <div class="ewl-coach-card" id="ewl-coach-card" style="display: flex; position: relative; z-index: 100;">
-        <div class="ewl-coach-icon">💡</div>
-        <div class="ewl-coach-content">
-          <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
-          <p id="ewl-coach-text" data-en="Ratio tables show equivalent ratios." data-es="Las tablas de razones muestran razones equivalentes.">Ratio tables show equivalent ratios.</p>
-        </div>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
+
+    <!-- EWL Diagnostic Misconception Coach -->
+    <div
+      class="ewl-coach-card"
+      id="ewl-coach-card"
+      style="display: flex; position: relative; z-index: 100"
+    >
+      <div class="ewl-coach-icon">💡</div>
+      <div class="ewl-coach-content">
+        <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
+        <p
+          id="ewl-coach-text"
+          data-en="Ratio tables show equivalent ratios."
+          data-es="Las tablas de razones muestran razones equivalentes."
+        >
+          Ratio tables show equivalent ratios.
+        </p>
       </div>
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <script src="/assets/formula-popup.js" defer></script>
-<script src="/assets/game-studio.js?v=20261003" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
-</body>
+    </div>
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <script src="/assets/formula-popup.js" defer></script>
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
+    <script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
+  </body>
 </html>

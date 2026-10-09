@@ -1318,11 +1318,7 @@
         overflow: hidden;
         border: 1px solid rgba(255, 255, 255, 0.14);
         background:
-          radial-gradient(
-            520px 200px at 80% 0%,
-            rgba(200, 166, 255, 0.12) 0,
-            transparent 70%
-          ),
+          radial-gradient(520px 200px at 80% 0%, rgba(200, 166, 255, 0.12) 0, transparent 70%),
           linear-gradient(180deg, #10283d 0%, #0d2133 100%);
         margin-bottom: 12px;
       }
@@ -1483,15 +1479,32 @@
       .dist-btn.cleared .db-st {
         color: var(--mint);
       }
+      .shift-board {
+        margin: 18px 0 8px;
+        padding: 16px 18px;
+        border: 1px solid rgba(237, 181, 74, 0.45);
+        border-radius: 16px;
+        background: rgba(15, 36, 55, 0.72);
+      }
+      .shift-board h3 {
+        margin: 0 0 8px;
+        font-size: 22px;
+      }
+      .shift-board p {
+        margin: 0 0 12px;
+        font-size: 17px;
+        line-height: 1.45;
+      }
+      .shift-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
       .district-card {
         border-radius: var(--r);
         padding: 16px 18px;
         margin-bottom: 18px;
-        background: linear-gradient(
-          150deg,
-          rgba(55, 200, 166, 0.12),
-          rgba(255, 255, 255, 0.04)
-        );
+        background: linear-gradient(150deg, rgba(55, 200, 166, 0.12), rgba(255, 255, 255, 0.04));
         border: 2px solid rgba(55, 200, 166, 0.4);
         color: #eaf3fa;
       }
@@ -1636,15 +1649,27 @@
         }
       }
       @media (prefers-reduced-motion: reduce) {
-        .rm-truck { transition: none; }
-        .rm-bob, .rm-dash, .rm-wheel, .rm-node.here .rm-ring, .rm-lanterns circle { animation: none; }
+        .rm-truck {
+          transition: none;
+        }
+        .rm-bob,
+        .rm-dash,
+        .rm-wheel,
+        .rm-node.here .rm-ring,
+        .rm-lanterns circle {
+          animation: none;
+        }
       }
-      .studio-reduced-motion .rm-truck { transition: none; }
+      .studio-reduced-motion .rm-truck {
+        transition: none;
+      }
       .studio-reduced-motion .rm-bob,
       .studio-reduced-motion .rm-dash,
       .studio-reduced-motion .rm-wheel,
       .studio-reduced-motion .rm-node.here .rm-ring,
-      .studio-reduced-motion .rm-lanterns circle { animation: none; }
+      .studio-reduced-motion .rm-lanterns circle {
+        animation: none;
+      }
     </style>
     <link rel="stylesheet" href="/assets/game-studio.css?v=20261002" />
     <script src="/assets/game-studio.js?v=20261003" defer></script>
@@ -1717,6 +1742,7 @@
           <div class="district-card" id="districtCard" role="region" aria-live="polite"></div>
           <h3 class="board-h" id="boardH">🧾 Stops on this street — tap one to cook it</h3>
           <div class="shops" id="contractRow"></div>
+          <section id="shiftBoard" class="shift-board" hidden aria-labelledby="shiftH"></section>
           <h3 class="board-h">🚚 Your truck</h3>
           <div class="truck-scene" id="truckScene"></div>
           <p class="truck-cap" id="truckCap"></p>
@@ -1808,6 +1834,7 @@
           celebrated: false,
           lastSkill: "",
           route: { season: 1, done: {}, at: "market", finale: {} },
+          shift: [],
         };
         function migrate(raw) {
           var s = raw && typeof raw === "object" ? raw : {};
@@ -1836,6 +1863,19 @@
             at: typeof r0.at === "string" ? r0.at : "market",
             finale: r0.finale && typeof r0.finale === "object" ? r0.finale : {},
           };
+          out.shift = Array.isArray(s.shift)
+            ? s.shift
+                .filter(function (job) {
+                  return (
+                    job &&
+                    typeof job.id === "string" &&
+                    Number.isInteger(job.lv) &&
+                    job.at >= 1 &&
+                    job.at < 3
+                  );
+                })
+                .slice(0, 24)
+            : [];
           return out;
         }
         try {
@@ -2180,8 +2220,7 @@
         function motionOff() {
           return !!(
             window.GameStudio?.settings.reducedMotion ||
-            (window.matchMedia &&
-              window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+            (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)
           );
         }
 
@@ -2209,8 +2248,7 @@
             var a = DISTRICTS[i - 1],
               b = DISTRICTS[i];
             var mx = (a.x + b.x) / 2;
-            road +=
-              " C" + mx + "," + a.y + " " + mx + "," + b.y + " " + b.x + "," + b.y;
+            road += " C" + mx + "," + a.y + " " + mx + "," + b.y + " " + b.x + "," + b.y;
           }
           s +=
             '<path d="' +
@@ -2344,8 +2382,7 @@
           var bar = "";
           for (var i = 0; i < at.clear; i++)
             bar += '<i class="' + (i < done ? "on" : "") + '"></i>';
-          card.className =
-            "district-card" + (why ? " locked" : isCleared(at) ? " cleared" : "");
+          card.className = "district-card" + (why ? " locked" : isCleared(at) ? " cleared" : "");
           card.innerHTML =
             '<div class="dc-top"><span class="dc-em" aria-hidden="true">' +
             at.em +
@@ -2383,7 +2420,8 @@
             var ns = document.createElement("button");
             ns.type = "button";
             ns.className = "b mint dc-season";
-            ns.textContent = "Start season " + (state.route.season + 1) + " — new orders at every stop →";
+            ns.textContent =
+              "Start season " + (state.route.season + 1) + " — new orders at every stop →";
             ns.addEventListener("click", function () {
               el("bSeason").click();
             });
@@ -2515,11 +2553,82 @@
           );
         }
 
+        function districtOfShop(id, lv) {
+          for (var i = 0; i < DISTRICTS.length; i++) {
+            var d = DISTRICTS[i];
+            for (var j = 0; j < d.stops.length; j++) {
+              if (d.stops[j][0] === id && d.stops[j][1] === lv) return { d: d, stop: d.stops[j] };
+            }
+          }
+          return null;
+        }
+
+        function noteShift(id, lv, st) {
+          if (!state.shift) state.shift = [];
+          var at = -1;
+          state.shift.forEach(function (job, n) {
+            if (job.id === id && job.lv === lv) at = n;
+          });
+          if (st >= 3) {
+            if (at >= 0) state.shift.splice(at, 1);
+            return;
+          }
+          if (at < 0) state.shift.push({ id: id, lv: lv, at: st });
+          else state.shift[at].at = st;
+        }
+
+        function beginReforge(id, lv) {
+          var found = districtOfShop(id, lv);
+          if (!found || !isOpen(found.d)) return;
+          state.route.at = found.d.id;
+          save();
+          begin(id, lv, { name: found.stop[2], em: found.stop[3] }, false);
+          if (run) run.reforge = true;
+        }
+
+        function paintShift() {
+          var host = el("shiftBoard");
+          if (!host) return;
+          var list = state.shift || [];
+          host.replaceChildren();
+          if (!list.length) {
+            host.hidden = true;
+            return;
+          }
+          host.hidden = false;
+          var title = document.createElement("h3");
+          title.id = "shiftH";
+          title.textContent = "Second shift";
+          var copy = document.createElement("p");
+          copy.textContent =
+            "These orders were served below three stars. Reforge one with new numbers. A higher star replaces the old one. Nothing is timed.";
+          var actions = document.createElement("div");
+          actions.className = "shift-actions";
+          list.forEach(function (job) {
+            var found = districtOfShop(job.id, job.lv);
+            var shop = shopOf(job.id);
+            var button = document.createElement("button");
+            button.type = "button";
+            button.className = "b brass";
+            var open = found && isOpen(found.d);
+            button.disabled = !open;
+            button.textContent = open
+              ? "Reforge " + (shop ? shop.name : job.id) + " · " + job.at + "★"
+              : (shop ? shop.name : job.id) + " · open its district first";
+            button.addEventListener("click", function () {
+              beginReforge(job.id, job.lv);
+            });
+            actions.appendChild(button);
+          });
+          host.append(title, copy, actions);
+        }
+
         function paintFoundry() {
           // First visit: the how-to-play card leads the page.
           el("howto").hidden = !!state.introSeen;
 
           paintRoute();
+          paintShift();
 
           // The truck scene — upgrades appear on the truck itself.
           el("truckScene").innerHTML = truckSVG();
@@ -2552,8 +2661,7 @@
             var client = c.client;
             var b = document.createElement("button");
             b.type = "button";
-            b.className =
-              "ticket" + (c.done ? " served" : "") + (open ? "" : " locked");
+            b.className = "ticket" + (c.done ? " served" : "") + (open ? "" : " locked");
             b.disabled = !open;
             b.setAttribute(
               "aria-label",
@@ -2566,17 +2674,13 @@
                 " of 3. Pays up to " +
                 payGold +
                 " dollars." +
-                (c.done
-                  ? " Already served this season — new numbers if you cook it again."
-                  : "") +
+                (c.done ? " Already served this season — new numbers if you cook it again." : "") +
                 (rush ? " Bonus order: pays extra." : "") +
                 (open ? "" : " Locked."),
             );
             b.innerHTML =
               (rush ? '<span class="t-rush">⭐ BONUS ORDER · +50% PAY</span>' : "") +
-              (c.done
-                ? '<span class="t-served" aria-hidden="true">✓ SERVED</span>'
-                : "") +
+              (c.done ? '<span class="t-served" aria-hidden="true">✓ SERVED</span>' : "") +
               '<span class="t-top"><span class="t-ava" aria-hidden="true">' +
               client.em +
               "</span>" +
@@ -2589,15 +2693,11 @@
               c.shop.name +
               "</span></span></span>" +
               '<span class="t-bubble">' +
-              (open
-                ? contractText(c.shop.id, c.lv)
-                : "This customer is waiting for your truck.") +
+              (open ? contractText(c.shop.id, c.lv) : "This customer is waiting for your truck.") +
               "</span>" +
               '<span class="t-meta">' +
               "🌶️".repeat(d) +
-              (c.stars
-                ? '<span aria-hidden="true">·</span> best ' + "★".repeat(c.stars)
-                : "") +
+              (c.stars ? '<span aria-hidden="true">·</span> best ' + "★".repeat(c.stars) : "") +
               '<span class="t-pay">up to $' +
               payGold +
               "</span></span>" +
@@ -2640,10 +2740,7 @@
               btn.type = "button";
               btn.className = "b brass";
               btn.textContent = "Build";
-              btn.setAttribute(
-                "aria-label",
-                "Build the " + m.name + " for " + m.cost + " dollars",
-              );
+              btn.setAttribute("aria-label", "Build the " + m.name + " for " + m.cost + " dollars");
               btn.disabled = state.ingots < m.cost;
               btn.addEventListener("click", function () {
                 if (state.built[m.id] || state.ingots < m.cost) return;
@@ -3032,6 +3129,7 @@
             st = run.wrong + run.tries > 4 ? 1 : 2;
           var key = k(run.shop.id, run.lv);
           if ((state.stars[key] || 0) < st) state.stars[key] = st;
+          noteShift(run.shop.id, run.lv, state.stars[key] || st);
           run.completed = true;
           delete VARIANT[run.shop.id + ":" + run.lv];
           /* Pay is decided here, once, for this one validated serve — the only
@@ -3100,7 +3198,9 @@
                 ? " — with a fix along the way."
                 : " — a rough one, but served.") +
             "</span>" +
-            (extras.length ? '<span class="forged receipt-extras">Extras: ' + extras.join(" · ") + "</span>" : "") +
+            (extras.length
+              ? '<span class="forged receipt-extras">Extras: ' + extras.join(" · ") + "</span>"
+              : "") +
             (nowCleared && !seasonWon
               ? '<span class="forged cleared-line">🏁 ' +
                 district.name +
@@ -3134,7 +3234,9 @@
             nextOrder.textContent = "🎡 See the festival finale →";
             nextOrder.addEventListener("click", showFinale, { once: true });
           } else {
-            nextOrder.textContent = nowCleared ? "Back to the route map →" : "Choose the next stop →";
+            nextOrder.textContent = nowCleared
+              ? "Back to the route map →"
+              : "Choose the next stop →";
             nextOrder.addEventListener(
               "click",
               function () {
@@ -3147,6 +3249,20 @@
             );
           }
           box.appendChild(nextOrder);
+          if (st < 3) {
+            var reforge = document.createElement("button");
+            reforge.type = "button";
+            reforge.className = "b brass lg";
+            reforge.textContent = "Second shift · reforge this order";
+            reforge.addEventListener(
+              "click",
+              function () {
+                beginReforge(run.shop.id, run.lv);
+              },
+              { once: true },
+            );
+            box.appendChild(reforge);
+          }
         }
 
         /* The season finale. Winning the Festival offers a new season: the
@@ -4721,7 +4837,11 @@
           save();
           paintFoundry();
           show("scMap");
-          say("Season " + state.route.season + " begins at Market Street. Every stop has new numbers.");
+          say(
+            "Season " +
+              state.route.season +
+              " begins at Market Street. Every stop has new numbers.",
+          );
         });
         el("bBack").addEventListener("click", function () {
           paintFoundry();

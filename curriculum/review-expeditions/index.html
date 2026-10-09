@@ -8487,9 +8487,48 @@ body.in-trek .at-top {
   const story = () => RX.STORY;
   const Sup = () => RX.Support;
   const levelNow = () => Sup().levelOf(s);
-  /** The challenge list of the running mission: an ad-hoc retry list, or the mission's own generators. */
-  const specsOf = (cur) => cur.gens || missionDef(cur.zone, cur.mission).gens;
-  const missionName = (cur) => (cur.retry ? 'Practice what you missed' : missionDef(cur.zone, cur.mission).name);
+  /** The challenge list of the running mission: a sharpen replay, an ad-hoc retry list, or the mission's own generators. */
+  const specsOf = (cur) => {
+    if (cur.sharpen && cur.slots) return cur.slots;
+    return cur.gens || missionDef(cur.zone, cur.mission).gens;
+  };
+  const missionName = (cur) => (cur.sharpen ? 'Sharpen' : cur.retry ? 'Practice what you missed' : missionDef(cur.zone, cur.mission).name);
+  /** Self-paced stars for one finished round. 1 at 3 correct, 2 at a streak of 3 or 8 correct, 3 at 80%+ on a round of 4 or more. */
+  function runStars(correct, total, bestStreak) {
+    let stars = 0;
+    if (correct >= 3) stars = 1;
+    if (bestStreak >= 3 || correct >= 8) stars = 2;
+    if (total >= 4 && correct / total >= 0.8) stars = 3;
+    return stars;
+  }
+  function starMarkup(n) {
+    const marks = [0, 1, 2].map((i) => `<span style="opacity:${i < n ? 1 : 0.28}">${icon('star')}</span>`).join('');
+    const label = n === 1 ? '1 star' : `${n} stars`;
+    return `<div class="rx-stars" role="img" aria-label="${label}. Self-paced." style="display:flex;gap:10px;color:#b8860b;margin:4px 0 4px">${marks}</div><p class="muted" style="margin-top:0">${label} · self-paced</p>`;
+  }
+  function genKey(g) {
+    return JSON.stringify(Array.isArray(g) ? g : [g, {}]);
+  }
+  /** Missed items from this run, plus up to 2 generator specs from the same zone that this run did not use. */
+  function sharpenPlan(cur, mission) {
+    const played = cur.playedGens || cur.gens || mission.gens;
+    const missedIdx = [];
+    played.forEach((_, i) => {
+      const row = cur.results[i];
+      if (row && !row.correct) missedIdx.push(i);
+    });
+    if (!missedIdx.length) return null;
+    const used = new Set(played.map(genKey));
+    const unseen = [];
+    zoneById(cur.zone).missions.forEach((mm) => mm.gens.forEach((g) => {
+      const key = genKey(g);
+      if (!used.has(key)) { used.add(key); unseen.push(g); }
+    }));
+    const pick = RX.R.make(((cur.seed || 1) ^ 0x9e3779b9) >>> 0);
+    const extraGens = pick.shuffle(unseen).slice(0, 2);
+    const slots = missedIdx.map((index) => ({ from: 'played', index })).concat(extraGens.map((_, extraIndex) => ({ from: 'extra', extraIndex })));
+    return { seed: cur.seed, playedGens: played, extraGens, slots, level: cur.level };
+  }
   const exitTo = () => (RX.UNIT.onExit ? RX.UNIT.onExit() : showMap());
 
   // ---------- Boot / title ----------
@@ -8707,17 +8746,25 @@ body.in-trek .at-top {
   function startMission(zid, mid, extra) {
     if (!s.startedAt) s.startedAt = Date.now();
     const seed = (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
-    s.current = Object.assign({ zone: zid, mission: mid, seed, qIndex: 0, results: [], level: levelNow() }, extra || {});
+    s.current = Object.assign({ zone: zid, mission: mid, seed, qIndex: 0, results: [], level: levelNow(), roundStreak: 0, roundBest: 0 }, extra || {});
     State.save();
     renderQuestion();
   }
   function buildQuestions(cur) {
-    const r = RX.R.make(cur.seed);
     const hard = cur.level === 2;
-    return specsOf(cur).map((g) => {
+    const make = (g, r) => {
       const [key, opts] = Array.isArray(g) ? g : [g, {}];
       return RX.G.make(key, r, hard ? Object.assign({}, opts, { hard: true }) : opts);
-    });
+    };
+    if (cur.sharpen && cur.slots) {
+      const fullRng = RX.R.make(cur.seed);
+      const full = (cur.playedGens || []).map((g) => make(g, fullRng));
+      const extraRng = RX.R.make((cur.seed + 17) >>> 0);
+      const extras = (cur.extraGens || []).map((g) => make(g, extraRng));
+      return cur.slots.map((slot) => (slot.from === 'played' ? full[slot.index] : extras[slot.extraIndex]));
+    }
+    const r = RX.R.make(cur.seed);
+    return specsOf(cur).map((g) => make(g, r));
   }
   function dotsFor(cur, qs) {
     return qs.map((_, i) => (i < cur.qIndex ? (cur.results[i] && cur.results[i].correct ? 'done' : 'miss') : i === cur.qIndex ? 'now' : ''));
@@ -8799,6 +8846,8 @@ body.in-trek .at-top {
       s.xp += xp;
       s.streak += 1;
       s.bestStreak = Math.max(s.bestStreak, s.streak);
+      cur.roundStreak = (cur.roundStreak || 0) + 1;
+      cur.roundBest = Math.max(cur.roundBest || 0, cur.roundStreak);
       s.stats.missRun = 0;
       recordResult({ correct: true, firstTry: first, attempts });
       if (first) {
@@ -8820,12 +8869,13 @@ body.in-trek .at-top {
       announce(got);
     } else {
       s.streak = 0;
+      cur.roundStreak = 0;
       if (attempts >= 2 || solutionShown) {
         s.stats.missRun++;
         recordResult({ correct: false, firstTry: false, attempts });
         widget.markResult(Object.assign({ final: true }, res));
         widget.setDisabled(true);
-        showFeedback(false, `${wrongText(ans, res)}<div class="fb-solution"><span class="fb-label">${icon('bulb')} Here is how it works</span>${q.solution}</div>`, 0, false, true);
+        showFeedback(false, `${wrongText(ans, res)} <span class="fb-again">Not yet. Use <b>Need help?</b> for a hint if you want one.</span>`, 0, false, true);
         State.save();
       } else {
         widget.markResult(Object.assign({ final: false }, res));
@@ -8871,7 +8921,7 @@ body.in-trek .at-top {
     fb.hidden = false;
     fb.className = 'q-feedback ' + (ok ? 'is-ok' : final ? 'is-final' : 'is-retry');
     const done = ok || final;
-    fb.innerHTML = `<div class="fb-head">${icon(ok ? 'check' : 'x')}<b>${ok ? (first ? 'Correct!' : 'Correct') : final ? "Let's look at the solution" : 'Not yet'}</b>${ok ? `<span class="fb-xp">+${xp} XP${first ? '' : ' (retry)'}</span>` : ''}</div><div class="fb-body">${html}</div>${done ? `<div class="fb-actions"><button type="button" class="btn btn-primary" id="btn-next">${s.current.qIndex + 1 < specsOf(s.current).length ? 'Next challenge' : s.current.retry ? 'Finish practice' : 'Finish mission'} ${icon('arrow')}</button></div>` : ''}`;
+    fb.innerHTML = `<div class="fb-head">${icon(ok ? 'check' : 'x')}<b>${ok ? (first ? 'Correct!' : 'Correct') : final ? 'Not yet' : 'Not yet'}</b>${ok ? `<span class="fb-xp">+${xp} XP${first ? '' : ' (retry)'}</span>` : ''}</div><div class="fb-body">${html}</div>${done ? `<div class="fb-actions"><button type="button" class="btn btn-primary" id="btn-next">${s.current.qIndex + 1 < specsOf(s.current).length ? 'Next challenge' : s.current.sharpen ? 'Finish sharpen' : s.current.retry ? 'Finish practice' : 'Finish mission'} ${icon('arrow')}</button></div>` : ''}`;
     const check = document.getElementById('btn-check');
     if (done) {
       check.disabled = true;
@@ -8892,7 +8942,7 @@ body.in-trek .at-top {
     const cur = s.current;
     root.ExpeditionVoyage?.completeStage(cur.voyage, cur.qIndex);
     cur.qIndex++;
-    if (cur.qIndex >= specsOf(cur).length) return cur.retry ? completeRetry() : completeMission();
+    if (cur.qIndex >= specsOf(cur).length) return cur.sharpen ? completeSharpen() : cur.retry ? completeRetry() : completeMission();
     State.save();
     renderQuestion();
   }
@@ -8941,6 +8991,7 @@ body.in-trek .at-top {
       ${cur.voyage ? `<div class="voyage-journal"><b>Expedition journal</b><br>${esc(root.ExpeditionVoyage.summary(cur.voyage))}</div>` : ''}
       <p class="eyebrow">${esc(z.name)} · ${esc(m.name)}</p><h2>${zoneNowDone && z.final ? esc(story().finalHeading) : zoneNowDone ? `${esc(z.name)} Cleared` : 'Mission Complete'}</h2>
       <div class="stat-row"><div class="stat"><b>${correct}/${total}</b><span>correct</span></div><div class="stat"><b>${first}/${total}</b><span>first try</span></div><div class="stat"><b>${s.xp}</b><span>total XP</span></div></div>
+      ${starMarkup(runStars(correct, total, cur.roundBest || 0))}
       ${newArtifact ? `<div class="artifact-reveal">${icon(newArtifact.icon)}<div><span class="ar-k">${esc(story().artifactWord || 'Instrument')} recovered</span><b>${esc(newArtifact.name)}</b></div></div>` : ''}
       ${
         got.length
@@ -8953,8 +9004,22 @@ body.in-trek .at-top {
           : ''
       }
       <div class="skill-rows">${skillRows}</div>
-      <div class="title-actions">${zoneNowDone && z.final ? `<button type="button" class="btn btn-primary btn-lg" id="btn-results" autofocus>${icon('chart')} See your Mission Report</button>` : `<button type="button" class="btn btn-primary btn-lg" id="btn-map" autofocus>${RX.UNIT.onExit ? 'Back to the Atlas' : 'Back to the map'} ${icon('arrow')}</button>`}${missedSpecs(cur, m).length ? `<button type="button" class="btn btn-ghost" id="btn-missed">${icon('bulb')} Practice the ${missedSpecs(cur, m).length} I missed (new numbers)</button>` : ''}<button type="button" class="btn btn-ghost" id="btn-replay">${icon('replay')} Replay this mission</button></div></div></section>`,
+      <div class="title-actions">${zoneNowDone && z.final ? `<button type="button" class="btn btn-primary btn-lg" id="btn-results" autofocus>${icon('chart')} See your Mission Report</button>` : `<button type="button" class="btn btn-primary btn-lg" id="btn-map" autofocus>${RX.UNIT.onExit ? 'Back to the Atlas' : 'Back to the map'} ${icon('arrow')}</button>`}${(() => { const plan = sharpenPlan(cur, m); return plan ? `<button type="button" class="btn btn-ghost" id="btn-sharpen">${icon('star')} Sharpen the ${plan.slots.filter((slot) => slot.from === 'played').length} I missed</button>` : ''; })()}${missedSpecs(cur, m).length ? `<button type="button" class="btn btn-ghost" id="btn-missed">${icon('bulb')} Practice the ${missedSpecs(cur, m).length} I missed (new numbers)</button>` : ''}<button type="button" class="btn btn-ghost" id="btn-replay">${icon('replay')} Replay this mission</button></div></div></section>`,
     );
+    const bsharp = document.getElementById('btn-sharpen');
+    if (bsharp) {
+      const plan = sharpenPlan(cur, m);
+      bsharp.addEventListener('click', () => startMission(z.id, m.id, {
+        sharpen: true,
+        seed: plan.seed,
+        playedGens: plan.playedGens,
+        extraGens: plan.extraGens,
+        slots: plan.slots,
+        level: plan.level,
+        roundStreak: 0,
+        roundBest: 0,
+      }));
+    }
     const bmiss = document.getElementById('btn-missed');
     if (bmiss) bmiss.addEventListener('click', () => startMission(z.id, m.id, { retry: true, gens: missedSpecs(cur, m) }));
     const bm = document.getElementById('btn-map');
@@ -8968,11 +9033,46 @@ body.in-trek .at-top {
     const specs = cur.gens || m.gens;
     return specs.filter((g, i) => cur.results[i] && !cur.results[i].firstTry);
   }
+  function completeSharpen() {
+    const cur = s.current,
+      z = zoneById(cur.zone);
+    const total = cur.results.length,
+      correct = cur.results.filter((r) => r && r.correct).length;
+    const stars = runStars(correct, total, cur.roundBest || 0);
+    const still = cur.slots.filter((slot, i) => cur.results[i] && !cur.results[i].correct);
+    const used = new Set((cur.playedGens || []).map(genKey));
+    (cur.extraGens || []).forEach((g) => used.add(genKey(g)));
+    const unseen = [];
+    z.missions.forEach((mm) => mm.gens.forEach((g) => {
+      const key = genKey(g);
+      if (!used.has(key)) { used.add(key); unseen.push(g); }
+    }));
+    const pick = RX.R.make(((cur.seed || 1) ^ 0x51ed27) >>> 0);
+    const more = still.length ? pick.shuffle(unseen).slice(0, 2) : [];
+    const extraGens = (cur.extraGens || []).concat(more);
+    const slots = still.concat(more.map((_, i) => ({ from: 'extra', extraIndex: (cur.extraGens || []).length + i })));
+    const again = still.length ? { sharpen: true, seed: cur.seed, playedGens: cur.playedGens, extraGens, slots, level: cur.level, roundStreak: 0, roundBest: 0, mission: cur.mission, zone: cur.zone } : null;
+    s.current = null;
+    State.save();
+    UI.hud({ xp: s.xp, streak: s.streak, title: z.name, sub: 'Sharpen complete' });
+    UI.screen(
+      'complete',
+      `<section class="complete" style="--accent:${z.accent}"><div class="complete-card"><p class="eyebrow">${esc(z.name)} · Sharpen</p><h2>${correct === total ? 'Sharpened' : 'Sharpen complete'}</h2>
+      ${starMarkup(stars)}
+      <div class="stat-row"><div class="stat"><b>${correct}/${total}</b><span>correct</span></div><div class="stat"><b>${s.xp}</b><span>total XP</span></div></div>
+      <p class="lede">${correct === total ? 'You got every one of these without seeing the answers first.' : 'The ones that are still open can be sharpened again. Answers stay hidden until you try them.'}</p>
+      <div class="title-actions"><button type="button" class="btn btn-primary btn-lg" id="btn-map" autofocus>${RX.UNIT.onExit ? 'Back to the Atlas' : 'Back to the map'} ${icon('arrow')}</button>${again ? `<button type="button" class="btn btn-ghost" id="btn-sharpen">${icon('star')} Sharpen the ${still.length} still open</button>` : ''}</div></div></section>`,
+    );
+    document.getElementById('btn-map').addEventListener('click', exitTo);
+    const againBtn = document.getElementById('btn-sharpen');
+    if (againBtn && again) againBtn.addEventListener('click', () => startMission(again.zone, again.mission, again));
+  }
   function completeRetry() {
     const cur = s.current,
       z = zoneById(cur.zone);
     const total = cur.results.length,
-      first = cur.results.filter((r) => r.firstTry).length;
+      first = cur.results.filter((r) => r.firstTry).length,
+      correct = cur.results.filter((r) => r && r.correct).length;
     s.current = null;
     State.save();
     const still = cur.gens.filter((g, i) => cur.results[i] && !cur.results[i].firstTry);
@@ -8980,6 +9080,7 @@ body.in-trek .at-top {
     UI.screen(
       'complete',
       `<section class="complete" style="--accent:${z.accent}"><div class="complete-card"><p class="eyebrow">${esc(z.name)} · Practice what you missed</p><h2>${first === total ? 'All fixed' : 'Practice complete'}</h2>
+      ${starMarkup(runStars(correct, total, cur.roundBest || 0))}
       <div class="stat-row"><div class="stat"><b>${first}/${total}</b><span>right on the first try</span></div><div class="stat"><b>${s.xp}</b><span>total XP</span></div></div>
       <p class="lede">${first === total ? 'You got every one of them this time. Those skills are stronger now.' : 'Each try with new numbers makes the skill stronger. Practice the rest again, or move on.'}</p>
       <div class="skill-rows">${summarizeSkills(cur.results)}</div>

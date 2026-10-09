@@ -123,10 +123,17 @@ const UI = {
     roundShown: (n) => `Answer shown: ${n}`,
     roundBest: (pts) => `Your best round: ${pts} points`,
     roundNewBest: "New best round!",
-    roundNext: (label) => `Practice next: ${label}. Choose it in "Attack to practice" to focus on it.`,
-    roundStrong: "Every attack went down on the first try. Try the next round with all three attacks.",
+    roundNext: (label) =>
+      `Practice next: ${label}. Choose it in "Attack to practice" to focus on it.`,
+    roundStrong:
+      "Every attack went down on the first try. Try the next round with all three attacks.",
     playAgain: "Play another round",
     roundDone: (pts) => `Round complete: ${pts} points.`,
+    counterBtn: "Counterattack the misses",
+    counterHeld:
+      "This attack stays up. It returns once at the end of the counterattack. The answer stays hidden.",
+    counterTitle: "Counterattack complete",
+    counterScore: (first, total) => `First-try hits on the counterattack: ${first} of ${total}.`,
   },
   es: {
     skipLink: "Ir a las preguntas",
@@ -203,10 +210,18 @@ const UI = {
     roundShown: (n) => `Respuesta mostrada: ${n}`,
     roundBest: (pts) => `Tu mejor ronda: ${pts} puntos`,
     roundNewBest: "¡Nueva mejor ronda!",
-    roundNext: (label) => `Practica después: ${label}. Elígelo en "Ataque para practicar" para enfocarte.`,
-    roundStrong: "Todos los ataques cayeron al primer intento. Prueba la próxima ronda con los tres ataques.",
+    roundNext: (label) =>
+      `Practica después: ${label}. Elígelo en "Ataque para practicar" para enfocarte.`,
+    roundStrong:
+      "Todos los ataques cayeron al primer intento. Prueba la próxima ronda con los tres ataques.",
     playAgain: "Jugar otra ronda",
     roundDone: (pts) => `Ronda completa: ${pts} puntos.`,
+    counterBtn: "Contraataque a los errores",
+    counterHeld:
+      "Este ataque sigue en pie. Vuelve una vez al final del contraataque. La respuesta permanece oculta.",
+    counterTitle: "Contraataque completo",
+    counterScore: (first, total) =>
+      `Aciertos al primer intento en el contraataque: ${first} de ${total}.`,
   },
 };
 
@@ -296,7 +311,21 @@ const state = {
 };
 
 function freshRound() {
-  return { done: 0, points: 0, first: 0, helped: 0, shown: 0, misses: {}, finished: false };
+  return {
+    done: 0,
+    points: 0,
+    first: 0,
+    helped: 0,
+    shown: 0,
+    misses: {},
+    finished: false,
+    counter: false,
+    len: ROUND_LEN,
+  };
+}
+
+function roundLimit(round = state.round) {
+  return round?.len || ROUND_LEN;
 }
 
 const $ = (id) => document.getElementById(id);
@@ -812,11 +841,36 @@ function questionSeed(attempt) {
   return `${state.weekKey}|${hashSeed(deviceId()) % 100000}|${attempt}`;
 }
 
+function beginCounterattack() {
+  const tags = Object.keys(state.round?.misses || {});
+  if (!tags.length) return;
+  const queue = [];
+  while (queue.length < Math.max(4, tags.length) && queue.length < 8) {
+    queue.push(tags[queue.length % tags.length]);
+  }
+  state.counter = { queue, once: {} };
+  state.round = freshRound();
+  state.round.counter = true;
+  state.round.len = queue.length;
+  nextQuestion();
+}
+
 function nextQuestion(opts = {}) {
-  if (!state.round || state.round.finished) state.round = freshRound();
-  const tags = state.focusTag ? [state.focusTag] : state.tags;
-  const tag = tags[state.attempt % tags.length];
-  const templateIndex = Math.floor(state.attempt / tags.length);
+  let tag;
+  let templateIndex;
+  if (state.round?.counter && !state.round.finished) {
+    if (!state.counter?.queue?.length) {
+      showRoundSummary();
+      return;
+    }
+    tag = state.counter.queue.shift();
+    templateIndex = state.attempt;
+  } else {
+    if (!state.round || state.round.finished) state.round = freshRound();
+    const tags = state.focusTag ? [state.focusTag] : state.tags;
+    tag = tags[state.attempt % tags.length];
+    templateIndex = Math.floor(state.attempt / tags.length);
+  }
   state.current = buildQuestion(tag, templateIndex, questionSeed(state.attempt));
   state.wrongPicks = [];
   state.outcome = null;
@@ -834,8 +888,9 @@ function nextQuestion(opts = {}) {
 function renderSession() {
   const r = state.round;
   if (!r || !el.session) return;
-  const n = Math.min(ROUND_LEN, r.done + (state.outcome ? 0 : 1));
-  el.session.textContent = t().progress(n, ROUND_LEN, r.points);
+  const limit = roundLimit(r);
+  const n = Math.min(limit, r.done + (state.outcome ? 0 : 1));
+  el.session.textContent = t().progress(n, limit, r.points);
 }
 
 function renderQuestion() {
@@ -880,11 +935,12 @@ function applyChoiceState() {
     node.classList.toggle("is-chosen-wrong", wasWrong);
     // The right answer is marked only once the challenge is over — never as a
     // side effect of a wrong try.
-    node.classList.toggle("is-correct", state.outcome !== null && value === String(q.correct));
+    const showRight = state.outcome === "solved" || state.outcome === "revealed";
+    node.classList.toggle("is-correct", showRight && value === String(q.correct));
     node.setAttribute("aria-label", `${choiceText(value)}${wasWrong ? " ✗" : ""}`);
   }
   el.nextBtn.hidden = state.outcome === null;
-  const last = state.round && state.round.done >= ROUND_LEN;
+  const last = state.round && state.round.done >= roundLimit();
   el.nextLabel.textContent = last ? t().seeResults : t().nextQ;
 }
 
@@ -914,6 +970,13 @@ function showFeedback() {
       el.feedback.append(head, para(t().fixedBody(pts, DAMAGE)));
     }
     el.feedback.append(para(`${t().moveWas} ${coachTier(q.tag, 1)}`, "coach-line"));
+    return;
+  }
+
+  if (state.outcome === "held") {
+    el.feedback.className = "feedback coach";
+    head.textContent = t().blockedTitle;
+    el.feedback.append(head, para(t().counterHeld), para(coachTier(q.tag, 1), "coach-line"));
     return;
   }
 
@@ -968,8 +1031,19 @@ function answer(choice) {
     state.round.misses[q.tag] = (state.round.misses[q.tag] || 0) + 1;
     // Only the right answer left: show it and how to get there. No-fail.
     if (state.wrongPicks.length >= q.choices.length - 1) {
-      state.outcome = "revealed";
-      state.round.shown += 1;
+      if (state.round?.counter) {
+        state.outcome = "held";
+        if (!state.counter.once[q.tag]) {
+          state.counter.once[q.tag] = true;
+          state.counter.queue.push(q.tag);
+          state.round.len += 1;
+        } else {
+          state.round.shown += 1;
+        }
+      } else {
+        state.outcome = "revealed";
+        state.round.shown += 1;
+      }
     }
   }
   if (state.outcome) finishChallenge();
@@ -1009,11 +1083,14 @@ function showRoundSummary() {
   el.questionArea.hidden = true;
   el.roundSummary.hidden = false;
   el.roundSummary.querySelector("h3")?.focus();
+  const limit = roundLimit(r);
+  const solved = r.first + r.helped;
   window.GameStudio?.emit("complete", {
     score: r.points,
-    correct: r.first + r.helped,
-    total: ROUND_LEN,
-    message: t().roundDone(r.points),
+    correct: solved,
+    total: limit,
+    accuracy: limit ? Math.round((solved / limit) * 100) : 0,
+    message: r.counter ? t().counterScore(r.first, limit) : t().roundDone(r.points),
   });
 }
 
@@ -1024,12 +1101,15 @@ function renderRoundSummary() {
   box.replaceChildren();
   const h = document.createElement("h3");
   h.tabIndex = -1;
-  h.textContent = t().roundTitle;
+  h.textContent = r.counter ? t().counterTitle : t().roundTitle;
   const list = document.createElement("ul");
   list.className = "round-stats";
+  const limit = roundLimit(r);
   for (const line of [
-    t().roundScore(r.points, ROUND_LEN * POINTS_BY_TRIES[0]),
-    t().roundFirst(r.first, ROUND_LEN),
+    r.counter
+      ? t().counterScore(r.first, limit)
+      : t().roundScore(r.points, limit * POINTS_BY_TRIES[0]),
+    t().roundFirst(r.first, limit),
     t().roundHelped(r.helped),
     t().roundShown(r.shown),
     r.newBest ? t().roundNewBest : t().roundBest(r.best),
@@ -1045,11 +1125,20 @@ function renderRoundSummary() {
   again.className = "next-btn";
   again.textContent = t().playAgain;
   again.addEventListener("click", () => nextQuestion());
-  box.append(h, list, next, again);
+  box.append(h, list, next);
+  if (!r.counter && Object.keys(r.misses).length) {
+    const counter = document.createElement("button");
+    counter.type = "button";
+    counter.className = "next-btn";
+    counter.textContent = t().counterBtn;
+    counter.addEventListener("click", () => beginCounterattack());
+    box.append(counter);
+  }
+  box.append(again);
 }
 
 function onNext() {
-  if (state.round && state.round.done >= ROUND_LEN && !state.round.finished) showRoundSummary();
+  if (state.round && state.round.done >= roundLimit() && !state.round.finished) showRoundSummary();
   else nextQuestion();
 }
 
@@ -1190,11 +1279,13 @@ async function init() {
     focus(tag) {
       state.focusTag = tag;
       el.raidFocus.value = tag;
+      if (state.round?.counter && !state.round.finished) return;
       if (!state.outcome && !state.wrongPicks.length) nextQuestion();
     },
   });
   el.raidFocus.addEventListener("change", () => {
     state.focusTag = el.raidFocus.value;
+    if (state.round?.counter && !state.round.finished) return;
     // A focus change keeps the round's score; it only changes what the next
     // challenge is about.
     nextQuestion();
@@ -1215,7 +1306,13 @@ async function init() {
 
   // Number keys 1-4 pick a choice, so the raid is playable from the keyboard.
   document.addEventListener("keydown", (event) => {
-    if (event.metaKey || event.ctrlKey || event.altKey || document.querySelector(".studio-dialog[open]")) return;
+    if (
+      event.metaKey ||
+      event.ctrlKey ||
+      event.altKey ||
+      document.querySelector(".studio-dialog[open]")
+    )
+      return;
     const tag = String(event.target?.tagName || "").toLowerCase();
     if (tag === "input" || tag === "textarea" || tag === "select") return;
     const n = Number(event.key);

@@ -75,12 +75,20 @@ const I18N = {
       "Your learner is running in offline mode right now — it still asks real questions.",
     emptyEntry: "Write a sentence or two first, then teach it.",
     whyPicked: "You chose this learner",
-    whyMetaPicked: "Practice any mix-up you like. Today's class focus is still marked ★ in the list.",
+    whyMetaPicked:
+      "Practice any mix-up you like. Today's class focus is still marked ★ in the list.",
     chooseLearner: "Choose a learner",
     todayMark: "★ ",
     nextLearner: "Teach another learner",
     taught: (n, total) => `Learners you have taught: ${n} of ${total}`,
     winDone: (name) => `You taught ${name}. Full credit — your explanation did it.`,
+    sealTitle: "Seal the lesson",
+    sealProgress: (n, total) => `Check ${n} of ${total}`,
+    sealMiss: "Not that line. The answer stays hidden. Missed checks come back once.",
+    sealPad: (n) => `That line does not answer the idea. (${n})`,
+    sealStem: (name, belief) =>
+      `${name} still wants to believe this: “${belief}”. Which line answers that idea?`,
+    sealSteps: "Repeat the steps and do not say why.",
   },
   es: {
     title: "Enseña a la Máquina",
@@ -129,6 +137,13 @@ const I18N = {
     nextLearner: "Enseñar a otro aprendiz",
     taught: (n, total) => `Aprendices que has enseñado: ${n} de ${total}`,
     winDone: (name) => `Le enseñaste a ${name}. Crédito completo: tu explicación lo logró.`,
+    sealTitle: "Sella la lección",
+    sealProgress: (n, total) => `Comprobación ${n} de ${total}`,
+    sealMiss: "Esa no. La respuesta permanece oculta. Las que fallen vuelven una vez.",
+    sealPad: (n) => `Esa frase no responde la idea. (${n})`,
+    sealStem: (name, belief) =>
+      `${name} todavía quiere creer esto: «${belief}». ¿Qué línea responde esa idea?`,
+    sealSteps: "Repite los pasos y no digas por qué.",
   },
 };
 
@@ -146,6 +161,7 @@ const state = {
   offline: false,
   won: false,
   todayTag: "",
+  seal: null,
 };
 
 const el = (id) => document.getElementById(id);
@@ -444,7 +460,7 @@ function renderWin() {
   const s = t();
   const p = state.persona;
   const panel = el("win");
-  if (!state.understanding.convinced) {
+  if (!state.understanding.convinced || state.seal?.active) {
     panel.hidden = true;
     return;
   }
@@ -464,9 +480,8 @@ function renderWin() {
     month: "long",
     day: "numeric",
   });
-  const stds = (state.tag === state.todayTag && state.standards.length
-    ? state.standards
-    : p.standards
+  const stds = (
+    state.tag === state.todayTag && state.standards.length ? state.standards : p.standards
   ).join(", ");
   setText("sc-foot", s.scFoot(date, stds));
   setText("model-answer-text", state.lang === "es" ? p.workedEs : p.worked);
@@ -503,6 +518,7 @@ function renderAll(pending) {
   renderStarters();
   renderWordBank();
   renderWin();
+  renderSeal();
 }
 
 /* ── Conversation ────────────────────────────────────────────────────────── */
@@ -629,20 +645,149 @@ async function submitExplanation(text) {
   renderAll(false);
 
   window.GameStudio?.emit("feedback", { correct: state.understanding.convinced });
-  if (justWon) {
-    markTaught(state.tag);
-    renderChrome();
-    renderPicker();
-    window.GameStudio?.emit("complete", {
-      score: readTaught().length,
-      message: t().winDone(state.persona.persona.name),
-    });
-    reportMastery();
-    const heading = el("win-heading");
-    if (heading) {
-      heading.setAttribute("tabindex", "-1");
-      heading.focus();
+  if (justWon) startSeal();
+}
+
+function sealQuestion(n) {
+  const s = t();
+  const ideas = state.persona.mustAddress;
+  const idea = ideas[n % ideas.length];
+  const es = state.lang === "es";
+  const correct = es ? idea.es : idea.en;
+  const belief = es ? state.persona.wrongIdeaEs : state.persona.wrongIdea;
+  const others = TAGS.filter((tag) => tag !== state.tag);
+  const foreign = PERSONAS[others[n % others.length]];
+  const choices = [{ text: correct, ok: true }];
+  for (const text of [belief, s.sealSteps, es ? foreign.wrongIdeaEs : foreign.wrongIdea]) {
+    if (text && text !== correct && !choices.some((choice) => choice.text === text)) {
+      choices.push({ text, ok: false });
     }
+  }
+  let pad = 1;
+  while (choices.length < 4) {
+    choices.push({ text: s.sealPad(pad), ok: false });
+    pad += 1;
+  }
+  const order = choices.slice(0, 4);
+  const seed = n * 17 + (state.seal?.salt || 1);
+  for (let i = order.length - 1; i > 0; i -= 1) {
+    const j = (seed + i * 3) % (i + 1);
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return {
+    stem: s.sealStem(state.persona.persona.name, belief),
+    choices: order,
+  };
+}
+
+function startSeal() {
+  state.seal = {
+    active: true,
+    index: 0,
+    results: [null, null, null, null],
+    phase: "first",
+    queue: [0, 1, 2, 3],
+    salt: 3,
+    locked: false,
+  };
+  const composer = el("composer");
+  if (composer) composer.hidden = true;
+  renderAll(false);
+  el("seal-heading")?.focus();
+}
+
+function renderSeal() {
+  const panel = el("seal");
+  if (!panel) return;
+  if (!state.seal?.active) {
+    panel.hidden = true;
+    const composer = el("composer");
+    if (composer) composer.hidden = false;
+    return;
+  }
+  panel.hidden = false;
+  const s = t();
+  setText("seal-heading", s.sealTitle);
+  const qn = state.seal.queue[state.seal.index];
+  const q = sealQuestion(qn);
+  setText("seal-progress", s.sealProgress(state.seal.index + 1, state.seal.queue.length));
+  setText("seal-stem", q.stem);
+  const box = el("seal-choices");
+  box.replaceChildren();
+  q.choices.forEach((choice, i) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "btn";
+    button.textContent = `${i + 1}. ${choice.text}`;
+    button.disabled = state.seal.locked;
+    button.addEventListener("click", () => pickSeal(qn, choice.ok));
+    box.append(button);
+  });
+  if (!state.seal.locked) setText("seal-note", "");
+}
+
+function pickSeal(qn, ok) {
+  if (!state.seal?.active || state.seal.locked) return;
+  state.seal.locked = true;
+  // Accuracy counts the first pass only; the retry never raises it.
+  if (state.seal.phase === "first") state.seal.results[qn] = ok;
+  window.GameStudio?.emit("feedback", {
+    correct: ok,
+    message: ok ? t().sealTitle : t().sealMiss,
+  });
+  setText("seal-note", ok ? "" : t().sealMiss);
+  el("seal-choices")
+    .querySelectorAll("button")
+    .forEach((button) => {
+      button.disabled = true;
+    });
+  window.setTimeout(() => advanceSeal(), 700);
+}
+
+function advanceSeal() {
+  if (!state.seal?.active) return;
+  state.seal.locked = false;
+  state.seal.index += 1;
+  if (state.seal.index < state.seal.queue.length) {
+    renderSeal();
+    el("seal-heading")?.focus();
+    return;
+  }
+  if (state.seal.phase === "first") {
+    const missed = state.seal.results.map((ok, i) => (ok ? -1 : i)).filter((i) => i >= 0);
+    if (missed.length) {
+      state.seal.phase = "retry";
+      state.seal.queue = missed;
+      state.seal.index = 0;
+      state.seal.salt += 5;
+      renderSeal();
+      el("seal-heading")?.focus();
+      return;
+    }
+  }
+  finishSeal();
+}
+
+function finishSeal() {
+  const results = state.seal.results;
+  const correct = results.filter(Boolean).length;
+  state.seal.active = false;
+  const composer = el("composer");
+  if (composer) composer.hidden = false;
+  markTaught(state.tag);
+  renderAll(false);
+  window.GameStudio?.emit("complete", {
+    score: correct,
+    correct,
+    total: results.length,
+    accuracy: Math.round((correct / results.length) * 100),
+    message: t().winDone(state.persona.persona.name),
+  });
+  reportMastery();
+  const heading = el("win-heading");
+  if (heading) {
+    heading.setAttribute("tabindex", "-1");
+    heading.focus();
   }
 }
 
@@ -683,6 +828,9 @@ function resetConversation() {
     convinced: false,
   };
   state.won = false;
+  state.seal = null;
+  const composer = el("composer");
+  if (composer) composer.hidden = false;
   setText("coach", "");
   el("entry").value = "";
   renderAll(false);
@@ -775,7 +923,7 @@ async function init() {
       "Your learner believes one wrong idea. Read what it says.",
       "Type an explanation and press Teach it. Say WHY, not just the steps. Sentence starters and the word bank can help.",
       "The checklist shows the ideas your learner still needs. Your learner changes its mind only when every idea is covered.",
-      "Take all the time you need. When it gets it, teach another learner from the list.",
+      "When your learner is convinced, seal the lesson: four checks, then one retry of any miss. A wrong line does not show the answer.",
     ],
   });
 }

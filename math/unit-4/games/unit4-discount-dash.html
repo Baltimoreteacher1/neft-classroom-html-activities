@@ -27,9 +27,7 @@
     <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
     <script>
       if (typeof Phaser === "undefined") {
-        document.write(
-          '<script src="/games/vendor/phaser/phaser-3.80.1.min.js"><\/script>',
-        );
+        document.write('<script src="/games/vendor/phaser/phaser-3.80.1.min.js"><\/script>');
       }
       window.addEventListener("load", function () {
         if (typeof Phaser === "undefined") {
@@ -47,34 +45,72 @@
     <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
     <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
     <!-- ghl-injected:end -->
-      <link rel="stylesheet" href="/assets/game-topbar.css" />
+    <link rel="stylesheet" href="/assets/game-topbar.css" />
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-  <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
-  <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
-<link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007">
-<link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261007">
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+    <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />
+    <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/assets/game-studio.css?v=20261002" />
+    <link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007" />
+    <link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261007" />
+  </head>
   <body>
-
-            <!-- EWL Universal Arcade Enhancements Header -->
-      <div class="ewl-arcade-header-bar">
-        <div class="ewl-arcade-title-group">
-          <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
-          <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
-        </div>
-        <div class="ewl-arcade-controls">
-          <button type="button" class="ewl-btn-toggle active" id="ewl-btn-l1" onclick="if(window.ewlSetLevel) window.ewlSetLevel(1)">L1 Support</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-l2" onclick="if(window.ewlSetLevel) window.ewlSetLevel(2)">L2 Challenge</button>
-          <button type="button" class="ewl-sound-toggle-btn" id="ewl-btn-sound" onclick="if(window.GameFX && window.GameFX.AudioSynth){ window.GameFX.AudioSynth.muted = !window.GameFX.AudioSynth.muted; this.innerText = window.GameFX.AudioSynth.muted ? '🔇 Muted' : '🔊 Sound On'; }">🔊 Sound On</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-lang" onclick="if(window.ewlToggleLang) window.ewlToggleLang()">🌐 EN / ES</button>
-        </div>
+    <!-- EWL Universal Arcade Enhancements Header -->
+    <div class="ewl-arcade-header-bar">
+      <div class="ewl-arcade-title-group">
+        <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge"
+          >⭐ Level 1: Guided Support</span
+        >
+        <span style="font-size: 13px; font-weight: 600; opacity: 0.85"
+          >| EduWonderLab Interactive Arcade</span
+        >
       </div>
-  
+      <div class="ewl-arcade-controls">
+        <button
+          type="button"
+          class="ewl-btn-toggle active"
+          id="ewl-btn-l1"
+          onclick="if (window.ewlSetLevel) window.ewlSetLevel(1);"
+        >
+          L1 Support
+        </button>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-l2"
+          onclick="if (window.ewlSetLevel) window.ewlSetLevel(2);"
+        >
+          L2 Challenge
+        </button>
+        <button
+          type="button"
+          class="ewl-sound-toggle-btn"
+          id="ewl-btn-sound"
+          onclick="
+            if (window.GameFX && window.GameFX.AudioSynth) {
+              window.GameFX.AudioSynth.muted = !window.GameFX.AudioSynth.muted;
+              this.innerText = window.GameFX.AudioSynth.muted ? '🔇 Muted' : '🔊 Sound On';
+            }
+          "
+        >
+          🔊 Sound On
+        </button>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-lang"
+          onclick="if (window.ewlToggleLang) window.ewlToggleLang();"
+        >
+          🌐 EN / ES
+        </button>
+      </div>
+    </div>
+
     <!-- nt-game-topbar-injected:begin (tools/inject-game-topbar.js) -->
-    <header class="nt-game-topbar" role="banner"><span class="ngt-title">Discount Dash — Best Deal Shopper</span></header>
+    <header class="nt-game-topbar" role="banner">
+      <span class="ngt-title">Discount Dash — Best Deal Shopper</span>
+    </header>
     <!-- nt-game-topbar-injected:end -->
     <div id="game"></div>
     <!-- Visually-hidden live region: mirrors each deal row for assistive
@@ -131,7 +167,10 @@
       const CART_Y = 560; // the shopper's cart under the chosen lane
       const NEXT_Y = 660; // "Next deal" button after a solved deal
       // Most points possible: every deal first try, streak bonus capped at +50.
-      const MAX_SCORE = Array.from({ length: TOTAL_ROUNDS }, (_, i) => 100 + Math.min(i, 5) * 10).reduce((a, b) => a + b, 0);
+      const MAX_SCORE = Array.from(
+        { length: TOTAL_ROUNDS },
+        (_, i) => 100 + Math.min(i, 5) * 10,
+      ).reduce((a, b) => a + b, 0);
 
       // ── Reduced-motion guard (bespoke FX respect prefers-reduced-motion) ──
       // Live-tracked so an OS-level toggle is honored without a reload.
@@ -146,7 +185,7 @@
           ? _mq.addEventListener("change", _onRM)
           : _mq.addListener && _mq.addListener(_onRM);
       } catch (e) {}
-      const reducedMotion = () => window.__flagshipReduced ?? (RM.reduce);
+      const reducedMotion = () => window.__flagshipReduced ?? RM.reduce;
 
       class SFX {
         constructor() {
@@ -194,9 +233,17 @@
       // percent-off in each lane. Exactly one lane is the best (lowest) deal.
       function makeRow(round, tier = 2) {
         const items = ["👟", "🎧", "🧥", "🎒", "⌚", "📱", "🕹️", "👕", "🧢", "👜"];
-        const base = tier === 1 ? randInt(2, 12) * 10 : randInt(round < 4 ? 10 : 20, round < 4 ? 60 : 120);
+        const base =
+          tier === 1 ? randInt(2, 12) * 10 : randInt(round < 4 ? 10 : 20, round < 4 ? 60 : 120);
         // percents get closer together as rounds climb (harder to compare)
-        const pcts = tier === 1 ? [10, 25, 50] : round < 3 ? [10, 25, 50] : round < 6 ? [15, 30, 45] : [20, 35, 40];
+        const pcts =
+          tier === 1
+            ? [10, 25, 50]
+            : round < 3
+              ? [10, 25, 50]
+              : round < 6
+                ? [15, 30, 45]
+                : [20, 35, 40];
         Phaser.Utils.Array.Shuffle(pcts);
         const emoji = Phaser.Utils.Array.GetRandom(items);
         // Pedagogy fix: give each lane its OWN original price (close to the row
@@ -205,7 +252,10 @@
         // larger price spread on later rounds keeps the comparison non-trivial.
         const spread = round < 4 ? 8 : 14;
         const cells = pcts.map((p) => {
-          const cellBase = tier === 1 ? Math.max(10, base + randInt(-2, 2) * 10) : Math.max(5, base + randInt(-spread, spread));
+          const cellBase =
+            tier === 1
+              ? Math.max(10, base + randInt(-2, 2) * 10)
+              : Math.max(5, base + randInt(-spread, spread));
           return {
             pct: p,
             base: cellBase,
@@ -316,7 +366,6 @@
           };
           btn.on("pointerdown", go);
           this.input.keyboard.once("keydown-ENTER", go);
-
         }
       }
 
@@ -331,6 +380,16 @@
           this.combo = 0;
           this.firstTry = 0; // deals solved on the first pick, no help
           this.helped = 0; // deals solved after a hint
+          this.bestStreak = 0;
+          this.solved = 0;
+          this.answerTries = 0;
+          this.misses = [];
+          const launch = this.sys.settings.data || {};
+          this.replayQueue =
+            launch.replay && launch.replay.length
+              ? launch.replay.map((row) => JSON.parse(JSON.stringify(row)))
+              : null;
+          this.maxRounds = this.replayQueue ? this.replayQueue.length : TOTAL_ROUNDS;
           this.round = 0;
           this.lane = 1;
           this.gameOver = false;
@@ -380,8 +439,14 @@
             padding: { x: 10, y: 4 },
           });
           this.hud = this.add.text(20, 14, "", hudStyle("#ffe066")).setDepth(20);
-          this.savHud = this.add.text(W - 20, 14, "", hudStyle("#51cf66")).setOrigin(1, 0).setDepth(20);
-          this.comboHud = this.add.text(W / 2, 14, "", hudStyle("#ffd8e8")).setOrigin(0.5, 0).setDepth(20);
+          this.savHud = this.add
+            .text(W - 20, 14, "", hudStyle("#51cf66"))
+            .setOrigin(1, 0)
+            .setDepth(20);
+          this.comboHud = this.add
+            .text(W / 2, 14, "", hudStyle("#ffd8e8"))
+            .setOrigin(0.5, 0)
+            .setDepth(20);
 
           // Coach line (persistent — feedback never fades before it is read).
           this.coach = this.add
@@ -542,7 +607,7 @@
         nextDeal() {
           if (this.gameOver) return;
           if (this.row && !this.row.scored) return;
-          if (this.round >= TOTAL_ROUNDS) {
+          if (this.round >= this.maxRounds) {
             this.endGame();
             return;
           }
@@ -573,19 +638,24 @@
               ? "Each lane has its own price and % off. Find each SALE price, then pick the lowest."
               : "New deal! Work out each sale price, then pick the lowest.",
           );
-          this.prompt.setText("Tap a deal card  •  or ← → / 1 2 3 and Enter  •  take all the time you need");
+          this.prompt.setText(
+            "Tap a deal card  •  or ← → / 1 2 3 and Enter  •  take all the time you need",
+          );
           this.updateHUD();
         }
 
         spawnRow() {
-          const data = makeRow(this.round, this.sys.settings.data?.studioTier || 2);
+          const data =
+            this.replayQueue && this.replayQueue.length
+              ? this.replayQueue.shift()
+              : makeRow(this.round, this.sys.settings.data?.studioTier || 2);
           // Mirror the deal row (given info only — never the sale prices)
           // into the hidden live region for assistive tech + the shared
           // hint ladder. Additive: never touches gameplay/scoring.
           const ddSr = document.getElementById("dd-sr");
           if (ddSr)
             ddSr.textContent =
-              `Deal row ${this.round} of ${TOTAL_ROUNDS}: ${data.emoji} — ` +
+              `Deal row ${this.round} of ${this.maxRounds}: ${data.emoji} — ` +
               data.cells
                 .map((cell, i) => `Lane ${i + 1}: ${money(cell.base)} at ${cell.pct}% off`)
                 .join(". ") +
@@ -684,7 +754,10 @@
         grabCell(row, laneIdx) {
           if (!row || row.scored || this.gameOver) return;
           if (row.wrong.includes(laneIdx)) {
-            this.say("You already checked Lane " + (laneIdx + 1) + ". Try a different lane.", "#ffd43b");
+            this.say(
+              "You already checked Lane " + (laneIdx + 1) + ". Try a different lane.",
+              "#ffd43b",
+            );
             return;
           }
           const rm = reducedMotion();
@@ -693,11 +766,14 @@
           if (d.bestIdxs.includes(laneIdx)) {
             row.scored = true;
             const tries = row.wrong.length;
+            this.solved++;
+            this.answerTries++;
             const cell = d.cells[laneIdx];
             const saved = Math.round((cell.base - cell.sale) * 100) / 100;
             let pts;
             if (tries === 0) {
               this.combo++;
+              this.bestStreak = Math.max(this.bestStreak, this.combo);
               this.firstTry++;
               pts = 100 + Math.min(this.combo - 1, 5) * 10;
             } else {
@@ -736,7 +812,10 @@
                 });
               }
             }
-            const lead = tries === 0 ? "Best deal — first try! +" + pts : "Best deal! +" + pts + " (with help)";
+            const lead =
+              tries === 0
+                ? "Best deal — first try! +" + pts
+                : "Best deal! +" + pts + " (with help)";
             this.say(
               lead +
                 "\nLane " +
@@ -751,7 +830,9 @@
             this.showNext();
           } else {
             row.wrong.push(laneIdx);
+            this.answerTries++;
             this.combo = 0;
+            if (row.wrong.length === 1) this.misses.push(JSON.parse(JSON.stringify(d)));
             sfx.bad();
             this.wrongFlash();
             const cellC = row.cells[laneIdx];
@@ -782,7 +863,9 @@
               );
             } else {
               // Tier 2 — concrete worked step for the lanes already ruled out.
-              row.wrong.forEach((i) => row.cells[i].saleT.setText("Sale " + money(d.cells[i].sale)));
+              row.wrong.forEach((i) =>
+                row.cells[i].saleT.setText("Sale " + money(d.cells[i].sale)),
+              );
               this.say(
                 "Let's work it out. " +
                   row.wrong.map((i) => "Lane " + (i + 1) + ": " + this.worked(i)).join(".  ") +
@@ -795,7 +878,7 @@
         }
 
         showNext() {
-          const last = this.round >= TOTAL_ROUNDS;
+          const last = this.round >= this.maxRounds;
           const label = last ? "SEE RESULTS ▶" : "NEXT DEAL ▶";
           const bg = this.add
             .rectangle(W / 2, NEXT_Y, 280, 60, 0xffe066)
@@ -813,7 +896,9 @@
             .setDepth(27);
           bg.on("pointerdown", () => this.nextDeal());
           this.nextBtn = [bg, t];
-          this.prompt.setText("Press Enter or tap " + (last ? "SEE RESULTS" : "NEXT DEAL") + " when you are ready");
+          this.prompt.setText(
+            "Press Enter or tap " + (last ? "SEE RESULTS" : "NEXT DEAL") + " when you are ready",
+          );
         }
 
         // Gold glow + quick pop around the pad the player correctly grabbed.
@@ -918,7 +1003,11 @@
             this.savHud.setText("SAVED  " + money(this.savings));
           }
           this.comboHud.setText(
-            "Deal " + this.round + " of " + TOTAL_ROUNDS + (this.combo > 1 ? "   streak x" + this.combo : ""),
+            "Deal " +
+              this.round +
+              " of " +
+              this.maxRounds +
+              (this.combo > 1 ? "   streak x" + this.combo : ""),
           );
         }
 
@@ -935,7 +1024,7 @@
                 maxScore: MAX_SCORE,
                 percent: Math.round((this.score / MAX_SCORE) * 100),
                 problemsCorrect: this.firstTry,
-                problemsAttempted: TOTAL_ROUNDS,
+                problemsAttempted: this.maxRounds,
               });
           } catch (e) {}
           this.scene.start("Results", {
@@ -945,6 +1034,11 @@
             helped: this.helped,
             newBest: this.score > hi,
             tier: this.sys.settings.data?.studioTier,
+            bestStreak: this.bestStreak,
+            solved: this.solved,
+            answerTries: this.answerTries,
+            misses: this.misses.slice(),
+            rounds: this.maxRounds,
           });
         }
 
@@ -979,7 +1073,15 @@
           this.cameras.main.setBackgroundColor("#10243f");
           const r = this.r;
           const first = r.firstTry || 0;
-          const acc = Math.round((first / TOTAL_ROUNDS) * 100);
+          const items = r.rounds || TOTAL_ROUNDS;
+          const solved = r.solved != null ? r.solved : items;
+          const answerTries = r.answerTries || items;
+          const accuracy = answerTries ? solved / answerTries : 0;
+          const stars =
+            (solved >= 3 ? 1 : 0) +
+            ((r.bestStreak || 0) >= 3 || solved >= 8 ? 1 : 0) +
+            (items >= 4 && accuracy >= 0.8 ? 1 : 0);
+          const acc = Math.round((first / items) * 100);
           const txt = (y, s, size, color, bold) =>
             this.add
               .text(W / 2, y, s, {
@@ -992,16 +1094,41 @@
               })
               .setOrigin(0.5);
           txt(110, "CHECKOUT!", "58px", "#ffe066", true);
-          txt(190, "Score: " + (r.score || 0) + (r.newBest ? "   ★ New best!" : ""), "32px", "#ffffff", true);
+          txt(
+            164,
+            "★".repeat(stars) + "☆".repeat(3 - stars) + "  " + stars + " of 3 stars",
+            "28px",
+            "#ffe066",
+            true,
+          );
+          txt(
+            190,
+            "Score: " + (r.score || 0) + (r.newBest ? "   ★ New best!" : ""),
+            "32px",
+            "#ffffff",
+            true,
+          );
           txt(
             240,
-            "Best deal on the first try: " + first + " of " + TOTAL_ROUNDS + " (" + acc + "%)" +
-              "   •   With a hint: " + (r.helped || 0),
+            "Best deal on the first try: " +
+              first +
+              " of " +
+              items +
+              " (" +
+              acc +
+              "%)" +
+              "   •   With a hint: " +
+              (r.helped || 0),
             "22px",
             "#dbe4ff",
           );
           txt(282, "Total saved: " + money(r.savings || 0), "24px", "#51cf66", true);
-          txt(318, "Best score: " + (localStorage.getItem(LS_KEY) || r.score || 0), "20px", "#74c0fc");
+          txt(
+            318,
+            "Best score: " + (localStorage.getItem(LS_KEY) || r.score || 0),
+            "20px",
+            "#74c0fc",
+          );
           txt(
             380,
             "Skills practiced: percent of a quantity • sale price = price × (100 − % off) ÷ 100 • comparing prices",
@@ -1022,11 +1149,29 @@
           txt(600, "New prices every time. Press Enter or tap.", "17px", "#94a3b8");
           const again = () => this.scene.start("Game", { studioTier: r.tier || 2 });
           btn.on("pointerdown", again);
+          if (r.misses && r.misses.length) {
+            const practice = this.add
+              .rectangle(W / 2, 660, 320, 52, 0x74c0fc)
+              .setInteractive({ useHandCursor: true });
+            txt(660, "PRACTICE THE MISSES", "22px", "#10243f", true);
+            practice.on("pointerdown", () =>
+              this.scene.start("Game", { studioTier: r.tier || 2, replay: r.misses }),
+            );
+          }
           this.input.keyboard.once("keydown-ENTER", again);
           const fb = document.getElementById("dd-fb");
           if (fb)
             fb.textContent =
-              "Checkout. Score " + (r.score || 0) + ". First-try best deals " + first + " of " + TOTAL_ROUNDS + ". " + next;
+              "Checkout. Score " +
+              (r.score || 0) +
+              ". " +
+              stars +
+              " of 3 stars. First-try best deals " +
+              first +
+              " of " +
+              items +
+              ". " +
+              next;
         }
       }
       const config = {
@@ -1041,7 +1186,7 @@
         },
         scene: [BootScene, TitleScene, GameScene, ResultsScene],
       };
-      const ddGame = window.__flagshipGame = new Phaser.Game(config);
+      const ddGame = (window.__flagshipGame = new Phaser.Game(config));
 
       // ── Canvas accessibility (additive; no gameplay change) ──
       // Phaser renders to one <canvas> that is not in the tab order by default,
@@ -1077,7 +1222,7 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <!-- gfx-injected:end -->
     <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-    
+
     <!-- mwb-injected:end -->
     <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
     <script src="/assets/game-hint-ladder.js" defer></script>
@@ -1097,23 +1242,33 @@
       });
     </script>
     <!-- ghl-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
-  
-      <!-- EWL Diagnostic Misconception Coach -->
-      <div class="ewl-coach-card" id="ewl-coach-card" style="display: flex; position: relative; z-index: 100;">
-        <div class="ewl-coach-icon">💡</div>
-        <div class="ewl-coach-content">
-          <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
-          <p id="ewl-coach-text" data-en="To find x% of a number, multiply by (x / 100)." data-es="Para hallar el x% de un número, multiplica por (x / 100).">To find x% of a number, multiply by (x / 100).</p>
-        </div>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
+
+    <!-- EWL Diagnostic Misconception Coach -->
+    <div
+      class="ewl-coach-card"
+      id="ewl-coach-card"
+      style="display: flex; position: relative; z-index: 100"
+    >
+      <div class="ewl-coach-icon">💡</div>
+      <div class="ewl-coach-content">
+        <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
+        <p
+          id="ewl-coach-text"
+          data-en="To find x% of a number, multiply by (x / 100)."
+          data-es="Para hallar el x% de un número, multiplica por (x / 100)."
+        >
+          To find x% of a number, multiply by (x / 100).
+        </p>
       </div>
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <script src="/assets/formula-popup.js" defer></script>
-<script src="/assets/game-studio.js?v=20261003" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
-<script src="/math/games/shared/flagship-puzzles.js?v=20261007" defer></script>
-<script src="/math/games/shared/flagship-adventures.js?v=20261007" defer></script>
-</body>
+    </div>
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <script src="/assets/formula-popup.js" defer></script>
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
+    <script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
+    <script src="/math/games/shared/flagship-puzzles.js?v=20261007" defer></script>
+    <script src="/math/games/shared/flagship-adventures.js?v=20261007" defer></script>
+  </body>
 </html>

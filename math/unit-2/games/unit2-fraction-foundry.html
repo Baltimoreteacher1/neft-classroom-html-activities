@@ -48,12 +48,7 @@
         z-index: 0;
         overflow: hidden;
         pointer-events: none;
-        background: radial-gradient(
-          130% 90% at 50% 100%,
-          #4a2410 0%,
-          #2a1608 50%,
-          #160b03 100%
-        );
+        background: radial-gradient(130% 90% at 50% 100%, #4a2410 0%, #2a1608 50%, #160b03 100%);
       }
       #ff-bg-layer {
         position: absolute;
@@ -117,9 +112,7 @@
       // from a mirror (document.write blocks parsing so the mirror is ready
       // before the game script runs).
       if (typeof Phaser === "undefined") {
-        document.write(
-          '<script src="/games/vendor/phaser/phaser-3.80.1.min.js"><\/script>',
-        );
+        document.write('<script src="/games/vendor/phaser/phaser-3.80.1.min.js"><\/script>');
       }
       // If both sources are unreachable, show a clear message instead of a blank page.
       window.addEventListener("load", function () {
@@ -138,34 +131,72 @@
     <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
     <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
     <!-- ghl-injected:end -->
-      <link rel="stylesheet" href="/assets/game-topbar.css" />
+    <link rel="stylesheet" href="/assets/game-topbar.css" />
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-  <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
-  <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
-<link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007">
-<link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261007">
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+    <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />
+    <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/assets/game-studio.css?v=20261002" />
+    <link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007" />
+    <link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261007" />
+  </head>
   <body>
-
-            <!-- EWL Universal Arcade Enhancements Header -->
-      <div class="ewl-arcade-header-bar">
-        <div class="ewl-arcade-title-group">
-          <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
-          <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
-        </div>
-        <div class="ewl-arcade-controls">
-          <button type="button" class="ewl-btn-toggle active" id="ewl-btn-l1" onclick="if(window.ewlSetLevel) window.ewlSetLevel(1)">L1 Support</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-l2" onclick="if(window.ewlSetLevel) window.ewlSetLevel(2)">L2 Challenge</button>
-          <button type="button" class="ewl-sound-toggle-btn" id="ewl-btn-sound" onclick="if(window.GameFX && window.GameFX.AudioSynth){ window.GameFX.AudioSynth.muted = !window.GameFX.AudioSynth.muted; this.innerText = window.GameFX.AudioSynth.muted ? '🔇 Muted' : '🔊 Sound On'; }">🔊 Sound On</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-lang" onclick="if(window.ewlToggleLang) window.ewlToggleLang()">🌐 EN / ES</button>
-        </div>
+    <!-- EWL Universal Arcade Enhancements Header -->
+    <div class="ewl-arcade-header-bar">
+      <div class="ewl-arcade-title-group">
+        <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge"
+          >⭐ Level 1: Guided Support</span
+        >
+        <span style="font-size: 13px; font-weight: 600; opacity: 0.85"
+          >| EduWonderLab Interactive Arcade</span
+        >
       </div>
-  
+      <div class="ewl-arcade-controls">
+        <button
+          type="button"
+          class="ewl-btn-toggle active"
+          id="ewl-btn-l1"
+          onclick="if (window.ewlSetLevel) window.ewlSetLevel(1);"
+        >
+          L1 Support
+        </button>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-l2"
+          onclick="if (window.ewlSetLevel) window.ewlSetLevel(2);"
+        >
+          L2 Challenge
+        </button>
+        <button
+          type="button"
+          class="ewl-sound-toggle-btn"
+          id="ewl-btn-sound"
+          onclick="
+            if (window.GameFX && window.GameFX.AudioSynth) {
+              window.GameFX.AudioSynth.muted = !window.GameFX.AudioSynth.muted;
+              this.innerText = window.GameFX.AudioSynth.muted ? '🔇 Muted' : '🔊 Sound On';
+            }
+          "
+        >
+          🔊 Sound On
+        </button>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-lang"
+          onclick="if (window.ewlToggleLang) window.ewlToggleLang();"
+        >
+          🌐 EN / ES
+        </button>
+      </div>
+    </div>
+
     <!-- nt-game-topbar-injected:begin (tools/inject-game-topbar.js) -->
-    <header class="nt-game-topbar" role="banner"><span class="ngt-title">Fraction Foundry — Divide Fractions</span></header>
+    <header class="nt-game-topbar" role="banner">
+      <span class="ngt-title">Fraction Foundry — Divide Fractions</span>
+    </header>
     <!-- nt-game-topbar-injected:end -->
     <!-- Decorative animated foundry-ember field (behind the Phaser canvas).
          Decorative only: aria-hidden, pointer-events:none, reduced-motion safe. -->
@@ -181,8 +212,7 @@
         var layer = document.getElementById("ff-bg-layer");
         if (!layer) return;
         var reduce =
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         var frag = document.createDocumentFragment();
         // soft heat glows near the bottom (the "furnace")
         var glowColors = ["#ff7b1a", "#ffb347", "#e8431f"];
@@ -253,9 +283,9 @@
 
       // ── small helpers ──
       const FF_RM_QUERY =
-        window.matchMedia &&
-        window.matchMedia("(prefers-reduced-motion: reduce)");
-      const reducedMotion = () => window.__flagshipReduced ?? (!!(FF_RM_QUERY && FF_RM_QUERY.matches));
+        window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
+      const reducedMotion = () =>
+        window.__flagshipReduced ?? !!(FF_RM_QUERY && FF_RM_QUERY.matches);
       const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
       const choice = (arr) => arr[Math.floor(Math.random() * arr.length)];
       function gcd(a, b) {
@@ -299,8 +329,7 @@
       function groupCaseOk(level, dividend, divisor) {
         const val = frVal(dividend);
         if (!(val > 0) || val > 4 + 1e-9) return false;
-        if (level === 3)
-          return divisor.n >= 2 && dividend.d === 1 && dividend.n >= 2;
+        if (level === 3) return divisor.n >= 2 && dividend.d === 1 && dividend.n >= 2;
         if (level === 4) return dividend.d > 1 && val <= 3 + 1e-9;
         // level 5: a true mixed number (greater than 1, not whole)
         return dividend.d > 1 && val > 1;
@@ -408,9 +437,7 @@
           if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
           if (!this.ctx) {
             try {
-              this.ctx = new (
-                window.AudioContext || window.webkitAudioContext
-              )();
+              this.ctx = new (window.AudioContext || window.webkitAudioContext)();
             } catch (e) {}
           }
         },
@@ -435,9 +462,7 @@
           this.play("square", 520, 0.04, 0.06);
         },
         correct() {
-          [660, 880].forEach((f, i) =>
-            setTimeout(() => this.play("sine", f, 0.14, 0.22), i * 70),
-          );
+          [660, 880].forEach((f, i) => setTimeout(() => this.play("sine", f, 0.14, 0.22), i * 70));
         },
         wrong() {
           this.play("sawtooth", 190, 0.28, 0.16);
@@ -499,12 +524,8 @@
 
           // floating crucible emblem
           const badge = this.add.container(cx, 148);
-          const pot = this.add
-            .rectangle(0, 6, 96, 56, 0x3a2410)
-            .setStrokeStyle(3, C.accent);
-          const molten = this.add
-            .rectangle(0, -8, 80, 18, C.molten)
-            .setStrokeStyle(2, C.gold);
+          const pot = this.add.rectangle(0, 6, 96, 56, 0x3a2410).setStrokeStyle(3, C.accent);
+          const molten = this.add.rectangle(0, -8, 80, 18, C.molten).setStrokeStyle(2, C.gold);
           const lip1 = this.add.rectangle(-54, -18, 16, 8, 0x3a2410);
           const lip2 = this.add.rectangle(54, -18, 16, 8, 0x3a2410);
           badge.add([pot, molten, lip1, lip2]);
@@ -636,6 +657,24 @@
         }
       }
 
+      // Questions the student missed this run. Survives level changes; a fresh
+      // start or a practice replay clears it. Practice replays these objects.
+      let ffMisses = [];
+
+      // Self-paced star tally for the current run: forges attempted, questions
+      // solved, and the best streak of consecutive solves. No clock, no score cutoff.
+      let ffRun = { solved: 0, attempts: 0, streak: 0, best: 0 };
+      // 1 star at 3 solved, 2 at a streak of 3 or 8 solved, 3 at 80%+ accuracy on 4 or more.
+      function ffStars() {
+        const { solved, attempts, best } = ffRun;
+        const accuracy = attempts ? solved / attempts : 0;
+        return (
+          (solved >= 3 ? 1 : 0) +
+          (best >= 3 || solved >= 8 ? 1 : 0) +
+          (solved >= 4 && accuracy >= 0.8 ? 1 : 0)
+        );
+      }
+
       // ════════════════════════════════════════════════════════════════════
       //  GAME
       // ════════════════════════════════════════════════════════════════════
@@ -644,13 +683,22 @@
           super("Game");
         }
         init(data) {
+          data = data || {};
+          if (data.fresh) ffMisses = [];
+          if (!data.level) ffRun = { solved: 0, attempts: 0, streak: 0, best: 0 };
+          this.replayQueue =
+            data.replay && data.replay.length
+              ? data.replay.map((q) => JSON.parse(JSON.stringify(q)))
+              : null;
+          this.replayOnly = !!this.replayQueue;
+          if (this.replayOnly) ffMisses = [];
           this.levelIndex = data.level || 0;
           this.score = data.score || 0;
           this.lives = data.lives != null ? data.lives : START_LIVES;
           this.streak = 0;
           this.locked = false;
           this.qInLevel = 0;
-          this.qPerLevel = 3; // rounds to clear a level (each is hands-on)
+          this.qPerLevel = this.replayOnly ? this.replayQueue.length : 3; // rounds to clear a level (each is hands-on)
           this.correctInLevel = 0;
         }
         create() {
@@ -669,9 +717,7 @@
           const kb = this.input.keyboard;
           const cuts = (d) => this.nudgeCuts(d);
           const count = (d) => this.nudgeCount(d);
-          ["PLUS", "NUMPAD_ADD", "UP"].forEach((k) =>
-            kb.on("keydown-" + k, () => cuts(1)),
-          );
+          ["PLUS", "NUMPAD_ADD", "UP"].forEach((k) => kb.on("keydown-" + k, () => cuts(1)));
           ["MINUS", "NUMPAD_SUBTRACT", "DOWN"].forEach((k) =>
             kb.on("keydown-" + k, () => cuts(-1)),
           );
@@ -740,9 +786,7 @@
 
         // ── Visual model area (left): the bar model YOU slice and count ──
         buildModelArea() {
-          this.add
-            .rectangle(250, 350, 460, 480, C.panel)
-            .setStrokeStyle(2, C.panelEdge);
+          this.add.rectangle(250, 350, 460, 480, C.panel).setStrokeStyle(2, C.panelEdge);
           this.add
             .text(250, 132, "YOUR BAR MODEL — TAP IT", {
               fontFamily: "Arial, sans-serif",
@@ -808,11 +852,7 @@
           if (this.locked || !this.current) return;
           const q = this.current;
           if (q.mode === "partition") {
-            this.sel = Phaser.Math.Clamp(
-              this.sel + delta,
-              0,
-              q.whole * this.cuts,
-            );
+            this.sel = Phaser.Math.Clamp(this.sel + delta, 0, q.whole * this.cuts);
           } else {
             const info = this.sliceInfo();
             if (!info.valid) {
@@ -834,11 +874,7 @@
           if (this.locked || !this.current) return;
           const q = this.current;
           const pieceW = 390 / this.cuts;
-          const p = Phaser.Math.Clamp(
-            Math.floor(localX / pieceW),
-            0,
-            this.cuts - 1,
-          );
+          const p = Phaser.Math.Clamp(Math.floor(localX / pieceW), 0, this.cuts - 1);
           const u = row * this.cuts + p; // global piece index
           if (q.mode === "partition") {
             // prefix-select up to the tapped piece; tap the last one to undo
@@ -861,10 +897,7 @@
         }
 
         addRowHitZone(x, y, w, h, row) {
-          const z = this.add
-            .zone(x, y, w, h)
-            .setOrigin(0)
-            .setInteractive({ useHandCursor: true });
+          const z = this.add.zone(x, y, w, h).setOrigin(0).setInteractive({ useHandCursor: true });
           z.on("pointerdown", (pointer, localX) => this.tapRow(row, localX));
           this.modelHits.push(z);
         }
@@ -1044,9 +1077,7 @@
 
         // ── Control panel (right): prompt, live readout, steppers, FORGE ──
         buildControlPanel() {
-          this.add
-            .rectangle(700, 350, 360, 480, C.panel)
-            .setStrokeStyle(2, C.panelEdge);
+          this.add.rectangle(700, 350, 360, 480, C.panel).setStrokeStyle(2, C.panelEdge);
           this.kindChip = this.add
             .text(700, 132, "", {
               fontFamily: "Arial, sans-serif",
@@ -1162,8 +1193,7 @@
         }
 
         kindLabel(q) {
-          if (q.mode === "partition")
-            return "WHOLE ÷ UNIT FRACTION · SLICE & COUNT";
+          if (q.mode === "partition") return "WHOLE ÷ UNIT FRACTION · SLICE & COUNT";
           if (q.level === 3) return "WHOLE ÷ FRACTION · SLICE & GROUP";
           if (q.level === 4) return "FRACTION ÷ FRACTION · SLICE & GROUP";
           return "MIXED NUMBER ÷ FRACTION · SLICE & GROUP";
@@ -1173,7 +1203,10 @@
         nextQuestion() {
           this.locked = false;
           this.missesThisRound = 0;
-          const q = makeQuestion(this.levelIndex + 1);
+          const q =
+            this.replayQueue && this.replayQueue.length
+              ? this.replayQueue.shift()
+              : makeQuestion(this.levelIndex + 1);
           this.current = q;
           this.cuts = 1;
           this.sel = 0;
@@ -1182,9 +1215,7 @@
           this.qText.setText(q.prompt);
           this.fbText.setText("");
           this.caption2.setText(
-            q.mode === "partition"
-              ? "PIECES PICKED — keys ← →"
-              : "FULL GROUPS — keys ← →",
+            q.mode === "partition" ? "PIECES PICKED — keys ← →" : "FULL GROUPS — keys ← →",
           );
           this.renderModel();
           this.setSR(
@@ -1249,21 +1280,24 @@
           SFX.init();
           const q = this.current;
           const res = this.judge();
+          ffRun.attempts++;
 
           if (res.correct) {
+            ffRun.solved++;
+            ffRun.streak++;
+            ffRun.best = Math.max(ffRun.best, ffRun.streak);
             this.locked = true;
             this.streak++;
             this.correctInLevel++;
-            window.FlagshipAdventure?.record({ firstTry: this.missesThisRound === 0, kind: q.mode });
+            window.FlagshipAdventure?.record({
+              firstTry: this.missesThisRound === 0,
+              kind: q.mode,
+            });
             this.qInLevel++;
             // Full points for an unaided first forge; fewer after a miss.
-            const gain = this.missesThisRound
-              ? 50
-              : 100 + Math.min(this.streak, 5) * 20;
+            const gain = this.missesThisRound ? 50 : 100 + Math.min(this.streak, 5) * 20;
             this.score += gain;
-            this.fbText
-              .setColor("#6bd18b")
-              .setText(`✓ +${gain}   ${q.explain}`);
+            this.fbText.setColor("#6bd18b").setText(`✓ +${gain}   ${q.explain}`);
             SFX.correct();
             this.burst(700, 490, C.good);
             this.setSR(`Correct. ${q.explain}`);
@@ -1278,8 +1312,10 @@
           // Wrong forge: explain WHY from the model state, then let the
           // student adjust the same model and forge again — self-paced.
           this.streak = 0;
+          ffRun.streak = 0;
           this.lives--;
           this.missesThisRound++;
+          if (this.missesThisRound === 1) ffMisses.push(JSON.parse(JSON.stringify(q)));
           this.fbText.setColor("#ff9b9b").setText(`✗ Not yet — ${res.why}`);
           SFX.wrong();
           if (!reducedMotion()) this.cameras.main.shake(170, 0.006);
@@ -1362,7 +1398,7 @@
             .setDepth(21)
             .setInteractive({ useHandCursor: true });
           this.add
-            .text(W / 2, 380, last ? "🏆  SEE RESULTS" : "▶  NEXT LEVEL", {
+            .text(W / 2, 380, last || this.replayOnly ? "🏆  SEE RESULTS" : "▶  NEXT LEVEL", {
               fontFamily: "Arial, sans-serif",
               fontSize: "22px",
               fontStyle: "bold",
@@ -1373,10 +1409,11 @@
           btn.on("pointerover", () => btn.setScale(1.04));
           btn.on("pointerout", () => btn.setScale(1));
           btn.on("pointerdown", () => {
-            if (last) {
+            if (last || this.replayOnly) {
               this.scene.start("Result", {
                 score: this.score,
                 lives: this.lives,
+                misses: ffMisses.slice(),
               });
             } else {
               this.scene.start("Game", {
@@ -1424,17 +1461,17 @@
         }
         init(data) {
           this.score = data.score || 0;
+          this.misses = data.misses || [];
         }
         create() {
           this.cameras.main.setBackgroundColor(C.bg);
           const cx = W / 2;
-          const stars = this.score >= 2600 ? 3 : this.score >= 1600 ? 2 : 1;
+          const stars = ffStars();
 
           // High score persist.
           try {
             const prev = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
-            if (this.score > prev)
-              localStorage.setItem(LS_KEY, String(this.score));
+            if (this.score > prev) localStorage.setItem(LS_KEY, String(this.score));
           } catch (e) {}
 
           // EduPulse classroom dashboard reporting (guarded no-op if absent).
@@ -1507,12 +1544,22 @@
               level: 0,
               score: 0,
               lives: START_LIVES,
+              fresh: true,
             }),
           );
+          if (this.misses.length) {
+            this.btn(cx, 530, "PRACTICE THE MISSES", 0x3a2410, () =>
+              this.scene.start("Game", {
+                level: 0,
+                score: 0,
+                lives: START_LIVES,
+                replay: this.misses,
+              }),
+            );
+          }
 
           const el = document.getElementById("ff-sr");
-          if (el)
-            el.textContent = `Foundry mastered. Final score ${this.score}, ${stars} stars.`;
+          if (el) el.textContent = `Foundry mastered. Final score ${this.score}, ${stars} stars.`;
         }
         btn(x, y, label, color, cb) {
           const b = this.add
@@ -1543,7 +1590,7 @@
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
         scene: [BootScene, TitleScene, GameScene, ResultScene],
       };
-      const ffGame = window.__flagshipGame = new Phaser.Game(config);
+      const ffGame = (window.__flagshipGame = new Phaser.Game(config));
 
       // ── Canvas accessibility (additive; no gameplay change) ──
       ffGame.events.once("ready", function () {
@@ -1575,7 +1622,7 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <!-- gfx-injected:end -->
     <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-    
+
     <!-- mwb-injected:end -->
     <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
     <script src="/assets/game-hint-ladder.js" defer></script>
@@ -1594,23 +1641,33 @@
       });
     </script>
     <!-- ghl-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
-  
-      <!-- EWL Diagnostic Misconception Coach -->
-      <div class="ewl-coach-card" id="ewl-coach-card" style="display: flex; position: relative; z-index: 100;">
-        <div class="ewl-coach-icon">💡</div>
-        <div class="ewl-coach-content">
-          <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
-          <p id="ewl-coach-text" data-en="Dividing by a fraction is multiplying by its reciprocal!" data-es="¡Dividir por una fracción es multiplicar por su recíproco!">Dividing by a fraction is multiplying by its reciprocal!</p>
-        </div>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
+
+    <!-- EWL Diagnostic Misconception Coach -->
+    <div
+      class="ewl-coach-card"
+      id="ewl-coach-card"
+      style="display: flex; position: relative; z-index: 100"
+    >
+      <div class="ewl-coach-icon">💡</div>
+      <div class="ewl-coach-content">
+        <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
+        <p
+          id="ewl-coach-text"
+          data-en="Dividing by a fraction is multiplying by its reciprocal!"
+          data-es="¡Dividir por una fracción es multiplicar por su recíproco!"
+        >
+          Dividing by a fraction is multiplying by its reciprocal!
+        </p>
       </div>
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <script src="/assets/formula-popup.js" defer></script>
-<script src="/assets/game-studio.js?v=20261003" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
-<script src="/math/games/shared/flagship-puzzles.js?v=20261007" defer></script>
-<script src="/math/games/shared/flagship-adventures.js?v=20261007" defer></script>
-</body>
+    </div>
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <script src="/assets/formula-popup.js" defer></script>
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
+    <script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
+    <script src="/math/games/shared/flagship-puzzles.js?v=20261007" defer></script>
+    <script src="/math/games/shared/flagship-adventures.js?v=20261007" defer></script>
+  </body>
 </html>

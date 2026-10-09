@@ -121,9 +121,7 @@
       // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
       // (document.write blocks parsing so the mirror is ready before the game script runs).
       if (typeof Phaser === "undefined") {
-        document.write(
-          '<script src="/games/vendor/phaser/phaser-3.80.1.min.js"><\/script>',
-        );
+        document.write('<script src="/games/vendor/phaser/phaser-3.80.1.min.js"><\/script>');
       }
       // If both CDNs are unreachable, show a clear message instead of a blank page.
       window.addEventListener("load", function () {
@@ -142,34 +140,72 @@
     <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
     <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
     <!-- ghl-injected:end -->
-      <link rel="stylesheet" href="/assets/game-topbar.css" />
+    <link rel="stylesheet" href="/assets/game-topbar.css" />
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-  <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
-  <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
-<link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007">
-<link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261007">
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+    <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />
+    <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/assets/game-studio.css?v=20261002" />
+    <link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007" />
+    <link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261007" />
+  </head>
   <body>
-
-            <!-- EWL Universal Arcade Enhancements Header -->
-      <div class="ewl-arcade-header-bar">
-        <div class="ewl-arcade-title-group">
-          <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
-          <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
-        </div>
-        <div class="ewl-arcade-controls">
-          <button type="button" class="ewl-btn-toggle active" id="ewl-btn-l1" onclick="if(window.ewlSetLevel) window.ewlSetLevel(1)">L1 Support</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-l2" onclick="if(window.ewlSetLevel) window.ewlSetLevel(2)">L2 Challenge</button>
-          <button type="button" class="ewl-sound-toggle-btn" id="ewl-btn-sound" onclick="if(window.GameFX && window.GameFX.AudioSynth){ window.GameFX.AudioSynth.muted = !window.GameFX.AudioSynth.muted; this.innerText = window.GameFX.AudioSynth.muted ? '🔇 Muted' : '🔊 Sound On'; }">🔊 Sound On</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-lang" onclick="if(window.ewlToggleLang) window.ewlToggleLang()">🌐 EN / ES</button>
-        </div>
+    <!-- EWL Universal Arcade Enhancements Header -->
+    <div class="ewl-arcade-header-bar">
+      <div class="ewl-arcade-title-group">
+        <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge"
+          >⭐ Level 1: Guided Support</span
+        >
+        <span style="font-size: 13px; font-weight: 600; opacity: 0.85"
+          >| EduWonderLab Interactive Arcade</span
+        >
       </div>
-  
+      <div class="ewl-arcade-controls">
+        <button
+          type="button"
+          class="ewl-btn-toggle active"
+          id="ewl-btn-l1"
+          onclick="if (window.ewlSetLevel) window.ewlSetLevel(1);"
+        >
+          L1 Support
+        </button>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-l2"
+          onclick="if (window.ewlSetLevel) window.ewlSetLevel(2);"
+        >
+          L2 Challenge
+        </button>
+        <button
+          type="button"
+          class="ewl-sound-toggle-btn"
+          id="ewl-btn-sound"
+          onclick="
+            if (window.GameFX && window.GameFX.AudioSynth) {
+              window.GameFX.AudioSynth.muted = !window.GameFX.AudioSynth.muted;
+              this.innerText = window.GameFX.AudioSynth.muted ? '🔇 Muted' : '🔊 Sound On';
+            }
+          "
+        >
+          🔊 Sound On
+        </button>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-lang"
+          onclick="if (window.ewlToggleLang) window.ewlToggleLang();"
+        >
+          🌐 EN / ES
+        </button>
+      </div>
+    </div>
+
     <!-- nt-game-topbar-injected:begin (tools/inject-game-topbar.js) -->
-    <header class="nt-game-topbar" role="banner"><span class="ngt-title">Area Architect — City Builder</span></header>
+    <header class="nt-game-topbar" role="banner">
+      <span class="ngt-title">Area Architect — City Builder</span>
+    </header>
     <!-- nt-game-topbar-injected:end -->
     <!-- Bespoke animated parallax cityscape (behind the Phaser canvas).
          Decorative only: aria-hidden, pointer-events:none, reduced-motion safe. -->
@@ -1108,7 +1144,13 @@
       GameScene.prototype.constructor = GameScene;
 
       GameScene.prototype.init = function (data) {
+        data = data || {};
         this.levelNum = data.level || 1;
+        this.replayQueue =
+          data.replay && data.replay.length
+            ? data.replay.map((round) => JSON.parse(JSON.stringify(round)))
+            : null;
+        this.misses = [];
         // Accessibility: respect the OS "reduce motion" preference. Used only
         // to soften purely-decorative animations (no gameplay change).
         this.reduceMotion = !!(
@@ -1123,7 +1165,7 @@
         this.totalWrong = 0; // wrong lock attempts across all rounds
         this.shapesPlaced = 0; // buildings added to the city strip
         this.roundsAsked = 0;
-        this.maxRounds = 10;
+        this.maxRounds = this.replayQueue ? this.replayQueue.length : 10;
         this.round = null;
         this.attempts = 0;
         this.selRow = 0;
@@ -1385,7 +1427,11 @@
           this.endGame();
           return;
         }
-        this.round = generateRound(this.levelNum);
+        this.round =
+          this.replayQueue && this.replayQueue.length
+            ? this.replayQueue.shift()
+            : generateRound(this.levelNum);
+        this.roundCard = JSON.parse(JSON.stringify(this.round));
         this.roundsAsked++;
         this.attempts = 0;
         this.lockBusy = false;
@@ -1933,6 +1979,7 @@
 
       GameScene.prototype.resolveWrong = function (teach) {
         this.attempts++;
+        if (this.attempts === 1 && this.roundCard) this.misses.push(this.roundCard);
         this.totalWrong++;
         this.combo = 0;
         this.comboText.setText("");
@@ -2053,6 +2100,7 @@
             stage: this.stage,
             rounds: this.maxRounds,
             buildings: this.shapesPlaced,
+            misses: this.misses.slice(),
           });
         });
       };
@@ -2081,7 +2129,13 @@
         this.add.rectangle(cx, H / 2, W, H, 0x0a1a2e);
 
         const pct = (d.totalCorrect / Math.max(1, d.rounds)) * 100;
-        const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
+        const solved = d.rounds || 0;
+        const attempts = solved + (d.totalWrong || 0);
+        const accuracy = attempts ? solved / attempts : 0;
+        const stars =
+          (solved >= 3 ? 1 : 0) +
+          (d.maxCombo >= 3 || solved >= 8 ? 1 : 0) +
+          (solved >= 4 && accuracy >= 0.8 ? 1 : 0);
 
         try {
           window.EduPulse &&
@@ -2329,11 +2383,26 @@
           this.cameras.main.fadeOut(300);
           this.time.delayedCall(300, () => this.scene.start("Title"));
         });
+        if (d.misses && d.misses.length) {
+          const practice = this.add
+            .rectangle(cx, 586, 250, 22, 0xf0b429)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(cx, 586, "PRACTICE THE MISSES", {
+              fontSize: "13px",
+              fontStyle: "bold",
+              color: "#1a1408",
+            })
+            .setOrigin(0.5);
+          practice.on("pointerdown", () =>
+            this.scene.start("Game", { level: d.levelNum, replay: d.misses }),
+          );
+        }
 
         this.cameras.main.fadeIn(600);
       };
 
-      const aaGame = window.__flagshipGame = new Phaser.Game(config);
+      const aaGame = (window.__flagshipGame = new Phaser.Game(config));
 
       // ── Canvas accessibility (additive) ──
       // The whole game renders into one Phaser <canvas>. Give assistive tech a
@@ -2366,7 +2435,7 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <!-- gfx-injected:end -->
     <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-    
+
     <!-- mwb-injected:end -->
     <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
     <script src="/assets/game-hint-ladder.js" defer></script>
@@ -2385,23 +2454,33 @@
       });
     </script>
     <!-- ghl-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
-  
-      <!-- EWL Diagnostic Misconception Coach -->
-      <div class="ewl-coach-card" id="ewl-coach-card" style="display: flex; position: relative; z-index: 100;">
-        <div class="ewl-coach-icon">💡</div>
-        <div class="ewl-coach-content">
-          <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
-          <p id="ewl-coach-text" data-en="Area of triangle = 1/2 * base * height." data-es="Área del triángulo = 1/2 * base * altura.">Area of triangle = 1/2 * base * height.</p>
-        </div>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
+
+    <!-- EWL Diagnostic Misconception Coach -->
+    <div
+      class="ewl-coach-card"
+      id="ewl-coach-card"
+      style="display: flex; position: relative; z-index: 100"
+    >
+      <div class="ewl-coach-icon">💡</div>
+      <div class="ewl-coach-content">
+        <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
+        <p
+          id="ewl-coach-text"
+          data-en="Area of triangle = 1/2 * base * height."
+          data-es="Área del triángulo = 1/2 * base * altura."
+        >
+          Area of triangle = 1/2 * base * height.
+        </p>
       </div>
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <script src="/assets/formula-popup.js" defer></script>
-<script src="/assets/game-studio.js?v=20261003" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
-<script src="/math/games/shared/flagship-puzzles.js?v=20261007" defer></script>
-<script src="/math/games/shared/flagship-adventures.js?v=20261007" defer></script>
-</body>
+    </div>
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <script src="/assets/formula-popup.js" defer></script>
+    <script src="/assets/game-studio.js?v=20261003" defer></script>
+    <script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
+    <script src="/math/games/shared/flagship-puzzles.js?v=20261007" defer></script>
+    <script src="/math/games/shared/flagship-adventures.js?v=20261007" defer></script>
+  </body>
 </html>
