@@ -133,22 +133,57 @@ function tapArea(model) {
   return `<div class="tp-live" data-live="area"><p class="tp-prompt">Tap each part to multiply it.</p><div class="tp-area"><span class="tp-area-side">${model.b}</span><div class="tp-area-box">${part(left, leftWidth)}${right ? part(right, 100 - leftWidth) : ""}</div></div><p class="tp-readout">Parts added: <b data-readout>0</b></p></div>`;
 }
 
-function tapLine(model) {
-  const points = [model.start];
-  for (const jump of model.jumps) points.push(points.at(-1) + jump);
-  const min = Math.min(...points);
-  const max = Math.max(...points);
-  const x = (v) => 30 + ((v - min) / Math.max(1, max - min)) * 440;
-  const arcs = model.jumps
-    .map((jump, i) => {
+// Open number line the student builds: jump buttons sized to the problem move a marker,
+// each jump draws an arc, and Undo takes the last jump back.
+function lineSvg(start, hops, end) {
+  const points = [start];
+  for (const hop of hops) points.push(points.at(-1) + hop);
+  const min = Math.min(...points, end);
+  const max = Math.max(...points, end);
+  const x = (v) => 34 + ((v - min) / Math.max(1, max - min)) * 432;
+  const fmt = (v) => v.toLocaleString("en-US");
+  const arcs = hops
+    .map((hop, i) => {
       const from = x(points[i]);
       const to = x(points[i + 1]);
-      const mid = (from + to) / 2;
-      return `<g class="tp-hop" data-hop="${i}"><path class="tp-jump" d="M${from},92 Q${mid},${28 + i * 10} ${to},92"/><text x="${mid}" y="${24 + i * 10}">${jump > 0 ? "+" : "−"}${Math.abs(jump).toLocaleString("en-US")}</text><path class="tp-tick" d="M${to},86 v14"/><text class="tp-land" x="${to}" y="122" data-land="${points[i + 1].toLocaleString("en-US")}">?</text></g>`;
+      const lift = Math.max(18, Math.min(60, Math.abs(to - from) / 2));
+      return `<path class="tp-jump" d="M${from},92 Q${(from + to) / 2},${92 - lift * 1.6} ${to},92"/><text class="tp-hop-label" x="${(from + to) / 2}" y="${86 - lift * 0.85}">${hop > 0 ? "+" : "−"}${fmt(Math.abs(hop))}</text>`;
     })
     .join("");
-  const buttons = model.jumps.map((jump, i) => `<button type="button" class="tp-hop-btn" data-jump="${i}"${i ? " disabled" : ""}>Jump ${jump > 0 ? "+" : "−"}${Math.abs(jump).toLocaleString("en-US")}</button>`).join("");
-  return `<div class="tp-live" data-live="line"><svg class="tp-line" viewBox="0 0 500 132" role="img" aria-label="${esc(model.caption || "Number line")}"><path class="tp-axis" d="M14,93 H486"/><path class="tp-tick" d="M${x(model.start)},86 v14"/><text class="tp-start" x="${x(model.start)}" y="122">${model.start.toLocaleString("en-US")}</text>${arcs}</svg><div class="tp-hop-row">${buttons}</div></div>`;
+  const here = points.at(-1);
+  // Label the start and where the marker is now; stops in between keep their ticks.
+  const ticks = points.map((v) => `<path class="tp-tick" d="M${x(v)},86 v14"/>`).join("");
+  return `<svg class="tp-line" viewBox="0 0 500 140" role="img" aria-label="Number line from ${fmt(start)}, now at ${fmt(here)}">
+    <path class="tp-axis" d="M10,93 H490"/>${ticks}${arcs}
+    ${min < 0 && max > 0 && ![start, end, points.at(-1)].includes(0) ? `<path class="tp-tick zero" d="M${x(0)},84 v18"/><text class="tp-zero" x="${x(0)}" y="122">0</text>` : ""}
+    <text class="tp-start" x="${x(start)}" y="122">${fmt(start)}</text>
+    ${here === end ? "" : `<path class="tp-tick goal" d="M${x(end)},84 v18"/><text class="tp-goal" x="${x(end)}" y="122">?</text>`}
+    ${hops.length ? `<circle class="tp-marker" cx="${x(here)}" cy="93" r="9"/><text class="tp-here" x="${x(here)}" y="132">${fmt(here)}</text>` : `<circle class="tp-marker" cx="${x(start)}" cy="93" r="9"/>`}
+  </svg>`;
+}
+
+function jumpSizes(total) {
+  const size = Math.abs(total);
+  const sizes = [];
+  for (let p = 10 ** Math.max(0, String(Math.floor(size)).length - 1); p >= 1; p /= 10) sizes.push(p);
+  return sizes.slice(0, 4);
+}
+
+function tapLine(model) {
+  if (!model.jumps.every(Number.isInteger) || !Number.isInteger(model.start)) return "";
+  const total = model.jumps.reduce((sum, jump) => sum + jump, 0);
+  const sign = total < 0 ? -1 : 1;
+  const buttons = jumpSizes(total)
+    .map((size) => `<button type="button" class="tp-hop-btn" data-hop-size="${sign * size}">${sign > 0 ? "+" : "−"}${size.toLocaleString("en-US")}</button>`)
+    .join("");
+  const goal = `${sign > 0 ? "+" : "−"}${Math.abs(total).toLocaleString("en-US")}`;
+  return `<div class="tp-live" data-live="line" data-start="${model.start}" data-end="${model.start + total}" data-hops="[]">
+    <p class="tp-prompt">Start at ${model.start.toLocaleString("en-US")}. Make jumps that add up to ${goal}.</p>
+    <div data-line>${lineSvg(model.start, [], model.start + total)}</div>
+    <div class="tp-hop-row">${buttons}<button type="button" class="tp-hop-btn undo" data-hop-undo disabled>Undo</button></div>
+    <p class="tp-readout">Moved so far: <b data-readout>0</b> of ${goal}</p>
+    <p class="tp-landed" data-landed hidden>You made the whole jump. Where did you land?</p>
+  </div>`;
 }
 
 export function interactivePicture(model) {
@@ -207,15 +242,21 @@ export function handleModelTap(target) {
     readout.textContent = sum.toLocaleString("en-US");
     return true;
   }
-  const hop = target.closest("[data-jump]");
-  if (hop) {
-    const i = Number(hop.dataset.jump);
-    const group = live.querySelector(`[data-hop="${i}"]`);
-    group.classList.add("shown");
-    const land = group.querySelector("[data-land]");
-    land.textContent = land.dataset.land;
-    hop.disabled = true;
-    live.querySelector(`[data-jump="${i + 1}"]`)?.removeAttribute("disabled");
+  const sizeButton = target.closest("[data-hop-size], [data-hop-undo]");
+  if (sizeButton && live.dataset.live === "line") {
+    const hops = JSON.parse(live.dataset.hops || "[]");
+    if (sizeButton.hasAttribute("data-hop-undo")) hops.pop();
+    else if (hops.length < 30) hops.push(Number(sizeButton.dataset.hopSize));
+    live.dataset.hops = JSON.stringify(hops);
+    const start = Number(live.dataset.start);
+    live.querySelector("[data-line]").innerHTML = lineSvg(start, hops, Number(live.dataset.end));
+    const moved = hops.reduce((sum, hop) => sum + hop, 0);
+    readout.textContent = `${moved > 0 ? "+" : moved < 0 ? "−" : ""}${Math.abs(moved).toLocaleString("en-US")}`;
+    live.querySelector("[data-hop-undo]").disabled = hops.length === 0;
+    const goal = Number(live.dataset.end) - start;
+    live.classList.toggle("landed", moved === goal);
+    const note = live.querySelector("[data-landed]");
+    if (note) note.hidden = moved !== goal;
     return true;
   }
   return false;
