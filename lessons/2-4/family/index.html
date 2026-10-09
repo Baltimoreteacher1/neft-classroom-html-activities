@@ -44,11 +44,43 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
 
-ol.choices{margin:6px 0 4px;}
+body { background: #f1f5f9; font-family: "Outfit", system-ui, sans-serif; }
+.wrap { max-width: 800px; padding: 0 0 64px 0; background: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.06); border-radius: 0 0 32px 32px; overflow: hidden; margin: 0 auto; }
+
+/* The new Hero header */
+.hero-header { background: linear-gradient(135deg, var(--navy), #1a4f8a); padding: 56px 32px; color: #fff; text-align: center; }
+.hero-header .eyebrow { color: var(--teal-light); font-size: 16px; margin-bottom: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
+.hero-header h1 { color: #fff; font-size: 44px; margin: 0; line-height: 1.1; font-weight: 800; }
+.hero-header .std { display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; margin-top:16px; border-radius: 999px; padding: 4px 12px; font-size: 14px; font-weight: 700; }
+
+/* Upgrade sections to look like cards */
+section { padding: 40px 32px; border: none; margin: 0; border-bottom: 1px solid #edf1f5; }
+section h2 { font-size: 30px; font-weight: 800; color: var(--navy); display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+section h2::before { content: "✨"; font-size: 28px; }
+
+/* Specific icons for sections */
+.section-learning h2::before { content: "💡"; }
+.section-kitchen h2::before { content: "🍕"; }
+.section-tool h2::before { content: "🕹️"; }
+.section-vocab h2::before { content: "💬"; }
+.section-example h2::before { content: "🏫"; }
+.section-practice h2::before { content: "✏️"; }
+.section-stuck h2::before { content: "🆘"; }
+
+ol.choices{margin:16px 0 8px;list-style:none;padding-left:0;}
+ol.choices li{background: #f8fafc; border:2px solid #e2e8f0;border-radius:16px;padding:16px 20px;margin-bottom:12px;font-weight:600; font-size: 20px; cursor: pointer; transition: all 0.2s; color: var(--navy); }
+ol.choices li:hover { border-color: var(--teal); background: var(--teal-light); }
+
+.welcome-note{background:var(--teal-light);border:none;border-radius:20px;padding:24px 32px;margin-bottom:0; text-align: left; }
+.welcome-note strong{display:block;font-size:26px;font-weight: 800; color:var(--navy);margin-bottom:8px;}
+.welcome-note p{margin:0;color:var(--navy);font-size:20px; line-height: 1.5; }
+
+.callout { border: none; border-radius: 20px; padding: 24px 32px; background: #f8fafc; font-size: 22px; line-height: 1.5; }
+
 .lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
-.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
-  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
-.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio + label{display:inline-block;border:2px solid #e2e8f0;border-radius:999px;padding:8px 24px;
+  margin:0 12px 16px 0;cursor:pointer;font-weight:700;color:var(--navy);background:#fff; font-size: 18px; transition: all 0.2s;}
+.lang-radio:checked + label{background:var(--navy);color:#fff;border-color:var(--navy);}
 .lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
 .lang-panel{display:none;margin-top:6px;}
 #family-lang-en:checked ~ .lang-panels [data-lang="en"],
@@ -58,7 +90,7 @@ ol.choices{margin:6px 0 4px;}
 #family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
 .lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
 .auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
-  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
+  padding:4px 16px;font-size:15px;font-weight:700;color:var(--ink);margin:0 0 12px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -69,14 +101,16 @@ ol.choices{margin:6px 0 4px;}
 </head>
 <body>
 <div class="wrap">
-<p class="eyebrow">Family Lesson Support</p>
-<h1>Unit 2, Lesson 4: Represent and Describe Data in a Box Plot<span class="std">6.DS.5</span></h1>
-<p class="sub">A quick guide for families and for any student who missed class.</p>
 
-<section>
+<div class="hero-header">
+  <p class="eyebrow">Family Lesson Support</p>
+  <h1>Unit 2, Lesson 4: Represent and Describe Data in a Box Plot</h1>
+  <span class="std">6.DS.5</span>
+</div>
+
+<section class="section-learning">
   <h2>What students are learning</h2>
-  <p>A box plot is a simple picture that shows how a set of data is spread out, using just five key numbers: the lowest value, the first quartile (Q1), the median (middle), the third quartile (Q3), and the highest value.</p>
-  <p class="callout"><strong>Key idea:</strong> A box plot shows how data is spread out using five numbers: the lowest, the first quartile (Q1), the median, the third quartile (Q3), and the highest. The box goes from Q1 to Q3 and holds the middle half of the data; its length is Q3 − Q1. Lines called whiskers reach from the box out to the lowest and highest numbers.<br><span class="es-text" lang="es">Idea clave: Un diagrama de caja muestra cómo se reparten los datos usando cinco números: el menor, el primer cuartil (Q1), la mediana, el tercer cuartil (Q3) y el mayor. La caja va de Q1 a Q3 y contiene la mitad central de los datos; su largo es Q3 − Q1. Unas líneas llamadas bigotes van desde la caja hasta el número menor y el número mayor.</span></p>
+  <p class="callout" style="font-size:22px;"><strong>Key idea:</strong> A box plot shows how data is spread out using five numbers: the lowest, the first quartile (Q1), the median, the third quartile (Q3), and the highest. The box goes from Q1 to Q3 and holds the middle half of the data; its length is Q3 − Q1. Lines called whiskers reach from the box out to the lowest and highest numbers.<br><span class="es-text" lang="es" style="font-size:18px;">Idea clave: Un diagrama de caja muestra cómo se reparten los datos usando cinco números: el menor, el primer cuartil (Q1), la mediana, el tercer cuartil (Q3) y el mayor. La caja va de Q1 a Q3 y contiene la mitad central de los datos; su largo es Q3 − Q1. Unas líneas llamadas bigotes van desde la caja hasta el número menor y el número mayor.</span></p>
 </section>
 
 <section class="lang-section">
@@ -91,42 +125,48 @@ ol.choices{margin:6px 0 4px;}
   </div>
   </div>
 </section>
-<section>
-  <h2>Key words</h2>
-  <ul><li><span class="kw">Display Data with Box Plots</span> — Show a data set's five-number summary in a box-and-whisker display.<br><span class="es-text">Español: Representar datos con diagramas de caja — Mostrar el resumen de cinco números de un conjunto de datos en un diagrama de caja y bigotes.</span></li><li><span class="kw">Box Plot</span> — A graph that shows how data is spread using five key numbers.<br><span class="es-text">Español: Diagrama de caja — Una gráfica que muestra cómo se reparten los datos con cinco números clave.</span></li><li><span class="kw">Median</span> — The middle number when you put them in order.<br><span class="es-text">Español: Mediana — El número del medio cuando los pones en orden.</span></li><li><span class="kw">Quartile</span> — Numbers that split the data into four equal parts.<br><span class="es-text">Español: Cuartil — Números que dividen los datos en cuatro partes iguales.</span></li><li><span class="kw">Interquartile Range</span> — The spread of the middle half of the data (Q3 − Q1).<br><span class="es-text">Español: Rango intercuartílico — La extensión de la mitad central de los datos (Q3 − Q1).</span></li><li><span class="kw">Data distribution</span> — How the data looks: where it sits and how spread out it is.<br><span class="es-text">Español: Distribución de datos — Cómo se ven los datos: dónde están y qué tan separados están.</span></li><li><span class="kw">Variability</span> — How spread out the numbers are.<br><span class="es-text">Español: Variabilidad — Qué tan separados están los números.</span></li><li><span class="kw">Five-number summary</span> — The minimum, first quartile, median, third quartile, and maximum of a data set.<br><span class="es-text">Español: Resumen de cinco números — El mínimo, el primer cuartil, la mediana, el tercer cuartil y el máximo de un conjunto de datos.</span></li><li><span class="kw">Whisker</span> — A line on a box plot that reaches from the box out to the least or greatest value.<br><span class="es-text">Español: Bigote — Una línea en un diagrama de caja que va desde la caja hasta el valor menor o mayor.</span></li><li><span class="kw">Middle half</span> — The values from the first quartile to the third quartile, which the box covers.<br><span class="es-text">Español: Mitad central — Los valores desde el primer cuartil hasta el tercer cuartil, que la caja cubre.</span></li></ul>
-</section>
-<section>
-  <h2>How we did it in class today</h2>
-  <ol><li>My data, in order: 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. There are 11 numbers.</li><li>The middle number is the 6th one, 14, so the median = 14.</li><li>The lower half is 4, 6, 8, 10, 12. Its middle is 8, so Q1 = 8.</li><li>The upper half is 15, 18, 22, 24, 28. Its middle is 22, so Q3 = 22.</li><li>The lowest is 4 and the highest is 28. I draw a box from 8 to 22, a line at 14, and whiskers out to 4 and 28.</li></ol>
-</section>
-<section>
-  <h2>Try this together</h2>
-  <p>Match each box plot term to its meaning.</p><ol><li>Minimum</li><li>Q1</li><li>Median</li></ol>
+<section class="section-kitchen">
+  <h2>Kitchen Table Math</h2>
+  <div class="welcome-note" style="background:var(--yellow-light); border-left-color:var(--yellow); margin-bottom: 0;">
+    <strong>Math is everywhere!</strong>
+    <p>Try exploring this topic while you are cooking, shopping, or driving. Ask your student to be the teacher and explain it to you in their own words.</p>
+  </div>
 </section>
 
-<section class="tool-section">
-  <h2>Try the tool together <span class="es">· Prueben la herramienta</span></h2>
-  <p><strong>Lesson Tool</strong> — This is the same model your student used in class. Change it and watch what happens.</p>
-  <p class="es-text">Herramienta de la lección — Este es el mismo modelo que su estudiante usó en clase. Cámbielo y observe qué sucede.</p>
+<section class="section-tool tool-section">
+  <h2>Play with today's math <span class="es">· Jueguen con las matemáticas</span></h2>
+  <p><strong>Interactive Lesson Model</strong> — This is the exact same interactive tool your student used in class today. Change the numbers and watch what happens!</p>
+  <p class="es-text">Modelo interactivo de la lección — Esta es la misma herramienta interactiva que su estudiante usó en clase hoy. ¡Cambie los números y observe qué sucede!</p>
   <div class="tool-host" data-lesson-model-host><div class="interactive-visual" data-visual="box-plot-builder" data-config="{&quot;kind&quot;:&quot;box-plot-builder&quot;,&quot;unit&quot;:&quot;points&quot;,&quot;data&quot;:[12,7,15,9,12,18,10,14,8],&quot;presets&quot;:[{&quot;label&quot;:&quot;Game points&quot;,&quot;data&quot;:[12,7,15,9,12,18,10,14,8],&quot;unit&quot;:&quot;points&quot;},{&quot;label&quot;:&quot;Quiz scores&quot;,&quot;data&quot;:[72,85,78,90,85,65,88,95,80,74],&quot;unit&quot;:&quot;scores&quot;},{&quot;label&quot;:&quot;Daily highs (°F)&quot;,&quot;data&quot;:[61,58,67,72,64,70,59,66],&quot;unit&quot;:&quot;°F&quot;}]}" role="group" aria-label="Interactive Represent and Describe Data in a Box Plot" style="margin:var(--sp-3) 0;"><noscript><div class="interactive-visual-fallback">Turn on JavaScript to use this tool. The steps above work on paper too.</div></noscript></div></div>
   <p class="muted-note">Works on a phone, a tablet, or a computer. Nothing to install, nothing to sign in to.</p>
 </section>
-<section>
-  <h2>Check your thinking together</h2>
-  <ol><li>Minimum → <span class="answer">Smallest value in the data set</span></li><li>Q1 → <span class="answer">Median of the lower half</span></li><li>Median → <span class="answer">Middle value of the entire data set</span></li></ol>
+<section class="section-vocab">
+  <h2>Vocabulary you might hear</h2>
+  <ul><li><span class="kw">Display Data with Box Plots</span> — Show a data set's five-number summary in a box-and-whisker display.<br><span class="es-text">Español: Representar datos con diagramas de caja — Mostrar el resumen de cinco números de un conjunto de datos en un diagrama de caja y bigotes.</span></li><li><span class="kw">Box Plot</span> — A graph that shows how data is spread using five key numbers.<br><span class="es-text">Español: Diagrama de caja — Una gráfica que muestra cómo se reparten los datos con cinco números clave.</span></li><li><span class="kw">Median</span> — The middle number when you put them in order.<br><span class="es-text">Español: Mediana — El número del medio cuando los pones en orden.</span></li><li><span class="kw">Quartile</span> — Numbers that split the data into four equal parts.<br><span class="es-text">Español: Cuartil — Números que dividen los datos en cuatro partes iguales.</span></li><li><span class="kw">Interquartile Range</span> — The spread of the middle half of the data (Q3 − Q1).<br><span class="es-text">Español: Rango intercuartílico — La extensión de la mitad central de los datos (Q3 − Q1).</span></li><li><span class="kw">Data distribution</span> — How the data looks: where it sits and how spread out it is.<br><span class="es-text">Español: Distribución de datos — Cómo se ven los datos: dónde están y qué tan separados están.</span></li><li><span class="kw">Variability</span> — How spread out the numbers are.<br><span class="es-text">Español: Variabilidad — Qué tan separados están los números.</span></li><li><span class="kw">Five-number summary</span> — The minimum, first quartile, median, third quartile, and maximum of a data set.<br><span class="es-text">Español: Resumen de cinco números — El mínimo, el primer cuartil, la mediana, el tercer cuartil y el máximo de un conjunto de datos.</span></li><li><span class="kw">Whisker</span> — A line on a box plot that reaches from the box out to the least or greatest value.<br><span class="es-text">Español: Bigote — Una línea en un diagrama de caja que va desde la caja hasta el valor menor o mayor.</span></li><li><span class="kw">Middle half</span> — The values from the first quartile to the third quartile, which the box covers.<br><span class="es-text">Español: Mitad central — Los valores desde el primer cuartil hasta el tercer cuartil, que la caja cubre.</span></li></ul>
 </section>
-<section>
+<section class="section-example">
+  <h2>How we did it in class today</h2>
+  <div class="callout" style="background:#fff;border-color:var(--line);"><ol><li>My data, in order: 4, 6, 8, 10, 12, 14, 15, 18, 22, 24, 28. There are 11 numbers.</li><li>The middle number is the 6th one, 14, so the median = 14.</li><li>The lower half is 4, 6, 8, 10, 12. Its middle is 8, so Q1 = 8.</li><li>The upper half is 15, 18, 22, 24, 28. Its middle is 22, so Q3 = 22.</li><li>The lowest is 4 and the highest is 28. I draw a box from 8 to 22, a line at 14, and whiskers out to 4 and 28.</li></ol></div>
+</section>
+<section class="section-practice">
+  <h2>Try this together</h2>
+  <p class="sub" style="margin-top:-6px;">Pick one question to talk about. You don't need to do them all!</p>
+  <div class="callout" style="background:var(--cream);border-color:var(--line); padding-bottom:16px;">
+         <p><strong>Match each box plot term to its meaning.</strong></p>
+         <p style="font-size:22px;color:var(--navy);margin:12px 0;">Minimum</p>
+         
+         <details style="margin-top: 20px; font-size: 18px;">
+           <summary style="cursor: pointer; color: var(--teal); font-weight: 600;">Check the answer</summary>
+           <p style="margin-top: 12px; margin-bottom:0;">The answer is: <strong class="answer" style="font-size:20px;">Smallest value in the data set</strong></p>
+         </details>
+       </div>
+</section>
+<section class="section-stuck">
   <h2>If they get stuck...</h2>
-  <p>Watch out for this: A common mistake in Display Data: Box Plots is treating a quartile as just one data point instead of the median of a half — for the lower half 4, 8, 10, 14, some students pick 10 (the last value) as Q1 instead of finding the median of that half: Q1 = (8 + 10) ÷ 2 = 9. A second common slip is finding IQR by adding the quartiles instead of subtracting, writing IQR = Q3 + Q1 (like 30 + 18 = 48) instead of IQR = Q3 − Q1 (30 − 18 = 12) — always order the data first, then subtract Q1 from Q3 to find the spread of the middle 50%.</p>
-  <p><strong>What to ask:</strong> "Can you show me how you got that? Did we miss a step?"</p>
-</section>
-<section>
-  <h2>How families can help at home</h2>
-  <ul>
-    <li>Look around the house for ways to use this math together (like cooking or shopping).</li>
-    <li>Ask your student to teach you the example above in their own words.</li>
-    <li>When they get an answer, ask "Does that make sense?" before checking if it's right.</li>
-  </ul>
+  <div class="callout" style="border-left: 6px solid #ff9800; background: #fff8e1;">
+    <p style="margin-top:0;"><strong>Watch out for this:</strong> A common mistake in Display Data: Box Plots is treating a quartile as just one data point instead of the median of a half — for the lower half 4, 8, 10, 14, some students pick 10 (the last value) as Q1 instead of finding the median of that half: Q1 = (8 + 10) ÷ 2 = 9. A second common slip is finding IQR by adding the quartiles instead of subtracting, writing IQR = Q3 + Q1 (like 30 + 18 = 48) instead of IQR = Q3 − Q1 (30 − 18 = 12) — always order the data first, then subtract Q1 from Q3 to find the spread of the middle 50%.</p>
+    <p style="margin-bottom:0;"><strong>Try asking:</strong> "Can you show me how you got that? Did we miss a step?"</p>
+  </div>
 </section>
 <section>
   <h2>Spanish support <span class="es">· Apoyo en español</span></h2>

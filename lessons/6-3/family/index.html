@@ -44,11 +44,43 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
 
-ol.choices{margin:6px 0 4px;}
+body { background: #f1f5f9; font-family: "Outfit", system-ui, sans-serif; }
+.wrap { max-width: 800px; padding: 0 0 64px 0; background: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.06); border-radius: 0 0 32px 32px; overflow: hidden; margin: 0 auto; }
+
+/* The new Hero header */
+.hero-header { background: linear-gradient(135deg, var(--navy), #1a4f8a); padding: 56px 32px; color: #fff; text-align: center; }
+.hero-header .eyebrow { color: var(--teal-light); font-size: 16px; margin-bottom: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
+.hero-header h1 { color: #fff; font-size: 44px; margin: 0; line-height: 1.1; font-weight: 800; }
+.hero-header .std { display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; margin-top:16px; border-radius: 999px; padding: 4px 12px; font-size: 14px; font-weight: 700; }
+
+/* Upgrade sections to look like cards */
+section { padding: 40px 32px; border: none; margin: 0; border-bottom: 1px solid #edf1f5; }
+section h2 { font-size: 30px; font-weight: 800; color: var(--navy); display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+section h2::before { content: "✨"; font-size: 28px; }
+
+/* Specific icons for sections */
+.section-learning h2::before { content: "💡"; }
+.section-kitchen h2::before { content: "🍕"; }
+.section-tool h2::before { content: "🕹️"; }
+.section-vocab h2::before { content: "💬"; }
+.section-example h2::before { content: "🏫"; }
+.section-practice h2::before { content: "✏️"; }
+.section-stuck h2::before { content: "🆘"; }
+
+ol.choices{margin:16px 0 8px;list-style:none;padding-left:0;}
+ol.choices li{background: #f8fafc; border:2px solid #e2e8f0;border-radius:16px;padding:16px 20px;margin-bottom:12px;font-weight:600; font-size: 20px; cursor: pointer; transition: all 0.2s; color: var(--navy); }
+ol.choices li:hover { border-color: var(--teal); background: var(--teal-light); }
+
+.welcome-note{background:var(--teal-light);border:none;border-radius:20px;padding:24px 32px;margin-bottom:0; text-align: left; }
+.welcome-note strong{display:block;font-size:26px;font-weight: 800; color:var(--navy);margin-bottom:8px;}
+.welcome-note p{margin:0;color:var(--navy);font-size:20px; line-height: 1.5; }
+
+.callout { border: none; border-radius: 20px; padding: 24px 32px; background: #f8fafc; font-size: 22px; line-height: 1.5; }
+
 .lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
-.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
-  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
-.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio + label{display:inline-block;border:2px solid #e2e8f0;border-radius:999px;padding:8px 24px;
+  margin:0 12px 16px 0;cursor:pointer;font-weight:700;color:var(--navy);background:#fff; font-size: 18px; transition: all 0.2s;}
+.lang-radio:checked + label{background:var(--navy);color:#fff;border-color:var(--navy);}
 .lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
 .lang-panel{display:none;margin-top:6px;}
 #family-lang-en:checked ~ .lang-panels [data-lang="en"],
@@ -58,7 +90,7 @@ ol.choices{margin:6px 0 4px;}
 #family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
 .lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
 .auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
-  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
+  padding:4px 16px;font-size:15px;font-weight:700;color:var(--ink);margin:0 0 12px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -69,14 +101,16 @@ ol.choices{margin:6px 0 4px;}
 </head>
 <body>
 <div class="wrap">
-<p class="eyebrow">Family Lesson Support</p>
-<h1>Unit 6, Lesson 3: Explore Numerical Expressions with Exponents<span class="std">6.AT.5</span></h1>
-<p class="sub">A quick guide for families and for any student who missed class.</p>
 
-<section>
+<div class="hero-header">
+  <p class="eyebrow">Family Lesson Support</p>
+  <h1>Unit 6, Lesson 3: Explore Numerical Expressions with Exponents</h1>
+  <span class="std">6.AT.5</span>
+</div>
+
+<section class="section-learning">
   <h2>What students are learning</h2>
-  <p>An exponent is a small raised number that tells you how many times to multiply a number by itself. We say 2³ as &quot;two to the third power.&quot;</p>
-  <p class="callout"><strong>Key idea:</strong> An exponent tells how many times to multiply a number by itself. For example, 2³ means 2 × 2 × 2 = 8, not 2 × 3 = 6.<br><span class="es-text" lang="es">Idea clave: Un exponente dice cuántas veces se multiplica un número por sí mismo. Por ejemplo, 2³ significa 2 × 2 × 2 = 8, no 2 × 3 = 6.</span></p>
+  <p class="callout" style="font-size:22px;"><strong>Key idea:</strong> An exponent tells how many times to multiply a number by itself. For example, 2³ means 2 × 2 × 2 = 8, not 2 × 3 = 6.<br><span class="es-text" lang="es" style="font-size:18px;">Idea clave: Un exponente dice cuántas veces se multiplica un número por sí mismo. Por ejemplo, 2³ significa 2 × 2 × 2 = 8, no 2 × 3 = 6.</span></p>
 </section>
 
 <section class="lang-section">
@@ -91,42 +125,48 @@ ol.choices{margin:6px 0 4px;}
   </div>
   </div>
 </section>
-<section>
-  <h2>Key words</h2>
-  <ul><li><span class="kw">Powers and Exponents</span> — A power uses a base and an exponent to show repeated multiplication.<br><span class="es-text">Español: Potencias y exponentes — Una potencia usa una base y un exponente para mostrar multiplicación repetida.</span></li><li><span class="kw">Exponent</span> — A small number that tells how many times to multiply a number by itself.<br><span class="es-text">Español: Exponente — Un número pequeño que dice cuántas veces multiplicar un número por sí mismo.</span></li><li><span class="kw">Base</span> — The number that gets multiplied by itself.<br><span class="es-text">Español: Base — El número que se multiplica por sí mismo.</span></li><li><span class="kw">Power</span> — A number written with a base and an exponent, like 2³.<br><span class="es-text">Español: Potencia — Un número escrito con una base y un exponente, como 2³.</span></li><li><span class="kw">Evaluate</span> — To find the value by putting numbers in for the letters.<br><span class="es-text">Español: Evaluar — Encontrar el valor poniendo números en lugar de las letras.</span></li><li><span class="kw">Repeated multiplication</span> — Multiplying the same factor again and again.<br><span class="es-text">Español: Multiplicación repetida — Multiplicar el mismo factor una y otra vez.</span></li><li><span class="kw">Expanded form</span> — A power written out as a product of its factors.<br><span class="es-text">Español: Forma desarrollada — Una potencia escrita como el producto de sus factores.</span></li><li><span class="kw">Squared</span> — A base used as a factor two times.<br><span class="es-text">Español: Al cuadrado — Una base usada como factor dos veces.</span></li><li><span class="kw">Cubed</span> — A base used as a factor three times.<br><span class="es-text">Español: Al cubo — Una base usada como factor tres veces.</span></li></ul>
-</section>
-<section>
-  <h2>How we did it in class today</h2>
-  <ol><li>I want to find the value of 2³.</li><li>The small 3 tells me to multiply 2 by itself 3 times.</li><li>So I write 2 × 2 × 2.</li><li>First 2 × 2 = 4. Then 4 × 2 = 8.</li><li>So 2³ = 8.</li></ol>
-</section>
-<section>
-  <h2>Try this together</h2>
-  <p>Match each power to its value.</p><ol><li>2⁵</li><li>3³</li><li>4³</li></ol>
+<section class="section-kitchen">
+  <h2>Kitchen Table Math</h2>
+  <div class="welcome-note" style="background:var(--yellow-light); border-left-color:var(--yellow); margin-bottom: 0;">
+    <strong>Math is everywhere!</strong>
+    <p>Try exploring this topic while you are cooking, shopping, or driving. Ask your student to be the teacher and explain it to you in their own words.</p>
+  </div>
 </section>
 
-<section class="tool-section">
-  <h2>Try the tool together <span class="es">· Prueben la herramienta</span></h2>
-  <p><strong>Lesson Tool</strong> — This is the same model your student used in class. Change it and watch what happens.</p>
-  <p class="es-text">Herramienta de la lección — Este es el mismo modelo que su estudiante usó en clase. Cámbielo y observe qué sucede.</p>
+<section class="section-tool tool-section">
+  <h2>Play with today's math <span class="es">· Jueguen con las matemáticas</span></h2>
+  <p><strong>Interactive Lesson Model</strong> — This is the exact same interactive tool your student used in class today. Change the numbers and watch what happens!</p>
+  <p class="es-text">Modelo interactivo de la lección — Esta es la misma herramienta interactiva que su estudiante usó en clase hoy. ¡Cambie los números y observe qué sucede!</p>
   <div class="tool-host" data-lesson-model-host><div class="interactive-visual" data-visual="power-builder" data-config="{&quot;kind&quot;:&quot;power-builder&quot;,&quot;base&quot;:4,&quot;exponent&quot;:3,&quot;presets&quot;:[&quot;4^3&quot;,&quot;6^2&quot;,&quot;2^5&quot;,&quot;10^3&quot;,&quot;3^4&quot;,&quot;5^2&quot;]}" role="group" aria-label="Interactive Explore Numerical Expressions with Exponents" style="margin:var(--sp-3) 0;"><noscript><div class="interactive-visual-fallback">Turn on JavaScript to use this tool. The steps above work on paper too.</div></noscript></div></div>
   <p class="muted-note">Works on a phone, a tablet, or a computer. Nothing to install, nothing to sign in to.</p>
 </section>
-<section>
-  <h2>Check your thinking together</h2>
-  <ol><li>2⁵ → <span class="answer">32</span></li><li>3³ → <span class="answer">27</span></li><li>4³ → <span class="answer">64</span></li></ol>
+<section class="section-vocab">
+  <h2>Vocabulary you might hear</h2>
+  <ul><li><span class="kw">Powers and Exponents</span> — A power uses a base and an exponent to show repeated multiplication.<br><span class="es-text">Español: Potencias y exponentes — Una potencia usa una base y un exponente para mostrar multiplicación repetida.</span></li><li><span class="kw">Exponent</span> — A small number that tells how many times to multiply a number by itself.<br><span class="es-text">Español: Exponente — Un número pequeño que dice cuántas veces multiplicar un número por sí mismo.</span></li><li><span class="kw">Base</span> — The number that gets multiplied by itself.<br><span class="es-text">Español: Base — El número que se multiplica por sí mismo.</span></li><li><span class="kw">Power</span> — A number written with a base and an exponent, like 2³.<br><span class="es-text">Español: Potencia — Un número escrito con una base y un exponente, como 2³.</span></li><li><span class="kw">Evaluate</span> — To find the value by putting numbers in for the letters.<br><span class="es-text">Español: Evaluar — Encontrar el valor poniendo números en lugar de las letras.</span></li><li><span class="kw">Repeated multiplication</span> — Multiplying the same factor again and again.<br><span class="es-text">Español: Multiplicación repetida — Multiplicar el mismo factor una y otra vez.</span></li><li><span class="kw">Expanded form</span> — A power written out as a product of its factors.<br><span class="es-text">Español: Forma desarrollada — Una potencia escrita como el producto de sus factores.</span></li><li><span class="kw">Squared</span> — A base used as a factor two times.<br><span class="es-text">Español: Al cuadrado — Una base usada como factor dos veces.</span></li><li><span class="kw">Cubed</span> — A base used as a factor three times.<br><span class="es-text">Español: Al cubo — Una base usada como factor tres veces.</span></li></ul>
 </section>
-<section>
+<section class="section-example">
+  <h2>How we did it in class today</h2>
+  <div class="callout" style="background:#fff;border-color:var(--line);"><ol><li>I want to find the value of 2³.</li><li>The small 3 tells me to multiply 2 by itself 3 times.</li><li>So I write 2 × 2 × 2.</li><li>First 2 × 2 = 4. Then 4 × 2 = 8.</li><li>So 2³ = 8.</li></ol></div>
+</section>
+<section class="section-practice">
+  <h2>Try this together</h2>
+  <p class="sub" style="margin-top:-6px;">Pick one question to talk about. You don't need to do them all!</p>
+  <div class="callout" style="background:var(--cream);border-color:var(--line); padding-bottom:16px;">
+         <p><strong>Match each power to its value.</strong></p>
+         <p style="font-size:22px;color:var(--navy);margin:12px 0;">2⁵</p>
+         
+         <details style="margin-top: 20px; font-size: 18px;">
+           <summary style="cursor: pointer; color: var(--teal); font-weight: 600;">Check the answer</summary>
+           <p style="margin-top: 12px; margin-bottom:0;">The answer is: <strong class="answer" style="font-size:20px;">32</strong></p>
+         </details>
+       </div>
+</section>
+<section class="section-stuck">
   <h2>If they get stuck...</h2>
-  <p>Watch out for this: A common mistake in Powers and Exponents is multiplying the base by the exponent instead of using the base as a repeated factor — for example, thinking 2³ = 2 × 3 = 6 instead of 2³ = 2 × 2 × 2 = 8. Before you submit, rewrite the power as repeated multiplication first, then multiply step by step.</p>
-  <p><strong>What to ask:</strong> "Can you show me how you got that? Did we miss a step?"</p>
-</section>
-<section>
-  <h2>How families can help at home</h2>
-  <ul>
-    <li>Look around the house for ways to use this math together (like cooking or shopping).</li>
-    <li>Ask your student to teach you the example above in their own words.</li>
-    <li>When they get an answer, ask "Does that make sense?" before checking if it's right.</li>
-  </ul>
+  <div class="callout" style="border-left: 6px solid #ff9800; background: #fff8e1;">
+    <p style="margin-top:0;"><strong>Watch out for this:</strong> A common mistake in Powers and Exponents is multiplying the base by the exponent instead of using the base as a repeated factor — for example, thinking 2³ = 2 × 3 = 6 instead of 2³ = 2 × 2 × 2 = 8. Before you submit, rewrite the power as repeated multiplication first, then multiply step by step.</p>
+    <p style="margin-bottom:0;"><strong>Try asking:</strong> "Can you show me how you got that? Did we miss a step?"</p>
+  </div>
 </section>
 <section>
   <h2>Spanish support <span class="es">· Apoyo en español</span></h2>

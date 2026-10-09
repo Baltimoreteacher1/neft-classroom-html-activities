@@ -44,11 +44,43 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
 
-ol.choices{margin:6px 0 4px;}
+body { background: #f1f5f9; font-family: "Outfit", system-ui, sans-serif; }
+.wrap { max-width: 800px; padding: 0 0 64px 0; background: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.06); border-radius: 0 0 32px 32px; overflow: hidden; margin: 0 auto; }
+
+/* The new Hero header */
+.hero-header { background: linear-gradient(135deg, var(--navy), #1a4f8a); padding: 56px 32px; color: #fff; text-align: center; }
+.hero-header .eyebrow { color: var(--teal-light); font-size: 16px; margin-bottom: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
+.hero-header h1 { color: #fff; font-size: 44px; margin: 0; line-height: 1.1; font-weight: 800; }
+.hero-header .std { display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; margin-top:16px; border-radius: 999px; padding: 4px 12px; font-size: 14px; font-weight: 700; }
+
+/* Upgrade sections to look like cards */
+section { padding: 40px 32px; border: none; margin: 0; border-bottom: 1px solid #edf1f5; }
+section h2 { font-size: 30px; font-weight: 800; color: var(--navy); display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+section h2::before { content: "✨"; font-size: 28px; }
+
+/* Specific icons for sections */
+.section-learning h2::before { content: "💡"; }
+.section-kitchen h2::before { content: "🍕"; }
+.section-tool h2::before { content: "🕹️"; }
+.section-vocab h2::before { content: "💬"; }
+.section-example h2::before { content: "🏫"; }
+.section-practice h2::before { content: "✏️"; }
+.section-stuck h2::before { content: "🆘"; }
+
+ol.choices{margin:16px 0 8px;list-style:none;padding-left:0;}
+ol.choices li{background: #f8fafc; border:2px solid #e2e8f0;border-radius:16px;padding:16px 20px;margin-bottom:12px;font-weight:600; font-size: 20px; cursor: pointer; transition: all 0.2s; color: var(--navy); }
+ol.choices li:hover { border-color: var(--teal); background: var(--teal-light); }
+
+.welcome-note{background:var(--teal-light);border:none;border-radius:20px;padding:24px 32px;margin-bottom:0; text-align: left; }
+.welcome-note strong{display:block;font-size:26px;font-weight: 800; color:var(--navy);margin-bottom:8px;}
+.welcome-note p{margin:0;color:var(--navy);font-size:20px; line-height: 1.5; }
+
+.callout { border: none; border-radius: 20px; padding: 24px 32px; background: #f8fafc; font-size: 22px; line-height: 1.5; }
+
 .lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
-.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
-  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
-.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio + label{display:inline-block;border:2px solid #e2e8f0;border-radius:999px;padding:8px 24px;
+  margin:0 12px 16px 0;cursor:pointer;font-weight:700;color:var(--navy);background:#fff; font-size: 18px; transition: all 0.2s;}
+.lang-radio:checked + label{background:var(--navy);color:#fff;border-color:var(--navy);}
 .lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
 .lang-panel{display:none;margin-top:6px;}
 #family-lang-en:checked ~ .lang-panels [data-lang="en"],
@@ -58,7 +90,7 @@ ol.choices{margin:6px 0 4px;}
 #family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
 .lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
 .auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
-  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
+  padding:4px 16px;font-size:15px;font-weight:700;color:var(--ink);margin:0 0 12px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -69,14 +101,16 @@ ol.choices{margin:6px 0 4px;}
 </head>
 <body>
 <div class="wrap">
-<p class="eyebrow">Family Lesson Support</p>
-<h1>Unit 7, Lesson 4: Compare and Order Integers and Rational Numbers<span class="std">6.NOS.8</span></h1>
-<p class="sub">A quick guide for families and for any student who missed class.</p>
 
-<section>
+<div class="hero-header">
+  <p class="eyebrow">Family Lesson Support</p>
+  <h1>Unit 7, Lesson 4: Compare and Order Integers and Rational Numbers</h1>
+  <span class="std">6.NOS.8</span>
+</div>
+
+<section class="section-learning">
   <h2>What students are learning</h2>
-  <p>To compare integers means to see which one is greater or less. On a number line, numbers get bigger as you go right and smaller as you go left.</p>
-  <p class="callout"><strong>Key idea:</strong> On a number line, numbers get bigger as you go right and smaller as you go left. So -10 is less than -2, because -10 is farther left. To put numbers in order, picture where each one sits on the line.<br><span class="es-text" lang="es">Idea clave: En la recta numérica, los números se hacen más grandes hacia la derecha y más pequeños hacia la izquierda. Por eso -10 es menor que -2, porque -10 está más a la izquierda. Para ordenar números, imagina dónde queda cada uno en la recta.</span></p>
+  <p class="callout" style="font-size:22px;"><strong>Key idea:</strong> On a number line, numbers get bigger as you go right and smaller as you go left. So -10 is less than -2, because -10 is farther left. To put numbers in order, picture where each one sits on the line.<br><span class="es-text" lang="es" style="font-size:18px;">Idea clave: En la recta numérica, los números se hacen más grandes hacia la derecha y más pequeños hacia la izquierda. Por eso -10 es menor que -2, porque -10 está más a la izquierda. Para ordenar números, imagina dónde queda cada uno en la recta.</span></p>
 </section>
 
 <section class="lang-section">
@@ -91,42 +125,48 @@ ol.choices{margin:6px 0 4px;}
   </div>
   </div>
 </section>
-<section>
-  <h2>Key words</h2>
-  <ul><li><span class="kw">Compare and Order Integers</span> — Use a number line to decide which integers are greater or less and place them in order.<br><span class="es-text">Español: Comparar y ordenar enteros — Usar una recta numérica para decidir cuáles enteros son mayores o menores y colocarlos en orden.</span></li><li><span class="kw">Number line</span> — A straight line where numbers are placed in order; numbers get smaller to the left and larger to the right.<br><span class="es-text">Español: Recta numérica — Una recta donde los números se colocan en orden; los números son menores a la izquierda y mayores a la derecha.</span></li><li><span class="kw">Compare</span> — To see if a number is bigger, smaller, or equal to another.<br><span class="es-text">Español: Comparar — Ver si un número es mayor, menor o igual que otro.</span></li><li><span class="kw">Order</span> — To arrange numbers by size, from least to greatest or greatest to least.<br><span class="es-text">Español: Ordenar — Acomodar números por tamaño, de menor a mayor o de mayor a menor.</span></li><li><span class="kw">Greater than</span> — The &gt; sign, showing one number is bigger.<br><span class="es-text">Español: Mayor que — El signo &gt;, que muestra que un número es mayor.</span></li><li><span class="kw">Less than</span> — The &lt; sign, showing one number is smaller.<br><span class="es-text">Español: Menor que — El signo &lt;, que muestra que un número es menor.</span></li><li><span class="kw">Negative integer</span> — A whole number smaller than zero, like -5.<br><span class="es-text">Español: Entero negativo — Un número entero menor que cero, como -5.</span></li><li><span class="kw">Integer</span> — Whole numbers and their opposites, like -2, -1, 0, 1, 2.<br><span class="es-text">Español: Número entero — Números enteros y sus opuestos, como -2, -1, 0, 1, 2.</span></li><li><span class="kw">Inequality</span> — A statement that uses &lt; or &gt; to compare two numbers.<br><span class="es-text">Español: Desigualdad — Un enunciado que usa &lt; o &gt; para comparar dos números.</span></li></ul>
-</section>
-<section>
-  <h2>How we did it in class today</h2>
-  <ol><li>I will compare -7 and -5. They are both negative, so I look at the number line.</li><li>-7 is 7 steps left of zero. -5 is only 5 steps left of zero.</li><li>-7 is farther to the left, so -7 is the smaller number.</li><li>I write -7 &lt; -5. The open side of the symbol points to the bigger number, -5.</li></ol>
-</section>
-<section>
-  <h2>Try this together</h2>
-  <ol><li>Put these integers in order from LEAST to GREATEST. Which list is correct?<ol class="choices" type="A"><li>9, 4, 0, -1, -6</li><li>-1, -6, 0, 4, 9</li><li>-6, -1, 0, 4, 9</li><li>0, -1, -6, 4, 9</li></ol></li></ol>
+<section class="section-kitchen">
+  <h2>Kitchen Table Math</h2>
+  <div class="welcome-note" style="background:var(--yellow-light); border-left-color:var(--yellow); margin-bottom: 0;">
+    <strong>Math is everywhere!</strong>
+    <p>Try exploring this topic while you are cooking, shopping, or driving. Ask your student to be the teacher and explain it to you in their own words.</p>
+  </div>
 </section>
 
-<section class="tool-section">
-  <h2>Try the tool together <span class="es">· Prueben la herramienta</span></h2>
-  <p><strong>Lesson Tool</strong> — This is the same model your student used in class. Change it and watch what happens.</p>
-  <p class="es-text">Herramienta de la lección — Este es el mismo modelo que su estudiante usó en clase. Cámbielo y observe qué sucede.</p>
+<section class="section-tool tool-section">
+  <h2>Play with today's math <span class="es">· Jueguen con las matemáticas</span></h2>
+  <p><strong>Interactive Lesson Model</strong> — This is the exact same interactive tool your student used in class today. Change the numbers and watch what happens!</p>
+  <p class="es-text">Modelo interactivo de la lección — Esta es la misma herramienta interactiva que su estudiante usó en clase hoy. ¡Cambie los números y observe qué sucede!</p>
   <div class="tool-host" data-lesson-model-host><div class="interactive-visual" data-visual="number-line-explorer" data-config="{&quot;kind&quot;:&quot;number-line-explorer&quot;,&quot;mode&quot;:&quot;compare&quot;,&quot;max&quot;:10,&quot;start&quot;:-6,&quot;startB&quot;:-2,&quot;intro&quot;:&quot;Drag both points to compare integers. The one farther right is greater — even when a more-negative number is farther from zero.&quot;}" role="group" aria-label="Interactive Compare and Order Integers and Rational Numbers" style="margin:var(--sp-3) 0;"><noscript><div class="interactive-visual-fallback">Turn on JavaScript to use this tool. The steps above work on paper too.</div></noscript></div></div>
   <p class="muted-note">Works on a phone, a tablet, or a computer. Nothing to install, nothing to sign in to.</p>
 </section>
-<section>
-  <h2>Check your thinking together</h2>
-  <ol><li>Put these integers in order from LEAST to GREATEST. Which list is correct? → <span class="answer">-6, -1, 0, 4, 9</span></li></ol>
+<section class="section-vocab">
+  <h2>Vocabulary you might hear</h2>
+  <ul><li><span class="kw">Compare and Order Integers</span> — Use a number line to decide which integers are greater or less and place them in order.<br><span class="es-text">Español: Comparar y ordenar enteros — Usar una recta numérica para decidir cuáles enteros son mayores o menores y colocarlos en orden.</span></li><li><span class="kw">Number line</span> — A straight line where numbers are placed in order; numbers get smaller to the left and larger to the right.<br><span class="es-text">Español: Recta numérica — Una recta donde los números se colocan en orden; los números son menores a la izquierda y mayores a la derecha.</span></li><li><span class="kw">Compare</span> — To see if a number is bigger, smaller, or equal to another.<br><span class="es-text">Español: Comparar — Ver si un número es mayor, menor o igual que otro.</span></li><li><span class="kw">Order</span> — To arrange numbers by size, from least to greatest or greatest to least.<br><span class="es-text">Español: Ordenar — Acomodar números por tamaño, de menor a mayor o de mayor a menor.</span></li><li><span class="kw">Greater than</span> — The &gt; sign, showing one number is bigger.<br><span class="es-text">Español: Mayor que — El signo &gt;, que muestra que un número es mayor.</span></li><li><span class="kw">Less than</span> — The &lt; sign, showing one number is smaller.<br><span class="es-text">Español: Menor que — El signo &lt;, que muestra que un número es menor.</span></li><li><span class="kw">Negative integer</span> — A whole number smaller than zero, like -5.<br><span class="es-text">Español: Entero negativo — Un número entero menor que cero, como -5.</span></li><li><span class="kw">Integer</span> — Whole numbers and their opposites, like -2, -1, 0, 1, 2.<br><span class="es-text">Español: Número entero — Números enteros y sus opuestos, como -2, -1, 0, 1, 2.</span></li><li><span class="kw">Inequality</span> — A statement that uses &lt; or &gt; to compare two numbers.<br><span class="es-text">Español: Desigualdad — Un enunciado que usa &lt; o &gt; para comparar dos números.</span></li></ul>
 </section>
-<section>
+<section class="section-example">
+  <h2>How we did it in class today</h2>
+  <div class="callout" style="background:#fff;border-color:var(--line);"><ol><li>I will compare -7 and -5. They are both negative, so I look at the number line.</li><li>-7 is 7 steps left of zero. -5 is only 5 steps left of zero.</li><li>-7 is farther to the left, so -7 is the smaller number.</li><li>I write -7 &lt; -5. The open side of the symbol points to the bigger number, -5.</li></ol></div>
+</section>
+<section class="section-practice">
+  <h2>Try this together</h2>
+  <p class="sub" style="margin-top:-6px;">Pick one question to talk about. You don't need to do them all!</p>
+  <div class="callout" style="background:var(--cream);border-color:var(--line); padding-bottom:16px;">
+         
+         <p style="font-size:22px;color:var(--navy);margin:12px 0;">Put these integers in order from LEAST to GREATEST. Which list is correct?</p>
+         <ol class="choices"><li>9, 4, 0, -1, -6</li><li>-1, -6, 0, 4, 9</li><li>-6, -1, 0, 4, 9</li><li>0, -1, -6, 4, 9</li></ol>
+         <details style="margin-top: 20px; font-size: 18px;">
+           <summary style="cursor: pointer; color: var(--teal); font-weight: 600;">Check the answer</summary>
+           <p style="margin-top: 12px; margin-bottom:0;">The answer is: <strong class="answer" style="font-size:20px;">-6, -1, 0, 4, 9</strong></p>
+         </details>
+       </div>
+</section>
+<section class="section-stuck">
   <h2>If they get stuck...</h2>
-  <p>Watch out for this: A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p>
-  <p><strong>What to ask:</strong> "Can you show me how you got that? Did we miss a step?"</p>
-</section>
-<section>
-  <h2>How families can help at home</h2>
-  <ul>
-    <li>Look around the house for ways to use this math together (like cooking or shopping).</li>
-    <li>Ask your student to teach you the example above in their own words.</li>
-    <li>When they get an answer, ask "Does that make sense?" before checking if it's right.</li>
-  </ul>
+  <div class="callout" style="border-left: 6px solid #ff9800; background: #fff8e1;">
+    <p style="margin-top:0;"><strong>Watch out for this:</strong> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p>
+    <p style="margin-bottom:0;"><strong>Try asking:</strong> "Can you show me how you got that? Did we miss a step?"</p>
+  </div>
 </section>
 <section>
   <h2>Spanish support <span class="es">· Apoyo en español</span></h2>

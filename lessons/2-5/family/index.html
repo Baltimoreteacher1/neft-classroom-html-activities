@@ -44,11 +44,43 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
 
-ol.choices{margin:6px 0 4px;}
+body { background: #f1f5f9; font-family: "Outfit", system-ui, sans-serif; }
+.wrap { max-width: 800px; padding: 0 0 64px 0; background: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.06); border-radius: 0 0 32px 32px; overflow: hidden; margin: 0 auto; }
+
+/* The new Hero header */
+.hero-header { background: linear-gradient(135deg, var(--navy), #1a4f8a); padding: 56px 32px; color: #fff; text-align: center; }
+.hero-header .eyebrow { color: var(--teal-light); font-size: 16px; margin-bottom: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
+.hero-header h1 { color: #fff; font-size: 44px; margin: 0; line-height: 1.1; font-weight: 800; }
+.hero-header .std { display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; margin-top:16px; border-radius: 999px; padding: 4px 12px; font-size: 14px; font-weight: 700; }
+
+/* Upgrade sections to look like cards */
+section { padding: 40px 32px; border: none; margin: 0; border-bottom: 1px solid #edf1f5; }
+section h2 { font-size: 30px; font-weight: 800; color: var(--navy); display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+section h2::before { content: "✨"; font-size: 28px; }
+
+/* Specific icons for sections */
+.section-learning h2::before { content: "💡"; }
+.section-kitchen h2::before { content: "🍕"; }
+.section-tool h2::before { content: "🕹️"; }
+.section-vocab h2::before { content: "💬"; }
+.section-example h2::before { content: "🏫"; }
+.section-practice h2::before { content: "✏️"; }
+.section-stuck h2::before { content: "🆘"; }
+
+ol.choices{margin:16px 0 8px;list-style:none;padding-left:0;}
+ol.choices li{background: #f8fafc; border:2px solid #e2e8f0;border-radius:16px;padding:16px 20px;margin-bottom:12px;font-weight:600; font-size: 20px; cursor: pointer; transition: all 0.2s; color: var(--navy); }
+ol.choices li:hover { border-color: var(--teal); background: var(--teal-light); }
+
+.welcome-note{background:var(--teal-light);border:none;border-radius:20px;padding:24px 32px;margin-bottom:0; text-align: left; }
+.welcome-note strong{display:block;font-size:26px;font-weight: 800; color:var(--navy);margin-bottom:8px;}
+.welcome-note p{margin:0;color:var(--navy);font-size:20px; line-height: 1.5; }
+
+.callout { border: none; border-radius: 20px; padding: 24px 32px; background: #f8fafc; font-size: 22px; line-height: 1.5; }
+
 .lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
-.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
-  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
-.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio + label{display:inline-block;border:2px solid #e2e8f0;border-radius:999px;padding:8px 24px;
+  margin:0 12px 16px 0;cursor:pointer;font-weight:700;color:var(--navy);background:#fff; font-size: 18px; transition: all 0.2s;}
+.lang-radio:checked + label{background:var(--navy);color:#fff;border-color:var(--navy);}
 .lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
 .lang-panel{display:none;margin-top:6px;}
 #family-lang-en:checked ~ .lang-panels [data-lang="en"],
@@ -58,7 +90,7 @@ ol.choices{margin:6px 0 4px;}
 #family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
 .lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
 .auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
-  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
+  padding:4px 16px;font-size:15px;font-weight:700;color:var(--ink);margin:0 0 12px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -69,14 +101,16 @@ ol.choices{margin:6px 0 4px;}
 </head>
 <body>
 <div class="wrap">
-<p class="eyebrow">Family Lesson Support</p>
-<h1>Unit 2, Lesson 5: Describe Data by Range and Interquartile Range<span class="std">6.DS.3</span></h1>
-<p class="sub">A quick guide for families and for any student who missed class.</p>
 
-<section>
+<div class="hero-header">
+  <p class="eyebrow">Family Lesson Support</p>
+  <h1>Unit 2, Lesson 5: Describe Data by Range and Interquartile Range</h1>
+  <span class="std">6.DS.3</span>
+</div>
+
+<section class="section-learning">
   <h2>What students are learning</h2>
-  <p>A measure of center like the median tells you where the data sits. It does not tell you how far apart the values are. Two classes can share the same median and still look nothing alike. Range and interquartile range are the two numbers that describe that spread.</p>
-  <p class="callout"><strong>Key idea:</strong> The range tells how spread out all of the data is: range = greatest number − least number. The interquartile range (IQR) tells how spread out the middle half of the data is: IQR = Q3 − Q1.<br><span class="es-text" lang="es">Idea clave: El rango dice qué tan separados están todos los datos: rango = número mayor − número menor. El rango intercuartílico dice qué tan separada está la mitad central de los datos: rango intercuartílico = Q3 − Q1.</span></p>
+  <p class="callout" style="font-size:22px;"><strong>Key idea:</strong> The range tells how spread out all of the data is: range = greatest number − least number. The interquartile range (IQR) tells how spread out the middle half of the data is: IQR = Q3 − Q1.<br><span class="es-text" lang="es" style="font-size:18px;">Idea clave: El rango dice qué tan separados están todos los datos: rango = número mayor − número menor. El rango intercuartílico dice qué tan separada está la mitad central de los datos: rango intercuartílico = Q3 − Q1.</span></p>
 </section>
 
 <section class="lang-section">
@@ -91,42 +125,48 @@ ol.choices{margin:6px 0 4px;}
   </div>
   </div>
 </section>
-<section>
-  <h2>Key words</h2>
-  <ul><li><span class="kw">Range and Interquartile Range</span> — Two numbers that describe spread: the range covers all the data, and the interquartile range covers only the middle half.<br><span class="es-text">Español: Rango y rango intercuartílico — Dos números que describen la dispersión: el rango cubre todos los datos y el rango intercuartílico solo la mitad central.</span></li><li><span class="kw">Range</span> — The distance from the least value to the greatest value, found by subtracting: greatest − least.<br><span class="es-text">Español: Rango — La distancia del valor menor al mayor, que se halla restando: mayor − menor.</span></li><li><span class="kw">Quartile</span> — One of the three values that cut an ordered data set into four equal-sized groups.<br><span class="es-text">Español: Cuartil — Uno de los tres valores que dividen un conjunto ordenado de datos en cuatro grupos del mismo tamaño.</span></li><li><span class="kw">Interquartile range</span> — The distance across the middle half of the data, found by subtracting the first quartile from the third: Q3 − Q1.<br><span class="es-text">Español: Rango intercuartílico — La distancia a lo largo de la mitad central de los datos: se resta el primer cuartil del tercero: Q3 − Q1.</span></li><li><span class="kw">Variability</span> — How much the values in a data set differ from one another — whether they sit close together or far apart.<br><span class="es-text">Español: Variabilidad — Cuánto se diferencian entre sí los valores de un conjunto de datos: si están juntos o muy separados.</span></li><li><span class="kw">Measure of variation</span> — A single number that describes the spread of a whole data set. The range and the IQR are both measures of variation.<br><span class="es-text">Español: Medida de variación — Un solo número que describe la dispersión de todo un conjunto de datos. El rango y el RIC son medidas de variación.</span></li><li><span class="kw">Extreme value</span> — The least or greatest value in a data set, far from the rest.<br><span class="es-text">Español: Valor extremo — El valor menor o mayor de un conjunto de datos, lejos del resto.</span></li></ul>
-</section>
-<section>
-  <h2>How we did it in class today</h2>
-  <ol><li>Here are 20 history test scores in order: 68, 70, 73, 74, 75, 76, 77, 80, 82, 83, 84, 85, 86, 86, 88, 88, 90, 90, 93, 94. Ordering them first is what makes every step after this possible.</li><li>Range: I subtract the least value from the greatest. 94 − 68 = 26. The scores span 26 points from end to end.</li><li>Now the quartiles. The median splits the 20 scores into two halves of 10. The median is halfway between the 10th and 11th values: (83 + 84) ÷ 2 = 83.5.</li><li>Q1 is the median of the lower 10 values: halfway between 75 and 76, so Q1 = 75.5. Q3 is the median of the upper 10: halfway between 88 and 88, so Q3 = 88.</li><li>Interquartile range: IQR = Q3 − Q1 = 88 − 75.5 = 12.5. The middle half of the students' scores differed by only 12.5 points, even though the full range was 26.</li></ol>
-</section>
-<section>
-  <h2>Try this together</h2>
-  <ol><li>A box plot shows how many minutes students read each night. Q1 = 14 and Q3 = 32. The least value is 6 and the greatest value is 45. What is the IQR, and what does it tell you?<ol class="choices" type="A"><li>IQR = 23; 23 is halfway between the quartiles</li><li>IQR = 39; the data spans 39 minutes from end to end</li><li>IQR = 18; the middle half of the data spans 18 minutes</li><li>IQR = 46; the quartiles add to 46</li></ol></li></ol>
+<section class="section-kitchen">
+  <h2>Kitchen Table Math</h2>
+  <div class="welcome-note" style="background:var(--yellow-light); border-left-color:var(--yellow); margin-bottom: 0;">
+    <strong>Math is everywhere!</strong>
+    <p>Try exploring this topic while you are cooking, shopping, or driving. Ask your student to be the teacher and explain it to you in their own words.</p>
+  </div>
 </section>
 
-<section class="tool-section">
-  <h2>Try the tool together <span class="es">· Prueben la herramienta</span></h2>
-  <p><strong>Lesson Tool</strong> — This is the same model your student used in class. Change it and watch what happens.</p>
-  <p class="es-text">Herramienta de la lección — Este es el mismo modelo que su estudiante usó en clase. Cámbielo y observe qué sucede.</p>
+<section class="section-tool tool-section">
+  <h2>Play with today's math <span class="es">· Jueguen con las matemáticas</span></h2>
+  <p><strong>Interactive Lesson Model</strong> — This is the exact same interactive tool your student used in class today. Change the numbers and watch what happens!</p>
+  <p class="es-text">Modelo interactivo de la lección — Esta es la misma herramienta interactiva que su estudiante usó en clase hoy. ¡Cambie los números y observe qué sucede!</p>
   <div class="tool-host" data-lesson-model-host><div class="interactive-visual" data-visual="box-plot-builder" data-config="{&quot;kind&quot;:&quot;box-plot-builder&quot;,&quot;unit&quot;:&quot;points&quot;,&quot;data&quot;:[62,68,72,74,76,79,81,83,85,87,88,90],&quot;presets&quot;:[{&quot;label&quot;:&quot;Class A math test&quot;,&quot;data&quot;:[62,68,72,74,76,79,81,83,85,87,88,90],&quot;unit&quot;:&quot;points&quot;},{&quot;label&quot;:&quot;Class B math test&quot;,&quot;data&quot;:[70,74,76,77,79,81,82,83,84,86,88,90],&quot;unit&quot;:&quot;points&quot;},{&quot;label&quot;:&quot;History test scores&quot;,&quot;data&quot;:[68,70,73,74,75,76,77,80,82,83,84,85,86,86,88,88,90,90,93,94],&quot;unit&quot;:&quot;points&quot;}],&quot;intro&quot;:&quot;Build each box plot, then measure both spreads: range from whisker to whisker, IQR across the box.&quot;}" role="group" aria-label="Interactive Describe Data by Range and Interquartile Range" style="margin:var(--sp-3) 0;"><noscript><div class="interactive-visual-fallback">Turn on JavaScript to use this tool. The steps above work on paper too.</div></noscript></div></div>
   <p class="muted-note">Works on a phone, a tablet, or a computer. Nothing to install, nothing to sign in to.</p>
 </section>
-<section>
-  <h2>Check your thinking together</h2>
-  <ol><li>A box plot shows how many minutes students read each night. Q1 = 14 and Q3 = 32. The least value is 6 and the greatest value is 45. What is the IQR, and what does it tell you? → <span class="answer">IQR = 18; the middle half of the data spans 18 minutes</span></li></ol>
+<section class="section-vocab">
+  <h2>Vocabulary you might hear</h2>
+  <ul><li><span class="kw">Range and Interquartile Range</span> — Two numbers that describe spread: the range covers all the data, and the interquartile range covers only the middle half.<br><span class="es-text">Español: Rango y rango intercuartílico — Dos números que describen la dispersión: el rango cubre todos los datos y el rango intercuartílico solo la mitad central.</span></li><li><span class="kw">Range</span> — The distance from the least value to the greatest value, found by subtracting: greatest − least.<br><span class="es-text">Español: Rango — La distancia del valor menor al mayor, que se halla restando: mayor − menor.</span></li><li><span class="kw">Quartile</span> — One of the three values that cut an ordered data set into four equal-sized groups.<br><span class="es-text">Español: Cuartil — Uno de los tres valores que dividen un conjunto ordenado de datos en cuatro grupos del mismo tamaño.</span></li><li><span class="kw">Interquartile range</span> — The distance across the middle half of the data, found by subtracting the first quartile from the third: Q3 − Q1.<br><span class="es-text">Español: Rango intercuartílico — La distancia a lo largo de la mitad central de los datos: se resta el primer cuartil del tercero: Q3 − Q1.</span></li><li><span class="kw">Variability</span> — How much the values in a data set differ from one another — whether they sit close together or far apart.<br><span class="es-text">Español: Variabilidad — Cuánto se diferencian entre sí los valores de un conjunto de datos: si están juntos o muy separados.</span></li><li><span class="kw">Measure of variation</span> — A single number that describes the spread of a whole data set. The range and the IQR are both measures of variation.<br><span class="es-text">Español: Medida de variación — Un solo número que describe la dispersión de todo un conjunto de datos. El rango y el RIC son medidas de variación.</span></li><li><span class="kw">Extreme value</span> — The least or greatest value in a data set, far from the rest.<br><span class="es-text">Español: Valor extremo — El valor menor o mayor de un conjunto de datos, lejos del resto.</span></li></ul>
 </section>
-<section>
+<section class="section-example">
+  <h2>How we did it in class today</h2>
+  <div class="callout" style="background:#fff;border-color:var(--line);"><ol><li>Here are 20 history test scores in order: 68, 70, 73, 74, 75, 76, 77, 80, 82, 83, 84, 85, 86, 86, 88, 88, 90, 90, 93, 94. Ordering them first is what makes every step after this possible.</li><li>Range: I subtract the least value from the greatest. 94 − 68 = 26. The scores span 26 points from end to end.</li><li>Now the quartiles. The median splits the 20 scores into two halves of 10. The median is halfway between the 10th and 11th values: (83 + 84) ÷ 2 = 83.5.</li><li>Q1 is the median of the lower 10 values: halfway between 75 and 76, so Q1 = 75.5. Q3 is the median of the upper 10: halfway between 88 and 88, so Q3 = 88.</li><li>Interquartile range: IQR = Q3 − Q1 = 88 − 75.5 = 12.5. The middle half of the students' scores differed by only 12.5 points, even though the full range was 26.</li></ol></div>
+</section>
+<section class="section-practice">
+  <h2>Try this together</h2>
+  <p class="sub" style="margin-top:-6px;">Pick one question to talk about. You don't need to do them all!</p>
+  <div class="callout" style="background:var(--cream);border-color:var(--line); padding-bottom:16px;">
+         
+         <p style="font-size:22px;color:var(--navy);margin:12px 0;">A box plot shows how many minutes students read each night. Q1 = 14 and Q3 = 32. The least value is 6 and the greatest value is 45. What is the IQR, and what does it tell you?</p>
+         <ol class="choices"><li>IQR = 23; 23 is halfway between the quartiles</li><li>IQR = 39; the data spans 39 minutes from end to end</li><li>IQR = 18; the middle half of the data spans 18 minutes</li><li>IQR = 46; the quartiles add to 46</li></ol>
+         <details style="margin-top: 20px; font-size: 18px;">
+           <summary style="cursor: pointer; color: var(--teal); font-weight: 600;">Check the answer</summary>
+           <p style="margin-top: 12px; margin-bottom:0;">The answer is: <strong class="answer" style="font-size:20px;">IQR = 18; the middle half of the data spans 18 minutes</strong></p>
+         </details>
+       </div>
+</section>
+<section class="section-stuck">
   <h2>If they get stuck...</h2>
-  <p>Watch out for this: A common mistake with Range and Interquartile Range is adding the two quartiles instead of subtracting them — writing IQR = Q3 + Q1. With Q1 = 42 and Q3 = 58 that gives 100, which is larger than the data set's entire range of 20. Every measure of variation is a DIFFERENCE, and the IQR can never exceed the range, because the middle half is part of the whole span. If your IQR comes out bigger than your range, you added when you should have subtracted.</p>
-  <p><strong>What to ask:</strong> "Can you show me how you got that? Did we miss a step?"</p>
-</section>
-<section>
-  <h2>How families can help at home</h2>
-  <ul>
-    <li>Look around the house for ways to use this math together (like cooking or shopping).</li>
-    <li>Ask your student to teach you the example above in their own words.</li>
-    <li>When they get an answer, ask "Does that make sense?" before checking if it's right.</li>
-  </ul>
+  <div class="callout" style="border-left: 6px solid #ff9800; background: #fff8e1;">
+    <p style="margin-top:0;"><strong>Watch out for this:</strong> A common mistake with Range and Interquartile Range is adding the two quartiles instead of subtracting them — writing IQR = Q3 + Q1. With Q1 = 42 and Q3 = 58 that gives 100, which is larger than the data set's entire range of 20. Every measure of variation is a DIFFERENCE, and the IQR can never exceed the range, because the middle half is part of the whole span. If your IQR comes out bigger than your range, you added when you should have subtracted.</p>
+    <p style="margin-bottom:0;"><strong>Try asking:</strong> "Can you show me how you got that? Did we miss a step?"</p>
+  </div>
 </section>
 <section>
   <h2>Spanish support <span class="es">· Apoyo en español</span></h2>

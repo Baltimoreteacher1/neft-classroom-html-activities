@@ -44,11 +44,43 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
 
-ol.choices{margin:6px 0 4px;}
+body { background: #f1f5f9; font-family: "Outfit", system-ui, sans-serif; }
+.wrap { max-width: 800px; padding: 0 0 64px 0; background: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.06); border-radius: 0 0 32px 32px; overflow: hidden; margin: 0 auto; }
+
+/* The new Hero header */
+.hero-header { background: linear-gradient(135deg, var(--navy), #1a4f8a); padding: 56px 32px; color: #fff; text-align: center; }
+.hero-header .eyebrow { color: var(--teal-light); font-size: 16px; margin-bottom: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
+.hero-header h1 { color: #fff; font-size: 44px; margin: 0; line-height: 1.1; font-weight: 800; }
+.hero-header .std { display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; margin-top:16px; border-radius: 999px; padding: 4px 12px; font-size: 14px; font-weight: 700; }
+
+/* Upgrade sections to look like cards */
+section { padding: 40px 32px; border: none; margin: 0; border-bottom: 1px solid #edf1f5; }
+section h2 { font-size: 30px; font-weight: 800; color: var(--navy); display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+section h2::before { content: "✨"; font-size: 28px; }
+
+/* Specific icons for sections */
+.section-learning h2::before { content: "💡"; }
+.section-kitchen h2::before { content: "🍕"; }
+.section-tool h2::before { content: "🕹️"; }
+.section-vocab h2::before { content: "💬"; }
+.section-example h2::before { content: "🏫"; }
+.section-practice h2::before { content: "✏️"; }
+.section-stuck h2::before { content: "🆘"; }
+
+ol.choices{margin:16px 0 8px;list-style:none;padding-left:0;}
+ol.choices li{background: #f8fafc; border:2px solid #e2e8f0;border-radius:16px;padding:16px 20px;margin-bottom:12px;font-weight:600; font-size: 20px; cursor: pointer; transition: all 0.2s; color: var(--navy); }
+ol.choices li:hover { border-color: var(--teal); background: var(--teal-light); }
+
+.welcome-note{background:var(--teal-light);border:none;border-radius:20px;padding:24px 32px;margin-bottom:0; text-align: left; }
+.welcome-note strong{display:block;font-size:26px;font-weight: 800; color:var(--navy);margin-bottom:8px;}
+.welcome-note p{margin:0;color:var(--navy);font-size:20px; line-height: 1.5; }
+
+.callout { border: none; border-radius: 20px; padding: 24px 32px; background: #f8fafc; font-size: 22px; line-height: 1.5; }
+
 .lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
-.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
-  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
-.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio + label{display:inline-block;border:2px solid #e2e8f0;border-radius:999px;padding:8px 24px;
+  margin:0 12px 16px 0;cursor:pointer;font-weight:700;color:var(--navy);background:#fff; font-size: 18px; transition: all 0.2s;}
+.lang-radio:checked + label{background:var(--navy);color:#fff;border-color:var(--navy);}
 .lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
 .lang-panel{display:none;margin-top:6px;}
 #family-lang-en:checked ~ .lang-panels [data-lang="en"],
@@ -58,7 +90,7 @@ ol.choices{margin:6px 0 4px;}
 #family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
 .lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
 .auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
-  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
+  padding:4px 16px;font-size:15px;font-weight:700;color:var(--ink);margin:0 0 12px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -69,14 +101,16 @@ ol.choices{margin:6px 0 4px;}
 </head>
 <body>
 <div class="wrap">
-<p class="eyebrow">Family Lesson Support</p>
-<h1>Unit 5, Lesson 8: Determine Surface Area of Pyramids<span class="std">6.GR.4</span></h1>
-<p class="sub">A quick guide for families and for any student who missed class.</p>
 
-<section>
+<div class="hero-header">
+  <p class="eyebrow">Family Lesson Support</p>
+  <h1>Unit 5, Lesson 8: Determine Surface Area of Pyramids</h1>
+  <span class="std">6.GR.4</span>
+</div>
+
+<section class="section-learning">
   <h2>What students are learning</h2>
-  <p>Surface area of a pyramid is the base area plus all the triangular side faces. A square pyramid has 1 square base and 4 triangular faces. Each triangle uses the slant height: ½ × base × slant height.</p>
-  <p class="callout"><strong>Key idea:</strong> The surface area of a pyramid is the area of its bottom plus the areas of its triangle sides. A square pyramid with a 6 in base edge and 5 in slant height: 6 × 6 = 36, each triangle is ½ × 6 × 5 = 15, so 36 + 4 × 15 = 96 square inches.<br><span class="es-text" lang="es">Idea clave: El área de superficie de una pirámide es el área de su base más las áreas de sus caras triangulares. Una pirámide cuadrada con arista de la base de 6 pulg y altura inclinada de 5 pulg: 6 × 6 = 36, cada triángulo es ½ × 6 × 5 = 15, así que 36 + 4 × 15 = 96 pulgadas cuadradas.</span></p>
+  <p class="callout" style="font-size:22px;"><strong>Key idea:</strong> The surface area of a pyramid is the area of its bottom plus the areas of its triangle sides. A square pyramid with a 6 in base edge and 5 in slant height: 6 × 6 = 36, each triangle is ½ × 6 × 5 = 15, so 36 + 4 × 15 = 96 square inches.<br><span class="es-text" lang="es" style="font-size:18px;">Idea clave: El área de superficie de una pirámide es el área de su base más las áreas de sus caras triangulares. Una pirámide cuadrada con arista de la base de 6 pulg y altura inclinada de 5 pulg: 6 × 6 = 36, cada triángulo es ½ × 6 × 5 = 15, así que 36 + 4 × 15 = 96 pulgadas cuadradas.</span></p>
 </section>
 
 <section class="lang-section">
@@ -91,42 +125,48 @@ ol.choices{margin:6px 0 4px;}
   </div>
   </div>
 </section>
-<section>
-  <h2>Key words</h2>
-  <ul><li><span class="kw">Surface Area of Pyramids</span> — The total area of a pyramid's base and triangular faces. Formula: SA = B + lateral area.<br><span class="es-text">Español: Área de superficie de pirámides — El área total de la base y las caras triangulares de una pirámide. Fórmula: SA = B + área lateral.</span></li><li><span class="kw">Pyramid</span> — A solid with a flat bottom and triangle sides that meet at one point on top.<br><span class="es-text">Español: Pirámide — Un sólido con un fondo plano y lados triangulares que se unen en un punto arriba.</span></li><li><span class="kw">Slant height</span> — The height of a side triangle, measured along its slanted face.<br><span class="es-text">Español: Altura inclinada (apotema) — La altura de un triángulo lateral, medida por su cara inclinada.</span></li><li><span class="kw">Lateral face</span> — A triangle side of a pyramid, not the bottom.<br><span class="es-text">Español: Cara lateral — Un lado triangular de una pirámide, no el fondo.</span></li><li><span class="kw">Base</span> — The flat bottom of a pyramid.<br><span class="es-text">Español: Base — El fondo plano de una pirámide.</span></li><li><span class="kw">Apex</span> — The point at the top of a pyramid where the sides meet.<br><span class="es-text">Español: Ápice — El punto en la parte de arriba de una pirámide donde se unen los lados.</span></li><li><span class="kw">Lateral area</span> — The total area of just the side triangles, not the bottom.<br><span class="es-text">Español: Área lateral — El área total solo de los triángulos laterales, sin el fondo.</span></li><li><span class="kw">Surface area</span> — The total area of every face of a solid, base included.<br><span class="es-text">Español: Área superficial — El área total de todas las caras de un sólido, incluida la base.</span></li></ul>
-</section>
-<section>
-  <h2>How we did it in class today</h2>
-  <ol><li>My square pyramid has a 6 in. × 6 in. base and a slant height of 8 in.</li><li>First the base area: 6 × 6 = 36.</li><li>Now one triangular face: ½ × 6 × 8 = 24. A square pyramid has 4 of them, so 4 × 24 = 96.</li><li>I add the base and the side faces: 36 + 96 = 132.</li><li>So the total surface area is 132 in². I used the slant height (8) for the triangles, not the pyramid's height.</li></ol>
-</section>
-<section>
-  <h2>Try this together</h2>
-  <ol><li>A play tent is shaped like a square pyramid with a base edge of 4 ft and a slant height of 7 ft. What is the total surface area, floor included?<ol class="choices" type="A"><li>72 ft²</li><li>16 ft²</li><li>56 ft²</li><li>72 ft³</li></ol></li></ol>
+<section class="section-kitchen">
+  <h2>Kitchen Table Math</h2>
+  <div class="welcome-note" style="background:var(--yellow-light); border-left-color:var(--yellow); margin-bottom: 0;">
+    <strong>Math is everywhere!</strong>
+    <p>Try exploring this topic while you are cooking, shopping, or driving. Ask your student to be the teacher and explain it to you in their own words.</p>
+  </div>
 </section>
 
-<section class="tool-section">
-  <h2>Try the tool together <span class="es">· Prueben la herramienta</span></h2>
-  <p><strong>Lesson Tool</strong> — This is the same model your student used in class. Change it and watch what happens.</p>
-  <p class="es-text">Herramienta de la lección — Este es el mismo modelo que su estudiante usó en clase. Cámbielo y observe qué sucede.</p>
+<section class="section-tool tool-section">
+  <h2>Play with today's math <span class="es">· Jueguen con las matemáticas</span></h2>
+  <p><strong>Interactive Lesson Model</strong> — This is the exact same interactive tool your student used in class today. Change the numbers and watch what happens!</p>
+  <p class="es-text">Modelo interactivo de la lección — Esta es la misma herramienta interactiva que su estudiante usó en clase hoy. ¡Cambie los números y observe qué sucede!</p>
   <div class="tool-host" data-lesson-model-host><div class="interactive-visual" data-visual="net-folder" data-config="{&quot;kind&quot;:&quot;net-folder&quot;,&quot;solid&quot;:&quot;square-pyramid&quot;,&quot;size&quot;:{&quot;w&quot;:130,&quot;h&quot;:150},&quot;instructions&quot;:&quot;Fold the net of a square pyramid. Count the faces as it closes: one square base plus the triangles that lean in to meet at the point.&quot;,&quot;question&quot;:{&quot;stem&quot;:&quot;How many faces do you add together for the surface area of a square pyramid?&quot;,&quot;choices&quot;:[&quot;1 — only the base&quot;,&quot;4 — just the triangles&quot;,&quot;5 — the square base plus 4 triangles&quot;,&quot;6 — like a rectangular prism&quot;],&quot;correctIndex&quot;:2}}" role="group" aria-label="Interactive Determine Surface Area of Pyramids" style="margin:var(--sp-3) 0;"><noscript><div class="interactive-visual-fallback">Turn on JavaScript to use this tool. The steps above work on paper too.</div></noscript></div></div>
   <p class="muted-note">Works on a phone, a tablet, or a computer. Nothing to install, nothing to sign in to.</p>
 </section>
-<section>
-  <h2>Check your thinking together</h2>
-  <ol><li>A play tent is shaped like a square pyramid with a base edge of 4 ft and a slant height of 7 ft. What is the total surface area, floor included? → <span class="answer">72 ft²</span></li></ol>
+<section class="section-vocab">
+  <h2>Vocabulary you might hear</h2>
+  <ul><li><span class="kw">Surface Area of Pyramids</span> — The total area of a pyramid's base and triangular faces. Formula: SA = B + lateral area.<br><span class="es-text">Español: Área de superficie de pirámides — El área total de la base y las caras triangulares de una pirámide. Fórmula: SA = B + área lateral.</span></li><li><span class="kw">Pyramid</span> — A solid with a flat bottom and triangle sides that meet at one point on top.<br><span class="es-text">Español: Pirámide — Un sólido con un fondo plano y lados triangulares que se unen en un punto arriba.</span></li><li><span class="kw">Slant height</span> — The height of a side triangle, measured along its slanted face.<br><span class="es-text">Español: Altura inclinada (apotema) — La altura de un triángulo lateral, medida por su cara inclinada.</span></li><li><span class="kw">Lateral face</span> — A triangle side of a pyramid, not the bottom.<br><span class="es-text">Español: Cara lateral — Un lado triangular de una pirámide, no el fondo.</span></li><li><span class="kw">Base</span> — The flat bottom of a pyramid.<br><span class="es-text">Español: Base — El fondo plano de una pirámide.</span></li><li><span class="kw">Apex</span> — The point at the top of a pyramid where the sides meet.<br><span class="es-text">Español: Ápice — El punto en la parte de arriba de una pirámide donde se unen los lados.</span></li><li><span class="kw">Lateral area</span> — The total area of just the side triangles, not the bottom.<br><span class="es-text">Español: Área lateral — El área total solo de los triángulos laterales, sin el fondo.</span></li><li><span class="kw">Surface area</span> — The total area of every face of a solid, base included.<br><span class="es-text">Español: Área superficial — El área total de todas las caras de un sólido, incluida la base.</span></li></ul>
 </section>
-<section>
+<section class="section-example">
+  <h2>How we did it in class today</h2>
+  <div class="callout" style="background:#fff;border-color:var(--line);"><ol><li>My square pyramid has a 6 in. × 6 in. base and a slant height of 8 in.</li><li>First the base area: 6 × 6 = 36.</li><li>Now one triangular face: ½ × 6 × 8 = 24. A square pyramid has 4 of them, so 4 × 24 = 96.</li><li>I add the base and the side faces: 36 + 96 = 132.</li><li>So the total surface area is 132 in². I used the slant height (8) for the triangles, not the pyramid's height.</li></ol></div>
+</section>
+<section class="section-practice">
+  <h2>Try this together</h2>
+  <p class="sub" style="margin-top:-6px;">Pick one question to talk about. You don't need to do them all!</p>
+  <div class="callout" style="background:var(--cream);border-color:var(--line); padding-bottom:16px;">
+         
+         <p style="font-size:22px;color:var(--navy);margin:12px 0;">A play tent is shaped like a square pyramid with a base edge of 4 ft and a slant height of 7 ft. What is the total surface area, floor included?</p>
+         <ol class="choices"><li>72 ft²</li><li>16 ft²</li><li>56 ft²</li><li>72 ft³</li></ol>
+         <details style="margin-top: 20px; font-size: 18px;">
+           <summary style="cursor: pointer; color: var(--teal); font-weight: 600;">Check the answer</summary>
+           <p style="margin-top: 12px; margin-bottom:0;">The answer is: <strong class="answer" style="font-size:20px;">72 ft²</strong></p>
+         </details>
+       </div>
+</section>
+<section class="section-stuck">
   <h2>If they get stuck...</h2>
-  <p>Watch out for this: A common mistake in Surface Area of Pyramids is finding the four triangular lateral faces correctly (½ × base edge × slant height, times 4) and then stopping — forgetting to add the base area at the end. This leaves the total surface area too small by exactly the base's area. Before you submit, ask: 'Did I add the base area to the four lateral faces, or did I stop after the sides?'</p>
-  <p><strong>What to ask:</strong> "Can you show me how you got that? Did we miss a step?"</p>
-</section>
-<section>
-  <h2>How families can help at home</h2>
-  <ul>
-    <li>Look around the house for ways to use this math together (like cooking or shopping).</li>
-    <li>Ask your student to teach you the example above in their own words.</li>
-    <li>When they get an answer, ask "Does that make sense?" before checking if it's right.</li>
-  </ul>
+  <div class="callout" style="border-left: 6px solid #ff9800; background: #fff8e1;">
+    <p style="margin-top:0;"><strong>Watch out for this:</strong> A common mistake in Surface Area of Pyramids is finding the four triangular lateral faces correctly (½ × base edge × slant height, times 4) and then stopping — forgetting to add the base area at the end. This leaves the total surface area too small by exactly the base's area. Before you submit, ask: 'Did I add the base area to the four lateral faces, or did I stop after the sides?'</p>
+    <p style="margin-bottom:0;"><strong>Try asking:</strong> "Can you show me how you got that? Did we miss a step?"</p>
+  </div>
 </section>
 <section>
   <h2>Spanish support <span class="es">· Apoyo en español</span></h2>

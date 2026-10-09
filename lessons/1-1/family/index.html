@@ -44,11 +44,43 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
 
-ol.choices{margin:6px 0 4px;}
+body { background: #f1f5f9; font-family: "Outfit", system-ui, sans-serif; }
+.wrap { max-width: 800px; padding: 0 0 64px 0; background: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.06); border-radius: 0 0 32px 32px; overflow: hidden; margin: 0 auto; }
+
+/* The new Hero header */
+.hero-header { background: linear-gradient(135deg, var(--navy), #1a4f8a); padding: 56px 32px; color: #fff; text-align: center; }
+.hero-header .eyebrow { color: var(--teal-light); font-size: 16px; margin-bottom: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
+.hero-header h1 { color: #fff; font-size: 44px; margin: 0; line-height: 1.1; font-weight: 800; }
+.hero-header .std { display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; margin-top:16px; border-radius: 999px; padding: 4px 12px; font-size: 14px; font-weight: 700; }
+
+/* Upgrade sections to look like cards */
+section { padding: 40px 32px; border: none; margin: 0; border-bottom: 1px solid #edf1f5; }
+section h2 { font-size: 30px; font-weight: 800; color: var(--navy); display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+section h2::before { content: "✨"; font-size: 28px; }
+
+/* Specific icons for sections */
+.section-learning h2::before { content: "💡"; }
+.section-kitchen h2::before { content: "🍕"; }
+.section-tool h2::before { content: "🕹️"; }
+.section-vocab h2::before { content: "💬"; }
+.section-example h2::before { content: "🏫"; }
+.section-practice h2::before { content: "✏️"; }
+.section-stuck h2::before { content: "🆘"; }
+
+ol.choices{margin:16px 0 8px;list-style:none;padding-left:0;}
+ol.choices li{background: #f8fafc; border:2px solid #e2e8f0;border-radius:16px;padding:16px 20px;margin-bottom:12px;font-weight:600; font-size: 20px; cursor: pointer; transition: all 0.2s; color: var(--navy); }
+ol.choices li:hover { border-color: var(--teal); background: var(--teal-light); }
+
+.welcome-note{background:var(--teal-light);border:none;border-radius:20px;padding:24px 32px;margin-bottom:0; text-align: left; }
+.welcome-note strong{display:block;font-size:26px;font-weight: 800; color:var(--navy);margin-bottom:8px;}
+.welcome-note p{margin:0;color:var(--navy);font-size:20px; line-height: 1.5; }
+
+.callout { border: none; border-radius: 20px; padding: 24px 32px; background: #f8fafc; font-size: 22px; line-height: 1.5; }
+
 .lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
-.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
-  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
-.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio + label{display:inline-block;border:2px solid #e2e8f0;border-radius:999px;padding:8px 24px;
+  margin:0 12px 16px 0;cursor:pointer;font-weight:700;color:var(--navy);background:#fff; font-size: 18px; transition: all 0.2s;}
+.lang-radio:checked + label{background:var(--navy);color:#fff;border-color:var(--navy);}
 .lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
 .lang-panel{display:none;margin-top:6px;}
 #family-lang-en:checked ~ .lang-panels [data-lang="en"],
@@ -58,7 +90,7 @@ ol.choices{margin:6px 0 4px;}
 #family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
 .lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
 .auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
-  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
+  padding:4px 16px;font-size:15px;font-weight:700;color:var(--ink);margin:0 0 12px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -69,14 +101,16 @@ ol.choices{margin:6px 0 4px;}
 </head>
 <body>
 <div class="wrap">
-<p class="eyebrow">Family Lesson Support</p>
-<h1>Unit 1, Lesson 1: Math is Mine<span class="std">MPP.3</span></h1>
-<p class="sub">A quick guide for families and for any student who missed class.</p>
 
-<section>
+<div class="hero-header">
+  <p class="eyebrow">Family Lesson Support</p>
+  <h1>Unit 1, Lesson 1: Math is Mine</h1>
+  <span class="std">MPP.3</span>
+</div>
+
+<section class="section-learning">
   <h2>What students are learning</h2>
-  <p>Before any new mathematics, the book asks a different question: where does math already live in your day?</p>
-  <p class="callout"><strong>Key idea:</strong> Everyone uses math every day — at home, at school, and in the neighborhood. When a problem feels big, first understand it, then break it into smaller parts and keep trying. A quick estimate or mental math helps you check if your answer makes sense.<br><span class="es-text" lang="es">Idea clave: Todos usamos las matemáticas todos los días: en casa, en la escuela y en el vecindario. Cuando un problema parece grande, primero hay que entenderlo, luego dividirlo en partes más pequeñas y seguir intentando. Una estimación rápida o el cálculo mental ayudan a comprobar si la respuesta tiene sentido.</span></p>
+  <p class="callout" style="font-size:22px;"><strong>Key idea:</strong> Everyone uses math every day — at home, at school, and in the neighborhood. When a problem feels big, first understand it, then break it into smaller parts and keep trying. A quick estimate or mental math helps you check if your answer makes sense.<br><span class="es-text" lang="es" style="font-size:18px;">Idea clave: Todos usamos las matemáticas todos los días: en casa, en la escuela y en el vecindario. Cuando un problema parece grande, primero hay que entenderlo, luego dividirlo en partes más pequeñas y seguir intentando. Una estimación rápida o el cálculo mental ayudan a comprobar si la respuesta tiene sentido.</span></p>
 </section>
 
 <section class="lang-section">
@@ -91,42 +125,48 @@ ol.choices{margin:6px 0 4px;}
   </div>
   </div>
 </section>
-<section>
-  <h2>Key words</h2>
-  <ul><li><span class="kw">doer of math</span> — Anyone who uses mathematical thinking — which is everyone, every day.<br><span class="es-text">Español: persona que hace matemáticas — Cualquiera que use el pensamiento matemático, es decir, todos, todos los días.</span></li><li><span class="kw">math story</span> — Your own history with mathematics — what you have done, felt, and learned so far.<br><span class="es-text">Español: historia matemática — Tu propia historia con las matemáticas: lo que has hecho, sentido y aprendido.</span></li><li><span class="kw">strength</span> — Something you already do well and can share with others.<br><span class="es-text">Español: fortaleza — Algo que ya haces bien y puedes compartir con otros.</span></li><li><span class="kw">decompose</span> — To break a number into parts that add, subtract, multiply, or divide back to it.<br><span class="es-text">Español: descomponer — Separar un número en partes que se combinan para volver a formarlo.</span></li><li><span class="kw">estimate</span> — A reasoned answer that is close enough to be useful, without counting every one.<br><span class="es-text">Español: estimar — Una respuesta razonada, lo bastante cercana para ser útil, sin contar todo.</span></li></ul>
-</section>
-<section>
-  <h2>How we did it in class today</h2>
-  <ol><li>The Ferris wheel has 20 cars, and about 4 people fit in each car. About how many people can ride at one time?</li><li>I count the cars: 20. Then I estimate how many riders fit in one car: about 4.</li><li>I do not count every person — an estimate is a reasoned answer that is close enough to be useful.</li><li>20 × 4 = 80, so I would say “about 80 people.”</li></ol>
-</section>
-<section>
-  <h2>Try this together</h2>
-  <ol><li>Sam's grandmother says she is &quot;not a math person,&quot; but she doubles recipes and keeps track of the grocery budget. Which response best fits the idea that everyone is a doer of math?<ol class="choices" type="A"><li>She is right — only people who score high on tests really do math</li><li>Cooking and shopping use math thinking, and when she shares her ways with Sam, they both learn</li><li>She does some math, but it only counts if she solves it the way Sam's teacher does</li><li>If she practiced harder, she would get the same answers as everyone else, the same way</li></ol></li></ol>
+<section class="section-kitchen">
+  <h2>Kitchen Table Math</h2>
+  <div class="welcome-note" style="background:var(--yellow-light); border-left-color:var(--yellow); margin-bottom: 0;">
+    <strong>Math is everywhere!</strong>
+    <p>Try exploring this topic while you are cooking, shopping, or driving. Ask your student to be the teacher and explain it to you in their own words.</p>
+  </div>
 </section>
 
-<section class="tool-section">
-  <h2>Try the tool together <span class="es">· Prueben la herramienta</span></h2>
-  <p><strong>Lesson Tool</strong> — This is the same model your student used in class. Change it and watch what happens.</p>
-  <p class="es-text">Herramienta de la lección — Este es el mismo modelo que su estudiante usó en clase. Cámbielo y observe qué sucede.</p>
+<section class="section-tool tool-section">
+  <h2>Play with today's math <span class="es">· Jueguen con las matemáticas</span></h2>
+  <p><strong>Interactive Lesson Model</strong> — This is the exact same interactive tool your student used in class today. Change the numbers and watch what happens!</p>
+  <p class="es-text">Modelo interactivo de la lección — Esta es la misma herramienta interactiva que su estudiante usó en clase hoy. ¡Cambie los números y observe qué sucede!</p>
   <div class="tool-host" data-lesson-model-host><div class="interactive-visual" data-visual="bar-chart" data-config="{&quot;kind&quot;:&quot;bar-chart&quot;,&quot;title&quot;:&quot;Riders per Ferris Wheel Turn (6 Turns in One Hour)&quot;,&quot;caption&quot;:&quot;Six turns carry 78, 80, 76, 82, 74, and 78 riders — 468 riders in the hour, which is why about 78 riders a turn is a reasonable estimate.&quot;,&quot;bars&quot;:[{&quot;label&quot;:&quot;Turn 1&quot;,&quot;value&quot;:78},{&quot;label&quot;:&quot;Turn 2&quot;,&quot;value&quot;:80},{&quot;label&quot;:&quot;Turn 3&quot;,&quot;value&quot;:76},{&quot;label&quot;:&quot;Turn 4&quot;,&quot;value&quot;:82},{&quot;label&quot;:&quot;Turn 5&quot;,&quot;value&quot;:74},{&quot;label&quot;:&quot;Turn 6&quot;,&quot;value&quot;:78}]}" role="group" aria-label="Interactive Riders per Ferris Wheel Turn (6 Turns in One Hour)" style="margin:var(--sp-3) 0;"><noscript><div class="interactive-visual-fallback">Turn on JavaScript to use this tool. The steps above work on paper too.</div></noscript></div></div>
   <p class="muted-note">Works on a phone, a tablet, or a computer. Nothing to install, nothing to sign in to.</p>
 </section>
-<section>
-  <h2>Check your thinking together</h2>
-  <ol><li>Sam's grandmother says she is &quot;not a math person,&quot; but she doubles recipes and keeps track of the grocery budget. Which response best fits the idea that everyone is a doer of math? → <span class="answer">Cooking and shopping use math thinking, and when she shares her ways with Sam, they both learn</span></li></ol>
+<section class="section-vocab">
+  <h2>Vocabulary you might hear</h2>
+  <ul><li><span class="kw">doer of math</span> — Anyone who uses mathematical thinking — which is everyone, every day.<br><span class="es-text">Español: persona que hace matemáticas — Cualquiera que use el pensamiento matemático, es decir, todos, todos los días.</span></li><li><span class="kw">math story</span> — Your own history with mathematics — what you have done, felt, and learned so far.<br><span class="es-text">Español: historia matemática — Tu propia historia con las matemáticas: lo que has hecho, sentido y aprendido.</span></li><li><span class="kw">strength</span> — Something you already do well and can share with others.<br><span class="es-text">Español: fortaleza — Algo que ya haces bien y puedes compartir con otros.</span></li><li><span class="kw">decompose</span> — To break a number into parts that add, subtract, multiply, or divide back to it.<br><span class="es-text">Español: descomponer — Separar un número en partes que se combinan para volver a formarlo.</span></li><li><span class="kw">estimate</span> — A reasoned answer that is close enough to be useful, without counting every one.<br><span class="es-text">Español: estimar — Una respuesta razonada, lo bastante cercana para ser útil, sin contar todo.</span></li></ul>
 </section>
-<section>
+<section class="section-example">
+  <h2>How we did it in class today</h2>
+  <div class="callout" style="background:#fff;border-color:var(--line);"><ol><li>The Ferris wheel has 20 cars, and about 4 people fit in each car. About how many people can ride at one time?</li><li>I count the cars: 20. Then I estimate how many riders fit in one car: about 4.</li><li>I do not count every person — an estimate is a reasoned answer that is close enough to be useful.</li><li>20 × 4 = 80, so I would say “about 80 people.”</li></ol></div>
+</section>
+<section class="section-practice">
+  <h2>Try this together</h2>
+  <p class="sub" style="margin-top:-6px;">Pick one question to talk about. You don't need to do them all!</p>
+  <div class="callout" style="background:var(--cream);border-color:var(--line); padding-bottom:16px;">
+         
+         <p style="font-size:22px;color:var(--navy);margin:12px 0;">Sam's grandmother says she is &quot;not a math person,&quot; but she doubles recipes and keeps track of the grocery budget. Which response best fits the idea that everyone is a doer of math?</p>
+         <ol class="choices"><li>She is right — only people who score high on tests really do math</li><li>Cooking and shopping use math thinking, and when she shares her ways with Sam, they both learn</li><li>She does some math, but it only counts if she solves it the way Sam's teacher does</li><li>If she practiced harder, she would get the same answers as everyone else, the same way</li></ol>
+         <details style="margin-top: 20px; font-size: 18px;">
+           <summary style="cursor: pointer; color: var(--teal); font-weight: 600;">Check the answer</summary>
+           <p style="margin-top: 12px; margin-bottom:0;">The answer is: <strong class="answer" style="font-size:20px;">Cooking and shopping use math thinking, and when she shares her ways with Sam, they both learn</strong></p>
+         </details>
+       </div>
+</section>
+<section class="section-stuck">
   <h2>If they get stuck...</h2>
-  <p>Watch out for this: Believing that 'doing math' only counts when it happens on paper in a classroom.</p>
-  <p><strong>What to ask:</strong> "Can you show me how you got that? Did we miss a step?"</p>
-</section>
-<section>
-  <h2>How families can help at home</h2>
-  <ul>
-    <li>Look around the house for ways to use this math together (like cooking or shopping).</li>
-    <li>Ask your student to teach you the example above in their own words.</li>
-    <li>When they get an answer, ask "Does that make sense?" before checking if it's right.</li>
-  </ul>
+  <div class="callout" style="border-left: 6px solid #ff9800; background: #fff8e1;">
+    <p style="margin-top:0;"><strong>Watch out for this:</strong> Believing that 'doing math' only counts when it happens on paper in a classroom.</p>
+    <p style="margin-bottom:0;"><strong>Try asking:</strong> "Can you show me how you got that? Did we miss a step?"</p>
+  </div>
 </section>
 <section>
   <h2>Spanish support <span class="es">· Apoyo en español</span></h2>

@@ -44,11 +44,43 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
 
-ol.choices{margin:6px 0 4px;}
+body { background: #f1f5f9; font-family: "Outfit", system-ui, sans-serif; }
+.wrap { max-width: 800px; padding: 0 0 64px 0; background: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.06); border-radius: 0 0 32px 32px; overflow: hidden; margin: 0 auto; }
+
+/* The new Hero header */
+.hero-header { background: linear-gradient(135deg, var(--navy), #1a4f8a); padding: 56px 32px; color: #fff; text-align: center; }
+.hero-header .eyebrow { color: var(--teal-light); font-size: 16px; margin-bottom: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
+.hero-header h1 { color: #fff; font-size: 44px; margin: 0; line-height: 1.1; font-weight: 800; }
+.hero-header .std { display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; margin-top:16px; border-radius: 999px; padding: 4px 12px; font-size: 14px; font-weight: 700; }
+
+/* Upgrade sections to look like cards */
+section { padding: 40px 32px; border: none; margin: 0; border-bottom: 1px solid #edf1f5; }
+section h2 { font-size: 30px; font-weight: 800; color: var(--navy); display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+section h2::before { content: "✨"; font-size: 28px; }
+
+/* Specific icons for sections */
+.section-learning h2::before { content: "💡"; }
+.section-kitchen h2::before { content: "🍕"; }
+.section-tool h2::before { content: "🕹️"; }
+.section-vocab h2::before { content: "💬"; }
+.section-example h2::before { content: "🏫"; }
+.section-practice h2::before { content: "✏️"; }
+.section-stuck h2::before { content: "🆘"; }
+
+ol.choices{margin:16px 0 8px;list-style:none;padding-left:0;}
+ol.choices li{background: #f8fafc; border:2px solid #e2e8f0;border-radius:16px;padding:16px 20px;margin-bottom:12px;font-weight:600; font-size: 20px; cursor: pointer; transition: all 0.2s; color: var(--navy); }
+ol.choices li:hover { border-color: var(--teal); background: var(--teal-light); }
+
+.welcome-note{background:var(--teal-light);border:none;border-radius:20px;padding:24px 32px;margin-bottom:0; text-align: left; }
+.welcome-note strong{display:block;font-size:26px;font-weight: 800; color:var(--navy);margin-bottom:8px;}
+.welcome-note p{margin:0;color:var(--navy);font-size:20px; line-height: 1.5; }
+
+.callout { border: none; border-radius: 20px; padding: 24px 32px; background: #f8fafc; font-size: 22px; line-height: 1.5; }
+
 .lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
-.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
-  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
-.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio + label{display:inline-block;border:2px solid #e2e8f0;border-radius:999px;padding:8px 24px;
+  margin:0 12px 16px 0;cursor:pointer;font-weight:700;color:var(--navy);background:#fff; font-size: 18px; transition: all 0.2s;}
+.lang-radio:checked + label{background:var(--navy);color:#fff;border-color:var(--navy);}
 .lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
 .lang-panel{display:none;margin-top:6px;}
 #family-lang-en:checked ~ .lang-panels [data-lang="en"],
@@ -58,7 +90,7 @@ ol.choices{margin:6px 0 4px;}
 #family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
 .lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
 .auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
-  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
+  padding:4px 16px;font-size:15px;font-weight:700;color:var(--ink);margin:0 0 12px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -69,14 +101,16 @@ ol.choices{margin:6px 0 4px;}
 </head>
 <body>
 <div class="wrap">
-<p class="eyebrow">Family Lesson Support</p>
-<h1>Unit 6, Lesson 5: Write and Evaluate Algebraic Expressions<span class="std">6.AT.6a</span></h1>
-<p class="sub">A quick guide for families and for any student who missed class.</p>
 
-<section>
+<div class="hero-header">
+  <p class="eyebrow">Family Lesson Support</p>
+  <h1>Unit 6, Lesson 5: Write and Evaluate Algebraic Expressions</h1>
+  <span class="std">6.AT.6a</span>
+</div>
+
+<section class="section-learning">
   <h2>What students are learning</h2>
-  <p>An algebraic expression uses numbers, a variable (a letter for an unknown number), and operations. We read a word phrase and write it with math symbols.</p>
-  <p class="callout"><strong>Key idea:</strong> A letter like s can stand for a number that changes, such as how many students there are. If shirts cost $4 each and shipping is $20 once, the cost is 4s + 20. For 10 students: 4 × 10 + 20 = $60.<br><span class="es-text" lang="es">Idea clave: Una letra como s puede representar un número que cambia, como la cantidad de estudiantes. Si cada camiseta cuesta $4 y el envío cuesta $20 una sola vez, el costo es 4s + 20. Para 10 estudiantes: 4 × 10 + 20 = $60.</span></p>
+  <p class="callout" style="font-size:22px;"><strong>Key idea:</strong> A letter like s can stand for a number that changes, such as how many students there are. If shirts cost $4 each and shipping is $20 once, the cost is 4s + 20. For 10 students: 4 × 10 + 20 = $60.<br><span class="es-text" lang="es" style="font-size:18px;">Idea clave: Una letra como s puede representar un número que cambia, como la cantidad de estudiantes. Si cada camiseta cuesta $4 y el envío cuesta $20 una sola vez, el costo es 4s + 20. Para 10 estudiantes: 4 × 10 + 20 = $60.</span></p>
 </section>
 
 <section class="lang-section">
@@ -91,42 +125,48 @@ ol.choices{margin:6px 0 4px;}
   </div>
   </div>
 </section>
-<section>
-  <h2>Key words</h2>
-  <ul><li><span class="kw">Write Algebraic Expressions</span> — Translate words or a situation into numbers, variables, and operation symbols.<br><span class="es-text">Español: Escribir expresiones algebraicas — Traducir palabras o una situación a números, variables y símbolos de operaciones.</span></li><li><span class="kw">Variable</span> — A letter that stands for a number that is unknown or can change.<br><span class="es-text">Español: Variable — Una letra que representa un número desconocido o que puede cambiar.</span></li><li><span class="kw">Algebraic Expression</span> — A math phrase that has at least one letter.<br><span class="es-text">Español: Expresión algebraica — Una frase matemática que tiene al menos una letra.</span></li><li><span class="kw">Coefficient</span> — The number in front of a letter, like the 3 in 3x.<br><span class="es-text">Español: Coeficiente — El número frente a una letra, como el 3 en 3x.</span></li><li><span class="kw">Constant</span> — A fixed number in an expression or equation that does not change.<br><span class="es-text">Español: Constante — Un número fijo en una expresión o ecuación que no cambia.</span></li><li><span class="kw">Like terms</span> — Terms with the same letter raised to the same power, like 2x and 5x.<br><span class="es-text">Español: Términos semejantes — Términos con la misma letra elevada a la misma potencia, como 2x y 5x.</span></li><li><span class="kw">Substitute</span> — To replace a variable with a given number before working out the value.<br><span class="es-text">Español: Sustituir — Reemplazar una variable por un número dado antes de calcular el valor.</span></li><li><span class="kw">Evaluate</span> — To find what an expression is worth once every variable has a number, following the order of operations.<br><span class="es-text">Español: Evaluar — Hallar cuánto vale una expresión una vez que cada variable tiene un número, siguiendo el orden de las operaciones.</span></li><li><span class="kw">Term</span> — One part of an expression, separated from the others by + or −.<br><span class="es-text">Español: Término — Una parte de una expresión, separada de las demás por + o −.</span></li></ul>
-</section>
-<section>
-  <h2>How we did it in class today</h2>
-  <ol><li>Tickets cost $12 each, plus a flat $50 venue fee. Let t be the number of tickets.</li><li>&quot;$12 each ticket&quot; means 12 times t, which I write as 12t.</li><li>The flat fee $50 is added once, so I add 50.</li><li>I put them together: total revenue = 12t + 50.</li></ol>
-</section>
-<section>
-  <h2>Try this together</h2>
-  <p>Match each word phrase to its algebraic expression.</p><ol><li>the product of 5 and n</li><li>8 less than a number w</li><li>a number p increased by 12</li></ol>
+<section class="section-kitchen">
+  <h2>Kitchen Table Math</h2>
+  <div class="welcome-note" style="background:var(--yellow-light); border-left-color:var(--yellow); margin-bottom: 0;">
+    <strong>Math is everywhere!</strong>
+    <p>Try exploring this topic while you are cooking, shopping, or driving. Ask your student to be the teacher and explain it to you in their own words.</p>
+  </div>
 </section>
 
-<section class="tool-section">
-  <h2>Try the tool together <span class="es">· Prueben la herramienta</span></h2>
-  <p><strong>Lesson Tool</strong> — This is the same model your student used in class. Change it and watch what happens.</p>
-  <p class="es-text">Herramienta de la lección — Este es el mismo modelo que su estudiante usó en clase. Cámbielo y observe qué sucede.</p>
+<section class="section-tool tool-section">
+  <h2>Play with today's math <span class="es">· Jueguen con las matemáticas</span></h2>
+  <p><strong>Interactive Lesson Model</strong> — This is the exact same interactive tool your student used in class today. Change the numbers and watch what happens!</p>
+  <p class="es-text">Modelo interactivo de la lección — Esta es la misma herramienta interactiva que su estudiante usó en clase hoy. ¡Cambie los números y observe qué sucede!</p>
   <div class="tool-host" data-lesson-model-host><div class="interactive-visual" data-visual="manip" data-config="{&quot;kind&quot;:&quot;manip&quot;,&quot;manip&quot;:&quot;expr-machine&quot;,&quot;attrs&quot;:{&quot;coef-name&quot;:&quot;dollars per hour&quot;,&quot;var-name&quot;:&quot;hours&quot;,&quot;const-name&quot;:&quot;one-time fee&quot;,&quot;default-a&quot;:8,&quot;default-x&quot;:4,&quot;default-b&quot;:25,&quot;result-name&quot;:&quot;total cost&quot;}}" role="group" aria-label="Interactive Write and Evaluate Algebraic Expressions" style="margin:var(--sp-3) 0;"><noscript><div class="interactive-visual-fallback">Turn on JavaScript to use this tool. The steps above work on paper too.</div></noscript></div></div>
   <p class="muted-note">Works on a phone, a tablet, or a computer. Nothing to install, nothing to sign in to.</p>
 </section>
-<section>
-  <h2>Check your thinking together</h2>
-  <ol><li>the product of 5 and n → <span class="answer">5n</span></li><li>8 less than a number w → <span class="answer">w − 8</span></li><li>a number p increased by 12 → <span class="answer">p + 12</span></li></ol>
+<section class="section-vocab">
+  <h2>Vocabulary you might hear</h2>
+  <ul><li><span class="kw">Write Algebraic Expressions</span> — Translate words or a situation into numbers, variables, and operation symbols.<br><span class="es-text">Español: Escribir expresiones algebraicas — Traducir palabras o una situación a números, variables y símbolos de operaciones.</span></li><li><span class="kw">Variable</span> — A letter that stands for a number that is unknown or can change.<br><span class="es-text">Español: Variable — Una letra que representa un número desconocido o que puede cambiar.</span></li><li><span class="kw">Algebraic Expression</span> — A math phrase that has at least one letter.<br><span class="es-text">Español: Expresión algebraica — Una frase matemática que tiene al menos una letra.</span></li><li><span class="kw">Coefficient</span> — The number in front of a letter, like the 3 in 3x.<br><span class="es-text">Español: Coeficiente — El número frente a una letra, como el 3 en 3x.</span></li><li><span class="kw">Constant</span> — A fixed number in an expression or equation that does not change.<br><span class="es-text">Español: Constante — Un número fijo en una expresión o ecuación que no cambia.</span></li><li><span class="kw">Like terms</span> — Terms with the same letter raised to the same power, like 2x and 5x.<br><span class="es-text">Español: Términos semejantes — Términos con la misma letra elevada a la misma potencia, como 2x y 5x.</span></li><li><span class="kw">Substitute</span> — To replace a variable with a given number before working out the value.<br><span class="es-text">Español: Sustituir — Reemplazar una variable por un número dado antes de calcular el valor.</span></li><li><span class="kw">Evaluate</span> — To find what an expression is worth once every variable has a number, following the order of operations.<br><span class="es-text">Español: Evaluar — Hallar cuánto vale una expresión una vez que cada variable tiene un número, siguiendo el orden de las operaciones.</span></li><li><span class="kw">Term</span> — One part of an expression, separated from the others by + or −.<br><span class="es-text">Español: Término — Una parte de una expresión, separada de las demás por + o −.</span></li></ul>
 </section>
-<section>
+<section class="section-example">
+  <h2>How we did it in class today</h2>
+  <div class="callout" style="background:#fff;border-color:var(--line);"><ol><li>Tickets cost $12 each, plus a flat $50 venue fee. Let t be the number of tickets.</li><li>&quot;$12 each ticket&quot; means 12 times t, which I write as 12t.</li><li>The flat fee $50 is added once, so I add 50.</li><li>I put them together: total revenue = 12t + 50.</li></ol></div>
+</section>
+<section class="section-practice">
+  <h2>Try this together</h2>
+  <p class="sub" style="margin-top:-6px;">Pick one question to talk about. You don't need to do them all!</p>
+  <div class="callout" style="background:var(--cream);border-color:var(--line); padding-bottom:16px;">
+         <p><strong>Match each word phrase to its algebraic expression.</strong></p>
+         <p style="font-size:22px;color:var(--navy);margin:12px 0;">the product of 5 and n</p>
+         
+         <details style="margin-top: 20px; font-size: 18px;">
+           <summary style="cursor: pointer; color: var(--teal); font-weight: 600;">Check the answer</summary>
+           <p style="margin-top: 12px; margin-bottom:0;">The answer is: <strong class="answer" style="font-size:20px;">5n</strong></p>
+         </details>
+       </div>
+</section>
+<section class="section-stuck">
   <h2>If they get stuck...</h2>
-  <p>Watch out for this: A common mistake in Write Algebraic Expressions is treating 'each' or 'per' as if it means add instead of multiply, and attaching the variable to the wrong number. For 'a $25 setup fee plus $8 per hour, h,' students often write 25 + 8 + h (adding all three numbers) or 25h + 8 (multiplying the flat fee by h) instead of the correct 8h + 25. Since $8 applies per hour, it must multiply the variable (8h), and the flat $25 fee is a constant added only once — check that the per-unit rate, not the flat fee, is the number multiplied by the variable.</p>
-  <p><strong>What to ask:</strong> "Can you show me how you got that? Did we miss a step?"</p>
-</section>
-<section>
-  <h2>How families can help at home</h2>
-  <ul>
-    <li>Look around the house for ways to use this math together (like cooking or shopping).</li>
-    <li>Ask your student to teach you the example above in their own words.</li>
-    <li>When they get an answer, ask "Does that make sense?" before checking if it's right.</li>
-  </ul>
+  <div class="callout" style="border-left: 6px solid #ff9800; background: #fff8e1;">
+    <p style="margin-top:0;"><strong>Watch out for this:</strong> A common mistake in Write Algebraic Expressions is treating 'each' or 'per' as if it means add instead of multiply, and attaching the variable to the wrong number. For 'a $25 setup fee plus $8 per hour, h,' students often write 25 + 8 + h (adding all three numbers) or 25h + 8 (multiplying the flat fee by h) instead of the correct 8h + 25. Since $8 applies per hour, it must multiply the variable (8h), and the flat $25 fee is a constant added only once — check that the per-unit rate, not the flat fee, is the number multiplied by the variable.</p>
+    <p style="margin-bottom:0;"><strong>Try asking:</strong> "Can you show me how you got that? Did we miss a step?"</p>
+  </div>
 </section>
 <section>
   <h2>Spanish support <span class="es">· Apoyo en español</span></h2>

@@ -44,11 +44,43 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
 
-ol.choices{margin:6px 0 4px;}
+body { background: #f1f5f9; font-family: "Outfit", system-ui, sans-serif; }
+.wrap { max-width: 800px; padding: 0 0 64px 0; background: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.06); border-radius: 0 0 32px 32px; overflow: hidden; margin: 0 auto; }
+
+/* The new Hero header */
+.hero-header { background: linear-gradient(135deg, var(--navy), #1a4f8a); padding: 56px 32px; color: #fff; text-align: center; }
+.hero-header .eyebrow { color: var(--teal-light); font-size: 16px; margin-bottom: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
+.hero-header h1 { color: #fff; font-size: 44px; margin: 0; line-height: 1.1; font-weight: 800; }
+.hero-header .std { display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; margin-top:16px; border-radius: 999px; padding: 4px 12px; font-size: 14px; font-weight: 700; }
+
+/* Upgrade sections to look like cards */
+section { padding: 40px 32px; border: none; margin: 0; border-bottom: 1px solid #edf1f5; }
+section h2 { font-size: 30px; font-weight: 800; color: var(--navy); display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+section h2::before { content: "✨"; font-size: 28px; }
+
+/* Specific icons for sections */
+.section-learning h2::before { content: "💡"; }
+.section-kitchen h2::before { content: "🍕"; }
+.section-tool h2::before { content: "🕹️"; }
+.section-vocab h2::before { content: "💬"; }
+.section-example h2::before { content: "🏫"; }
+.section-practice h2::before { content: "✏️"; }
+.section-stuck h2::before { content: "🆘"; }
+
+ol.choices{margin:16px 0 8px;list-style:none;padding-left:0;}
+ol.choices li{background: #f8fafc; border:2px solid #e2e8f0;border-radius:16px;padding:16px 20px;margin-bottom:12px;font-weight:600; font-size: 20px; cursor: pointer; transition: all 0.2s; color: var(--navy); }
+ol.choices li:hover { border-color: var(--teal); background: var(--teal-light); }
+
+.welcome-note{background:var(--teal-light);border:none;border-radius:20px;padding:24px 32px;margin-bottom:0; text-align: left; }
+.welcome-note strong{display:block;font-size:26px;font-weight: 800; color:var(--navy);margin-bottom:8px;}
+.welcome-note p{margin:0;color:var(--navy);font-size:20px; line-height: 1.5; }
+
+.callout { border: none; border-radius: 20px; padding: 24px 32px; background: #f8fafc; font-size: 22px; line-height: 1.5; }
+
 .lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
-.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
-  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
-.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio + label{display:inline-block;border:2px solid #e2e8f0;border-radius:999px;padding:8px 24px;
+  margin:0 12px 16px 0;cursor:pointer;font-weight:700;color:var(--navy);background:#fff; font-size: 18px; transition: all 0.2s;}
+.lang-radio:checked + label{background:var(--navy);color:#fff;border-color:var(--navy);}
 .lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
 .lang-panel{display:none;margin-top:6px;}
 #family-lang-en:checked ~ .lang-panels [data-lang="en"],
@@ -58,7 +90,7 @@ ol.choices{margin:6px 0 4px;}
 #family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
 .lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
 .auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
-  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
+  padding:4px 16px;font-size:15px;font-weight:700;color:var(--ink);margin:0 0 12px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -69,14 +101,16 @@ ol.choices{margin:6px 0 4px;}
 </head>
 <body>
 <div class="wrap">
-<p class="eyebrow">Family Lesson Support</p>
-<h1>Unit 5, Lesson 7: Determine Surface Area of Prisms<span class="std">6.GR.4</span></h1>
-<p class="sub">A quick guide for families and for any student who missed class.</p>
 
-<section>
+<div class="hero-header">
+  <p class="eyebrow">Family Lesson Support</p>
+  <h1>Unit 5, Lesson 7: Determine Surface Area of Prisms</h1>
+  <span class="std">6.GR.4</span>
+</div>
+
+<section class="section-learning">
   <h2>What students are learning</h2>
-  <p>Surface area is the total area of all the faces of a solid. A rectangular prism has 6 faces; a triangular prism has 5 faces (2 triangles + 3 rectangles). Add every face to get the total.</p>
-  <p class="callout"><strong>Key idea:</strong> Surface area is the total area of every face on the outside of a solid: a box has 6 rectangles, and a triangular prism has 2 triangle ends and 3 rectangle sides. Add the areas of all the faces. A box 3 in by 2 in by 1 in has faces of 6, 6, 3, 3, 2, and 2 square inches, so its surface area is 22 square inches.<br><span class="es-text" lang="es">Idea clave: El área de superficie es el área total de todas las caras por fuera de un sólido: una caja tiene 6 rectángulos, y un prisma triangular tiene 2 triángulos en los extremos y 3 rectángulos a los lados. Suma las áreas de todas las caras. Una caja de 3 pulg por 2 pulg por 1 pulg tiene caras de 6, 6, 3, 3, 2 y 2 pulgadas cuadradas, así que su área de superficie es 22 pulgadas cuadradas.</span></p>
+  <p class="callout" style="font-size:22px;"><strong>Key idea:</strong> Surface area is the total area of every face on the outside of a solid: a box has 6 rectangles, and a triangular prism has 2 triangle ends and 3 rectangle sides. Add the areas of all the faces. A box 3 in by 2 in by 1 in has faces of 6, 6, 3, 3, 2, and 2 square inches, so its surface area is 22 square inches.<br><span class="es-text" lang="es" style="font-size:18px;">Idea clave: El área de superficie es el área total de todas las caras por fuera de un sólido: una caja tiene 6 rectángulos, y un prisma triangular tiene 2 triángulos en los extremos y 3 rectángulos a los lados. Suma las áreas de todas las caras. Una caja de 3 pulg por 2 pulg por 1 pulg tiene caras de 6, 6, 3, 3, 2 y 2 pulgadas cuadradas, así que su área de superficie es 22 pulgadas cuadradas.</span></p>
 </section>
 
 <section class="lang-section">
@@ -91,42 +125,48 @@ ol.choices{margin:6px 0 4px;}
   </div>
   </div>
 </section>
-<section>
-  <h2>Key words</h2>
-  <ul><li><span class="kw">Surface Area of Prisms</span> — The total area of all bases and lateral faces of a prism. Formula: SA = 2B + lateral area.<br><span class="es-text">Español: Área de superficie de prismas — El área total de las bases y caras laterales de un prisma. Fórmula: SA = 2B + área lateral.</span></li><li><span class="kw">Surface area</span> — The total area of all the flat sides of a solid.<br><span class="es-text">Español: Área de superficie — El área total de todos los lados planos de un sólido.</span></li><li><span class="kw">Rectangular prism</span> — A solid box shape with six flat rectangle sides.<br><span class="es-text">Español: Prisma rectangular — Una figura sólida en forma de caja con seis lados rectangulares.</span></li><li><span class="kw">Triangular prism</span> — A solid with two triangle ends and three flat rectangle sides.<br><span class="es-text">Español: Prisma triangular — Un sólido con dos extremos triangulares y tres lados rectangulares.</span></li><li><span class="kw">Face</span> — One flat side of a solid shape.<br><span class="es-text">Español: Cara — Un lado plano de una figura sólida.</span></li><li><span class="kw">Net</span> — A flat shape that folds up into a solid.<br><span class="es-text">Español: Plantilla (desarrollo plano) — Una figura plana que se dobla y forma un sólido.</span></li><li><span class="kw">Lateral face</span> — The side faces of a solid, not the top or bottom.<br><span class="es-text">Español: Cara lateral — Los lados de un sólido, no la parte de arriba ni la de abajo.</span></li><li><span class="kw">Congruent</span> — Exactly the same size and shape.<br><span class="es-text">Español: Congruente — Exactamente del mismo tamaño y forma.</span></li></ul>
-</section>
-<section>
-  <h2>How we did it in class today</h2>
-  <ol><li>My triangular prism has triangle bases (base 6 in., height 4 in.), is 10 in. long, and the two slant sides are 5 in. each.</li><li>Each triangle base is ½ × 6 × 4 = 12, and there are 2 of them: 2 × 12 = 24.</li><li>Now the 3 rectangles: 6 × 10 = 60, 5 × 10 = 50, and 5 × 10 = 50, which add to 160.</li><li>I add the bases and the rectangles: 24 + 160 = 184.</li><li>So the surface area is 184 in². I counted 5 faces because it is a triangular prism.</li></ol>
-</section>
-<section>
-  <h2>Try this together</h2>
-  <ol><li>You are painting every outside face of a toy chest at home. It is l = 5 ft, w = 4 ft, h = 2 ft. How many square feet will you paint (its surface area)?<ol class="choices" type="A"><li>76 ft²</li><li>38 ft²</li><li>40 ft²</li><li>76 ft³</li></ol></li></ol>
+<section class="section-kitchen">
+  <h2>Kitchen Table Math</h2>
+  <div class="welcome-note" style="background:var(--yellow-light); border-left-color:var(--yellow); margin-bottom: 0;">
+    <strong>Math is everywhere!</strong>
+    <p>Try exploring this topic while you are cooking, shopping, or driving. Ask your student to be the teacher and explain it to you in their own words.</p>
+  </div>
 </section>
 
-<section class="tool-section">
-  <h2>Try the tool together <span class="es">· Prueben la herramienta</span></h2>
-  <p><strong>Lesson Tool</strong> — This is the same model your student used in class. Change it and watch what happens.</p>
-  <p class="es-text">Herramienta de la lección — Este es el mismo modelo que su estudiante usó en clase. Cámbielo y observe qué sucede.</p>
+<section class="section-tool tool-section">
+  <h2>Play with today's math <span class="es">· Jueguen con las matemáticas</span></h2>
+  <p><strong>Interactive Lesson Model</strong> — This is the exact same interactive tool your student used in class today. Change the numbers and watch what happens!</p>
+  <p class="es-text">Modelo interactivo de la lección — Esta es la misma herramienta interactiva que su estudiante usó en clase hoy. ¡Cambie los números y observe qué sucede!</p>
   <div class="tool-host" data-lesson-model-host><div class="interactive-visual" data-visual="net-folder" data-config="{&quot;kind&quot;:&quot;net-folder&quot;,&quot;solid&quot;:&quot;triangular-prism&quot;,&quot;instructions&quot;:&quot;Fold the 2D net into a 3D triangular prism. Observe how the 2 triangular bases and 3 rectangular lateral faces meet in 3D space.&quot;}" role="group" aria-label="Interactive Determine Surface Area of Prisms" style="margin:var(--sp-3) 0;"><noscript><div class="interactive-visual-fallback">Turn on JavaScript to use this tool. The steps above work on paper too.</div></noscript></div></div>
   <p class="muted-note">Works on a phone, a tablet, or a computer. Nothing to install, nothing to sign in to.</p>
 </section>
-<section>
-  <h2>Check your thinking together</h2>
-  <ol><li>You are painting every outside face of a toy chest at home. It is l = 5 ft, w = 4 ft, h = 2 ft. How many square feet will you paint (its surface area)? → <span class="answer">76 ft²</span></li></ol>
+<section class="section-vocab">
+  <h2>Vocabulary you might hear</h2>
+  <ul><li><span class="kw">Surface Area of Prisms</span> — The total area of all bases and lateral faces of a prism. Formula: SA = 2B + lateral area.<br><span class="es-text">Español: Área de superficie de prismas — El área total de las bases y caras laterales de un prisma. Fórmula: SA = 2B + área lateral.</span></li><li><span class="kw">Surface area</span> — The total area of all the flat sides of a solid.<br><span class="es-text">Español: Área de superficie — El área total de todos los lados planos de un sólido.</span></li><li><span class="kw">Rectangular prism</span> — A solid box shape with six flat rectangle sides.<br><span class="es-text">Español: Prisma rectangular — Una figura sólida en forma de caja con seis lados rectangulares.</span></li><li><span class="kw">Triangular prism</span> — A solid with two triangle ends and three flat rectangle sides.<br><span class="es-text">Español: Prisma triangular — Un sólido con dos extremos triangulares y tres lados rectangulares.</span></li><li><span class="kw">Face</span> — One flat side of a solid shape.<br><span class="es-text">Español: Cara — Un lado plano de una figura sólida.</span></li><li><span class="kw">Net</span> — A flat shape that folds up into a solid.<br><span class="es-text">Español: Plantilla (desarrollo plano) — Una figura plana que se dobla y forma un sólido.</span></li><li><span class="kw">Lateral face</span> — The side faces of a solid, not the top or bottom.<br><span class="es-text">Español: Cara lateral — Los lados de un sólido, no la parte de arriba ni la de abajo.</span></li><li><span class="kw">Congruent</span> — Exactly the same size and shape.<br><span class="es-text">Español: Congruente — Exactamente del mismo tamaño y forma.</span></li></ul>
 </section>
-<section>
+<section class="section-example">
+  <h2>How we did it in class today</h2>
+  <div class="callout" style="background:#fff;border-color:var(--line);"><ol><li>My triangular prism has triangle bases (base 6 in., height 4 in.), is 10 in. long, and the two slant sides are 5 in. each.</li><li>Each triangle base is ½ × 6 × 4 = 12, and there are 2 of them: 2 × 12 = 24.</li><li>Now the 3 rectangles: 6 × 10 = 60, 5 × 10 = 50, and 5 × 10 = 50, which add to 160.</li><li>I add the bases and the rectangles: 24 + 160 = 184.</li><li>So the surface area is 184 in². I counted 5 faces because it is a triangular prism.</li></ol></div>
+</section>
+<section class="section-practice">
+  <h2>Try this together</h2>
+  <p class="sub" style="margin-top:-6px;">Pick one question to talk about. You don't need to do them all!</p>
+  <div class="callout" style="background:var(--cream);border-color:var(--line); padding-bottom:16px;">
+         
+         <p style="font-size:22px;color:var(--navy);margin:12px 0;">You are painting every outside face of a toy chest at home. It is l = 5 ft, w = 4 ft, h = 2 ft. How many square feet will you paint (its surface area)?</p>
+         <ol class="choices"><li>76 ft²</li><li>38 ft²</li><li>40 ft²</li><li>76 ft³</li></ol>
+         <details style="margin-top: 20px; font-size: 18px;">
+           <summary style="cursor: pointer; color: var(--teal); font-weight: 600;">Check the answer</summary>
+           <p style="margin-top: 12px; margin-bottom:0;">The answer is: <strong class="answer" style="font-size:20px;">76 ft²</strong></p>
+         </details>
+       </div>
+</section>
+<section class="section-stuck">
   <h2>If they get stuck...</h2>
-  <p>Watch out for this: A common mistake in Surface Area of Prisms is confusing surface area with volume — multiplying l × w × h (which finds the space INSIDE the prism, in cubic units) instead of adding the areas of all the faces (SA = 2lw + 2lh + 2wh, in square units). A second common slip is forgetting to double one face pair, like writing 2(l×w) + 2(l×h) + (w×h) instead of + 2(w×h) — always count all 6 faces (or all 5 for a triangular prism) before you submit.</p>
-  <p><strong>What to ask:</strong> "Can you show me how you got that? Did we miss a step?"</p>
-</section>
-<section>
-  <h2>How families can help at home</h2>
-  <ul>
-    <li>Look around the house for ways to use this math together (like cooking or shopping).</li>
-    <li>Ask your student to teach you the example above in their own words.</li>
-    <li>When they get an answer, ask "Does that make sense?" before checking if it's right.</li>
-  </ul>
+  <div class="callout" style="border-left: 6px solid #ff9800; background: #fff8e1;">
+    <p style="margin-top:0;"><strong>Watch out for this:</strong> A common mistake in Surface Area of Prisms is confusing surface area with volume — multiplying l × w × h (which finds the space INSIDE the prism, in cubic units) instead of adding the areas of all the faces (SA = 2lw + 2lh + 2wh, in square units). A second common slip is forgetting to double one face pair, like writing 2(l×w) + 2(l×h) + (w×h) instead of + 2(w×h) — always count all 6 faces (or all 5 for a triangular prism) before you submit.</p>
+    <p style="margin-bottom:0;"><strong>Try asking:</strong> "Can you show me how you got that? Did we miss a step?"</p>
+  </div>
 </section>
 <section>
   <h2>Spanish support <span class="es">· Apoyo en español</span></h2>

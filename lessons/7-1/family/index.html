@@ -44,11 +44,43 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
 
-ol.choices{margin:6px 0 4px;}
+body { background: #f1f5f9; font-family: "Outfit", system-ui, sans-serif; }
+.wrap { max-width: 800px; padding: 0 0 64px 0; background: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.06); border-radius: 0 0 32px 32px; overflow: hidden; margin: 0 auto; }
+
+/* The new Hero header */
+.hero-header { background: linear-gradient(135deg, var(--navy), #1a4f8a); padding: 56px 32px; color: #fff; text-align: center; }
+.hero-header .eyebrow { color: var(--teal-light); font-size: 16px; margin-bottom: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
+.hero-header h1 { color: #fff; font-size: 44px; margin: 0; line-height: 1.1; font-weight: 800; }
+.hero-header .std { display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; margin-top:16px; border-radius: 999px; padding: 4px 12px; font-size: 14px; font-weight: 700; }
+
+/* Upgrade sections to look like cards */
+section { padding: 40px 32px; border: none; margin: 0; border-bottom: 1px solid #edf1f5; }
+section h2 { font-size: 30px; font-weight: 800; color: var(--navy); display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+section h2::before { content: "✨"; font-size: 28px; }
+
+/* Specific icons for sections */
+.section-learning h2::before { content: "💡"; }
+.section-kitchen h2::before { content: "🍕"; }
+.section-tool h2::before { content: "🕹️"; }
+.section-vocab h2::before { content: "💬"; }
+.section-example h2::before { content: "🏫"; }
+.section-practice h2::before { content: "✏️"; }
+.section-stuck h2::before { content: "🆘"; }
+
+ol.choices{margin:16px 0 8px;list-style:none;padding-left:0;}
+ol.choices li{background: #f8fafc; border:2px solid #e2e8f0;border-radius:16px;padding:16px 20px;margin-bottom:12px;font-weight:600; font-size: 20px; cursor: pointer; transition: all 0.2s; color: var(--navy); }
+ol.choices li:hover { border-color: var(--teal); background: var(--teal-light); }
+
+.welcome-note{background:var(--teal-light);border:none;border-radius:20px;padding:24px 32px;margin-bottom:0; text-align: left; }
+.welcome-note strong{display:block;font-size:26px;font-weight: 800; color:var(--navy);margin-bottom:8px;}
+.welcome-note p{margin:0;color:var(--navy);font-size:20px; line-height: 1.5; }
+
+.callout { border: none; border-radius: 20px; padding: 24px 32px; background: #f8fafc; font-size: 22px; line-height: 1.5; }
+
 .lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
-.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
-  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
-.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio + label{display:inline-block;border:2px solid #e2e8f0;border-radius:999px;padding:8px 24px;
+  margin:0 12px 16px 0;cursor:pointer;font-weight:700;color:var(--navy);background:#fff; font-size: 18px; transition: all 0.2s;}
+.lang-radio:checked + label{background:var(--navy);color:#fff;border-color:var(--navy);}
 .lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
 .lang-panel{display:none;margin-top:6px;}
 #family-lang-en:checked ~ .lang-panels [data-lang="en"],
@@ -58,7 +90,7 @@ ol.choices{margin:6px 0 4px;}
 #family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
 .lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
 .auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
-  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
+  padding:4px 16px;font-size:15px;font-weight:700;color:var(--ink);margin:0 0 12px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -69,14 +101,16 @@ ol.choices{margin:6px 0 4px;}
 </head>
 <body>
 <div class="wrap">
-<p class="eyebrow">Family Lesson Support</p>
-<h1>Unit 7, Lesson 1: Explore Integers and Their Opposites<span class="std">6.NOS.5</span></h1>
-<p class="sub">A quick guide for families and for any student who missed class.</p>
 
-<section>
+<div class="hero-header">
+  <p class="eyebrow">Family Lesson Support</p>
+  <h1>Unit 7, Lesson 1: Explore Integers and Their Opposites</h1>
+  <span class="std">6.NOS.5</span>
+</div>
+
+<section class="section-learning">
   <h2>What students are learning</h2>
-  <p>Counting numbers, their opposites, and 0 are integers. A negative integer is less than zero and is written with a − sign. Opposites are the same distance from 0, but on opposite sides of the number line.</p>
-  <p class="callout"><strong>Key idea:</strong> Integers are the counting numbers (1, 2, 3, ...), their opposites (-1, -2, -3, ...), and 0. Opposites are the same distance from 0 on different sides, like 5 and -5. Zero often means a starting point, like sea level or $0 in a bank account.<br><span class="es-text" lang="es">Idea clave: Los números enteros son los números para contar (1, 2, 3, ...), sus opuestos (-1, -2, -3, ...) y el 0. Los opuestos están a la misma distancia del 0 pero en lados diferentes, como 5 y -5. El cero muchas veces es un punto de partida, como el nivel del mar o $0 en una cuenta de banco.</span></p>
+  <p class="callout" style="font-size:22px;"><strong>Key idea:</strong> Integers are the counting numbers (1, 2, 3, ...), their opposites (-1, -2, -3, ...), and 0. Opposites are the same distance from 0 on different sides, like 5 and -5. Zero often means a starting point, like sea level or $0 in a bank account.<br><span class="es-text" lang="es" style="font-size:18px;">Idea clave: Los números enteros son los números para contar (1, 2, 3, ...), sus opuestos (-1, -2, -3, ...) y el 0. Los opuestos están a la misma distancia del 0 pero en lados diferentes, como 5 y -5. El cero muchas veces es un punto de partida, como el nivel del mar o $0 en una cuenta de banco.</span></p>
 </section>
 
 <section class="lang-section">
@@ -91,42 +125,48 @@ ol.choices{margin:6px 0 4px;}
   </div>
   </div>
 </section>
-<section>
-  <h2>Key words</h2>
-  <ul><li><span class="kw">Integer</span> — The counting numbers, their opposites, and 0.<br><span class="es-text">Español: Número entero — Los números para contar, sus opuestos y el 0.</span></li><li><span class="kw">Opposite</span> — A number that is the same distance from 0 as another number, but on the other side of 0.<br><span class="es-text">Español: Opuesto — Un número que está a la misma distancia de 0 que otro número, pero del otro lado del 0.</span></li><li><span class="kw">Negative number</span> — A number less than 0, written with a − sign. On a number line it sits to the left of 0.<br><span class="es-text">Español: Número negativo — Un número menor que 0, escrito con un signo −. En la recta numérica queda a la izquierda del 0.</span></li><li><span class="kw">Positive number</span> — A number greater than 0. On a number line it sits to the right of 0.<br><span class="es-text">Español: Número positivo — Un número mayor que 0. En la recta numérica queda a la derecha del 0.</span></li><li><span class="kw">Number line</span> — A straight line where numbers are placed in order. It extends to the left of 0 to show values less than 0.<br><span class="es-text">Español: Recta numérica — Una recta donde los números se colocan en orden. Se extiende a la izquierda del 0 para mostrar valores menores que 0.</span></li><li><span class="kw">Opposite of the opposite</span> — Taking the opposite twice brings you back to the first number.<br><span class="es-text">Español: Opuesto del opuesto — Tomar el opuesto dos veces te devuelve al primer número.</span></li></ul>
-</section>
-<section>
-  <h2>How we did it in class today</h2>
-  <ol><li>Badwater Basin is 86 meters below sea level, and sea level is defined as 0.</li><li>Below 0 means a negative number, so I write the elevation as −86 meters.</li><li>On a number line, I count 86 units to the LEFT of 0 and mark that point.</li><li>The opposite of −86 is 86. Both are 86 units from 0, just on different sides.</li></ol>
-</section>
-<section>
-  <h2>Try this together</h2>
-  <ol><li>Which situation is best represented by the integer -12?<ol class="choices" type="A"><li>A bird flying 12 feet above the ground</li><li>A temperature of 12 degrees above zero</li><li>A $12 withdrawal from a savings account</li><li>A team scoring 12 points in a game</li></ol></li></ol>
+<section class="section-kitchen">
+  <h2>Kitchen Table Math</h2>
+  <div class="welcome-note" style="background:var(--yellow-light); border-left-color:var(--yellow); margin-bottom: 0;">
+    <strong>Math is everywhere!</strong>
+    <p>Try exploring this topic while you are cooking, shopping, or driving. Ask your student to be the teacher and explain it to you in their own words.</p>
+  </div>
 </section>
 
-<section class="tool-section">
-  <h2>Try the tool together <span class="es">· Prueben la herramienta</span></h2>
-  <p><strong>Lesson Tool</strong> — This is the same model your student used in class. Change it and watch what happens.</p>
-  <p class="es-text">Herramienta de la lección — Este es el mismo modelo que su estudiante usó en clase. Cámbielo y observe qué sucede.</p>
+<section class="section-tool tool-section">
+  <h2>Play with today's math <span class="es">· Jueguen con las matemáticas</span></h2>
+  <p><strong>Interactive Lesson Model</strong> — This is the exact same interactive tool your student used in class today. Change the numbers and watch what happens!</p>
+  <p class="es-text">Modelo interactivo de la lección — Esta es la misma herramienta interactiva que su estudiante usó en clase hoy. ¡Cambie los números y observe qué sucede!</p>
   <div class="tool-host" data-lesson-model-host><div class="interactive-visual" data-visual="number-line-explorer" data-config="{&quot;kind&quot;:&quot;number-line-explorer&quot;,&quot;mode&quot;:&quot;absolute&quot;,&quot;max&quot;:10,&quot;step&quot;:1,&quot;start&quot;:-9,&quot;intro&quot;:&quot;Drag the point to any integer. Watch its distance from 0 and its opposite — −9°C in Reykjavik and 9°C in Toronto sit the same distance from 0 on opposite sides.&quot;}" role="group" aria-label="Interactive Explore Integers and Their Opposites" style="margin:var(--sp-3) 0;"><noscript><div class="interactive-visual-fallback">Turn on JavaScript to use this tool. The steps above work on paper too.</div></noscript></div></div>
   <p class="muted-note">Works on a phone, a tablet, or a computer. Nothing to install, nothing to sign in to.</p>
 </section>
-<section>
-  <h2>Check your thinking together</h2>
-  <ol><li>Which situation is best represented by the integer -12? → <span class="answer">A $12 withdrawal from a savings account</span></li></ol>
+<section class="section-vocab">
+  <h2>Vocabulary you might hear</h2>
+  <ul><li><span class="kw">Integer</span> — The counting numbers, their opposites, and 0.<br><span class="es-text">Español: Número entero — Los números para contar, sus opuestos y el 0.</span></li><li><span class="kw">Opposite</span> — A number that is the same distance from 0 as another number, but on the other side of 0.<br><span class="es-text">Español: Opuesto — Un número que está a la misma distancia de 0 que otro número, pero del otro lado del 0.</span></li><li><span class="kw">Negative number</span> — A number less than 0, written with a − sign. On a number line it sits to the left of 0.<br><span class="es-text">Español: Número negativo — Un número menor que 0, escrito con un signo −. En la recta numérica queda a la izquierda del 0.</span></li><li><span class="kw">Positive number</span> — A number greater than 0. On a number line it sits to the right of 0.<br><span class="es-text">Español: Número positivo — Un número mayor que 0. En la recta numérica queda a la derecha del 0.</span></li><li><span class="kw">Number line</span> — A straight line where numbers are placed in order. It extends to the left of 0 to show values less than 0.<br><span class="es-text">Español: Recta numérica — Una recta donde los números se colocan en orden. Se extiende a la izquierda del 0 para mostrar valores menores que 0.</span></li><li><span class="kw">Opposite of the opposite</span> — Taking the opposite twice brings you back to the first number.<br><span class="es-text">Español: Opuesto del opuesto — Tomar el opuesto dos veces te devuelve al primer número.</span></li></ul>
 </section>
-<section>
+<section class="section-example">
+  <h2>How we did it in class today</h2>
+  <div class="callout" style="background:#fff;border-color:var(--line);"><ol><li>Badwater Basin is 86 meters below sea level, and sea level is defined as 0.</li><li>Below 0 means a negative number, so I write the elevation as −86 meters.</li><li>On a number line, I count 86 units to the LEFT of 0 and mark that point.</li><li>The opposite of −86 is 86. Both are 86 units from 0, just on different sides.</li></ol></div>
+</section>
+<section class="section-practice">
+  <h2>Try this together</h2>
+  <p class="sub" style="margin-top:-6px;">Pick one question to talk about. You don't need to do them all!</p>
+  <div class="callout" style="background:var(--cream);border-color:var(--line); padding-bottom:16px;">
+         
+         <p style="font-size:22px;color:var(--navy);margin:12px 0;">Which situation is best represented by the integer -12?</p>
+         <ol class="choices"><li>A bird flying 12 feet above the ground</li><li>A temperature of 12 degrees above zero</li><li>A $12 withdrawal from a savings account</li><li>A team scoring 12 points in a game</li></ol>
+         <details style="margin-top: 20px; font-size: 18px;">
+           <summary style="cursor: pointer; color: var(--teal); font-weight: 600;">Check the answer</summary>
+           <p style="margin-top: 12px; margin-bottom:0;">The answer is: <strong class="answer" style="font-size:20px;">A $12 withdrawal from a savings account</strong></p>
+         </details>
+       </div>
+</section>
+<section class="section-stuck">
   <h2>If they get stuck...</h2>
-  <p>Watch out for this: The most common mistake in this lesson is thinking that the opposite of a negative integer is still negative — for example, saying the opposite of -7 is -7, or that the opposite of -12 is -24. Opposites are the same DISTANCE from 0 but on OPPOSITE sides of 0, so taking an opposite always changes the direction and never changes the distance: the opposite of -7 is 7 and the opposite of -12 is 12. The one exception is 0, which is 0 units from itself and is therefore its own opposite. Before you submit, count the units from 0 and check that your answer is on the other side.</p>
-  <p><strong>What to ask:</strong> "Can you show me how you got that? Did we miss a step?"</p>
-</section>
-<section>
-  <h2>How families can help at home</h2>
-  <ul>
-    <li>Look around the house for ways to use this math together (like cooking or shopping).</li>
-    <li>Ask your student to teach you the example above in their own words.</li>
-    <li>When they get an answer, ask "Does that make sense?" before checking if it's right.</li>
-  </ul>
+  <div class="callout" style="border-left: 6px solid #ff9800; background: #fff8e1;">
+    <p style="margin-top:0;"><strong>Watch out for this:</strong> The most common mistake in this lesson is thinking that the opposite of a negative integer is still negative — for example, saying the opposite of -7 is -7, or that the opposite of -12 is -24. Opposites are the same DISTANCE from 0 but on OPPOSITE sides of 0, so taking an opposite always changes the direction and never changes the distance: the opposite of -7 is 7 and the opposite of -12 is 12. The one exception is 0, which is 0 units from itself and is therefore its own opposite. Before you submit, count the units from 0 and check that your answer is on the other side.</p>
+    <p style="margin-bottom:0;"><strong>Try asking:</strong> "Can you show me how you got that? Did we miss a step?"</p>
+  </div>
 </section>
 <section>
   <h2>Spanish support <span class="es">· Apoyo en español</span></h2>

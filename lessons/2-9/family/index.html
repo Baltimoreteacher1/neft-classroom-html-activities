@@ -44,11 +44,43 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
 
-ol.choices{margin:6px 0 4px;}
+body { background: #f1f5f9; font-family: "Outfit", system-ui, sans-serif; }
+.wrap { max-width: 800px; padding: 0 0 64px 0; background: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.06); border-radius: 0 0 32px 32px; overflow: hidden; margin: 0 auto; }
+
+/* The new Hero header */
+.hero-header { background: linear-gradient(135deg, var(--navy), #1a4f8a); padding: 56px 32px; color: #fff; text-align: center; }
+.hero-header .eyebrow { color: var(--teal-light); font-size: 16px; margin-bottom: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
+.hero-header h1 { color: #fff; font-size: 44px; margin: 0; line-height: 1.1; font-weight: 800; }
+.hero-header .std { display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; margin-top:16px; border-radius: 999px; padding: 4px 12px; font-size: 14px; font-weight: 700; }
+
+/* Upgrade sections to look like cards */
+section { padding: 40px 32px; border: none; margin: 0; border-bottom: 1px solid #edf1f5; }
+section h2 { font-size: 30px; font-weight: 800; color: var(--navy); display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+section h2::before { content: "✨"; font-size: 28px; }
+
+/* Specific icons for sections */
+.section-learning h2::before { content: "💡"; }
+.section-kitchen h2::before { content: "🍕"; }
+.section-tool h2::before { content: "🕹️"; }
+.section-vocab h2::before { content: "💬"; }
+.section-example h2::before { content: "🏫"; }
+.section-practice h2::before { content: "✏️"; }
+.section-stuck h2::before { content: "🆘"; }
+
+ol.choices{margin:16px 0 8px;list-style:none;padding-left:0;}
+ol.choices li{background: #f8fafc; border:2px solid #e2e8f0;border-radius:16px;padding:16px 20px;margin-bottom:12px;font-weight:600; font-size: 20px; cursor: pointer; transition: all 0.2s; color: var(--navy); }
+ol.choices li:hover { border-color: var(--teal); background: var(--teal-light); }
+
+.welcome-note{background:var(--teal-light);border:none;border-radius:20px;padding:24px 32px;margin-bottom:0; text-align: left; }
+.welcome-note strong{display:block;font-size:26px;font-weight: 800; color:var(--navy);margin-bottom:8px;}
+.welcome-note p{margin:0;color:var(--navy);font-size:20px; line-height: 1.5; }
+
+.callout { border: none; border-radius: 20px; padding: 24px 32px; background: #f8fafc; font-size: 22px; line-height: 1.5; }
+
 .lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
-.lang-radio + label{display:inline-block;border:1px solid var(--teal);border-radius:999px;padding:6px 14px;
-  margin:0 6px 8px 0;cursor:pointer;font-weight:600;color:var(--navy);background:#fff;min-height:44px;line-height:30px;}
-.lang-radio:checked + label{background:var(--navy);border-color:var(--navy);color:#fff;}
+.lang-radio + label{display:inline-block;border:2px solid #e2e8f0;border-radius:999px;padding:8px 24px;
+  margin:0 12px 16px 0;cursor:pointer;font-weight:700;color:var(--navy);background:#fff; font-size: 18px; transition: all 0.2s;}
+.lang-radio:checked + label{background:var(--navy);color:#fff;border-color:var(--navy);}
 .lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
 .lang-panel{display:none;margin-top:6px;}
 #family-lang-en:checked ~ .lang-panels [data-lang="en"],
@@ -58,7 +90,7 @@ ol.choices{margin:6px 0 4px;}
 #family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
 .lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
 .auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
-  padding:2px 12px;font-size:14px;font-weight:700;color:var(--ink);margin:0 0 8px;}
+  padding:4px 16px;font-size:15px;font-weight:700;color:var(--ink);margin:0 0 12px;}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -69,14 +101,16 @@ ol.choices{margin:6px 0 4px;}
 </head>
 <body>
 <div class="wrap">
-<p class="eyebrow">Family Lesson Support</p>
-<h1>Unit 2, Lesson 9: Describe Data by Mean Absolute Deviation<span class="std">6.DS.6c</span></h1>
-<p class="sub">A quick guide for families and for any student who missed class.</p>
 
-<section>
+<div class="hero-header">
+  <p class="eyebrow">Family Lesson Support</p>
+  <h1>Unit 2, Lesson 9: Describe Data by Mean Absolute Deviation</h1>
+  <span class="std">6.DS.6c</span>
+</div>
+
+<section class="section-learning">
   <h2>What students are learning</h2>
-  <p>The mean absolute deviation, or MAD, is the average distance of each value from the mean. It tells you how spread out the data is: a small MAD means the data is close together, and a large MAD means it is spread out.</p>
-  <p class="callout"><strong>Key idea:</strong> The mean absolute deviation (MAD) tells how spread out the data is. Find the mean, find how far each number is from the mean, then find the average of those distances. A small MAD means the numbers are close together; a large MAD means they are spread out.<br><span class="es-text" lang="es">Idea clave: La desviación media absoluta dice qué tan separados están los datos. Halla la media, halla qué tan lejos está cada número de la media y luego halla el promedio de esas distancias. Si la desviación media absoluta es pequeña, los números están cerca unos de otros; si es grande, están muy separados.</span></p>
+  <p class="callout" style="font-size:22px;"><strong>Key idea:</strong> The mean absolute deviation (MAD) tells how spread out the data is. Find the mean, find how far each number is from the mean, then find the average of those distances. A small MAD means the numbers are close together; a large MAD means they are spread out.<br><span class="es-text" lang="es" style="font-size:18px;">Idea clave: La desviación media absoluta dice qué tan separados están los datos. Halla la media, halla qué tan lejos está cada número de la media y luego halla el promedio de esas distancias. Si la desviación media absoluta es pequeña, los números están cerca unos de otros; si es grande, están muy separados.</span></p>
 </section>
 
 <section class="lang-section">
@@ -91,42 +125,48 @@ ol.choices{margin:6px 0 4px;}
   </div>
   </div>
 </section>
-<section>
-  <h2>Key words</h2>
-  <ul><li><span class="kw">Mean Absolute Deviation</span> — The average distance of data values from the mean; it describes spread.<br><span class="es-text">Español: Desviación media absoluta — La distancia promedio de los valores de datos respecto a la media; describe la dispersión.</span></li><li><span class="kw">Deviation</span> — How far a number is from the mean.<br><span class="es-text">Español: Desviación — Qué tan lejos está un número de la media.</span></li><li><span class="kw">Absolute Value</span> — How far a number is from zero. It is never negative.<br><span class="es-text">Español: Valor absoluto — Qué tan lejos está un número de cero. Nunca es negativo.</span></li><li><span class="kw">Spread</span> — How far apart the numbers are.<br><span class="es-text">Español: Dispersión — Qué tan separados están los números.</span></li><li><span class="kw">Data distribution</span> — How the data looks: where it sits and how spread out it is.<br><span class="es-text">Español: Distribución de datos — Cómo se ven los datos: dónde están y qué tan separados están.</span></li><li><span class="kw">Variability</span> — How spread out the numbers are.<br><span class="es-text">Español: Variabilidad — Qué tan separados están los números.</span></li><li><span class="kw">Mean</span> — The total shared equally among all the values.<br><span class="es-text">Español: Media — El total repartido en partes iguales entre todos los valores.</span></li><li><span class="kw">Variation</span> — How much the values in a data set differ from one another.<br><span class="es-text">Español: Variación — Cuánto difieren entre sí los valores de un conjunto de datos.</span></li></ul>
-</section>
-<section>
-  <h2>How we did it in class today</h2>
-  <ol><li>My data set: 6, 8, 10, 12. First I find the mean: 6 + 8 + 10 + 12 = 36, then 36 ÷ 4 = 9. The mean is 9.</li><li>Next I find each deviation (value − mean): 6−9 = −3, 8−9 = −1, 10−9 = 1, 12−9 = 3.</li><li>Then I take the absolute value of each (the distance, never negative (zero is allowed)): 3, 1, 1, 3.</li><li>Finally I average those distances: 3 + 1 + 1 + 3 = 8, then 8 ÷ 4 = 2. So the MAD = 2 points.</li></ol>
-</section>
-<section>
-  <h2>Try this together</h2>
-  <p>Match each MAD value to what it tells you about the data.</p><ol><li>MAD = 1.5</li><li>MAD = 8.0</li><li>MAD = 0</li></ol>
+<section class="section-kitchen">
+  <h2>Kitchen Table Math</h2>
+  <div class="welcome-note" style="background:var(--yellow-light); border-left-color:var(--yellow); margin-bottom: 0;">
+    <strong>Math is everywhere!</strong>
+    <p>Try exploring this topic while you are cooking, shopping, or driving. Ask your student to be the teacher and explain it to you in their own words.</p>
+  </div>
 </section>
 
-<section class="tool-section">
-  <h2>Try the tool together <span class="es">· Prueben la herramienta</span></h2>
-  <p><strong>Lesson Tool</strong> — This is the same model your student used in class. Change it and watch what happens.</p>
-  <p class="es-text">Herramienta de la lección — Este es el mismo modelo que su estudiante usó en clase. Cámbielo y observe qué sucede.</p>
+<section class="section-tool tool-section">
+  <h2>Play with today's math <span class="es">· Jueguen con las matemáticas</span></h2>
+  <p><strong>Interactive Lesson Model</strong> — This is the exact same interactive tool your student used in class today. Change the numbers and watch what happens!</p>
+  <p class="es-text">Modelo interactivo de la lección — Esta es la misma herramienta interactiva que su estudiante usó en clase hoy. ¡Cambie los números y observe qué sucede!</p>
   <div class="tool-host" data-lesson-model-host><div class="interactive-visual" data-visual="stats-data-lab" data-config="{&quot;kind&quot;:&quot;stats-data-lab&quot;,&quot;focus&quot;:&quot;spread&quot;,&quot;unit&quot;:&quot;points&quot;,&quot;data&quot;:[18,22,20,24,16],&quot;presets&quot;:[{&quot;label&quot;:&quot;Player A scores&quot;,&quot;data&quot;:[18,22,20,24,16],&quot;unit&quot;:&quot;points&quot;},{&quot;label&quot;:&quot;Tightly clustered&quot;,&quot;data&quot;:[20,21,20,19,20],&quot;unit&quot;:&quot;points&quot;}]}" role="group" aria-label="Interactive Describe Data by Mean Absolute Deviation" style="margin:var(--sp-3) 0;"><noscript><div class="interactive-visual-fallback">Turn on JavaScript to use this tool. The steps above work on paper too.</div></noscript></div></div>
   <p class="muted-note">Works on a phone, a tablet, or a computer. Nothing to install, nothing to sign in to.</p>
 </section>
-<section>
-  <h2>Check your thinking together</h2>
-  <ol><li>MAD = 1.5 → <span class="answer">Very consistent data</span></li><li>MAD = 8.0 → <span class="answer">Very spread out data</span></li><li>MAD = 0 → <span class="answer">All values are identical</span></li></ol>
+<section class="section-vocab">
+  <h2>Vocabulary you might hear</h2>
+  <ul><li><span class="kw">Mean Absolute Deviation</span> — The average distance of data values from the mean; it describes spread.<br><span class="es-text">Español: Desviación media absoluta — La distancia promedio de los valores de datos respecto a la media; describe la dispersión.</span></li><li><span class="kw">Deviation</span> — How far a number is from the mean.<br><span class="es-text">Español: Desviación — Qué tan lejos está un número de la media.</span></li><li><span class="kw">Absolute Value</span> — How far a number is from zero. It is never negative.<br><span class="es-text">Español: Valor absoluto — Qué tan lejos está un número de cero. Nunca es negativo.</span></li><li><span class="kw">Spread</span> — How far apart the numbers are.<br><span class="es-text">Español: Dispersión — Qué tan separados están los números.</span></li><li><span class="kw">Data distribution</span> — How the data looks: where it sits and how spread out it is.<br><span class="es-text">Español: Distribución de datos — Cómo se ven los datos: dónde están y qué tan separados están.</span></li><li><span class="kw">Variability</span> — How spread out the numbers are.<br><span class="es-text">Español: Variabilidad — Qué tan separados están los números.</span></li><li><span class="kw">Mean</span> — The total shared equally among all the values.<br><span class="es-text">Español: Media — El total repartido en partes iguales entre todos los valores.</span></li><li><span class="kw">Variation</span> — How much the values in a data set differ from one another.<br><span class="es-text">Español: Variación — Cuánto difieren entre sí los valores de un conjunto de datos.</span></li></ul>
 </section>
-<section>
+<section class="section-example">
+  <h2>How we did it in class today</h2>
+  <div class="callout" style="background:#fff;border-color:var(--line);"><ol><li>My data set: 6, 8, 10, 12. First I find the mean: 6 + 8 + 10 + 12 = 36, then 36 ÷ 4 = 9. The mean is 9.</li><li>Next I find each deviation (value − mean): 6−9 = −3, 8−9 = −1, 10−9 = 1, 12−9 = 3.</li><li>Then I take the absolute value of each (the distance, never negative (zero is allowed)): 3, 1, 1, 3.</li><li>Finally I average those distances: 3 + 1 + 1 + 3 = 8, then 8 ÷ 4 = 2. So the MAD = 2 points.</li></ol></div>
+</section>
+<section class="section-practice">
+  <h2>Try this together</h2>
+  <p class="sub" style="margin-top:-6px;">Pick one question to talk about. You don't need to do them all!</p>
+  <div class="callout" style="background:var(--cream);border-color:var(--line); padding-bottom:16px;">
+         <p><strong>Match each MAD value to what it tells you about the data.</strong></p>
+         <p style="font-size:22px;color:var(--navy);margin:12px 0;">MAD = 1.5</p>
+         
+         <details style="margin-top: 20px; font-size: 18px;">
+           <summary style="cursor: pointer; color: var(--teal); font-weight: 600;">Check the answer</summary>
+           <p style="margin-top: 12px; margin-bottom:0;">The answer is: <strong class="answer" style="font-size:20px;">Very consistent data</strong></p>
+         </details>
+       </div>
+</section>
+<section class="section-stuck">
   <h2>If they get stuck...</h2>
-  <p>Watch out for this: A common mistake in Mean Absolute Deviation is adding the signed deviations (value − mean) instead of their absolute values, so the positives and negatives cancel out to 0. For 6, 8, 10, 12 (mean = 9), the deviations are −3, −1, 1, 3 — they sum to 0, but that is NOT the MAD. Before averaging, take the absolute value of every deviation so each becomes a nonnegative distance, including zero: |−3| = 3, |−1| = 1, |1| = 1, |3| = 3. Sum = 8, so MAD = 8 ÷ 4 = 2. A MAD of exactly 0 is a warning sign — it only happens if every value in the data set equals the mean.</p>
-  <p><strong>What to ask:</strong> "Can you show me how you got that? Did we miss a step?"</p>
-</section>
-<section>
-  <h2>How families can help at home</h2>
-  <ul>
-    <li>Look around the house for ways to use this math together (like cooking or shopping).</li>
-    <li>Ask your student to teach you the example above in their own words.</li>
-    <li>When they get an answer, ask "Does that make sense?" before checking if it's right.</li>
-  </ul>
+  <div class="callout" style="border-left: 6px solid #ff9800; background: #fff8e1;">
+    <p style="margin-top:0;"><strong>Watch out for this:</strong> A common mistake in Mean Absolute Deviation is adding the signed deviations (value − mean) instead of their absolute values, so the positives and negatives cancel out to 0. For 6, 8, 10, 12 (mean = 9), the deviations are −3, −1, 1, 3 — they sum to 0, but that is NOT the MAD. Before averaging, take the absolute value of every deviation so each becomes a nonnegative distance, including zero: |−3| = 3, |−1| = 1, |1| = 1, |3| = 3. Sum = 8, so MAD = 8 ÷ 4 = 2. A MAD of exactly 0 is a warning sign — it only happens if every value in the data set equals the mean.</p>
+    <p style="margin-bottom:0;"><strong>Try asking:</strong> "Can you show me how you got that? Did we miss a step?"</p>
+  </div>
 </section>
 <section>
   <h2>Spanish support <span class="es">· Apoyo en español</span></h2>
