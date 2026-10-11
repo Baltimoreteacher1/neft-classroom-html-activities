@@ -1,5 +1,5 @@
 // Fact Match and Target Hunt. Both are untimed: the only clock is the learner's own thinking.
-import { answerOf, cardText, gameProblems, huntBoard, shuffle } from "./game-pool.js";
+import { answerOf, answerText, cardText, gameProblems, huntBoard, shuffle } from "./game-pool.js";
 import { canSpeak, speak } from "./speech.js";
 import { mathText } from "./trail-pictures.js";
 
@@ -12,7 +12,7 @@ export function playMatch(host, { grade, stop, calm, finish }) {
   const items = gameProblems(grade, stop, pairs, { distinctAnswers: true });
   const cards = shuffle([
     ...items.map((item, id) => ({ id, side: "q", text: cardText(item) })),
-    ...items.map((item, id) => ({ id, side: "a", text: String(answerOf(item)) })),
+    ...items.map((item, id) => ({ id, side: "a", text: answerText(item) })),
   ]);
   const matched = new Set();
   const missedIds = new Set();
@@ -51,7 +51,7 @@ export function playMatch(host, { grade, stop, calm, finish }) {
     if (a.id === b.id && a.side !== b.side) {
       matched.add(a.id);
       open = [];
-      note = `Match! ${mathText(cardText(items[a.id]))} = ${answerOf(items[a.id])}`;
+      note = `Match! ${mathText(cardText(items[a.id]))} = ${answerText(items[a.id])}`;
       render(i);
       if (matched.size === items.length)
         timer = setTimeout(
@@ -108,12 +108,13 @@ export function playHunt(host, { grade, stop, calm, finish }) {
     render();
   }
 
+  const targetText = () => board.target.toLocaleString("en-US", { maximumFractionDigits: 6 });
   const winners = () => board.cards.filter((item) => answerOf(item) === board.target).length;
 
   function render(focusIndex) {
     host.innerHTML = `<div class="gm-play gm-hunt">
       <div class="gm-bar"><button type="button" class="tr-back" data-gm-menu>← Games</button><b>Target Hunt</b><span>Round ${round + 1} of ${HUNT_ROUNDS}</span></div>
-      <div class="gm-target"><span>Find every problem that equals</span><strong>${board.target}</strong><em>${found.size} of ${winners()} found</em>${canSpeak() ? `<button type="button" class="tr-tool" data-gm-read>Read to me</button>` : ""}</div>
+      <div class="gm-target"><span>Find every problem whose answer is</span><strong>${targetText()}</strong><em>${found.size} of ${winners()} found</em>${canSpeak() ? `<button type="button" class="tr-tool" data-gm-read>Read to me</button>` : ""}</div>
       <p class="gm-note" role="status" aria-live="polite">${tried.size && !found.size ? "Not that one. Work it out and try another." : "Tap a card when you know its answer is the target."}</p>
       <div class="gm-cards ${calm ? "cols-3" : "cols-4"}" role="group" aria-label="Problem cards">${board.cards
         .map((item, i) => {
@@ -160,7 +161,7 @@ export function playHunt(host, { grade, stop, calm, finish }) {
 
   host.onclick = (event) => {
     if (event.target.closest("[data-gm-next]")) return start();
-    if (event.target.closest("[data-gm-read]")) return speak(`Find every problem that equals ${board.target}`);
+    if (event.target.closest("[data-gm-read]")) return speak(`Find every problem whose answer is ${targetText()}`);
     const card = event.target.closest("[data-i]");
     if (card) pick(Number(card.dataset.i));
   };

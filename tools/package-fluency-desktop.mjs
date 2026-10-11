@@ -35,6 +35,7 @@ const files = [
   "speech.js",
   "play-backup.js",
   "class-snapshot.js",
+  "paper-games.js",
   "step-builders.js",
   "styles.css",
   "tutor.css",

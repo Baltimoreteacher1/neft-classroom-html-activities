@@ -15,7 +15,12 @@ export function cleanPlay(value) {
   const facts = {};
   for (const [id, entry] of Object.entries(value.trail?.facts || {}))
     if (/^(add|mul):\d{1,3}:\d{1,3}$/.test(id) && entry && typeof entry === "object")
-      facts[id] = { right: count(entry.right), missed: count(entry.missed), last: entry.last === true };
+      facts[id] = {
+        right: count(entry.right),
+        missed: count(entry.missed),
+        last: entry.last === true,
+        ...(/^\d{4}-\d{2}-\d{2}$/.test(entry.lastDay) ? { lastDay: entry.lastDay } : {}),
+      };
   return { trail: { stations, facts }, rewards: cleanRewards(value.rewards || {}) };
 }
 

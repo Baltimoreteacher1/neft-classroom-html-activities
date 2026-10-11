@@ -110,6 +110,13 @@ export const STICKERS = [
     test: (s) => s.scenes >= SCENE_IDS.length,
   },
   {
+    id: "boss",
+    icon: "👑",
+    name: "Boss Beater",
+    hint: "Beat a trail's boss round with 2 stars",
+    test: (s) => s.boss >= 1,
+  },
+  {
     id: "sort-3",
     icon: "🗂️",
     name: "Super Sorter",
@@ -202,6 +209,7 @@ export function summarize(trail = loadTrail(), data = loadRewards()) {
     threeStar: entries.filter((entry) => entry.stars >= 3).length,
     stars,
     stops: entries.filter((entry) => entry.stars >= 2).length,
+    boss: Object.entries(trail.stations).filter(([id, entry]) => id.endsWith(":boss") && entry.stars >= 2).length,
     facts,
     plays: data.plays,
     best: data.best,
@@ -215,7 +223,7 @@ export const earnedIds = (summary) =>
   STICKERS.filter((sticker) => sticker.test(summary)).map((sticker) => sticker.id);
 
 export function rankFor(summary) {
-  const score = summary.stars + summary.plays * 2 + summary.scenes * 3;
+  const score = summary.stars + summary.plays * 2 + summary.scenes * 3 + (summary.boss || 0) * 5;
   const index = RANKS.reduce((best, rank, i) => (score >= rank.at ? i : best), 0);
   return { ...RANKS[index], next: RANKS[index + 1] || null, score };
 }

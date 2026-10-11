@@ -121,9 +121,10 @@ export function mountTeacherStudio(container, { grade: initialGrade, onLaunch, o
       <div class="teacher-layout"><form id="assignment-builder"><label for="assignment-label">Assignment title<input id="assignment-label" maxlength="80" value="${escapeHtml(label)}"/></label><div class="form-row"><label for="assignment-grade">Grade<select id="assignment-grade">${GRADES.map((g) => `<option value="${g.grade}" ${g.grade === grade ? 'selected' : ''}>${g.label}</option>`).join("")}</select></label><label for="assignment-count">Problems per visit<select id="assignment-count">${[5, 10, 15, 20].map((n) => `<option ${n === count ? 'selected' : ''}>${n}</option>`).join("")}</select></label></div>
       <label for="assignment-mode">Support level<select id="assignment-mode"><option value="adaptive" ${mode === 'adaptive' ? 'selected' : ''}>Adaptive: help when needed</option><option value="guided" ${mode === 'guided' ? 'selected' : ''}>Coached: strategy steps always open</option></select></label>
       <div class="form-row"><label for="assignment-game">Add a game (optional)<select id="assignment-game"><option value="">No game</option>${games.map((g) => `<option value="${g.id}" ${g.id === game ? 'selected' : ''}>${escapeHtml(g.name)}</option>`).join("")}</select></label><label for="assignment-stop">Game facts<select id="assignment-stop"><option value="all">Everything on the grade’s trail</option>${stopsFor(grade).map((s) => `<option value="${s.id}" ${s.id === stop ? 'selected' : ''}>${escapeHtml(s.name)}</option>`).join("")}</select></label></div>
+      <label for="assignment-standard">Pick skills by standard<select id="assignment-standard"><option value="">Choose a standard…</option>${[...new Set(skills.map((skill) => skill.standard))].map((code) => `<option value="${escapeHtml(code)}">${escapeHtml(code)} (${skills.filter((skill) => skill.standard === code).length} skill${skills.filter((skill) => skill.standard === code).length === 1 ? '' : 's'})</option>`).join("")}</select></label>
       <fieldset class="assignment-skills"><legend>Choose skills (or only a game)</legend>${skills.map((skill) => `<label><input type="checkbox" name="assignment-skill" value="${skillKey(skill)}" ${selected.has(skillKey(skill)) ? 'checked' : ''}/><span>${escapeHtml(skill.title)}<small>${escapeHtml(skill.standard)}</small></span></label>`).join("")}</fieldset><button type="submit" class="primary-action">Build assignment</button><p id="assignment-error" role="status"></p></form>
       <aside class="teacher-guide"><h3>Use it across the school day</h3><ul><li><strong>Arrival:</strong> open Today’s 10 for an individual start.</li><li><strong>Small group:</strong> work through a visual lesson together.</li><li><strong>Independent station:</strong> share a focused skill playlist.</li><li><strong>At home:</strong> repeat the same link for fresh problems, then explain a strategy.</li><li><strong>Without a screen:</strong> print a five-day packet.</li></ul><h3>Progress and privacy</h3><p>Each browser profile saves its own work. Students can download a progress report or backup to bring between devices. Assignment links contain the task only.</p><p>This version does not send student results to a teacher or maintain a central roster. Use your classroom system to collect downloaded reports if needed.</p></aside></div><section id="assignment-result" class="assignment-result" aria-live="polite" hidden></section><div id="snapshot-host"></div>`;
-    if (snapshot) snapshot(container.querySelector("#snapshot-host"));
+    if (snapshot) snapshot(container.querySelector("#snapshot-host"), grade);
   }
   const capture = () => {
     label = container.querySelector("#assignment-label").value.trim() || "Class practice";
@@ -133,7 +134,14 @@ export function mountTeacherStudio(container, { grade: initialGrade, onLaunch, o
     stop = container.querySelector("#assignment-stop").value;
     selected = new Set([...container.querySelectorAll('[name="assignment-skill"]:checked')].map((input) => input.value));
   };
-  container.onchange = (event) => { if (event.target.id === "assignment-grade") { capture(); grade = Number(event.target.value); selected = new Set(); stop = "all"; render(); } };
+  container.onchange = (event) => {
+    if (event.target.id === "assignment-standard" && event.target.value) {
+      capture();
+      selected = new Set(ALL_SKILLS.filter((skill) => skill.grade === grade && skill.standard === event.target.value).map(skillKey));
+      render();
+      return;
+    }
+    if (event.target.id === "assignment-grade") { capture(); grade = Number(event.target.value); selected = new Set(); stop = "all"; render(); } };
   container.onsubmit = (event) => {
     event.preventDefault(); capture();
     assignment = validateAssignment({ version: 1, grade, keys: [...selected], game: game || null, stop: stop === "all" ? null : stop, count, mode, label });

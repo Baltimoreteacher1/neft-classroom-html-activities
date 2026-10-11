@@ -5,6 +5,8 @@ import {
   TRAILS,
   bandFor,
   factStatus,
+  bossFor,
+  bossOpen,
   getStation,
   loadTrail,
   makeProblem,
@@ -114,6 +116,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
           })
           .join("")}
       </ol>
+      ${renderBoss()}
       ${trail.chart ? renderChart() : ""}
       <p class="tr-more"><button type="button" class="tr-link" data-more-skills>More Grade ${grade} practice</button></p>`;
   }
@@ -126,6 +129,17 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
 
   function teachBack() {
     return `<section class="tr-teachback" aria-labelledby="tb-title"><h3 id="tb-title">How did you think about it?</h3><div>${TEACH_BACK[bandFor(grade)].map((id) => `<button type="button" data-strategy="${id}"><span aria-hidden="true">${STRATEGIES[id].icon}</span> ${esc(STRATEGIES[id].label)}</button>`).join("")}</div></section>`;
+  }
+
+  function renderBoss() {
+    const open = bossOpen(data, grade);
+    const stars = stationStars("boss");
+    return `<div class="tr-boss${open ? " open" : ""}${stars >= 2 ? " done" : ""}">
+      <button type="button" ${open ? 'data-station="boss"' : "disabled"} aria-label="Boss round, ${stars} of 3 stars${open ? "" : ", locked until every stop has 2 stars"}">
+        <span class="tr-medal" aria-hidden="true">👑</span>
+        <span class="tr-name">Boss round</span>${starRow(stars)}
+        <span class="tr-here">${open ? (stars ? "Play again" : "Ready!") : "Earn 2 stars on every stop to open"}</span>
+      </button></div>`;
   }
 
   function renderChart() {
@@ -336,7 +350,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
     container.innerHTML = `
       <div class="tr-done">
         ${starRow(stars, "big")}
-        <h2>${stars === 3 ? "Amazing round!" : stars === 2 ? "Great round!" : "Good practice!"}</h2>
+        <h2>${round.entry.boss ? (stars >= 2 ? "Boss defeated!" : "Good try on the boss!") : stars === 3 ? "Amazing round!" : stars === 2 ? "Great round!" : "Good practice!"}</h2>
         <p class="tr-score">You got <b>${round.firstTry} of ${ROUND}</b> on the first try.</p>
         ${stickerToast(fresh)}
         ${teachBack()}

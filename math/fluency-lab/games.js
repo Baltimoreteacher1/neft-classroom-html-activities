@@ -90,7 +90,7 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
     const rank = rankFor(summary);
     container.innerHTML = `
       <header class="gm-head">
-        <div><p class="section-label">Grade ${grade}: ${esc(TRAILS[grade].focus)}</p><h2>Game Room</h2><p>No timers. Think it through, and play as long as you like.</p></div>
+        <div><p class="section-label">Grade ${grade}: ${esc(TRAILS[grade].focus)}</p><h2>Game Room</h2><p>No timers. Think it through, and play as long as you like. Facts you missed lately come back in mixed play.</p></div>
         <p class="gm-rank"><b aria-hidden="true">${rank.icon}</b><span>${rank.name}<small>${rank.next ? `${rank.next.at - rank.score} more points to ${rank.next.name}` : "Top rank reached"}</small></span></p>
       </header>
       <div class="gm-options">

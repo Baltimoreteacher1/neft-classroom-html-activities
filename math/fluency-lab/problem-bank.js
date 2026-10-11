@@ -75,7 +75,7 @@ function friendlyJumps(start, amount, direction) {
 const fmt = (value) => whole.format(value);
 
 // Two or three short number sentences that walk to the answer, using the problem's own numbers.
-function factSteps(op, a, b, answer, strategy) {
+export function factSteps(op, a, b, answer, strategy) {
   const small = Math.min(a, b);
   const big = Math.max(a, b);
   if (op === "add") {

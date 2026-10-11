@@ -1,6 +1,7 @@
 // Fact Trail: one short, ordered fluency path per grade, built on that grade's fluency standard.
 // Each station teaches one strategy (one sentence + one picture), then a 10-problem round.
 import { generateProblem } from "./problem-bank.js";
+import { localDay } from "./tutor-engine.js";
 import { profileKey, profiles, readLocal, writeLocal } from "./school-tools.js";
 
 const range = (from, to, step = 1) =>
@@ -508,7 +509,17 @@ export const TRAILS = {
   },
 };
 
+// The boss round mixes every regular stop of a grade; it opens when each of them has 2+ stars.
+export function bossFor(grade) {
+  const ids = TRAILS[grade].stations.filter((entry) => !entry.mix).map((entry) => entry.id);
+  return { id: "boss", label: "👑", name: "Boss round", idea: "A mix of everything on this trail. Show what you know.", mix: ids, boss: true };
+}
+
+export const bossOpen = (data, grade) =>
+  TRAILS[grade].stations.every((entry) => (data.stations[`${grade}:${entry.id}`]?.stars || 0) >= 2);
+
 export function getStation(grade, id) {
+  if (id === "boss") return bossFor(grade);
   return TRAILS[grade]?.stations.find((entry) => entry.id === id) || null;
 }
 
@@ -578,6 +589,7 @@ export function recordFact(data, item, firstTry) {
   if (firstTry) entry.right += 1;
   else entry.missed += 1;
   entry.last = firstTry;
+  entry.lastDay = localDay();
   data.facts[key] = entry;
 }
 

@@ -13,6 +13,9 @@ const { ALL_STOPS, answerOf, cardText, gameProblems, huntBoard, stopsFor } = awa
 const { STICKERS, dailyGame, earnedIds, rankFor, streakOf } = await import(
   "../math/fluency-lab/rewards.js"
 );
+const { comebackItems } = await import("../math/fluency-lab/game-pool.js");
+const { bossFor, bossOpen, getStation, TRAILS } = await import("../math/fluency-lab/fact-trail.js");
+const { PAPER_GAMES, paperSheets } = await import("../math/fluency-lab/paper-games.js");
 const { sortBoard } = await import("../math/fluency-lab/sort-game.js");
 const { cleanPlay } = await import("../math/fluency-lab/play-backup.js");
 const { factLabel, parseFactsReport, summarizeReports } = await import(
@@ -47,7 +50,10 @@ for (const grade of [1, 2, 3, 4, 5, 6, 7, 8]) {
           validateAnswer(item.answers[0], item),
           `${tag}: rejects its own answer for ${item.question}`,
         );
-        check(cardText(item).length <= 16, `${tag}: card text too long: ${item.question}`);
+        check(
+          cardText(item)?.length <= 22,
+          `${tag}: card text missing or too long: ${item.question}`,
+        );
       }
       for (let i = 0; i < 6; i += 1) {
         const { target, cards } = huntBoard(grade, stop);
@@ -163,6 +169,64 @@ check(
   "Class snapshot counts learners per tricky fact.",
 );
 check(parseFactsReport({ app: "other" }) === null, "A non-report file is rejected.");
+
+// Comeback facts: only facts missed last time, on a later day, in this grade's chart.
+const facts = {
+  "mul:6:7": { right: 0, missed: 3, last: false, lastDay: "2000-01-01" },
+  "mul:2:3": { right: 2, missed: 0, last: true, lastDay: "2000-01-01" },
+  "mul:8:9": { right: 0, missed: 1, last: false, lastDay: "2026-10-11" },
+  "add:3:4": { right: 0, missed: 2, last: false, lastDay: "2000-01-01" },
+};
+const back = comebackItems(3, 5, { stations: {}, facts }, "2026-10-11");
+check(
+  back.length === 1 &&
+    back[0].question === "6 × 7 = ?" &&
+    back[0].answers[0] === "42" &&
+    back[0].steps.length >= 2,
+  "Comeback items are the still-missed facts of this grade's operation, from an earlier day.",
+);
+check(
+  comebackItems(7, 5, { stations: {}, facts }, "2026-10-11").length === 0,
+  "Grades without a fact chart have no comeback facts.",
+);
+
+// Boss round: mixes every regular stop, opens only when each has 2+ stars.
+for (const grade of [1, 2, 3, 4, 5, 6, 7, 8]) {
+  const boss = bossFor(grade);
+  check(
+    boss.mix.length >= 3 &&
+      boss.mix.every((id) => getStation(grade, id) && !getStation(grade, id).mix),
+    `Grade ${grade}: boss mixes regular stops only.`,
+  );
+  const done = {
+    stations: Object.fromEntries(
+      TRAILS[grade].stations.map((entry) => [`${grade}:${entry.id}`, { stars: 2 }]),
+    ),
+    facts: {},
+  };
+  check(bossOpen(done, grade), `Grade ${grade}: boss opens when every stop has 2 stars.`);
+  delete done.stations[`${grade}:${TRAILS[grade].stations[0].id}`];
+  check(!bossOpen(done, grade), `Grade ${grade}: boss stays locked until every stop has stars.`);
+}
+
+// Paper sheets: every game prints for every grade, the key is optional, and keys never leak onto sheets.
+for (const grade of [1, 3, 6, 7]) {
+  const sheets = paperSheets(
+    grade,
+    "all",
+    PAPER_GAMES.map((g) => g.id),
+    { includeKey: false },
+  );
+  check(
+    !sheets.includes("answer-key") && !sheets.includes("teacher-answer-page"),
+    `Grade ${grade}: no key unless asked.`,
+  );
+  check((sheets.match(/packet-page/g) || []).length === 3, `Grade ${grade}: three game pages.`);
+  check(
+    paperSheets(grade, "all", ["match"], { includeKey: true }).includes("teacher-answer-page"),
+    `Grade ${grade}: key page when asked.`,
+  );
+}
 
 check(
   SCENE_IDS.length === 6 && SCENE_IDS.every((id) => SCENES[id].svg && SCENES[id].title),

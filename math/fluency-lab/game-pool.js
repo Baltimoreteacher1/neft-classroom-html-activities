@@ -1,10 +1,11 @@
 // Problems for the Game Room come from the same trail stops as the rounds, so a game always
-// practices the grade's own fluency standard. Games only use short, whole-number-answer problems.
-import { TRAILS, getStation, makeProblem } from "./fact-trail.js";
-import { seededRandom } from "./problem-bank.js";
+// practices the grade's own fluency standard. Games use short problems with a single numeric answer (whole numbers, decimals, equations).
+import { TRAILS, getStation, loadTrail, makeProblem } from "./fact-trail.js";
+import { factSteps, seededRandom } from "./problem-bank.js";
+import { localDay } from "./tutor-engine.js";
 
 export const ALL_STOPS = "all";
-const MAX_LENGTH = 16;
+const MAX_LENGTH = 22;
 
 const playable = new Map();
 
@@ -41,11 +42,30 @@ export function stopsFor(grade) {
   return playable.get(grade);
 }
 
-const isCardFriendly = (item) =>
-  item.kind === "number" &&
-  Number.isInteger(Number(item.answers[0])) &&
-  item.question.replace(" = ?", "").length <= MAX_LENGTH &&
-  / = \?$/.test(item.question);
+// How a problem reads on a card. Equations and evaluations get a short verb so a card is never a bare "7x + 7 = 112".
+const CARD_RULES = [
+  [/^(.+) = \?$/, (m) => m[1]],
+  [/^(.+)\. Find x\.$/, (m) => `Solve ${m[1]}`],
+  [/^Evaluate (.+) when x = (-?\d+)\.$/, (m) => `${m[1]}, x = ${m[2]}`],
+  [/^What is (.+)\?$/, (m) => m[1]],
+];
+
+export function cardText(item) {
+  for (const [pattern, text] of CARD_RULES) {
+    const match = item.question.match(pattern);
+    if (match) return text(match);
+  }
+  return null;
+}
+
+export const answerOf = (item) => Number(item.answers[0]);
+export const answerText = (item) => answerOf(item).toLocaleString("en-US", { maximumFractionDigits: 6 });
+
+const isCardFriendly = (item) => {
+  if (item.kind !== "number" || !Number.isFinite(answerOf(item))) return false;
+  const text = cardText(item);
+  return text !== null && text.length <= MAX_LENGTH;
+};
 
 // One short numeric problem from the chosen stop (or any stop of the grade).
 export function gameProblem(grade, stopId = ALL_STOPS, rng = Math.random) {
@@ -58,21 +78,49 @@ export function gameProblem(grade, stopId = ALL_STOPS, rng = Math.random) {
   throw new Error(`No card-friendly problem found for grade ${grade} stop ${stopId}`);
 }
 
-export const cardText = (item) => item.question.replace(" = ?", "");
-export const answerOf = (item) => Number(item.answers[0]);
+// Facts the learner missed last time they saw them, as fresh problems. A fact missed today waits for a later day.
+export function comebackItems(grade, count, trail = loadTrail(), today = localDay()) {
+  const chart = TRAILS[grade].chart;
+  if (!chart || count < 1) return [];
+  const symbol = chart.op === "add" ? "+" : "×";
+  return Object.entries(trail.facts)
+    .map(([key, entry]) => ({ key: key.split(":"), entry }))
+    .filter(({ key: [op, a, b], entry }) => op === chart.op && Number(b) <= chart.max && (!chart.sumMax || Number(a) + Number(b) <= chart.sumMax) && entry.last === false && entry.lastDay !== today)
+    .sort((x, y) => (y.entry.missed || 0) - (x.entry.missed || 0))
+    .slice(0, count)
+    .map(({ key: [op, a, b] }) => {
+      const answer = op === "add" ? Number(a) + Number(b) : Number(a) * Number(b);
+      return {
+        question: `${a} ${symbol} ${b} = ?`,
+        answers: [String(answer)],
+        displayAnswer: String(answer),
+        hint: "Use a strategy you know for this fact.",
+        explanation: `${a} ${symbol} ${b} = ${answer}`,
+        kind: "number",
+        choices: null,
+        unit: "",
+        model: null,
+        steps: factSteps(op, Number(a), Number(b), answer),
+        comeback: true,
+      };
+    });
+}
 
 // `count` problems with different questions; `distinctAnswers` also keeps every answer different.
-export function gameProblems(grade, stopId, count, { distinctAnswers = false } = {}) {
+export function gameProblems(grade, stopId, count, { distinctAnswers = false, comeback = true } = {}) {
   const questions = new Set();
   const answers = new Set();
   const items = [];
-  for (let tries = 0; items.length < count && tries < 800; tries += 1) {
-    const item = gameProblem(grade, stopId);
-    if (questions.has(item.question) || (distinctAnswers && answers.has(answerOf(item)))) continue;
+  const take = (item) => {
+    if (questions.has(item.question) || (distinctAnswers && answers.has(answerOf(item)))) return false;
     questions.add(item.question);
     answers.add(answerOf(item));
     items.push(item);
-  }
+    return true;
+  };
+  // Mixed play (every stop) brings back up to a third of the board from facts the learner missed.
+  if (comeback && stopId === ALL_STOPS) for (const item of comebackItems(grade, Math.ceil(count / 3))) take(item);
+  for (let tries = 0; items.length < count && tries < 800; tries += 1) take(gameProblem(grade, stopId));
   return items;
 }
 
