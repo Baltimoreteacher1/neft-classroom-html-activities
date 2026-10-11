@@ -56,13 +56,13 @@ export function parseBackup(value) {
   return makeBackup({ progress: value.progress, tutor: value.tutor, settings: value.settings || {}, grade: GRADES.some((grade) => grade.grade === value.grade) ? value.grade : 1 });
 }
 
-const GAME_IDS = ["match", "hunt", "sort", "picture"];
+const GAME_IDS = ["match", "hunt", "sort", "mistake", "picture"];
 
 export function validateAssignment(value) {
   if (!value || value.version !== 1 || !GRADES.some((grade) => grade.grade === value.grade)) return null;
   const keys = [...new Set((Array.isArray(value.keys) ? value.keys : []).filter((key) => findSkill(key)?.grade === value.grade))].slice(0, 10);
   const game = GAME_IDS.includes(value.game) ? value.game : null;
-  const stop = game && /^[\w-]{1,30}$/.test(String(value.stop || "")) ? value.stop : null;
+  const stop = game && /^[\w:-]{1,40}$/.test(String(value.stop || "")) ? value.stop : null;
   if (!keys.length && !game) return null;
   return { version: 1, grade: value.grade, keys, ...(game ? { game } : {}), ...(stop ? { stop } : {}), count: [5, 10, 15, 20].includes(value.count) ? value.count : 10, mode: value.mode === "guided" ? "guided" : "adaptive", label: String(value.label || "Class practice").slice(0, 80) };
 }
@@ -106,7 +106,7 @@ export function printablePacket(assignment, { includeKey = false, seed = Date.no
   return pages + key;
 }
 
-export function mountTeacherStudio(container, { grade: initialGrade, onLaunch, onPrint, announce, games = [], stopsFor = () => [], snapshot = null }) {
+export function mountTeacherStudio(container, { grade: initialGrade, onLaunch, onPrint, announce, games = [], stopsFor = () => [], stopOptions = () => "", snapshot = null }) {
   let grade = initialGrade;
   let selected = new Set();
   let assignment = null;
@@ -120,7 +120,7 @@ export function mountTeacherStudio(container, { grade: initialGrade, onLaunch, o
     container.innerHTML = `<div class="section-heading"><div><p class="section-label">Teacher studio</p><h2>One useful assignment. Fresh practice every time.</h2><p>Choose the skills your class needs. Share the link through your classroom system, project it, or send it home.</p></div></div>
       <div class="teacher-layout"><form id="assignment-builder"><label for="assignment-label">Assignment title<input id="assignment-label" maxlength="80" value="${escapeHtml(label)}"/></label><div class="form-row"><label for="assignment-grade">Grade<select id="assignment-grade">${GRADES.map((g) => `<option value="${g.grade}" ${g.grade === grade ? 'selected' : ''}>${g.label}</option>`).join("")}</select></label><label for="assignment-count">Problems per visit<select id="assignment-count">${[5, 10, 15, 20].map((n) => `<option ${n === count ? 'selected' : ''}>${n}</option>`).join("")}</select></label></div>
       <label for="assignment-mode">Support level<select id="assignment-mode"><option value="adaptive" ${mode === 'adaptive' ? 'selected' : ''}>Adaptive: help when needed</option><option value="guided" ${mode === 'guided' ? 'selected' : ''}>Coached: strategy steps always open</option></select></label>
-      <div class="form-row"><label for="assignment-game">Add a game (optional)<select id="assignment-game"><option value="">No game</option>${games.map((g) => `<option value="${g.id}" ${g.id === game ? 'selected' : ''}>${escapeHtml(g.name)}</option>`).join("")}</select></label><label for="assignment-stop">Game facts<select id="assignment-stop"><option value="all">Everything on the grade’s trail</option>${stopsFor(grade).map((s) => `<option value="${s.id}" ${s.id === stop ? 'selected' : ''}>${escapeHtml(s.name)}</option>`).join("")}</select></label></div>
+      <div class="form-row"><label for="assignment-game">Add a game (optional)<select id="assignment-game"><option value="">No game</option>${games.map((g) => `<option value="${g.id}" ${g.id === game ? 'selected' : ''}>${escapeHtml(g.name)}</option>`).join("")}</select></label><label for="assignment-stop">Game facts<select id="assignment-stop">${stopOptions(stopsFor(grade), stop, "Everything on the grade’s trail")}</select></label></div>
       <label for="assignment-standard">Pick skills by standard<select id="assignment-standard"><option value="">Choose a standard…</option>${[...new Set(skills.map((skill) => skill.standard))].map((code) => `<option value="${escapeHtml(code)}">${escapeHtml(code)} (${skills.filter((skill) => skill.standard === code).length} skill${skills.filter((skill) => skill.standard === code).length === 1 ? '' : 's'})</option>`).join("")}</select></label>
       <fieldset class="assignment-skills"><legend>Choose skills (or only a game)</legend>${skills.map((skill) => `<label><input type="checkbox" name="assignment-skill" value="${skillKey(skill)}" ${selected.has(skillKey(skill)) ? 'checked' : ''}/><span>${escapeHtml(skill.title)}<small>${escapeHtml(skill.standard)}</small></span></label>`).join("")}</fieldset><button type="submit" class="primary-action">Build assignment</button><p id="assignment-error" role="status"></p></form>
       <aside class="teacher-guide"><h3>Use it across the school day</h3><ul><li><strong>Arrival:</strong> open Today’s 10 for an individual start.</li><li><strong>Small group:</strong> work through a visual lesson together.</li><li><strong>Independent station:</strong> share a focused skill playlist.</li><li><strong>At home:</strong> repeat the same link for fresh problems, then explain a strategy.</li><li><strong>Without a screen:</strong> print a five-day packet.</li></ul><h3>Progress and privacy</h3><p>Each browser profile saves its own work. Students can download a progress report or backup to bring between devices. Assignment links contain the task only.</p><p>This version does not send student results to a teacher or maintain a central roster. Use your classroom system to collect downloaded reports if needed.</p></aside></div><section id="assignment-result" class="assignment-result" aria-live="polite" hidden></section><div id="snapshot-host"></div>`;

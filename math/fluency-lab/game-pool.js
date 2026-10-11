@@ -1,21 +1,29 @@
 // Problems for the Game Room come from the same trail stops as the rounds, so a game always
 // practices the grade's own fluency standard. Games use short problems with a single numeric answer (whole numbers, decimals, equations).
 import { TRAILS, getStation, loadTrail, makeProblem } from "./fact-trail.js";
-import { factSteps, seededRandom } from "./problem-bank.js";
+import { factSteps, generateProblem, getGrade, getSkill, seededRandom } from "./problem-bank.js";
 import { localDay } from "./tutor-engine.js";
 
 export const ALL_STOPS = "all";
 const MAX_LENGTH = 22;
 
 const playable = new Map();
+const SKILL = "skill:";
+
+// A stop is a trail stop ("x6-7") or one of the grade's skills ("skill:fraction-add"); skills add fractions,
+// decimals and equations that the trail's fact stops never ask.
+const skillOf = (grade, stopId) => (stopId.startsWith(SKILL) ? getSkill(grade, stopId.slice(SKILL.length)) : null);
+const sample = (grade, stopId, rng) => {
+  const skill = skillOf(grade, stopId);
+  return skill ? generateProblem(skill, rng) : makeProblem(grade, getStation(grade, stopId), rng);
+};
 
 // Share of a stop's problems that fit a card (short, whole-number answer), measured with a fixed seed so
 // the list of playable stops never changes between visits.
 function cardFriendlyShare(grade, stopId) {
   const rng = seededRandom(grade * 7919 + stopId.length * 131);
-  const stop = getStation(grade, stopId);
   let friendly = 0;
-  for (let i = 0; i < 120; i += 1) if (isCardFriendly(makeProblem(grade, stop, rng))) friendly += 1;
+  for (let i = 0; i < 120; i += 1) if (isCardFriendly(sample(grade, stopId, rng))) friendly += 1;
   return friendly / 120;
 }
 
@@ -36,7 +44,10 @@ export function stopsFor(grade) {
   if (!playable.has(grade)) {
     playable.set(
       grade,
-      TRAILS[grade].stations.filter(({ id }) => supportsEveryGame(grade, id)).map(({ id, name }) => ({ id, name })),
+      [
+        ...TRAILS[grade].stations.map(({ id, name }) => ({ id, name, group: "Trail stops" })),
+        ...getGrade(grade).skills.map((skill) => ({ id: `${SKILL}${skill.id}`, name: skill.title, group: `Grade ${grade} skills` })),
+      ].filter(({ id }) => supportsEveryGame(grade, id)),
     );
   }
   return playable.get(grade);
@@ -58,11 +69,25 @@ export function cardText(item) {
   return null;
 }
 
-export const answerOf = (item) => Number(item.answers[0]);
-export const answerText = (item) => answerOf(item).toLocaleString("en-US", { maximumFractionDigits: 6 });
+// Numeric value of a card's answer; fractions compare by value (2/6 and 1/3 are the same answer).
+export function answerOf(item) {
+  const fraction = String(item.answers[0]).match(/^(-?\d+)\/(\d+)$/);
+  const value = fraction ? Number(fraction[1]) / Number(fraction[2]) : Number(item.answers[0]);
+  return Math.round(value * 1e9) / 1e9;
+}
+export const answerText = (item) =>
+  item.kind === "fraction" ? item.displayAnswer : answerOf(item).toLocaleString("en-US", { maximumFractionDigits: 6 });
+
+// <option>/<optgroup> markup for a facts picker.
+export function stopOptions(stops, selected = ALL_STOPS, allLabel = "Everything on my trail") {
+  const esc = (v) => String(v).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+  const option = (s) => `<option value="${esc(s.id)}"${s.id === selected ? " selected" : ""}>${esc(s.name)}</option>`;
+  const groups = [...new Set(stops.map((s) => s.group))];
+  return `<option value="${ALL_STOPS}"${selected === ALL_STOPS ? " selected" : ""}>${esc(allLabel)}</option>${groups.map((g) => `<optgroup label="${esc(g)}">${stops.filter((s) => s.group === g).map(option).join("")}</optgroup>`).join("")}`;
+}
 
 const isCardFriendly = (item) => {
-  if (item.kind !== "number" || !Number.isFinite(answerOf(item))) return false;
+  if (!["number", "fraction"].includes(item.kind) || !Number.isFinite(answerOf(item))) return false;
   const text = cardText(item);
   return text !== null && text.length <= MAX_LENGTH;
 };
@@ -70,9 +95,9 @@ const isCardFriendly = (item) => {
 // One short numeric problem from the chosen stop (or any stop of the grade).
 export function gameProblem(grade, stopId = ALL_STOPS, rng = Math.random) {
   const stations = TRAILS[grade].stations;
-  const pool = stopId === ALL_STOPS ? stations : stations.filter((entry) => entry.id === stopId);
   for (let tries = 0; tries < 300; tries += 1) {
-    const item = makeProblem(grade, pool[Math.floor(rng() * pool.length)], rng);
+    const id = stopId === ALL_STOPS ? stations[Math.floor(rng() * stations.length)].id : stopId;
+    const item = sample(grade, id, rng);
     if (isCardFriendly(item)) return item;
   }
   throw new Error(`No card-friendly problem found for grade ${grade} stop ${stopId}`);
@@ -166,7 +191,7 @@ export function huntBoard(grade, stopId, { size = 12, hits = 4 } = {}) {
       }
     }
     if (decoys.length === size - winners.length)
-      return { target, cards: shuffle([...winners, ...decoys]) };
+      return { target, targetText: answerText(winners[0]), cards: shuffle([...winners, ...decoys]) };
   }
   throw new Error(`Could not build a Target Hunt board for grade ${grade} stop ${stopId}`);
 }

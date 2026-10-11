@@ -1,5 +1,6 @@
 // Sticker book, ranks, practice-day streak, and a small celebration. Local to this learner; nothing is sent anywhere.
 import { TRAILS, factStatus, loadTrail } from "./fact-trail.js";
+import { GAMES_BY_ID_NAME } from "./game-names.js";
 import { SCENE_IDS } from "./scenes.js";
 import { STRATEGIES } from "./strategies.js";
 import { localDay } from "./tutor-engine.js";
@@ -9,8 +10,7 @@ const KEY = "ewl-fluency-rewards-v1";
 const key = () => profileKey(KEY, profiles().active);
 const DAY_MS = 86400000;
 
-const GAME_IDS = ["match", "hunt", "sort", "picture"];
-const GAME_NAMES = { match: "Fact Match", hunt: "Target Hunt", sort: "Answer Sort", picture: "Mystery Picture" };
+const GAME_IDS = ["match", "hunt", "sort", "mistake", "picture"];
 
 // One suggested game per day, the same all day for everyone on this device.
 export const dailyGame = (time = Date.now()) => GAME_IDS[Math.floor(time / DAY_MS) % GAME_IDS.length];
@@ -110,6 +110,13 @@ export const STICKERS = [
     test: (s) => s.scenes >= SCENE_IDS.length,
   },
   {
+    id: "mistake-3",
+    icon: "🔍",
+    name: "Mistake Spotter",
+    hint: "Win Spot the Mistake with 3 stars",
+    test: (s) => s.best.mistake >= 3,
+  },
+  {
     id: "boss",
     icon: "👑",
     name: "Boss Beater",
@@ -157,7 +164,7 @@ export function cleanRewards(saved = {}) {
       ? saved.days.filter((day) => /^\d{4}-\d{2}-\d{2}$/.test(day)).slice(-60)
       : [],
     plays: num(saved.plays),
-    best: { match: num(best.match), hunt: num(best.hunt), sort: num(best.sort), picture: num(best.picture) },
+    best: { match: num(best.match), hunt: num(best.hunt), sort: num(best.sort), mistake: num(best.mistake), picture: num(best.picture) },
     scenes: Array.isArray(saved.scenes) ? saved.scenes.filter((id) => SCENE_IDS.includes(id)) : [],
     seen: Array.isArray(saved.seen) ? saved.seen.filter((id) => STICKERS.some((sticker) => sticker.id === id)) : [],
     strategies,
@@ -259,7 +266,7 @@ export function rewardStrip(grade) {
   return `<div class="rw-strip" aria-label="Your rewards">
     <span class="rw-chip"><b aria-hidden="true">${rank.icon}</b>${rank.name}<small>${toNext}</small></span>
     <span class="rw-chip"><b aria-hidden="true">🔥</b>${streak} day${streak === 1 ? "" : "s"} in a row<small>${streak ? "Come back tomorrow" : "Practice today to start"}</small></span>
-    <button type="button" class="rw-chip rw-go" data-daily-game="${dailyGame()}"><b aria-hidden="true">🎮</b>Play today’s game<small>${GAME_NAMES[dailyGame()]}</small></button>
+    <button type="button" class="rw-chip rw-go" data-daily-game="${dailyGame()}"><b aria-hidden="true">🎮</b>Play today’s game<small>${GAMES_BY_ID_NAME[dailyGame()]}</small></button>
     <span class="rw-chip"><b aria-hidden="true">🎖️</b>${earnedIds(summary).length} of ${STICKERS.length} stickers<small>${TRAILS[grade] ? "See the Games tab" : ""}</small></span>
   </div>`;
 }

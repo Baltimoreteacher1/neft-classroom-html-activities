@@ -3,7 +3,7 @@
 import { validateAnswer } from "./problem-bank.js";
 import { SCENES } from "./scenes.js";
 import { gameProblems } from "./game-pool.js";
-import { canSpeak, speak } from "./speech.js";
+import { canSpeak, speak, syncLive } from "./speech.js";
 import { mathText, stepsBlock } from "./trail-pictures.js";
 
 const TILES = 12;
@@ -47,7 +47,7 @@ export function playPicture(host, { grade, stop, scene, calm, finish, onFact }) 
         <input id="gm-input" class="tr-input" inputmode="${grade >= 6 ? "text" : "numeric"}" spellcheck="false" aria-describedby="gm-q" />
         <button type="submit" class="tr-check">Clear tile</button>
       </div>
-      <p class="gm-note" role="status" aria-live="polite">${esc(note)}</p>
+      <p class="gm-note">${esc(note)}</p>
       ${misses ? `<p class="tr-tip">${mathText(item.hint)}</p>` : ""}
       ${steps.length > 1 && peek ? stepsBlock(steps, peek, { id: "gm-steps", cap: steps.length - 1 }) : ""}
       ${steps.length > 1 && !peek ? `<button type="button" class="tr-tool" data-gm-peek>Show a step</button>` : ""}
@@ -65,6 +65,7 @@ export function playPicture(host, { grade, stop, scene, calm, finish, onFact }) 
         <div class="gm-side">${panel()}</div>
       </div></div>`;
     host.querySelector("#gm-input")?.focus();
+    syncLive(host);
   }
 
   function submit(value) {

@@ -15,3 +15,25 @@ export function speak(text) {
   speechSynthesis.cancel();
   speechSynthesis.speak(new SpeechSynthesisUtterance(spoken(text)));
 }
+
+// One live region that is never re-created, so screen readers announce every game message reliably.
+let region = null;
+let last = "";
+export function announce(text) {
+  const message = String(text || "").trim();
+  if (!message) return;
+  if (!region) {
+    region = document.createElement("div");
+    region.setAttribute("role", "status");
+    region.setAttribute("aria-live", "polite");
+    region.setAttribute("aria-atomic", "true");
+    region.style.cssText = "position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap";
+    document.body.append(region);
+  }
+  // A repeated message still needs a change to be announced again.
+  region.textContent = message === last ? `${message}\u200b` : message;
+  last = message === last ? `${message}\u200b` : message;
+}
+
+// Announce the visible hint line of a game after it re-renders.
+export const syncLive = (host) => announce(host.querySelector(".gm-note")?.textContent);

@@ -1,9 +1,10 @@
 // Game Room: four untimed games on the grade's own fact trail, a sticker book, and a short review of misses.
 import { TRAILS, loadTrail, recordFact, saveTrail } from "./fact-trail.js";
 import { getGrade } from "./problem-bank.js";
-import { ALL_STOPS, stopsFor } from "./game-pool.js";
+import { ALL_STOPS, stopOptions, stopsFor } from "./game-pool.js";
 import { playHunt, playMatch } from "./card-games.js";
 import { playSort } from "./sort-game.js";
+import { playMistake } from "./mistake-game.js";
 import { playPicture } from "./picture-game.js";
 import { SCENES, SCENE_IDS } from "./scenes.js";
 import {
@@ -41,6 +42,13 @@ export const GAMES = [
     icon: "🗂️",
     blurb: "Sort problems by whether their answer is less than a number.",
     run: playSort,
+  },
+  {
+    id: "mistake",
+    name: "Spot the Mistake",
+    icon: "🔍",
+    blurb: "Find the wrong step in a solution, then fix it.",
+    run: playMistake,
   },
   {
     id: "picture",
@@ -95,7 +103,7 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
       </header>
       <div class="gm-options">
         <label class="gm-stop">Practice which facts?
-          <select id="gm-stop">${[{ id: ALL_STOPS, name: "Everything on my trail" }, ...stops].map((s) => `<option value="${s.id}"${s.id === stop ? " selected" : ""}>${esc(s.name)}</option>`).join("")}</select>
+          <select id="gm-stop">${stopOptions(stops, stop)}</select>
         </label>
         <label class="gm-stop">Mystery Picture
           <select id="gm-scene"><option value="next"${scenePick === "next" ? " selected" : ""}>Next new picture</option>${SCENE_IDS.map((id) => `<option value="${id}"${scenePick === id ? " selected" : ""}>${esc(SCENES[id].title)}${rewards.scenes.includes(id) ? " ✓" : ""}</option>`).join("")}</select>
@@ -146,13 +154,22 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
       return;
     }
     container.addEventListener("click", back);
+    focusHeading(".gm-bar b");
     container.scrollIntoView?.({ block: "start" });
+  }
+
+  // Re-rendering removes the button that was focused, so put focus on a heading in the new screen.
+  function focusHeading(selector) {
+    const heading = container.querySelector(selector);
+    heading?.setAttribute("tabindex", "-1");
+    heading?.focus();
   }
 
   function back(event) {
     if (!event.target.closest("[data-gm-menu]")) return;
     container.removeEventListener("click", back);
     renderMenu();
+    focusHeading(".gm-head h2");
   }
 
   function renderResult({ game, stars, missed, line, scene }, played) {

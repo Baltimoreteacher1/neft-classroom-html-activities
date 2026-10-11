@@ -16,11 +16,14 @@ const { STICKERS, dailyGame, earnedIds, rankFor, streakOf } = await import(
 const { comebackItems } = await import("../math/fluency-lab/game-pool.js");
 const { bossFor, bossOpen, getStation, TRAILS } = await import("../math/fluency-lab/fact-trail.js");
 const { PAPER_GAMES, paperSheets } = await import("../math/fluency-lab/paper-games.js");
+const { buildRound } = await import("../math/fluency-lab/mistake-game.js");
+const { familySummaryHtml, familySummaryDocument } = await import(
+  "../math/fluency-lab/family-page.js"
+);
 const { sortBoard } = await import("../math/fluency-lab/sort-game.js");
 const { cleanPlay } = await import("../math/fluency-lab/play-backup.js");
-const { factLabel, parseFactsReport, summarizeReports } = await import(
-  "../math/fluency-lab/class-snapshot.js"
-);
+const { factLabel, parseFactsReport, summarizeReports, compareReports, comparisonHtml } =
+  await import("../math/fluency-lab/class-snapshot.js");
 const { validateAssignment } = await import("../math/fluency-lab/school-tools.js");
 const { SCENES, SCENE_IDS } = await import("../math/fluency-lab/scenes.js");
 const { ALL_SKILLS, generateProblem, seededRandom, validateAnswer } = await import(
@@ -228,6 +231,97 @@ for (const grade of [1, 3, 6, 7]) {
   );
 }
 
+// Spot the Mistake: exactly one checkable step is wrong, and claims are right or wrong as labelled.
+const STEP = /^([\d.,]+) ([+−×÷]) ([\d.,]+) = ([\d.,]+)\.?$/;
+const val = (t) => Number(String(t).replaceAll(",", ""));
+const calc = (a, op, b) => (op === "+" ? a + b : op === "−" ? a - b : op === "×" ? a * b : a / b);
+for (const grade of [1, 3, 5, 6, 7, 8]) {
+  for (const stop of [
+    ALL_STOPS,
+    ...stopsFor(grade)
+      .slice(0, 4)
+      .map((s) => s.id),
+  ]) {
+    for (let i = 0; i < 10; i += 1) {
+      const round = buildRound(grade, stop);
+      if (round.format === "steps") {
+        const bad = round.steps
+          .map((text, k) => {
+            const m = text.match(STEP);
+            return m && Math.abs(calc(val(m[1]), m[2], val(m[3])) - val(m[4])) > 1e-6 ? k : -1;
+          })
+          .filter((k) => k >= 0);
+        check(
+          bad.length === 1 && bad[0] === round.bad,
+          `${grade}/${stop}: exactly one wrong step expected (${round.item.question}).`,
+        );
+      } else {
+        check(
+          Math.abs(round.shown - round.truth) < 1e-9 === round.right,
+          `${grade}/${stop}: claim flag matches its number (${round.item.question}).`,
+        );
+      }
+    }
+  }
+}
+check(
+  stopsFor(5).some((s) => s.id === "skill:fraction-add") &&
+    stopsFor(7).some((s) => s.id === "skill:fraction-ops"),
+  "Fraction skills are playable stops.",
+);
+{
+  const { cards, lineText } = sortBoard(5, "skill:fraction-add", 8, { comeback: false });
+  check(
+    cards.every((c) => c.kind === "fraction") && ["1/2", "1", "1 1/2", "2", "3"].includes(lineText),
+    "Fraction Answer Sort uses a benchmark line.",
+  );
+  const hunt = huntBoard(5, "skill:fraction-mul");
+  check(/^\d+\/\d+$/.test(hunt.targetText), "Fraction Target Hunt names its target as a fraction.");
+}
+
+// Week over week: facts that cleared, stayed, or are new.
+{
+  const mk = (keys, known) =>
+    parseFactsReport({
+      app: "EduWonderLab Fluency Lab facts report",
+      version: 1,
+      grade: 3,
+      tricky: keys.map((key) => ({ key, right: 0, missed: 1 })),
+      known,
+      strategies: {},
+    });
+  const before = [mk(["mul:6:7", "mul:8:9"], 4), mk(["mul:6:7"], 6)];
+  const after = [mk(["mul:8:9", "mul:7:7"], 9), mk([], 12)];
+  const r = compareReports(before, after);
+  check(r.improved.map((x) => x.key).join() === "mul:6:7", "Week over week: 6 × 7 got easier.");
+  check(
+    r.stillTricky.map((x) => x.key).join() === "mul:8:9",
+    "Week over week: 8 × 9 is still tricky.",
+  );
+  check(r.newTrouble.map((x) => x.key).join() === "mul:7:7", "Week over week: 7 × 7 is new.");
+  check(
+    r.knownAverage[0] === 5 && r.knownAverage[1] === 10.5,
+    "Week over week averages known facts.",
+  );
+  check(
+    comparisonHtml(r).includes("Getting easier") && !comparisonHtml(r).includes("undefined"),
+    "Comparison renders.",
+  );
+}
+
+// Family page: names the learner, never prints "undefined", and the saved file is a full document.
+{
+  const html = familySummaryHtml({ grade: 3, name: "Orbit <b>" });
+  check(
+    html.includes("Orbit &lt;b&gt;") && !html.includes("undefined") && !html.includes("NaN"),
+    "Family summary escapes the name and prints no undefined/NaN.",
+  );
+  check(
+    familySummaryDocument({ grade: 7, name: "River" }).startsWith("<!doctype html>"),
+    "Family summary file is a full document.",
+  );
+}
+
 check(
   SCENE_IDS.length === 6 && SCENE_IDS.every((id) => SCENES[id].svg && SCENES[id].title),
   "Six titled scenes expected.",
@@ -249,7 +343,10 @@ check(
   earnedIds({ ...blank, rounds: 1, stars: 12 }).includes("stars-10"),
   "10 stars earns the 10 Stars sticker.",
 );
-check(["match", "hunt", "picture"].includes(dailyGame()), "dailyGame must name a real game.");
+check(
+  ["match", "hunt", "sort", "mistake", "picture"].includes(dailyGame()),
+  "dailyGame must name a real game.",
+);
 check(rankFor(blank).name === "Trail Starter", "Rank starts at Trail Starter.");
 
 const day = (offset) => {

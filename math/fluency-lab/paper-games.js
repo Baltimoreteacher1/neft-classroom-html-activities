@@ -1,6 +1,6 @@
 // Paper versions of the games for stations and screen-free practice. Each sheet is fresh; the answer key
 // is a separate page so it can be left out. Nothing here reads a learner's saved progress.
-import { ALL_STOPS, answerOf, answerText, cardText, gameProblems, huntBoard, shuffle } from "./game-pool.js";
+import { ALL_STOPS, answerOf, answerText, cardText, gameProblems, huntBoard, shuffle, stopOptions } from "./game-pool.js";
 import { sortBoard } from "./sort-game.js";
 
 export const PAPER_GAMES = [
@@ -28,18 +28,18 @@ function matchSheet(grade, stop) {
 function huntSheet(grade, stop) {
   const rounds = Array.from({ length: 3 }, () => huntBoard(grade, stop));
   const page = `<article class="packet-page paper-game">${header(grade, "Target Hunt", "Circle every problem whose answer is the target number.")}
-    ${rounds.map(({ target, cards }, r) => `<section class="paper-hunt"><h2>Round ${r + 1}: target ${fmt(target)}</h2><div>${cards.map((item) => `<span>${esc(cardText(item))}</span>`).join("")}</div></section>`).join("")}</article>`;
-  const key = `<p><b>Target Hunt:</b> ${rounds.map(({ target, cards }, r) => `Round ${r + 1} (${fmt(target)}): ${cards.filter((item) => answerOf(item) === target).map((item) => esc(cardText(item))).join(", ")}`).join(" · ")}</p>`;
+    ${rounds.map(({ targetText, cards }, r) => `<section class="paper-hunt"><h2>Round ${r + 1}: target ${esc(targetText)}</h2><div>${cards.map((item) => `<span>${esc(cardText(item))}</span>`).join("")}</div></section>`).join("")}</article>`;
+  const key = `<p><b>Target Hunt:</b> ${rounds.map(({ target, targetText, cards }, r) => `Round ${r + 1} (${esc(targetText)}): ${cards.filter((item) => answerOf(item) === target).map((item) => esc(cardText(item))).join(", ")}`).join(" · ")}</p>`;
   return { page, key };
 }
 
 function sortSheet(grade, stop) {
-  const { cards, line } = sortBoard(grade, stop, 8, { comeback: false });
+  const { cards, line, lineText } = sortBoard(grade, stop, 8, { comeback: false });
   const page = `<article class="packet-page paper-game">${header(grade, "Answer Sort", `Work out each answer. Write the letter of each problem in the box where its answer belongs.`)}
     <ul class="paper-sort-cards">${cards.map((item, i) => `<li><b>${LETTERS[i]}</b> ${esc(cardText(item))}</li>`).join("")}</ul>
-    <div class="paper-bins"><div><b>Less than ${fmt(line)}</b></div><div><b>${fmt(line)} or more</b></div></div></article>`;
+    <div class="paper-bins"><div><b>Less than ${lineText}</b></div><div><b>${lineText} or more</b></div></div></article>`;
   const letters = (test) => cards.map((item, i) => (test(answerOf(item)) ? LETTERS[i] : null)).filter(Boolean).join(", ");
-  const key = `<p><b>Answer Sort:</b> Less than ${fmt(line)}: ${letters((n) => n < line)} · ${fmt(line)} or more: ${letters((n) => n >= line)}</p>`;
+  const key = `<p><b>Answer Sort:</b> Less than ${lineText}: ${letters((n) => n < line)} · ${lineText} or more: ${letters((n) => n >= line)}</p>`;
   return { page, key };
 }
 
@@ -58,7 +58,7 @@ export function mountPaperGames(container, { grade, stopsFor, onPrint }) {
     "beforeend",
     `<section class="class-snapshot paper-games" aria-labelledby="paper-title"><h3 id="paper-title">Paper game sheets</h3><p>Print fresh sheets for stations or screen-free practice. Every print makes new problems.</p>
     <div class="form-row"><label for="paper-game">Game<select id="paper-game"><option value="all">All three games</option>${PAPER_GAMES.map((g) => `<option value="${g.id}">${g.name}</option>`).join("")}</select></label>
-    <label for="paper-stop">Facts<select id="paper-stop"><option value="${ALL_STOPS}">Everything on the grade's trail</option>${stopsFor(grade).map((s) => `<option value="${s.id}">${esc(s.name)}</option>`).join("")}</select></label></div>
+    <label for="paper-stop">Facts<select id="paper-stop">${stopOptions(stopsFor(grade), ALL_STOPS, "Everything on the grade's trail")}</select></label></div>
     <label class="inline-check"><input type="checkbox" id="paper-key"/> Add a separate teacher answer-key page</label>
     <div class="button-row"><button type="button" class="primary-action" id="paper-print">Print game sheets</button></div><p id="paper-error" role="status"></p></section>`,
   );
