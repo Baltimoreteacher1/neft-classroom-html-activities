@@ -23,6 +23,13 @@ const { balanceRound, scaleSvg } = await import("../math/fluency-lab/balance-gam
 const { familySummaryHtml, familySummaryDocument } = await import(
   "../math/fluency-lab/family-page.js"
 );
+const { unlockedIds, buddySvg } = await import("../math/fluency-lab/buddy.js");
+const { ITEMS, COLORS } = await import("../math/fluency-lab/buddy-items.js");
+const { cleanBuddy, cleanRewards, daysThisWeek, weekStart } = await import(
+  "../math/fluency-lab/rewards.js"
+);
+const { cleanRecent, clearMiss, recordMiss } = await import("../math/fluency-lab/fact-trail.js");
+const { deckFor } = await import("../math/fluency-lab/flip-game.js");
 const { sortBoard } = await import("../math/fluency-lab/sort-game.js");
 const { cleanPlay } = await import("../math/fluency-lab/play-backup.js");
 const { factLabel, parseFactsReport, summarizeReports, compareReports, comparisonHtml } =
@@ -419,6 +426,122 @@ for (const grade of [1, 3, 5, 6, 7, 8]) {
       rightHeavy.includes("40 + 9") &&
       !leftHeavy.includes("undefined"),
     "Scale shows both pans.",
+  );
+}
+
+// Buddy: nothing is unlocked without evidence, items unlock with their sticker or rank, saved looks are cleaned.
+{
+  const blank = {
+    rounds: 0,
+    threeStar: 0,
+    stars: 0,
+    stops: 0,
+    boss: 0,
+    facts: 0,
+    plays: 0,
+    best: {},
+    scenes: 0,
+    streak: 0,
+    goalWeeks: 0,
+    retired: 0,
+    strategyTotal: 0,
+  };
+  check(unlockedIds(blank).length === 0, "A new learner has no buddy accessories unlocked.");
+  check(
+    unlockedIds({ ...blank, plays: 1 }).join() === "party",
+    "Finishing a game unlocks the party hat.",
+  );
+  check(
+    unlockedIds({ ...blank, stars: 5 }).includes("cap"),
+    "Rank Path Finder unlocks the explorer cap.",
+  );
+  check(unlockedIds({ ...blank, boss: 1 }).includes("cape"), "Beating a boss unlocks the cape.");
+  check(
+    ITEMS.every((item) => ["hat", "face", "back"].includes(item.slot)) &&
+      new Set(ITEMS.map((i) => i.id)).size === ITEMS.length,
+    "Buddy items have unique ids and valid slots.",
+  );
+  const look = cleanBuddy({ color: "nope", hat: "crown", face: "cape", back: "cape" });
+  check(
+    look.color === "blue" && look.hat === "crown" && look.face === "" && look.back === "cape",
+    "A saved buddy look is cleaned slot by slot.",
+  );
+  for (const color of Object.keys(COLORS))
+    check(
+      buddySvg({ color, hat: "wizard", face: "glasses", back: "wings", mood: "cheer" }).startsWith(
+        "<svg",
+      ),
+      `Buddy draws in ${color}.`,
+    );
+  check(
+    !buddySvg({ hat: "nope" }).includes("undefined"),
+    "An unknown accessory draws nothing, not 'undefined'.",
+  );
+}
+
+// Weekly goal: Monday-Sunday weeks, distinct days only, goal clamps to 2-5, a sticker needs a met week.
+{
+  const wed = new Date(2026, 9, 14, 12).getTime();
+  check(weekStart(wed) === "2026-10-12", "Weeks start on Monday.");
+  check(
+    weekStart(new Date(2026, 9, 18, 9).getTime()) === "2026-10-12",
+    "Sunday belongs to the week that began on Monday.",
+  );
+  check(
+    daysThisWeek(["2026-10-11", "2026-10-12", "2026-10-12", "2026-10-14", "2026-10-15"], wed) === 2,
+    "Only distinct days from Monday through today count.",
+  );
+  check(
+    cleanRewards({ goal: 9 }).goal === 3 && cleanRewards({ goal: 5 }).goal === 5,
+    "The weekly goal stays within 2 to 5.",
+  );
+}
+
+// Recent misses: newest first, no duplicates, capped, only answerable kinds, and cleared on retire.
+{
+  const item = (n, kind = "number") => ({
+    question: `${n} + 1 = ?`,
+    answers: [String(n + 1)],
+    displayAnswer: String(n + 1),
+    kind,
+    steps: ["one", "two"],
+    hint: "",
+  });
+  const data = { recent: [] };
+  for (let n = 0; n < 30; n += 1) recordMiss(data, item(n), 3);
+  check(
+    data.recent.length === 20 && data.recent[0].question === "29 + 1 = ?",
+    "Recent misses keep the newest 20.",
+  );
+  recordMiss(data, item(25), 3);
+  check(
+    data.recent.filter((e) => e.question === "25 + 1 = ?").length === 1 &&
+      data.recent[0].question === "25 + 1 = ?",
+    "A repeated miss moves to the front without duplicating.",
+  );
+  recordMiss(data, item(99, "choice"), 3);
+  check(
+    !data.recent.some((e) => e.question.startsWith("99")),
+    "Multiple-choice items are not kept as flash cards.",
+  );
+  clearMiss(data, "25 + 1 = ?");
+  check(!data.recent.some((e) => e.question === "25 + 1 = ?"), "Retiring a card removes it.");
+  check(
+    cleanRecent([{ question: 5 }, { question: "x", answers: [] }, null]).length === 0,
+    "Malformed recent entries are dropped.",
+  );
+  check(
+    deckFor(
+      {
+        recent: [
+          { ...item(1), grade: 3 },
+          { ...item(2), grade: 5 },
+        ],
+      },
+      3,
+      6,
+    ).length === 1,
+    "The deck only holds cards from the learner's grade.",
   );
 }
 

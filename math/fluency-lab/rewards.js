@@ -1,5 +1,6 @@
 // Sticker book, ranks, practice-day streak, and a small celebration. Local to this learner; nothing is sent anywhere.
 import { TRAILS, factStatus, loadTrail } from "./fact-trail.js";
+import { COLORS, ITEMS, SLOTS } from "./buddy-items.js";
 import { GAMES_BY_ID_NAME } from "./game-names.js";
 import { t } from "./i18n.js";
 import { SCENE_IDS } from "./scenes.js";
@@ -11,12 +12,12 @@ const KEY = "ewl-fluency-rewards-v1";
 const key = () => profileKey(KEY, profiles().active);
 const DAY_MS = 86400000;
 
-const GAME_IDS = ["match", "hunt", "sort", "mistake", "make", "family", "balance", "picture"];
+const GAME_IDS = ["match", "hunt", "sort", "mistake", "make", "family", "balance", "picture", "flip"];
 
 // One suggested game per day, the same all day for everyone on this device.
 // One suggested game per day; Fact Family Builder is a Grades 1-5 game, so it is skipped for older grades.
 export const dailyGame = (time = Date.now(), grade = 0) => {
-  const list = GAME_IDS.filter((id) => !(id === "family" && grade > 5));
+  const list = GAME_IDS.filter((id) => id !== "flip" && !(id === "family" && grade > 5));
   return list[Math.floor(time / DAY_MS) % list.length];
 };
 
@@ -164,6 +165,20 @@ export const STICKERS = [
     test: (s) => s.strategyTotal >= 5,
   },
   {
+    id: "retired-5",
+    icon: "💪",
+    name: "Comeback Kid",
+    hint: "Retire 5 tricky fact cards",
+    test: (s) => s.retired >= 5,
+  },
+  {
+    id: "goal",
+    icon: "🎯",
+    name: "Goal Getter",
+    hint: "Reach your weekly practice goal",
+    test: (s) => s.goalWeeks >= 1,
+  },
+  {
     id: "days-3",
     icon: "🔥",
     name: "3 Days Running",
@@ -190,13 +205,35 @@ export function cleanRewards(saved = {}) {
       ? saved.days.filter((day) => /^\d{4}-\d{2}-\d{2}$/.test(day)).slice(-60)
       : [],
     plays: num(saved.plays),
-    best: { match: num(best.match), hunt: num(best.hunt), sort: num(best.sort), mistake: num(best.mistake), make: num(best.make), family: num(best.family), balance: num(best.balance), picture: num(best.picture) },
+    best: { match: num(best.match), hunt: num(best.hunt), sort: num(best.sort), mistake: num(best.mistake), make: num(best.make), family: num(best.family), balance: num(best.balance), picture: num(best.picture), flip: num(best.flip) },
     scenes: Array.isArray(saved.scenes) ? saved.scenes.filter((id) => SCENE_IDS.includes(id)) : [],
     seen: Array.isArray(saved.seen) ? saved.seen.filter((id) => STICKERS.some((sticker) => sticker.id === id)) : [],
     strategies,
     calm: saved.calm === true,
+    buddy: cleanBuddy(saved.buddy),
+    goal: [2, 3, 4, 5].includes(saved.goal) ? saved.goal : 3,
+    retired: num(saved.retired),
+    goalWeeks: Array.isArray(saved.goalWeeks) ? saved.goalWeeks.filter((day) => /^\d{4}-\d{2}-\d{2}$/.test(day)).slice(-60) : [],
   };
 }
+
+// Colour and one accessory per slot; anything unknown falls back to the default look.
+export function cleanBuddy(saved = {}) {
+  const look = { color: saved?.color in COLORS ? saved.color : "blue" };
+  for (const slot of SLOTS) look[slot] = ITEMS.some((item) => item.slot === slot && item.id === saved?.[slot]) ? saved[slot] : "";
+  return look;
+}
+
+// Weekly goal: the week runs Monday to Sunday, counted in distinct practice days.
+export const weekStart = (time = Date.now()) => {
+  const date = new Date(time);
+  date.setDate(date.getDate() - ((date.getDay() + 6) % 7));
+  return localDay(date.getTime());
+};
+export const daysThisWeek = (days, time = Date.now()) => {
+  const start = weekStart(time);
+  return new Set(days.filter((day) => day >= start && day <= localDay(time))).size;
+};
 
 export const loadRewards = () => cleanRewards(readLocal(key(), {}));
 
@@ -211,6 +248,8 @@ export const saveRewards = (data) => writeLocal(key(), data);
 export function noteToday(data) {
   const today = localDay();
   if (!data.days.includes(today)) data.days = [...data.days, today].slice(-60);
+  const week = weekStart();
+  if (daysThisWeek(data.days) >= data.goal && !data.goalWeeks.includes(week)) data.goalWeeks = [...data.goalWeeks, week].slice(-60);
 }
 
 export function recordGame(data, game, stars, scene = null) {
@@ -247,6 +286,8 @@ export function summarize(trail = loadTrail(), data = loadRewards()) {
     plays: data.plays,
     best: data.best,
     scenes: data.scenes.length,
+    goalWeeks: data.goalWeeks.length,
+    retired: data.retired,
     strategyTotal: Object.values(data.strategies).reduce((sum, count) => sum + count, 0),
     streak: streakOf(data.days),
   };
@@ -255,11 +296,14 @@ export function summarize(trail = loadTrail(), data = loadRewards()) {
 export const earnedIds = (summary) =>
   STICKERS.filter((sticker) => sticker.test(summary)).map((sticker) => sticker.id);
 
+const scoreOf = (summary) => summary.stars + summary.plays * 2 + summary.scenes * 3 + (summary.boss || 0) * 5;
+
+export const rankIndex = (summary) => RANKS.reduce((best, rank, i) => (scoreOf(summary) >= rank.at ? i : best), 0);
+
 export function rankFor(summary) {
-  const score = summary.stars + summary.plays * 2 + summary.scenes * 3 + (summary.boss || 0) * 5;
-  const index = RANKS.reduce((best, rank, i) => (score >= rank.at ? i : best), 0);
+  const index = rankIndex(summary);
   const next = RANKS[index + 1] ? { ...RANKS[index + 1], name: t(RANKS[index + 1].name) } : null;
-  return { ...RANKS[index], name: t(RANKS[index].name), next, score };
+  return { ...RANKS[index], name: t(RANKS[index].name), next, score: scoreOf(summary) };
 }
 
 // Stickers earned since the learner last looked; marks them seen.
@@ -284,15 +328,19 @@ export function stickerShelf(summary) {
   ).join("")}</ul>`;
 }
 
-export function rewardStrip(grade) {
+export function rewardStrip(grade, avatarHtml = "") {
   const data = loadRewards();
   const summary = summarize(loadTrail(), data);
   const rank = rankFor(summary);
   const toNext = rank.next ? t("{n} more to {rank}", { n: rank.next.at - rank.score, rank: rank.next.name }) : t("Top rank");
   const streak = summary.streak;
+  const week = daysThisWeek(data.days);
+  const goalMet = week >= data.goal;
   return `<div class="rw-strip" aria-label="${t("Your rewards")}">
+    ${avatarHtml ? `<span class="rw-buddy" aria-hidden="true">${avatarHtml}</span>` : ""}
     <span class="rw-chip"><b aria-hidden="true">${rank.icon}</b>${rank.name}<small>${toNext}</small></span>
     <span class="rw-chip"><b aria-hidden="true">🔥</b>${streak === 1 ? t("{n} day in a row", { n: streak }) : t("{n} days in a row", { n: streak })}<small>${streak ? t("Come back tomorrow") : t("Practice today to start")}</small></span>
+    <span class="rw-chip${goalMet ? " met" : ""}"><b aria-hidden="true">${goalMet ? "✅" : "🎯"}</b>${t("This week: {a} of {b} days", { a: Math.min(week, data.goal), b: data.goal })}<small>${goalMet ? t("Goal reached!") : t("Your weekly goal")}</small></span>
     <button type="button" class="rw-chip rw-go" data-daily-game="${dailyGame(Date.now(), grade)}"><b aria-hidden="true">🎮</b>${t("Play today’s game")}<small>${t(GAMES_BY_ID_NAME[dailyGame(Date.now(), grade)])}</small></button>
     <span class="rw-chip"><b aria-hidden="true">🎖️</b>${t("{n} of {m} stickers", { n: earnedIds(summary).length, m: STICKERS.length })}<small>${TRAILS[grade] ? t("See the Games tab") : ""}</small></span>
   </div>`;

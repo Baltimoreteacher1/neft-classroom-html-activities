@@ -555,11 +555,41 @@ export function chartKey(item) {
 const TRAIL_KEY = "ewl-fluency-trail-v1";
 const storageKey = () => profileKey(TRAIL_KEY, profiles().active);
 
+const MAX_RECENT = 20;
+
+// Facts and problems the learner missed lately, kept so "Tricky Facts" can bring them back as flash cards.
+export function cleanRecent(list) {
+  const text = (value, max) => String(value ?? "").slice(0, max);
+  return (Array.isArray(list) ? list : [])
+    .filter((entry) => entry && typeof entry.question === "string" && Array.isArray(entry.answers) && entry.answers.length)
+    .slice(0, MAX_RECENT)
+    .map((entry) => ({
+      question: text(entry.question, 120),
+      answers: entry.answers.slice(0, 3).map((a) => text(a, 40)),
+      displayAnswer: text(entry.displayAnswer ?? entry.answers[0], 40),
+      kind: ["number", "fraction", "text"].includes(entry.kind) ? entry.kind : "number",
+      grade: Number.isInteger(entry.grade) && entry.grade >= 1 && entry.grade <= 8 ? entry.grade : 0,
+      steps: (Array.isArray(entry.steps) ? entry.steps : []).slice(0, 6).map((step) => text(step, 160)),
+      hint: text(entry.hint, 160),
+    }));
+}
+
+export function recordMiss(data, item, grade) {
+  if (!["number", "fraction", "text"].includes(item.kind)) return;
+  const entry = { question: item.question, answers: item.answers, displayAnswer: item.displayAnswer, kind: item.kind, grade, steps: item.steps || [], hint: item.hint || "" };
+  data.recent = cleanRecent([entry, ...data.recent.filter((old) => old.question !== item.question)]);
+}
+
+export function clearMiss(data, question) {
+  data.recent = data.recent.filter((entry) => entry.question !== question);
+}
+
 export function loadTrail() {
   const saved = readLocal(storageKey(), null);
   return {
     stations: saved?.stations && typeof saved.stations === "object" ? saved.stations : {},
     facts: saved?.facts && typeof saved.facts === "object" ? saved.facts : {},
+    recent: cleanRecent(saved?.recent),
   };
 }
 

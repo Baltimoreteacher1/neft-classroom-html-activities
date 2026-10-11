@@ -15,6 +15,7 @@ const { STRATEGIES, TIPS } = await import("../math/fluency-lab/strategies.js");
 const { RANKS, STICKERS } = await import("../math/fluency-lab/rewards.js");
 const { GAMES_BY_ID_NAME } = await import("../math/fluency-lab/game-names.js");
 const { SCENES } = await import("../math/fluency-lab/scenes.js");
+const { ITEMS } = await import("../math/fluency-lab/buddy-items.js");
 
 const failures = [];
 const keys = new Set();
@@ -60,6 +61,12 @@ for (const name of Object.values(GAMES_BY_ID_NAME)) keys.add(name);
 for (const scene of Object.values(SCENES)) keys.add(scene.title);
 for (let n = 1; n <= 8; n += 1) keys.add(`Grade ${n} skills`);
 keys.add("Trail stops");
+for (const item of ITEMS) {
+  keys.add(item.name);
+  keys.add(item.hint);
+}
+for (const word of ["Blue", "Green", "Pink", "Orange", "Purple", "Teal", "Hat", "Face", "Back"])
+  keys.add(word);
 keys.add("Everything on my trail");
 keys.add("Grade");
 

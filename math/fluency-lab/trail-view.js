@@ -12,12 +12,14 @@ import {
   makeProblem,
   nextStation,
   recordFact,
+  recordMiss,
   recordRound,
   saveTrail,
 } from "./fact-trail.js";
 import { celebrate, claimNewStickers, loadRewards, noteToday, recordStrategy, rewardStrip, saveRewards, stickerToast, summarize } from "./rewards.js";
 import { STRATEGIES, TEACH_BACK, tipOfDay } from "./strategies.js";
 import { t } from "./i18n.js";
+import { buddySvg } from "./buddy.js";
 import { canSpeak, speak } from "./speech.js";
 import { handleModelInput, handleModelTap, interactivePicture, mathText, stepsBlock, trailPicture } from "./trail-pictures.js";
 
@@ -99,7 +101,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
           <span><b class="tr-gold">★ ${earned}</b> ${t("stars")}</span>
         </div>
       </header>
-      ${rewardStrip(grade)}
+      ${rewardStrip(grade, buddySvg(loadRewards().buddy))}
       ${tipCard()}
       <ol class="tr-map">
         ${trail.stations
@@ -321,6 +323,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
       round.results.push("miss");
       round.missed.push(current.item);
       recordFact(data, current.item, false);
+      recordMiss(data, current.item, grade);
       if (round.queue.filter((entry) => entry.review).length < 3)
         round.queue.push({ item: current.item, review: true });
     }

@@ -1,5 +1,5 @@
 // Trail stars, the fact chart, stickers, and strategy notes travel with the learner's JSON backup.
-import { loadTrail, saveTrail } from "./fact-trail.js";
+import { cleanRecent, loadTrail, saveTrail } from "./fact-trail.js";
 import { cleanRewards, loadRewards, saveRewards } from "./rewards.js";
 
 const count = (value, max = 100000) => (Number.isFinite(value) && value >= 0 ? Math.min(Math.floor(value), max) : 0);
@@ -21,7 +21,7 @@ export function cleanPlay(value) {
         last: entry.last === true,
         ...(/^\d{4}-\d{2}-\d{2}$/.test(entry.lastDay) ? { lastDay: entry.lastDay } : {}),
       };
-  return { trail: { stations, facts }, rewards: cleanRewards(value.rewards || {}) };
+  return { trail: { stations, facts, recent: cleanRecent(value.trail?.recent) }, rewards: cleanRewards(value.rewards || {}) };
 }
 
 export function importPlay(clean) {

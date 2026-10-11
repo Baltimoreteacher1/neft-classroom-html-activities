@@ -26,6 +26,33 @@ for (const [key, value] of Object.entries({
   Event: win.Event,
 }))
   Object.defineProperty(globalThis, key, { value, configurable: true, writable: true });
+win.localStorage.setItem(
+  "ewl-fluency-trail-v1",
+  JSON.stringify({
+    stations: {},
+    facts: {},
+    recent: [
+      {
+        question: "6 × 7 = ?",
+        answers: ["42"],
+        displayAnswer: "42",
+        kind: "number",
+        grade: 3,
+        steps: ["5 × 6 = 30", "2 × 6 = 12", "30 + 12 = 42"],
+        hint: "",
+      },
+      {
+        question: "8 × 9 = ?",
+        answers: ["72"],
+        displayAnswer: "72",
+        kind: "number",
+        grade: 3,
+        steps: ["10 × 8 = 80", "80 − 8 = 72"],
+        hint: "",
+      },
+    ],
+  }),
+);
 await import("../math/fluency-lab/app.js");
 
 const $ = (selector) => win.document.querySelector(selector);
@@ -53,7 +80,13 @@ const toMenu = async () => {
 
 await wait();
 assert.ok($(".gm-menu"), "The Game Room opens from ?view=games");
-assert.equal($$("[data-game]").length, 8, "Eight games are offered to Grade 3");
+assert.equal($$("[data-game]").length, 9, "Nine games are offered to Grade 3");
+assert.ok($("#bd-view svg"), "The buddy panel shows a buddy");
+assert.match(
+  $("#gm-goal-progress").textContent,
+  /This week: 0 of 3 days/,
+  "The weekly goal starts at 0 of 3",
+);
 
 // ---- Fact Match: brute-force the pairs
 click('[data-game="match"]');
@@ -251,10 +284,90 @@ await wait(60);
 assert.ok($(".gm-result"), "Balance It ends on a result screen");
 await toMenu();
 
+// ---- Tricky Facts: flash cards from missed facts; a wrong answer shows steps, a right one retires the card
+{
+  const before = JSON.parse(win.localStorage.getItem("ewl-fluency-trail-v1")).recent.length;
+  assert.ok(before >= 2, "Missed facts were kept for flash cards");
+  click('[data-game="flip"]');
+  await wait();
+  let first = true;
+  while ($("#gm-q")) {
+    const answer = sum($("#gm-q").textContent);
+    if (first) {
+      first = false;
+      $("#gm-input").value = String(answer + 1);
+      $(".gm-ask-form").dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+      assert.match(
+        $(".gm-note").textContent,
+        /Not yet/,
+        "A wrong flash-card answer is answered with a nudge",
+      );
+      assert.ok($(".tr-steps"), "A wrong flash-card answer shows steps");
+      assert.ok(
+        ![...win.document.querySelectorAll(".tr-steps li")].some((li) =>
+          li.textContent.includes(`= ${answer}`),
+        ),
+        "The steps stop before the step that states the answer",
+      );
+    }
+    $("#gm-input").value = String(answer);
+    $(".gm-ask-form").dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+    await wait(20);
+  }
+  await wait(60);
+  assert.ok($(".gm-result .bd-bubble"), "The result screen has the buddy cheering");
+  const after = JSON.parse(win.localStorage.getItem("ewl-fluency-trail-v1")).recent.length;
+  assert.ok(after < before, "Retired cards leave the deck");
+  assert.ok(
+    JSON.parse(win.localStorage.getItem("ewl-fluency-rewards-v1")).retired >= 2,
+    "Retired cards are counted",
+  );
+  await toMenu();
+}
+
+// ---- Buddy and weekly goal
+click('[data-buddy-color="green"]');
+{
+  const select = $('[data-buddy-slot="hat"]');
+  assert.ok(
+    ![...select.options].find((o) => o.value === "party").disabled,
+    "Finishing games unlocked the party hat",
+  );
+  assert.ok(
+    [...select.options].find((o) => o.value === "crown").disabled,
+    "The crown stays locked",
+  );
+  select.value = "party";
+  select.dispatchEvent(new win.Event("change", { bubbles: true }));
+  const goal = $("#gm-goal");
+  goal.value = "4";
+  goal.dispatchEvent(new win.Event("change", { bubbles: true }));
+  assert.match(
+    $("#gm-goal-progress").textContent,
+    /of 4 days/,
+    "Changing the goal updates the progress line",
+  );
+  const saved = JSON.parse(win.localStorage.getItem("ewl-fluency-rewards-v1"));
+  assert.equal(saved.buddy.color, "green", "The buddy color is saved");
+  assert.equal(saved.buddy.hat, "party", "The buddy hat is saved");
+  assert.equal(saved.goal, 4, "The weekly goal is saved");
+  assert.ok($("#bd-view").innerHTML.includes("M60 4l-20 38"), "The buddy picture shows the hat");
+}
+
 // ---- Everything above is remembered
 const rewards = JSON.parse(win.localStorage.getItem("ewl-fluency-rewards-v1"));
-assert.equal(rewards.plays, 8, "Eight finished games are recorded");
-for (const game of ["match", "hunt", "sort", "mistake", "make", "family", "balance", "picture"])
+assert.equal(rewards.plays, 9, "Nine finished games are recorded");
+for (const game of [
+  "match",
+  "hunt",
+  "sort",
+  "mistake",
+  "make",
+  "family",
+  "balance",
+  "flip",
+  "picture",
+])
   assert.ok(rewards.best[game] >= 1, `${game} recorded a best result`);
 assert.ok($$(".rw-shelf li.on").length >= 3, "The sticker book shows earned stickers");
 assert.ok(rewards.scenes.length >= 1, "The finished picture is kept");
@@ -272,6 +385,6 @@ assert.equal(win.document.documentElement.lang, "en", "English returns");
 assert.match($(".gm-head h2").textContent, /Game Room/, "The Game Room heading is English again");
 
 console.log(
-  `fluency-games-ui: ${results.length + 3} games played to the end in a DOM; results, focus, stickers, menu return and the Spanish toggle hold`,
+  `fluency-games-ui: ${results.length + 4} games played to the end in a DOM; results, focus, stickers, menu return and the Spanish toggle hold`,
 );
 process.exit(0);

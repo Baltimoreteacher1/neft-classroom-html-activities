@@ -1,5 +1,5 @@
 // Game Room: four untimed games on the grade's own fact trail, a sticker book, and a short review of misses.
-import { TRAILS, loadTrail, recordFact, saveTrail } from "./fact-trail.js";
+import { TRAILS, loadTrail, recordFact, recordMiss, saveTrail } from "./fact-trail.js";
 import { getGrade } from "./problem-bank.js";
 import { ALL_STOPS, stopOptions, stopsFor } from "./game-pool.js";
 import { playHunt, playMatch } from "./card-games.js";
@@ -8,12 +8,16 @@ import { playMistake } from "./mistake-game.js";
 import { playMake } from "./make-game.js";
 import { playFamily } from "./family-game.js";
 import { playBalance } from "./balance-game.js";
+import { playFlip } from "./flip-game.js";
+import { buddyPanel, buddySvg, moodFor, reactionFor } from "./buddy.js";
+import { cleanBuddy } from "./rewards.js";
 import { playPicture } from "./picture-game.js";
 import { SCENES, SCENE_IDS } from "./scenes.js";
 import {
   celebrate,
   claimNewStickers,
   dailyGame,
+  daysThisWeek,
   loadRewards,
   rankFor,
   recordGame,
@@ -77,6 +81,13 @@ export const GAMES = [
     run: playBalance,
   },
   {
+    id: "flip",
+    name: "Tricky Facts",
+    icon: "💪",
+    blurb: "Flash cards for facts you missed. Retire a card when you get it.",
+    run: playFlip,
+  },
+  {
     id: "picture",
     name: "Mystery Picture",
     icon: "🖼️",
@@ -134,18 +145,43 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
         <label class="gm-stop">${t("Mystery Picture")}
           <select id="gm-scene"><option value="next"${scenePick === "next" ? " selected" : ""}>${t("Next new picture")}</option>${SCENE_IDS.map((id) => `<option value="${id}"${scenePick === id ? " selected" : ""}>${esc(t(SCENES[id].title))}${rewards.scenes.includes(id) ? " ✓" : ""}</option>`).join("")}</select>
         </label>
+        <label class="gm-stop">${t("My weekly goal")}
+          <select id="gm-goal">${[2, 3, 4, 5].map((n) => `<option value="${n}"${rewards.goal === n ? " selected" : ""}>${t("{n} days a week", { n })}</option>`).join("")}</select>
+        </label>
         <label class="gm-calm"><input type="checkbox" id="gm-calm"${rewards.calm ? " checked" : ""} /> ${t("Calm mode")} <small>${t("Fewer cards, a head start on the picture")}</small></label>
       </div>
       ${notice ? `<p class="gm-note" role="status">${esc(notice)}</p>` : ""}
       <div class="gm-menu">${GAMES.filter((game) => !game.grades || game.grades.includes(grade)).map((game) => `<button type="button" class="gm-game${game.id === dailyGame(Date.now(), grade) ? " today" : ""}" data-game="${game.id}">${game.id === dailyGame(Date.now(), grade) ? `<em class="gm-today">${t("Today’s pick")}</em>` : ""}<span class="gm-icon" aria-hidden="true">${game.icon}</span><b>${t(game.name)}</b><small>${t(game.blurb)}</small>${starRow(rewards.best[game.id] || 0)}</button>`).join("")}</div>
+      <p class="gm-goal-progress" id="gm-goal-progress">${t("This week: {a} of {b} days", { a: Math.min(daysThisWeek(rewards.days), rewards.goal), b: rewards.goal })}</p>
+      ${buddyPanel(rewards, summary)}
       <section class="gm-book" aria-labelledby="gm-book-title"><h3 id="gm-book-title">${t("My sticker book")}</h3>${stickerShelf(summary)}</section>`;
     container.onclick = (event) => {
       const button = event.target.closest("[data-game]");
-      if (button) start(button.dataset.game);
+      if (button) return start(button.dataset.game);
+      const swatch = event.target.closest("[data-buddy-color]");
+      if (swatch) {
+        const data = loadRewards();
+        data.buddy = cleanBuddy({ ...data.buddy, color: swatch.dataset.buddyColor });
+        saveRewards(data);
+        container.querySelector("#bd-view").innerHTML = buddySvg(data.buddy);
+        for (const other of container.querySelectorAll("[data-buddy-color]")) other.setAttribute("aria-pressed", String(other === swatch));
+      }
     };
     container.onchange = (event) => {
       if (event.target.id === "gm-stop") stop = event.target.value;
       if (event.target.id === "gm-scene") scenePick = event.target.value;
+      if (event.target.id === "gm-goal") {
+        const data = loadRewards();
+        data.goal = Number(event.target.value);
+        saveRewards(data);
+        container.querySelector("#gm-goal-progress").textContent = t("This week: {a} of {b} days", { a: Math.min(daysThisWeek(data.days), data.goal), b: data.goal });
+      }
+      if (event.target.dataset.buddySlot !== undefined) {
+        const data = loadRewards();
+        data.buddy = cleanBuddy({ ...data.buddy, [event.target.dataset.buddySlot]: event.target.value });
+        saveRewards(data);
+        container.querySelector("#bd-view").innerHTML = buddySvg(data.buddy);
+      }
       if (event.target.id === "gm-calm") {
         const data = loadRewards();
         data.calm = event.target.checked;
@@ -206,10 +242,16 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
     recordGame(rewards, game, stars, scene);
     const fresh = claimNewStickers(rewards, summarize(loadTrail(), rewards));
     saveRewards(rewards);
+    if (game !== "flip" && missed.length) {
+      const trail = loadTrail();
+      for (const item of missed) recordMiss(trail, item, grade);
+      saveTrail(trail);
+    }
     const info = GAMES.find((entry) => entry.id === game);
     reviewItems = [...new Map(missed.map((item) => [item.question, item])).values()].slice(0, 4);
     container.innerHTML = `
       <div class="gm-result">
+        <div class="bd-cheer">${buddySvg({ ...rewards.buddy, mood: moodFor(stars) })}<p class="bd-bubble" role="status">${reactionFor(stars)}</p></div>
         ${scene ? `<div class="gm-final" role="img" aria-label="${t(SCENES[scene].title)}"><svg viewBox="0 0 120 90" aria-hidden="true">${SCENES[scene].svg}</svg></div>` : ""}
         ${starRow(stars)}
         <h2>${stars === 3 ? t("Amazing!") : stars === 2 ? t("Great game!") : t("Nice work!")}</h2>
