@@ -16,6 +16,7 @@ import { mountWorkbench } from "./workbench.js";
 import { createWorkbenchState } from "./workbench-state.js";
 import { mountTrail } from "./trail-view.js";
 import { GAMES, mountGames } from "./games.js";
+import { getLang, setLang, t, translatePage } from "./i18n.js";
 import { factsReport, mountSnapshot } from "./class-snapshot.js";
 import { familySummaryDocument, familySummaryHtml } from "./family-page.js";
 import { mountPaperGames } from "./paper-games.js";
@@ -198,7 +199,7 @@ function renderGradeTabs() {
   els.gradeTabs.innerHTML = GRADES.map(
     (grade) => `
       <button class="grade-tab" role="tab" aria-selected="${grade.grade === state.grade}" data-grade="${grade.grade}" style="--grade:${grade.color}">
-        <span>Grade</span><strong>${grade.grade}</strong>
+        <span>${t("Grade")}</span><strong>${grade.grade}</strong>
       </button>`,
   ).join("");
 }
@@ -1169,6 +1170,22 @@ document.querySelector("#add-profile").addEventListener("click", () => {
   const data = profiles(); const id = PROFILE_NAMES.findIndex((_, index) => !data.ids.includes(index));
   if (id >= 0) switchProfile(id);
 });
+// English / Español: the Game Room, trail, rewards and page chrome switch; skill titles and lesson text stay English.
+function applyLang() {
+  translatePage();
+  const toggle = document.querySelector("#lang-toggle");
+  const spanish = getLang() === "es";
+  toggle.textContent = spanish ? "English" : "Español";
+  toggle.lang = spanish ? "en" : "es";
+}
+document.querySelector("#lang-toggle").addEventListener("click", () => {
+  setLang(getLang() === "es" ? "en" : "es");
+  applyLang();
+  renderGradeTabs();
+  if (state.view === "games") openHubView("games");
+  else if (state.view === "library") renderLibrary();
+});
+applyLang();
 document.querySelector("#focus-mode").addEventListener("click", () => { state.settings.focus = !state.settings.focus; saveSettings(); applySettings(); });
 document.querySelector("#download-progress").addEventListener("click", () => {
   saveActiveSession(); downloadFile(`fluency-${PROFILE_NAMES[activeProfile].toLowerCase()}-${localDay()}.json`, JSON.stringify({ ...makeBackup(state), play: exportPlay() }, null, 2));

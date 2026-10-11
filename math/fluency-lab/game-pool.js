@@ -2,6 +2,7 @@
 // practices the grade's own fluency standard. Games use short problems with a single numeric answer (whole numbers, decimals, equations).
 import { TRAILS, getStation, loadTrail, makeProblem } from "./fact-trail.js";
 import { factSteps, generateProblem, getGrade, getSkill, seededRandom } from "./problem-bank.js";
+import { t } from "./i18n.js";
 import { localDay } from "./tutor-engine.js";
 
 export const ALL_STOPS = "all";
@@ -56,7 +57,7 @@ export function stopsFor(grade) {
 // How a problem reads on a card. Equations and evaluations get a short verb so a card is never a bare "7x + 7 = 112".
 const CARD_RULES = [
   [/^(.+) = \?$/, (m) => m[1]],
-  [/^(.+)\. Find x\.$/, (m) => `Solve ${m[1]}`],
+  [/^(.+)\. Find x\.$/, (m) => `${t("Solve")} ${m[1]}`],
   [/^Evaluate (.+) when x = (-?\d+)\.$/, (m) => `${m[1]}, x = ${m[2]}`],
   [/^What is (.+)\?$/, (m) => m[1]],
 ];
@@ -80,10 +81,11 @@ export const answerText = (item) =>
 
 // <option>/<optgroup> markup for a facts picker.
 export function stopOptions(stops, selected = ALL_STOPS, allLabel = "Everything on my trail") {
+  allLabel = t(allLabel);
   const esc = (v) => String(v).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
-  const option = (s) => `<option value="${esc(s.id)}"${s.id === selected ? " selected" : ""}>${esc(s.name)}</option>`;
+  const option = (s) => `<option value="${esc(s.id)}"${s.id === selected ? " selected" : ""}>${esc(t(s.name))}</option>`;
   const groups = [...new Set(stops.map((s) => s.group))];
-  return `<option value="${ALL_STOPS}"${selected === ALL_STOPS ? " selected" : ""}>${esc(allLabel)}</option>${groups.map((g) => `<optgroup label="${esc(g)}">${stops.filter((s) => s.group === g).map(option).join("")}</optgroup>`).join("")}`;
+  return `<option value="${ALL_STOPS}"${selected === ALL_STOPS ? " selected" : ""}>${esc(allLabel)}</option>${groups.map((g) => `<optgroup label="${esc(t(g))}">${stops.filter((s) => s.group === g).map(option).join("")}</optgroup>`).join("")}`;
 }
 
 const isCardFriendly = (item) => {

@@ -2,6 +2,7 @@
 // the error by checking the math, then types the correct result. Nothing is revealed until they have found it.
 import { gameProblem, shuffle } from "./game-pool.js";
 import { validateAnswer } from "./problem-bank.js";
+import { t } from "./i18n.js";
 import { canSpeak, speak, syncLive } from "./speech.js";
 import { mathText } from "./trail-pictures.js";
 
@@ -56,20 +57,20 @@ export function playMistake(host, { grade, stop, calm, finish }) {
 
   function body() {
     const round = current();
-    const head = `<p class="gm-q" id="gm-q">${mathText(round.item.question)}</p>${canSpeak() ? `<button type="button" class="tr-tool" data-gm-read>Read to me</button>` : ""}`;
+    const head = `<p class="gm-q" id="gm-q">${mathText(round.item.question)}</p>${canSpeak() ? `<button type="button" class="tr-tool" data-gm-read>${t("Read to me")}</button>` : ""}`;
     if (round.format === "steps") {
       const list = round.steps.map((text, i) => `<li><button type="button" class="gm-step${nope === i ? " nope" : ""}${phase === "fix" && i === round.bad ? " pick" : ""}" data-pick="${i}" ${phase === "fix" ? "disabled" : ""}><b>${i + 1}</b> ${mathText(text)}</button></li>`).join("");
-      const fix = phase === "fix" ? `<form class="gm-fix"><label for="gm-fix-in">You found it! What should step ${round.bad + 1} say? Type its result.</label><div class="tr-answer"><input id="gm-fix-in" class="tr-input" inputmode="decimal" autocomplete="off" spellcheck="false" /><button type="submit" class="tr-check">Check</button></div></form>` : "";
-      return `${head}<p class="gm-ask">One step has a mistake. Check each step, then tap the one that is wrong.</p><ol class="gm-steps">${list}</ol>${fix}`;
+      const fix = phase === "fix" ? `<form class="gm-fix"><label for="gm-fix-in">${t("You found it! What should step {n} say? Type its result.", { n: round.bad + 1 })}</label><div class="tr-answer"><input id="gm-fix-in" class="tr-input" inputmode="decimal" autocomplete="off" spellcheck="false" /><button type="submit" class="tr-check">${t("Check")}</button></div></form>` : "";
+      return `${head}<p class="gm-ask">${t("One step has a mistake. Check each step, then tap the one that is wrong.")}</p><ol class="gm-steps">${list}</ol>${fix}`;
     }
-    const claim = `<p class="gm-claim">Sam says the answer is <b>${pretty(round.shown)}</b>.</p>`;
-    const choose = phase === "find" ? `<div class="gm-choice"><button type="button" class="tr-go" data-claim="right">Sam is right</button><button type="button" class="tr-go alt" data-claim="wrong">Sam is wrong</button></div>` : "";
-    const fix = phase === "fix" ? `<form class="gm-fix"><label for="gm-fix-in">You spotted it! What is the correct answer?</label><div class="tr-answer"><input id="gm-fix-in" class="tr-input" inputmode="decimal" autocomplete="off" spellcheck="false" /><button type="submit" class="tr-check">Check</button></div></form>` : "";
+    const claim = `<p class="gm-claim">${t("Sam says the answer is {n}.", { n: `<b>${pretty(round.shown)}</b>` })}</p>`;
+    const choose = phase === "find" ? `<div class="gm-choice"><button type="button" class="tr-go" data-claim="right">${t("Sam is right")}</button><button type="button" class="tr-go alt" data-claim="wrong">${t("Sam is wrong")}</button></div>` : "";
+    const fix = phase === "fix" ? `<form class="gm-fix"><label for="gm-fix-in">${t("You spotted it! What is the correct answer?")}</label><div class="tr-answer"><input id="gm-fix-in" class="tr-input" inputmode="decimal" autocomplete="off" spellcheck="false" /><button type="submit" class="tr-check">${t("Check")}</button></div></form>` : "";
     return `${head}${claim}${choose}${fix}`;
   }
 
   function render() {
-    host.innerHTML = `<div class="gm-play gm-mistake"><div class="gm-bar"><button type="button" class="tr-back" data-gm-menu>← Games</button><b>Spot the Mistake</b><span>Problem ${at + 1} of ${total}</span></div>${body()}<p class="gm-note">${esc(note)}</p></div>`;
+    host.innerHTML = `<div class="gm-play gm-mistake"><div class="gm-bar"><button type="button" class="tr-back" data-gm-menu>${t("← Games")}</button><b>${t("Spot the Mistake")}</b><span>${t("Problem {a} of {b}", { a: at + 1, b: total })}</span></div>${body()}<p class="gm-note">${esc(note)}</p></div>`;
     host.querySelector("#gm-fix-in")?.focus();
     syncLive(host);
   }
@@ -80,7 +81,7 @@ export function playMistake(host, { grade, stop, calm, finish }) {
     nope = null;
     note = "";
     if (at >= total) {
-      timer = setTimeout(() => finish({ game: "mistake", stars: mistakeStars(wrong), missed: [...missed.values()], line: `${wrong} wrong guess${wrong === 1 ? "" : "es"}` }), 600);
+      timer = setTimeout(() => finish({ game: "mistake", stars: mistakeStars(wrong), missed: [...missed.values()], line: wrong === 1 ? t("{n} wrong guess", { n: wrong }) : t("{n} wrong guesses", { n: wrong }) }), 600);
       return;
     }
     render();
@@ -104,7 +105,7 @@ export function playMistake(host, { grade, stop, calm, finish }) {
       } else {
         miss(round);
         nope = i;
-        note = "That step is correct. Check the others.";
+        note = t("That step is correct. Check the others.");
       }
       render();
       return;
@@ -114,7 +115,7 @@ export function playMistake(host, { grade, stop, calm, finish }) {
       const saysWrong = claim.dataset.claim === "wrong";
       if (saysWrong === !round.right) {
         if (round.right) {
-          note = "Yes, Sam is right. Nice checking.";
+          note = t("Yes, Sam is right. Nice checking.");
           render();
           timer = setTimeout(advance, 900);
           return;
@@ -123,7 +124,7 @@ export function playMistake(host, { grade, stop, calm, finish }) {
         note = "";
       } else {
         miss(round);
-        note = round.right ? "Check again. Work the problem yourself before you decide." : "Work the problem yourself and compare with Sam's answer.";
+        note = round.right ? t("Check again. Work the problem yourself before you decide.") : t("Work the problem yourself and compare with Sam's answer.");
       }
       render();
     }
@@ -134,12 +135,12 @@ export function playMistake(host, { grade, stop, calm, finish }) {
     const typed = host.querySelector("#gm-fix-in").value;
     const right = round.format === "steps" ? Number.isFinite(num(typed)) && typed.trim() !== "" && same(num(typed), round.truth) : validateAnswer(typed, round.item);
     if (right) {
-      note = "Yes! Mistake fixed.";
+      note = t("Yes! Mistake fixed.");
       phase = "done";
       render();
       timer = setTimeout(advance, 800);
     } else {
-      note = "Not yet. Work that step out again.";
+      note = t("Not yet. Work that step out again.");
       render();
       host.querySelector("#gm-fix-in").value = typed;
     }

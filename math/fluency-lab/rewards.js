@@ -1,6 +1,7 @@
 // Sticker book, ranks, practice-day streak, and a small celebration. Local to this learner; nothing is sent anywhere.
 import { TRAILS, factStatus, loadTrail } from "./fact-trail.js";
 import { GAMES_BY_ID_NAME } from "./game-names.js";
+import { t } from "./i18n.js";
 import { SCENE_IDS } from "./scenes.js";
 import { STRATEGIES } from "./strategies.js";
 import { localDay } from "./tutor-engine.js";
@@ -10,10 +11,14 @@ const KEY = "ewl-fluency-rewards-v1";
 const key = () => profileKey(KEY, profiles().active);
 const DAY_MS = 86400000;
 
-const GAME_IDS = ["match", "hunt", "sort", "mistake", "picture"];
+const GAME_IDS = ["match", "hunt", "sort", "mistake", "make", "family", "balance", "picture"];
 
 // One suggested game per day, the same all day for everyone on this device.
-export const dailyGame = (time = Date.now()) => GAME_IDS[Math.floor(time / DAY_MS) % GAME_IDS.length];
+// One suggested game per day; Fact Family Builder is a Grades 1-5 game, so it is skipped for older grades.
+export const dailyGame = (time = Date.now(), grade = 0) => {
+  const list = GAME_IDS.filter((id) => !(id === "family" && grade > 5));
+  return list[Math.floor(time / DAY_MS) % list.length];
+};
 
 export const RANKS = [
   { at: 0, name: "Trail Starter", icon: "🥾" },
@@ -117,6 +122,27 @@ export const STICKERS = [
     test: (s) => s.best.mistake >= 3,
   },
   {
+    id: "make-3",
+    icon: "🧩",
+    name: "Pair Master",
+    hint: "Win Make It with 3 stars",
+    test: (s) => s.best.make >= 3,
+  },
+  {
+    id: "family-3",
+    icon: "👨‍👩‍👧",
+    name: "Family Builder",
+    hint: "Win Fact Family Builder with 3 stars",
+    test: (s) => s.best.family >= 3,
+  },
+  {
+    id: "balance-3",
+    icon: "⚖️",
+    name: "Balance Master",
+    hint: "Win Balance It with 3 stars",
+    test: (s) => s.best.balance >= 3,
+  },
+  {
     id: "boss",
     icon: "👑",
     name: "Boss Beater",
@@ -164,7 +190,7 @@ export function cleanRewards(saved = {}) {
       ? saved.days.filter((day) => /^\d{4}-\d{2}-\d{2}$/.test(day)).slice(-60)
       : [],
     plays: num(saved.plays),
-    best: { match: num(best.match), hunt: num(best.hunt), sort: num(best.sort), mistake: num(best.mistake), picture: num(best.picture) },
+    best: { match: num(best.match), hunt: num(best.hunt), sort: num(best.sort), mistake: num(best.mistake), make: num(best.make), family: num(best.family), balance: num(best.balance), picture: num(best.picture) },
     scenes: Array.isArray(saved.scenes) ? saved.scenes.filter((id) => SCENE_IDS.includes(id)) : [],
     seen: Array.isArray(saved.seen) ? saved.seen.filter((id) => STICKERS.some((sticker) => sticker.id === id)) : [],
     strategies,
@@ -232,7 +258,8 @@ export const earnedIds = (summary) =>
 export function rankFor(summary) {
   const score = summary.stars + summary.plays * 2 + summary.scenes * 3 + (summary.boss || 0) * 5;
   const index = RANKS.reduce((best, rank, i) => (score >= rank.at ? i : best), 0);
-  return { ...RANKS[index], next: RANKS[index + 1] || null, score };
+  const next = RANKS[index + 1] ? { ...RANKS[index + 1], name: t(RANKS[index + 1].name) } : null;
+  return { ...RANKS[index], name: t(RANKS[index].name), next, score };
 }
 
 // Stickers earned since the learner last looked; marks them seen.
@@ -244,16 +271,16 @@ export function claimNewStickers(data, summary) {
 
 export const stickerToast = (stickers) =>
   stickers.length
-    ? `<div class="rw-toast" role="status"><b>New sticker${stickers.length > 1 ? "s" : ""}!</b> ${stickers.map((s) => `<span title="${s.name}">${s.icon} ${s.name}</span>`).join("")}</div>`
+    ? `<div class="rw-toast" role="status"><b>${stickers.length > 1 ? t("New stickers!") : t("New sticker!")}</b> ${stickers.map((s) => `<span title="${t(s.name)}">${s.icon} ${t(s.name)}</span>`).join("")}</div>`
     : "";
 
 export function stickerShelf(summary) {
   const earned = new Set(earnedIds(summary));
-  return `<ul class="rw-shelf" aria-label="Sticker book, ${earned.size} of ${STICKERS.length} earned">${STICKERS.map(
+  return `<ul class="rw-shelf" aria-label="${t("Sticker book, {n} of {m} earned", { n: earned.size, m: STICKERS.length })}">${STICKERS.map(
     (s) =>
       earned.has(s.id)
-        ? `<li class="on"><span aria-hidden="true">${s.icon}</span><b>${s.name}</b><small>${s.hint}</small></li>`
-        : `<li><span aria-hidden="true" class="lock">?</span><b>${s.name}</b><small>${s.hint}</small></li>`,
+        ? `<li class="on"><span aria-hidden="true">${s.icon}</span><b>${t(s.name)}</b><small>${t(s.hint)}</small></li>`
+        : `<li><span aria-hidden="true" class="lock">?</span><b>${t(s.name)}</b><small>${t(s.hint)}</small></li>`,
   ).join("")}</ul>`;
 }
 
@@ -261,13 +288,13 @@ export function rewardStrip(grade) {
   const data = loadRewards();
   const summary = summarize(loadTrail(), data);
   const rank = rankFor(summary);
-  const toNext = rank.next ? `${rank.next.at - rank.score} more to ${rank.next.name}` : "Top rank";
+  const toNext = rank.next ? t("{n} more to {rank}", { n: rank.next.at - rank.score, rank: rank.next.name }) : t("Top rank");
   const streak = summary.streak;
-  return `<div class="rw-strip" aria-label="Your rewards">
+  return `<div class="rw-strip" aria-label="${t("Your rewards")}">
     <span class="rw-chip"><b aria-hidden="true">${rank.icon}</b>${rank.name}<small>${toNext}</small></span>
-    <span class="rw-chip"><b aria-hidden="true">🔥</b>${streak} day${streak === 1 ? "" : "s"} in a row<small>${streak ? "Come back tomorrow" : "Practice today to start"}</small></span>
-    <button type="button" class="rw-chip rw-go" data-daily-game="${dailyGame()}"><b aria-hidden="true">🎮</b>Play today’s game<small>${GAMES_BY_ID_NAME[dailyGame()]}</small></button>
-    <span class="rw-chip"><b aria-hidden="true">🎖️</b>${earnedIds(summary).length} of ${STICKERS.length} stickers<small>${TRAILS[grade] ? "See the Games tab" : ""}</small></span>
+    <span class="rw-chip"><b aria-hidden="true">🔥</b>${streak === 1 ? t("{n} day in a row", { n: streak }) : t("{n} days in a row", { n: streak })}<small>${streak ? t("Come back tomorrow") : t("Practice today to start")}</small></span>
+    <button type="button" class="rw-chip rw-go" data-daily-game="${dailyGame(Date.now(), grade)}"><b aria-hidden="true">🎮</b>${t("Play today’s game")}<small>${t(GAMES_BY_ID_NAME[dailyGame(Date.now(), grade)])}</small></button>
+    <span class="rw-chip"><b aria-hidden="true">🎖️</b>${t("{n} of {m} stickers", { n: earnedIds(summary).length, m: STICKERS.length })}<small>${TRAILS[grade] ? t("See the Games tab") : ""}</small></span>
   </div>`;
 }
 

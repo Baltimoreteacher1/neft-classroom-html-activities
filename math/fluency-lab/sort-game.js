@@ -2,6 +2,7 @@
 import { answerOf, cardText, gameProblems } from "./game-pool.js";
 
 const fmt = (n) => n.toLocaleString("en-US", { maximumFractionDigits: 6 });
+import { t } from "./i18n.js";
 import { syncLive } from "./speech.js";
 import { mathText } from "./trail-pictures.js";
 
@@ -44,14 +45,14 @@ export function playSort(host, { grade, stop, calm, finish }) {
   let nope = null;
   let timer = null;
   const left = () => cards.filter((item) => !placed.low.includes(item) && !placed.high.includes(item));
-  const bin = (key, title) => `<button type="button" class="gm-bin" data-bin="${key}" ${chosen == null ? "disabled" : ""} aria-label="${title}${placed[key].length ? `, ${placed[key].length} placed` : ""}"><b>${title}</b><span>${placed[key].map((item) => mathText(cardText(item))).join(" · ")}</span></button>`;
+  const bin = (key, title) => `<button type="button" class="gm-bin" data-bin="${key}" ${chosen == null ? "disabled" : ""} aria-label="${title}${placed[key].length ? t(", {n} placed", { n: placed[key].length }) : ""}"><b>${title}</b><span>${placed[key].map((item) => mathText(cardText(item))).join(" · ")}</span></button>`;
 
   function render() {
     host.innerHTML = `<div class="gm-play gm-sort">
-      <div class="gm-bar"><button type="button" class="tr-back" data-gm-menu>← Games</button><b>Answer Sort</b><span>${count - left().length} of ${count} sorted</span></div>
-      <p class="gm-note">${nope ? "Not that bin. Work it out again." : chosen == null ? "Pick a problem, then choose where its answer belongs." : "Where does its answer go?"}</p>
-      <div class="gm-cards cols-4" role="group" aria-label="Problems to sort">${left().map((item, i) => `<button type="button" class="gm-card q${chosen === item ? " pick" : ""}${nope === item ? " nope" : ""}" data-s="${cards.indexOf(item)}" aria-pressed="${chosen === item}"><span>${mathText(cardText(item))}</span></button>`).join("")}</div>
-      <div class="gm-bins">${bin("low", `Less than ${lineText}`)}${bin("high", `${lineText} or more`)}</div></div>`;
+      <div class="gm-bar"><button type="button" class="tr-back" data-gm-menu>${t("← Games")}</button><b>${t("Answer Sort")}</b><span>${t("{a} of {b} sorted", { a: count - left().length, b: count })}</span></div>
+      <p class="gm-note">${nope ? t("Not that bin. Work it out again.") : chosen == null ? t("Pick a problem, then choose where its answer belongs.") : t("Where does its answer go?")}</p>
+      <div class="gm-cards cols-4" role="group" aria-label="${t("Problems to sort")}">${left().map((item, i) => `<button type="button" class="gm-card q${chosen === item ? " pick" : ""}${nope === item ? " nope" : ""}" data-s="${cards.indexOf(item)}" aria-pressed="${chosen === item}"><span>${mathText(cardText(item))}</span></button>`).join("")}</div>
+      <div class="gm-bins">${bin("low", t("Less than {n}", { n: lineText }))}${bin("high", t("{n} or more", { n: lineText }))}</div></div>`;
     host.querySelector(chosen != null ? `[data-s="${cards.indexOf(chosen)}"]` : "[data-s]")?.focus();
     syncLive(host);
   }
@@ -71,7 +72,7 @@ export function playSort(host, { grade, stop, calm, finish }) {
     placed[key].push(item);
     chosen = null;
     render();
-    if (!left().length) timer = setTimeout(() => finish({ game: "sort", stars: sortStars(wrong), missed: [...missed.values()], line: `${wrong} wrong placement${wrong === 1 ? "" : "s"}` }), 900);
+    if (!left().length) timer = setTimeout(() => finish({ game: "sort", stars: sortStars(wrong), missed: [...missed.values()], line: wrong === 1 ? t("{n} wrong placement", { n: wrong }) : t("{n} wrong placements", { n: wrong }) }), 900);
   }
 
   host.onclick = (event) => {

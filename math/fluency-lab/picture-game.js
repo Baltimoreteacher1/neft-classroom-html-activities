@@ -3,6 +3,7 @@
 import { validateAnswer } from "./problem-bank.js";
 import { SCENES } from "./scenes.js";
 import { gameProblems } from "./game-pool.js";
+import { t } from "./i18n.js";
 import { canSpeak, speak, syncLive } from "./speech.js";
 import { mathText, stepsBlock } from "./trail-pictures.js";
 
@@ -31,35 +32,35 @@ export function playPicture(host, { grade, stop, scene, calm, finish, onFact }) 
 
   const fog = (i) => {
     const done = cleared.has(i);
-    return `<button type="button" class="gm-tile${done ? " clear" : ""}${active === i ? " on" : ""}" data-tile="${i}" ${done ? "disabled" : ""} aria-label="Tile ${i + 1}${done ? ", cleared" : ""}"><span>${done ? "" : i + 1}</span></button>`;
+    return `<button type="button" class="gm-tile${done ? " clear" : ""}${active === i ? " on" : ""}" data-tile="${i}" ${done ? "disabled" : ""} aria-label="${t("Tile {n}", { n: i + 1 })}${done ? t(", cleared") : ""}"><span>${done ? "" : i + 1}</span></button>`;
   };
 
   function panel() {
     if (active == null)
-      return `<p class="gm-ask">Pick a tile to clear the fog. ${TILES - cleared.size} left.</p>`;
+      return `<p class="gm-ask">${t("Pick a tile to clear the fog. {n} left.", { n: TILES - cleared.size })}</p>`;
     const item = items[active];
     const steps = item.steps || [];
     return `<form class="gm-ask-form" autocomplete="off">
       <p class="gm-q" id="gm-q">${mathText(item.question)}</p>
-      ${canSpeak() ? `<button type="button" class="tr-tool" data-gm-read>Read to me</button>` : ""}
+      ${canSpeak() ? `<button type="button" class="tr-tool" data-gm-read>${t("Read to me")}</button>` : ""}
       <div class="tr-answer">
-        <label class="tr-sr" for="gm-input">Your answer</label>
+        <label class="tr-sr" for="gm-input">${t("Your answer")}</label>
         <input id="gm-input" class="tr-input" inputmode="${grade >= 6 ? "text" : "numeric"}" spellcheck="false" aria-describedby="gm-q" />
-        <button type="submit" class="tr-check">Clear tile</button>
+        <button type="submit" class="tr-check">${t("Clear tile")}</button>
       </div>
       <p class="gm-note">${esc(note)}</p>
       ${misses ? `<p class="tr-tip">${mathText(item.hint)}</p>` : ""}
       ${steps.length > 1 && peek ? stepsBlock(steps, peek, { id: "gm-steps", cap: steps.length - 1 }) : ""}
-      ${steps.length > 1 && !peek ? `<button type="button" class="tr-tool" data-gm-peek>Show a step</button>` : ""}
+      ${steps.length > 1 && !peek ? `<button type="button" class="tr-tool" data-gm-peek>${t("Show a step")}</button>` : ""}
     </form>`;
   }
 
   function render() {
     host.innerHTML = `<div class="gm-play gm-picture">
-      <div class="gm-bar"><button type="button" class="tr-back" data-gm-menu>← Games</button><b>Mystery Picture</b><span>${cleared.size} of ${TILES} cleared</span></div>
+      <div class="gm-bar"><button type="button" class="tr-back" data-gm-menu>${t("← Games")}</button><b>${t("Mystery Picture")}</b><span>${t("{a} of {b} cleared", { a: cleared.size, b: TILES })}</span></div>
       <div class="gm-stage">
         <div class="gm-scene">
-          <svg viewBox="0 0 120 90" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${cleared.size === TILES ? art.title : "A hidden picture covered by fog tiles"}">${art.svg}</svg>
+          <svg viewBox="0 0 120 90" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${cleared.size === TILES ? t(art.title) : t("A hidden picture covered by fog tiles")}">${art.svg}</svg>
           <div class="gm-fog">${Array.from({ length: TILES }, (_, i) => fog(i)).join("")}</div>
         </div>
         <div class="gm-side">${panel()}</div>
@@ -90,7 +91,7 @@ export function playPicture(host, { grade, stop, scene, calm, finish, onFact }) 
               stars: pictureStars(firstTry.size, total),
               scene,
               missed: [...missedItems.values()],
-              line: art.title,
+              line: t(art.title),
             }),
           1400,
         );
@@ -104,7 +105,7 @@ export function playPicture(host, { grade, stop, scene, calm, finish, onFact }) 
       onFact?.(item, false);
     }
     misses += 1;
-    note = "Not yet. Look at the clue and try again.";
+    note = t("Not yet. Look at the clue and try again.");
     const typed = host.querySelector("#gm-input").value;
     render();
     host.querySelector("#gm-input").value = typed;

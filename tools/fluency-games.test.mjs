@@ -17,6 +17,9 @@ const { comebackItems } = await import("../math/fluency-lab/game-pool.js");
 const { bossFor, bossOpen, getStation, TRAILS } = await import("../math/fluency-lab/fact-trail.js");
 const { PAPER_GAMES, paperSheets } = await import("../math/fluency-lab/paper-games.js");
 const { buildRound } = await import("../math/fluency-lab/mistake-game.js");
+const { makeBoard, rulesFor } = await import("../math/fluency-lab/make-game.js");
+const { familyNumbers, familyOpFor, frameOk } = await import("../math/fluency-lab/family-game.js");
+const { balanceRound, scaleSvg } = await import("../math/fluency-lab/balance-game.js");
 const { familySummaryHtml, familySummaryDocument } = await import(
   "../math/fluency-lab/family-page.js"
 );
@@ -322,6 +325,103 @@ check(
   );
 }
 
+// Make It: every board holds the wanted number of tile pairs that reach the target.
+for (const grade of [1, 2, 3, 4, 5, 6, 7, 8]) {
+  for (let i = 0; i < 25; i += 1) {
+    for (const wanted of [2, 3]) {
+      const { op, target, tiles } = makeBoard(grade, wanted);
+      const combine = (a, b) => (op === "+" ? a + b : a * b);
+      let pairs = 0;
+      for (let x = 0; x < tiles.length; x += 1)
+        for (let y = x + 1; y < tiles.length; y += 1)
+          if (combine(tiles[x], tiles[y]) === target) pairs += 1;
+      check(
+        pairs >= wanted,
+        `Make It grade ${grade}: needs ${wanted}+ pairs for ${target} (${tiles.join()}).`,
+      );
+      check(
+        tiles.length === wanted * 2 + 2 && rulesFor(grade).op === op,
+        `Make It grade ${grade}: tile count and operation.`,
+      );
+    }
+  }
+}
+
+// Fact Family Builder: the four frames accept exactly the right equations.
+for (const grade of [1, 2, 3, 4, 5]) {
+  for (let i = 0; i < 30; i += 1) {
+    const [a, b, c] = familyNumbers(grade);
+    const op = familyOpFor(grade);
+    const inverse = op === "+" ? "−" : "÷";
+    check(
+      op === "+" ? a + b === c : a * b === c,
+      `Family grade ${grade}: ${a},${b},${c} must be a fact family.`,
+    );
+    check(
+      a !== b && c > b && (grade > 1 || c <= 10) && (grade !== 2 || c <= 20),
+      `Family grade ${grade}: numbers differ and stay in range (${a},${b},${c}).`,
+    );
+    const nums = [a, b, c];
+    check(
+      frameOk({ op }, [a, b, c], nums) && frameOk({ op }, [b, a, c], nums),
+      `Family grade ${grade}: both orders of the first sentence are right.`,
+    );
+    check(
+      frameOk({ op: inverse }, [c, a, b], nums) && frameOk({ op: inverse }, [c, b, a], nums),
+      `Family grade ${grade}: both inverse sentences are right.`,
+    );
+    check(
+      !frameOk({ op }, [a, a, c], nums) &&
+        !frameOk({ op: inverse }, [a, c, b], nums) &&
+        !frameOk({ op }, [a, b, null], nums),
+      `Family grade ${grade}: wrong or incomplete frames are rejected.`,
+    );
+  }
+}
+
+// Balance It: the missing number completes the part, and the scale tilts toward the heavier side.
+for (const grade of [1, 3, 5, 6, 7, 8]) {
+  for (const stop of [
+    ALL_STOPS,
+    ...stopsFor(grade)
+      .slice(0, 3)
+      .map((s) => s.id),
+  ]) {
+    const round = balanceRound(grade, stop);
+    check(
+      round.part + round.missing === round.total &&
+        round.choices.includes(round.missing) &&
+        new Set(round.choices).size === round.choices.length,
+      `Balance It ${grade}/${stop}: part + missing = total and the choices differ.`,
+    );
+    check(
+      round.choices.every((n) => n > 0),
+      `Balance It ${grade}/${stop}: choices are positive.`,
+    );
+  }
+}
+{
+  const beam = (svg) =>
+    svg
+      .match(
+        /<line x1="[\d.]+" y1="([\d.]+)" x2="[\d.]+" y2="([\d.]+)" stroke="#13233a" stroke-width="7"/,
+      )
+      .slice(1)
+      .map(Number);
+  const leftHeavy = scaleSvg({ left: "6 × 7", rightText: "20 + ?", tilt: -12 });
+  const rightHeavy = scaleSvg({ left: "6 × 7", rightText: "40 + 9", tilt: 12 });
+  const level = scaleSvg({ left: "6 × 7", rightText: "40 + 2", tilt: 0 });
+  check(beam(leftHeavy)[0] > beam(leftHeavy)[1], "The heavier left side sits lower.");
+  check(beam(rightHeavy)[0] < beam(rightHeavy)[1], "The heavier right side sits lower.");
+  check(beam(level)[0] === beam(level)[1], "A balanced scale is level.");
+  check(
+    leftHeavy.includes("6 × 7") &&
+      rightHeavy.includes("40 + 9") &&
+      !leftHeavy.includes("undefined"),
+    "Scale shows both pans.",
+  );
+}
+
 check(
   SCENE_IDS.length === 6 && SCENE_IDS.every((id) => SCENES[id].svg && SCENES[id].title),
   "Six titled scenes expected.",
@@ -344,7 +444,9 @@ check(
   "10 stars earns the 10 Stars sticker.",
 );
 check(
-  ["match", "hunt", "sort", "mistake", "picture"].includes(dailyGame()),
+  ["match", "hunt", "sort", "mistake", "make", "family", "balance", "picture"].includes(
+    dailyGame(),
+  ),
   "dailyGame must name a real game.",
 );
 check(rankFor(blank).name === "Trail Starter", "Rank starts at Trail Starter.");

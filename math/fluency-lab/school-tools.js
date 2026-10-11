@@ -56,7 +56,7 @@ export function parseBackup(value) {
   return makeBackup({ progress: value.progress, tutor: value.tutor, settings: value.settings || {}, grade: GRADES.some((grade) => grade.grade === value.grade) ? value.grade : 1 });
 }
 
-const GAME_IDS = ["match", "hunt", "sort", "mistake", "picture"];
+const GAME_IDS = ["match", "hunt", "sort", "mistake", "make", "family", "balance", "picture"];
 
 export function validateAssignment(value) {
   if (!value || value.version !== 1 || !GRADES.some((grade) => grade.grade === value.grade)) return null;

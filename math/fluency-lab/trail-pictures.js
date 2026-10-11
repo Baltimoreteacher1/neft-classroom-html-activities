@@ -1,3 +1,4 @@
+import { t } from "./i18n.js";
 // Static, student-facing pictures for the Fact Trail. Each one is drawn from the problem's own
 // model data (built in problem-bank.js), so the picture always shows the numbers in the problem.
 const esc = (value) =>
@@ -849,7 +850,7 @@ export function stepsBlock(steps, shown, { id, cap = steps.length } = {}) {
   });
   const more = shown < cap;
   return `<ol class="tr-steps" id="${id}">${visible.map((line, i) => `<li${i === visible.length - 1 ? ' class="latest"' : ""}><span class="tr-step-num">${i + 1}</span><span class="tr-step-text">${mathText(line)}</span>${pictures[i]}</li>`).join("")}</ol>
-    ${more ? `<button type="button" class="tr-step-next" data-step="${id}">Next step</button>` : ""}`;
+    ${more ? `<button type="button" class="tr-step-next" data-step="${id}">${t("Next step")}</button>` : ""}`;
 }
 
 // ---------- a small picture for every guided step ----------

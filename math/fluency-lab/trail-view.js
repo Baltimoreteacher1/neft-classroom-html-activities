@@ -17,6 +17,7 @@ import {
 } from "./fact-trail.js";
 import { celebrate, claimNewStickers, loadRewards, noteToday, recordStrategy, rewardStrip, saveRewards, stickerToast, summarize } from "./rewards.js";
 import { STRATEGIES, TEACH_BACK, tipOfDay } from "./strategies.js";
+import { t } from "./i18n.js";
 import { canSpeak, speak } from "./speech.js";
 import { handleModelInput, handleModelTap, interactivePicture, mathText, stepsBlock, trailPicture } from "./trail-pictures.js";
 
@@ -28,7 +29,7 @@ const esc = (value) =>
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
 const starRow = (count, size = "") =>
-  `<span class="tr-stars ${size}" aria-label="${count} of 3 stars">${[1, 2, 3].map((n) => `<span class="tr-star${n <= count ? " on" : ""}" aria-hidden="true">★</span>`).join("")}</span>`;
+  `<span class="tr-stars ${size}" aria-label="${t("{n} of 3 stars", { n: count })}">${[1, 2, 3].map((n) => `<span class="tr-star${n <= count ? " on" : ""}" aria-hidden="true">★</span>`).join("")}</span>`;
 export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
   const trail = TRAILS[grade];
   const words = BANDS[bandFor(grade)];
@@ -48,7 +49,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
   function liveModel(item) {
     const html = interactivePicture(item.model);
     if (!html) return "";
-    if (bandFor(grade) === "upper" && !round.modelOpen) return `<button type="button" class="tr-tool tr-model-open" data-model-open>Use a model</button>`;
+    if (bandFor(grade) === "upper" && !round.modelOpen) return `<button type="button" class="tr-tool tr-model-open" data-model-open>${t("Use a model")}</button>`;
     return `<div class="tr-model">${html}</div>`;
   }
 
@@ -90,12 +91,12 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
     container.innerHTML = `
       <header class="tr-head">
         <div>
-          <h2 id="trail-title">${esc(words.trail)}</h2>
-          <p class="tr-focus">Grade ${grade}: ${esc(trail.focus)}</p>
+          <h2 id="trail-title">${esc(t(words.trail))}</h2>
+          <p class="tr-focus">${t("Grade {n}", { n: grade })}: ${esc(t(trail.focus))}</p>
         </div>
-        <div class="tr-tally" aria-label="${done} of ${trail.stations.length} stops done, ${earned} stars">
-          <span><b>${done}</b> of ${trail.stations.length} stops</span>
-          <span><b class="tr-gold">★ ${earned}</b> stars</span>
+        <div class="tr-tally" aria-label="${t("{a} of {b} stops done, {c} stars", { a: done, b: trail.stations.length, c: earned })}">
+          <span><b>${done}</b> ${t("of {n} stops", { n: trail.stations.length })}</span>
+          <span><b class="tr-gold">★ ${earned}</b> ${t("stars")}</span>
         </div>
       </header>
       ${rewardStrip(grade)}
@@ -106,11 +107,11 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
             const stars = stationStars(entry.id);
             const isNext = entry === next;
             return `<li class="tr-stop${stars >= 2 ? " done" : ""}${isNext ? " next" : ""}">
-              <button type="button" data-station="${entry.id}" aria-label="Stop ${index + 1}: ${esc(entry.name)}, ${stars} of 3 stars${isNext ? ", your next stop" : ""}">
+              <button type="button" data-station="${entry.id}" aria-label="${t("Stop {n}", { n: index + 1 })}: ${esc(t(entry.name))}, ${t("{n} of 3 stars", { n: stars })}${isNext ? t(", your next stop") : ""}">
                 <span class="tr-medal">${mathText(entry.label)}</span>
-                <span class="tr-name">${esc(entry.name)}</span>
+                <span class="tr-name">${esc(t(entry.name))}</span>
                 ${starRow(stars)}
-                ${isNext ? `<span class="tr-here">${stars ? "Keep going" : "Start here"}</span>` : ""}
+                ${isNext ? `<span class="tr-here">${stars ? t("Keep going") : t("Start here")}</span>` : ""}
               </button>
             </li>`;
           })
@@ -118,27 +119,27 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
       </ol>
       ${renderBoss()}
       ${trail.chart ? renderChart() : ""}
-      <p class="tr-more"><button type="button" class="tr-link" data-more-skills>More Grade ${grade} practice</button></p>`;
+      <p class="tr-more"><button type="button" class="tr-link" data-more-skills>${t("More Grade {n} practice", { n: grade })}</button></p>`;
   }
 
   // One way of thinking per day, matched to the grade band. A tip is a strategy, never a worked answer.
   function tipCard() {
     const tip = tipOfDay(bandFor(grade));
-    return `<aside class="tr-tip-card" aria-label="Strategy of the day"><b>Strategy of the day: ${esc(tip.title)}</b><span>${esc(tip.tip)}</span></aside>`;
+    return `<aside class="tr-tip-card" aria-label="${t("Strategy of the day")}"><b>${t("Strategy of the day")}: ${esc(t(tip.title))}</b><span>${esc(t(tip.tip))}</span></aside>`;
   }
 
   function teachBack() {
-    return `<section class="tr-teachback" aria-labelledby="tb-title"><h3 id="tb-title">How did you think about it?</h3><div>${TEACH_BACK[bandFor(grade)].map((id) => `<button type="button" data-strategy="${id}"><span aria-hidden="true">${STRATEGIES[id].icon}</span> ${esc(STRATEGIES[id].label)}</button>`).join("")}</div></section>`;
+    return `<section class="tr-teachback" aria-labelledby="tb-title"><h3 id="tb-title">${t("How did you think about it?")}</h3><div>${TEACH_BACK[bandFor(grade)].map((id) => `<button type="button" data-strategy="${id}"><span aria-hidden="true">${STRATEGIES[id].icon}</span> ${esc(t(STRATEGIES[id].label))}</button>`).join("")}</div></section>`;
   }
 
   function renderBoss() {
     const open = bossOpen(data, grade);
     const stars = stationStars("boss");
     return `<div class="tr-boss${open ? " open" : ""}${stars >= 2 ? " done" : ""}">
-      <button type="button" ${open ? 'data-station="boss"' : "disabled"} aria-label="Boss round, ${stars} of 3 stars${open ? "" : ", locked until every stop has 2 stars"}">
+      <button type="button" ${open ? 'data-station="boss"' : "disabled"} aria-label="${t("Boss round")}, ${t("{n} of 3 stars", { n: stars })}${open ? "" : t(", locked until every stop has 2 stars")}">
         <span class="tr-medal" aria-hidden="true">👑</span>
-        <span class="tr-name">Boss round</span>${starRow(stars)}
-        <span class="tr-here">${open ? (stars ? "Play again" : "Ready!") : "Earn 2 stars on every stop to open"}</span>
+        <span class="tr-name">${t("Boss round")}</span>${starRow(stars)}
+        <span class="tr-here">${open ? (stars ? t("Play again") : t("Ready!")) : t("Earn 2 stars on every stop to open")}</span>
       </button></div>`;
   }
 
@@ -160,11 +161,11 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
     }).join("");
     return `<section class="tr-chart" aria-labelledby="chart-title">
       <div class="tr-chart-head">
-        <h3 id="chart-title">My fact chart</h3>
-        <p>${counts.known} of ${counts.total} facts filled in. A fact fills in after you get it right twice on the first try.</p>
+        <h3 id="chart-title">${t("My fact chart")}</h3>
+        <p>${t("{a} of {b} facts filled in. A fact fills in after you get it right twice on the first try.", { a: counts.known, b: counts.total })}</p>
       </div>
       <div class="tr-chart-scroll"><table class="tr-grid ${op}">${head}${rows}</table></div>
-      <p class="tr-legend"><span><i class="known"></i>I know it</span><span><i class="growing"></i>Getting there</span><span><i class="practice"></i>Practice more</span></p>
+      <p class="tr-legend"><span><i class="known"></i>${t("I know it")}</span><span><i class="growing"></i>${t("Getting there")}</span><span><i class="practice"></i>${t("Practice more")}</span></p>
     </section>`;
   }
 
@@ -179,21 +180,21 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
     container.innerHTML = `
       <div class="tr-card">
         <div class="tr-card-top">
-          <button type="button" class="tr-back" data-map>← ${esc(words.trail)}</button>
-          <p class="tr-kicker">${esc(entry.name)}</p>
+          <button type="button" class="tr-back" data-map>← ${esc(t(words.trail))}</button>
+          <p class="tr-kicker">${esc(t(entry.name))}</p>
         </div>
-        <h2 class="tr-idea">${esc(entry.idea)}</h2>
+        <h2 class="tr-idea">${esc(t(entry.idea))}</h2>
         <div class="tr-lesson">
           <div class="tr-example">
             <p class="tr-example-fact">${mathText(example.question)}</p>
             ${picture}
           </div>
           <div class="tr-guide">
-            <p class="tr-guide-title">Watch me solve it</p>
+            <p class="tr-guide-title">${t("Watch me solve it")}</p>
             ${stepsBlock(example.steps, shown, { id: "card-steps" })}
           </div>
         </div>
-        <button type="button" class="tr-go" data-start="${entry.id}">${esc(words.start)}</button>
+        <button type="button" class="tr-go" data-start="${entry.id}">${esc(t(words.start))}</button>
       </div>`;
     container.querySelector(shown >= example.steps.length ? "[data-start]" : "[data-step]")?.focus();
   }
@@ -231,7 +232,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
       (_, i) => `<span class="tr-dot ${round.results[i] ?? ""}"></span>`,
     ).join("");
     const keypad = words.keypad
-      ? `<div class="tr-pad" aria-label="Number keys">${[
+      ? `<div class="tr-pad" aria-label="${t("Number keys")}">${[
           1,
           2,
           3,
@@ -248,7 +249,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
           .map((key) =>
             key === ""
               ? "<span></span>"
-              : `<button type="button" data-key="${key}" aria-label="${key === "⌫" ? "Delete" : key}">${key}</button>`,
+              : `<button type="button" data-key="${key}" aria-label="${key === "⌫" ? t("Delete") : key}">${key}</button>`,
           )
           .join("")}</div>`
       : "";
@@ -256,31 +257,31 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
     container.innerHTML = `
       <div class="tr-round">
         <div class="tr-round-top">
-          <button type="button" class="tr-back" data-map>← ${esc(words.trail)}</button>
+          <button type="button" class="tr-back" data-map>← ${esc(t(words.trail))}</button>
           <div class="tr-dots" aria-hidden="true">${dots}</div>
-          <span class="tr-count">${current.review ? "One more look" : `${Math.min(answered + 1, ROUND)} of ${ROUND}`}</span>
+          <span class="tr-count">${current.review ? t("One more look") : t("{a} of {b}", { a: Math.min(answered + 1, ROUND), b: ROUND })}</span>
         </div>
         <div class="tr-play">
           <div class="tr-main">
             <p class="tr-q" id="tr-q">${mathText(item.question)}</p>
             <form class="tr-answer" autocomplete="off">
-              <label class="tr-sr" for="tr-input">Your answer</label>
+              <label class="tr-sr" for="tr-input">${t("Your answer")}</label>
               <input id="tr-input" class="tr-input" inputmode="${bandFor(grade) === "upper" ? "text" : "numeric"}" enterkeyhint="done" spellcheck="false" />
-              <button type="submit" class="tr-check">${esc(words.check)}</button>
+              <button type="submit" class="tr-check">${esc(t(words.check))}</button>
             </form>
             <p class="tr-feedback" role="status" aria-live="polite"></p>
             ${round.miss ? "" : liveModel(item)}
             ${
               round.miss
-                ? `<div class="tr-help"><p class="tr-miss-title">${esc(words.miss)}</p><div class="tr-help-body">${stepsBlock(steps, steps.length, { id: "miss-steps" })}</div><p class="tr-retype">${esc(words.retype)}</p></div>`
+                ? `<div class="tr-help"><p class="tr-miss-title">${esc(t(words.miss))}</p><div class="tr-help-body">${stepsBlock(steps, steps.length, { id: "miss-steps" })}</div><p class="tr-retype">${esc(t(words.retype))}</p></div>`
                 : ""
             }
           </div>
           <div class="tr-side">
             ${keypad}
             <div class="tr-tools">
-              ${round.miss ? "" : `<button type="button" class="tr-tool" data-peek>Show a step</button>`}
-              ${canSpeak() ? `<button type="button" class="tr-tool" data-read>${esc(words.read)}</button>` : ""}
+              ${round.miss ? "" : `<button type="button" class="tr-tool" data-peek>${t("Show a step")}</button>`}
+              ${canSpeak() ? `<button type="button" class="tr-tool" data-read>${esc(t(words.read))}</button>` : ""}
             </div>
             ${round.miss ? "" : `<div id="tr-peek-slot"></div>`}
           </div>
@@ -297,7 +298,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
     const correct = validateAnswer(value, current.item);
     if (round.miss) {
       if (!correct) {
-        feedback.textContent = `Type ${current.item.displayAnswer} to keep going.`;
+        feedback.textContent = t("Type {n} to keep going.", { n: current.item.displayAnswer });
         return;
       }
       round.miss = false;
@@ -310,7 +311,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
         round.results.push("right");
         recordFact(data, current.item, true);
       }
-      feedback.textContent = words.right[round.index % words.right.length];
+      feedback.textContent = t(words.right[round.index % words.right.length]);
       feedback.className = "tr-feedback good";
       container.querySelector(".tr-answer").classList.add("good");
       timer = setTimeout(advance, 650);
@@ -350,15 +351,15 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
     container.innerHTML = `
       <div class="tr-done">
         ${starRow(stars, "big")}
-        <h2>${round.entry.boss ? (stars >= 2 ? "Boss defeated!" : "Good try on the boss!") : stars === 3 ? "Amazing round!" : stars === 2 ? "Great round!" : "Good practice!"}</h2>
-        <p class="tr-score">You got <b>${round.firstTry} of ${ROUND}</b> on the first try.</p>
+        <h2>${round.entry.boss ? (stars >= 2 ? t("Boss defeated!") : t("Good try on the boss!")) : stars === 3 ? t("Amazing round!") : stars === 2 ? t("Great round!") : t("Good practice!")}</h2>
+        <p class="tr-score">${t("You got {n} on the first try.", { n: `<b>${t("{a} of {b}", { a: round.firstTry, b: ROUND })}</b>` })}</p>
         ${stickerToast(fresh)}
         ${teachBack()}
-        ${practice.length ? `<div class="tr-review"><p>Facts to practice again:</p><ul>${practice.map((fact) => `<li>${mathText(fact)}</li>`).join("")}</ul></div>` : `<p class="tr-perfect">Every fact on the first try.</p>`}
+        ${practice.length ? `<div class="tr-review"><p>${t("Facts to practice again:")}</p><ul>${practice.map((fact) => `<li>${mathText(fact)}</li>`).join("")}</ul></div>` : `<p class="tr-perfect">${t("Every fact on the first try.")}</p>`}
         <div class="tr-done-actions">
-          <button type="button" class="tr-go" data-start="${round.entry.id}">${esc(words.again)}</button>
-          ${next && next !== round.entry ? `<button type="button" class="tr-go alt" data-card="${next.id}">${esc(words.next)}: ${esc(next.name)}</button>` : ""}
-          <button type="button" class="tr-link" data-map>Back to the ${esc(words.trail.toLowerCase())}</button>
+          <button type="button" class="tr-go" data-start="${round.entry.id}">${esc(t(words.again))}</button>
+          ${next && next !== round.entry ? `<button type="button" class="tr-go alt" data-card="${next.id}">${esc(t(words.next))}: ${esc(t(next.name))}</button>` : ""}
+          <button type="button" class="tr-link" data-map>${t("Back to the {trail}", { trail: esc(t(words.trail).toLowerCase()) })}</button>
         </div>
       </div>`;
     if (stars === 3 || fresh.length) celebrate(container);
@@ -382,7 +383,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
       recordStrategy(rewards, target.dataset.strategy);
       const fresh = claimNewStickers(rewards, summarize(data, rewards));
       saveRewards(rewards);
-      container.querySelector(".tr-teachback").innerHTML = `<p>Thanks for sharing: ${esc(STRATEGIES[target.dataset.strategy].label.toLowerCase())}.</p>${stickerToast(fresh)}`;
+      container.querySelector(".tr-teachback").innerHTML = `<p>${t("Thanks for sharing: {what}.", { what: esc(t(STRATEGIES[target.dataset.strategy].label).toLowerCase()) })}</p>${stickerToast(fresh)}`;
     } else if (target.dataset.dailyGame) onPlayGame?.(target.dataset.dailyGame);
     else if (target.hasAttribute("data-map")) renderMap();
     else if (target.hasAttribute("data-more-skills")) onShowSkills?.();

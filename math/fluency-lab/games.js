@@ -5,6 +5,9 @@ import { ALL_STOPS, stopOptions, stopsFor } from "./game-pool.js";
 import { playHunt, playMatch } from "./card-games.js";
 import { playSort } from "./sort-game.js";
 import { playMistake } from "./mistake-game.js";
+import { playMake } from "./make-game.js";
+import { playFamily } from "./family-game.js";
+import { playBalance } from "./balance-game.js";
 import { playPicture } from "./picture-game.js";
 import { SCENES, SCENE_IDS } from "./scenes.js";
 import {
@@ -19,6 +22,7 @@ import {
   stickerToast,
   summarize,
 } from "./rewards.js";
+import { t } from "./i18n.js";
 import { mathText, stepsBlock } from "./trail-pictures.js";
 
 export const GAMES = [
@@ -51,6 +55,28 @@ export const GAMES = [
     run: playMistake,
   },
   {
+    id: "make",
+    name: "Make It",
+    icon: "🧩",
+    blurb: "Tap two tiles that make the target. Find every pair.",
+    run: playMake,
+  },
+  {
+    id: "family",
+    name: "Fact Family Builder",
+    icon: "👨‍👩‍👧",
+    blurb: "Build all four equations from three numbers.",
+    grades: [1, 2, 3, 4, 5],
+    run: playFamily,
+  },
+  {
+    id: "balance",
+    name: "Balance It",
+    icon: "⚖️",
+    blurb: "Find the number that makes the scale balance.",
+    run: playBalance,
+  },
+  {
     id: "picture",
     name: "Mystery Picture",
     icon: "🖼️",
@@ -65,7 +91,7 @@ const esc = (value) =>
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
 const starRow = (count) =>
-  `<span class="tr-stars big" aria-label="${count} of 3 stars">${[1, 2, 3].map((n) => `<span class="tr-star${n <= count ? " on" : ""}" aria-hidden="true">★</span>`).join("")}</span>`;
+  `<span class="tr-stars big" aria-label="${t("{n} of 3 stars", { n: count })}">${[1, 2, 3].map((n) => `<span class="tr-star${n <= count ? " on" : ""}" aria-hidden="true">★</span>`).join("")}</span>`;
 
 // The review after a game shows the steps up to, but not including, the one that names the answer.
 function reviewBody(item, id, shown) {
@@ -98,21 +124,21 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
     const rank = rankFor(summary);
     container.innerHTML = `
       <header class="gm-head">
-        <div><p class="section-label">Grade ${grade}: ${esc(TRAILS[grade].focus)}</p><h2>Game Room</h2><p>No timers. Think it through, and play as long as you like. Facts you missed lately come back in mixed play.</p></div>
-        <p class="gm-rank"><b aria-hidden="true">${rank.icon}</b><span>${rank.name}<small>${rank.next ? `${rank.next.at - rank.score} more points to ${rank.next.name}` : "Top rank reached"}</small></span></p>
+        <div><p class="section-label">${t("Grade {n}", { n: grade })}: ${esc(t(TRAILS[grade].focus))}</p><h2>${t("Game Room")}</h2><p>${t("No timers. Think it through, and play as long as you like. Facts you missed lately come back in mixed play.")}</p></div>
+        <p class="gm-rank"><b aria-hidden="true">${rank.icon}</b><span>${rank.name}<small>${rank.next ? t("{n} more points to {rank}", { n: rank.next.at - rank.score, rank: rank.next.name }) : t("Top rank reached")}</small></span></p>
       </header>
       <div class="gm-options">
-        <label class="gm-stop">Practice which facts?
+        <label class="gm-stop">${t("Practice which facts?")}
           <select id="gm-stop">${stopOptions(stops, stop)}</select>
         </label>
-        <label class="gm-stop">Mystery Picture
-          <select id="gm-scene"><option value="next"${scenePick === "next" ? " selected" : ""}>Next new picture</option>${SCENE_IDS.map((id) => `<option value="${id}"${scenePick === id ? " selected" : ""}>${esc(SCENES[id].title)}${rewards.scenes.includes(id) ? " ✓" : ""}</option>`).join("")}</select>
+        <label class="gm-stop">${t("Mystery Picture")}
+          <select id="gm-scene"><option value="next"${scenePick === "next" ? " selected" : ""}>${t("Next new picture")}</option>${SCENE_IDS.map((id) => `<option value="${id}"${scenePick === id ? " selected" : ""}>${esc(t(SCENES[id].title))}${rewards.scenes.includes(id) ? " ✓" : ""}</option>`).join("")}</select>
         </label>
-        <label class="gm-calm"><input type="checkbox" id="gm-calm"${rewards.calm ? " checked" : ""} /> Calm mode <small>Fewer cards, a head start on the picture</small></label>
+        <label class="gm-calm"><input type="checkbox" id="gm-calm"${rewards.calm ? " checked" : ""} /> ${t("Calm mode")} <small>${t("Fewer cards, a head start on the picture")}</small></label>
       </div>
       ${notice ? `<p class="gm-note" role="status">${esc(notice)}</p>` : ""}
-      <div class="gm-menu">${GAMES.map((game) => `<button type="button" class="gm-game${game.id === dailyGame() ? " today" : ""}" data-game="${game.id}">${game.id === dailyGame() ? `<em class="gm-today">Today’s pick</em>` : ""}<span class="gm-icon" aria-hidden="true">${game.icon}</span><b>${game.name}</b><small>${game.blurb}</small>${starRow(rewards.best[game.id] || 0)}</button>`).join("")}</div>
-      <section class="gm-book" aria-labelledby="gm-book-title"><h3 id="gm-book-title">My sticker book</h3>${stickerShelf(summary)}</section>`;
+      <div class="gm-menu">${GAMES.filter((game) => !game.grades || game.grades.includes(grade)).map((game) => `<button type="button" class="gm-game${game.id === dailyGame(Date.now(), grade) ? " today" : ""}" data-game="${game.id}">${game.id === dailyGame(Date.now(), grade) ? `<em class="gm-today">${t("Today’s pick")}</em>` : ""}<span class="gm-icon" aria-hidden="true">${game.icon}</span><b>${t(game.name)}</b><small>${t(game.blurb)}</small>${starRow(rewards.best[game.id] || 0)}</button>`).join("")}</div>
+      <section class="gm-book" aria-labelledby="gm-book-title"><h3 id="gm-book-title">${t("My sticker book")}</h3>${stickerShelf(summary)}</section>`;
     container.onclick = (event) => {
       const button = event.target.closest("[data-game]");
       if (button) start(button.dataset.game);
@@ -150,7 +176,7 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
       });
     } catch {
       // A stop with too few distinct facts for this game: go back to the menu and say so.
-      renderMenu("That set of facts is too small for this game. Try “Everything on my trail”.");
+      renderMenu(t("That set of facts is too small for this game. Try “Everything on my trail”."));
       return;
     }
     container.addEventListener("click", back);
@@ -184,15 +210,15 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
     reviewItems = [...new Map(missed.map((item) => [item.question, item])).values()].slice(0, 4);
     container.innerHTML = `
       <div class="gm-result">
-        ${scene ? `<div class="gm-final" role="img" aria-label="${SCENES[scene].title}"><svg viewBox="0 0 120 90" aria-hidden="true">${SCENES[scene].svg}</svg></div>` : ""}
+        ${scene ? `<div class="gm-final" role="img" aria-label="${t(SCENES[scene].title)}"><svg viewBox="0 0 120 90" aria-hidden="true">${SCENES[scene].svg}</svg></div>` : ""}
         ${starRow(stars)}
-        <h2>${stars === 3 ? "Amazing!" : stars === 2 ? "Great game!" : "Nice work!"}</h2>
-        <p class="tr-score">${esc(info.name)}: ${esc(line)}</p>
+        <h2>${stars === 3 ? t("Amazing!") : stars === 2 ? t("Great game!") : t("Nice work!")}</h2>
+        <p class="tr-score">${esc(t(info.name))}: ${esc(line)}</p>
         ${stickerToast(fresh)}
-        ${reviewItems.length ? `<section class="gm-review"><h3>Facts to look at again</h3><p>Tap “Next step” to work through each one. Try to finish it before the last step.</p><div>${reviewItems.map((item, i) => `<article data-review="${i}">${reviewBody(item, `gm-review-${i}`, Math.max(1, (item.steps || []).length - 1))}</article>`).join("")}</div></section>` : `<p class="tr-perfect">No misses this game.</p>`}
+        ${reviewItems.length ? `<section class="gm-review"><h3>${t("Facts to look at again")}</h3><p>${t("Tap “Next step” to work through each one. Try to finish it before the last step.")}</p><div>${reviewItems.map((item, i) => `<article data-review="${i}">${reviewBody(item, `gm-review-${i}`, Math.max(1, (item.steps || []).length - 1))}</article>`).join("")}</div></section>` : `<p class="tr-perfect">${t("No misses this game.")}</p>`}
         <div class="tr-done-actions">
-          <button type="button" class="tr-go" data-again>Play again</button>
-          <button type="button" class="tr-link" data-gm-menu>Back to the Game Room</button>
+          <button type="button" class="tr-go" data-again>${t("Play again")}</button>
+          <button type="button" class="tr-link" data-gm-menu>${t("Back to the Game Room")}</button>
         </div>
       </div>`;
     if (stars === 3 || fresh.length) celebrate(container);
@@ -208,7 +234,10 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
         );
         card.querySelector("[data-step]")?.focus();
       } else if (event.target.closest("[data-again]")) start(played);
-      else if (event.target.closest("[data-gm-menu]")) renderMenu();
+      else if (event.target.closest("[data-gm-menu]")) {
+        renderMenu();
+        focusHeading(".gm-head h2");
+      }
     };
     container.querySelector("[data-again]").focus();
   }
