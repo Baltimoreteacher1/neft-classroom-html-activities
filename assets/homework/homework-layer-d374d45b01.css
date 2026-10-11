@@ -5943,6 +5943,30 @@ body.lang-mode-es .concept-title-es { display: inline; }
   text-align: left;
 }
 .concept-visual-caption .lang-en { display: block; }
+.concept-zoom-btn { display: none; }
+.concept-zoom-dialog {
+  width: min(100vw - 16px, 960px);
+  max-height: 92vh;
+  padding: 10px;
+  border: 3px solid var(--teal);
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+.concept-zoom-dialog::backdrop { background: rgba(15, 23, 42, .72); }
+.concept-zoom-close {
+  display: block;
+  min-height: 48px;
+  margin: 0 0 8px auto;
+  padding: 8px 18px;
+  border: 2px solid var(--teal);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--teal-ink);
+  font: 800 16px/1.2 inherit;
+  cursor: pointer;
+}
+.concept-zoom-body { max-height: calc(92vh - 90px); overflow: auto; -webkit-overflow-scrolling: touch; }
+.concept-zoom-body svg { display: block; width: 780px; max-width: none; height: auto; }
 
 /* Fallback picture (a lesson with no topic drawing): the two ends of the
    worked example, side by side, so the jump from setup to answer is visible
@@ -6121,6 +6145,21 @@ body.lang-mode-es .concept-title-es { display: inline; }
   .big-idea .guided-step { padding: 12px 14px; }
   .big-idea .guided-step .step-lead { font-size: 16px; }
   .big-idea .concept-visual-caption { font-size: 18px; }
+  .concept-zoom-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 48px;
+    margin-top: 12px;
+    border: 2px solid var(--teal);
+    border-radius: 12px;
+    background: var(--teal-light);
+    color: var(--teal-ink);
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+  }
   /* Give the drawing back the frame's side padding — on a 375px phone that is
      the difference between a 301px and a 341px picture. */
   .big-idea .concept-visual-wrap { padding: 14px 8px; }
@@ -7175,6 +7214,63 @@ html [hidden] { display: none !important; }
   body.print-problems-only .problem-header-row,
   body.print-problems-only .problem-stem { break-after:avoid; break-inside:avoid; }
   body.print-problems-only .problem-section::after { content:""; display:block; min-height:26mm; }
+}
+
+/* Phone tap targets and type: every tappable is at least 44px, and nothing
+   readable sits below 12px. Audited on a 390px viewport. */
+@media (max-width: 620px) {
+  .btn-read-aloud,
+  .btn-listen-concept,
+  .obj-term,
+  .hw-draw-clear,
+  .btn-listen-prob,
+  .sound-toggle-btn,
+  .powerup-choice-btn { min-height: 44px; }
+  .btn-read-aloud,
+  .btn-listen-concept { min-width: 44px; }
+  .homework-tab-bar .homework-tab-btn .tab-en,
+  .homework-tab-bar .homework-tab-btn .tab-es { font-size: 11px; }
+  .homework-tab-bar .tab-step { width: 20px; height: 20px; font-size: 12px; }
+  .lang-selector-title,
+  .powerup-tag { font-size: 12px; }
+}
+.done-problem-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; padding: 0; list-style: none; }
+.done-problem-list:empty { display: none; }
+.done-problem-chip {
+  min-width: 48px;
+  min-height: 48px;
+  padding: 6px 12px;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--navy);
+  font: 800 16px/1 inherit;
+  cursor: pointer;
+}
+.done-problem-chip.is-done { border-color: var(--teal); background: var(--teal-light); color: var(--teal-ink); }
+
+.learn-jump-row { display: none; }
+@media (max-width: 620px) {
+  .learn-jump-row { display: flex; gap: 8px; margin: 0 0 12px; overflow-x: auto; }
+  .learn-jump-row a {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 6px 14px;
+    border: 2px solid var(--teal);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--teal-ink);
+    font-size: 14px;
+    font-weight: 800;
+    text-decoration: none;
+  }
+}
+
+@media print {
+  .concept-zoom-btn,
+  .concept-zoom-dialog { display: none !important; }
 }
 
 

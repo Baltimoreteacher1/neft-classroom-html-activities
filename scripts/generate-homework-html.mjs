@@ -4636,6 +4636,18 @@ function updateCelebrationTab() {
         '<br><button type="button" class="btn btn-secondary" onclick="switchHomeworkTab(&#39;check&#39;)"><span class="lang-en">Back to the problems</span><span class="lang-es" lang="es">Volver a los problemas</span></button>';
     }
   }
+  /* One chip per problem, so a family sees WHICH ones are open and can jump
+     straight to them instead of re-scanning the whole Check stop. */
+  const list = document.getElementById("hw_done_problems");
+  if (list) {
+    window.__hwDoneProblems = problems;
+    list.innerHTML = problems
+      .map((s, i) => {
+        const done = s.classList.contains("correct") || s.classList.contains("reviewed");
+        return '<li><button type="button" class="done-problem-chip' + (done ? " is-done" : "") + '" onclick="jumpToHomeworkProblem(' + i + ')" aria-label="' + (document.documentElement.lang === "es" ? "Problema " + (i + 1) + (done ? ", revisado" : ", sin revisar") : "Problem " + (i + 1) + (done ? ", checked" : ", not checked yet")) + '"><span aria-hidden="true">' + (i + 1) + (done ? " ✓" : "") + '</span></button></li>';
+      })
+      .join("");
+  }
   if (bPractice && correctCount >= practiceGoal) bPractice.classList.add("is-unlocked");
   try {
     if (bVocab && localStorage.getItem(STORAGE_KEY + "_vocab_won")) {
@@ -4649,6 +4661,13 @@ function updateCelebrationTab() {
   if (correctCount >= practiceGoal) {
     if (typeof triggerConfettiBurst === "function") triggerConfettiBurst(null, null, 60);
   }
+}
+
+function jumpToHomeworkProblem(i) {
+  const target = (window.__hwDoneProblems || [])[i];
+  if (!target) return;
+  switchHomeworkTab("check");
+  setTimeout(() => target.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
 }
 
 function updateCertStudentName(val) {

@@ -92,6 +92,18 @@ const dateLabel = (iso, lang) =>
 const mondayOf = (iso) => addDays(iso, -(new Date(`${iso}T12:00:00Z`).getUTCDay() + 6) % 7);
 
 /** The public page and authenticated preview use exactly the same view. */
+/* Between weeks a family should still have somewhere to go: every lesson's
+   family homework page stays open all year. */
+function browseLessonsLink(t) {
+  const link = el(
+    "a",
+    t("Browse all lessons", "Ver todas las lecciones"),
+    "button browse-lessons-link",
+  );
+  link.setAttribute("href", "/curriculum/units/");
+  return link;
+}
+
 export function renderHomeworkHub(
   root,
   snapshot,
@@ -207,6 +219,7 @@ export function renderHomeworkHub(
       ),
     );
     week.lastChild.setAttribute("href", `?${catchUp}`);
+    week.append(browseLessonsLink(t));
   } else if (phase === "empty") {
     week.append(
       el(
@@ -218,6 +231,7 @@ export function renderHomeworkHub(
         "empty-state",
       ),
     );
+    week.append(browseLessonsLink(t));
   } else {
     if (preview && phase === "past")
       week.append(

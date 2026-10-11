@@ -1666,7 +1666,7 @@ function conceptVisual(config) {
         label:
           "Understand Percent: scaling ratio 4 out of 10 to 40 out of 100 and showing 40 shaded squares on a hundredths grid",
         tone: "teal",
-        height: 420,
+        height: 440,
         title: "Understand Percent / ¿Qué es un porcentaje?",
         body: `
         <!-- Scaling Ratio Card -->
@@ -1693,11 +1693,12 @@ function conceptVisual(config) {
         <text x="468" y="268" text-anchor="middle" font-size="12" font-weight="700" fill="#12355b">Total: 100 squares = 100%</text>
 
         <!-- Key Rule Callout -->
-        <rect x="34" y="304" width="572" height="98" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
+        <rect x="34" y="304" width="572" height="118" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
         <text x="54" y="328" font-size="15" font-weight="800" fill="#0f766e">✔ KEY PERCENT RULE:</text>
-        <text x="54" y="352" font-size="14" font-weight="700" fill="#12355b">Percent literally means "per hundred". Scale any ratio until the bottom number is 100.</text>
-        <text x="54" y="374" font-size="14" font-weight="700" fill="#12355b">100% stands for 1 whole. Percents can also exceed 100%: 150% = 1.5 wholes.</text>
-        <text x="54" y="394" font-size="13" font-weight="700" fill="#0f766e">Equivalent ratio: 4/10 = 40/100 = 40%</text>`,
+        <text x="54" y="351" font-size="14" font-weight="700" fill="#12355b">Percent means "per hundred". Scale any ratio until</text>
+        <text x="54" y="370" font-size="14" font-weight="700" fill="#12355b">the bottom number is 100.</text>
+        <text x="54" y="392" font-size="14" font-weight="700" fill="#12355b">100% is 1 whole. Percents can be more than 100%: 150% = 1.5 wholes.</text>
+        <text x="54" y="412" font-size="13" font-weight="700" fill="#0f766e">Equivalent ratio: 4/10 = 40/100 = 40%</text>`,
       })}</div>`,
       capEn:
         "Percent means per hundred. Multiply both parts of a ratio so the second number is 100.",
@@ -1968,7 +1969,7 @@ function conceptVisual(config) {
           <!-- Takeaway Callout -->
           <rect x="34" y="300" width="572" height="104" rx="14" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
           <text x="54" y="326" font-size="15" font-weight="800" fill="#1d4ed8">✔ WHY PERCENTS MAKE COMPARISON FAIR:</text>
-          <text x="54" y="350" font-size="14" font-weight="700" fill="#12355b">You cannot compare 21 and 16 directly because they come from different totals (25 vs 20).</text>
+          <text x="54" y="350" font-size="14" font-weight="700" fill="#12355b">You can't compare 21 and 16 directly: the totals differ (25 vs 20).</text>
           <text x="54" y="372" font-size="14" font-weight="700" fill="#12355b">Percents put both scores on the same 100-point scale: 84% beats 80%.</text>
           <text x="54" y="392" font-size="13" font-weight="700" fill="#1d4ed8">Equivalent ratio scaling: 21/25 = 84/100 and 16/20 = 80/100</text>`,
         })}</div>`,
@@ -2061,7 +2062,7 @@ function conceptVisual(config) {
           <rect x="34" y="304" width="572" height="98" rx="14" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
           <text x="54" y="328" font-size="15" font-weight="800" fill="#047857">✔ CHECK YOUR WORK (INVERSE OPERATION):</text>
           <text x="54" y="352" font-size="14" font-weight="700" fill="#12355b">Multiply back: 15% of $40 = 0.15 × 40 = $6. ✓ Matches the tip!</text>
-          <text x="54" y="374" font-size="14" font-weight="700" fill="#12355b">Sanity check: Since 15% is less than 100%, the whole MUST be greater than the part ($40 &gt; $6).</text>
+          <text x="54" y="374" font-size="14" font-weight="700" fill="#12355b">Sanity check: 15% is less than 100%, so the whole MUST exceed the part ($40 &gt; $6).</text>
           <text x="54" y="392" font-size="13" font-weight="700" fill="#047857">Multiplying by 0.15 would give $0.90 — an obvious red flag for a total bill!</text>`,
         })}</div>`,
         capEn:
@@ -2381,7 +2382,7 @@ function conceptVisual(config) {
         title: "Net → Surface Area / Red → Área de superficie",
         body: `${faces}
         <text x="440" y="150" font-size="24" font-weight="800" fill="#12355b">Add every face:</text>
-        <text x="440" y="196" font-size="23" font-weight="700" fill="#12355b">12+15+20+15+20+12</text>
+        <text x="440" y="196" font-size="17" font-weight="700" fill="#12355b">12+15+20+15+20+12</text>
         <text x="440" y="252" font-size="34" font-weight="800" fill="#0f766e">= 94 in²</text>
         <text x="320" y="336" text-anchor="middle" font-size="24" font-weight="800" fill="#12355b">A net is the box unfolded flat — 6 faces, 6 areas.</text>`,
       }),
@@ -2798,7 +2799,13 @@ export function renderWelcomeBanner(config, lessonId) {
 
         <p class="hw-hero-lesson">
           <span class="hw-hero-lesson-title"><span class="lang-en">${esc(title)}</span><span class="lang-es" lang="es">${esc(familyTitlesEs[lessonId] || title)}</span></span>
-          <span class="hw-hero-lesson-meta">${esc(homeworkPageLabel(lessonId))}</span>
+          <span class="hw-hero-lesson-meta"><span class="lang-en">${esc(homeworkPageLabel(lessonId))}</span><span class="lang-es" lang="es">${esc(
+            homeworkPageLabel(lessonId)
+              .replace(/^Lesson /, "Lección ")
+              .replace(/^Review/, "Repaso")
+              .replace("Part 2", "Parte 2")
+              .replace("Section 3", "Sección 3"),
+          )}</span></span>
         </p>
 
         <div class="hw-hero-controls">
@@ -2952,7 +2959,7 @@ export function renderConceptExplainer(config) {
           <button type="button" class="btn-read-aloud" onclick="speakHomeworkText(${escAttr(JSON.stringify(keyEn))}, ${escAttr(JSON.stringify(keyEs))})" title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         </div>
       </div>
-      <figure class="concept-visual-wrap">${visual.svg}${caption}</figure>
+      <figure class="concept-visual-wrap">${visual.svg}${caption}<button type="button" class="concept-zoom-btn" onclick="openConceptZoom(this)"><span class="lang-en">🔍 Tap to enlarge the picture</span><span class="lang-es" lang="es">🔍 Toca para ampliar la imagen</span></button></figure>
       <ol class="guided-steps">
         ${steps
           .map((s, index) => {
@@ -3059,6 +3066,7 @@ export function renderCelebration(config = null, _lessonId = "") {
       <h2 class="section-title">🎉 <span class="lang-en">Finished for today</span><span class="lang-es" lang="es">Terminaste por hoy</span></h2>
       <p class="family-explain-finish"><span class="lang-en">Explain one answer aloud or on paper: “I got ___ because ___. I checked by ___.” Include your strategy and units. Then you are done.</span><span class="lang-es" lang="es">Explica una respuesta en voz alta o en papel: “Obtuve ___ porque ___. Comprobé usando ___.” Incluye tu estrategia y las unidades. Después termina.</span></p>
       <div class="done-summary" id="hw_done_summary" role="status" aria-live="polite"></div>
+      <ol class="done-problem-list" id="hw_done_problems" aria-label="Problems / Problemas"></ol>
       <p class="celebrate-text lang-en">Name one strategy that helped, or one question to ask next time. You can stop here; no adult signature is needed.</p>
       <p class="celebrate-text lang-es" lang="es">Di una estrategia que te ayudó o una pregunta para la próxima vez. Puedes terminar aquí; no necesitas la firma de un adulto.</p>
       <p class="celebrate-sub bilingual-block">
@@ -7694,7 +7702,7 @@ export function renderSkillPowerUp(config, topic = "expressions") {
     <section class="guided-section card section-powerup" aria-label="Skill Power-Up Challenge">
       <div class="powerup-header">
         <div class="powerup-title-wrap">
-          <span class="powerup-tag">⚡ <span class="lang-en">SKILL POWER-UP</span><span class="lang-es" lang="es">RETO DE PODER</span></span>
+          <span class="powerup-tag">⚡ <span class="lang-en">SKILL POWER-UP · OPTIONAL</span><span class="lang-es" lang="es">RETO DE PODER · OPCIONAL</span></span>
           <h3 class="powerup-question">
             <span class="lang-en">${esc(powerUp.qEn)}</span>
             <span class="lang-es" lang="es">${esc(powerUp.qEs)}</span>
@@ -8066,12 +8074,17 @@ export function renderLearnTab(config, visualLabHtml = "", workbenchHtml = "") {
 
   return `
     <div ${tabPanelAttrs("learn")}>
+      <nav class="learn-jump-row" aria-label="On this page / En esta página">
+        <a href="#hw_learn_idea"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></a>
+        ${visualLabHtml.trim() ? '<a href="#hw_learn_try"><span class="lang-en">Touch &amp; try</span><span class="lang-es" lang="es">Toca y prueba</span></a>' : ""}
+        <a href="#hw_learn_quick"><span class="lang-en">Quick question</span><span class="lang-es" lang="es">Pregunta rápida</span></a>
+      </nav>
       <div class="learn-summary-block">${learning}</div>
-      <div class="learn-big-idea-block">${concept}</div>
-      <div class="learn-extended-block">${visualLabHtml}</div>
+      <div class="learn-big-idea-block" id="hw_learn_idea">${concept}</div>
+      <div class="learn-extended-block" id="hw_learn_try">${visualLabHtml}</div>
 ${workbenchLaunchHtml}
 ${workbenchHtml}
-      <div class="learn-extended-block">${parentDrawerHtml}${powerUpHtml}</div>
+      <div class="learn-extended-block" id="hw_learn_quick">${parentDrawerHtml}${powerUpHtml}</div>
       <p class="tab-help-row learn-extended-block">${helpButton("💡 Need more help? / ¿Más ayuda?", { titleEn: "The big idea", titleEs: "La idea principal", en: keyEn, es: keyEs })}</p>
       <div class="tab-flow-nav">
         <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('learn')">
@@ -8811,7 +8824,7 @@ export function renderRefrigeratorSheet(config = {}, lessonId = "") {
       <div class="rf-header">
         <div class="rf-title-group">
           <span class="rf-kicker">EduWonderLab Mathematics · Grade 6 Core Program</span>
-          <h1 class="rf-title">Lesson ${esc(displayId)}: ${esc(title)}</h1>
+          <h2 class="rf-title">Lesson ${esc(displayId)}: ${esc(title)}</h2>
           <p class="rf-sub">🏠 <strong><span class="lang-en">Family Math Night Companion</span><span class="lang-es" lang="es">Hoja Familiar de Matemáticas</span></strong></p>
         </div>
         <div class="rf-qr-box">
@@ -9001,11 +9014,6 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "") {
           ${HOMEWORK_TABS.map(tabBtn).join("")}
           ${HOMEWORK_EXTRA_TABS.map(extraBtn).join("")}
         </nav>
-        <p class="homework-tab-extra-note">
-          <span aria-hidden="true">📸</span>
-          <span class="lang-en">The <strong>Photobooth</strong> is a camera you can open any time — photograph the notebook page, the scratchpad or the whiteboard, add a frame and stickers, then download or print it. It is optional, and the photo stays on this device.</span>
-          <span class="lang-es" lang="es">La <strong>cabina de fotos</strong> es una cámara que pueden abrir cuando quieran: fotografíen la página del cuaderno, el borrador o la pizarra, agreguen un marco y calcomanías, y descárguenla o imprímanla. Es opcional, y la foto se queda en este dispositivo.</span>
-        </p>
         <div class="homework-tab-track" aria-hidden="true"><span class="homework-tab-track-fill" id="hw_tab_track_fill"></span></div>
       </div>
       <div class="homework-tab-panels" id="hw_tab_panels">
@@ -9791,6 +9799,8 @@ function setLanguageMode(mode) {
   document.body.classList.add('lang-mode-' + mode);
   syncDocumentLanguage(mode);
   document.body.dataset.homeworkLanguage = mode;
+  var saveLabel = document.querySelector('.nsr-launcher-label');
+  if (saveLabel) saveLabel.textContent = mode === 'es' ? 'Guardar / Continuar' : 'Save / Resume';
   initHomeworkShareLinks();
   document.querySelectorAll('[data-aria-en]').forEach(function (el) { el.setAttribute('aria-label', mode === 'es' ? el.dataset.ariaEs : el.dataset.ariaEn); });
   document.querySelectorAll('.lang-toggle-btn').forEach(function(btn) {
@@ -9798,6 +9808,29 @@ function setLanguageMode(mode) {
     btn.classList.toggle('active', active);
     btn.setAttribute('aria-pressed', active ? 'true' : 'false');
   });
+}
+
+function openConceptZoom(btn) {
+  var wrap = btn && btn.closest('.concept-visual-wrap');
+  var svg = wrap && wrap.querySelector('svg');
+  if (!svg || typeof HTMLDialogElement === 'undefined') return;
+  var dlg = document.getElementById('hw_concept_zoom');
+  if (!dlg) {
+    dlg = document.createElement('dialog');
+    dlg.id = 'hw_concept_zoom';
+    dlg.className = 'concept-zoom-dialog';
+    dlg.setAttribute('aria-label', 'Enlarged picture / Imagen ampliada');
+    dlg.innerHTML = '<button type="button" class="concept-zoom-close" aria-label="Close / Cerrar">✕ Close / Cerrar</button><div class="concept-zoom-body"></div>';
+    dlg.addEventListener('click', function (e) {
+      if (e.target === dlg || e.target.closest('.concept-zoom-close')) dlg.close();
+    });
+    document.body.appendChild(dlg);
+  }
+  var copy = svg.cloneNode(true);
+  copy.removeAttribute('width');
+  copy.removeAttribute('height');
+  dlg.querySelector('.concept-zoom-body').replaceChildren(copy);
+  dlg.showModal();
 }
 
 function toggleCoOpMode() {
@@ -10283,6 +10316,8 @@ function initHomeworkPage() {
     var save = document.getElementById('nsr-root');
     if (!utilities || !save) return false;
     utilities.appendChild(save);
+    var saveLabel = save.querySelector('.nsr-launcher-label');
+    if (saveLabel && document.body.dataset.homeworkLanguage === 'es') saveLabel.textContent = 'Guardar / Continuar';
     syncHomeworkChromeHeights();
     return true;
   }
@@ -14666,6 +14701,30 @@ body.lang-mode-es .concept-title-es { display: inline; }
   text-align: left;
 }
 .concept-visual-caption .lang-en { display: block; }
+.concept-zoom-btn { display: none; }
+.concept-zoom-dialog {
+  width: min(100vw - 16px, 960px);
+  max-height: 92vh;
+  padding: 10px;
+  border: 3px solid var(--teal);
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+.concept-zoom-dialog::backdrop { background: rgba(15, 23, 42, .72); }
+.concept-zoom-close {
+  display: block;
+  min-height: 48px;
+  margin: 0 0 8px auto;
+  padding: 8px 18px;
+  border: 2px solid var(--teal);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--teal-ink);
+  font: 800 16px/1.2 inherit;
+  cursor: pointer;
+}
+.concept-zoom-body { max-height: calc(92vh - 90px); overflow: auto; -webkit-overflow-scrolling: touch; }
+.concept-zoom-body svg { display: block; width: 780px; max-width: none; height: auto; }
 
 /* Fallback picture (a lesson with no topic drawing): the two ends of the
    worked example, side by side, so the jump from setup to answer is visible
@@ -14844,6 +14903,21 @@ body.lang-mode-es .concept-title-es { display: inline; }
   .big-idea .guided-step { padding: 12px 14px; }
   .big-idea .guided-step .step-lead { font-size: 16px; }
   .big-idea .concept-visual-caption { font-size: 18px; }
+  .concept-zoom-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 48px;
+    margin-top: 12px;
+    border: 2px solid var(--teal);
+    border-radius: 12px;
+    background: var(--teal-light);
+    color: var(--teal-ink);
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+  }
   /* Give the drawing back the frame's side padding — on a 375px phone that is
      the difference between a 301px and a 341px picture. */
   .big-idea .concept-visual-wrap { padding: 14px 8px; }
@@ -15899,5 +15973,62 @@ html [hidden] { display: none !important; }
   body.print-problems-only .problem-header-row,
   body.print-problems-only .problem-stem { break-after:avoid; break-inside:avoid; }
   body.print-problems-only .problem-section::after { content:""; display:block; min-height:26mm; }
+}
+
+/* Phone tap targets and type: every tappable is at least 44px, and nothing
+   readable sits below 12px. Audited on a 390px viewport. */
+@media (max-width: 620px) {
+  .btn-read-aloud,
+  .btn-listen-concept,
+  .obj-term,
+  .hw-draw-clear,
+  .btn-listen-prob,
+  .sound-toggle-btn,
+  .powerup-choice-btn { min-height: 44px; }
+  .btn-read-aloud,
+  .btn-listen-concept { min-width: 44px; }
+  .homework-tab-bar .homework-tab-btn .tab-en,
+  .homework-tab-bar .homework-tab-btn .tab-es { font-size: 11px; }
+  .homework-tab-bar .tab-step { width: 20px; height: 20px; font-size: 12px; }
+  .lang-selector-title,
+  .powerup-tag { font-size: 12px; }
+}
+.done-problem-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; padding: 0; list-style: none; }
+.done-problem-list:empty { display: none; }
+.done-problem-chip {
+  min-width: 48px;
+  min-height: 48px;
+  padding: 6px 12px;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--navy);
+  font: 800 16px/1 inherit;
+  cursor: pointer;
+}
+.done-problem-chip.is-done { border-color: var(--teal); background: var(--teal-light); color: var(--teal-ink); }
+
+.learn-jump-row { display: none; }
+@media (max-width: 620px) {
+  .learn-jump-row { display: flex; gap: 8px; margin: 0 0 12px; overflow-x: auto; }
+  .learn-jump-row a {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 6px 14px;
+    border: 2px solid var(--teal);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--teal-ink);
+    font-size: 14px;
+    font-weight: 800;
+    text-decoration: none;
+  }
+}
+
+@media print {
+  .concept-zoom-btn,
+  .concept-zoom-dialog { display: none !important; }
 }
 `;

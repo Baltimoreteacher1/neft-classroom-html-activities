@@ -724,6 +724,8 @@ function setLanguageMode(mode) {
   document.body.classList.add('lang-mode-' + mode);
   syncDocumentLanguage(mode);
   document.body.dataset.homeworkLanguage = mode;
+  var saveLabel = document.querySelector('.nsr-launcher-label');
+  if (saveLabel) saveLabel.textContent = mode === 'es' ? 'Guardar / Continuar' : 'Save / Resume';
   initHomeworkShareLinks();
   document.querySelectorAll('[data-aria-en]').forEach(function (el) { el.setAttribute('aria-label', mode === 'es' ? el.dataset.ariaEs : el.dataset.ariaEn); });
   document.querySelectorAll('.lang-toggle-btn').forEach(function(btn) {
@@ -731,6 +733,29 @@ function setLanguageMode(mode) {
     btn.classList.toggle('active', active);
     btn.setAttribute('aria-pressed', active ? 'true' : 'false');
   });
+}
+
+function openConceptZoom(btn) {
+  var wrap = btn && btn.closest('.concept-visual-wrap');
+  var svg = wrap && wrap.querySelector('svg');
+  if (!svg || typeof HTMLDialogElement === 'undefined') return;
+  var dlg = document.getElementById('hw_concept_zoom');
+  if (!dlg) {
+    dlg = document.createElement('dialog');
+    dlg.id = 'hw_concept_zoom';
+    dlg.className = 'concept-zoom-dialog';
+    dlg.setAttribute('aria-label', 'Enlarged picture / Imagen ampliada');
+    dlg.innerHTML = '<button type="button" class="concept-zoom-close" aria-label="Close / Cerrar">✕ Close / Cerrar</button><div class="concept-zoom-body"></div>';
+    dlg.addEventListener('click', function (e) {
+      if (e.target === dlg || e.target.closest('.concept-zoom-close')) dlg.close();
+    });
+    document.body.appendChild(dlg);
+  }
+  var copy = svg.cloneNode(true);
+  copy.removeAttribute('width');
+  copy.removeAttribute('height');
+  dlg.querySelector('.concept-zoom-body').replaceChildren(copy);
+  dlg.showModal();
 }
 
 function toggleCoOpMode() {
@@ -1216,6 +1241,8 @@ function initHomeworkPage() {
     var save = document.getElementById('nsr-root');
     if (!utilities || !save) return false;
     utilities.appendChild(save);
+    var saveLabel = save.querySelector('.nsr-launcher-label');
+    if (saveLabel && document.body.dataset.homeworkLanguage === 'es') saveLabel.textContent = 'Guardar / Continuar';
     syncHomeworkChromeHeights();
     return true;
   }
@@ -3313,6 +3340,18 @@ function updateCelebrationTab() {
         '<br><button type="button" class="btn btn-secondary" onclick="switchHomeworkTab(&#39;check&#39;)"><span class="lang-en">Back to the problems</span><span class="lang-es" lang="es">Volver a los problemas</span></button>';
     }
   }
+  /* One chip per problem, so a family sees WHICH ones are open and can jump
+     straight to them instead of re-scanning the whole Check stop. */
+  const list = document.getElementById("hw_done_problems");
+  if (list) {
+    window.__hwDoneProblems = problems;
+    list.innerHTML = problems
+      .map((s, i) => {
+        const done = s.classList.contains("correct") || s.classList.contains("reviewed");
+        return '<li><button type="button" class="done-problem-chip' + (done ? " is-done" : "") + '" onclick="jumpToHomeworkProblem(' + i + ')" aria-label="' + (document.documentElement.lang === "es" ? "Problema " + (i + 1) + (done ? ", revisado" : ", sin revisar") : "Problem " + (i + 1) + (done ? ", checked" : ", not checked yet")) + '"><span aria-hidden="true">' + (i + 1) + (done ? " ✓" : "") + '</span></button></li>';
+      })
+      .join("");
+  }
   if (bPractice && correctCount >= practiceGoal) bPractice.classList.add("is-unlocked");
   try {
     if (bVocab && localStorage.getItem(STORAGE_KEY + "_vocab_won")) {
@@ -3326,6 +3365,13 @@ function updateCelebrationTab() {
   if (correctCount >= practiceGoal) {
     if (typeof triggerConfettiBurst === "function") triggerConfettiBurst(null, null, 60);
   }
+}
+
+function jumpToHomeworkProblem(i) {
+  const target = (window.__hwDoneProblems || [])[i];
+  if (!target) return;
+  switchHomeworkTab("check");
+  setTimeout(() => target.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
 }
 
 function updateCertStudentName(val) {
