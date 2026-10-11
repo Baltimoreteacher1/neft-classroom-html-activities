@@ -1666,7 +1666,7 @@ function conceptVisual(config) {
         label:
           "Understand Percent: scaling ratio 4 out of 10 to 40 out of 100 and showing 40 shaded squares on a hundredths grid",
         tone: "teal",
-        height: 440,
+        height: 458,
         title: "Understand Percent / ¿Qué es un porcentaje?",
         body: `
         <!-- Scaling Ratio Card -->
@@ -1693,12 +1693,13 @@ function conceptVisual(config) {
         <text x="468" y="268" text-anchor="middle" font-size="12" font-weight="700" fill="#12355b">Total: 100 squares = 100%</text>
 
         <!-- Key Rule Callout -->
-        <rect x="34" y="304" width="572" height="118" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
+        <rect x="34" y="304" width="572" height="136" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
         <text x="54" y="328" font-size="15" font-weight="800" fill="#0f766e">✔ KEY PERCENT RULE:</text>
-        <text x="54" y="351" font-size="14" font-weight="700" fill="#12355b">Percent means "per hundred". Scale any ratio until</text>
-        <text x="54" y="370" font-size="14" font-weight="700" fill="#12355b">the bottom number is 100.</text>
-        <text x="54" y="392" font-size="14" font-weight="700" fill="#12355b">100% is 1 whole. Percents can be more than 100%: 150% = 1.5 wholes.</text>
-        <text x="54" y="412" font-size="13" font-weight="700" fill="#0f766e">Equivalent ratio: 4/10 = 40/100 = 40%</text>`,
+        <text x="54" y="351" font-size="14" font-weight="700" fill="#12355b">Percent literally means "per hundred". Scale any ratio until</text>
+        <text x="54" y="369" font-size="14" font-weight="700" fill="#12355b">the bottom number is 100.</text>
+        <text x="54" y="391" font-size="14" font-weight="700" fill="#12355b">100% stands for 1 whole. Percents can also exceed 100%:</text>
+        <text x="54" y="409" font-size="14" font-weight="700" fill="#12355b">150% = 1.5 wholes.</text>
+        <text x="54" y="430" font-size="13" font-weight="700" fill="#0f766e">Equivalent ratio: 4/10 = 40/100 = 40%</text>`,
       })}</div>`,
       capEn:
         "Percent means per hundred. Multiply both parts of a ratio so the second number is 100.",
@@ -2062,7 +2063,7 @@ function conceptVisual(config) {
           <rect x="34" y="304" width="572" height="98" rx="14" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
           <text x="54" y="328" font-size="15" font-weight="800" fill="#047857">✔ CHECK YOUR WORK (INVERSE OPERATION):</text>
           <text x="54" y="352" font-size="14" font-weight="700" fill="#12355b">Multiply back: 15% of $40 = 0.15 × 40 = $6. ✓ Matches the tip!</text>
-          <text x="54" y="374" font-size="14" font-weight="700" fill="#12355b">Sanity check: 15% is less than 100%, so the whole MUST exceed the part ($40 &gt; $6).</text>
+          <text x="54" y="374" font-size="13" font-weight="700" fill="#12355b">Sanity check: 15% is less than 100%, so the whole MUST exceed the part ($40 &gt; $6).</text>
           <text x="54" y="392" font-size="13" font-weight="700" fill="#047857">Multiplying by 0.15 would give $0.90 — an obvious red flag for a total bill!</text>`,
         })}</div>`,
         capEn:
@@ -2983,6 +2984,8 @@ export function renderConceptExplainer(config) {
           })
           .join("")}
       </ol>
+      <details class="watch-for-drawer">
+      <summary class="watch-for-summary"><span class="lang-en">Watch for these (3)</span><span class="lang-es" lang="es">Ten en cuenta (3)</span></summary>
       <ul class="watch-for-list">
         ${watchForCues(config)
           .map(
@@ -2997,6 +3000,7 @@ export function renderConceptExplainer(config) {
           )
           .join("")}
       </ul>
+      </details>
       </div>
     </section>`;
 }
@@ -16026,6 +16030,20 @@ html [hidden] { display: none !important; }
     text-decoration: none;
   }
 }
+
+.watch-for-summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 8px 14px;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--teal-ink);
+  font-weight: 800;
+  cursor: pointer;
+}
+.watch-for-drawer[open] > .watch-for-summary { margin-bottom: 10px; }
 
 @media print {
   .concept-zoom-btn,
