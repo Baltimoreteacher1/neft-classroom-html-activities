@@ -24,9 +24,16 @@ const files = [
   "fact-trail.js",
   "trail-view.js",
   "trail-pictures.js",
+  "games.js",
+  "card-games.js",
+  "picture-game.js",
+  "game-pool.js",
+  "scenes.js",
+  "rewards.js",
   "styles.css",
   "tutor.css",
   "trail.css",
+  "games.css",
 ];
 for (const file of files) copyFileSync(join(source, file), join(destination, file));
 let html = readFileSync(join(source, "index.html"), "utf8")
@@ -48,11 +55,11 @@ const bundled = (Array.isArray(bundleResult) ? bundleResult : [bundleResult])
   .flatMap((result) => result.output)
   .find((output) => output.type === "chunk");
 if (!bundled) throw new Error("The standalone application bundle was not generated.");
-const css = ["styles.css", "tutor.css", "trail.css"]
+const css = ["styles.css", "tutor.css", "trail.css", "games.css"]
   .map((file) => readFileSync(join(source, file), "utf8"))
   .join("\n");
 html = html
-  .replace(/\s*<link rel="stylesheet" href="\.\/(?:styles|tutor|trail)\.css"\s*\/>/g, "")
+  .replace(/\s*<link rel="stylesheet" href="\.\/(?:styles|tutor|trail|games)\.css"\s*\/>/g, "")
   .replace(/\s*<script type="module" src="\.\/app\.js"><\/script>/, "")
   .replaceAll('href="./index.html"', 'href="./Math Fluency Lab.html"')
   .replace("</head>", `<style>${css}</style></head>`)
@@ -63,7 +70,7 @@ html = html
 writeFileSync(join(destination, "Math Fluency Lab.html"), html);
 writeFileSync(
   join(destination, "README.txt"),
-  `MATH FLUENCY LAB — GRADES 1–8\n\nDouble-click Math Fluency Lab.html to open the complete offline edition. No server or installation is needed. It includes all scripts and styles in one file.\n\nThe local learner profiles store progress in this browser. Use Download backup to carry progress between devices or between the offline file and the live site. Restore only a backup you recognize.\n\nPractice: 80 skills, interactive visual lessons, adaptive practice, a starting-point checkup, a personal daily ten, guided practice, an untimed 10-in-a-row streak, a mistake notebook, and fresh generated sets.\n\nTeachers: use Teacher studio to create a focused skill assignment link or print a five-day packet. Assignment links open the live site: https://eduwonderlab.com/math/fluency-lab/\n\nA browser may restrict local-file storage. A warning will appear if saving fails; download a backup before closing in that case. The browser-served edition is also available by double-clicking Open Math Fluency Lab.command on macOS.\n\nProgress stays local. This edition does not maintain a central roster or send results to teachers. Students can download their progress reports for classroom submission.\n`,
+  `MATH FLUENCY LAB — GRADES 1–8\n\nDouble-click Math Fluency Lab.html to open the complete offline edition. No server or installation is needed. It includes all scripts and styles in one file.\n\nThe local learner profiles store progress in this browser. Use Download backup to carry progress between devices or between the offline file and the live site. Restore only a backup you recognize.\n\nPractice: 80 skills, interactive visual lessons, adaptive practice, a starting-point checkup, a personal daily ten, guided practice, an untimed 10-in-a-row streak, a mistake notebook, a Game Room (Fact Match, Target Hunt, Mystery Picture) with a sticker book, and fresh generated sets.\n\nTeachers: use Teacher studio to create a focused skill assignment link or print a five-day packet. Assignment links open the live site: https://eduwonderlab.com/math/fluency-lab/\n\nA browser may restrict local-file storage. A warning will appear if saving fails; download a backup before closing in that case. The browser-served edition is also available by double-clicking Open Math Fluency Lab.command on macOS.\n\nProgress stays local. This edition does not maintain a central roster or send results to teachers. Students can download their progress reports for classroom submission.\n`,
 );
 const launcher = `#!/bin/zsh\nset -euo pipefail\nsite_dir="\${0:A:h}"\ncd "$site_dir"\npython_bin="$(command -v python3)"\nport="$($python_bin -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1]); s.close()')"\nurl="http://127.0.0.1:$port/"\n"$python_bin" -m http.server "$port" --bind 127.0.0.1 &\nserver_pid=$!\ntrap 'kill "$server_pid" 2>/dev/null || true' EXIT INT TERM\nfor _ in {1..30}; do\n  if /usr/bin/curl --silent --fail "$url" >/dev/null 2>&1; then\n    /usr/bin/open "$url"\n    echo "Math Fluency Lab is open. Keep this window open while using this edition."\n    wait "$server_pid"\n    exit 0\n  fi\n  sleep 0.1\ndone\necho "The local site could not start. Open Math Fluency Lab.html instead."\n`;
 writeFileSync(join(destination, "Open Math Fluency Lab.command"), launcher);

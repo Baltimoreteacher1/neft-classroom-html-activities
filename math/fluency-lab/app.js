@@ -15,6 +15,7 @@ import { PROFILE_NAMES, assignmentQueue, cleanProgress, decodeAssignment, downlo
 import { mountWorkbench } from "./workbench.js";
 import { createWorkbenchState } from "./workbench-state.js";
 import { mountTrail } from "./trail-view.js";
+import { mountGames } from "./games.js";
 
 const STORAGE_KEY = "ewl-fluency-progress-v1";
 const SETTINGS_KEY = "ewl-fluency-settings-v1";
@@ -25,6 +26,7 @@ const initialParams = new URLSearchParams(location.search);
 let activeProfile = profiles().active;
 let cleanupVisual = null;
 let cleanupTrail = null;
+let cleanupGames = null;
 let pendingRestore = null;
 
 const els = {
@@ -90,6 +92,7 @@ const els = {
   dashboard: document.querySelector("#personal-dashboard"),
   path: document.querySelector("#path-view"),
   notebook: document.querySelector("#notebook-view"),
+  games: document.querySelector("#games-view"),
   teacher: document.querySelector("#teacher-view"),
   insight: document.querySelector("#session-insight"),
   topic: document.querySelector("#problem-topic"),
@@ -211,6 +214,7 @@ function renderLibrary() {
   cleanupTrail = mountTrail(els.trail, {
     grade: state.grade,
     onShowSkills: () => els.morePractice.scrollIntoView({ behavior: "smooth", block: "start" }),
+    onPlayGame: (game) => { state.autoGame = game; openHubView("games"); },
   });
   els.gradeHeading.textContent = `More ${grade.label} practice`;
   els.gradePromise.textContent = grade.promise;
@@ -850,7 +854,8 @@ function applySettings() {
 
 function showArea(view) {
   state.view = view;
-  for (const [name, element] of [["library", els.library], ["workspace", els.workspace], ["path", els.path], ["notebook", els.notebook], ["teacher", els.teacher]]) element.hidden = name !== view;
+  for (const [name, element] of [["library", els.library], ["workspace", els.workspace], ["path", els.path], ["notebook", els.notebook], ["games", els.games], ["teacher", els.teacher]]) element.hidden = name !== view;
+  if (view !== "games") { cleanupGames?.(); cleanupGames = null; }
   document.body.classList.toggle("working-on-skill", view === "workspace");
   document.querySelectorAll("#hub-tabs button").forEach((button) => {
     if (button.dataset.view === view || (view === "workspace" && button.dataset.view === "library")) button.setAttribute("aria-current", "page");
@@ -876,8 +881,9 @@ function openHubView(view) {
   showArea(view);
   if (view === "path") renderPath();
   if (view === "notebook") renderNotebook();
+  if (view === "games") { cleanupGames?.(); cleanupGames = mountGames(els.games, { grade: state.grade, autostart: state.autoGame }); state.autoGame = null; }
   if (view === "teacher") mountTeacherStudio(els.teacher, { grade: state.grade, onLaunch: launchAssignment, onPrint: printHtml, announce });
-  document.title = `${view === 'teacher' ? 'Teacher studio' : view === 'path' ? 'My learning path' : 'Mistake notebook'} | Math Fluency Lab`;
+  document.title = `${{ teacher: 'Teacher studio', path: 'My learning path', games: 'Game Room' }[view] || 'Mistake notebook'} | Math Fluency Lab`;
   setUrl();
   document.querySelector(`#${view}-view`)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -1042,7 +1048,8 @@ els.gradeTabs.addEventListener("click", (event) => {
   state.grade = Number(button.dataset.grade);
   state.strand = "All";
   saveSettings();
-  renderLibrary();
+  if (state.view === "games") openHubView("games");
+  else renderLibrary();
 });
 
 els.strandFilters.addEventListener("click", (event) => {
@@ -1226,4 +1233,4 @@ const initialSkill = initialParams.get("skill");
 if (initialSkill) openSkill(initialSkill);
 renderProfiles();
 renderAssignmentBanner();
-if (initialParams.get("view") === "teacher") openHubView("teacher");
+if (["teacher", "games"].includes(initialParams.get("view"))) openHubView(initialParams.get("view"));

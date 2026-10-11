@@ -13,6 +13,7 @@ import {
   recordRound,
   saveTrail,
 } from "./fact-trail.js";
+import { celebrate, claimNewStickers, loadRewards, noteToday, rewardStrip, saveRewards, stickerToast, summarize } from "./rewards.js";
 import { handleModelInput, handleModelTap, interactivePicture, mathText, stepsBlock, trailPicture } from "./trail-pictures.js";
 
 const ROUND = 10;
@@ -33,7 +34,7 @@ const spoken = (text) =>
     .replace(/\^(\d+)/g, " to the power of $1")
     .replaceAll("√", "the square root of ");
 
-export function mountTrail(container, { grade, onShowSkills }) {
+export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
   const trail = TRAILS[grade];
   const words = BANDS[bandFor(grade)];
   const color = getGrade(grade).color;
@@ -102,6 +103,7 @@ export function mountTrail(container, { grade, onShowSkills }) {
           <span><b class="tr-gold">★ ${earned}</b> stars</span>
         </div>
       </header>
+      ${rewardStrip(grade)}
       <ol class="tr-map">
         ${trail.stations
           .map((entry, index) => {
@@ -321,6 +323,10 @@ export function mountTrail(container, { grade, onShowSkills }) {
   function renderDone() {
     const stars = recordRound(data, grade, round.entry.id, round.firstTry, ROUND);
     saveTrail(data);
+    const rewards = loadRewards();
+    noteToday(rewards);
+    const fresh = claimNewStickers(rewards, summarize(data, rewards));
+    saveRewards(rewards);
     const next = nextStation(data, grade);
     const practice = [...new Set(round.missed.map((item) => item.question.replace(" = ?", "")))];
     container.innerHTML = `
@@ -328,6 +334,7 @@ export function mountTrail(container, { grade, onShowSkills }) {
         ${starRow(stars, "big")}
         <h2>${stars === 3 ? "Amazing round!" : stars === 2 ? "Great round!" : "Good practice!"}</h2>
         <p class="tr-score">You got <b>${round.firstTry} of ${ROUND}</b> on the first try.</p>
+        ${stickerToast(fresh)}
         ${practice.length ? `<div class="tr-review"><p>Facts to practice again:</p><ul>${practice.map((fact) => `<li>${mathText(fact)}</li>`).join("")}</ul></div>` : `<p class="tr-perfect">Every fact on the first try.</p>`}
         <div class="tr-done-actions">
           <button type="button" class="tr-go" data-start="${round.entry.id}">${esc(words.again)}</button>
@@ -335,6 +342,7 @@ export function mountTrail(container, { grade, onShowSkills }) {
           <button type="button" class="tr-link" data-map>Back to the ${esc(words.trail.toLowerCase())}</button>
         </div>
       </div>`;
+    if (stars === 3 || fresh.length) celebrate(container);
     container.querySelector(".tr-done-actions .tr-go").focus();
   }
 
@@ -350,6 +358,7 @@ export function mountTrail(container, { grade, onShowSkills }) {
     if (target.dataset.station) renderCard(target.dataset.station);
     else if (target.dataset.card) renderCard(target.dataset.card);
     else if (target.dataset.start) startRound(target.dataset.start);
+    else if (target.dataset.dailyGame) onPlayGame?.(target.dataset.dailyGame);
     else if (target.hasAttribute("data-map")) renderMap();
     else if (target.hasAttribute("data-more-skills")) onShowSkills?.();
     else if (target.hasAttribute("data-peek") && round) {

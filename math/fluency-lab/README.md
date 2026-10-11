@@ -4,6 +4,8 @@ Grades 1–8, 80 focused skills. The curriculum hub links here under Featured Le
 
 Students can explore three checked visual steps, complete a starting-point checkup, practice with adaptive support, revisit a personal daily mix, and repair mistakes with fresh problems. Each set generates new problems; the smallest fact domains intentionally revisit a finite set of facts.
 
+The Game Room has three untimed games on the grade's own fact trail: Fact Match (flip cards to pair problems with answers), Target Hunt (find every problem that equals a target), and Mystery Picture (type answers to clear fog from a hidden picture). Trail rounds and games earn stars, stickers, a rank, and a practice-day streak; everything is stored on the device with the other progress. Games never show a model that computes an answer, and the fact chart fills only from first-try typed answers.
+
 Teacher studio creates shareable assignments for selected skills, a problem count, and a support level. The same link generates new questions each visit. Five-day printable packets optionally include a separate teacher answer key. Family progress views, CSV reports, and JSON backups work locally.
 
 ## Progress rules
@@ -24,6 +26,7 @@ No analytics, student names, central database, or network submission is added. S
 npm run dev -- --host 127.0.0.1
 npm run validate:fluency
 node tools/fluency-tutor.test.mjs
+node tools/fluency-games.test.mjs
 node tools/fluency-tutor-ui.test.mjs
 node tools/package-fluency-desktop.mjs '/dedicated/output/Math Fluency Lab'
 ```
