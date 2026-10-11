@@ -428,6 +428,60 @@
   renderNowNext();
   renderContinue(document.querySelector("[data-hub-now]"));
 
+  // Lesson finder: type a topic (English or Spanish) or a number like "4-1" and
+  // get links straight to the lesson. Reads the same pacing plan as Now / Next.
+  function plain(text) {
+    return text
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+  }
+  function setupLessonFinder() {
+    const box = document.querySelector("[data-hub-find]");
+    const plan = /** @type {any} */ (window).__NT_PACING_DAYS;
+    const lessons = plan?.lessons;
+    if (!box || !lessons) return;
+    const input = box.querySelector("input");
+    const status = box.querySelector(".hub-find__status");
+    const list = box.querySelector(".hub-find__results");
+    if (!input || !status || !list) return;
+    const index = Object.entries(lessons)
+      .filter(([id]) => !id.endsWith("-catchup"))
+      .map(([id, [title, titleEs]]) => ({
+        id,
+        title,
+        titleEs,
+        text: plain(`${id} ${title} ${titleEs}`),
+      }))
+      .sort((a, b) => a.id.localeCompare(b.id, "en", { numeric: true }));
+    box.hidden = false;
+    function search() {
+      const words = plain(input.value).split(/\s+/).filter(Boolean);
+      list.replaceChildren();
+      if (!words.length) {
+        status.textContent = "";
+        return;
+      }
+      const found = index.filter((item) => words.every((word) => item.text.includes(word)));
+      found.slice(0, 8).forEach((item) => {
+        const li = el("li");
+        const link = el("a", "hub-find__link");
+        link.href = `/lessons/${item.id}/`;
+        link.append(el("strong", "", `${item.id} `), `${item.title} `, es(`· ${item.titleEs}`));
+        li.appendChild(link);
+        list.appendChild(li);
+      });
+      status.textContent = found.length
+        ? `${found.length} ${found.length === 1 ? "lesson" : "lessons"} found${found.length > 8 ? ", showing 8" : ""}`
+        : "No lesson found. Try a shorter word.";
+    }
+    input.addEventListener("input", search);
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") list.querySelector("a")?.click();
+    });
+  }
+  setupLessonFinder();
+
   // Audience switcher: Student (default) / Family / Teacher. Student and Family
   // are remembered on this device; Teacher is the existing Teacher view, whose
   // PIN prompt and storage live in curriculum-enhancements.js — the Teacher
