@@ -13,6 +13,12 @@ const { ALL_STOPS, answerOf, cardText, gameProblems, huntBoard, stopsFor } = awa
 const { STICKERS, dailyGame, earnedIds, rankFor, streakOf } = await import(
   "../math/fluency-lab/rewards.js"
 );
+const { sortBoard } = await import("../math/fluency-lab/sort-game.js");
+const { cleanPlay } = await import("../math/fluency-lab/play-backup.js");
+const { factLabel, parseFactsReport, summarizeReports } = await import(
+  "../math/fluency-lab/class-snapshot.js"
+);
+const { validateAssignment } = await import("../math/fluency-lab/school-tools.js");
 const { SCENES, SCENE_IDS } = await import("../math/fluency-lab/scenes.js");
 const { ALL_SKILLS, generateProblem, seededRandom, validateAnswer } = await import(
   "../math/fluency-lab/problem-bank.js"
@@ -84,9 +90,83 @@ for (const skill of ALL_SKILLS) {
   }
 }
 
+for (const grade of [1, 3, 5, 7]) {
+  for (const count of [6, 8]) {
+    const { cards, line } = sortBoard(grade, ALL_STOPS, count);
+    const below = cards.filter((item) => answerOf(item) < line).length;
+    check(below >= 2 && count - below >= 2, `Answer Sort grade ${grade}: both bins need 2+ cards.`);
+  }
+}
+
+// Backup round trip: hostile input is cleaned, good input survives.
+const play = cleanPlay({
+  trail: {
+    stations: { "3:x6-7": { stars: 9, best: -2, rounds: 4 }, "../evil": { stars: 3 } },
+    facts: { "mul:6:7": { right: 2, missed: 1, last: true }, bad: { right: 1 } },
+  },
+  rewards: {
+    plays: 3,
+    best: { match: 3 },
+    scenes: ["rocket", "nope"],
+    strategies: { fact: 2, nope: 5 },
+    seen: ["first-game", "zzz"],
+    calm: true,
+  },
+});
 check(
-  SCENE_IDS.length === 4 && SCENE_IDS.every((id) => SCENES[id].svg && SCENES[id].title),
-  "Four titled scenes expected.",
+  Object.keys(play.trail.stations).join() === "3:x6-7" &&
+    play.trail.stations["3:x6-7"].stars === 3 &&
+    play.trail.stations["3:x6-7"].best === 0,
+  "cleanPlay keeps only valid, clamped station entries.",
+);
+check(Object.keys(play.trail.facts).join() === "mul:6:7", "cleanPlay keeps only valid fact keys.");
+check(
+  play.rewards.scenes.join() === "rocket" &&
+    play.rewards.strategies.fact === 2 &&
+    !play.rewards.strategies.nope &&
+    play.rewards.seen.join() === "first-game" &&
+    play.rewards.calm,
+  "cleanPlay cleans rewards.",
+);
+check(cleanPlay(null) === null, "cleanPlay(null) is null.");
+
+// Teacher side: assignments may name a game, and facts reports summarize without names.
+const gameOnly = validateAssignment({ version: 1, grade: 3, keys: [], game: "hunt", stop: "x6-7" });
+check(gameOnly?.game === "hunt" && gameOnly.stop === "x6-7", "A game-only assignment is valid.");
+check(
+  validateAssignment({ version: 1, grade: 3, keys: [], game: "nope" }) === null,
+  "An unknown game with no skills is not an assignment.",
+);
+check(
+  factLabel("mul:6:7") === "6 × 7" && factLabel("add:3:4") === "3 + 4",
+  "Fact labels read naturally.",
+);
+const reports = [1, 2, 3].map((n) =>
+  parseFactsReport({
+    app: "EduWonderLab Fluency Lab facts report",
+    version: 1,
+    grade: 3,
+    tricky: [
+      { key: "mul:6:7", right: 0, missed: n },
+      ...(n === 1 ? [{ key: "mul:8:9", right: 0, missed: 1 }] : []),
+    ],
+    known: 4,
+    strategies: { apart: n },
+  }),
+);
+const summary = summarizeReports(reports);
+check(
+  summary.students === 3 &&
+    summary.facts[0][0] === "mul:6:7" &&
+    summary.facts[0][1] === 3 &&
+    summary.strategies.apart === 6,
+  "Class snapshot counts learners per tricky fact.",
+);
+check(parseFactsReport({ app: "other" }) === null, "A non-report file is rejected.");
+
+check(
+  SCENE_IDS.length === 6 && SCENE_IDS.every((id) => SCENES[id].svg && SCENES[id].title),
+  "Six titled scenes expected.",
 );
 const blank = {
   rounds: 0,

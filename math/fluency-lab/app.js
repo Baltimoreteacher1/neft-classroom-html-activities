@@ -15,7 +15,10 @@ import { PROFILE_NAMES, assignmentQueue, cleanProgress, decodeAssignment, downlo
 import { mountWorkbench } from "./workbench.js";
 import { createWorkbenchState } from "./workbench-state.js";
 import { mountTrail } from "./trail-view.js";
-import { mountGames } from "./games.js";
+import { GAMES, mountGames } from "./games.js";
+import { factsReport, mountSnapshot } from "./class-snapshot.js";
+import { stopsFor } from "./game-pool.js";
+import { cleanPlay, exportPlay, importPlay } from "./play-backup.js";
 
 const STORAGE_KEY = "ewl-fluency-progress-v1";
 const SETTINGS_KEY = "ewl-fluency-settings-v1";
@@ -881,8 +884,8 @@ function openHubView(view) {
   showArea(view);
   if (view === "path") renderPath();
   if (view === "notebook") renderNotebook();
-  if (view === "games") { cleanupGames?.(); cleanupGames = mountGames(els.games, { grade: state.grade, autostart: state.autoGame }); state.autoGame = null; }
-  if (view === "teacher") mountTeacherStudio(els.teacher, { grade: state.grade, onLaunch: launchAssignment, onPrint: printHtml, announce });
+  if (view === "games") { cleanupGames?.(); cleanupGames = mountGames(els.games, { grade: state.grade, autostart: state.autoGame, assignedStop: state.autoStop }); state.autoGame = null; state.autoStop = null; }
+  if (view === "teacher") mountTeacherStudio(els.teacher, { grade: state.grade, onLaunch: launchAssignment, onPrint: printHtml, announce, games: GAMES, stopsFor, snapshot: mountSnapshot });
   document.title = `${{ teacher: 'Teacher studio', path: 'My learning path', games: 'Game Room' }[view] || 'Mistake notebook'} | Math Fluency Lab`;
   setUrl();
   document.querySelector(`#${view}-view`)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -941,14 +944,16 @@ function launchAssignment(assignment) {
   saveActiveSession(); state.session = null;
   state.assignment = assignment; state.grade = assignment.grade; saveSettings(); renderGradeTabs();
   document.documentElement.style.setProperty("--grade", getGrade(state.grade).color);
-  renderAssignmentBanner(); openPlanned("assignment", assignmentQueue(assignment));
+  renderAssignmentBanner();
+  if (assignment.keys.length) openPlanned("assignment", assignmentQueue(assignment));
+  else if (assignment.game) { state.autoGame = assignment.game; state.autoStop = assignment.stop; openHubView("games"); }
 }
 
 function renderAssignmentBanner() {
   const banner = document.querySelector("#assignment-banner"); banner.hidden = !state.assignment;
   if (!state.assignment) return;
   const assignment = state.assignment;
-  banner.innerHTML = `<div><p class="section-label">Your class practice</p><h2>${escapeHtml(assignment.label)}</h2><p>Grade ${assignment.grade} · ${assignment.count} fresh questions · ${assignment.keys.map((key) => escapeHtml(findSkill(key).title)).join(', ')}</p></div><button class="primary-action" data-start-assignment>Start class practice</button>`;
+  banner.innerHTML = `<div><p class="section-label">Your class practice</p><h2>${escapeHtml(assignment.label)}</h2><p>Grade ${assignment.grade}${assignment.keys.length ? ` · ${assignment.count} fresh questions · ${assignment.keys.map((key) => escapeHtml(findSkill(key).title)).join(', ')}` : ''}${assignment.game ? ` · Game: ${escapeHtml(GAMES.find((g) => g.id === assignment.game)?.name || '')}` : ''}</p></div>${assignment.keys.length ? '<button class="primary-action" data-start-assignment>Start class practice</button>' : ''}${assignment.game ? '<button class="primary-action" data-start-assignment-game>Play the assigned game</button>' : ''}`;
 }
 
 function saveActiveSession() {
@@ -1142,6 +1147,7 @@ document.addEventListener("click", (event) => {
   if (event.target.closest("[data-start-daily]")) openPlanned("daily", dailyPlan(state.tutor, state.grade));
   if (event.target.closest("[data-resume-practice]")) resumePractice();
   if (event.target.closest("[data-start-assignment]")) launchAssignment(state.assignment);
+  if (event.target.closest("[data-start-assignment-game]")) { state.autoGame = state.assignment.game; state.autoStop = state.assignment.stop; state.grade = state.assignment.grade; openHubView("games"); }
   if (event.target.closest("[data-print-report]")) printFamilyReport();
   const repair = event.target.closest("[data-repair-key]");
   if (repair) startRepair([repair.dataset.repairKey]);
@@ -1163,15 +1169,18 @@ document.querySelector("#add-profile").addEventListener("click", () => {
 });
 document.querySelector("#focus-mode").addEventListener("click", () => { state.settings.focus = !state.settings.focus; saveSettings(); applySettings(); });
 document.querySelector("#download-progress").addEventListener("click", () => {
-  saveActiveSession(); downloadFile(`fluency-${PROFILE_NAMES[activeProfile].toLowerCase()}-${localDay()}.json`, JSON.stringify(makeBackup(state), null, 2));
+  saveActiveSession(); downloadFile(`fluency-${PROFILE_NAMES[activeProfile].toLowerCase()}-${localDay()}.json`, JSON.stringify({ ...makeBackup(state), play: exportPlay() }, null, 2));
 });
+document.querySelector("#download-facts").addEventListener("click", () => downloadFile(`fluency-facts-grade-${state.grade}-${localDay()}.json`, JSON.stringify(factsReport(state.grade), null, 2)));
 document.querySelector("#download-report").addEventListener("click", () => downloadFile(`fluency-grade-${state.grade}-${localDay()}.csv`, progressReport(state.tutor, state.grade), "text/csv"));
 document.querySelector("#restore-progress").addEventListener("change", async (event) => {
   const file = event.target.files?.[0]; if (!file) return;
   const preview = document.querySelector("#restore-preview"); preview.hidden = false;
   try {
     if (file.size > 2000000) throw new Error("This file is too large for a Fluency Lab backup. Choose the downloaded progress JSON file.");
-    pendingRestore = parseBackup(JSON.parse(await file.text()));
+    const raw = JSON.parse(await file.text());
+    pendingRestore = parseBackup(raw);
+    pendingRestore.play = cleanPlay(raw.play);
     preview.innerHTML = `<p>Restore Grade ${pendingRestore.grade} progress with ${Object.keys(pendingRestore.tutor.records).length} practiced skills into <strong>${PROFILE_NAMES[activeProfile]}</strong>? A backup of this learner’s current progress will download first.</p><button class="primary-action" id="confirm-restore" type="button">Back up current progress and restore</button><button class="outline-action" id="cancel-restore" type="button">Cancel</button>`;
   } catch (error) { pendingRestore = null; preview.textContent = error.message || "The backup could not be read. Your progress has not changed."; }
   event.target.value = "";
@@ -1179,10 +1188,10 @@ document.querySelector("#restore-progress").addEventListener("change", async (ev
 document.querySelector("#restore-preview").addEventListener("click", (event) => {
   if (event.target.id === "cancel-restore") { pendingRestore = null; event.currentTarget.hidden = true; }
   if (event.target.id === "confirm-restore" && pendingRestore) {
-    downloadFile(`fluency-before-restore-${localDay()}.json`, JSON.stringify(makeBackup(state), null, 2));
+    downloadFile(`fluency-before-restore-${localDay()}.json`, JSON.stringify({ ...makeBackup(state), play: exportPlay() }, null, 2));
     state.session = null; state.item = null;
     state.progress = pendingRestore.progress; state.tutor = pendingRestore.tutor; state.settings = pendingRestore.settings; state.grade = pendingRestore.grade;
-    writeLocal(profileKey(SESSION_KEY, activeProfile), null); saveProgress(); saveSettings(); applySettings(); renderLibrary();
+    writeLocal(profileKey(SESSION_KEY, activeProfile), null); importPlay(pendingRestore.play); saveProgress(); saveSettings(); applySettings(); renderLibrary();
     pendingRestore = null; event.currentTarget.hidden = true; announce("Progress restored into the current learner profile.");
   }
 });

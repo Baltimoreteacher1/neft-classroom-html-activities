@@ -1,15 +1,16 @@
 // Sticker book, ranks, practice-day streak, and a small celebration. Local to this learner; nothing is sent anywhere.
 import { TRAILS, factStatus, loadTrail } from "./fact-trail.js";
+import { SCENE_IDS } from "./scenes.js";
+import { STRATEGIES } from "./strategies.js";
 import { localDay } from "./tutor-engine.js";
 import { profileKey, profiles, readLocal, writeLocal } from "./school-tools.js";
 
 const KEY = "ewl-fluency-rewards-v1";
 const key = () => profileKey(KEY, profiles().active);
 const DAY_MS = 86400000;
-const SCENES = ["rocket", "reef", "house", "dino"];
 
-const GAME_IDS = ["match", "hunt", "picture"];
-const GAME_NAMES = { match: "Fact Match", hunt: "Target Hunt", picture: "Mystery Picture" };
+const GAME_IDS = ["match", "hunt", "sort", "picture"];
+const GAME_NAMES = { match: "Fact Match", hunt: "Target Hunt", sort: "Answer Sort", picture: "Mystery Picture" };
 
 // One suggested game per day, the same all day for everyone on this device.
 export const dailyGame = (time = Date.now()) => GAME_IDS[Math.floor(time / DAY_MS) % GAME_IDS.length];
@@ -102,11 +103,25 @@ export const STICKERS = [
     test: (s) => s.best.picture >= 3,
   },
   {
-    id: "scenes-4",
+    id: "gallery",
     icon: "🎨",
     name: "Gallery Keeper",
-    hint: "Reveal all four Mystery Pictures",
-    test: (s) => s.scenes >= 4,
+    hint: "Reveal every Mystery Picture",
+    test: (s) => s.scenes >= SCENE_IDS.length,
+  },
+  {
+    id: "sort-3",
+    icon: "🗂️",
+    name: "Super Sorter",
+    hint: "Win Answer Sort with 3 stars",
+    test: (s) => s.best.sort >= 3,
+  },
+  {
+    id: "thinker",
+    icon: "💭",
+    name: "Strategy Thinker",
+    hint: "Tell how you solved something 5 times",
+    test: (s) => s.strategyTotal >= 5,
   },
   {
     id: "days-3",
@@ -124,22 +139,31 @@ export const STICKERS = [
   },
 ];
 
-export function loadRewards() {
-  const saved = readLocal(key(), {});
-  const num = (value) => (Number.isFinite(value) ? value : 0);
+// Accepts anything (storage or a restored backup) and returns a well-formed rewards record.
+export function cleanRewards(saved = {}) {
+  const num = (value) => (Number.isFinite(value) && value >= 0 ? Math.min(Math.floor(value), 100000) : 0);
+  const best = saved.best || {};
+  const strategies = {};
+  for (const id of Object.keys(STRATEGIES)) if (num(saved.strategies?.[id])) strategies[id] = num(saved.strategies[id]);
   return {
     days: Array.isArray(saved.days)
       ? saved.days.filter((day) => /^\d{4}-\d{2}-\d{2}$/.test(day)).slice(-60)
       : [],
     plays: num(saved.plays),
-    best: {
-      match: num(saved.best?.match),
-      hunt: num(saved.best?.hunt),
-      picture: num(saved.best?.picture),
-    },
-    scenes: Array.isArray(saved.scenes) ? saved.scenes.filter((id) => SCENES.includes(id)) : [],
-    seen: Array.isArray(saved.seen) ? saved.seen : [],
+    best: { match: num(best.match), hunt: num(best.hunt), sort: num(best.sort), picture: num(best.picture) },
+    scenes: Array.isArray(saved.scenes) ? saved.scenes.filter((id) => SCENE_IDS.includes(id)) : [],
+    seen: Array.isArray(saved.seen) ? saved.seen.filter((id) => STICKERS.some((sticker) => sticker.id === id)) : [],
+    strategies,
+    calm: saved.calm === true,
   };
+}
+
+export const loadRewards = () => cleanRewards(readLocal(key(), {}));
+
+export function recordStrategy(data, id) {
+  if (!STRATEGIES[id]) return;
+  noteToday(data);
+  data.strategies[id] = (data.strategies[id] || 0) + 1;
 }
 
 export const saveRewards = (data) => writeLocal(key(), data);
@@ -182,6 +206,7 @@ export function summarize(trail = loadTrail(), data = loadRewards()) {
     plays: data.plays,
     best: data.best,
     scenes: data.scenes.length,
+    strategyTotal: Object.values(data.strategies).reduce((sum, count) => sum + count, 0),
     streak: streakOf(data.days),
   };
 }

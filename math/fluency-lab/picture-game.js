@@ -3,10 +3,13 @@
 import { validateAnswer } from "./problem-bank.js";
 import { SCENES } from "./scenes.js";
 import { gameProblems } from "./game-pool.js";
+import { canSpeak, speak } from "./speech.js";
 import { mathText, stepsBlock } from "./trail-pictures.js";
 
 const TILES = 12;
-const pictureStars = (firstTry) => (firstTry >= 11 ? 3 : firstTry >= 8 ? 2 : 1);
+const pictureStars = (firstTry, total) => (firstTry >= total - 1 ? 3 : firstTry >= total - 4 ? 2 : 1);
+// Calm mode starts with half the fog already cleared, in a checkerboard.
+const CALM_START = [0, 2, 5, 7, 8, 10];
 const esc = (value) =>
   String(value)
     .replaceAll("&", "&amp;")
@@ -14,10 +17,11 @@ const esc = (value) =>
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
 
-export function playPicture(host, { grade, stop, scene, finish, onFact }) {
+export function playPicture(host, { grade, stop, scene, calm, finish, onFact }) {
   const art = SCENES[scene];
   const items = gameProblems(grade, stop, TILES);
-  const cleared = new Set();
+  const cleared = new Set(calm ? CALM_START : []);
+  const total = TILES - cleared.size;
   const firstTry = new Set();
   const missedItems = new Map();
   let active = null;
@@ -37,6 +41,7 @@ export function playPicture(host, { grade, stop, scene, finish, onFact }) {
     const steps = item.steps || [];
     return `<form class="gm-ask-form" autocomplete="off">
       <p class="gm-q" id="gm-q">${mathText(item.question)}</p>
+      ${canSpeak() ? `<button type="button" class="tr-tool" data-gm-read>Read to me</button>` : ""}
       <div class="tr-answer">
         <label class="tr-sr" for="gm-input">Your answer</label>
         <input id="gm-input" class="tr-input" inputmode="${grade >= 6 ? "text" : "numeric"}" spellcheck="false" aria-describedby="gm-q" />
@@ -53,8 +58,8 @@ export function playPicture(host, { grade, stop, scene, finish, onFact }) {
     host.innerHTML = `<div class="gm-play gm-picture">
       <div class="gm-bar"><button type="button" class="tr-back" data-gm-menu>← Games</button><b>Mystery Picture</b><span>${cleared.size} of ${TILES} cleared</span></div>
       <div class="gm-stage">
-        <div class="gm-scene" role="img" aria-label="${cleared.size === TILES ? art.title : "A hidden picture covered by fog tiles"}">
-          <svg viewBox="0 0 120 90" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${art.svg}</svg>
+        <div class="gm-scene">
+          <svg viewBox="0 0 120 90" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${cleared.size === TILES ? art.title : "A hidden picture covered by fog tiles"}">${art.svg}</svg>
           <div class="gm-fog">${Array.from({ length: TILES }, (_, i) => fog(i)).join("")}</div>
         </div>
         <div class="gm-side">${panel()}</div>
@@ -81,7 +86,7 @@ export function playPicture(host, { grade, stop, scene, finish, onFact }) {
           () =>
             finish({
               game: "picture",
-              stars: pictureStars(firstTry.size),
+              stars: pictureStars(firstTry.size, total),
               scene,
               missed: [...missedItems.values()],
               line: art.title,
@@ -115,7 +120,8 @@ export function playPicture(host, { grade, stop, scene, finish, onFact }) {
       render();
       return;
     }
-    if (event.target.closest("[data-gm-peek]")) {
+    if (event.target.closest("[data-gm-read]")) speak(items[active].question);
+    else if (event.target.closest("[data-gm-peek]")) {
       peek = 1;
       const typed = host.querySelector("#gm-input").value;
       render();

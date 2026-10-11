@@ -66,6 +66,28 @@ export const SCENES = {
       <g><path d="M24 62c0-14 12-20 24-18 6-9 16-8 20-2 3 4 1 10-4 11-4 1-6 5-4 9l6 6H54l-4-6c-6 4-14 4-20 0l-4 6h-6z" fill="#3fa356"/><circle cx="64" cy="46" r="1.8" fill="#13233a"/><path d="M34 46l4-6 4 6M44 44l4-6 4 6" fill="#2a7d41"/><path d="M60 52q4 2 8 0" stroke="#13233a" stroke-width="1.4" fill="none" stroke-linecap="round"/></g>
       <g fill="#2a7d41"><path d="M8 68v-14m0 6l-5-5m5 3l5-6" stroke="#2a7d41" stroke-width="3" stroke-linecap="round" fill="none"/></g>`,
   },
+  city: {
+    title: "Skyline at Night",
+    svg: `<defs><linearGradient id="sc-night" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b1f4b"/><stop offset="1" stop-color="#7a4a9c"/></linearGradient></defs>
+      <rect width="120" height="90" fill="url(#sc-night)"/>
+      <circle cx="96" cy="18" r="9" fill="#fff6c9"/><circle cx="101" cy="15" r="8" fill="#2a2d63"/>
+      ${[[12, 10], [36, 22], [58, 8], [78, 30], [24, 38], [110, 40]].map(([x, y]) => star(x, y)).join("")}
+      <rect x="6" y="46" width="22" height="44" fill="#2d3561"/><rect x="32" y="30" width="20" height="60" fill="#3a4276"/><rect x="56" y="52" width="26" height="38" fill="#2d3561"/><rect x="86" y="38" width="22" height="52" fill="#3a4276"/>
+      <path d="M92 38l5-9 5 9z" fill="#3a4276"/>
+      ${[[10, 52], [18, 52], [10, 62], [18, 62], [10, 72], [36, 36], [44, 36], [36, 48], [44, 60], [36, 72], [60, 58], [72, 58], [66, 70], [90, 44], [100, 44], [90, 58], [100, 70]].map(([x, y]) => `<rect x="${x}" y="${y}" width="5" height="6" fill="#ffd966"/>`).join("")}
+      <rect y="84" width="120" height="6" fill="#1a1d3f"/>`,
+  },
+  camp: {
+    title: "Camping in the Mountains",
+    svg: `<defs><linearGradient id="sc-dusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a76"/><stop offset="1" stop-color="#ffd9a0"/></linearGradient></defs>
+      <rect width="120" height="90" fill="url(#sc-dusk)"/>
+      <circle cx="26" cy="30" r="11" fill="#fff0b3"/>
+      <path d="M0 62l30-34 24 26 22-30 44 38v28H0z" fill="#5d6fa8"/><path d="M26 34l4-6 5 6-5 3zM74 24l5-6 6 7-6 3z" fill="#fff"/>
+      <path d="M0 70q30-10 60 0t60-4v24H0z" fill="#3f8f54"/>
+      <path d="M44 84l16-30 16 30z" fill="#e8574b"/><path d="M60 54l-8 30h16z" fill="#c23f35"/><path d="M60 84l-5-14h10z" fill="#3b2a24"/>
+      <g transform="translate(94 78)"><path d="M-6 0l6-12 6 12z" fill="#ff7a1a"/><path d="M-3 0l3-7 3 7z" fill="#ffd23f"/><rect x="-8" y="0" width="16" height="3" rx="1.5" fill="#6b4a33"/></g>
+      <path d="M8 84v-20m0 8l-6-6m6 4l6-8" stroke="#2a6f3f" stroke-width="3" stroke-linecap="round" fill="none"/>`,
+  },
 };
 
 export const SCENE_IDS = Object.keys(SCENES);

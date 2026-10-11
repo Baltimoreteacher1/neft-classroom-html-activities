@@ -13,7 +13,9 @@ import {
   recordRound,
   saveTrail,
 } from "./fact-trail.js";
-import { celebrate, claimNewStickers, loadRewards, noteToday, rewardStrip, saveRewards, stickerToast, summarize } from "./rewards.js";
+import { celebrate, claimNewStickers, loadRewards, noteToday, recordStrategy, rewardStrip, saveRewards, stickerToast, summarize } from "./rewards.js";
+import { STRATEGIES, TEACH_BACK, tipOfDay } from "./strategies.js";
+import { canSpeak, speak } from "./speech.js";
 import { handleModelInput, handleModelTap, interactivePicture, mathText, stepsBlock, trailPicture } from "./trail-pictures.js";
 
 const ROUND = 10;
@@ -25,15 +27,6 @@ const esc = (value) =>
     .replaceAll('"', "&quot;");
 const starRow = (count, size = "") =>
   `<span class="tr-stars ${size}" aria-label="${count} of 3 stars">${[1, 2, 3].map((n) => `<span class="tr-star${n <= count ? " on" : ""}" aria-hidden="true">★</span>`).join("")}</span>`;
-const spoken = (text) =>
-  text
-    .replaceAll("×", " times ")
-    .replaceAll("÷", " divided by ")
-    .replaceAll("−", " minus ")
-    .replaceAll("= ?", " equals what?")
-    .replace(/\^(\d+)/g, " to the power of $1")
-    .replaceAll("√", "the square root of ");
-
 export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
   const trail = TRAILS[grade];
   const words = BANDS[bandFor(grade)];
@@ -104,6 +97,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
         </div>
       </header>
       ${rewardStrip(grade)}
+      ${tipCard()}
       <ol class="tr-map">
         ${trail.stations
           .map((entry, index) => {
@@ -122,6 +116,16 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
       </ol>
       ${trail.chart ? renderChart() : ""}
       <p class="tr-more"><button type="button" class="tr-link" data-more-skills>More Grade ${grade} practice</button></p>`;
+  }
+
+  // One way of thinking per day, matched to the grade band. A tip is a strategy, never a worked answer.
+  function tipCard() {
+    const tip = tipOfDay(bandFor(grade));
+    return `<aside class="tr-tip-card" aria-label="Strategy of the day"><b>Strategy of the day: ${esc(tip.title)}</b><span>${esc(tip.tip)}</span></aside>`;
+  }
+
+  function teachBack() {
+    return `<section class="tr-teachback" aria-labelledby="tb-title"><h3 id="tb-title">How did you think about it?</h3><div>${TEACH_BACK[bandFor(grade)].map((id) => `<button type="button" data-strategy="${id}"><span aria-hidden="true">${STRATEGIES[id].icon}</span> ${esc(STRATEGIES[id].label)}</button>`).join("")}</div></section>`;
   }
 
   function renderChart() {
@@ -262,7 +266,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
             ${keypad}
             <div class="tr-tools">
               ${round.miss ? "" : `<button type="button" class="tr-tool" data-peek>Show a step</button>`}
-              ${"speechSynthesis" in window ? `<button type="button" class="tr-tool" data-read>${esc(words.read)}</button>` : ""}
+              ${canSpeak() ? `<button type="button" class="tr-tool" data-read>${esc(words.read)}</button>` : ""}
             </div>
             ${round.miss ? "" : `<div id="tr-peek-slot"></div>`}
           </div>
@@ -335,6 +339,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
         <h2>${stars === 3 ? "Amazing round!" : stars === 2 ? "Great round!" : "Good practice!"}</h2>
         <p class="tr-score">You got <b>${round.firstTry} of ${ROUND}</b> on the first try.</p>
         ${stickerToast(fresh)}
+        ${teachBack()}
         ${practice.length ? `<div class="tr-review"><p>Facts to practice again:</p><ul>${practice.map((fact) => `<li>${mathText(fact)}</li>`).join("")}</ul></div>` : `<p class="tr-perfect">Every fact on the first try.</p>`}
         <div class="tr-done-actions">
           <button type="button" class="tr-go" data-start="${round.entry.id}">${esc(words.again)}</button>
@@ -358,7 +363,13 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
     if (target.dataset.station) renderCard(target.dataset.station);
     else if (target.dataset.card) renderCard(target.dataset.card);
     else if (target.dataset.start) startRound(target.dataset.start);
-    else if (target.dataset.dailyGame) onPlayGame?.(target.dataset.dailyGame);
+    else if (target.dataset.strategy) {
+      const rewards = loadRewards();
+      recordStrategy(rewards, target.dataset.strategy);
+      const fresh = claimNewStickers(rewards, summarize(data, rewards));
+      saveRewards(rewards);
+      container.querySelector(".tr-teachback").innerHTML = `<p>Thanks for sharing: ${esc(STRATEGIES[target.dataset.strategy].label.toLowerCase())}.</p>${stickerToast(fresh)}`;
+    } else if (target.dataset.dailyGame) onPlayGame?.(target.dataset.dailyGame);
     else if (target.hasAttribute("data-map")) renderMap();
     else if (target.hasAttribute("data-more-skills")) onShowSkills?.();
     else if (target.hasAttribute("data-peek") && round) {
@@ -370,10 +381,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
       round.peek += 1;
       renderPeek();
     } else if (target.hasAttribute("data-read") && round) {
-      speechSynthesis.cancel();
-      speechSynthesis.speak(
-        new SpeechSynthesisUtterance(spoken(round.queue[round.index].item.question)),
-      );
+      speak(round.queue[round.index].item.question);
     } else if (target.dataset.key) {
       const input = container.querySelector("#tr-input");
       const key = target.dataset.key;

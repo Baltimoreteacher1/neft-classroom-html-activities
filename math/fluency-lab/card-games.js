@@ -1,13 +1,15 @@
 // Fact Match and Target Hunt. Both are untimed: the only clock is the learner's own thinking.
 import { answerOf, cardText, gameProblems, huntBoard, shuffle } from "./game-pool.js";
+import { canSpeak, speak } from "./speech.js";
 import { mathText } from "./trail-pictures.js";
 
 const pairStars = (tries) => (tries <= 8 ? 3 : tries <= 12 ? 2 : 1);
 const huntStars = (wrong) => (wrong <= 2 ? 3 : wrong <= 5 ? 2 : 1);
 
 // ---------- Fact Match: flip a problem card, then the card that holds its answer ----------
-export function playMatch(host, { grade, stop, finish }) {
-  const items = gameProblems(grade, stop, 6, { distinctAnswers: true });
+export function playMatch(host, { grade, stop, calm, finish }) {
+  const pairs = calm ? 4 : 6;
+  const items = gameProblems(grade, stop, pairs, { distinctAnswers: true });
   const cards = shuffle([
     ...items.map((item, id) => ({ id, side: "q", text: cardText(item) })),
     ...items.map((item, id) => ({ id, side: "a", text: String(answerOf(item)) })),
@@ -22,9 +24,9 @@ export function playMatch(host, { grade, stop, finish }) {
 
   function render(focusIndex) {
     host.innerHTML = `<div class="gm-play gm-match">
-      <div class="gm-bar"><button type="button" class="tr-back" data-gm-menu>← Games</button><b>Fact Match</b><span>${matched.size} of 6 pairs · ${tries} tries</span></div>
+      <div class="gm-bar"><button type="button" class="tr-back" data-gm-menu>← Games</button><b>Fact Match</b><span>${matched.size} of ${pairs} pairs · ${tries} tries</span></div>
       <p class="gm-note" role="status" aria-live="polite">${note}</p>
-      <div class="gm-cards cols-4">${cards
+      <div class="gm-cards cols-4" role="group" aria-label="Fact Match cards">${cards
         .map((card, i) => {
           const faceUp = open.includes(i) || matched.has(card.id);
           const label = faceUp
@@ -58,7 +60,7 @@ export function playMatch(host, { grade, stop, finish }) {
               game: "match",
               stars: pairStars(tries),
               missed: [...missedIds].map((id) => items[id]),
-              line: `${tries} tries for 6 pairs`,
+              line: `${tries} tries for ${pairs} pairs`,
             }),
           900,
         );
@@ -90,7 +92,7 @@ export function playMatch(host, { grade, stop, finish }) {
 // ---------- Target Hunt: tap every problem whose answer is the target number ----------
 const HUNT_ROUNDS = 3;
 
-export function playHunt(host, { grade, stop, finish }) {
+export function playHunt(host, { grade, stop, calm, finish }) {
   let round = 0;
   let board = null;
   let found = new Set();
@@ -100,7 +102,7 @@ export function playHunt(host, { grade, stop, finish }) {
   let timer = null;
 
   function start() {
-    board = huntBoard(grade, stop);
+    board = calm ? huntBoard(grade, stop, { size: 9, hits: 3 }) : huntBoard(grade, stop);
     found = new Set();
     tried = new Set();
     render();
@@ -111,9 +113,9 @@ export function playHunt(host, { grade, stop, finish }) {
   function render(focusIndex) {
     host.innerHTML = `<div class="gm-play gm-hunt">
       <div class="gm-bar"><button type="button" class="tr-back" data-gm-menu>← Games</button><b>Target Hunt</b><span>Round ${round + 1} of ${HUNT_ROUNDS}</span></div>
-      <div class="gm-target"><span>Find every problem that equals</span><strong>${board.target}</strong><em>${found.size} of ${winners()} found</em></div>
+      <div class="gm-target"><span>Find every problem that equals</span><strong>${board.target}</strong><em>${found.size} of ${winners()} found</em>${canSpeak() ? `<button type="button" class="tr-tool" data-gm-read>Read to me</button>` : ""}</div>
       <p class="gm-note" role="status" aria-live="polite">${tried.size && !found.size ? "Not that one. Work it out and try another." : "Tap a card when you know its answer is the target."}</p>
-      <div class="gm-cards cols-4">${board.cards
+      <div class="gm-cards ${calm ? "cols-3" : "cols-4"}" role="group" aria-label="Problem cards">${board.cards
         .map((item, i) => {
           const state = found.has(i) ? " done" : tried.has(i) ? " nope" : "";
           return `<button type="button" class="gm-card q${state}" data-i="${i}" ${found.has(i) ? "disabled" : ""} aria-label="${cardText(item)}${found.has(i) ? ", found" : tried.has(i) ? ", not the target" : ""}"><span>${mathText(cardText(item))}</span></button>`;
@@ -158,6 +160,7 @@ export function playHunt(host, { grade, stop, finish }) {
 
   host.onclick = (event) => {
     if (event.target.closest("[data-gm-next]")) return start();
+    if (event.target.closest("[data-gm-read]")) return speak(`Find every problem that equals ${board.target}`);
     const card = event.target.closest("[data-i]");
     if (card) pick(Number(card.dataset.i));
   };
