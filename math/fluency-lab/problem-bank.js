@@ -43,6 +43,21 @@ function problem(question, answer, options = {}) {
   };
 }
 
+const listed = (values, cap = 10) => (values.length > cap ? `${values.slice(0, cap).join(", ")}, …` : values.join(", "));
+const factorsOf = (n) => Array.from({ length: n }, (_, i) => i + 1).filter((f) => n % f === 0);
+
+// GCF/LCM steps build the two lists first and name the answer last.
+function gcfLcmSteps(find, a, b, answer) {
+  if (find === "gcf") {
+    const [fa, fb] = [factorsOf(a), factorsOf(b)];
+    const shared = fa.filter((f) => fb.includes(f));
+    return [`Factors of ${a}: ${listed(fa)}`, `Factors of ${b}: ${listed(fb)}`, `Shared factors: ${listed(shared)}`, `The greatest shared factor is ${answer}.`];
+  }
+  const [small, big] = a < b ? [a, b] : [b, a];
+  const multiples = Array.from({ length: answer / big }, (_, i) => big * (i + 1));
+  return [`Multiples of ${big}: ${listed(multiples, 6)}`, `Does ${small} divide each one? Check from the start.`, `The first multiple of ${big} that ${small} divides is ${answer}.`];
+}
+
 const FACT_SYMBOL = { add: "+", sub: "−", mul: "×", div: "÷" };
 
 // Nonzero jumps that land on a friendly number: a leading-place chunk, or the next ten for small steps.
@@ -80,8 +95,8 @@ function factSteps(op, a, b, answer, strategy) {
     return friendlyJumps(a, b, -1).map((jump) => `${fmt(at)} − ${fmt(-jump)} = ${fmt((at += jump))}`);
   }
   if (op === "mul") {
-    if (small === 0) return [`Times 0 is always 0.`, `${a} × ${b} = 0`];
-    if (small === 1) return [`1 group of ${big} is ${big}.`, `${a} × ${b} = ${big}`];
+    if (small === 0) return [`Zero groups, or nothing in each group, leaves nothing.`, `${a} × ${b} = 0`];
+    if (small === 1) return [`Multiplying by 1 keeps the other number the same.`, `${a} × ${b} = ${big}`];
     const zerosA = String(a).match(/0*$/)[0].length;
     const zerosB = String(b).match(/0*$/)[0].length;
     const basicA = a / 10 ** zerosA;
@@ -299,7 +314,7 @@ const generators = {
     return problem(`${known} + ? = ${target}`, answer, {
       hint: `Picture a ${target}-frame. How many spaces are still empty?`,
       explanation: `${known} needs ${answer} more to make ${target}.`,
-      steps: [`${known} + ? = ${target}`, `Count the empty spaces: ${answer}`, `${known} + ${answer} = ${target}`],
+      steps: [`${known} + ? = ${target}`, `Count the empty spaces in the ten-frame.`, `${known} + ${answer} = ${target}`],
       model: target <= 20 ? { type: "counters", kind: "missing", total: target <= 10 ? 10 : 20, filled: known, target, shown: known, caption: `${known} counters. How many more make ${target}?` } : null,
     });
   },
@@ -548,6 +563,7 @@ const generators = {
       hint: find === "gcf" ? "List factor pairs and find the greatest shared factor." : "List multiples until both lists meet.",
       explanation: `The ${find.toUpperCase()} of ${a} and ${b} is ${answer}.`,
       model: { type: "lists", a, b, find },
+      steps: gcfLcmSteps(find, a, b, answer),
     });
   },
 
@@ -622,7 +638,7 @@ const generators = {
       explanation: `${a} ${symbol} ${b < 0 ? `(${b})` : b} = ${answer}.`,
       steps:
         op === "mul" || op === "div"
-          ? [`Size: ${Math.abs(a)} ${symbol} ${Math.abs(b)} = ${Math.abs(answer)}`, `Sign: ${(a < 0) === (b < 0) || answer === 0 ? "same signs, so positive" : "different signs, so negative"}`, `${a} ${symbol} ${b < 0 ? `(${b})` : b} = ${answer}`]
+          ? [`Size: multiply ${Math.abs(a)} ${symbol} ${Math.abs(b)} without the signs`, `Sign: ${(a < 0) === (b < 0) || answer === 0 ? "same signs, so positive" : "different signs, so negative"}`, `${a} ${symbol} ${b < 0 ? `(${b})` : b} = ${answer}`]
           : op === "sub"
             ? [`Subtracting ${b} is adding ${-b}.`, `${a} + ${-b < 0 ? `(${-b})` : -b} = ${answer}`]
             : [`Start at ${a}. Move ${Math.abs(b)} ${b < 0 ? "left" : "right"}.`, `${a} + ${b < 0 ? `(${b})` : b} = ${answer}`],
@@ -1005,7 +1021,7 @@ export const GRADES = [
     promise: "Become fluent with decimals, fractions, multi-digit operations, and volume.",
     skills: [
       S("multiply-whole", "Multi-digit multiplication", "Operations", "fact", { op: "mul", minA: 100, maxA: 999, minB: 10, maxB: 99 }, "5.NBT.B.5", L("Partial products show why the standard algorithm works.", ["Decompose a factor by place value.", "Find each partial product.", "Add and estimate-check."], "214 × 36 = 214 × 30 + 214 × 6 = 7,704", "Each partial product needs the correct place value.")),
-      S("divide-whole", "Whole-number division", "Operations", "fact", { op: "div", maxDivisor: 24, maxQuotient: 200 }, "5.NBT.B.6", L("Division partitions a dividend into equal groups.", ["Estimate each quotient digit.", "Multiply and subtract.", "Bring down the next place and repeat."], "936 ÷ 12 = 78", "Check that divisor × quotient equals the dividend.")),
+      S("divide-whole", "Whole-number division", "Operations", "fact", { op: "div", minDivisor: 2, maxDivisor: 24, maxQuotient: 200 }, "5.NBT.B.6", L("Division partitions a dividend into equal groups.", ["Estimate each quotient digit.", "Multiply and subtract.", "Bring down the next place and repeat."], "936 ÷ 12 = 78", "Check that divisor × quotient equals the dividend.")),
       S("decimal-place", "Decimal place value", "Decimals", "decimalPlace", { places: 3 }, "5.NBT.A.3", L("Decimal places name parts of one: tenths, hundredths, thousandths.", ["Start immediately right of the decimal.", "Move one place at a time.", "Name the digit and place."], "In 4.307, the 7 is in the thousandths place.", "Zeros inside a decimal hold important places.")),
       S("decimal-add", "Add decimals", "Decimals", "decimalOp", { op: "add", places: 2 }, "5.NBT.B.7", L("Line up decimal points so equal place values combine.", ["Write numbers vertically.", "Add placeholder zeros if helpful.", "Add and bring the decimal straight down."], "4.8 + 2.35 = 7.15", "Do not line up the final digits instead of the decimal points.")),
       S("decimal-sub", "Subtract decimals", "Decimals", "decimalOp", { op: "sub", places: 2 }, "5.NBT.B.7", L("Subtract decimals by place value.", ["Align decimal points.", "Add placeholder zeros.", "Regroup and subtract."], "9.2 − 3.47 = 5.73", "A placeholder zero can make regrouping visible.")),
@@ -1089,7 +1105,11 @@ export function getSkill(grade, skillId) {
 export function generateProblem(skill, rng = Math.random) {
   const generator = generators[skill.generator];
   if (!generator) throw new Error(`Unknown fluency generator: ${skill.generator}`);
-  return generator(skill.config || {}, rng);
+  const item = generator(skill.config || {}, rng);
+  // A generator with no authored steps would otherwise open "Watch me solve it" on the answer itself:
+  // lead with the skill's own strategy lines and state the worked line last.
+  if (item.steps.length < 2 && skill.learn?.steps?.length) item.steps = [...skill.learn.steps, ...item.steps];
+  return item;
 }
 
 const compact = (value) => String(value).trim().toLowerCase().replace(/\s+/g, "");

@@ -14,7 +14,9 @@ const { STICKERS, dailyGame, earnedIds, rankFor, streakOf } = await import(
   "../math/fluency-lab/rewards.js"
 );
 const { SCENES, SCENE_IDS } = await import("../math/fluency-lab/scenes.js");
-const { validateAnswer } = await import("../math/fluency-lab/problem-bank.js");
+const { ALL_SKILLS, generateProblem, seededRandom, validateAnswer } = await import(
+  "../math/fluency-lab/problem-bank.js"
+);
 
 const failures = [];
 const check = (condition, message) => condition || failures.push(message);
@@ -57,6 +59,28 @@ for (const grade of [1, 2, 3, 4, 5, 6, 7, 8]) {
     } catch (error) {
       failures.push(`${tag}: ${error.message}`);
     }
+  }
+}
+
+// "Watch me solve it" opens on step 1: it may never be the answer itself (Joel, 2026-10-11).
+const tail = (text) => String(text).replace(/[,\s]/g, "");
+for (const skill of ALL_SKILLS) {
+  const rng = seededRandom(skill.grade * 31 + skill.id.length);
+  for (let i = 0; i < 60; i += 1) {
+    const item = generateProblem(skill, rng);
+    check(
+      item.steps.length >= 2,
+      `${skill.grade}/${skill.id}: needs 2+ guided steps (${item.question}).`,
+    );
+    const first = tail(item.steps[0]);
+    const answer = tail(item.answers[0]);
+    check(
+      first.includes("?") || // restating the open problem is fine
+        (first !== tail(item.explanation) &&
+          !first.endsWith(`=${answer}`) &&
+          !first.endsWith(`is${answer}.`)),
+      `${skill.grade}/${skill.id}: step 1 gives away the answer to ${item.question}: ${item.steps[0]}`,
+    );
   }
 }
 
