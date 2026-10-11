@@ -264,6 +264,7 @@
       const title = unitTitle(info.unit);
       card.appendChild(el("p", "hub-now__unit", `Unit ${info.unit}${title ? ` · ${title}` : ""}`));
     }
+    if (info.base) card.appendChild(lessonActions(info.base));
     if (info.base) {
       const guide = el("a", "hub-now__guide hub-for-family", "Family guide ");
       guide.href = `/lessons/${info.base}/family/`;
@@ -271,6 +272,130 @@
       card.appendChild(guide);
     }
     return card;
+  }
+  // Three one-tap steps for a lesson day, in the order a student needs them:
+  // warm up on the prerequisite skills, do the practice sheet, get help.
+  // Every lesson in the pacing plan has all three pages (checked in the tests).
+  function lessonActions(base) {
+    const row = el("p", "hub-now__actions");
+    [
+      ["Get ready", "Prepárate", `/lessons/${base}/readiness/`],
+      ["Practice", "Practica", `/lessons/${base}/worksheet.html`],
+      ["Get help", "Ayuda", `/lessons/${base}/student-help/`],
+    ].forEach(([label, labelEs, href]) => {
+      const link = el("a", "hub-now__action", label);
+      link.href = href;
+      link.append(" ", es(`· ${labelEs}`));
+      row.appendChild(link);
+    });
+    return row;
+  }
+
+  // Practice days in a row, read from the Fluency Lab's own saved days so the
+  // number matches what the lab shows. Local to this device; never sent.
+  function fluencyStreak() {
+    try {
+      const stored = JSON.parse(localStorage.getItem("ewl-fluency-profiles-v1") || "{}");
+      const active = Number.isInteger(stored.active) && stored.active > 0 ? stored.active : 0;
+      const base = "ewl-fluency-rewards-v1";
+      const saved = JSON.parse(
+        localStorage.getItem(active ? `${base}:profile-${active}` : base) || "{}",
+      );
+      const days = new Set(Array.isArray(saved.days) ? saved.days : []);
+      let cursor = new Date();
+      if (!days.has(isoDate(cursor))) cursor.setDate(cursor.getDate() - 1);
+      let run = 0;
+      while (days.has(isoDate(cursor))) {
+        run += 1;
+        cursor.setDate(cursor.getDate() - 1);
+      }
+      return run;
+    } catch {
+      return 0;
+    }
+  }
+  // A day with no class is still a day to practice: the card says so, shows the
+  // streak when there is one, and links to the Fluency Lab game room.
+  function restCard() {
+    const card = el("article", "hub-now__card hub-now__card--off");
+    const when = el("p", "hub-now__when", "No class today ");
+    when.appendChild(es("Hoy no hay clase"));
+    const streak = fluencyStreak();
+    const link = el("a", "hub-now__action hub-now__action--play");
+    link.href = "/math/fluency-lab/";
+    link.append(
+      streak ? `🔥 ${streak}-day streak. Keep it going` : "🎮 Play a quick fluency game",
+      " ",
+    );
+    link.appendChild(es(streak ? `· Racha de ${streak} días` : "· Un juego rápido"));
+    card.append(when, link);
+    return card;
+  }
+
+  // "Pick up where you left off": the most recent unfinished Save / Resume
+  // record on this device (shared/save-resume stores them as nsr:rec:<code>).
+  // Only same-site paths are linked, and "Not me" hides it for shared devices.
+  const CONTINUE_DISMISSED = "nt-hub-continue-dismissed";
+  const CONTINUE_MAX_DAYS = 30;
+  function latestUnfinished() {
+    let best = null;
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key || !key.startsWith("nsr:rec:")) continue;
+        let rec = null;
+        try {
+          rec = JSON.parse(localStorage.getItem(key) || "null");
+        } catch {}
+        if (!rec || typeof rec.url !== "string" || !/^\/(?!\/)/.test(rec.url)) continue;
+        if (rec.url === "/curriculum/") continue;
+        const pct = Number(rec.progressPercent) || 0;
+        const when = Date.parse(rec.updatedAt);
+        if (!rec.activityTitle || pct >= 100 || !Number.isFinite(when)) continue;
+        if (Date.now() - when > CONTINUE_MAX_DAYS * 86400000) continue;
+        if (!best || when > best.when)
+          best = { code: rec.saveCode, url: rec.url, title: String(rec.activityTitle), pct, when };
+      }
+      if (best && localStorage.getItem(CONTINUE_DISMISSED) === `${best.code}@${best.when}`)
+        return null;
+    } catch {
+      return null;
+    }
+    return best;
+  }
+  function savedAgo(when) {
+    const days = Math.floor((Date.now() - when) / 86400000);
+    if (days <= 0) return ["Saved today", "Guardado hoy"];
+    if (days === 1) return ["Saved yesterday", "Guardado ayer"];
+    return [`Saved ${days} days ago`, `Guardado hace ${days} días`];
+  }
+  function renderContinue(host) {
+    const item = latestUnfinished();
+    if (!host || !item) return;
+    const card = el("article", "hub-now__card hub-now__card--continue");
+    const when = el("p", "hub-now__when");
+    when.append(el("strong", "", "Pick up where you left off "), es("· Sigue donde lo dejaste"));
+    const heading = el("h3", "hub-now__title");
+    const link = el("a", "", item.title);
+    link.href = item.url;
+    heading.appendChild(link);
+    const [ago, agoEs] = savedAgo(item.when);
+    const meter = el("p", "hub-now__unit", `${Math.round(item.pct)}% done · ${ago} `);
+    meter.appendChild(es(`· ${Math.round(item.pct)}% completado · ${agoEs}`));
+    const bar = el("span", "hub-now__bar");
+    bar.setAttribute("aria-hidden", "true");
+    bar.style.setProperty("--pct", `${Math.min(100, Math.max(0, item.pct))}%`);
+    const hide = el("button", "hub-now__dismiss", "Not me ");
+    hide.type = "button";
+    hide.appendChild(es("· No soy yo"));
+    hide.addEventListener("click", () => {
+      try {
+        localStorage.setItem(CONTINUE_DISMISSED, `${item.code}@${item.when}`);
+      } catch {}
+      card.remove();
+    });
+    card.append(when, heading, meter, bar, hide);
+    host.prepend(card);
   }
   function renderNowNext() {
     const host = document.querySelector("[data-hub-now]");
@@ -284,11 +409,7 @@
     const next = days.find((day) => day[0] > today);
     host.replaceChildren();
     if (now) host.appendChild(nowCard("Today", "Hoy", now, lessons));
-    else {
-      const off = el("article", "hub-now__card hub-now__card--off");
-      off.append(el("p", "hub-now__when", "No class today "), es("Hoy no hay clase"));
-      host.appendChild(off);
-    }
+    else host.appendChild(restCard());
     if (next) host.appendChild(nowCard("Next", "Siguiente", next, lessons));
     // The family "Lesson guide" card points at this week's lesson.
     const lessonDay = days.find((day) => day[0] >= today && day[3]);
@@ -305,6 +426,7 @@
     }
   }
   renderNowNext();
+  renderContinue(document.querySelector("[data-hub-now]"));
 
   // Audience switcher: Student (default) / Family / Teacher. Student and Family
   // are remembered on this device; Teacher is the existing Teacher view, whose
