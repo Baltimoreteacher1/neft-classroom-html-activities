@@ -451,10 +451,12 @@
         id,
         title,
         titleEs,
-        text: plain(`${id} ${title} ${titleEs}`),
+        named: plain(`${id} ${title} ${titleEs}`),
+        vocab: /** @type {string[]} */ ([]),
       }))
       .sort((a, b) => a.id.localeCompare(b.id, "en", { numeric: true }));
     box.hidden = false;
+    const haystack = (item) => `${item.named} ${plain(item.vocab.join(" "))}`;
     function search() {
       const words = plain(input.value).split(/\s+/).filter(Boolean);
       list.replaceChildren();
@@ -462,12 +464,19 @@
         status.textContent = "";
         return;
       }
-      const found = index.filter((item) => words.every((word) => item.text.includes(word)));
+      const found = index.filter((item) => words.every((word) => haystack(item).includes(word)));
       found.slice(0, 8).forEach((item) => {
         const li = el("li");
         const link = el("a", "hub-find__link");
         link.href = `/lessons/${item.id}/`;
         link.append(el("strong", "", `${item.id} `), `${item.title} `, es(`· ${item.titleEs}`));
+        // A match that came from a vocabulary word says which word, so the
+        // result never looks unrelated to what was typed.
+        if (!words.every((word) => item.named.includes(word))) {
+          const hits = (v) => words.filter((word) => plain(v).includes(word)).length;
+          const term = item.vocab.reduce((best, v) => (hits(v) > hits(best || "") ? v : best), "");
+          if (term) link.append(el("small", "hub-find__word", `Word: ${term}`));
+        }
         li.appendChild(link);
         list.appendChild(li);
       });
@@ -475,9 +484,36 @@
         ? `${found.length} ${found.length === 1 ? "lesson" : "lessons"} found${found.length > 8 ? ", showing 8" : ""}`
         : "No lesson found. Try a shorter word.";
     }
+    // Vocabulary words come from the launch manifest; the hub's other scripts
+    // already fetch it, so this is a cache hit. Fetched on first focus only.
+    let vocabLoaded = false;
+    function loadVocabulary() {
+      if (vocabLoaded) return;
+      vocabLoaded = true;
+      fetch("/data/curriculum-launch-manifest.json")
+        .then((res) => (res.ok ? res.json() : Promise.reject(new Error(String(res.status)))))
+        .then((manifest) => {
+          const byId = new Map((manifest.lessons || []).map((l) => [l.id, l.vocabulary || []]));
+          index.forEach((item) => {
+            item.vocab = (byId.get(item.id) || []).filter((v) => plain(v) !== plain(item.title));
+          });
+          search();
+        })
+        .catch(() => {});
+    }
+    input.addEventListener("focus", loadVocabulary, { once: true });
     input.addEventListener("input", search);
     input.addEventListener("keydown", (event) => {
       if (event.key === "Enter") list.querySelector("a")?.click();
+    });
+    // "/" jumps to the finder from anywhere on the page, like most search boxes.
+    document.addEventListener("keydown", (event) => {
+      const target = /** @type {HTMLElement | null} */ (event.target);
+      if (event.key !== "/" || event.ctrlKey || event.metaKey || event.altKey) return;
+      if (target?.closest("input, textarea, select, [contenteditable]")) return;
+      if (box.hidden || !box.offsetParent) return;
+      event.preventDefault();
+      input.focus();
     });
   }
   setupLessonFinder();

@@ -34,4 +34,15 @@ for (const base of bases) {
   const [title, titleEs] = plan.lessons[base] || [];
   assert.ok(title && titleEs, `lesson ${base} has English and Spanish titles for the finder`);
 }
+// Vocabulary search reads the launch manifest: every lesson needs a vocabulary array.
+const manifest = JSON.parse(
+  readFileSync(`${REPO_ROOT}/data/curriculum-launch-manifest.json`, "utf8"),
+);
+for (const base of bases) {
+  const entry = manifest.lessons.find((l) => l.id === base);
+  assert.ok(
+    entry && Array.isArray(entry.vocabulary),
+    `lesson ${base} has vocabulary for the finder`,
+  );
+}
 console.log(`curriculum-home-student: ${bases.size} lessons x ${pages.length} pages ok`);
