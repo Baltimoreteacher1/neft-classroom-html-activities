@@ -3,6 +3,7 @@ import { TRAILS, factStatus, loadTrail } from "./fact-trail.js";
 import { COLORS, ITEMS, SLOTS } from "./buddy-items.js";
 import { GAMES_BY_ID_NAME } from "./game-names.js";
 import { t } from "./i18n.js";
+import { chime } from "./sounds.js";
 import { SCENE_IDS } from "./scenes.js";
 import { STRATEGIES } from "./strategies.js";
 import { localDay } from "./tutor-engine.js";
@@ -348,6 +349,7 @@ export function rewardStrip(grade, avatarHtml = "") {
 
 // Confetti that only moves for people who have not asked for reduced motion.
 export function celebrate(host) {
+  chime("win");
   if (!host || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
   const layer = host.ownerDocument.createElement("div");
   layer.className = "rw-confetti";

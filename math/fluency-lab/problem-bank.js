@@ -1,3 +1,4 @@
+import { detailSteps } from "./detail-steps.js";
 import { workedSteps } from "./step-builders.js";
 
 const whole = new Intl.NumberFormat("en-US", { maximumFractionDigits: 6 });
@@ -1108,6 +1109,7 @@ export function generateProblem(skill, rng = Math.random) {
   const generator = generators[skill.generator];
   if (!generator) throw new Error(`Unknown fluency generator: ${skill.generator}`);
   const item = generator(skill.config || {}, rng);
+  item.steps = detailSteps(item) || item.steps;
   // A generator with no authored steps would otherwise open "Watch me solve it" on the answer itself:
   // lead with the skill's own strategy lines and state the worked line last.
   if (item.steps.length < 2) item.steps = workedSteps(item) || [...(skill.learn?.steps || []), ...item.steps];

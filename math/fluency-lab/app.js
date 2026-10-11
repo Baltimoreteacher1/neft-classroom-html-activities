@@ -10,7 +10,7 @@ import {
 import { adaptiveProblem, dailyPlan, diagnosticPlan, difficulty, emptyTutor, evidence, feedbackFor, findSkill, localDay, prerequisites, recommendations, recordAnswer, rememberMistake, sanitizeTutor, skillKey as tutorSkillKey } from "./tutor-engine.js";
 import { mountVisualLesson, renderModel, renderInlineProblemModel } from "./visual-lab.js";
 import { transferPrompt } from "./lesson-content.js";
-import { handleModelInput, handleModelTap, interactivePicture, mathText, stepVisual, stepsBlock, trailPicture } from "./trail-pictures.js";
+import { handleModelInput, handleModelTap, interactivePicture, mathText, openFillRow, stepVisual, stepWaiting, stepsBlock, trailPicture } from "./trail-pictures.js";
 import { PROFILE_NAMES, assignmentQueue, cleanProgress, decodeAssignment, downloadFile, makeBackup, mountTeacherStudio, parseBackup, profileKey, profiles, progressReport, readLocal, selectProfile, writeLocal } from "./school-tools.js";
 import { mountWorkbench } from "./workbench.js";
 import { createWorkbenchState } from "./workbench-state.js";
@@ -18,6 +18,9 @@ import { mountTrail } from "./trail-view.js";
 import { GAMES, mountGames } from "./games.js";
 import { getLang, setLang, t, translatePage } from "./i18n.js";
 import { factsReport, mountSnapshot } from "./class-snapshot.js";
+import { whyFor } from "./step-whys.js";
+import { certificateHtml } from "./certificate.js";
+import { chime, setSound, soundOn } from "./sounds.js";
 import { familySummaryDocument, familySummaryHtml } from "./family-page.js";
 import { mountPaperGames } from "./paper-games.js";
 import { stopOptions, stopsFor } from "./game-pool.js";
@@ -603,12 +606,13 @@ function renderGuidedCoach() {
       (step, index) => `
         <li class="${index === state.guidedStepsShown - 1 ? "current" : "complete"}">
           <span>${index + 1}</span>
-          <div class="guided-step-body"><p>${mathText(step.copy)}</p>${stepVisual(step.copy)}</div>
+          <div class="guided-step-body">${openFillRow(step.copy, index, steps.map((entry) => entry.copy), `coach:${state.item.question}`) || `<p>${mathText(step.copy)}</p>`}${whyFor(step.copy, index, steps.map((entry) => entry.copy)) ? `<p class="tr-step-why">${escapeHtml(whyFor(step.copy, index, steps.map((entry) => entry.copy)))}</p>` : ""}${openFillRow(step.copy, index, steps.map((entry) => entry.copy), `coach:${state.item.question}`) ? "" : stepVisual(step.copy)}</div>
         </li>`,
     )
     .join("");
   els.guidedStepCount.textContent = `${state.guidedStepsShown} of ${steps.length} steps open`;
   els.guidedNextStep.hidden = state.guidedStepsShown >= steps.length;
+  els.guidedNextStep.disabled = stepWaiting(steps.map((entry) => entry.copy), state.guidedStepsShown, `coach:${state.item.question}`);
 }
 
 function revealGuidedStep() {
@@ -738,6 +742,7 @@ function showFeedback(title, copy, type) {
   els.feedback.dataset.type = type;
   els.feedbackTitle.textContent = title;
   els.feedbackCopy.textContent = copy;
+  if (type === "correct") chime("good");
 }
 
 function updateSessionHeader() {
@@ -856,6 +861,13 @@ function applySettings() {
   els.textSizeButton.textContent = state.settings.largeText ? "Text size: Large" : "Text size: Standard";
   document.body.classList.toggle("focus-mode", Boolean(state.settings.focus));
   document.querySelector("#focus-mode").setAttribute("aria-pressed", String(Boolean(state.settings.focus)));
+  document.documentElement.classList.toggle("reading-font", Boolean(state.settings.readingFont));
+  const font = document.querySelector("#reading-font");
+  font.setAttribute("aria-pressed", String(Boolean(state.settings.readingFont)));
+  font.textContent = state.settings.readingFont ? t("Reading font: On") : t("Reading font: Off");
+  const sound = document.querySelector("#sound-toggle");
+  sound.setAttribute("aria-pressed", String(soundOn()));
+  sound.textContent = soundOn() ? t("Sound: On") : t("Sound: Off");
 }
 
 function showArea(view) {
@@ -1112,6 +1124,7 @@ els.hintButton.addEventListener("click", () => {
 });
 
 els.nextButton.addEventListener("click", nextProblem);
+els.guidedSteps.addEventListener("fluency-fill-solved", () => renderGuidedCoach());
 els.guidedNextStep.addEventListener("click", () => {
   const step = revealGuidedStep();
   saveActiveSession();
@@ -1173,6 +1186,7 @@ document.querySelector("#add-profile").addEventListener("click", () => {
 // English / Español: the Game Room, trail, rewards and page chrome switch; skill titles and lesson text stay English.
 function applyLang() {
   translatePage();
+  applySettings();
   const toggle = document.querySelector("#lang-toggle");
   const spanish = getLang() === "es";
   toggle.textContent = spanish ? "English" : "Español";
@@ -1190,6 +1204,9 @@ document.querySelector("#focus-mode").addEventListener("click", () => { state.se
 document.querySelector("#download-progress").addEventListener("click", () => {
   saveActiveSession(); downloadFile(`fluency-${PROFILE_NAMES[activeProfile].toLowerCase()}-${localDay()}.json`, JSON.stringify({ ...makeBackup(state), play: exportPlay() }, null, 2));
 });
+document.querySelector("#reading-font").addEventListener("click", () => { state.settings.readingFont = !state.settings.readingFont; saveSettings(); applySettings(); });
+document.querySelector("#sound-toggle").addEventListener("click", () => { setSound(!soundOn()); applySettings(); });
+document.querySelector("#print-certificate").addEventListener("click", () => printHtml(certificateHtml({ grade: state.grade, name: PROFILE_NAMES[activeProfile] })));
 document.querySelector("#print-family").addEventListener("click", () => printHtml(familySummaryHtml({ grade: state.grade, name: PROFILE_NAMES[activeProfile] })));
 document.querySelector("#download-family").addEventListener("click", () => downloadFile(`fluency-family-${PROFILE_NAMES[activeProfile].toLowerCase()}-${localDay()}.html`, familySummaryDocument({ grade: state.grade, name: PROFILE_NAMES[activeProfile] }), "text/html"));
 document.querySelector("#download-facts").addEventListener("click", () => downloadFile(`fluency-facts-grade-${state.grade}-${localDay()}.json`, JSON.stringify(factsReport(state.grade), null, 2)));

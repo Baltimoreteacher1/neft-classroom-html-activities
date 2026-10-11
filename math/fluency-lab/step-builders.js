@@ -20,7 +20,7 @@ function comparePlaces(a, b) {
   const at = [...px].findIndex((digit, i) => digit !== py[i]);
   if (at < 0) return [`Both numbers have the same digits in every place.`];
   const place = PLACES[width - 1 - at];
-  const steps = [`Line up the digits and start at the left, with the biggest place.`];
+  const steps = [`Line up the digits and start at the left, with the biggest place, because it changes the size of a number the most.`];
   if (at > 0) steps.push(`The digits match until the ${place} place, so look there.`);
   steps.push(`Compare the ${place} digits: ${Number(px[at])} and ${Number(py[at])}.`);
   return steps;
@@ -46,7 +46,7 @@ const BUILDERS = [
     (kind, place, n) =>
       [
         `Label the places from the right: ${PLACES.slice(0, Math.max(PLACES.indexOf(place) + 1, 2)).join(", ")}.`,
-        `Count over to the ${place} place and point at its digit in ${n}.`,
+        `Count over to the ${place} place and point at its digit in ${n}. Each place has its own name and worth.`,
         kind.startsWith("is") ? `Say what that digit is worth in its place.` : "",
       ].filter(Boolean),
   ],

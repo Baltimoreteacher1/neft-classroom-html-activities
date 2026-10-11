@@ -40,3 +40,11 @@ The page header has an English / Español button. Spanish covers the page tabs, 
 ## Buddy and weekly goal
 
 Every learner has a buddy (no name, no photo). Six colors are free; hats, face items and back items unlock with stickers and ranks, so a buddy's look is always earned. The buddy shows on the trail strip and cheers after each game with a short message that praises thinking, never speed. A weekly goal of 2–5 practice days (Monday to Sunday) is set in the Game Room; meeting it earns a sticker. Buddy look, goal, retired flash cards, and missed-fact cards travel with the JSON backup.
+
+## Steps that explain, and "Your turn"
+
+Every guided step says what to do and why, in plain words. `detail-steps.js` writes number-specific steps (with reasons) for whole-number and decimal arithmetic, fractions, rounding, area/perimeter/volume, coins, equations, percent, unit rates, probability, and more; `step-whys.js` adds a one-line reason under the fact-strategy number sentences. When a step ends in a partial result (for example `34 + 50 = 84`), the learner types that number first ("Your turn"): a right entry opens the step, a wrong one gets a nudge, and two misses open it so nobody is stuck. The next step waits for the typed number, and the result is never in the page until then (`step-fill.js`, pinned by `tools/fluency-step-fill.test.mjs`).
+
+## Comfort and keepsakes
+
+The header has a Reading font switch (Lexend, more letter and line spacing) and an optional Sound switch (soft chimes for a right answer or a finished game; nothing plays for a wrong answer; off by default). The Progress area can print a Certificate of Achievement with the learner's rank, trail stops, stars, and stickers, in English or Spanish.

@@ -1,4 +1,6 @@
 import { t } from "./i18n.js";
+import { fillKey, isSolved, peekFill, register, splitFill, tryFill } from "./step-fill.js";
+import { whyFor } from "./step-whys.js";
 // Static, student-facing pictures for the Fact Trail. Each one is drawn from the problem's own
 // model data (built in problem-bank.js), so the picture always shows the numbers in the problem.
 const esc = (value) =>
@@ -838,19 +840,74 @@ export function handleModelTap(target) {
 export const mathText = (text) => esc(text).replace(/\^(-?\d+)/g, "<sup>$1</sup>");
 
 // Super-simple guided steps: one short number sentence at a time, revealed by tapping "Next step".
+// The "Your turn" row for a step that ends in a partial result, or null when the step is plain text or solved.
+export function openFillRow(line, i, steps, id) {
+  const fill = splitFill(line, i, steps);
+  const key = fillKey(id, i, line);
+  if (!fill || isSolved(key)) return null;
+  register(key, fill.result);
+  return `<span class="tr-step-text tr-fill-row">${t("Your turn:")} ${mathText(fill.left)} = <input class="tr-fill" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" size="${Math.max(3, fill.result.length + 1)}" data-fill="${esc(key)}" aria-label="${esc(t("Type the missing number: {sum}", { sum: fill.left }))}" /><span class="tr-fill-note" role="status"></span></span>`;
+}
+
+export const stepWaiting = (steps, count, id) =>
+  steps.slice(0, count).some((line, i) => splitFill(line, i, steps) && !isSolved(fillKey(id, i, line)));
+
 export function stepsBlock(steps, shown, { id, cap = steps.length } = {}) {
   const visible = steps.slice(0, Math.min(shown, cap));
   // A step only gets a picture when it shows something the step above did not.
   let previous = "";
-  const pictures = visible.map((line) => {
-    const html = stepVisual(line);
+  const items = visible.map((line, i) => {
+    const row = openFillRow(line, i, steps, id);
+    const open = row !== null;
+    const html = open ? "" : stepVisual(line);
     const same = html.replace(/>[^<]*</g, "><") === previous.replace(/>[^<]*</g, "><") && html.includes("sv-array");
-    previous = html;
-    return same ? "" : html;
+    if (!open) previous = html;
+    const why = whyFor(line, i, steps);
+    const text = open ? row : `<span class="tr-step-text">${mathText(line)}</span>`;
+    return `<li${i === visible.length - 1 ? ' class="latest"' : ""}><span class="tr-step-num">${i + 1}</span>${text}${same ? "" : html}${why ? `<span class="tr-step-why">${esc(why)}</span>` : ""}</li>`;
   });
   const more = shown < cap;
-  return `<ol class="tr-steps" id="${id}">${visible.map((line, i) => `<li${i === visible.length - 1 ? ' class="latest"' : ""}><span class="tr-step-num">${i + 1}</span><span class="tr-step-text">${mathText(line)}</span>${pictures[i]}</li>`).join("")}</ol>
-    ${more ? `<button type="button" class="tr-step-next" data-step="${id}">${t("Next step")}</button>` : ""}`;
+  // The next step builds on this one's result, so it waits until the number is typed (two misses also open it).
+  const waiting = stepWaiting(steps, visible.length, id);
+  return `<ol class="tr-steps" id="${id}">${items.join("")}</ol>
+    ${more ? `<button type="button" class="tr-step-next" data-step="${id}"${waiting ? ' disabled title="' + esc(t("Type the missing number first.")) + '"' : ""}>${t("Next step")}</button>` : ""}`;
+}
+
+// One shared listener: a typed number is checked as it is entered; Enter checks a short or wrong entry.
+if (typeof document !== "undefined" && !globalThis.__fluencyFillWired) {
+  globalThis.__fluencyFillWired = true;
+  const settle = (input, force) => {
+    const key = input.dataset.fill;
+    const row = input.closest(".tr-fill-row");
+    const note = row?.querySelector(".tr-fill-note");
+    if (!key || !row) return;
+    const value = input.value.trim();
+    if (!value) return;
+    if (!peekFill(key, value) && !force) return;
+    const result = tryFill(key, value);
+    if (result === "wrong") {
+      if (note) note.textContent = t("Not quite. Look at the numbers and try again.");
+      input.select();
+      return;
+    }
+    const li = row.closest("li");
+    const line = key.split("|").slice(2).join("|");
+    row.classList.remove("tr-fill-row");
+    row.innerHTML = `${mathText(line)}${result === "shown" ? ` <small class="tr-fill-shown">${esc(t("Here it is. Read it, then keep going."))}</small>` : ` <b class="tr-fill-ok" aria-hidden="true">✓</b><span class="tr-sr"> ${esc(t("Correct"))}</span>`}`;
+    li?.insertAdjacentHTML("beforeend", stepVisual(line));
+    row.dispatchEvent(new (row.ownerDocument.defaultView.Event)("fluency-fill-solved", { bubbles: true }));
+    const list = li?.closest("ol");
+    if (list && !list.querySelector("input.tr-fill")) list.parentElement.querySelector(`button[data-step="${list.id}"]`)?.removeAttribute("disabled");
+  };
+  document.addEventListener("input", (event) => {
+    if (event.target.matches?.("input.tr-fill")) settle(event.target, false);
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && event.target.matches?.("input.tr-fill")) {
+      event.preventDefault();
+      settle(event.target, true);
+    }
+  });
 }
 
 // ---------- a small picture for every guided step ----------
