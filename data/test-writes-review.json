@@ -95,6 +95,11 @@
       "file": "tools/qa-lock.test.mjs",
       "targets": "tmpdir",
       "reason": "writes only a fake lock owner file under mkdtempSync(join(tmpdir(), 'qa-lock-test-')); the lock directory is passed in, never the real one"
+    },
+    {
+      "file": "tools/test-scope.test.mjs",
+      "targets": "tmpdir",
+      "reason": "every write (fixture tests, data files, the recorded manifest, the changed-files list) lands under mkdtempSync(join(tmpdir(), 'test-scope-')); the throwaway repo's GIT_* variables are stripped so it can never reach this repository's index, and the test asserts the caller's index is untouched"
     }
   ]
 }

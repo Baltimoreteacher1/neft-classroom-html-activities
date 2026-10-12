@@ -17,11 +17,28 @@
 // run alone after the pool. Output is buffered per script and printed in
 // discovery order once all scripts finish.
 
-import { execFile } from "node:child_process";
-import { readdirSync, statSync } from "node:fs";
-import { availableParallelism, setPriority } from "node:os";
+import { execFile, execFileSync } from "node:child_process";
+import {
+  existsSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
+import { availableParallelism, setPriority, tmpdir } from "node:os";
 import { join, relative } from "node:path";
+import { pathToFileURL } from "node:url";
 import { SKIP_EXIT } from "./lib/skip-exit.mjs";
+import {
+  entryFromTrace,
+  loadManifest,
+  MANIFEST_PATH,
+  selectTests,
+  serializeManifest,
+  verifyReads,
+} from "./lib/test-scope.mjs";
 
 const ROOT = process.cwd();
 const IGNORE_DIRS = new Set(["node_modules", "dist", ".git", ".qa-logs", "coverage"]);
@@ -84,6 +101,38 @@ try {
   setPriority(0, 10); // below interactive work; test workers inherit it
 } catch {}
 
+/* --- Scoping and read tracing (see tools/lib/test-scope.mjs) -----------------
+ * QA_TEST_SCOPE_FILES: file listing changed paths (set by scripts/qa-run.mjs);
+ *   only tests whose recorded reads include one of them run.
+ * QA_TEST_VERIFY=1:    trace every test that runs and FAIL if it read something
+ *   data/test-reads.json does not list (a stale manifest would under-select).
+ * --record:            run everything traced and rewrite data/test-reads.json. */
+const RECORD = process.argv.includes("--record");
+const VERIFY = RECORD || process.env.QA_TEST_VERIFY === "1";
+const manifest = loadManifest(ROOT);
+let toRun = tests;
+let scopeNote = "";
+if (!RECORD && process.env.QA_TEST_SCOPE_FILES) {
+  let changed = [];
+  try {
+    changed = readFileSync(process.env.QA_TEST_SCOPE_FILES, "utf8").split("\n").filter(Boolean);
+  } catch {}
+  const pick = selectTests(
+    tests.map((f) => relative(ROOT, f)),
+    manifest,
+    changed,
+  );
+  const chosen = new Set(pick.selected);
+  toRun = tests.filter((f) => chosen.has(relative(ROOT, f)));
+  scopeNote = pick.scoped
+    ? `test scope: ${toRun.length} of ${tests.length} scripts — ${pick.why}`
+    : `test scope: all ${tests.length} scripts — ${pick.why}`;
+  console.log(scopeNote);
+}
+const traceDir = VERIFY ? mkdtempSync(join(tmpdir(), "qa-test-trace-")) : null;
+const traceFile = (file) => join(traceDir, `${relative(ROOT, file).replace(/[^\w.-]/g, "_")}.json`);
+const PRELOAD = pathToFileURL(join(ROOT, "tools/lib/test-trace-preload.mjs")).href;
+
 const JOBS = Math.max(1, Number(process.env.TEST_JOBS) || Math.min(8, availableParallelism() - 1));
 
 /**
@@ -108,14 +157,23 @@ const SERIAL_TESTS = new Set([
 function runOne(file) {
   const started = Date.now();
   return new Promise((resolve) => {
-    execFile(process.execPath, [file], { maxBuffer: 64 * 1024 * 1024 }, (err, stdout, stderr) => {
-      resolve({
-        file,
-        e: err ? { status: err.code } : null,
-        output: `${stdout}${stderr}`,
-        ms: Date.now() - started,
-      });
-    });
+    const args = VERIFY ? ["--import", PRELOAD, file] : [file];
+    const env = VERIFY
+      ? { ...process.env, QA_TRACE_OUT: traceFile(file), QA_TRACE_ROOT: ROOT }
+      : process.env;
+    execFile(
+      process.execPath,
+      args,
+      { env, maxBuffer: 64 * 1024 * 1024 },
+      (err, stdout, stderr) => {
+        resolve({
+          file,
+          e: err ? { status: err.code } : null,
+          output: `${stdout}${stderr}`,
+          ms: Date.now() - started,
+        });
+      },
+    );
   });
 }
 
@@ -136,11 +194,87 @@ async function runPool(files, jobs) {
 const isSerial = (file) => SERIAL_TESTS.has(relative(ROOT, file));
 const results = [
   ...(await runPool(
-    tests.filter((f) => !isSerial(f)),
+    toRun.filter((f) => !isSerial(f)),
     JOBS,
   )),
-  ...(await runPool(tests.filter(isSerial), 1)),
+  ...(await runPool(toRun.filter(isSerial), 1)),
 ];
+
+/** Compare each traced test against the manifest (or rewrite it with --record). Returns failures added. */
+function checkReads(done) {
+  const tracked = new Set(
+    execFileSync("git", ["ls-files", "-z"], { cwd: ROOT, maxBuffer: 256 * 1024 * 1024 })
+      .toString()
+      .split("\0")
+      .filter(Boolean),
+  );
+  // A directory is "tracked" when git tracks anything under it.
+  const trackedDirs = new Set();
+  for (const f of tracked) {
+    for (let i = f.indexOf("/"); i !== -1; i = f.indexOf("/", i + 1))
+      trackedDirs.add(f.slice(0, i));
+  }
+  const helpers = {
+    isTracked: (p) => tracked.has(p) || trackedDirs.has(p),
+    existsRel: (p) => existsSync(join(ROOT, p)),
+  };
+  const next = {};
+  const drift = [];
+  const unlisted = [];
+  for (const { file, e } of done) {
+    const rel = relative(ROOT, file);
+    let trace = null;
+    try {
+      trace = JSON.parse(readFileSync(traceFile(file), "utf8"));
+    } catch {}
+    if (!trace || e?.status === SKIP_EXIT) {
+      next[rel] = { wide: "no complete trace when recorded" };
+      continue;
+    }
+    next[rel] = entryFromTrace(trace, helpers);
+    const known = manifest?.tests[rel];
+    if (!known) unlisted.push(rel);
+    else {
+      const missing = verifyReads(known, trace, helpers);
+      if (missing.length) drift.push({ rel, missing });
+    }
+  }
+  rmSync(traceDir, { recursive: true, force: true });
+  if (RECORD) {
+    if (done.some((r) => r.e && r.e.status !== SKIP_EXIT)) {
+      console.error(
+        "\nNot writing data/test-reads.json: a test failed, so its reads are incomplete.",
+      );
+      return 0;
+    }
+    const merged = { ...(manifest?.tests ?? {}) };
+    for (const t of Object.keys(merged)) if (!existsSync(join(ROOT, t))) delete merged[t];
+    writeFileSync(join(ROOT, MANIFEST_PATH), serializeManifest({ ...merged, ...next }));
+    const wide = Object.values(next).filter((v) => v.wide).length;
+    console.log(
+      `\nRecorded ${MANIFEST_PATH}: ${Object.keys(next).length} tests, ${wide} always-run (opaque).`,
+    );
+    return 0;
+  }
+  if (unlisted.length) {
+    console.log(
+      `\n${unlisted.length} test(s) not in ${MANIFEST_PATH} (they always run; add with npm run test:reads): ${unlisted.slice(0, 5).join(", ")}${unlisted.length > 5 ? ", ..." : ""}`,
+    );
+  }
+  if (!drift.length) return 0;
+  console.error(
+    `\nTEST SCOPE MANIFEST IS STALE — these tests read files ${MANIFEST_PATH} does not list,`,
+  );
+  console.error(
+    "so a change to those files would not select them. Run `npm run test:reads` and commit it:",
+  );
+  for (const { rel, missing } of drift) {
+    console.error(
+      `  ${rel}: ${missing.slice(0, 4).join(", ")}${missing.length > 4 ? ` (+${missing.length - 4} more)` : ""}`,
+    );
+  }
+  return drift.length;
+}
 
 let failed = 0;
 const skipped = [];
@@ -171,7 +305,9 @@ const slowest = [...results]
   .map((r) => `${relative(ROOT, r.file)} ${(r.ms / 1000).toFixed(1)}s`);
 console.log(`\nslowest test scripts: ${slowest.join(", ")}`);
 
-console.log(`\n${tests.length - failed - skipped.length}/${tests.length} test scripts passed.`);
+console.log(`\n${toRun.length - failed - skipped.length}/${toRun.length} test scripts passed.`);
+if (scopeNote) console.log(`(${scopeNote})`);
+if (VERIFY) failed += checkReads(results);
 if (optedOut.length) {
   // Always named, never silent: "what did this run actually verify?" must stay
   // answerable, the same reason skipped tests are listed below.

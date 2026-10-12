@@ -170,6 +170,26 @@ check(
   "only `test` may receive QA_BUILD_VERIFIED",
 );
 check(
+  testEnv("test", ["test"], "/tmp/changed.txt").QA_TEST_SCOPE_FILES === "/tmp/changed.txt",
+  "`test` is handed the change list so it can scope itself",
+);
+check(
+  testEnv("test", ["test"]).QA_TEST_VERIFY === "1" &&
+    testEnv("test", ["test"]).QA_TEST_SCOPE_FILES === undefined,
+  "a gated `test` always verifies its reads, but is scoped only when a change list exists",
+);
+check(
+  testEnv("validate:hub", ["validate:hub"], "/tmp/changed.txt").QA_TEST_SCOPE_FILES === undefined &&
+    testEnv("validate:hub", ["validate:hub"]).QA_TEST_VERIFY === undefined,
+  "only `test` may receive the scoping variables",
+);
+process.env.QA_TEST_SCOPE_FILES = "/leaked";
+check(
+  testEnv("test", ["test"]).QA_TEST_SCOPE_FILES === undefined,
+  "an inherited QA_TEST_SCOPE_FILES must not leak into a run that has no change list",
+);
+delete process.env.QA_TEST_SCOPE_FILES;
+check(
   fullSet.has("build") && fullSet.has("test"),
   "the full gate must contain both `build` and `test` (test relies on build ran)",
 );

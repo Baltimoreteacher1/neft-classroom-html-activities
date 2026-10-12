@@ -37,6 +37,7 @@ import {
   appendFileSync,
   existsSync,
   mkdirSync,
+  mkdtempSync,
   readFileSync,
   rmSync,
   writeFileSync,
@@ -615,7 +616,7 @@ const COVERAGE = [
   [/^functions\//, ["test", "validate:data-contracts"]],
   // Unit tests, Playwright specs, and QA runner / hook plumbing
   [
-    /^(tools\/[^/]+\.test\.mjs$|tests\/[^/]+\.spec\.ts$|scripts\/(qa-run\.mjs|lib\/(qa-lock|run-group)\.mjs|codex\/codex-verify\.sh)$|tools\/(run-tests|validate-js-syntax)\.mjs$|\.githooks\/)/,
+    /^(tools\/[^/]+\.test\.mjs$|tests\/[^/]+\.spec\.ts$|scripts\/(qa-run\.mjs|lib\/(qa-lock|run-group)\.mjs|codex\/codex-verify\.sh)$|tools\/(run-tests|validate-js-syntax)\.mjs|tools\/lib\/test-(scope|trace-preload)\.mjs|data\/test-reads\.json$|\.githooks\/)/,
     ["test", "validate:gate-coverage", "validate:js-syntax"],
   ],
   [/^docs\/|\.md$/, []],
@@ -688,7 +689,8 @@ function resolveSet(names) {
   return out;
 }
 
-function changedPaths() {
+/** `noRenames` lists BOTH sides of a rename: a test may have read the old path. */
+function changedPaths(noRenames = false) {
   const run = (a) => {
     try {
       return execFileSync("git", a, { cwd: ROOT, encoding: "utf8" });
@@ -702,9 +704,9 @@ function changedPaths() {
       .split(",")
       .map((s) => s.trim())
       .filter(Boolean);
-  const worktree = `${run(["diff", "--name-only", "HEAD"])}\n${run(["ls-files", "--others", "--exclude-standard"])}`;
-  const branchDiff =
-    PUSH_MODE || !worktree.trim() ? run(["diff", "--name-only", "origin/main...HEAD"]) : "";
+  const diff = ["diff", "--name-only", ...(noRenames ? ["--no-renames"] : [])];
+  const worktree = `${run([...diff, "HEAD"])}\n${run(["ls-files", "--others", "--exclude-standard"])}`;
+  const branchDiff = PUSH_MODE || !worktree.trim() ? run([...diff, "origin/main...HEAD"]) : "";
   return [
     ...new Set(
       `${worktree}\n${branchDiff}`
@@ -743,12 +745,26 @@ function scopeFor(paths) {
  * matters because EXCLUSIVE checks wait for everything else to finish — and it
  * rewrote source and dist/ while other checks read them. Standalone `npm test`
  * (and CI) still run it. Only set when `build` is part of THIS run. */
-function testEnv(name, checks) {
+function testEnv(name, checks, scopeFile = null) {
   // Strip first: this process may itself be running inside a gate's `test`
   // check (qa-run.test.mjs imports this), and a leaked flag would otherwise
   // reach checks that must not have it.
-  const { QA_BUILD_VERIFIED: _inherited, ...env } = process.env;
-  return name === "test" && checks.includes("build") ? { ...env, QA_BUILD_VERIFIED: "1" } : env;
+  const {
+    QA_BUILD_VERIFIED: _inherited,
+    QA_TEST_SCOPE_FILES: _scope,
+    QA_TEST_VERIFY: _verify,
+    ...env
+  } = process.env;
+  if (name !== "test") return env;
+  // Every gated `test` run traces what each test reads and fails if that outruns
+  // data/test-reads.json; a change list additionally scopes WHICH tests run
+  // (tools/lib/test-scope.mjs). Standalone `npm test` and CI stay unscoped.
+  return {
+    ...env,
+    QA_TEST_VERIFY: "1",
+    ...(checks.includes("build") ? { QA_BUILD_VERIFIED: "1" } : {}),
+    ...(scopeFile ? { QA_TEST_SCOPE_FILES: scopeFile } : {}),
+  };
 }
 
 export {
@@ -765,6 +781,9 @@ export {
   UNIVERSAL,
 };
 
+/** Path of the file listing changed paths for the `test` check, when the change set is known. */
+let testScopeFile = null;
+
 async function main() {
   /* --- Decide the check set ------------------------------------------------- */
   let checks;
@@ -774,6 +793,10 @@ async function main() {
     label = "explicit --only set";
   } else if (MODE_CHANGED) {
     const paths = changedPaths();
+    if (paths.length) {
+      testScopeFile = join(mkdtempSync(join(tmpdir(), "qa-scope-")), "changed.txt");
+      writeFileSync(testScopeFile, `${changedPaths(true).join("\n")}\n`);
+    }
     const scoped = scopeFor(paths);
     if (scoped) {
       checks = resolveSet(scoped);
@@ -937,7 +960,7 @@ async function main() {
         ["run", name],
         {
           cwd: ROOT,
-          env: testEnv(name, checks),
+          env: testEnv(name, checks, testScopeFile),
           maxBuffer: 64 * 1024 * 1024,
           timeout: TIMEOUT_MS,
         },
