@@ -421,6 +421,9 @@ const COVERAGE = [
     ["test"],
   ],
   [/^scripts\/generate-warmups\.mjs$/, ["test"]],
+  // The deploy driver is covered by tools/deploy-path.test.mjs (bash -n, lock,
+  // per-worktree engine link, manifest regeneration); nothing else reads it.
+  [/^(scripts\/ship\.sh|tools\/deploy-path\.test\.mjs)$/, ["test"]],
   [
     /^lessons\/[^/]+\/config\.json$/,
     [

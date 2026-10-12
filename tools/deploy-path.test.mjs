@@ -14,6 +14,7 @@
  * machines without Chromium) and exit 2 from validate:production (honest).
  * ============================================================================= */
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import test from "node:test";
@@ -51,4 +52,20 @@ test("the push GATE includes validate and does not treat validate:production as 
 test("qa:loop and validate:production are distinct npm scripts", () => {
   assert.equal(pkg.scripts["qa:loop"], "node scripts/qa-run.mjs");
   assert.equal(pkg.scripts["validate:production"], "node scripts/validate-production.mjs");
+});
+
+test("ship.sh parses and takes a single-flight lock before touching origin/main", () => {
+  execFileSync("bash", ["-n", join(ROOT, "scripts/ship.sh")]);
+  assert.match(ship, /mkdir "\$LOCK_DIR"/);
+  assert.ok(ship.indexOf('mkdir "$LOCK_DIR"') < ship.indexOf("git worktree add"));
+});
+
+test("ship.sh points the worktree's engine link at its own engine/, not the checkout's", () => {
+  assert.match(ship, /ln -s "\$WT\/engine" "\$WT\/node_modules\/@eduwonderlab\/engine"/);
+  assert.doesNotMatch(ship, /ln -s "\$ROOT\/node_modules" "\$WT\/node_modules"/);
+});
+
+test("ship.sh regenerates the download manifest instead of failing on its conflict", () => {
+  assert.match(ship, /generate-download-manifest\.mjs/);
+  assert.match(ship, /QA_TIMEOUT_MS="\$\{QA_TIMEOUT_MS:-1800000\}"/);
 });

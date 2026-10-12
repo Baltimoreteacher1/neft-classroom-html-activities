@@ -42,6 +42,7 @@ cd "$ROOT" || exit 1
 STAMP_URL="https://eduwonderlab.com/access-practice-lab/config.json"
 EXPECTED_REPO="neft-classroom-html-activities"
 SMOKE_PORT=41847
+GENERATED_MANIFEST="data/curriculum-download-manifest.json"
 VERIFY_TIMEOUT_SECS=720
 VERIFY_INTERVAL_SECS=20
 
@@ -187,6 +188,38 @@ if [ "$MODE" = "ship" ]; then
   git log --no-walk --format='  %h %s' "${RESOLVED[@]}"
 fi
 
+# --- Single-flight lock + orphan sweep ------------------------------------------------
+# Two concurrent ships race on origin/main (the loser's push is rejected after
+# a full QA gate) and on the smoke port. mkdir is atomic; a lock whose PID is
+# dead is stale and taken over. Holding the lock also proves any other
+# eduwonderlab-ship-* worktree is an orphan from a crashed run, so sweep them.
+LOCK_DIR="$(git rev-parse --git-common-dir)/ship.lock"
+if ! mkdir "$LOCK_DIR" 2>/dev/null; then
+  HOLDER="$(cat "$LOCK_DIR/pid" 2>/dev/null || true)"
+  if [ -n "$HOLDER" ] && kill -0 "$HOLDER" 2>/dev/null; then
+    fail "another ship is running (pid $HOLDER). Wait for it, then re-run — it moves origin/main."
+  fi
+  say "• Taking over stale ship lock (pid ${HOLDER:-unknown} is gone)"
+  rm -rf "$LOCK_DIR"
+  mkdir "$LOCK_DIR" || fail "could not take ship lock at $LOCK_DIR"
+fi
+printf '%s' "$$" >"$LOCK_DIR/pid"
+release_lock() { rm -rf "$LOCK_DIR"; }
+trap release_lock EXIT
+
+git worktree prune 2>/dev/null || true
+while IFS= read -r stale; do
+  [ -n "$stale" ] || continue
+  say "• Removing orphaned ship worktree: $stale"
+  git worktree remove --force "$stale" 2>/dev/null || rm -rf "$stale"
+done < <(git worktree list --porcelain | sed -n 's/^worktree //p' | grep '/eduwonderlab-ship-' || true)
+git worktree prune 2>/dev/null || true
+
+# The browser sweep is killed at the 15 min default when the machine is busy,
+# which reads as a gate failure and costs a full re-ship. Ship is the one caller
+# that must not time out spuriously; an explicit QA_TIMEOUT_MS still wins.
+export QA_TIMEOUT_MS="${QA_TIMEOUT_MS:-1800000}"
+
 # --- Kill orphan smoke-server (recurring validate:lesson-boot 0/16 failure) --------
 ORPHANS="$(lsof -ti tcp:"$SMOKE_PORT" 2>/dev/null || true)"
 if [ -n "$ORPHANS" ]; then
@@ -204,6 +237,7 @@ WT="$(mktemp -d "${TMPDIR:-/tmp}/eduwonderlab-ship-XXXXXX")" || fail "mktemp fai
 git worktree add --detach --force "$WT" origin/main --quiet || fail "could not create worktree at origin/main"
 KEEP_WT=0
 cleanup() {
+  release_lock
   if [ "$KEEP_WT" = "1" ]; then
     say "Worktree kept for inspection: $WT"
     say "Remove with: git worktree remove --force '$WT'"
@@ -226,7 +260,36 @@ cleanup() {
 trap cleanup EXIT
 
 # The pre-push QA loop builds from the worktree root; share node_modules.
-[ -d "$ROOT/node_modules" ] && ln -s "$ROOT/node_modules" "$WT/node_modules"
+# Link entry by entry rather than the whole directory: @eduwonderlab/engine is a
+# workspace symlink to ../../engine, and a whole-directory link resolves it to
+# the CHECKOUT's engine/ — whatever branch that is — so a stale checkout fakes
+# a red gate at every commit. Pointing it at the worktree's own engine/ makes
+# the gate test the code being shipped.
+preflight_fail=""
+if [ ! -d "$ROOT/node_modules" ]; then
+  preflight_fail="$ROOT/node_modules is missing — run npm ci in the checkout first"
+elif [ ! -e "$ROOT/node_modules/@eduwonderlab/engine" ]; then
+  preflight_fail="node_modules/@eduwonderlab/engine is missing (stale branch or no workspace install) — run npm ci in the checkout first"
+elif [ ! -d "$WT/engine" ]; then
+  preflight_fail="origin/main has no engine/ workspace — wrong remote?"
+fi
+[ -z "$preflight_fail" ] || fail "preflight: $preflight_fail"
+mkdir "$WT/node_modules"
+for entry in "$ROOT"/node_modules/* "$ROOT"/node_modules/.bin; do
+  [ -e "$entry" ] || continue
+  name="$(basename "$entry")"
+  [ "$name" = "@eduwonderlab" ] && continue
+  ln -s "$entry" "$WT/node_modules/$name"
+done
+mkdir "$WT/node_modules/@eduwonderlab"
+for entry in "$ROOT"/node_modules/@eduwonderlab/*; do
+  name="$(basename "$entry")"
+  if [ "$name" = "engine" ]; then
+    ln -s "$WT/engine" "$WT/node_modules/@eduwonderlab/engine"
+  else
+    ln -s "$entry" "$WT/node_modules/@eduwonderlab/$name"
+  fi
+done
 # …and reports/, for the same reason. It is gitignored generated output, so a
 # fresh worktree never has it, and tools/a11y-ratchet.test.mjs asserts on
 # reports/a11y-audit.md — which failed the QA gate on every ship regardless of
@@ -243,9 +306,21 @@ if [ "$MODE" = "rebuild" ]; then
 else
   for r in "${RESOLVED[@]}"; do
     if ! git -C "$WT" cherry-pick "$r" >/dev/null 2>&1; then
-      git -C "$WT" cherry-pick --abort 2>/dev/null || true
-      KEEP_WT=0
-      fail "cherry-pick of ${r:0:9} conflicts with origin/main. Rebase your branch on origin/main, re-commit, then ship the new SHA."
+      # The download manifest records per-file byte sizes, so every concurrent
+      # ship that touches a shipped file conflicts on it. It is GENERATED: take
+      # origin/main's copy and regenerate rather than bouncing the ship.
+      CONFLICTED="$(git -C "$WT" diff --name-only --diff-filter=U)"
+      if [ "$CONFLICTED" = "$GENERATED_MANIFEST" ] &&
+        git -C "$WT" checkout --ours -- "$GENERATED_MANIFEST" &&
+        (cd "$WT" && node scripts/generate-download-manifest.mjs >/dev/null) &&
+        git -C "$WT" add "$GENERATED_MANIFEST" &&
+        git -C "$WT" -c core.editor=true cherry-pick --continue >/dev/null 2>&1; then
+        say "• Regenerated $GENERATED_MANIFEST while applying ${r:0:9}"
+      else
+        git -C "$WT" cherry-pick --abort 2>/dev/null || true
+        KEEP_WT=0
+        fail "cherry-pick of ${r:0:9} conflicts with origin/main${CONFLICTED:+ ($(echo "$CONFLICTED" | tr '\n' ' '))}. Rebase your branch on origin/main, re-commit, then ship the new SHA."
+      fi
     fi
     # GH007 guard: GitHub rejects pushes exposing a private author email.
     AUTHOR_EMAIL="$(git -C "$WT" log -1 --format='%ae')"
