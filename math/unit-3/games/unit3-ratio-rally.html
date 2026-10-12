@@ -463,7 +463,18 @@
           }
         }
         const choices = shuffle([answer, ...shuffle(pool).slice(0, 3)]);
-        return { prompt, answer, choices, type, wrong, hint1, hint2, explain };
+        return {
+          prompt,
+          answer,
+          correct: answer,
+          choices,
+          options: choices,
+          type,
+          wrong,
+          hint1,
+          hint2,
+          explain,
+        };
       }
       function generateQuestions(difficulty, count = 10) {
         const qs = [];
@@ -1334,6 +1345,109 @@
         this.startRallySector();
       };
 
+      GameScene.prototype.buildParallaxBackground = function () {
+        this.parallaxLayers = [];
+        const horizonColor =
+          this.difficulty === "easy"
+            ? 0xe8b878
+            : this.difficulty === "medium"
+              ? 0x4a5a72
+              : 0x2a1a55;
+        this.add.rectangle(W / 2, 70, W, 140, horizonColor, 0.35).setDepth(0);
+        const farTint =
+          this.difficulty === "hard"
+            ? [0xffffff, 0xaaccff, 0xffeeaa]
+            : this.difficulty === "medium"
+              ? [0xffdd88, 0xfff0c0, 0xcce0ff]
+              : [0xfff4d8, 0xffe0a0];
+        const farDots = [];
+        for (let i = 0; i < 28; i++) {
+          farDots.push(
+            this.add
+              .image(randInt(0, W), randInt(0, 150), "farDot")
+              .setTint(farTint[i % farTint.length])
+              .setScale(randInt(5, 11) / 10)
+              .setAlpha(randInt(35, 80) / 100)
+              .setDepth(0),
+          );
+        }
+        this.parallaxLayers.push({ items: farDots, factor: 0.12, wrap: 150 });
+        const midItems = [];
+        const midColor =
+          this.difficulty === "easy"
+            ? 0xb07840
+            : this.difficulty === "medium"
+              ? 0x2c3850
+              : 0x1a0e3a;
+        for (let i = 0; i < 9; i++) {
+          const isCity = this.difficulty === "medium";
+          const bw = isCity ? randInt(40, 70) : randInt(90, 150);
+          const bh = isCity ? randInt(60, 150) : randInt(50, 100);
+          midItems.push(
+            this.add
+              .rectangle(i * (W / 8) + randInt(-20, 20), 150 - bh / 2, bw, bh, midColor, 0.5)
+              .setDepth(0),
+          );
+        }
+        this.parallaxLayers.push({ items: midItems, factor: 0.28, wrap: W });
+      };
+
+      GameScene.prototype.buildRoadPerspective = function () {
+        const g = this.add.graphics().setDepth(1);
+        const hx = W / 2,
+          hy = 90;
+        [0, 1, 2, 3, 4].forEach((k) => {
+          const x = ROAD_LEFT + LANE_W * k;
+          g.lineStyle(2, 0xffffff, 0.08);
+          g.lineBetween(x, H, hx + (x - hx) * 0.18, hy);
+        });
+        g.fillStyle(0xffffff, 0.05);
+        g.fillTriangle(ROAD_LEFT, H, ROAD_LEFT + ROAD_W, H, hx, hy);
+      };
+
+      GameScene.prototype.updateHUD = function () {
+        if (this.scoreText) this.scoreText.setText(`Score: ${this.score}`);
+        const n = Math.min(this.currentQ + 1, this.totalCheckpoints);
+        const snap = this.race ? this.race.snapshot() : { position: 1, player: this.checkpointsHit, rivals: [0, 0] };
+        if (this.progressLabel) {
+          this.progressLabel.setText(
+            this.raceFinished
+              ? `Finished ${RRPro.ordinal(snap.position)}!`
+              : `${RRPro.ordinal(snap.position)} place · Checkpoint ${n} of ${this.totalCheckpoints}`,
+          );
+        }
+        const tier = RRPro.tierFor(this.combo);
+        if (this.streakLabel) {
+          this.streakLabel
+            .setText(
+              tier ? `${tier.name} x${tier.mult}` : this.combo >= 2 ? `Streak x${this.combo}` : "",
+            )
+            .setColor(tier ? tier.color : "#ffdd00");
+        }
+        if (this.coinText) this.coinText.setText(String(this.coins));
+        if (this.flags) {
+          this.flags.forEach((f, i) => {
+            f.setFillStyle(
+              i < this.checkpointsHit ? 0x22cc66 : i === this.currentQ ? 0xffaa00 : 0x445566,
+            );
+          });
+        }
+        const x0 = 150,
+          x1 = W - 150;
+        const along = (progress) => x0 + (x1 - x0) * Math.min(1, progress / Math.max(1, this.totalCheckpoints));
+        if (this.mapCar) this.mapCar.x = along(snap.player);
+        if (this.rivalDots) {
+          this.rivalDots.forEach((dot, i) => {
+            if (dot && snap.rivals && snap.rivals[i] != null) dot.x = along(snap.rivals[i]);
+          });
+        }
+      };
+
+      GameScene.prototype.say = function (text) {
+        const rrSr = document.getElementById("rr-sr");
+        if (rrSr) rrSr.textContent = text;
+      };
+
       // ── Steering & Lane Control ──
       GameScene.prototype.shiftLane = function (dir) {
         if (this.locked) return;
@@ -1771,6 +1885,7 @@
             beam,
             eliminated: false,
             laneIdx: i,
+            optText: c,
           };
           this.answerBtns.push(entry);
 
@@ -1953,6 +2068,14 @@
         );
         this.say(msg);
         this.updateHUD();
+      };
+
+      GameScene.prototype.submitAnswer = function (i) {
+        this.pickChoice(i);
+      };
+
+      GameScene.prototype.pick = function (i) {
+        this.pickChoice(i);
       };
 
       // ── Trip Finish ──
