@@ -186,7 +186,7 @@ const SPECS = [
     pages: [6, 7, 8, 9, 10, 11, 12, 13, 14],
     title: "The Rule in the <em>Table</em>",
     file: "axiom-city-u9-e2-the-rule-in-the-table.html",
-    lessons: "Lessons 9-3, 9-4 &amp; 9-5",
+    lessons: "Lessons 9-3 &amp; 9-4",
     topic: "TABLES → EQUATIONS",
     eplabel: "E2 · The Rule in the Table",
     epcovers: "tables to equations &middot; coordinate pairs &middot; apply &middot; 6.AT.D.11",

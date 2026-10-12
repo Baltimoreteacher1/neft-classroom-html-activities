@@ -41,7 +41,7 @@ const EPS = {
     ["E1 · Lines That Talk", "Lessons 9-1, 9-2", "axiom-city-u9-e1-lines-that-talk.html"],
     [
       "E2 · The Rule in the Table",
-      "Lessons 9-3, 9-4, 9-5",
+      "Lessons 9-3, 9-4",
       "axiom-city-u9-e2-the-rule-in-the-table.html",
     ],
   ],

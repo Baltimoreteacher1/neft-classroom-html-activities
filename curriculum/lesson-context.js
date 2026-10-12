@@ -76,7 +76,7 @@ window.LESSON_PROJECTS = {
       "href": "/math/statistics/histogram-master-lab/"
     },
     {
-      "text": "📖 Unit 8 Graphic Novel",
+      "text": "📖 Court Vision Graphic Novel",
       "href": "/graphic-novels/unit8/graphic-novel-1.html"
     }
   ],
@@ -474,7 +474,7 @@ window.LESSON_PROJECTS = {
       "href": "/geometry-prep/surface-area-packer/"
     },
     {
-      "text": "📖 Unit 10 Graphic Novel — Part 1",
+      "text": "📖 Aquarium Architect Graphic Novel — Part 1",
       "href": "/graphic-novels/unit10/graphic-novel-1.html"
     }
   ],
@@ -492,7 +492,7 @@ window.LESSON_PROJECTS = {
       "href": "/geometry-prep/surface-area-packer/"
     },
     {
-      "text": "📖 Unit 10 Graphic Novel — Part 2",
+      "text": "📖 Aquarium Architect Graphic Novel — Part 2",
       "href": "/graphic-novels/unit10/graphic-novel-2.html"
     }
   ],
@@ -510,7 +510,7 @@ window.LESSON_PROJECTS = {
       "href": "/geometry-prep/tangram-architect/"
     },
     {
-      "text": "📖 Unit 10 Graphic Novel — Part 2",
+      "text": "📖 Aquarium Architect Graphic Novel — Part 2",
       "href": "/graphic-novels/unit10/graphic-novel-2.html"
     }
   ],

@@ -60,7 +60,7 @@ window.GN_STORY = {
     {
       "id": "act1",
       "tab": "Act 1: Supply Manifest",
-      "kicker": "Act 1 · Lesson 1-5",
+      "kicker": "Act 1 · Lesson 2-11",
       "title": "The Supply Manifest",
       "advanceLabel": "Confirm the manifest ▶",
       "steps": [
@@ -328,7 +328,7 @@ window.GN_STORY = {
     {
       "id": "act2",
       "tab": "Act 2: Thruster Calibration",
-      "kicker": "Act 2 · Lesson 1-6",
+      "kicker": "Act 2 · Lesson 2-12",
       "title": "Thruster Calibration",
       "advanceLabel": "Calibrate thrusters ▶",
       "steps": [
@@ -626,7 +626,7 @@ window.GN_STORY = {
     {
       "id": "final",
       "tab": "Final: Fleet Launch",
-      "kicker": "Final · Lessons 1-5 & 1-6",
+      "kicker": "Final · Lessons 2-11 & 2-12",
       "title": "The Fleet Launch Code",
       "advanceLabel": "Launch the fleet! 🌟 ▶",
       "steps": [

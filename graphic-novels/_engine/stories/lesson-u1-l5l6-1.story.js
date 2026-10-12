@@ -61,7 +61,7 @@ window.GN_STORY = {
     {
       "id": "act1",
       "tab": "Act 1: Fuel Totals",
-      "kicker": "Act 1 · Lesson 1-5",
+      "kicker": "Act 1 · Lesson 2-11",
       "title": "Fuel Totals",
       "advanceLabel": "Lock in the total ▶",
       "steps": [
@@ -364,7 +364,7 @@ window.GN_STORY = {
     {
       "id": "act2",
       "tab": "Act 2: Power Boost",
-      "kicker": "Act 2 · Lesson 1-6",
+      "kicker": "Act 2 · Lesson 2-12",
       "title": "Power Boost",
       "advanceLabel": "Charge the core ▶",
       "steps": [
@@ -618,7 +618,7 @@ window.GN_STORY = {
     {
       "id": "final",
       "tab": "Final: Launch Code",
-      "kicker": "Final · Lessons 1-5 & 1-6",
+      "kicker": "Final · Lessons 2-11 & 2-12",
       "title": "The Launch Code",
       "advanceLabel": "Launch! 🌟 ▶",
       "steps": [

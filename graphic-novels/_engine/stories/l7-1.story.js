@@ -60,7 +60,7 @@ window.GN_STORY = {
     {
       "id": "act1",
       "tab": "Act 1: Equal Jumps",
-      "kicker": "Act 1 · Lesson 1-7",
+      "kicker": "Act 1 · Lesson 2-7",
       "title": "Equal Jumps",
       "advanceLabel": "Plot the jumps 🚀",
       "steps": [
@@ -404,7 +404,7 @@ window.GN_STORY = {
     {
       "id": "final",
       "tab": "Final: Home Jump",
-      "kicker": "Final · Lesson 1-7",
+      "kicker": "Final · Lesson 2-7",
       "title": "The Home Jump",
       "advanceLabel": "Jump home! 🌟",
       "steps": [
