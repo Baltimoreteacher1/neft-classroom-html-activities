@@ -1,4 +1,5 @@
 import { detailSteps } from "./detail-steps.js";
+import { peekCap } from "./step-leak.js";
 import { workedSteps } from "./step-builders.js";
 
 const whole = new Intl.NumberFormat("en-US", { maximumFractionDigits: 6 });
@@ -93,7 +94,7 @@ export function factSteps(op, a, b, answer, strategy) {
   if (op === "sub") {
     if (b === 0) return [`Take away 0. Nothing changes.`, `${a} − 0 = ${a}`];
     if (strategy === "countBack" || (a <= 20 && b <= 2)) return [`Start at ${a}.`, `Count back ${b}: ${Array.from({ length: b }, (_, i) => a - i - 1).join(", ")}`];
-    if (a <= 20) return [`${b} + ? = ${a}`, `${b} + ${answer} = ${a}`, `So ${a} − ${b} = ${answer}`];
+    if (a <= 20) return [`${b} + ? = ${a}`, `Count up from ${b} to ${a}: ${Array.from({ length: a - b }, (_, i) => b + i + 1).join(", ")}`, `Count how many numbers you said. That count is the missing addend.`, `${b} + ${answer} = ${a}, so ${a} − ${b} = ${answer}`];
     let at = a;
     return friendlyJumps(a, b, -1).map((jump) => `${fmt(at)} − ${fmt(-jump)} = ${fmt((at += jump))}`);
   }
@@ -128,9 +129,10 @@ export function factSteps(op, a, b, answer, strategy) {
   // quotient only appears in the last steps (the old first step, "16 × 20 = 320", already stated it).
   if (answer <= 12) {
     const multiples = Array.from({ length: answer }, (_, i) => fmt(b * (i + 1)));
-    return [`${b} × ? = ${fmt(a)}`, `Count by ${b}s until you reach ${fmt(a)}: ${multiples.join(", ")}`, `${b} × ${answer} = ${fmt(a)}`, `So ${fmt(a)} ÷ ${b} = ${answer}`];
+    return [`${b} × ? = ${fmt(a)}`, `Count by ${b}s until you reach ${fmt(a)}: ${multiples.join(", ")}`, `Count how many numbers you said. That count is the quotient.`, `${b} × ${answer} = ${fmt(a)}, so ${fmt(a)} ÷ ${b} = ${answer}`];
   }
   const tens = Math.floor(answer / 10) * 10;
+  if (answer % 10 === 0) return [`${b} × ? = ${fmt(a)}`, `Think of ${fmt(a)} as ${fmt(a / 10)} tens, and share the tens: ${fmt(a / 10)} ÷ ${b}.`, `${fmt(a / 10)} ÷ ${b} = ${answer / 10}, so ${answer / 10} tens, and ${fmt(a)} ÷ ${b} = ${fmt(answer)}`];
   return [`${b} × ? = ${fmt(a)}`, `${b} × ${fmt(tens)} = ${fmt(b * tens)}`, `${b} × ${answer - tens} = ${fmt(b * (answer - tens))}`, `${fmt(tens)} + ${answer - tens} = ${fmt(answer)}`];
 }
 
@@ -1191,9 +1193,7 @@ export const baseGenerator = (skill) => GENERATOR_PARTS[skill?.generator]?.[0] |
 const FILLER = /^(0|\d+ [−×] 0|\d+ [+−] 0|0 [+−×÷]|(\d+) − \2|1 ×|\d+ × 1)\b.*= \?$/;
 const isFiller = (question) => FILLER.test(String(question).replaceAll(",", "")) || /\+ 0 = |□ \+ 0\b|^0 \+ □/.test(question);
 
-export function generateProblem(skill, rng = Math.random) {
-  const generator = generators[skill.generator];
-  if (!generator) throw new Error(`Unknown fluency generator: ${skill.generator}`);
+function drawProblem(skill, generator, rng) {
   let item = generator(resolveOp(skill.config || {}, rng), rng);
   for (let attempt = 0; attempt < 8 && isFiller(item.question) && rng() > 0.1; attempt += 1) {
     item = generator(resolveOp(skill.config || {}, rng), rng);
@@ -1204,6 +1204,18 @@ export function generateProblem(skill, rng = Math.random) {
   // A generator with no authored steps would otherwise open "Watch me solve it" on the answer itself:
   // lead with the skill's own strategy lines and state the worked line last.
   if (item.steps.length < 2) item.steps = workedSteps(item) || [...(skill.learn?.steps || []), ...item.steps];
+  return item;
+}
+
+export function generateProblem(skill, rng = Math.random) {
+  const generator = generators[skill.generator];
+  if (!generator) throw new Error(`Unknown fluency generator: ${skill.generator}`);
+  let item = drawProblem(skill, generator, rng);
+  // Some numbers make an early step state the answer by coincidence (the answer equals a place value, a coin
+  // value, a factor). Draw again rather than show a hint that gives it away.
+  for (let attempt = 0; attempt < 12 && peekCap(item) < item.steps.length - 1; attempt += 1) {
+    item = drawProblem(skill, generator, rng);
+  }
   return item;
 }
 

@@ -182,4 +182,45 @@ assert.equal(gradeTabs.filter((tab) => tab.tabIndex === 0).length, 1);
 assert.ok(gradeTabs.every((tab) => tab.getAttribute("aria-controls") === "library-view"));
 
 win.close();
+// 8. No hint step before the last one states the answer, for any skill. Coincidences (an answer that equals a
+// place value, a coin value, a coefficient) are redrawn; a number the question already shows is not news.
+const leaky = [];
+for (const skill of ALL_SKILLS)
+  for (const item of sample(skill, 250, 17))
+    if (item.steps.length < 2 || item.steps.slice(0, -1).some((step) => stepLeaks(step, item)))
+      leaky.push(`${skill.grade}:${skill.id} ${item.question} | ${item.steps.join(" / ")}`);
+assert.deepEqual(leaky.slice(0, 3), [], `${leaky.length} problems state the answer early`);
+const solve = { question: "6x − 10 = 26. Find x.", answers: ["6"], displayAnswer: "6" };
+assert.ok(
+  !stepLeaks("6x means 6 times x, so divide both sides by 6.", solve),
+  "a number the question shows is not a leak",
+);
+assert.ok(
+  stepLeaks("Divide: 36 ÷ 6 = 6, so x = 6.", {
+    question: "36 ÷ 6 = ?",
+    answers: ["6"],
+    displayAnswer: "6",
+  }) === false,
+);
+assert.ok(
+  stepLeaks("So the missing number is 8.", {
+    question: "7 + ? = 15",
+    answers: ["8"],
+    displayAnswer: "8",
+  }),
+  "a stated answer still leaks",
+);
+for (const [grade, id] of [
+  [1, "subtract-20"],
+  [3, "division-facts"],
+]) {
+  const item = sample(getSkill(grade, id), 100).find((entry) =>
+    /\? = |\+ \? =/.test(entry.steps[0]),
+  );
+  assert.ok(item, `${id} has a search-style item`);
+  assert.match(item.steps[1], /^Count (up|by) /, `${id} searches before it states the fact`);
+}
+const compare = sample(getSkill(3, "fraction-compare"), 20)[0];
+assert.ok(!/>, </.test(compare.steps[2]), "the comparison step does not list the answer symbols");
+
 console.log("fluency open items 2: ok");

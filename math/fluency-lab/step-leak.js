@@ -16,12 +16,17 @@ function answerForms(item) {
 
 const holds = (text, form) => new RegExp(`(?<![\\w./-])${escape(form)}(?![\\w/]|\\.\\d)`).test(plain(text));
 
+// A number the question already shows (the 6 in "6x", the 2 in "1/2") is not news when a step repeats it.
+const NUMERIC = /^-?\d+(\.\d+)?$/;
+const shows = (question, form) =>
+  NUMERIC.test(form) ? new RegExp(`(?<![\\d.])${escape(form)}(?!\\d|\\.\\d)`).test(plain(question)) : holds(question, form);
+
 // "Factors of 48: 1, 2, 3, 4, …" lists a search space for the learner to work through; it does not state a result.
 const isList = (step) => /:\s*[-\d.,\s…\/]+$/.test(plain(step)) && (String(step).match(/,/g) || []).length >= 1;
 
 export function stepLeaks(step, item) {
   if (isList(step)) return false;
-  return answerForms(item).some((form) => !holds(item.question || "", form) && holds(step, form));
+  return answerForms(item).some((form) => !shows(item.question || "", form) && holds(step, form));
 }
 
 export function peekCap(item) {

@@ -338,7 +338,7 @@ const BUILDERS = [
     /^A data table has x-values/,
     () => [
       `Read the y-values from left to right and see how they change as x goes up.`,
-      `Going up is positive, going down is negative, and no steady direction means none.`,
+      `Does y mostly rise, mostly fall, or jump around? Match what you see to one of the choices.`,
     ],
   ],
 ];
