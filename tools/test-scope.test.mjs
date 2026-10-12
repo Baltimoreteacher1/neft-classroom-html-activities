@@ -173,7 +173,12 @@ try {
   writeFileSync(join(dir, "b.test.mjs"), reader("b.json"));
   writeFileSync(
     join(dir, "c.test.mjs"),
-    'import { execFileSync } from "node:child_process";\nexecFileSync(process.execPath, ["-e", "0"]);\n',
+    'import { execFileSync } from "node:child_process";\nexecFileSync("git", ["--version"]);\n',
+  );
+  writeFileSync(
+    join(dir, "d.test.mjs"),
+    'import { execFileSync } from "node:child_process";\n' +
+      "execFileSync(process.execPath, [\"-e\", \"require('node:fs').readFileSync('data/b.json')\"]);\n",
   );
   execFileSync("git", ["init", "-q"], { cwd: dir, env: cleanEnv });
   execFileSync("git", ["add", "-A"], { cwd: dir, env: cleanEnv });
@@ -195,16 +200,26 @@ try {
   const m = JSON.parse(readFileSync(join(dir, "data/test-reads.json"), "utf8")).tests;
   assert.ok(m["a.test.mjs"].files.includes("data/a.json"), "the tracer saw the fs read");
   assert.ok(!m["a.test.mjs"].files.includes("data/b.json"));
-  assert.equal(m["c.test.mjs"].wide, "spawns a subprocess", "a spawning test is always-run");
+  assert.equal(m["c.test.mjs"].wide, "spawns a non-node subprocess", "a non-node spawn is opaque");
+  assert.equal(m["d.test.mjs"].wide, undefined, "a node child is traced, not opaque");
+  assert.ok(m["d.test.mjs"].files.includes("data/b.json"), "the CHILD's reads belong to the test");
 
   const scopeFile = join(dir, "changed.txt");
   writeFileSync(scopeFile, "data/a.json\n");
   const scoped = run([], { QA_TEST_SCOPE_FILES: scopeFile, QA_TEST_VERIFY: "1" });
   assert.equal(scoped.status, 0, scoped.stdout + scoped.stderr);
-  assert.match(scoped.stdout, /test scope: 2 of 3 scripts/);
+  assert.match(scoped.stdout, /test scope: 2 of 4 scripts/);
   assert.match(scoped.stdout, /PASS {2}a\.test\.mjs/);
   assert.match(scoped.stdout, /PASS {2}c\.test\.mjs/);
-  assert.doesNotMatch(scoped.stdout, /b\.test\.mjs/, "an unaffected test must not run");
+  assert.doesNotMatch(scoped.stdout, /[bd]\.test\.mjs/, "an unaffected test must not run");
+
+  // A file only a node CHILD reads still selects the test that spawned it.
+  writeFileSync(scopeFile, "data/b.json\n");
+  const viaChild = run([], { QA_TEST_SCOPE_FILES: scopeFile, QA_TEST_VERIFY: "1" });
+  assert.equal(viaChild.status, 0, viaChild.stdout + viaChild.stderr);
+  assert.match(viaChild.stdout, /test scope: 3 of 4 scripts/);
+  assert.match(viaChild.stdout, /PASS {2}d\.test\.mjs/);
+  assert.doesNotMatch(viaChild.stdout, /a\.test\.mjs/);
 
   // The test now reads a file the manifest has never seen: verification must FAIL.
   writeFileSync(

@@ -12,11 +12,12 @@
 import childProcess from "node:child_process";
 import fs from "node:fs";
 import moduleApi, { registerHooks, syncBuiltinESMExports } from "node:module";
-import { isAbsolute, relative, resolve } from "node:path";
+import { basename, isAbsolute, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import workerThreads from "node:worker_threads";
 
+const PRELOAD = import.meta.url;
 const OUT = process.env.QA_TRACE_OUT;
 const ROOT = process.env.QA_TRACE_ROOT;
 
@@ -48,6 +49,7 @@ function install() {
   const dirs = new Set();
   let wide = null;
   const writeOut = fs.writeFileSync;
+  const readOut = fs.readFileSync;
   const widen = (why) => {
     wide ??= why;
   };
@@ -60,7 +62,11 @@ function install() {
     else if (Buffer.isBuffer(p)) abs = p.toString();
     if (!abs) return null;
     const r = relative(ROOT, resolve(process.cwd(), abs)).split("\\").join("/");
-    if (r.startsWith("..") || isAbsolute(r) || r.startsWith("node_modules/")) return null;
+    // .qa-logs/ and output/ are the gate's own scratch areas (qa-run filters them
+    // out of change lists too); their random names would churn the manifest.
+    if (r.startsWith("..") || isAbsolute(r) || /^(node_modules|\.qa-logs|output)\//.test(r)) {
+      return null;
+    }
     return r;
   }
   function note(p, set) {
@@ -119,7 +125,52 @@ function install() {
     wrap(fs, name, (a) => noteDir(a[1]?.cwd ?? process.cwd()));
   }
   wrap(fs.promises, "glob", (a) => noteDir(a[1]?.cwd ?? process.cwd()));
-  for (const name of SPAWNERS) wrap(childProcess, name, () => widen("spawns a subprocess"));
+
+  // A node child gets this same tracer and writes its own trace file, merged at
+  // exit. Anything else — a shell, git, npm, a missing trace — is opaque.
+  const childTraces = [];
+  const isNodeBinary = (cmd) =>
+    typeof cmd === "string" && (cmd === process.execPath || basename(cmd) === "node");
+  function traceChild(name, a) {
+    if (name === "exec" || name === "execSync") return widen("runs a shell command");
+    let list = null;
+    let opts = null;
+    let callback = null;
+    for (const v of a.slice(1)) {
+      if (Array.isArray(v)) list = v;
+      else if (typeof v === "function") callback = v;
+      else if (v && typeof v === "object") opts = v;
+    }
+    if (opts?.shell) return widen("runs a shell command");
+    // A nested runner (tools/run-tests.mjs) points QA_TRACE_OUT at its own file;
+    // overwriting it would swallow that trace, so leave it and stay opaque.
+    if (opts?.env?.QA_TRACE_OUT && opts.env.QA_TRACE_OUT !== OUT) {
+      return widen("manages its own trace");
+    }
+    const forked = name === "fork";
+    if (forked ? opts?.execPath && !isNodeBinary(opts.execPath) : !isNodeBinary(a[0])) {
+      return widen("spawns a non-node subprocess");
+    }
+    // The test runner starts its own workers through bindings this cannot see.
+    if ((list ?? []).some((x) => x === "--test" || x === "--watch")) {
+      return widen("runs the node test runner");
+    }
+    const childOut = `${OUT}.c${childTraces.length}`;
+    childTraces.push(childOut);
+    const next = {
+      ...(opts ?? {}),
+      env: { ...(opts?.env ?? process.env), QA_TRACE_OUT: childOut, QA_TRACE_ROOT: ROOT },
+    };
+    let args = list ?? [];
+    if (forked) {
+      const execArgv = opts?.execArgv ?? process.execArgv;
+      if (!execArgv.includes(PRELOAD)) next.execArgv = [...execArgv, "--import", PRELOAD];
+    } else {
+      args = ["--import", PRELOAD, ...args];
+    }
+    a.splice(0, a.length, a[0], args, next, ...(callback ? [callback] : []));
+  }
+  for (const name of SPAWNERS) wrap(childProcess, name, (a) => traceChild(name, a));
 
   // module.register() runs loader hooks on another thread: reads there are unseen.
   wrap(moduleApi, "register", () => widen("registers module loader hooks"));
@@ -142,6 +193,16 @@ function install() {
   if (process.argv[1]) noteFile(process.argv[1]);
 
   process.on("exit", () => {
+    for (const file of childTraces) {
+      try {
+        const child = JSON.parse(readOut(file, "utf8"));
+        for (const f of child.files) files.add(f);
+        for (const d of child.dirs) dirs.add(d);
+        if (child.wide) widen(child.wide);
+      } catch {
+        widen("a child process left no trace");
+      }
+    }
     try {
       writeOut(OUT, JSON.stringify({ files: [...files].sort(), dirs: [...dirs].sort(), wide }));
     } catch {}
