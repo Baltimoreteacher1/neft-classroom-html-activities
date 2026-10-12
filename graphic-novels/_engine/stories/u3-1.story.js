@@ -9,7 +9,37 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U3 #1: Global Travel Planner",
     "artBase": "../_art/unit3/",
-    "home": "../index.html"
+    "home": "../index.html",
+    "artFocus": {
+      "celebrate.png": [
+        52,
+        22
+      ],
+      "cover.png": [
+        48,
+        22
+      ],
+      "final-challenge.png": [
+        52,
+        32
+      ],
+      "ratio-table.png": [
+        45,
+        38
+      ],
+      "ratios-compare.png": [
+        70,
+        35
+      ],
+      "unlock.png": [
+        70,
+        25
+      ],
+      "world-map.png": [
+        50,
+        30
+      ]
+    }
   },
   "cast": {
     "traveler": {
@@ -34,7 +64,8 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#d97706"
-      }
+      },
+      "figure": "../_art/characters/u3-compass.png"
     },
     "log": {
       "name": "Capt. Ravi Kapoor",
@@ -43,18 +74,20 @@ window.GN_STORY = {
       "tagIcon": "✈️",
       "blurb": "Global Route Director · Unit-Rate Specialist",
       "portrait": {
+        "outfit": "pilot",
         "skin": "#b87244",
         "hair": "#1e293b",
-        "hairStyle": 5,
+        "hairStyle": "short",
+        "beard": "mustache",
         "glasses": true
       }
     }
   },
   "cover": {
     "art": "cover.png",
-    "alt": "Maya, a young travel planner, stands on a giant glowing globe holding a travel map with airplane trails arcing between landmarks",
+    "alt": "Lina, a young travel planner, stands on a giant glowing globe holding a travel map with airplane trails arcing between landmarks",
     "blurbEn": "You are <b>Lina</b>, a young trip planner. You will travel around the world! Each city has a <b>ratio puzzle</b>. Solve it to unlock the next stop. ATLAS-1, your travel drone, wants to help… but it keeps comparing the wrong totals. Use math to plan the perfect trip!",
-    "blurbEs": "Eres Maya, una joven planificadora de viajes. Resuelve cada acertijo de razones para desbloquear la siguiente ciudad.",
+    "blurbEs": "Eres Lina, una joven planificadora de viajes. Resuelve cada acertijo de razones para desbloquear la siguiente ciudad.",
     "startLabel": "Start the Trip ✈️"
   },
   "acts": [
@@ -68,14 +101,14 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "ratios-compare.png",
-          "alt": "Maya stands in front of the Eiffel Tower holding passports, with a glowing ratio comparison floating beside her",
+          "alt": "Lina stands in front of the Eiffel Tower holding passports, with a glowing ratio comparison floating beside her",
           "lastLabel": "Try the gate ▶",
           "beats": [
             {
               "who": "log",
               "caption": true,
               "en": "Welcome to Paris, Lina! This gate is locked. To open it, write the right RATIO.",
-              "es": "¡Bienvenida a París, Maya! Esta puerta está cerrada. Escribe la RAZÓN correcta."
+              "es": "¡Bienvenida a París, Lina! Esta puerta está cerrada. Escribe la RAZÓN correcta."
             },
             {
               "who": "traveler",
@@ -135,7 +168,7 @@ window.GN_STORY = {
               "es": "6 a 2 (eso es viajeros : guías)",
               "correct": false,
               "why": {
-                "en": "❌ Order matters. Write guides FIRST, then travelers: 2 to 6. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Order matters. Write guides FIRST, then travelers: 2 to 6. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "El orden importa. Escribe guías primero: 2 a 6."
               }
             },
@@ -144,7 +177,7 @@ window.GN_STORY = {
               "es": "2 a 8 (8 no es el número de viajeros)",
               "correct": false,
               "why": {
-                "en": "❌ Order matters. Write guides FIRST, then travelers: 2 to 6. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Order matters. Write guides FIRST, then travelers: 2 to 6. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "El orden importa. Escribe guías primero: 2 a 6."
               }
             }
@@ -187,8 +220,8 @@ window.GN_STORY = {
             "es": "En la historia, ¿qué significa la palabra <b>razón</b>?"
           },
           "hint": {
-            "en": "Think about how Maya used 2 guides and 6 travelers.",
-            "es": "Piensa en cómo Maya usó 2 guías y 6 viajeros."
+            "en": "Think about how Lina used 2 guides and 6 travelers.",
+            "es": "Piensa en cómo Lina usó 2 guías y 6 viajeros."
           },
           "choices": [
             {
@@ -201,8 +234,8 @@ window.GN_STORY = {
               "es": "El total cuando sumas dos cantidades.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -210,8 +243,8 @@ window.GN_STORY = {
               "es": "El número más grande del panel de la puerta.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -219,7 +252,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "ratios-compare.png",
-          "alt": "Maya studies a glowing ratio of stamps to passports beside the Eiffel Tower",
+          "alt": "Lina studies a glowing ratio of stamps to passports beside the Eiffel Tower",
           "lastLabel": "Match the ratio ▶",
           "beats": [
             {
@@ -259,7 +292,7 @@ window.GN_STORY = {
               "es": "7 pasaportes (eso es 4 + 3, no la razón)",
               "correct": false,
               "why": {
-                "en": "❌ Keep the same ratio. Each stamp brings 3 passports, so multiply by 3, not add. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Keep the same ratio. Each stamp brings 3 passports, so multiply by 3, not add. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Mantén la misma razón. Multiplica por 3, no sumes."
               }
             },
@@ -273,7 +306,7 @@ window.GN_STORY = {
               "es": "4 pasaportes (igual que los sellos)",
               "correct": false,
               "why": {
-                "en": "❌ Keep the same ratio. Each stamp brings 3 passports, so multiply by 3, not add. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Keep the same ratio. Each stamp brings 3 passports, so multiply by 3, not add. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Mantén la misma razón. Multiplica por 3, no sumes."
               }
             }
@@ -283,7 +316,7 @@ window.GN_STORY = {
           "badEn": "❌ Keep the same ratio. Each stamp brings 3 passports, so multiply by 3, not add. Try again.",
           "badEs": "Mantén la misma razón. Multiplica por 3, no sumes.",
           "solveArt": "unlock.png",
-          "solveAlt": "A glowing gateway opens to reveal pyramids as Maya cheers with raised fists",
+          "solveAlt": "A glowing gateway opens to reveal pyramids as Lina cheers with raised fists",
           "solveBeat": {
             "who": "traveler",
             "en": "The gateway opens to the pyramids! On to Tokyo to build a ratio table.",
@@ -315,7 +348,7 @@ window.GN_STORY = {
           "ask": {
             "who": "log",
             "en": "Tap the line that shows ATLAS-1 <b>added</b> the amounts instead of using the ratio.",
-            "es": "Toca la línea que muestra que COMPASS <b>sumó</b> las cantidades en vez de usar la razón."
+            "es": "Toca la línea que muestra que ATLAS-1 <b>sumó</b> las cantidades en vez de usar la razón."
           },
           "choices": [
             {
@@ -328,8 +361,8 @@ window.GN_STORY = {
               "es": "“Una razón compara dos cantidades.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -337,8 +370,8 @@ window.GN_STORY = {
               "es": "“Ahora necesito una razón equivalente con el mismo patrón.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -355,7 +388,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "ratio-table.png",
-          "alt": "Maya draws a glowing ratio table and a rising line graph in the air on a Tokyo street",
+          "alt": "Lina draws a glowing ratio table and a rising line graph in the air on a Tokyo street",
           "lastLabel": "Fill the table ▶",
           "beats": [
             {
@@ -406,7 +439,7 @@ window.GN_STORY = {
               "es": "190 millas (solo sumó 40)",
               "correct": false,
               "why": {
-                "en": "❌ Each hour adds 50 miles. 50, 100, 150, 200. Use the pattern and try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Each hour adds 50 miles. 50, 100, 150, 200. Use the pattern and try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Cada hora suma 50 millas: 50, 100, 150, 200."
               }
             },
@@ -420,7 +453,7 @@ window.GN_STORY = {
               "es": "150 millas (eso son 3 horas)",
               "correct": false,
               "why": {
-                "en": "❌ Each hour adds 50 miles. 50, 100, 150, 200. Use the pattern and try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Each hour adds 50 miles. 50, 100, 150, 200. Use the pattern and try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Cada hora suma 50 millas: 50, 100, 150, 200."
               }
             }
@@ -473,8 +506,8 @@ window.GN_STORY = {
               "es": "200 millas.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -482,8 +515,8 @@ window.GN_STORY = {
               "es": "4 millas.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -491,7 +524,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "ratio-table.png",
-          "alt": "Maya stands at a Tokyo money desk with a glowing dollars-to-coins ratio table",
+          "alt": "Lina stands at a Tokyo money desk with a glowing dollars-to-coins ratio table",
           "lastLabel": "Swap the money ▶",
           "beats": [
             {
@@ -522,8 +555,8 @@ window.GN_STORY = {
             "es": "Multiplica los dólares por 5. 6 × 5 = ?"
           },
           "frame": {
-            "en": "“For $6 Maya gets ____ coins because 6 × 5 = ____.”",
-            "es": "“Por $6 Maya recibe ____ monedas porque 6 × 5 = ____.”"
+            "en": "“For $6 Lina gets ____ coins because 6 × 5 = ____.”",
+            "es": "“Por $6 Lina recibe ____ monedas porque 6 × 5 = ____.”"
           },
           "choices": [
             {
@@ -531,7 +564,7 @@ window.GN_STORY = {
               "es": "11 monedas (eso es 6 + 5)",
               "correct": false,
               "why": {
-                "en": "❌ Multiply the dollars by 5, do not add. 6 × 5 = 30. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Multiply the dollars by 5, do not add. 6 × 5 = 30. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Multiplica los dólares por 5: 6 × 5 = 30."
               }
             },
@@ -545,7 +578,7 @@ window.GN_STORY = {
               "es": "25 monedas (eso es $5)",
               "correct": false,
               "why": {
-                "en": "❌ Multiply the dollars by 5, do not add. 6 × 5 = 30. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Multiply the dollars by 5, do not add. 6 × 5 = 30. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Multiplica los dólares por 5: 6 × 5 = 30."
               }
             }
@@ -585,7 +618,7 @@ window.GN_STORY = {
           "ask": {
             "who": "log",
             "en": "What is Lina mainly doing in Tokyo?",
-            "es": "¿Qué hace principalmente Maya en Tokio?"
+            "es": "¿Qué hace principalmente Lina en Tokio?"
           },
           "choices": [
             {
@@ -598,8 +631,8 @@ window.GN_STORY = {
               "es": "Escribir la primera razón de guías a viajeros.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -607,8 +640,8 @@ window.GN_STORY = {
               "es": "Contar las maletas que cada viajero puede llevar.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -628,18 +661,18 @@ window.GN_STORY = {
           },
           "items": [
             {
-              "en": "Maya fills the train table to find the miles in 4 hours.",
-              "es": "Maya completa la tabla del tren para hallar las millas en 4 horas.",
+              "en": "Lina fills the train table to find the miles in 4 hours.",
+              "es": "Lina completa la tabla del tren para hallar las millas en 4 horas.",
               "order": 1
             },
             {
-              "en": "COMPASS adds $6 and 5 coins to guess 11 coins.",
-              "es": "COMPASS suma $6 y 5 monedas y adivina 11 monedas.",
+              "en": "ATLAS-1 adds $6 and 5 coins to guess 11 coins.",
+              "es": "ATLAS-1 suma $6 y 5 monedas y adivina 11 monedas.",
               "order": 2
             },
             {
-              "en": "Maya multiplies to change $6 into 30 coins and unlocks Tokyo.",
-              "es": "Maya multiplica para cambiar $6 por 30 monedas y desbloquea Tokio.",
+              "en": "Lina multiplies to change $6 into 30 coins and unlocks Tokyo.",
+              "es": "Lina multiplica para cambiar $6 por 30 monedas y desbloquea Tokio.",
               "order": 3
             }
           ]
@@ -656,7 +689,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "final-challenge.png",
-          "alt": "Maya stands before a huge glowing globe gateway with ratio tables and route lines orbiting her",
+          "alt": "Lina stands before a huge glowing globe gateway with ratio tables and route lines orbiting her",
           "lastLabel": "Open the gateway ▶",
           "beats": [
             {
@@ -706,7 +739,7 @@ window.GN_STORY = {
               "es": "La razón es 2 : 1, y 5 viajeros necesitan 7 maletas",
               "correct": false,
               "why": {
-                "en": "❌ Check both parts. The ratio is 2 bags to 1 traveler, and 5×2 = 10 bags. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Check both parts. The ratio is 2 bags to 1 traveler, and 5×2 = 10 bags. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Revisa ambas partes. La razón es 2 a 1 y 5 × 2 = 10 maletas."
               }
             },
@@ -720,7 +753,7 @@ window.GN_STORY = {
               "es": "La razón es 1 : 2, y 5 viajeros necesitan 10 maletas",
               "correct": false,
               "why": {
-                "en": "❌ Check both parts. The ratio is 2 bags to 1 traveler, and 5×2 = 10 bags. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Check both parts. The ratio is 2 bags to 1 traveler, and 5×2 = 10 bags. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Revisa ambas partes. La razón es 2 a 1 y 5 × 2 = 10 maletas."
               }
             }
@@ -732,7 +765,7 @@ window.GN_STORY = {
           "solveBeat": {
             "who": "traveler",
             "en": "The Last Gateway opens! The whole trip is planned. Thanks, ATLAS-1 — even the wrong guesses helped.",
-            "es": "¡La Última Puerta se abre! Todo el viaje está planeado. Gracias, COMPASS."
+            "es": "¡La Última Puerta se abre! Todo el viaje está planeado. Gracias, ATLAS-1."
           },
           "help": {
             "conceptual": {
@@ -760,11 +793,11 @@ window.GN_STORY = {
           "ask": {
             "who": "log",
             "en": "ATLAS-1 keeps adding the two amounts together. Why does ATLAS-1 keep guessing wrong?",
-            "es": "COMPASS sigue sumando las dos cantidades. ¿Por qué COMPASS sigue adivinando mal?"
+            "es": "ATLAS-1 sigue sumando las dos cantidades. ¿Por qué ATLAS-1 sigue adivinando mal?"
           },
           "hint": {
-            "en": "Look back: COMPASS adds when it should multiply or keep the ratio.",
-            "es": "Mira atrás: COMPASS suma cuando debería multiplicar o mantener la razón."
+            "en": "Look back: ATLAS-1 adds when it should multiply or keep the ratio.",
+            "es": "Mira atrás: ATLAS-1 suma cuando debería multiplicar o mantener la razón."
           },
           "choices": [
             {
@@ -774,11 +807,11 @@ window.GN_STORY = {
             },
             {
               "en": "It does not want Lina to finish the trip.",
-              "es": "No quiere que Maya termine el viaje.",
+              "es": "No quiere que Lina termine el viaje.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -786,8 +819,8 @@ window.GN_STORY = {
               "es": "Los paneles de la puerta muestran números equivocados.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -803,7 +836,7 @@ window.GN_STORY = {
           "ask": {
             "who": "log",
             "en": "The Last Gateway is open. What will Lina most likely do next?",
-            "es": "La Última Puerta está abierta. ¿Qué hará Maya probablemente después?"
+            "es": "La Última Puerta está abierta. ¿Qué hará Lina probablemente después?"
           },
           "choices": [
             {
@@ -816,8 +849,8 @@ window.GN_STORY = {
               "es": "Regresar y cerrar otra vez la puerta de París.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -825,8 +858,8 @@ window.GN_STORY = {
               "es": "Dejar de usar tablas de razones por el resto del viaje.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -892,7 +925,7 @@ window.GN_STORY = {
   ],
   "complete": {
     "art": "celebrate.png",
-    "alt": "Maya celebrates with arms wide, surrounded by world landmarks, fireworks, and a passport full of stamps",
+    "alt": "Lina celebrates with arms wide, surrounded by world landmarks, fireworks, and a passport full of stamps",
     "badge": "🎉✈️⭐",
     "titleEn": "Trip Complete!",
     "en": "You planned the whole trip around the world! You used <b>ratios</b> to compare groups and <b>ratio tables</b> to scale up trips, money, and bags. Your passport is full of stamps. Amazing work, Lina!",

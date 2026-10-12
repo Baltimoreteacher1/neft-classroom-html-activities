@@ -359,3 +359,43 @@ Every bubble (and comprehension `ask`) gets a 🔊 read-aloud control (Web Speec
 API, EN + ES) when the browser supports it. The mission-complete screen renders
 a printable "My Reading + Math Log" (`#nt-notebook`) collecting each solved
 item; a print button triggers the print stylesheet (`@media print`).
+
+## Comic page layer (2026-10-12)
+
+Every `beats` step is lettered as one comic **page**: a grid of inked panels,
+one per beat, revealed in reading order (Next button, tap the next blank panel,
+or "Read page to me", which voices and reveals each panel in turn). How a panel
+is shot depends on who speaks:
+
+| speaker role  | panel                                                                   |
+| ------------- | ----------------------------------------------------------------------- |
+| first beat    | establishing shot: the whole `art` image                                |
+| `protagonist` | close-up: the scene art zoomed onto the hero's face (`meta.artFocus`)   |
+| `companion`   | the illustrated cut-out `cast.figure` in front of the softened scene    |
+| `specialist`  | a "LIVE" transmission monitor with a drawn portrait (`cast.portrait`)   |
+| `narrator`    | a yellow caption box                                                    |
+
+A solved math challenge adds a two-panel strip: the hero saying the correct
+reply, then `solveBeat` over `solveArt`. A `misconception` beat gets a wobbly
+red balloon and a "Call it out!" button that opens the trap analysis.
+
+New fields (all optional; panels fall back gracefully without them):
+
+```js
+meta: { artFocus: { "scene.png": [x, y] } }  // hero face position, % of the image
+cast: {
+  pip: { figure: "../_art/characters/u2-pip.png", figureTint: 150 }, // cut-out + hue shift (#2 novels)
+  chef_log: { portrait: { outfit: "chef", skin: "#f2c29b", hair: "#7c2d12",
+                          hairStyle: "bun", beard: "full", glasses: true,
+                          earrings: true, gray: true } },
+}
+```
+
+`portrait.outfit` is one of chef, pilot, blazer, suit, lab, hardhat, dj,
+detective, judge, coach, captain, parka. `hairStyle`: short, long, bun, curly,
+braid, bald. `portrait.bot: true` marks a robot. Robots are declared, never
+guessed from names. Readers pick bubble language (EN + ES / EN / ES) from the
+top bar; it persists in `localStorage["nt_gn_lang"]`.
+
+Math Labs and the Math X-Ray load **practice numbers** (each number in the
+question + 1). They model the method and never print the question's answer.

@@ -9,7 +9,37 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U2 #1: Master Chef Kitchen: The Recipe Rescue",
     "artBase": "../_art/unit2/",
-    "home": "../index.html"
+    "home": "../index.html",
+    "artFocus": {
+      "celebration.png": [
+        48,
+        32
+      ],
+      "cover.png": [
+        52,
+        28
+      ],
+      "final-banquet.png": [
+        52,
+        32
+      ],
+      "kitchen-orders.png": [
+        36,
+        38
+      ],
+      "pantry-open.png": [
+        27,
+        36
+      ],
+      "portioning.png": [
+        35,
+        40
+      ],
+      "scaling-recipe.png": [
+        44,
+        30
+      ]
+    }
   },
   "cast": {
     "chef": {
@@ -34,7 +64,8 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#0284c7"
-      }
+      },
+      "figure": "../_art/characters/u2-pip.png"
     },
     "chef_log": {
       "name": "Chef Colette Moreau",
@@ -43,18 +74,19 @@ window.GN_STORY = {
       "tagIcon": "🥐",
       "blurb": "Executive Patissier · Reciprocal Master",
       "portrait": {
-        "skin": "#f6d2b8",
+        "outfit": "chef",
+        "skin": "#f2c29b",
         "hair": "#7c2d12",
-        "hairStyle": 4,
-        "gear": "toque"
+        "hairStyle": "bun",
+        "earrings": true
       }
     }
   },
   "cover": {
     "art": "cover.png",
-    "alt": "Kai, a young chef, strikes a hero pose in a glowing futuristic kitchen with floating order tickets",
-    "blurbEn": "You are <b>Kai</b>, a young chef. The restaurant is very busy! The pantry is locked. You must <b>divide fractions</b> to portion the food and unlock the kitchen. PIP-4, the kitchen bot, wants to help… but PIP-4 keeps flipping which number divides which. Catch its mistakes and save dinner!",
-    "blurbEs": "Eres Kai, un chef joven. El restaurante está muy ocupado. Debes <b>dividir fracciones</b> para servir la comida y abrir la despensa.",
+    "alt": "Mateo, a young chef, strikes a hero pose in a glowing futuristic kitchen with floating order tickets",
+    "blurbEn": "You are <b>Mateo</b>, a young chef. The restaurant is very busy! The pantry is locked. You must <b>divide fractions</b> to portion the food and unlock the kitchen. PIP-4, the kitchen bot, wants to help… but PIP-4 keeps flipping which number divides which. Catch its mistakes and save dinner!",
+    "blurbEs": "Eres Mateo, un chef joven. El restaurante está muy ocupado. Debes <b>dividir fracciones</b> para servir la comida y abrir la despensa.",
     "startLabel": "Start Cooking 🛒"
   },
   "acts": [
@@ -68,14 +100,14 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "kitchen-orders.png",
-          "alt": "Kai stands at a prep station looking at floating order tickets and a locked pantry door",
-          "lastLabel": "Stop PIP ▶",
+          "alt": "Mateo stands at a prep station looking at floating order tickets and a locked pantry door",
+          "lastLabel": "Stop PIP-4 ▶",
           "beats": [
             {
               "who": "chef_log",
               "caption": true,
-              "en": "Kai! The dinner rush is here and the pantry is LOCKED. Only correct portions will open it!",
-              "es": "¡Kai! Llegaron muchos clientes y la despensa está CERRADA. ¡Solo las porciones correctas la abren!"
+              "en": "Mateo! The dinner rush is here and the pantry is LOCKED. Only correct portions will open it!",
+              "es": "¡Mateo! Llegaron muchos clientes y la despensa está CERRADA. ¡Solo las porciones correctas la abren!"
             },
             {
               "who": "chef_log",
@@ -124,11 +156,11 @@ window.GN_STORY = {
             },
             {
               "en": "PIP-4 is trapped inside the pantry.",
-              "es": "PIP está atrapado dentro de la despensa.",
+              "es": "PIP-4 está atrapado dentro de la despensa.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -136,8 +168,8 @@ window.GN_STORY = {
               "es": "Los clientes quieren ver la puerta cerrada.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -148,7 +180,7 @@ window.GN_STORY = {
           "ask": {
             "who": "chef",
             "en": "Hold on, PIP-4 — that's multiplying, not dividing. What does the ticket <b>3 ÷ 1/4</b> really mean?",
-            "es": "Espera, PIP: eso es multiplicar, no dividir. ¿Qué significa 3 ÷ 1/4?"
+            "es": "Espera, PIP-4: eso es multiplicar, no dividir. ¿Qué significa 3 ÷ 1/4?"
           },
           "hint": {
             "en": "“Divide by 1/4” means “How many <b>1/4-cup</b> pieces fit inside?” Think: how many quarters are in the whole amount?"
@@ -161,7 +193,7 @@ window.GN_STORY = {
               "en": "How much is 3 plus 1/4? <span class=\"note\">(that is adding, not dividing)</span>",
               "correct": false,
               "why": {
-                "en": "❌ That is a different operation. Dividing by 1/4 means counting how many 1/4-cup pieces fit. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ That is a different operation. Dividing by 1/4 means counting how many 1/4-cup pieces fit. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Esa es otra operación. Dividir entre 1/4 cuenta cuántos pedazos de 1/4 caben."
               }
             },
@@ -173,7 +205,7 @@ window.GN_STORY = {
               "en": "How much is 3 times 1/4? <span class=\"note\">(that is multiplying, not dividing)</span>",
               "correct": false,
               "why": {
-                "en": "❌ That is a different operation. Dividing by 1/4 means counting how many 1/4-cup pieces fit. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ That is a different operation. Dividing by 1/4 means counting how many 1/4-cup pieces fit. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Esa es otra operación. Dividir entre 1/4 cuenta cuántos pedazos de 1/4 caben."
               }
             }
@@ -216,8 +248,8 @@ window.GN_STORY = {
             "es": "En un ticket, una <b>porción</b> es —"
           },
           "hint": {
-            "en": "Think about the 1/4-cup bowls Kai fills for each order.",
-            "es": "Piensa en los tazones de 1/4 de taza que Kai llena para cada pedido."
+            "en": "Think about the 1/4-cup bowls Mateo fills for each order.",
+            "es": "Piensa en los tazones de 1/4 de taza que Mateo llena para cada pedido."
           },
           "choices": [
             {
@@ -230,8 +262,8 @@ window.GN_STORY = {
               "es": "toda la despensa cerrada.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -239,8 +271,8 @@ window.GN_STORY = {
               "es": "el nombre del robot de cocina.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -250,7 +282,7 @@ window.GN_STORY = {
           "id": "1b",
           "ask": {
             "who": "chef",
-            "en": "Now find the answer. How many <b>1/4-cup</b> bowls can Kai fill from <b>3 cups</b> of soup? Solve <b>3 ÷ 1/4</b>.",
+            "en": "Now find the answer. How many <b>1/4-cup</b> bowls can Mateo fill from <b>3 cups</b> of soup? Solve <b>3 ÷ 1/4</b>.",
             "es": "¿Cuántos tazones de 1/4 de taza salen de 3 tazas?"
           },
           "hint": {
@@ -264,7 +296,7 @@ window.GN_STORY = {
               "en": "3/4 of a bowl <span class=\"note\">(that is 3 × 1/4, not dividing)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Not quite. Dividing by 1/4 means flip to 4 and multiply: 3 × 4. Use the hint. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Not quite. Dividing by 1/4 means flip to 4 and multiply: 3 × 4. Use the hint. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Casi. Dividir entre 1/4 es invertir a 4 y multiplicar: 3 × 4. Usa la pista."
               }
             },
@@ -276,7 +308,7 @@ window.GN_STORY = {
               "en": "7 bowls <span class=\"note\">(that is 3 + 4, not 3 × 4)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Not quite. Dividing by 1/4 means flip to 4 and multiply: 3 × 4. Use the hint. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Not quite. Dividing by 1/4 means flip to 4 and multiply: 3 × 4. Use the hint. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Casi. Dividir entre 1/4 es invertir a 4 y multiplicar: 3 × 4. Usa la pista."
               }
             }
@@ -286,11 +318,11 @@ window.GN_STORY = {
           "badEn": "❌ Not quite. Dividing by 1/4 means flip to 4 and multiply: 3 × 4. Use the hint.",
           "badEs": "Casi. Dividir entre 1/4 es invertir a 4 y multiplicar: 3 × 4. Usa la pista.",
           "solveArt": "pantry-open.png",
-          "solveAlt": "The pantry door bursts open with golden light as Kai raises a fist",
+          "solveAlt": "The pantry door bursts open with golden light as Mateo raises a fist",
           "solveBeat": {
             "who": "chef",
             "en": "12 bowls — the pantry is open! Thanks for the help, PIP-4, even the wrong guess.",
-            "es": "¡12 tazones, la despensa está abierta! Gracias, PIP."
+            "es": "¡12 tazones, la despensa está abierta! Gracias, PIP-4."
           },
           "help": {
             "conceptual": {
@@ -331,17 +363,17 @@ window.GN_STORY = {
               "es": "“El primer ticket dice 3 ÷ 1/4.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "“Thanks for the help, PIP-4.”",
-              "es": "“Gracias, PIP.”",
+              "es": "“Gracias, PIP-4.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -358,8 +390,8 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "scaling-recipe.png",
-          "alt": "Kai pours flour into measuring cups while scaling up a recipe",
-          "lastLabel": "Stop PIP ▶",
+          "alt": "Mateo pours flour into measuring cups while scaling up a recipe",
+          "lastLabel": "Stop PIP-4 ▶",
           "beats": [
             {
               "who": "chef_log",
@@ -403,8 +435,8 @@ window.GN_STORY = {
           "passageRef": "act2.beat1",
           "ask": {
             "who": "chef_log",
-            "en": "What is Kai mainly trying to do in this chapter?",
-            "es": "¿Qué intenta hacer Kai principalmente en este capítulo?"
+            "en": "What is Mateo mainly trying to do in this chapter?",
+            "es": "¿Qué intenta hacer Mateo principalmente en este capítulo?"
           },
           "choices": [
             {
@@ -417,17 +449,17 @@ window.GN_STORY = {
               "es": "Abrir otra vez la puerta cerrada de la despensa.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Teach PIP-4 how to read order tickets.",
-              "es": "Enseñar a PIP a leer los tickets de pedidos.",
+              "es": "Enseñar a PIP-4 a leer los tickets de pedidos.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -451,7 +483,7 @@ window.GN_STORY = {
               "en": "2 plates <span class=\"note\">(that is 6 × 1/3, not dividing)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Dividing by 1/3 means flip to 3 and multiply: 6 × 3. Check the hint. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Dividing by 1/3 means flip to 3 and multiply: 6 × 3. Check the hint. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Dividir entre 1/3 es invertir a 3 y multiplicar: 6 × 3. Revisa la pista."
               }
             },
@@ -463,7 +495,7 @@ window.GN_STORY = {
               "en": "9 plates <span class=\"note\">(that is 6 + 3, not 6 × 3)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Dividing by 1/3 means flip to 3 and multiply: 6 × 3. Check the hint. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Dividing by 1/3 means flip to 3 and multiply: 6 × 3. Check the hint. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Dividir entre 1/3 es invertir a 3 y multiplicar: 6 × 3. Revisa la pista."
               }
             }
@@ -497,7 +529,7 @@ window.GN_STORY = {
           "id": "2b",
           "ask": {
             "who": "chef",
-            "en": "Kai has <b>3/4 cup</b> of sauce. Each small dish needs <b>1/8 cup</b>. How many dishes can Kai fill? Solve <b>3/4 ÷ 1/8</b>.",
+            "en": "Mateo has <b>3/4 cup</b> of sauce. Each small dish needs <b>1/8 cup</b>. How many dishes can Mateo fill? Solve <b>3/4 ÷ 1/8</b>.",
             "es": "¿Cuántos platos de 1/8 de taza salen de 3/4 de taza?"
           },
           "hint": {
@@ -511,7 +543,7 @@ window.GN_STORY = {
               "en": "3/32 of a dish <span class=\"note\">(that is 3/4 × 1/8, not flipping)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Flip the SECOND fraction: 3/4 × 8/1 = 24/4 = 6. Try the hint. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Flip the SECOND fraction: 3/4 × 8/1 = 24/4 = 6. Try the hint. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Invierte la SEGUNDA fracción: 3/4 × 8/1 = 24/4 = 6."
               }
             },
@@ -523,7 +555,7 @@ window.GN_STORY = {
               "en": "8 dishes <span class=\"note\">(you forgot the 3/4)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Flip the SECOND fraction: 3/4 × 8/1 = 24/4 = 6. Try the hint. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Flip the SECOND fraction: 3/4 × 8/1 = 24/4 = 6. Try the hint. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Invierte la SEGUNDA fracción: 3/4 × 8/1 = 24/4 = 6."
               }
             }
@@ -567,18 +599,18 @@ window.GN_STORY = {
           },
           "items": [
             {
-              "en": "PIP guesses that 6 ÷ 1/3 is just 6 ÷ 3 = 2 plates.",
-              "es": "PIP adivina que 6 ÷ 1/3 es solo 6 ÷ 3 = 2 platos.",
+              "en": "PIP-4 guesses that 6 ÷ 1/3 is just 6 ÷ 3 = 2 plates.",
+              "es": "PIP-4 adivina que 6 ÷ 1/3 es solo 6 ÷ 3 = 2 platos.",
               "order": 1
             },
             {
-              "en": "Kai divides the stew and fills 18 plates.",
-              "es": "Kai divide el guiso y llena 18 platos.",
+              "en": "Mateo divides the stew and fills 18 plates.",
+              "es": "Mateo divide el guiso y llena 18 platos.",
               "order": 2
             },
             {
-              "en": "Kai portions the sauce into 6 dishes and sends the order.",
-              "es": "Kai reparte la salsa en 6 platos y envía el pedido.",
+              "en": "Mateo portions the sauce into 6 dishes and sends the order.",
+              "es": "Mateo reparte la salsa en 6 platos y envía el pedido.",
               "order": 3
             }
           ]
@@ -595,14 +627,14 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "final-banquet.png",
-          "alt": "Kai rolls up sleeves to face a huge glowing banquet order ticket",
-          "lastLabel": "Stop PIP ▶",
+          "alt": "Mateo rolls up sleeves to face a huge glowing banquet order ticket",
+          "lastLabel": "Stop PIP-4 ▶",
           "beats": [
             {
               "who": "chef_log",
               "caption": true,
-              "en": "The banquet table is the BIGGEST order tonight. One more portion problem, Kai. You ready?",
-              "es": "La mesa del banquete es el pedido MÁS GRANDE de la noche. Un problema más, Kai. ¿Listo?"
+              "en": "The banquet table is the BIGGEST order tonight. One more portion problem, Mateo. You ready?",
+              "es": "La mesa del banquete es el pedido MÁS GRANDE de la noche. Un problema más, Mateo. ¿Listo?"
             },
             {
               "who": "chef_log",
@@ -635,7 +667,7 @@ window.GN_STORY = {
           "id": "F",
           "ask": {
             "who": "chef",
-            "en": "Careful, PIP-4 — you only flipped part of it. The banquet pot holds <b>4 cups</b> of curry. Each guest bowl takes <b>2/3 cup</b>. How many bowls can Kai serve? Solve <b>4 ÷ 2/3</b>.",
+            "en": "Careful, PIP-4 — you only flipped part of it. The banquet pot holds <b>4 cups</b> of curry. Each guest bowl takes <b>2/3 cup</b>. How many bowls can Mateo serve? Solve <b>4 ÷ 2/3</b>.",
             "es": "¿Cuántos tazones de 2/3 de taza salen de 4 tazas?"
           },
           "hint": {
@@ -649,7 +681,7 @@ window.GN_STORY = {
               "en": "4 bowls <span class=\"note\">(you flipped only part of it)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Flip 2/3 to 3/2, then 4 × 3/2 = 12/2 = 6. Use the hint and try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Flip 2/3 to 3/2, then 4 × 3/2 = 12/2 = 6. Use the hint and try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Invierte 2/3 a 3/2, luego 4 × 3/2 = 12/2 = 6. Usa la pista."
               }
             },
@@ -661,7 +693,7 @@ window.GN_STORY = {
               "en": "8/3 of a bowl <span class=\"note\">(that is 4 × 2/3, not dividing)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Flip 2/3 to 3/2, then 4 × 3/2 = 12/2 = 6. Use the hint and try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Flip 2/3 to 3/2, then 4 × 3/2 = 12/2 = 6. Use the hint and try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Invierte 2/3 a 3/2, luego 4 × 3/2 = 12/2 = 6. Usa la pista."
               }
             }
@@ -701,25 +733,25 @@ window.GN_STORY = {
           "ask": {
             "who": "chef_log",
             "en": "PIP-4 keeps guessing wrong portions. Why does PIP-4 guess wrong?",
-            "es": "PIP sigue adivinando porciones incorrectas. ¿Por qué se equivoca PIP?"
+            "es": "PIP-4 sigue adivinando porciones incorrectas. ¿Por qué se equivoca PIP-4?"
           },
           "hint": {
-            "en": "Look back: PIP treats “÷ 1/n” as if it were just “÷ n.”",
-            "es": "Mira atrás: PIP trata “÷ 1/n” como si fuera solo “÷ n.”"
+            "en": "Look back: PIP-4 treats “÷ 1/n” as if it were just “÷ n.”",
+            "es": "Mira atrás: PIP-4 trata “÷ 1/n” como si fuera solo “÷ n.”"
           },
           "choices": [
             {
               "en": "PIP-4 flips which number divides which, so it never finishes dividing by the fraction.",
-              "es": "PIP confunde cuál número divide a cuál, así que nunca termina de dividir entre la fracción.",
+              "es": "PIP-4 confunde cuál número divide a cuál, así que nunca termina de dividir entre la fracción.",
               "correct": true
             },
             {
               "en": "PIP-4 does not want the dinner to be served.",
-              "es": "PIP no quiere que se sirva la cena.",
+              "es": "PIP-4 no quiere que se sirva la cena.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -727,8 +759,8 @@ window.GN_STORY = {
               "es": "Los tickets de pedidos muestran las recetas equivocadas.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -743,8 +775,8 @@ window.GN_STORY = {
           "passageRef": "final",
           "ask": {
             "who": "chef_log",
-            "en": "The banquet is plated. What will Kai most likely do next?",
-            "es": "El banquete está servido. ¿Qué hará Kai probablemente después?"
+            "en": "The banquet is plated. What will Mateo most likely do next?",
+            "es": "El banquete está servido. ¿Qué hará Mateo probablemente después?"
           },
           "choices": [
             {
@@ -757,8 +789,8 @@ window.GN_STORY = {
               "es": "Cerrar otra vez la despensa del Acto 1.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -766,8 +798,8 @@ window.GN_STORY = {
               "es": "Dejar de dividir fracciones para siempre.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -833,11 +865,11 @@ window.GN_STORY = {
   ],
   "complete": {
     "art": "celebration.png",
-    "alt": "Kai proudly presents a banquet of finished dishes while chef friends cheer",
+    "alt": "Mateo proudly presents a banquet of finished dishes while chef friends cheer",
     "badge": "🎉🛒⭐",
     "titleEn": "Kitchen Saved!",
-    "en": "You did it, Mateo Kai! You used <b>dividing fractions</b> to portion the soup, scale the recipes, and serve the whole banquet. Every guest is happy. Great cooking!",
-    "es": "¡Lo lograste, Chef Kai! Usaste la división de fracciones para servir a todos. ¡Excelente trabajo!",
+    "en": "You did it, Chef Mateo! You used <b>dividing fractions</b> to portion the soup, scale the recipes, and serve the whole banquet. Every guest is happy. Great cooking!",
+    "es": "¡Lo lograste, Chef Mateo! Usaste la división de fracciones para servir a todos. ¡Excelente trabajo!",
     "master": {
       "headingEn": "Prove your rank to certify your Master Certificate!",
       "promptEn": "Scale the recipe: divide <strong>2/3 cup</strong> of milk into portion bowls of <strong>1/6 cup</strong> each. Solve 2/3 ÷ 1/6.",

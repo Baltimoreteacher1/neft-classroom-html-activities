@@ -9,7 +9,41 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U1 #1: Decimal Docking Bay",
     "artBase": "../../_art/unit1/",
-    "home": "../../index.html"
+    "home": "../../index.html",
+    "artFocus": {
+      "airlock-locked.png": [
+        65,
+        22
+      ],
+      "airlock-open.png": [
+        50,
+        22
+      ],
+      "boss-door.png": [
+        50,
+        55
+      ],
+      "common-factor.png": [
+        50,
+        15
+      ],
+      "cover.png": [
+        45,
+        22
+      ],
+      "factor-tree.png": [
+        42,
+        30
+      ],
+      "mission-complete.png": [
+        32,
+        22
+      ],
+      "twin-engines.png": [
+        50,
+        45
+      ]
+    }
   },
   "cast": {
     "cadet": {
@@ -34,7 +68,8 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#ea580c"
-      }
+      },
+      "figure": "../../_art/characters/u1-axis.png"
     },
     "log": {
       "name": "Flight Dir. Chen",
@@ -43,10 +78,11 @@ window.GN_STORY = {
       "tagIcon": "📡",
       "blurb": "Orbital Berth Chief · Place-Value Precision Lead",
       "portrait": {
-        "skin": "#f2c29b",
-        "hair": "#0f172a",
-        "hairStyle": 5,
-        "glasses": true
+        "outfit": "captain",
+        "skin": "#d89668",
+        "hair": "#1e293b",
+        "hairStyle": "bun",
+        "earrings": true
       }
     }
   },
@@ -132,8 +168,8 @@ window.GN_STORY = {
               "es": "2.75 litros.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -141,8 +177,8 @@ window.GN_STORY = {
               "es": "6.9 litros.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -174,7 +210,7 @@ window.GN_STORY = {
               "es": "5.79 litros",
               "correct": false,
               "why": {
-                "en": "❌ Check your places. Annex a zero (3.40) and line up the decimal points, then add. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Check your places. Annex a zero (3.40) and line up the decimal points, then add. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Revisa los valores posicionales. Agrega un cero (3.40) y alinea los puntos."
               }
             },
@@ -183,7 +219,7 @@ window.GN_STORY = {
               "es": "6.9 litros (sumado sin alinear)",
               "correct": false,
               "why": {
-                "en": "❌ Check your places. Annex a zero (3.40) and line up the decimal points, then add. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Check your places. Annex a zero (3.40) and line up the decimal points, then add. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Revisa los valores posicionales. Agrega un cero (3.40) y alinea los puntos."
               }
             }
@@ -236,8 +272,8 @@ window.GN_STORY = {
               "es": "Borrar el punto decimal del número.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -245,8 +281,8 @@ window.GN_STORY = {
               "es": "Hacer el número diez veces más grande.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -278,7 +314,7 @@ window.GN_STORY = {
               "es": "5.27 litros",
               "correct": false,
               "why": {
-                "en": "❌ Annex a zero (8.50) and subtract place by place, keeping the decimal points aligned. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Annex a zero (8.50) and subtract place by place, keeping the decimal points aligned. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Agrega un cero (8.50) y resta posición por posición."
               }
             },
@@ -287,7 +323,7 @@ window.GN_STORY = {
               "es": "4.23 litros",
               "correct": false,
               "why": {
-                "en": "❌ Annex a zero (8.50) and subtract place by place, keeping the decimal points aligned. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Annex a zero (8.50) and subtract place by place, keeping the decimal points aligned. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Agrega un cero (8.50) y resta posición por posición."
               }
             }
@@ -340,7 +376,7 @@ window.GN_STORY = {
               "es": "“Para sumar decimales alineo los puntos primero.”",
               "correct": false,
               "why": {
-                "en": "❌ That line is about a math step, not the docking rule. Find the line about the ship needing an exact total. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ That line is about a math step, not the docking rule. Find the line about the ship needing an exact total. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Esa línea es sobre un paso, no la regla de acople. Busca la del total exacto."
               }
             },
@@ -349,7 +385,7 @@ window.GN_STORY = {
               "es": "“Ahora hay una fuga: debo restar lo que perdimos.”",
               "correct": false,
               "why": {
-                "en": "❌ That line is about a math step, not the docking rule. Find the line about the ship needing an exact total. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ That line is about a math step, not the docking rule. Find the line about the ship needing an exact total. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Esa línea es sobre un paso, no la regla de acople. Busca la del total exacto."
               }
             }
@@ -432,7 +468,7 @@ window.GN_STORY = {
               "es": "2.4",
               "correct": false,
               "why": {
-                "en": "❌ Multiply 6×4=24, then count decimal places: 1+1=2, so the answer is 0.24. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Multiply 6×4=24, then count decimal places: 1+1=2, so the answer is 0.24. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Multiplica 6×4=24 y cuenta los lugares: 1+1=2, así que es 0.24."
               }
             },
@@ -441,7 +477,7 @@ window.GN_STORY = {
               "es": "0.024",
               "correct": false,
               "why": {
-                "en": "❌ Multiply 6×4=24, then count decimal places: 1+1=2, so the answer is 0.24. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Multiply 6×4=24, then count decimal places: 1+1=2, so the answer is 0.24. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Multiplica 6×4=24 y cuenta los lugares: 1+1=2, así que es 0.24."
               }
             }
@@ -497,7 +533,7 @@ window.GN_STORY = {
               "es": "0.6",
               "correct": false,
               "why": {
-                "en": "❌ 12×5=60. Count places: 1+2=3, so write 0.060 = 0.06. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ 12×5=60. Count places: 1+2=3, so write 0.060 = 0.06. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ 12×5=60. Cuenta lugares: 1+2=3, así que 0.060 = 0.06."
               }
             },
@@ -506,7 +542,7 @@ window.GN_STORY = {
               "es": "0.006",
               "correct": false,
               "why": {
-                "en": "❌ 12×5=60. Count places: 1+2=3, so write 0.060 = 0.06. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ 12×5=60. Count places: 1+2=3, so write 0.060 = 0.06. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ 12×5=60. Cuenta lugares: 1+2=3, así que 0.060 = 0.06."
               }
             }
@@ -559,7 +595,7 @@ window.GN_STORY = {
               "es": "Alinear los puntos para sumar el combustible de dos tanques.",
               "correct": false,
               "why": {
-                "en": "❌ That happened in another chapter. This one is about multiplying decimals for the reactor. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ That happened in another chapter. This one is about multiplying decimals for the reactor. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Eso fue en otro capítulo. Este trata de multiplicar decimales."
               }
             },
@@ -568,7 +604,7 @@ window.GN_STORY = {
               "es": "Restar para hallar cuánto combustible drenó una fuga.",
               "correct": false,
               "why": {
-                "en": "❌ That happened in another chapter. This one is about multiplying decimals for the reactor. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ That happened in another chapter. This one is about multiplying decimals for the reactor. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Eso fue en otro capítulo. Este trata de multiplicar decimales."
               }
             }
@@ -674,7 +710,7 @@ window.GN_STORY = {
               "es": "4.5 + 1.5 = 6.0, luego 6.0 × 0.5 = 30",
               "correct": false,
               "why": {
-                "en": "❌ Add first: 4.5 + 1.5 = 6.0. Then 6.0 × 0.5 is HALF of 6, which is 3.0 — not 30. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Add first: 4.5 + 1.5 = 6.0. Then 6.0 × 0.5 is HALF of 6, which is 3.0 — not 30. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Suma primero: 4.5 + 1.5 = 6.0. Luego × 0.5 es la MITAD de 6, o sea 3.0."
               }
             },
@@ -683,7 +719,7 @@ window.GN_STORY = {
               "es": "4.5 + 1.5 = 5.0, luego 5.0 × 0.5 = 2.5",
               "correct": false,
               "why": {
-                "en": "❌ Add first: 4.5 + 1.5 = 6.0. Then 6.0 × 0.5 is HALF of 6, which is 3.0 — not 30. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Add first: 4.5 + 1.5 = 6.0. Then 6.0 × 0.5 is HALF of 6, which is 3.0 — not 30. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Suma primero: 4.5 + 1.5 = 6.0. Luego × 0.5 es la MITAD de 6, o sea 3.0."
               }
             }
@@ -740,7 +776,7 @@ window.GN_STORY = {
               "es": "AXIS no sabe multiplicar números enteros para nada.",
               "correct": false,
               "why": {
-                "en": "❌ Look again at the answers. DOCK-BOT 5 multiplies fine — the problem is where the decimal point lands. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Look again at the answers. DOCK-BOT 5 multiplies fine — the problem is where the decimal point lands. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Mira otra vez. AXIS multiplica bien; el problema es dónde queda el punto."
               }
             },
@@ -749,7 +785,7 @@ window.GN_STORY = {
               "es": "Los medidores de combustible están dañados y muestran números falsos.",
               "correct": false,
               "why": {
-                "en": "❌ Look again at the answers. DOCK-BOT 5 multiplies fine — the problem is where the decimal point lands. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Look again at the answers. DOCK-BOT 5 multiplies fine — the problem is where the decimal point lands. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Mira otra vez. AXIS multiplica bien; el problema es dónde queda el punto."
               }
             }
@@ -783,7 +819,7 @@ window.GN_STORY = {
               "es": "La nave regresa y vuelve a cerrar la bahía de acople.",
               "correct": false,
               "why": {
-                "en": "❌ Think about what a successful launch leads to: the crew gets supplied, not re-locked. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Think about what a successful launch leads to: the crew gets supplied, not re-locked. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Piensa qué sigue tras un lanzamiento exitoso: llegan las provisiones."
               }
             },
@@ -792,7 +828,7 @@ window.GN_STORY = {
               "es": "La cadete deja de usar decimales por el resto de la misión.",
               "correct": false,
               "why": {
-                "en": "❌ Think about what a successful launch leads to: the crew gets supplied, not re-locked. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Think about what a successful launch leads to: the crew gets supplied, not re-locked. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Piensa qué sigue tras un lanzamiento exitoso: llegan las provisiones."
               }
             }

@@ -127,8 +127,8 @@ window.GN_STORY = {
               "es": "Una distancia de 12.6 unidades cruzada de una sola vez.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -136,8 +136,8 @@ window.GN_STORY = {
               "es": "Una distancia de 21 unidades entre dos estaciones.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -169,7 +169,7 @@ window.GN_STORY = {
               "es": "2.1 tramos.",
               "correct": false,
               "why": {
-                "en": "❌ Multiply both by 10: 12.6 ÷ 0.6 = 126 ÷ 6 = 21. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Multiply both by 10: 12.6 ÷ 0.6 = 126 ÷ 6 = 21. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ ×10 en ambos: 12.6 ÷ 0.6 = 126 ÷ 6 = 21."
               }
             },
@@ -178,7 +178,7 @@ window.GN_STORY = {
               "es": "12 tramos.",
               "correct": false,
               "why": {
-                "en": "❌ Multiply both by 10: 12.6 ÷ 0.6 = 126 ÷ 6 = 21. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Multiply both by 10: 12.6 ÷ 0.6 = 126 ÷ 6 = 21. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ ×10 en ambos: 12.6 ÷ 0.6 = 126 ÷ 6 = 21."
               }
             }
@@ -235,8 +235,8 @@ window.GN_STORY = {
               "es": "Un problema con una respuesta más grande que el original.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -244,8 +244,8 @@ window.GN_STORY = {
               "es": "Un problema que solo se resuelve con calculadora.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -284,7 +284,7 @@ window.GN_STORY = {
               "es": "1.26.",
               "correct": false,
               "why": {
-                "en": "❌ 21 × 6 = 126; with 1 decimal place that is 12.6, which matches the start. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ 21 × 6 = 126; with 1 decimal place that is 12.6, which matches the start. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ 21 × 6 = 126; con 1 lugar decimal es 12.6."
               }
             },
@@ -293,7 +293,7 @@ window.GN_STORY = {
               "es": "126.",
               "correct": false,
               "why": {
-                "en": "❌ 21 × 6 = 126; with 1 decimal place that is 12.6, which matches the start. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ 21 × 6 = 126; with 1 decimal place that is 12.6, which matches the start. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ 21 × 6 = 126; con 1 lugar decimal es 12.6."
               }
             }
@@ -346,8 +346,8 @@ window.GN_STORY = {
               "es": "Las distancias más largas siempre necesitan más combustible que las cortas.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -355,8 +355,8 @@ window.GN_STORY = {
               "es": "AXIS es más rápida en matemáticas que la Comandante.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -385,8 +385,8 @@ window.GN_STORY = {
               "es": "“planea una ruta de 12.6 unidades en tramos de 0.6.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -394,8 +394,8 @@ window.GN_STORY = {
               "es": "“Ahora el tramo de precisión a casa.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -474,7 +474,7 @@ window.GN_STORY = {
               "es": "1.25 ÷ 0.25 = 125 ÷ 25 = 50 saltos.",
               "correct": false,
               "why": {
-                "en": "❌ Both numbers have hundredths — multiply both by 100: 125 ÷ 25 = 5, not 50. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Both numbers have hundredths — multiply both by 100: 125 ÷ 25 = 5, not 50. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Ambos tienen centésimas — ×100 en ambos: 125 ÷ 25 = 5."
               }
             },
@@ -483,7 +483,7 @@ window.GN_STORY = {
               "es": "1.25 ÷ 0.25 = 12.5 ÷ 25 = 0.5 saltos.",
               "correct": false,
               "why": {
-                "en": "❌ Both numbers have hundredths — multiply both by 100: 125 ÷ 25 = 5, not 50. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Both numbers have hundredths — multiply both by 100: 125 ÷ 25 = 5, not 50. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Ambos tienen centésimas — ×100 en ambos: 125 ÷ 25 = 5."
               }
             }
@@ -571,8 +571,8 @@ window.GN_STORY = {
               "es": "AXIS olvidó multiplicar ambos números por 100.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -580,8 +580,8 @@ window.GN_STORY = {
               "es": "AXIS usó una distancia más pequeña que la de la orden.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -610,8 +610,8 @@ window.GN_STORY = {
               "es": "Negarse por completo a intentar la división.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -619,8 +619,8 @@ window.GN_STORY = {
               "es": "Resolverlo perfectamente sin ninguna comprobación.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]

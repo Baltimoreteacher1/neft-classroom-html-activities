@@ -9,7 +9,33 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U9 #2: Treasure Map Navigator",
     "artBase": "../_art/unit9/",
-    "home": "../index.html"
+    "home": "../index.html",
+    "artFocus": {
+      "cover.png": [
+        40,
+        28
+      ],
+      "depth-dive.png": [
+        52,
+        40
+      ],
+      "elevation.png": [
+        35,
+        30
+      ],
+      "final-nav.png": [
+        45,
+        35
+      ],
+      "map-grid.png": [
+        40,
+        25
+      ],
+      "treasure-found.png": [
+        45,
+        40
+      ]
+    }
   },
   "cast": {
     "navigator": {
@@ -34,7 +60,9 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#0d9488"
-      }
+      },
+      "figure": "../_art/characters/u10-coral.png",
+      "figureTint": 150
     },
     "log": {
       "name": "Navigator Toma Lind",
@@ -43,16 +71,17 @@ window.GN_STORY = {
       "tagIcon": "🔱",
       "blurb": "Arctic & Trench Pilot · Zero-Line Crossing Specialist",
       "portrait": {
-        "skin": "#f2c29b",
-        "hair": "#b45309",
-        "hairStyle": 3,
-        "glasses": true
+        "outfit": "parka",
+        "skin": "#eab68c",
+        "hair": "#7c2d12",
+        "hairStyle": "short",
+        "beard": "full"
       }
     }
   },
   "cover": {
     "art": "cover.png",
-    "alt": "Maya the young explorer holds up a glowing treasure map on a tropical cliff above the sea",
+    "alt": "Ananya the young explorer holds up a glowing treasure map on a tropical cliff above the sea",
     "blurbEn": "A storm-worn chart names a lost cache somewhere across the archipelago. As <b>the Navigator</b>, you must chart ordered pairs across all four quadrants, <b>reflect points across the axes</b>, and reason with <b>integers and absolute value</b> — reading elevation above the waves and depth below them — to triangulate the treasure before the tide turns. SEXTANT-9, your first mate, will help… but keeps ranking negatives by the size of their digits.",
     "blurbEs": "",
     "startLabel": "Begin the Expedition 🗺️"
@@ -68,7 +97,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "map-grid.png",
-          "alt": "Maya studies a treasure map overlaid with a glowing coordinate grid",
+          "alt": "Ananya studies a treasure map overlaid with a glowing coordinate grid",
           "lastLabel": "Chart the beacon ▶",
           "beats": [
             {
@@ -107,8 +136,8 @@ window.GN_STORY = {
               "tree": "(reflected across the y-axis)",
               "correct": false,
               "why": {
-                "en": "❌ Across the x-axis, x stays and y flips sign. (−6, 4) → (−6, −4). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Across the x-axis, x stays and y flips sign. (−6, 4) → (−6, −4). Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -121,8 +150,8 @@ window.GN_STORY = {
               "tree": "(reflected across both axes)",
               "correct": false,
               "why": {
-                "en": "❌ Across the x-axis, x stays and y flips sign. (−6, 4) → (−6, −4). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Across the x-axis, x stays and y flips sign. (−6, 4) → (−6, −4). Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -160,8 +189,8 @@ window.GN_STORY = {
               "tree": "(that is the shared y-value)",
               "correct": false,
               "why": {
-                "en": "❌ The points share y = 2, so subtract the x-values and take the absolute value: |−3 − 5| = 8. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ The points share y = 2, so subtract the x-values and take the absolute value: |−3 − 5| = 8. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -174,8 +203,8 @@ window.GN_STORY = {
               "tree": "(distance is never negative)",
               "correct": false,
               "why": {
-                "en": "❌ The points share y = 2, so subtract the x-values and take the absolute value: |−3 − 5| = 8. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ The points share y = 2, so subtract the x-values and take the absolute value: |−3 − 5| = 8. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -224,16 +253,16 @@ window.GN_STORY = {
               "en": "make an exact copy at the very same coordinates.",
               "correct": false,
               "why": {
-                "en": "❌ In this chart, to mirror means to reflect a point across an axis, flipping it to the opposite side, not to copy or shrink it. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ In this chart, to mirror means to reflect a point across an axis, flipping it to the opposite side, not to copy or shrink it. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "shrink the distance between two beacons by half.",
               "correct": false,
               "why": {
-                "en": "❌ In this chart, to mirror means to reflect a point across an axis, flipping it to the opposite side, not to copy or shrink it. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ In this chart, to mirror means to reflect a point across an axis, flipping it to the opposite side, not to copy or shrink it. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -261,16 +290,16 @@ window.GN_STORY = {
               "en": "At the lighthouse landmark.",
               "correct": false,
               "why": {
-                "en": "❌ Reread the opening log: the origin is set at the old harbor. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Reread the opening log: the origin is set at the old harbor. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "At the wreck on the reef shelf.",
               "correct": false,
               "why": {
-                "en": "❌ Reread the opening log: the origin is set at the old harbor. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Reread the opening log: the origin is set at the old harbor. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -305,8 +334,8 @@ window.GN_STORY = {
               "tree": "(only reflected across x-axis)",
               "correct": false,
               "why": {
-                "en": "❌ Apply them in order: y-axis flips x, then x-axis flips y. Result is (−4, 7). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Apply them in order: y-axis flips x, then x-axis flips y. Result is (−4, 7). Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -319,8 +348,8 @@ window.GN_STORY = {
               "tree": "(only reflected across y-axis)",
               "correct": false,
               "why": {
-                "en": "❌ Apply them in order: y-axis flips x, then x-axis flips y. Result is (−4, 7). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Apply them in order: y-axis flips x, then x-axis flips y. Result is (−4, 7). Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -357,8 +386,8 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "elevation.png",
-          "alt": "Maya at a cliff edge reading a vertical scale of heights above and depths below the sea",
-          "lastLabel": "Stop MARLOW ▶",
+          "alt": "Ananya at a cliff edge reading a vertical scale of heights above and depths below the sea",
+          "lastLabel": "Stop SEXTANT-9 ▶",
           "beats": [
             {
               "who": "navigator",
@@ -393,8 +422,8 @@ window.GN_STORY = {
               "tree": "(−9 and −23 are out of order)",
               "correct": false,
               "why": {
-                "en": "❌ More negative means deeper and smaller. Deepest-first is −23, −9, 0, 5, 14. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ More negative means deeper and smaller. Deepest-first is −23, −9, 0, 5, 14. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -407,8 +436,8 @@ window.GN_STORY = {
               "tree": "(that is highest to deepest)",
               "correct": false,
               "why": {
-                "en": "❌ More negative means deeper and smaller. Deepest-first is −23, −9, 0, 5, 14. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ More negative means deeper and smaller. Deepest-first is −23, −9, 0, 5, 14. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -453,8 +482,8 @@ window.GN_STORY = {
               "tree": "(compares value, not distance)",
               "correct": false,
               "why": {
-                "en": "❌ Compare DISTANCES, not signed values: |−25| = 25 > |18| = 18, so the diver is farther. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Compare DISTANCES, not signed values: |−25| = 25 > |18| = 18, so the diver is farther. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -467,8 +496,8 @@ window.GN_STORY = {
               "tree": "(only the surface is 0 away)",
               "correct": false,
               "why": {
-                "en": "❌ Compare DISTANCES, not signed values: |−25| = 25 > |18| = 18, so the diver is farther. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Compare DISTANCES, not signed values: |−25| = 25 > |18| = 18, so the diver is farther. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -526,8 +555,8 @@ window.GN_STORY = {
               "tree": "(−11 is actually less than −4)",
               "correct": false,
               "why": {
-                "en": "❌ On the number line −4 is to the right of −11, so −4 > −11. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ On the number line −4 is to the right of −11, so −4 > −11. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -540,8 +569,8 @@ window.GN_STORY = {
               "tree": "(sign alone doesn't set order)",
               "correct": false,
               "why": {
-                "en": "❌ On the number line −4 is to the right of −11, so −4 > −11. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ On the number line −4 is to the right of −11, so −4 > −11. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -587,16 +616,16 @@ window.GN_STORY = {
               "en": "“Above the waves is positive elevation; below is negative depth.”",
               "correct": false,
               "why": {
-                "en": "❌ Look for the line where SEXTANT-9 actually compares the digits 9 and 23 to rank the negatives. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Look for the line where SEXTANT-9 actually compares the digits 9 and 23 to rank the negatives. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "“Order them, then judge true distance from the surface with absolute value.”",
               "correct": false,
               "why": {
-                "en": "❌ Look for the line where SEXTANT-9 actually compares the digits 9 and 23 to rank the negatives. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Look for the line where SEXTANT-9 actually compares the digits 9 and 23 to rank the negatives. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -624,16 +653,16 @@ window.GN_STORY = {
               "en": "Every depth below sea level is impossible to measure.",
               "correct": false,
               "why": {
-                "en": "❌ Reread the chapter: it separates ordering integers (position) from measuring distance (absolute value). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Reread the chapter: it separates ordering integers (position) from measuring distance (absolute value). Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Reflecting a point across an axis changes how deep it is buried.",
               "correct": false,
               "why": {
-                "en": "❌ Reread the chapter: it separates ordering integers (position) from measuring distance (absolute value). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Reread the chapter: it separates ordering integers (position) from measuring distance (absolute value). Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -654,7 +683,7 @@ window.GN_STORY = {
           },
           "items": [
             {
-              "en": "MARLOW ranks the depths by their digits: −9, −23, 0, 5, 14.",
+              "en": "SEXTANT-9 ranks the depths by their digits: −9, −23, 0, 5, 14.",
               "order": 1
             },
             {
@@ -679,7 +708,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "final-nav.png",
-          "alt": "Maya stands at a glowing X on the map grid near a steep cliff edge",
+          "alt": "Ananya stands at a glowing X on the map grid near a steep cliff edge",
           "lastLabel": "Enter the fix ▶",
           "beats": [
             {
@@ -716,8 +745,8 @@ window.GN_STORY = {
               "tree": "(reflection across y-axis flips x, not y)",
               "correct": false,
               "why": {
-                "en": "❌ Left+down is Quadrant III; y-axis reflection flips only x → (7,−3); and depth = |−12| = 12 m (never negative). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Left+down is Quadrant III; y-axis reflection flips only x → (7,−3); and depth = |−12| = 12 m (never negative). Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -730,8 +759,8 @@ window.GN_STORY = {
               "tree": "(left+down is QIII, and distance ≥ 0)",
               "correct": false,
               "why": {
-                "en": "❌ Left+down is Quadrant III; y-axis reflection flips only x → (7,−3); and depth = |−12| = 12 m (never negative). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Left+down is Quadrant III; y-axis reflection flips only x → (7,−3); and depth = |−12| = 12 m (never negative). Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -771,8 +800,8 @@ window.GN_STORY = {
               "tree": "(that is 9 + (−12), not a distance)",
               "correct": false,
               "why": {
-                "en": "❌ They are on opposite sides of 0, so add the distances: |9| + |−12| = 21 m. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ They are on opposite sides of 0, so add the distances: |9| + |−12| = 21 m. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -785,8 +814,8 @@ window.GN_STORY = {
               "tree": "(that is only the depth below 0)",
               "correct": false,
               "why": {
-                "en": "❌ They are on opposite sides of 0, so add the distances: |9| + |−12| = 21 m. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ They are on opposite sides of 0, so add the distances: |9| + |−12| = 21 m. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -835,16 +864,16 @@ window.GN_STORY = {
               "en": "SEXTANT-9 believes the cache is actually above the surface.",
               "correct": false,
               "why": {
-                "en": "❌ A depth distance is an absolute value, so it can't be −12. SEXTANT-9 is confusing signed position with distance. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ A depth distance is an absolute value, so it can't be −12. SEXTANT-9 is confusing signed position with distance. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "SEXTANT-9 has correctly measured the depth as a distance.",
               "correct": false,
               "why": {
-                "en": "❌ A depth distance is an absolute value, so it can't be −12. SEXTANT-9 is confusing signed position with distance. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ A depth distance is an absolute value, so it can't be −12. SEXTANT-9 is confusing signed position with distance. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -872,16 +901,16 @@ window.GN_STORY = {
               "en": "Reflect the cache marker across the y-axis one more time for fun.",
               "correct": false,
               "why": {
-                "en": "❌ The log warns the tide is rising, so the most likely next step is to secure the cache and get clear. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ The log warns the tide is rising, so the most likely next step is to secure the cache and get clear. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Abandon the treasure and re-survey the empty harbor.",
               "correct": false,
               "why": {
-                "en": "❌ The log warns the tide is rising, so the most likely next step is to secure the cache and get clear. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ The log warns the tide is rising, so the most likely next step is to secure the cache and get clear. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -955,7 +984,7 @@ window.GN_STORY = {
   ],
   "complete": {
     "art": "treasure-found.png",
-    "alt": "Maya opens a glowing treasure chest full of gold on the beach at sunset",
+    "alt": "Ananya opens a glowing treasure chest full of gold on the beach at sunset",
     "badge": "🎉💰⭐",
     "titleEn": "Cache Recovered — Expedition Complete!",
     "en": "The treasure is unearthed, Navigator. You charted ordered pairs across every quadrant, <b>reflected points across the axes</b>, ordered integers from the deepest wreck to the highest gull rock, and used <b>absolute value</b> to measure true distances from the surface. A flawless fix. The map — and the gold — are yours.",

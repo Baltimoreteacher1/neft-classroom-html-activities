@@ -9,7 +9,41 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U1 #1: Prime Station: The Factor Code",
     "artBase": "../_art/unit1/",
-    "home": "../index.html"
+    "home": "../index.html",
+    "artFocus": {
+      "airlock-locked.png": [
+        65,
+        22
+      ],
+      "airlock-open.png": [
+        50,
+        22
+      ],
+      "boss-door.png": [
+        50,
+        55
+      ],
+      "common-factor.png": [
+        50,
+        15
+      ],
+      "cover.png": [
+        45,
+        22
+      ],
+      "factor-tree.png": [
+        42,
+        30
+      ],
+      "mission-complete.png": [
+        32,
+        22
+      ],
+      "twin-engines.png": [
+        50,
+        45
+      ]
+    }
   },
   "cast": {
     "cadet": {
@@ -34,7 +68,8 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#0284c7"
-      }
+      },
+      "figure": "../_art/characters/u1-axis.png"
     },
     "log": {
       "name": "Cmdr. Talia Vance",
@@ -43,9 +78,11 @@ window.GN_STORY = {
       "tagIcon": "🛰️",
       "blurb": "Prime Station Director · Number Theory Lead",
       "portrait": {
-        "skin": "#f6d2b8",
-        "hair": "#991b1b",
-        "hairStyle": 2
+        "outfit": "captain",
+        "skin": "#d89668",
+        "hair": "#1e293b",
+        "hairStyle": "bun",
+        "earrings": true
       }
     }
   },
@@ -134,8 +171,8 @@ window.GN_STORY = {
               "es": "Un árbol de factores holográfico.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -143,8 +180,8 @@ window.GN_STORY = {
               "es": "Dos motores de la nave.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -242,8 +279,8 @@ window.GN_STORY = {
               "es": "Un número que se puede dividir de muchas formas.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -251,8 +288,8 @@ window.GN_STORY = {
               "es": "El número más grande del panel de código.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -307,7 +344,7 @@ window.GN_STORY = {
               "es": "6 no es primo.",
               "correct": false,
               "why": {
-                "en": "❌ That tree still has a number that is NOT prime. Keep breaking it down until every end is prime. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ That tree still has a number that is NOT prime. Keep breaking it down until every end is prime. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Ese árbol aún tiene un número no primo. Sigue dividiendo."
               }
             },
@@ -317,7 +354,7 @@ window.GN_STORY = {
               "es": "4 y 9 no son primos.",
               "correct": false,
               "why": {
-                "en": "❌ That tree still has a number that is NOT prime. Keep breaking it down until every end is prime. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ That tree still has a number that is NOT prime. Keep breaking it down until every end is prime. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Ese árbol aún tiene un número no primo. Sigue dividiendo."
               }
             }
@@ -372,8 +409,8 @@ window.GN_STORY = {
               "es": "“Los códigos usan números primos.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -381,8 +418,8 @@ window.GN_STORY = {
               "es": "“Gracias por la ayuda, AXIS.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -458,8 +495,8 @@ window.GN_STORY = {
               "es": "Abrir la puerta cerrada de las cápsulas de escape.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -467,8 +504,8 @@ window.GN_STORY = {
               "es": "Enseñar a AXIS a leer el panel de código.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -500,7 +537,7 @@ window.GN_STORY = {
               "es": "Tienes razón, 9 divide a ambos.",
               "correct": false,
               "why": {
-                "en": "❌ That number only divides ONE of them. A common factor must divide BOTH. Check the hint. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ That number only divides ONE of them. A common factor must divide BOTH. Check the hint. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Ese número solo divide a uno. Debe dividir a ambos."
               }
             },
@@ -509,7 +546,7 @@ window.GN_STORY = {
               "es": "4 divide a ambos.",
               "correct": false,
               "why": {
-                "en": "❌ That number only divides ONE of them. A common factor must divide BOTH. Check the hint. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ That number only divides ONE of them. A common factor must divide BOTH. Check the hint. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Ese número solo divide a uno. Debe dividir a ambos."
               }
             }
@@ -586,7 +623,7 @@ window.GN_STORY = {
               "es": "Tienes razón, el MFC es 6.",
               "correct": false,
               "why": {
-                "en": "❌ That IS a common factor, but not the GREATEST one. Look for a bigger shared factor. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ That IS a common factor, but not the GREATEST one. Look for a bigger shared factor. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Es común, pero no el mayor. Busca uno más grande."
               }
             },
@@ -595,7 +632,7 @@ window.GN_STORY = {
               "es": "El MFC es 4.",
               "correct": false,
               "why": {
-                "en": "❌ That IS a common factor, but not the GREATEST one. Look for a bigger shared factor. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ That IS a common factor, but not the GREATEST one. Look for a bigger shared factor. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Es común, pero no el mayor. Busca uno más grande."
               }
             }
@@ -722,7 +759,7 @@ window.GN_STORY = {
               "es": "15 no es primo y el MFC no es 5.",
               "correct": false,
               "why": {
-                "en": "❌ One part is wrong. Check that 30 is broken into ONLY primes, and that the GCF is the BIGGEST shared factor (15, not 5). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ One part is wrong. Check that 30 is broken into ONLY primes, and that the GCF is the BIGGEST shared factor (15, not 5). Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Una parte está mal. Revisa los primos de 30 y el MFC más grande (15)."
               }
             },
@@ -731,7 +768,7 @@ window.GN_STORY = {
               "es": "La factorización está bien, pero el MFC no es 5.",
               "correct": false,
               "why": {
-                "en": "❌ One part is wrong. Check that 30 is broken into ONLY primes, and that the GCF is the BIGGEST shared factor (15, not 5). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ One part is wrong. Check that 30 is broken into ONLY primes, and that the GCF is the BIGGEST shared factor (15, not 5). Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Una parte está mal. Revisa los primos de 30 y el MFC más grande (15)."
               }
             }
@@ -788,8 +825,8 @@ window.GN_STORY = {
               "es": "AXIS no quiere que se arregle la estación.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -797,8 +834,8 @@ window.GN_STORY = {
               "es": "Los paneles de código están dañados y muestran números equivocados.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -827,8 +864,8 @@ window.GN_STORY = {
               "es": "Cerrar otra vez la puerta del Acto 1.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -836,8 +873,8 @@ window.GN_STORY = {
               "es": "Dejar de usar la factorización en primos para siempre.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]

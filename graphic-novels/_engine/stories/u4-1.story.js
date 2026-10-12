@@ -9,11 +9,41 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U4 #1: Shopping Mall Mogul",
     "artBase": "../_art/unit4/",
-    "home": "../index.html"
+    "home": "../index.html",
+    "artFocus": {
+      "cover.png": [
+        80,
+        22
+      ],
+      "discount.png": [
+        32,
+        38
+      ],
+      "final-challenge.png": [
+        50,
+        38
+      ],
+      "finish.png": [
+        50,
+        20
+      ],
+      "mall-bustle.png": [
+        50,
+        30
+      ],
+      "unit-rate.png": [
+        48,
+        30
+      ],
+      "unlock.png": [
+        52,
+        35
+      ]
+    }
   },
   "cast": {
     "mogul": {
-      "name": "Nia Sterling",
+      "name": "Mateo Sterling",
       "role": "protagonist",
       "color": "#db2777",
       "tagIcon": "🛍️",
@@ -34,7 +64,8 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#0284c7"
-      }
+      },
+      "figure": "../_art/characters/u4-penny.png"
     },
     "helper": {
       "name": "Marcus Vance",
@@ -43,9 +74,11 @@ window.GN_STORY = {
       "tagIcon": "🏷️",
       "blurb": "Atrium Retail Advisor · 10% & 25% Benchmark Coach",
       "portrait": {
-        "skin": "#d89668",
-        "hair": "#3b2314",
-        "hairStyle": 5
+        "outfit": "blazer",
+        "skin": "#8d522c",
+        "hair": "#0f172a",
+        "hairStyle": "short",
+        "beard": "goatee"
       }
     }
   },
@@ -68,7 +101,7 @@ window.GN_STORY = {
           "type": "beats",
           "art": "unit-rate.png",
           "alt": "Mateo holds two product boxes and compares their prices",
-          "lastLabel": "Stop PENNY ▶",
+          "lastLabel": "Stop TALLY-5 ▶",
           "beats": [
             {
               "who": "helper",
@@ -121,7 +154,7 @@ window.GN_STORY = {
               "en": "3 apps for $6<span class=\"calc\">$6 &divide; 3 = $2.00 each</span>",
               "correct": false,
               "why": {
-                "en": "&#10060; That one costs MORE per app. Divide each price by the number of apps and pick the smaller unit rate. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; That one costs MORE per app. Divide each price by the number of apps and pick the smaller unit rate. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Ese cuesta m&aacute;s por app. Divide y elige la tasa unitaria menor."
               }
             },
@@ -182,8 +215,8 @@ window.GN_STORY = {
               "es": "El paquete m&aacute;s grande del estante.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -191,8 +224,8 @@ window.GN_STORY = {
               "es": "El precio total que pagas por todo el paquete.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -217,7 +250,7 @@ window.GN_STORY = {
               "en": "$4.00 per ounce<span class=\"calc\">12 &divide; 3 (flipped!)</span>",
               "correct": false,
               "why": {
-                "en": "&#10060; Remember: unit rate = price &divide; quantity = $3 &divide; 12. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; Remember: unit rate = price &divide; quantity = $3 &divide; 12. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Recuerda: tasa unitaria = precio &divide; cantidad."
               }
             },
@@ -225,7 +258,7 @@ window.GN_STORY = {
               "en": "$0.36 per ounce<span class=\"calc\">not 3 &divide; 12</span>",
               "correct": false,
               "why": {
-                "en": "&#10060; Remember: unit rate = price &divide; quantity = $3 &divide; 12. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; Remember: unit rate = price &divide; quantity = $3 &divide; 12. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Recuerda: tasa unitaria = precio &divide; cantidad."
               }
             }
@@ -280,8 +313,8 @@ window.GN_STORY = {
               "es": "$8 por un vaso de 12 oz.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -289,8 +322,8 @@ window.GN_STORY = {
               "es": "$0.25 por un vaso de 12 oz.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -306,7 +339,7 @@ window.GN_STORY = {
           "ask": {
             "who": "helper",
             "en": "Tap the line that shows TALLY-5 made a <b>mistake</b> about the best buy.",
-            "es": "Toca la l&iacute;nea que muestra que PENNY se <b>equivoc&oacute;</b> sobre la mejor compra."
+            "es": "Toca la l&iacute;nea que muestra que TALLY-5 se <b>equivoc&oacute;</b> sobre la mejor compra."
           },
           "choices": [
             {
@@ -319,8 +352,8 @@ window.GN_STORY = {
               "es": "&ldquo;Compara el precio de UN art&iacute;culo: la tasa unitaria.&rdquo;",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -328,8 +361,8 @@ window.GN_STORY = {
               "es": "&ldquo;Ahora la barra de batidos quiere el precio POR ONZA.&rdquo;",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -347,7 +380,7 @@ window.GN_STORY = {
           "type": "beats",
           "art": "discount.png",
           "alt": "Mateo points at a shop covered in bright percent-off sale signs",
-          "lastLabel": "Stop PENNY ▶",
+          "lastLabel": "Stop TALLY-5 ▶",
           "beats": [
             {
               "who": "helper",
@@ -397,7 +430,7 @@ window.GN_STORY = {
               "en": "$4 off<span class=\"calc\">that is only 10%</span>",
               "correct": false,
               "why": {
-                "en": "&#10060; Change 25% to 0.25 and multiply: $40 &times; 0.25. Use the hint and try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; Change 25% to 0.25 and multiply: $40 &times; 0.25. Use the hint and try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Cambia 25% a 0.25 y multiplica: $40 &times; 0.25."
               }
             },
@@ -409,7 +442,7 @@ window.GN_STORY = {
               "en": "$25 off<span class=\"calc\">25% is not $25</span>",
               "correct": false,
               "why": {
-                "en": "&#10060; Change 25% to 0.25 and multiply: $40 &times; 0.25. Use the hint and try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; Change 25% to 0.25 and multiply: $40 &times; 0.25. Use the hint and try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Cambia 25% a 0.25 y multiplica: $40 &times; 0.25."
               }
             }
@@ -462,8 +495,8 @@ window.GN_STORY = {
               "es": "Hallar el precio de una onza de batido.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -471,8 +504,8 @@ window.GN_STORY = {
               "es": "Comprar el paquete m&aacute;s grande solo porque se ve m&aacute;s grande.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -507,7 +540,7 @@ window.GN_STORY = {
               "en": "3/4 = 0.34 = 34%",
               "correct": false,
               "why": {
-                "en": "&#10060; Move the dot two places: 0.75 = 75%, and 75% = 75/100 = 3/4. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; Move the dot two places: 0.75 = 75%, and 75% = 75/100 = 3/4. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Mueve el punto dos lugares: 0.75 = 75% = 3/4."
               }
             },
@@ -515,7 +548,7 @@ window.GN_STORY = {
               "en": "7/5 = 0.75 = 7.5%",
               "correct": false,
               "why": {
-                "en": "&#10060; Move the dot two places: 0.75 = 75%, and 75% = 75/100 = 3/4. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; Move the dot two places: 0.75 = 75%, and 75% = 75/100 = 3/4. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Mueve el punto dos lugares: 0.75 = 75% = 3/4."
               }
             }
@@ -634,7 +667,7 @@ window.GN_STORY = {
               "en": "$5.00<span class=\"calc\">unit rate, but no discount yet</span>",
               "correct": false,
               "why": {
-                "en": "&#10060; Do it in two steps: first $20 &divide; 4 = $5 for one, THEN take 20% of $5 ($1) off. The final price is $4. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; Do it in two steps: first $20 &divide; 4 = $5 for one, THEN take 20% of $5 ($1) off. The final price is $4. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Dos pasos: $20 &divide; 4 = $5, luego 20% de $5 ($1). Precio final: $4."
               }
             },
@@ -646,7 +679,7 @@ window.GN_STORY = {
               "en": "$16.00<span class=\"calc\">that is 20% off the whole pack</span>",
               "correct": false,
               "why": {
-                "en": "&#10060; Do it in two steps: first $20 &divide; 4 = $5 for one, THEN take 20% of $5 ($1) off. The final price is $4. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; Do it in two steps: first $20 &divide; 4 = $5 for one, THEN take 20% of $5 ($1) off. The final price is $4. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Dos pasos: $20 &divide; 4 = $5, luego 20% de $5 ($1). Precio final: $4."
               }
             }
@@ -658,7 +691,7 @@ window.GN_STORY = {
           "solveBeat": {
             "who": "mogul",
             "en": "Best deal in the mall! The doors are open and the crowd pours in. We did it, TALLY-5!",
-            "es": "¡La mejor oferta del centro comercial! Las puertas están abiertas. ¡Lo logramos, PENNY!"
+            "es": "¡La mejor oferta del centro comercial! Las puertas están abiertas. ¡Lo logramos, TALLY-5!"
           },
           "help": {
             "conceptual": {
@@ -686,25 +719,25 @@ window.GN_STORY = {
           "ask": {
             "who": "helper",
             "en": "TALLY-5 keeps grabbing the bigger package and skipping steps. Why does TALLY-5 keep getting the deals wrong?",
-            "es": "PENNY sigue tomando el paquete m&aacute;s grande y se salta pasos. &iquest;Por qu&eacute; PENNY se equivoca con las ofertas?"
+            "es": "TALLY-5 sigue tomando el paquete m&aacute;s grande y se salta pasos. &iquest;Por qu&eacute; TALLY-5 se equivoca con las ofertas?"
           },
           "hint": {
-            "en": "Look back: PENNY guesses by size instead of finding the price for ONE.",
-            "es": "Mira atr&aacute;s: PENNY adivina por el tama&ntilde;o en vez de hallar el precio de UNO."
+            "en": "Look back: TALLY-5 guesses by size instead of finding the price for ONE.",
+            "es": "Mira atr&aacute;s: TALLY-5 adivina por el tama&ntilde;o en vez de hallar el precio de UNO."
           },
           "choices": [
             {
               "en": "TALLY-5 guesses by package size and skips the unit-rate math, so it misses the real best deal.",
-              "es": "PENNY adivina por el tama&ntilde;o del paquete y se salta la tasa unitaria, as&iacute; que no halla la mejor oferta real.",
+              "es": "TALLY-5 adivina por el tama&ntilde;o del paquete y se salta la tasa unitaria, as&iacute; que no halla la mejor oferta real.",
               "correct": true
             },
             {
               "en": "TALLY-5 does not want the mall to open.",
-              "es": "PENNY no quiere que el centro comercial abra.",
+              "es": "TALLY-5 no quiere que el centro comercial abra.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -712,8 +745,8 @@ window.GN_STORY = {
               "es": "Las etiquetas de precio del centro comercial est&aacute;n todas mal.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -742,8 +775,8 @@ window.GN_STORY = {
               "es": "Cerrar las tiendas que reci&eacute;n abrieron en el Acto 1.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -751,8 +784,8 @@ window.GN_STORY = {
               "es": "Dejar de comparar precios para siempre.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]

@@ -9,11 +9,41 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U3 #2: Global Travel Planner",
     "artBase": "../_art/unit3/",
-    "home": "../index.html"
+    "home": "../index.html",
+    "artFocus": {
+      "celebrate.png": [
+        52,
+        22
+      ],
+      "cover.png": [
+        48,
+        22
+      ],
+      "final-challenge.png": [
+        52,
+        32
+      ],
+      "ratio-table.png": [
+        45,
+        38
+      ],
+      "ratios-compare.png": [
+        70,
+        35
+      ],
+      "unlock.png": [
+        70,
+        25
+      ],
+      "world-map.png": [
+        50,
+        30
+      ]
+    }
   },
   "cast": {
     "traveler": {
-      "name": "Desmond Osei",
+      "name": "Abena Osei",
       "role": "protagonist",
       "color": "#0f766e",
       "tagIcon": "🌍",
@@ -34,7 +64,9 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#0284c7"
-      }
+      },
+      "figure": "../_art/characters/u3-compass.png",
+      "figureTint": 150
     },
     "log": {
       "name": "Dr. Astrid Lindqvist",
@@ -43,17 +75,19 @@ window.GN_STORY = {
       "tagIcon": "🗺️",
       "blurb": "Chief Cartographer · Proportional Reasoning Lead",
       "portrait": {
+        "outfit": "lab",
         "skin": "#f6d2b8",
-        "hair": "#b45309",
-        "hairStyle": 2,
-        "glasses": true
+        "hair": "#e5c07b",
+        "hairStyle": "bun",
+        "glasses": true,
+        "earrings": true
       }
     }
   },
   "cover": {
     "art": "cover.png",
-    "alt": "Maya, a young travel planner, stands on a giant glowing globe holding a travel map with airplane trails arcing between landmarks",
-    "blurbEn": "Desmond has won a contest: plan one perfect <b>around-the-world</b> expedition. But every destination is sealed behind a ratio cipher. Reason with <b>ratios</b>, <b>unit rates</b>, and <b>ratio tables</b> &mdash; and graph them &mdash; to chart the route and unlock the world. VECTOR-X will help… but it keeps grabbing the bigger total instead of the rate. Each act also hides an optional <b>⭐ Globetrotter Challenge</b> for extra glory.",
+    "alt": "Abena, a young travel planner, stands on a giant glowing globe holding a travel map with airplane trails arcing between landmarks",
+    "blurbEn": "Abena has won a contest: plan one perfect <b>around-the-world</b> expedition. But every destination is sealed behind a ratio cipher. Reason with <b>ratios</b>, <b>unit rates</b>, and <b>ratio tables</b> &mdash; and graph them &mdash; to chart the route and unlock the world. VECTOR-X will help… but it keeps grabbing the bigger total instead of the rate. Each act also hides an optional <b>⭐ Globetrotter Challenge</b> for extra glory.",
     "blurbEs": "",
     "startLabel": "Begin the Expedition ✈️"
   },
@@ -68,13 +102,13 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "ratios-compare.png",
-          "alt": "Maya stands before the Eiffel Tower holding passports with a glowing ratio comparison floating beside her",
+          "alt": "Abena stands before the Eiffel Tower holding passports with a glowing ratio comparison floating beside her",
           "lastLabel": "Decode ▶",
           "beats": [
             {
               "who": "log",
               "caption": true,
-              "en": "Desmond, you have arrived in Paris. The first cipher demands an equivalent ratio &mdash; same comparison, leaner form."
+              "en": "Abena, you have arrived in Paris. The first cipher demands an equivalent ratio &mdash; same comparison, leaner form."
             },
             {
               "who": "traveler",
@@ -106,8 +140,8 @@ window.GN_STORY = {
               "tree": "(that is 2:3 of travelers:?, wrong order)",
               "correct": false,
               "why": {
-                "en": "❌ That changes the comparison. Divide BOTH 4 and 6 by their common factor 2 → 2:3. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That changes the comparison. Divide BOTH 4 and 6 by their common factor 2 → 2:3. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -120,8 +154,8 @@ window.GN_STORY = {
               "tree": "(only the travelers doubled)",
               "correct": false,
               "why": {
-                "en": "❌ That changes the comparison. Divide BOTH 4 and 6 by their common factor 2 → 2:3. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That changes the comparison. Divide BOTH 4 and 6 by their common factor 2 → 2:3. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -167,16 +201,16 @@ window.GN_STORY = {
               "en": "add up to the same total when their parts are combined.",
               "correct": false,
               "why": {
-                "en": "❌ In this context, <i>equivalent</i> means the same comparison written differently (4:6 = 2:3), not the same sum or the biggest numbers. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ In this context, <i>equivalent</i> means the same comparison written differently (4:6 = 2:3), not the same sum or the biggest numbers. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "always use the largest possible whole numbers.",
               "correct": false,
               "why": {
-                "en": "❌ In this context, <i>equivalent</i> means the same comparison written differently (4:6 = 2:3), not the same sum or the biggest numbers. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ In this context, <i>equivalent</i> means the same comparison written differently (4:6 = 2:3), not the same sum or the biggest numbers. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -186,7 +220,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "ratios-compare.png",
-          "alt": "Maya studies a glowing shuttle gauge showing kilometers and liters of fuel in Paris",
+          "alt": "Abena studies a glowing shuttle gauge showing kilometers and liters of fuel in Paris",
           "lastLabel": "Find the rate ▶",
           "beats": [
             {
@@ -207,7 +241,7 @@ window.GN_STORY = {
           "id": "1b",
           "ask": {
             "who": "traveler",
-            "en": "The shuttle covers <b>18 km using 3 liters</b> of fuel. To compare offers, Desmond needs the <b>unit rate</b>: kilometers per <b>1 liter</b>. What is it?"
+            "en": "The shuttle covers <b>18 km using 3 liters</b> of fuel. To compare offers, Abena needs the <b>unit rate</b>: kilometers per <b>1 liter</b>. What is it?"
           },
           "choices": [
             {
@@ -215,8 +249,8 @@ window.GN_STORY = {
               "tree": "(that divides the wrong way)",
               "correct": false,
               "why": {
-                "en": "❌ A unit rate is per ONE liter: divide km by liters, 18 ÷ 3 = 6. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ A unit rate is per ONE liter: divide km by liters, 18 ÷ 3 = 6. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -229,15 +263,15 @@ window.GN_STORY = {
               "tree": "(that is 18 − 3)",
               "correct": false,
               "why": {
-                "en": "❌ A unit rate is per ONE liter: divide km by liters, 18 ÷ 3 = 6. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ A unit rate is per ONE liter: divide km by liters, 18 ÷ 3 = 6. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
           "goodEn": "✅ Unit rate = 18 ÷ 3 = 6 km per liter. PARIS UNLOCKED!",
           "badEn": "❌ A unit rate is per ONE liter: divide km by liters, 18 ÷ 3 = 6.",
           "solveArt": "unlock.png",
-          "solveAlt": "A glowing gateway opens to reveal pyramids as Maya cheers",
+          "solveAlt": "A glowing gateway opens to reveal pyramids as Abena cheers",
           "solveBeat": {
             "who": "traveler",
             "en": "Paris is open and the route to the pyramids is lit. But the cache outside the Louvre tempts me first…"
@@ -275,19 +309,19 @@ window.GN_STORY = {
               "correct": true
             },
             {
-              "en": "“To compare offers, Desmond needs the unit rate: kilometers per 1 liter.”",
+              "en": "“To compare offers, Abena needs the unit rate: kilometers per 1 liter.”",
               "correct": false,
               "why": {
-                "en": "❌ That line states the correct goal or just reacts. Find the line where VECTOR-X subtracts and calls the result a rate. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That line states the correct goal or just reacts. Find the line where VECTOR-X subtracts and calls the result a rate. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "“Paris is open and the route to the pyramids is lit.”",
               "correct": false,
               "why": {
-                "en": "❌ That line states the correct goal or just reacts. Find the line where VECTOR-X subtracts and calls the result a rate. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That line states the correct goal or just reacts. Find the line where VECTOR-X subtracts and calls the result a rate. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -315,16 +349,16 @@ window.GN_STORY = {
               "en": "3 km on 18 liters of fuel.",
               "correct": false,
               "why": {
-                "en": "❌ Reread the gauge: 18 km on 3 liters. (6 km per liter is the rate you compute from those two amounts.) Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Reread the gauge: 18 km on 3 liters. (6 km per liter is the rate you compute from those two amounts.) Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "6 km on 6 liters of fuel.",
               "correct": false,
               "why": {
-                "en": "❌ Reread the gauge: 18 km on 3 liters. (6 km per liter is the rate you compute from those two amounts.) Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Reread the gauge: 18 km on 3 liters. (6 km per liter is the rate you compute from those two amounts.) Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -346,8 +380,8 @@ window.GN_STORY = {
               "tree": "($24÷8 = $3/km vs $15÷5 = $3/km)",
               "correct": false,
               "why": {
-                "en": "❌ Compute each price per km: $24÷8 and $15÷5. Compare those unit rates. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Compute each price per km: $24÷8 and $15÷5. Compare those unit rates. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -360,8 +394,8 @@ window.GN_STORY = {
               "tree": "(check both unit rates again)",
               "correct": false,
               "why": {
-                "en": "❌ Compute each price per km: $24÷8 and $15÷5. Compare those unit rates. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Compute each price per km: $24÷8 and $15÷5. Compare those unit rates. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -398,7 +432,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "ratio-table.png",
-          "alt": "Maya draws a glowing ratio table and a rising line graph in the air on a Tokyo street",
+          "alt": "Abena draws a glowing ratio table and a rising line graph in the air on a Tokyo street",
           "lastLabel": "Scale the table ▶",
           "beats": [
             {
@@ -436,8 +470,8 @@ window.GN_STORY = {
               "tree": "(added 140, not the unit rate)",
               "correct": false,
               "why": {
-                "en": "❌ Find the unit rate first: 240÷3 = 80 km/hr, then multiply by 7. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Find the unit rate first: 240÷3 = 80 km/hr, then multiply by 7. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -450,8 +484,8 @@ window.GN_STORY = {
               "tree": "(that is 6 hours)",
               "correct": false,
               "why": {
-                "en": "❌ Find the unit rate first: 240÷3 = 80 km/hr, then multiply by 7. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Find the unit rate first: 240÷3 = 80 km/hr, then multiply by 7. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -479,7 +513,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "ratio-table.png",
-          "alt": "Maya plots glowing ordered pairs on a rising line through the origin over Tokyo",
+          "alt": "Abena plots glowing ordered pairs on a rising line through the origin over Tokyo",
           "lastLabel": "Plot the point ▶",
           "beats": [
             {
@@ -500,7 +534,7 @@ window.GN_STORY = {
           "id": "2b",
           "ask": {
             "who": "traveler",
-            "en": "Desmond graphs the table, plotting (hours, km). Because the ratio is constant, the points form a straight line through the origin. Which ordered pair is <b>on that line</b>?"
+            "en": "Abena graphs the table, plotting (hours, km). Because the ratio is constant, the points form a straight line through the origin. Which ordered pair is <b>on that line</b>?"
           },
           "choices": [
             {
@@ -508,8 +542,8 @@ window.GN_STORY = {
               "tree": "(4×80 = 320, not 360)",
               "correct": false,
               "why": {
-                "en": "❌ A point is on the line only if km = 80×hours. Test each pair against that. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ A point is on the line only if km = 80×hours. Test each pair against that. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -522,8 +556,8 @@ window.GN_STORY = {
               "tree": "(2×80 = 160, not 80)",
               "correct": false,
               "why": {
-                "en": "❌ A point is on the line only if km = 80×hours. Test each pair against that. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ A point is on the line only if km = 80×hours. Test each pair against that. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -562,23 +596,23 @@ window.GN_STORY = {
           },
           "choices": [
             {
-              "en": "A constant ratio lets Desmond scale a table by the unit rate and predict points that all fall on one straight line through the origin.",
+              "en": "A constant ratio lets Abena scale a table by the unit rate and predict points that all fall on one straight line through the origin.",
               "correct": true
             },
             {
               "en": "Bullet trains in Tokyo are faster than trains in any other city.",
               "correct": false,
               "why": {
-                "en": "❌ That's a minor or invented detail. The central idea is that a constant unit rate scales the table and produces a straight line through the origin. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That's a minor or invented detail. The central idea is that a constant unit rate scales the table and produces a straight line through the origin. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "The biggest numbers on a graph are always the ones that land on the line.",
               "correct": false,
               "why": {
-                "en": "❌ That's a minor or invented detail. The central idea is that a constant unit rate scales the table and produces a straight line through the origin. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That's a minor or invented detail. The central idea is that a constant unit rate scales the table and produces a straight line through the origin. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -595,7 +629,7 @@ window.GN_STORY = {
           "passageRef": "act2",
           "ask": {
             "who": "log",
-            "en": "Order the steps Desmond followed to chart the Tokyo train on a graph."
+            "en": "Order the steps Abena followed to chart the Tokyo train on a graph."
           },
           "items": [
             {
@@ -612,7 +646,7 @@ window.GN_STORY = {
             }
           ],
           "goodEn": "✅ Rate first, then scale the table, then plot — each step depends on the constant unit rate.",
-          "badEn": "❌ Not quite. Desmond must find the unit rate first, then scale the table, and only then plot the points on the line."
+          "badEn": "❌ Not quite. Abena must find the unit rate first, then scale the table, and only then plot the points on the line."
         },
         {
           "type": "challenge",
@@ -621,7 +655,7 @@ window.GN_STORY = {
           "bonusTag": "⭐ Globetrotter Challenge",
           "ask": {
             "who": "log",
-            "en": "Optional exchange puzzle: at the counter, <b>5 euros = 6 dollars</b>. Desmond wants to convert <b>30 dollars</b> back into euros using a ratio table. How many euros? Skip it any time. <br><br>Euros: 5, 10, ? → Dollars: 6, 12, 30"
+            "en": "Optional exchange puzzle: at the counter, <b>5 euros = 6 dollars</b>. Abena wants to convert <b>30 dollars</b> back into euros using a ratio table. How many euros? Skip it any time. <br><br>Euros: 5, 10, ? → Dollars: 6, 12, 30"
           },
           "choices": [
             {
@@ -629,8 +663,8 @@ window.GN_STORY = {
               "tree": "(scaled the dollars, not the euros)",
               "correct": false,
               "why": {
-                "en": "❌ Scale by matching dollars: 30÷6 = 5, then 5×5 euros = 25 euros. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Scale by matching dollars: 30÷6 = 5, then 5×5 euros = 25 euros. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -643,8 +677,8 @@ window.GN_STORY = {
               "tree": "(that is 30 − 1)",
               "correct": false,
               "why": {
-                "en": "❌ Scale by matching dollars: 30÷6 = 5, then 5×5 euros = 25 euros. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Scale by matching dollars: 30÷6 = 5, then 5×5 euros = 25 euros. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -681,7 +715,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "final-challenge.png",
-          "alt": "Maya stands before a huge glowing globe gateway with ratio tables and route lines orbiting her",
+          "alt": "Abena stands before a huge glowing globe gateway with ratio tables and route lines orbiting her",
           "lastLabel": "Enter the cipher ▶",
           "beats": [
             {
@@ -718,8 +752,8 @@ window.GN_STORY = {
               "tree": "(8×4.5 = 36, not 32)",
               "correct": false,
               "why": {
-                "en": "❌ One value is off. The rate is 9 L per 2 hrs = 4.5 L/hr; recheck the 8-hour fuel and the point. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ One value is off. The rate is 9 L per 2 hrs = 4.5 L/hr; recheck the 8-hour fuel and the point. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -732,8 +766,8 @@ window.GN_STORY = {
               "tree": "(used 9 per hour instead of per 2 hours)",
               "correct": false,
               "why": {
-                "en": "❌ One value is off. The rate is 9 L per 2 hrs = 4.5 L/hr; recheck the 8-hour fuel and the point. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ One value is off. The rate is 9 L per 2 hrs = 4.5 L/hr; recheck the 8-hour fuel and the point. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -776,19 +810,19 @@ window.GN_STORY = {
               "correct": true
             },
             {
-              "en": "It deliberately sabotages the cipher so Desmond cannot finish.",
+              "en": "It deliberately sabotages the cipher so Abena cannot finish.",
               "correct": false,
               "why": {
-                "en": "❌ The text shows no malice or total failure. VECTOR-X's pattern is skipping the division by the second quantity to find a true unit rate. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ The text shows no malice or total failure. VECTOR-X's pattern is skipping the division by the second quantity to find a true unit rate. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "It cannot read any of the numbers on the gauge.",
               "correct": false,
               "why": {
-                "en": "❌ The text shows no malice or total failure. VECTOR-X's pattern is skipping the division by the second quantity to find a true unit rate. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ The text shows no malice or total failure. VECTOR-X's pattern is skipping the division by the second quantity to find a true unit rate. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -805,7 +839,7 @@ window.GN_STORY = {
           "passageRef": "final.F",
           "ask": {
             "who": "log",
-            "en": "Given that the Master Gateway allows only one attempt, what should Desmond do <b>next</b> before transmitting any combined cipher?"
+            "en": "Given that the Master Gateway allows only one attempt, what should Abena do <b>next</b> before transmitting any combined cipher?"
           },
           "choices": [
             {
@@ -816,21 +850,21 @@ window.GN_STORY = {
               "en": "Trust VECTOR-X's 9 L/hr answer to save time on the single attempt.",
               "correct": false,
               "why": {
-                "en": "❌ With a single attempt and no partial credit, Desmond must double-check the rate, the fuel, and the graphed point first. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ With a single attempt and no partial credit, Abena must double-check the rate, the fuel, and the graphed point first. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Send only the unit rate and leave out the table and the graph point.",
               "correct": false,
               "why": {
-                "en": "❌ With a single attempt and no partial credit, Desmond must double-check the rate, the fuel, and the graphed point first. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ With a single attempt and no partial credit, Abena must double-check the rate, the fuel, and the graphed point first. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
-          "goodEn": "✅ Wise prediction — with one attempt, Desmond must verify the rate, the scaled value, and the point before sending the cipher.",
-          "badEn": "❌ With a single attempt and no partial credit, Desmond must double-check the rate, the fuel, and the graphed point first."
+          "goodEn": "✅ Wise prediction — with one attempt, Abena must verify the rate, the scaled value, and the point before sending the cipher.",
+          "badEn": "❌ With a single attempt and no partial credit, Abena must double-check the rate, the fuel, and the graphed point first."
         },
         {
           "type": "challenge",
@@ -852,8 +886,8 @@ window.GN_STORY = {
               "tree": "(compare 1500÷3 and 2400÷4 again)",
               "correct": false,
               "why": {
-                "en": "❌ Compare the unit rates: 1500÷3 vs 2400÷4. The larger km/hr is faster. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Compare the unit rates: 1500÷3 vs 2400÷4. The larger km/hr is faster. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -861,8 +895,8 @@ window.GN_STORY = {
               "tree": "(the unit rates differ)",
               "correct": false,
               "why": {
-                "en": "❌ Compare the unit rates: 1500÷3 vs 2400÷4. The larger km/hr is faster. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Compare the unit rates: 1500÷3 vs 2400÷4. The larger km/hr is faster. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -954,10 +988,10 @@ window.GN_STORY = {
   ],
   "complete": {
     "art": "celebrate.png",
-    "alt": "Maya celebrates with arms wide, surrounded by world landmarks, fireworks, and a passport full of stamps",
+    "alt": "Abena celebrates with arms wide, surrounded by world landmarks, fireworks, and a passport full of stamps",
     "badge": "🎉✈️⭐",
     "titleEn": "Expedition Complete!",
-    "en": "Every gateway is open and the route around the world is charted. You reasoned with <b>equivalent ratios</b> and <b>unit rates</b>, scaled <b>ratio tables</b>, and read <b>graphs</b> of constant ratios to conquer currency, distance, and fuel. The world is yours, Desmond.",
+    "en": "Every gateway is open and the route around the world is charted. You reasoned with <b>equivalent ratios</b> and <b>unit rates</b>, scaled <b>ratio tables</b>, and read <b>graphs</b> of constant ratios to conquer currency, distance, and fuel. The world is yours, Abena.",
     "es": "",
     "master": {
       "headingEn": "Prove your rank to certify your Master Certificate!",

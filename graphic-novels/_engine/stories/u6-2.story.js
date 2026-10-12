@@ -9,11 +9,41 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U6 #2: Festival Producer: Power Up the Show",
     "artBase": "../_art/unit6/",
-    "home": "../index.html"
+    "home": "../index.html",
+    "artFocus": {
+      "celebration.png": [
+        40,
+        40
+      ],
+      "cover.png": [
+        50,
+        22
+      ],
+      "expression-build.png": [
+        40,
+        22
+      ],
+      "final-show.png": [
+        73,
+        22
+      ],
+      "speaker-power.png": [
+        40,
+        25
+      ],
+      "stage-lit.png": [
+        60,
+        40
+      ],
+      "stage-setup.png": [
+        35,
+        25
+      ]
+    }
   },
   "cast": {
     "producer": {
-      "name": "Liam Gallagher-Cruz",
+      "name": "Mika Gallagher-Cruz",
       "role": "protagonist",
       "color": "#be185d",
       "tagIcon": "🎛️",
@@ -34,7 +64,9 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#0d9488"
-      }
+      },
+      "figure": "../_art/characters/u6-echo.png",
+      "figureTint": 150
     },
     "log": {
       "name": "Simone Beaulieu",
@@ -43,10 +75,11 @@ window.GN_STORY = {
       "tagIcon": "🎼",
       "blurb": "Head Acoustic Engineer · Algebraic Factoring Specialist",
       "portrait": {
+        "outfit": "dj",
         "skin": "#8d522c",
-        "hair": "#0f172a",
-        "hairStyle": 4,
-        "glasses": true
+        "hair": "#1e1b4b",
+        "hairStyle": "curly",
+        "earrings": true
       }
     }
   },
@@ -69,7 +102,7 @@ window.GN_STORY = {
           "type": "beats",
           "art": "speaker-power.png",
           "alt": "Mika studies a towering speaker stack pulsing with energy beside a holographic power gauge",
-          "lastLabel": "Check ECHO ▶",
+          "lastLabel": "Check DECIBEL-9 ▶",
           "beats": [
             {
               "who": "log",
@@ -110,8 +143,8 @@ window.GN_STORY = {
               "tree": "(that is 4 × 3, not 4³)",
               "correct": false,
               "why": {
-                "en": "❌ An exponent is repeated multiplication. 4³ = 4×4×4 = 64, not 4×3 and not 4². Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ An exponent is repeated multiplication. 4³ = 4×4×4 = 64, not 4×3 and not 4². Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -124,8 +157,8 @@ window.GN_STORY = {
               "tree": "(that is 4², the exponent is too small)",
               "correct": false,
               "why": {
-                "en": "❌ An exponent is repeated multiplication. 4³ = 4×4×4 = 64, not 4×3 and not 4². Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ An exponent is repeated multiplication. 4³ = 4×4×4 = 64, not 4×3 and not 4². Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -160,7 +193,7 @@ window.GN_STORY = {
           "passageRef": "act1.1a",
           "ask": {
             "who": "log",
-            "en": "Liam says an <b>exponent</b> tells you how many <b>factors</b> to use. As used here, a <b>factor</b> is —"
+            "en": "Mika says an <b>exponent</b> tells you how many <b>factors</b> to use. As used here, a <b>factor</b> is —"
           },
           "choices": [
             {
@@ -171,16 +204,16 @@ window.GN_STORY = {
               "en": "the small raised number written above the base.",
               "correct": false,
               "why": {
-                "en": "❌ In this context a <i>factor</i> is one of the equal numbers being multiplied (each 4), not the raised exponent or the final value. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ In this context a <i>factor</i> is one of the equal numbers being multiplied (each 4), not the raised exponent or the final value. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "the final answer after the power is evaluated.",
               "correct": false,
               "why": {
-                "en": "❌ In this context a <i>factor</i> is one of the equal numbers being multiplied (each 4), not the raised exponent or the final value. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ In this context a <i>factor</i> is one of the equal numbers being multiplied (each 4), not the raised exponent or the final value. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -200,8 +233,8 @@ window.GN_STORY = {
               "tree": "(used 2 × 4 = 8, then ×3)",
               "correct": false,
               "why": {
-                "en": "❌ Evaluate the exponent before multiplying: 2⁴ = 16, then ×3. Only the base 2 is raised to the 4th. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Evaluate the exponent before multiplying: 2⁴ = 16, then ×3. Only the base 2 is raised to the 4th. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -214,8 +247,8 @@ window.GN_STORY = {
               "tree": "((2 × 3)⁴ — wrong, only 2 is raised)",
               "correct": false,
               "why": {
-                "en": "❌ Evaluate the exponent before multiplying: 2⁴ = 16, then ×3. Only the base 2 is raised to the 4th. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Evaluate the exponent before multiplying: 2⁴ = 16, then ×3. Only the base 2 is raised to the 4th. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -263,16 +296,16 @@ window.GN_STORY = {
               "en": "“The lighting truss draws 2⁴ × 3 amps.”",
               "correct": false,
               "why": {
-                "en": "❌ That line just names the expression or reacts afterward. Find the line that states which part actually gets the exponent. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That line just names the expression or reacts afterward. Find the line that states which part actually gets the exponent. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "“Speaker grid online.”",
               "correct": false,
               "why": {
-                "en": "❌ That line just names the expression or reacts afterward. Find the line that states which part actually gets the exponent. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That line just names the expression or reacts afterward. Find the line that states which part actually gets the exponent. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -294,8 +327,8 @@ window.GN_STORY = {
               "tree": "((2 + 3)² — you cannot combine the bases)",
               "correct": false,
               "why": {
-                "en": "❌ Evaluate each power separately, then add: 2³ = 8 and 3² = 9, so 8 + 9 = 17. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Evaluate each power separately, then add: 2³ = 8 and 3² = 9, so 8 + 9 = 17. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -308,8 +341,8 @@ window.GN_STORY = {
               "tree": "(used 2×3 + 3×2 — not powers)",
               "correct": false,
               "why": {
-                "en": "❌ Evaluate each power separately, then add: 2³ = 8 and 3² = 9, so 8 + 9 = 17. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Evaluate each power separately, then add: 2³ = 8 and 3² = 9, so 8 + 9 = 17. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -347,7 +380,7 @@ window.GN_STORY = {
           "type": "beats",
           "art": "expression-build.png",
           "alt": "Mika arranges glowing holographic blocks into an expression at a mixing console",
-          "lastLabel": "Check ECHO ▶",
+          "lastLabel": "Check DECIBEL-9 ▶",
           "beats": [
             {
               "who": "log",
@@ -388,8 +421,8 @@ window.GN_STORY = {
               "tree": "(added 4 + 3 before squaring — wrong order)",
               "correct": false,
               "why": {
-                "en": "❌ Follow the order: do the parentheses, then square, then multiply, then add. (6−2)² = 16, 3×16 = 48, 4+48 = 52. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Follow the order: do the parentheses, then square, then multiply, then add. (6−2)² = 16, 3×16 = 48, 4+48 = 52. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -402,8 +435,8 @@ window.GN_STORY = {
               "tree": "(squared 6−2 wrong, or multiplied too early)",
               "correct": false,
               "why": {
-                "en": "❌ Follow the order: do the parentheses, then square, then multiply, then add. (6−2)² = 16, 3×16 = 48, 4+48 = 52. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Follow the order: do the parentheses, then square, then multiply, then add. (6−2)² = 16, 3×16 = 48, 4+48 = 52. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -449,16 +482,16 @@ window.GN_STORY = {
               "en": "The addition of 4 + 3 on the far left.",
               "correct": false,
               "why": {
-                "en": "❌ The order of operations does grouping FIRST: evaluate (6 − 2) before squaring, multiplying, or adding. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ The order of operations does grouping FIRST: evaluate (6 − 2) before squaring, multiplying, or adding. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "The multiplication by 3.",
               "correct": false,
               "why": {
-                "en": "❌ The order of operations does grouping FIRST: evaluate (6 − 2) before squaring, multiplying, or adding. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ The order of operations does grouping FIRST: evaluate (6 − 2) before squaring, multiplying, or adding. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -484,8 +517,8 @@ window.GN_STORY = {
               "tree": "(only the lights got doubled, not the fee)",
               "correct": false,
               "why": {
-                "en": "❌ Both the lights and the fee belong to one stage, and BOTH double. Group the per-stage cost first: 2(5d + 50). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Both the lights and the fee belong to one stage, and BOTH double. Group the per-stage cost first: 2(5d + 50). Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -498,8 +531,8 @@ window.GN_STORY = {
               "tree": "(doubled the lights but forgot to double the fee)",
               "correct": false,
               "why": {
-                "en": "❌ Both the lights and the fee belong to one stage, and BOTH double. Group the per-stage cost first: 2(5d + 50). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Both the lights and the fee belong to one stage, and BOTH double. Group the per-stage cost first: 2(5d + 50). Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -545,16 +578,16 @@ window.GN_STORY = {
               "en": "The mixing console glows with colorful holographic blocks.",
               "correct": false,
               "why": {
-                "en": "❌ That's a minor or invented detail. The central idea is using correct order and grouping to model the festival's costs. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That's a minor or invented detail. The central idea is using correct order and grouping to model the festival's costs. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "DECIBEL-9 is faster than the Producer at reading numbers aloud.",
               "correct": false,
               "why": {
-                "en": "❌ That's a minor or invented detail. The central idea is using correct order and grouping to model the festival's costs. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That's a minor or invented detail. The central idea is using correct order and grouping to model the festival's costs. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -605,8 +638,8 @@ window.GN_STORY = {
               "tree": "(the 3 crew go with each act, so it is 3n)",
               "correct": false,
               "why": {
-                "en": "❌ The 3 crew attach to EACH act, so that part is 3n. The 2 solos are a separate constant: 3n + 2. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ The 3 crew attach to EACH act, so that part is 3n. The 2 solos are a separate constant: 3n + 2. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -619,8 +652,8 @@ window.GN_STORY = {
               "tree": "(you cannot combine 3n and a constant 2)",
               "correct": false,
               "why": {
-                "en": "❌ The 3 crew attach to EACH act, so that part is 3n. The 2 solos are a separate constant: 3n + 2. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ The 3 crew attach to EACH act, so that part is 3n. The 2 solos are a separate constant: 3n + 2. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -658,7 +691,7 @@ window.GN_STORY = {
           "type": "beats",
           "art": "final-show.png",
           "alt": "Mika at the master control booth ready to start the headliner show",
-          "lastLabel": "Check ECHO ▶",
+          "lastLabel": "Check DECIBEL-9 ▶",
           "beats": [
             {
               "who": "log",
@@ -693,8 +726,8 @@ window.GN_STORY = {
               "tree": "(used 3×3=9 instead of 3³, or wrong order)",
               "correct": false,
               "why": {
-                "en": "❌ One step slipped. 3³ = 27 (not 9), then (8−3)=5, 2×5=10, and finally 27+10 = 37. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ One step slipped. 3³ = 27 (not 9), then (8−3)=5, 2×5=10, and finally 27+10 = 37. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -707,8 +740,8 @@ window.GN_STORY = {
               "tree": "(added before multiplying — not allowed)",
               "correct": false,
               "why": {
-                "en": "❌ One step slipped. 3³ = 27 (not 9), then (8−3)=5, 2×5=10, and finally 27+10 = 37. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ One step slipped. 3³ = 27 (not 9), then (8−3)=5, 2×5=10, and finally 27+10 = 37. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -754,16 +787,16 @@ window.GN_STORY = {
               "en": "It is deliberately stalling so the show starts late.",
               "correct": false,
               "why": {
-                "en": "❌ The text shows DECIBEL-9 reading straight across rather than by priority — not stalling, and it does have the numbers. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ The text shows DECIBEL-9 reading straight across rather than by priority — not stalling, and it does have the numbers. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "It has never been given any of the numbers to work with.",
               "correct": false,
               "why": {
-                "en": "❌ The text shows DECIBEL-9 reading straight across rather than by priority — not stalling, and it does have the numbers. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ The text shows DECIBEL-9 reading straight across rather than by priority — not stalling, and it does have the numbers. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -791,16 +824,16 @@ window.GN_STORY = {
               "en": "Accept DECIBEL-9's 47 to save time on the single attempt.",
               "correct": false,
               "why": {
-                "en": "❌ With one attempt and DECIBEL-9's left-to-right habit, the Producer must re-check the order, not trust 47 or add straight across. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ With one attempt and DECIBEL-9's left-to-right habit, the Producer must re-check the order, not trust 47 or add straight across. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Add every number left to right to keep it simple.",
               "correct": false,
               "why": {
-                "en": "❌ With one attempt and DECIBEL-9's left-to-right habit, the Producer must re-check the order, not trust 47 or add straight across. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ With one attempt and DECIBEL-9's left-to-right habit, the Producer must re-check the order, not trust 47 or add straight across. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -827,8 +860,8 @@ window.GN_STORY = {
               "tree": "(subtracted 100 before multiplying by 5)",
               "correct": false,
               "why": {
-                "en": "❌ Multiply before subtracting: 4³=64, 64×5=320, then subtract the fee: 320−100 = 220. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Multiply before subtracting: 4³=64, 64×5=320, then subtract the fee: 320−100 = 220. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -836,8 +869,8 @@ window.GN_STORY = {
               "tree": "(used 4×3=12, 12×5=60, forgot the fee)",
               "correct": false,
               "why": {
-                "en": "❌ Multiply before subtracting: 4³=64, 64×5=320, then subtract the fee: 320−100 = 220. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Multiply before subtracting: 4³=64, 64×5=320, then subtract the fee: 320−100 = 220. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],

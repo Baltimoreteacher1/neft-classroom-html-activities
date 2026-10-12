@@ -9,7 +9,37 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U10 #1: Aquarium Architect",
     "artBase": "../_art/unit10/",
-    "home": "../index.html"
+    "home": "../index.html",
+    "artFocus": {
+      "complete.png": [
+        40,
+        25
+      ],
+      "cover.png": [
+        52,
+        32
+      ],
+      "design.png": [
+        60,
+        32
+      ],
+      "final.png": [
+        62,
+        30
+      ],
+      "net.png": [
+        35,
+        30
+      ],
+      "unlock.png": [
+        35,
+        35
+      ],
+      "volume.png": [
+        40,
+        32
+      ]
+    }
   },
   "cast": {
     "architect": {
@@ -34,7 +64,8 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#ea580c"
-      }
+      },
+      "figure": "../_art/characters/u10-coral.png"
     },
     "log": {
       "name": "Dr. Hannah Sterling",
@@ -43,10 +74,12 @@ window.GN_STORY = {
       "tagIcon": "🌊",
       "blurb": "Marine Structural Director · Open-Top Prism Expert",
       "portrait": {
-        "skin": "#f6d2b8",
-        "hair": "#b45309",
-        "hairStyle": 2,
-        "glasses": true
+        "outfit": "lab",
+        "skin": "#eab68c",
+        "hair": "#3b2314",
+        "hairStyle": "long",
+        "glasses": true,
+        "earrings": true
       }
     }
   },
@@ -127,8 +160,8 @@ window.GN_STORY = {
               "es": "Los peces reciben un tanque más grande.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -136,8 +169,8 @@ window.GN_STORY = {
               "es": "No pasa nada.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -163,7 +196,7 @@ window.GN_STORY = {
               "en": "12 ft³ &nbsp;(that is 5 + 4 + 3, not multiply)",
               "correct": false,
               "why": {
-                "en": "❌ Not yet. For volume you MULTIPLY all three sides. Try the hint and try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Not yet. For volume you MULTIPLY all three sides. Try the hint and try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Aún no. Para el volumen se MULTIPLICAN los tres lados. Usa la pista."
               }
             },
@@ -175,7 +208,7 @@ window.GN_STORY = {
               "en": "20 ft³ &nbsp;(that is only 5 × 4)",
               "correct": false,
               "why": {
-                "en": "❌ Not yet. For volume you MULTIPLY all three sides. Try the hint and try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Not yet. For volume you MULTIPLY all three sides. Try the hint and try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Aún no. Para el volumen se MULTIPLICAN los tres lados. Usa la pista."
               }
             }
@@ -232,8 +265,8 @@ window.GN_STORY = {
               "es": "Cuánto vidrio cubre el exterior del tanque.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -241,8 +274,8 @@ window.GN_STORY = {
               "es": "El lado más largo del tanque.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -271,7 +304,7 @@ window.GN_STORY = {
               "en": "24 ft³ &nbsp;(you forgot to use the ½)",
               "correct": false,
               "why": {
-                "en": "❌ Remember the ½. Multiplying by ½ means taking HALF. Half of 24 is 12. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Remember the ½. Multiplying by ½ means taking HALF. Half of 24 is 12. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Recuerda el ½. Multiplicar por ½ es tomar la MITAD. La mitad de 24 es 12."
               }
             },
@@ -279,7 +312,7 @@ window.GN_STORY = {
               "en": "48 ft³ &nbsp;(that is doubling, not halving)",
               "correct": false,
               "why": {
-                "en": "❌ Remember the ½. Multiplying by ½ means taking HALF. Half of 24 is 12. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Remember the ½. Multiplying by ½ means taking HALF. Half of 24 is 12. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Recuerda el ½. Multiplicar por ½ es tomar la MITAD. La mitad de 24 es 12."
               }
             },
@@ -338,8 +371,8 @@ window.GN_STORY = {
               "es": "“Ahora construyo el vidrio: eso es área de superficie.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -347,8 +380,8 @@ window.GN_STORY = {
               "es": "“Volumen = largo × ancho × alto.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -424,7 +457,7 @@ window.GN_STORY = {
               "en": "4 faces &nbsp;(that misses the top and bottom)",
               "correct": false,
               "why": {
-                "en": "❌ Look at the net again and count every rectangle. A box has 6 faces. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Look at the net again and count every rectangle. A box has 6 faces. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Mira la red otra vez y cuenta cada rectángulo. Son 6 caras."
               }
             },
@@ -436,7 +469,7 @@ window.GN_STORY = {
               "en": "8 faces &nbsp;(a box has only 6)",
               "correct": false,
               "why": {
-                "en": "❌ Look at the net again and count every rectangle. A box has 6 faces. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Look at the net again and count every rectangle. A box has 6 faces. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Mira la red otra vez y cuenta cada rectángulo. Son 6 caras."
               }
             }
@@ -486,7 +519,7 @@ window.GN_STORY = {
               "en": "26 ft² &nbsp;(that is only one of each face)",
               "correct": false,
               "why": {
-                "en": "❌ Add ALL six faces. Each pair matches: 12+12, 6+6, 8+8. Use the hint. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Add ALL six faces. Each pair matches: 12+12, 6+6, 8+8. Use the hint. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Suma las SEIS caras. Cada par es igual: 12+12, 6+6, 8+8."
               }
             },
@@ -498,7 +531,7 @@ window.GN_STORY = {
               "en": "24 ft² &nbsp;(that is the volume, not the glass)",
               "correct": false,
               "why": {
-                "en": "❌ Add ALL six faces. Each pair matches: 12+12, 6+6, 8+8. Use the hint. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Add ALL six faces. Each pair matches: 12+12, 6+6, 8+8. Use the hint. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Suma las SEIS caras. Cada par es igual: 12+12, 6+6, 8+8."
               }
             }
@@ -551,8 +584,8 @@ window.GN_STORY = {
               "es": "Llenar cada tanque con la cantidad exacta de agua.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -560,8 +593,8 @@ window.GN_STORY = {
               "es": "Enseñar a CORAL a contar hasta seis.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -652,7 +685,7 @@ window.GN_STORY = {
               "en": "Volume = 120 ft³, &nbsp; Surface area = 74 ft²",
               "correct": false,
               "why": {
-                "en": "❌ One part is off. Volume MULTIPLIES the 3 sides (120). Surface area ADDS the 6 faces (148, not 74). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ One part is off. Volume MULTIPLIES the 3 sides (120). Surface area ADDS the 6 faces (148, not 74). Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Una parte está mal. El volumen multiplica (120). El área suma las 6 caras (148)."
               }
             },
@@ -664,7 +697,7 @@ window.GN_STORY = {
               "en": "Volume = 148 ft³, &nbsp; Surface area = 120 ft²",
               "correct": false,
               "why": {
-                "en": "❌ One part is off. Volume MULTIPLIES the 3 sides (120). Surface area ADDS the 6 faces (148, not 74). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ One part is off. Volume MULTIPLIES the 3 sides (120). Surface area ADDS the 6 faces (148, not 74). Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Una parte está mal. El volumen multiplica (120). El área suma las 6 caras (148)."
               }
             }
@@ -721,8 +754,8 @@ window.GN_STORY = {
               "es": "CORAL no quiere que el acuario abra.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -730,8 +763,8 @@ window.GN_STORY = {
               "es": "Los tanques tienen el tamaño equivocado en los planos.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -760,8 +793,8 @@ window.GN_STORY = {
               "es": "Vaciar todos los tanques que acaba de llenar.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -769,8 +802,8 @@ window.GN_STORY = {
               "es": "Sumar los tres lados otra vez para hallar el volumen.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]

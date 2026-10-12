@@ -9,7 +9,37 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U7 #2: Detective Case Files: The Equation Mysteries",
     "artBase": "../_art/unit7/",
-    "home": "../index.html"
+    "home": "../index.html",
+    "artFocus": {
+      "aha.png": [
+        52,
+        42
+      ],
+      "cover.png": [
+        45,
+        25
+      ],
+      "evidence-room.png": [
+        35,
+        25
+      ],
+      "final-case.png": [
+        55,
+        25
+      ],
+      "solved.png": [
+        65,
+        48
+      ],
+      "unlock-box.png": [
+        55,
+        35
+      ],
+      "write-equation.png": [
+        48,
+        30
+      ]
+    }
   },
   "cast": {
     "detective": {
@@ -34,7 +64,9 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#0284c7"
-      }
+      },
+      "figure": "../_art/characters/u1-axis.png",
+      "figureTint": 150
     },
     "log": {
       "name": "Judge Camille Devereaux",
@@ -43,10 +75,13 @@ window.GN_STORY = {
       "tagIcon": "🏛️",
       "blurb": "District Warrant Arbiter · Constraints & Proof Expert",
       "portrait": {
-        "skin": "#8d522c",
-        "hair": "#1e293b",
-        "hairStyle": 4,
-        "glasses": true
+        "outfit": "judge",
+        "skin": "#d89668",
+        "hair": "#9ca3af",
+        "hairStyle": "bun",
+        "gray": true,
+        "glasses": true,
+        "earrings": true
       }
     }
   },
@@ -110,8 +145,8 @@ window.GN_STORY = {
               "en": "2b + 8 = 30 (this doubles the bills).",
               "correct": false,
               "why": {
-                "en": "&#10060; Track the actions in order: HALF remained (b&divide;2), then 8 were RECOVERED (added). Re-read and try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Track the actions in order: HALF remained (b&divide;2), then 8 were RECOVERED (added). Re-read and try again. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -122,8 +157,8 @@ window.GN_STORY = {
               "en": "b/2 &minus; 8 = 30 (8 was recovered, not removed).",
               "correct": false,
               "why": {
-                "en": "&#10060; Track the actions in order: HALF remained (b&divide;2), then 8 were RECOVERED (added). Re-read and try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Track the actions in order: HALF remained (b&divide;2), then 8 were RECOVERED (added). Re-read and try again. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -172,16 +207,16 @@ window.GN_STORY = {
               "en": "The final code that opens a locked evidence box.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "A phrase in a clue that tells you to multiply.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -207,16 +242,16 @@ window.GN_STORY = {
               "en": "The thief returned all of them the next night.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Another 8 bills were stolen, leaving 30.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -239,16 +274,16 @@ window.GN_STORY = {
               "en": "4(f + 3) = 23 (this adds 3 first, then multiplies).",
               "correct": false,
               "why": {
-                "en": "&#10060; 'Four times the prints' is 4f, and 'three more' adds 3 AFTER multiplying: 4f + 3. Watch the order. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; 'Four times the prints' is 4f, and 'three more' adds 3 AFTER multiplying: 4f + 3. Watch the order. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "3f + 4 = 23 (mixed up the 3 and the 4).",
               "correct": false,
               "why": {
-                "en": "&#10060; 'Four times the prints' is 4f, and 'three more' adds 3 AFTER multiplying: 4f + 3. Watch the order. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; 'Four times the prints' is 4f, and 'three more' adds 3 AFTER multiplying: 4f + 3. Watch the order. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -259,7 +294,7 @@ window.GN_STORY = {
           "goodEn": "&#9989; Exactly. 'Four times f' is 4f; 'three more' adds 3: 4f + 3 = 23. Operation order preserved.",
           "badEn": "&#10060; 'Four times the prints' is 4f, and 'three more' adds 3 AFTER multiplying: 4f + 3. Watch the order.",
           "solveArt": "write-equation.png",
-          "solveAlt": "Detective Mateo writes equations at his desk under a warm lamp",
+          "solveAlt": "Detective Jonah writes equations at his desk under a warm lamp",
           "solveBeat": {
             "who": "log",
             "caption": true,
@@ -301,16 +336,16 @@ window.GN_STORY = {
               "en": "“The thief took half of them, then a guard recovered 8.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "“Words are just equations in disguise.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -333,16 +368,16 @@ window.GN_STORY = {
               "en": "2n + 7 = n &minus; 5 (signs reversed).",
               "correct": false,
               "why": {
-                "en": "&#10060; 'Twice a number' is 2n (not 2(n&minus;7)); 'decreased by 7' subtracts after. Compare to n + 5. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; 'Twice a number' is 2n (not 2(n&minus;7)); 'decreased by 7' subtracts after. Compare to n + 5. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "2(n &minus; 7) = n + 5 (\"twice a number\" is 2n, not 2(n&minus;7)).",
               "correct": false,
               "why": {
-                "en": "&#10060; 'Twice a number' is 2n (not 2(n&minus;7)); 'decreased by 7' subtracts after. Compare to n + 5. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; 'Twice a number' is 2n (not 2(n&minus;7)); 'decreased by 7' subtracts after. Compare to n + 5. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -379,7 +414,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "unlock-box.png",
-          "alt": "Detective Mateo opens a locked evidence box with golden light pouring out",
+          "alt": "Detective Jonah opens a locked evidence box with golden light pouring out",
           "lastLabel": "Solve box one ▶",
           "beats": [
             {
@@ -430,16 +465,16 @@ window.GN_STORY = {
               "en": "Translate the very first paper clue into an equation.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Count how many evidence boxes are stacked in the room.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -460,16 +495,16 @@ window.GN_STORY = {
               "en": "x = 15 (this added 6).",
               "correct": false,
               "why": {
-                "en": "&#10060; Division by 6 is undone by MULTIPLYING both sides by 6: x = 9 &times; 6. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Division by 6 is undone by MULTIPLYING both sides by 6: x = 9 &times; 6. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "x = 1.5 (this divided 9 by 6).",
               "correct": false,
               "why": {
-                "en": "&#10060; Division by 6 is undone by MULTIPLYING both sides by 6: x = 9 &times; 6. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Division by 6 is undone by MULTIPLYING both sides by 6: x = 9 &times; 6. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -516,8 +551,8 @@ window.GN_STORY = {
               "en": "n = 9 (check: 3&times;9+5 = 32, not 26).",
               "correct": false,
               "why": {
-                "en": "&#10060; Two moves: first subtract the constant 5, THEN divide by the coefficient 3. Substitute to check. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Two moves: first subtract the constant 5, THEN divide by the coefficient 3. Substitute to check. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -528,8 +563,8 @@ window.GN_STORY = {
               "en": "n = 10 (check: 3&times;10+5 = 35, not 26).",
               "correct": false,
               "why": {
-                "en": "&#10060; Two moves: first subtract the constant 5, THEN divide by the coefficient 3. Substitute to check. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Two moves: first subtract the constant 5, THEN divide by the coefficient 3. Substitute to check. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -569,8 +604,8 @@ window.GN_STORY = {
               "en": "m = 7 (check: 7 &minus; 15 = &minus;8, not 8).",
               "correct": false,
               "why": {
-                "en": "&#10060; Substitute each value into 8 = m &minus; 15. Only the one giving a true statement is the solution. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Substitute each value into 8 = m &minus; 15. Only the one giving a true statement is the solution. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -581,8 +616,8 @@ window.GN_STORY = {
               "en": "m = &minus;7 (check: &minus;7 &minus; 15 = &minus;22).",
               "correct": false,
               "why": {
-                "en": "&#10060; Substitute each value into 8 = m &minus; 15. Only the one giving a true statement is the solution. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Substitute each value into 8 = m &minus; 15. Only the one giving a true statement is the solution. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -646,7 +681,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "final-case.png",
-          "alt": "Detective Mateo faces a giant vault door covered in locks and dials",
+          "alt": "Detective Jonah faces a giant vault door covered in locks and dials",
           "lastLabel": "Enter the vault ▶",
           "beats": [
             {
@@ -688,8 +723,8 @@ window.GN_STORY = {
               "en": "2c &minus; 12 = 30, c = 9 (equation right, but check: 2&times;9&minus;12=6).",
               "correct": false,
               "why": {
-                "en": "&#10060; The clue subtracts 12 from TWICE the coins: 2c &minus; 12 = 30. Add 12, then divide by 2, then verify. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; The clue subtracts 12 from TWICE the coins: 2c &minus; 12 = 30. Add 12, then divide by 2, then verify. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -700,8 +735,8 @@ window.GN_STORY = {
               "en": "2c + 12 = 30, c = 9 (the clue subtracts 12, not adds).",
               "correct": false,
               "why": {
-                "en": "&#10060; The clue subtracts 12 from TWICE the coins: 2c &minus; 12 = 30. Add 12, then divide by 2, then verify. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; The clue subtracts 12 from TWICE the coins: 2c &minus; 12 = 30. Add 12, then divide by 2, then verify. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -745,16 +780,16 @@ window.GN_STORY = {
               "en": "y = 76 (check: 76/4+6 = 25, not 13).",
               "correct": false,
               "why": {
-                "en": "&#10060; Undo the +6 first (subtract 6), THEN multiply by 4. Verify by substituting back. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Undo the +6 first (subtract 6), THEN multiply by 4. Verify by substituting back. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "y = 1.75 (divided too early; handle +6 first).",
               "correct": false,
               "why": {
-                "en": "&#10060; Undo the +6 first (subtract 6), THEN multiply by 4. Verify by substituting back. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Undo the +6 first (subtract 6), THEN multiply by 4. Verify by substituting back. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -803,16 +838,16 @@ window.GN_STORY = {
               "en": "CIPHER-9 secretly wants the vault to stay locked.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "The clues are written in a code no one can translate.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -838,16 +873,16 @@ window.GN_STORY = {
               "en": "Re-lock the inner safe and walk away from the precinct.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Let CIPHER-9 balance only one side from now on.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -909,7 +944,7 @@ window.GN_STORY = {
   ],
   "complete": {
     "art": "solved.png",
-    "alt": "Detective Mateo celebrates with confetti as all the evidence boxes stand open",
+    "alt": "Detective Jonah celebrates with confetti as all the evidence boxes stand open",
     "badge": "&#127881;&#128373;&#65039;&#11088;",
     "titleEn": "Case Closed &mdash; Brilliantly Solved!",
     "en": "Masterful work, Detective. You translated tangled clues into precise <b>equations</b>, <b>solved</b> one-step and multi-step locks, and <b>verified</b> every solution before trusting it. The precinct's coldest case is officially closed.",

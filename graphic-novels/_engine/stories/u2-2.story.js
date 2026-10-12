@@ -9,7 +9,37 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U2 #2: Master Chef Kitchen: The Recipe Rescue",
     "artBase": "../_art/unit2/",
-    "home": "../index.html"
+    "home": "../index.html",
+    "artFocus": {
+      "celebration.png": [
+        48,
+        32
+      ],
+      "cover.png": [
+        52,
+        28
+      ],
+      "final-banquet.png": [
+        52,
+        32
+      ],
+      "kitchen-orders.png": [
+        36,
+        38
+      ],
+      "pantry-open.png": [
+        27,
+        36
+      ],
+      "portioning.png": [
+        35,
+        40
+      ],
+      "scaling-recipe.png": [
+        44,
+        30
+      ]
+    }
   },
   "cast": {
     "chef": {
@@ -34,7 +64,9 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#0d9488"
-      }
+      },
+      "figure": "../_art/characters/u2-pip.png",
+      "figureTint": 150
     },
     "chef_log": {
       "name": "Chef Kwame Mensah",
@@ -43,17 +75,18 @@ window.GN_STORY = {
       "tagIcon": "🍲",
       "blurb": "Culinary Director · Banquet Operations",
       "portrait": {
+        "outfit": "chef",
         "skin": "#693b1e",
         "hair": "#0f172a",
-        "hairStyle": 5,
-        "glasses": true
+        "hairStyle": "bald",
+        "beard": "full"
       }
     }
   },
   "cover": {
     "art": "cover.png",
-    "alt": "Kai, a young chef, strikes a hero pose in a glowing futuristic kitchen with floating order tickets",
-    "blurbEn": "The flagship restaurant Aurora is slammed on its biggest night, and every locked station now answers only to precise fraction math. As the rising chef <b>Kai</b>, you must interpret division of fractions, portion ingredients, and scale recipes under pressure — before the dinner service collapses. WHISK-9, the kitchen bot, races to help… but it keeps flipping which number divides which. Watch for the optional <b>⭐ Sora's Challenge</b> in each act for extra credit.",
+    "alt": "Sora, a young chef, strikes a hero pose in a glowing futuristic kitchen with floating order tickets",
+    "blurbEn": "The flagship restaurant Aurora is slammed on its biggest night, and every locked station now answers only to precise fraction math. As the rising chef <b>Sora</b>, you must interpret division of fractions, portion ingredients, and scale recipes under pressure — before the dinner service collapses. WHISK-9, the kitchen bot, races to help… but it keeps flipping which number divides which. Watch for the optional <b>⭐ Sora's Challenge</b> in each act for extra credit.",
     "blurbEs": "",
     "startLabel": "Begin Service 🛒"
   },
@@ -68,13 +101,13 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "kitchen-orders.png",
-          "alt": "Kai stands at a prep station looking at floating order tickets and a locked pantry door",
-          "lastLabel": "Check PIP ▶",
+          "alt": "Sora stands at a prep station looking at floating order tickets and a locked pantry door",
+          "lastLabel": "Check WHISK-9 ▶",
           "beats": [
             {
               "who": "chef_log",
               "caption": true,
-              "en": "Kai, we are buried in tickets and the pantry just locked itself. It only releases for exact fraction work — no rounding, no guesses."
+              "en": "Sora, we are buried in tickets and the pantry just locked itself. It only releases for exact fraction work — no rounding, no guesses."
             },
             {
               "who": "chef_log",
@@ -84,7 +117,7 @@ window.GN_STORY = {
             {
               "who": "chef_log",
               "caption": true,
-              "en": "The ticket rail is already three deep, and the lock won't budge until the numbers come out exact. Steady hands, Kai."
+              "en": "The ticket rail is already three deep, and the lock won't budge until the numbers come out exact. Steady hands, Sora."
             },
             {
               "who": "chef",
@@ -125,16 +158,16 @@ window.GN_STORY = {
               "en": "Only after WHISK-9 transmits the first key it decodes.",
               "correct": false,
               "why": {
-                "en": "❌ Reread the Head Sora: the pantry opens only for exact fraction work — no rounding, no guesses. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Reread the Head Sora: the pantry opens only for exact fraction work — no rounding, no guesses. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Only once the critic at table nine finishes dinner.",
               "correct": false,
               "why": {
-                "en": "❌ Reread the Head Sora: the pantry opens only for exact fraction work — no rounding, no guesses. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Reread the Head Sora: the pantry opens only for exact fraction work — no rounding, no guesses. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -153,8 +186,8 @@ window.GN_STORY = {
               "en": "It splits 5 cups into 3 equal portions of 5/3 cup each. <span class=\"note\">(that models 5 ÷ 3, not 5 ÷ 1/3)</span>",
               "correct": false,
               "why": {
-                "en": "❌ That models a different operation. Dividing 5 by 1/3 asks how many 1/3-cup portions fit in 5 cups. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That models a different operation. Dividing 5 by 1/3 asks how many 1/3-cup portions fit in 5 cups. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -165,8 +198,8 @@ window.GN_STORY = {
               "en": "It finds 1/3 of 5 cups, giving 5/3 cup. <span class=\"note\">(that is 5 × 1/3, multiplication)</span>",
               "correct": false,
               "why": {
-                "en": "❌ That models a different operation. Dividing 5 by 1/3 asks how many 1/3-cup portions fit in 5 cups. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That models a different operation. Dividing 5 by 1/3 asks how many 1/3-cup portions fit in 5 cups. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -201,7 +234,7 @@ window.GN_STORY = {
           "passageRef": "act1.beat2",
           "ask": {
             "who": "chef_log",
-            "en": "When Kai vows to <b>model</b> every ticket precisely, <b>model</b> most nearly means to —"
+            "en": "When Sora vows to <b>model</b> every ticket precisely, <b>model</b> most nearly means to —"
           },
           "choices": [
             {
@@ -212,16 +245,16 @@ window.GN_STORY = {
               "en": "pose for a photo beside the finished dish.",
               "correct": false,
               "why": {
-                "en": "❌ In this context, <i>model</i> means to represent the ticket mathematically, not to pose or copy. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ In this context, <i>model</i> means to represent the ticket mathematically, not to pose or copy. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "copy another chef's plating exactly.",
               "correct": false,
               "why": {
-                "en": "❌ In this context, <i>model</i> means to represent the ticket mathematically, not to pose or copy. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ In this context, <i>model</i> means to represent the ticket mathematically, not to pose or copy. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -240,8 +273,8 @@ window.GN_STORY = {
               "en": "7/32 <span class=\"note\">(that is 7/8 × 1/4 — multiplied instead of divided)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Keep, flip, multiply: 7/8 × 4/1 = 28/8 = 3 1/2. Recompute and try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Keep, flip, multiply: 7/8 × 4/1 = 28/8 = 3 1/2. Recompute and try again. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -252,15 +285,15 @@ window.GN_STORY = {
               "en": "4 brushes <span class=\"note\">(that ignores the numerator 7; 7/8 ≠ 1)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Keep, flip, multiply: 7/8 × 4/1 = 28/8 = 3 1/2. Recompute and try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Keep, flip, multiply: 7/8 × 4/1 = 28/8 = 3 1/2. Recompute and try again. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
           "goodEn": "✅ 7/8 ÷ 1/4 = 7/8 × 4/1 = 28/8 = 7/2 = 3 1/2 brushes. Pantry releasing…",
           "badEn": "❌ Keep, flip, multiply: 7/8 × 4/1 = 28/8 = 3 1/2. Recompute and try again.",
           "solveArt": "pantry-open.png",
-          "solveAlt": "The pantry door bursts open with golden light as Kai raises a fist",
+          "solveAlt": "The pantry door bursts open with golden light as Sora raises a fist",
           "solveBeat": {
             "who": "chef",
             "en": "Pantry open. WHISK-9, the captain's tasting menu hides a bonus — want to try it?"
@@ -301,16 +334,16 @@ window.GN_STORY = {
               "en": "“A food critic is dining incognito at table nine.”",
               "correct": false,
               "why": {
-                "en": "❌ Look for the line that names the lock's rule: exact fraction work, no rounding, no guesses. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Look for the line that names the lock's rule: exact fraction work, no rounding, no guesses. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "“Pantry open. WHISK-9, the captain's tasting menu hides a bonus.”",
               "correct": false,
               "why": {
-                "en": "❌ Look for the line that names the lock's rule: exact fraction work, no rounding, no guesses. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Look for the line that names the lock's rule: exact fraction work, no rounding, no guesses. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -331,8 +364,8 @@ window.GN_STORY = {
               "en": "54 cups <span class=\"note\">(that is 9 × 6, ignoring the 1/6 is a SIXTH)</span>",
               "correct": false,
               "why": {
-                "en": "❌ If total ÷ 1/6 = 9, then total = 9 × 1/6 = 1 1/2 cups, not a whole-number scale-up. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ If total ÷ 1/6 = 9, then total = 9 × 1/6 = 1 1/2 cups, not a whole-number scale-up. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -343,8 +376,8 @@ window.GN_STORY = {
               "en": "3/2 of a ramekin... wait, 1/54 cup <span class=\"note\">(that is 9 ÷ 6 mis-set-up)</span>",
               "correct": false,
               "why": {
-                "en": "❌ If total ÷ 1/6 = 9, then total = 9 × 1/6 = 1 1/2 cups, not a whole-number scale-up. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ If total ÷ 1/6 = 9, then total = 9 × 1/6 = 1 1/2 cups, not a whole-number scale-up. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -381,8 +414,8 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "scaling-recipe.png",
-          "alt": "Kai pours flour into measuring cups while scaling up a recipe",
-          "lastLabel": "Check PIP ▶",
+          "alt": "Sora pours flour into measuring cups while scaling up a recipe",
+          "lastLabel": "Check WHISK-9 ▶",
           "beats": [
             {
               "who": "chef_log",
@@ -426,23 +459,23 @@ window.GN_STORY = {
           },
           "choices": [
             {
-              "en": "Kai must divide and scale the recipes so every banquet plate comes out an exact, equal portion.",
+              "en": "Sora must divide and scale the recipes so every banquet plate comes out an exact, equal portion.",
               "correct": true
             },
             {
-              "en": "Kai is teaching WHISK-9 to greet the banquet party at the door.",
+              "en": "Sora is teaching WHISK-9 to greet the banquet party at the door.",
               "correct": false,
               "why": {
-                "en": "❌ The other ideas are minor details. The main work here is dividing and scaling for exact, equal portions. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ The other ideas are minor details. The main work here is dividing and scaling for exact, equal portions. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "The banquet party is unhappy with the restaurant's décor.",
               "correct": false,
               "why": {
-                "en": "❌ The other ideas are minor details. The main work here is dividing and scaling for exact, equal portions. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ The other ideas are minor details. The main work here is dividing and scaling for exact, equal portions. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -454,15 +487,15 @@ window.GN_STORY = {
           "id": "2a",
           "ask": {
             "who": "chef",
-            "en": "Stop, WHISK-9 — you dropped the /4. The banquet pot holds <b>9 cups</b> of risotto and each entrée plates <b>3/4 cup</b>. How many full entrées can Kai send? Evaluate <b>9 ÷ 3/4</b>."
+            "en": "Stop, WHISK-9 — you dropped the /4. The banquet pot holds <b>9 cups</b> of risotto and each entrée plates <b>3/4 cup</b>. How many full entrées can Sora send? Evaluate <b>9 ÷ 3/4</b>."
           },
           "choices": [
             {
               "en": "6 3/4 plates <span class=\"note\">(that is 9 × 3/4 — multiplication)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Multiply by the reciprocal of 3/4: 9 × 4/3 = 12. Check your setup. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Multiply by the reciprocal of 3/4: 9 × 4/3 = 12. Check your setup. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -473,8 +506,8 @@ window.GN_STORY = {
               "en": "3 plates <span class=\"note\">(that is 9 ÷ 3, dropping the /4)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Multiply by the reciprocal of 3/4: 9 × 4/3 = 12. Check your setup. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Multiply by the reciprocal of 3/4: 9 × 4/3 = 12. Check your setup. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -504,7 +537,7 @@ window.GN_STORY = {
           "id": "2b",
           "ask": {
             "who": "chef",
-            "en": "A sauce recipe needs <b>2/3 cup</b> of cream, but Kai only wants to make <b>1/6-cup</b> tasting portions for the judges. How many tasting portions does one recipe yield? Evaluate <b>2/3 ÷ 1/6</b>."
+            "en": "A sauce recipe needs <b>2/3 cup</b> of cream, but Sora only wants to make <b>1/6-cup</b> tasting portions for the judges. How many tasting portions does one recipe yield? Evaluate <b>2/3 ÷ 1/6</b>."
           },
           "choices": [
             {
@@ -515,16 +548,16 @@ window.GN_STORY = {
               "en": "1/9 of a portion <span class=\"note\">(that is 2/3 × 1/6 — multiplied)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Flip the divisor: 2/3 × 6/1 = 12/3 = 4. Recompute. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Flip the divisor: 2/3 × 6/1 = 12/3 = 4. Recompute. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "9 portions <span class=\"note\">(reciprocal of the wrong fraction)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Flip the divisor: 2/3 × 6/1 = 12/3 = 4. Recompute. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Flip the divisor: 2/3 × 6/1 = 12/3 = 4. Recompute. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -556,15 +589,15 @@ window.GN_STORY = {
           "bonusTag": "⭐ Captain's Challenge",
           "ask": {
             "who": "chef_log",
-            "en": "Optional: the judges want a mixed-number scale-down. The order's already out, so this one is just for the extra star. Kai has <b>2 1/2 cups</b> of broth and needs <b>5/8-cup</b> bowls. How many bowls can be filled exactly? Evaluate <b>2 1/2 ÷ 5/8</b>."
+            "en": "Optional: the judges want a mixed-number scale-down. The order's already out, so this one is just for the extra star. Sora has <b>2 1/2 cups</b> of broth and needs <b>5/8-cup</b> bowls. How many bowls can be filled exactly? Evaluate <b>2 1/2 ÷ 5/8</b>."
           },
           "choices": [
             {
               "en": "1 9/16 bowls <span class=\"note\">(that is 5/2 × 5/8 — multiplied)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Convert 2 1/2 to 5/2, then multiply by 8/5: 40/10 = 4 bowls. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Convert 2 1/2 to 5/2, then multiply by 8/5: 40/10 = 4 bowls. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -575,8 +608,8 @@ window.GN_STORY = {
               "en": "3 1/8 bowls <span class=\"note\">(forgot to convert 2 1/2 to 5/2 first)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Convert 2 1/2 to 5/2, then multiply by 8/5: 40/10 = 4 bowls. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Convert 2 1/2 to 5/2, then multiply by 8/5: 40/10 = 4 bowls. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -615,15 +648,15 @@ window.GN_STORY = {
           },
           "items": [
             {
-              "en": "PIP misfires, claiming 9 ÷ 3/4 is just 9 ÷ 3 = 3 plates.",
+              "en": "WHISK-9 misfires, claiming 9 ÷ 3/4 is just 9 ÷ 3 = 3 plates.",
               "order": 1
             },
             {
-              "en": "Kai divides 9 cups of risotto into 3/4-cup plates and sends 12 entrées.",
+              "en": "Sora divides 9 cups of risotto into 3/4-cup plates and sends 12 entrées.",
               "order": 2
             },
             {
-              "en": "Kai scales the cream sauce into 1/6-cup tasting portions for the judges.",
+              "en": "Sora scales the cream sauce into 1/6-cup tasting portions for the judges.",
               "order": 3
             }
           ],
@@ -642,13 +675,13 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "final-banquet.png",
-          "alt": "Kai rolls up sleeves to face a huge glowing banquet order ticket",
-          "lastLabel": "Check PIP ▶",
+          "alt": "Sora rolls up sleeves to face a huge glowing banquet order ticket",
+          "lastLabel": "Check WHISK-9 ▶",
           "beats": [
             {
               "who": "chef_log",
               "caption": true,
-              "en": "Master ticket, Kai — the banquet's signature course. One line, two portion problems, zero mistakes. Show me."
+              "en": "Master ticket, Sora — the banquet's signature course. One line, two portion problems, zero mistakes. Show me."
             },
             {
               "who": "chef_log",
@@ -678,15 +711,15 @@ window.GN_STORY = {
           "id": "F",
           "ask": {
             "who": "chef",
-            "en": "Careful, WHISK-9 — 6 ÷ 2/3 isn't 4. The head chef hands Kai the master ticket. It needs ONE fully correct line: first portion <b>3 3/4 cups</b> of bisque into <b>1/2-cup</b> cups, then confirm how many <b>2/3-cup</b> ladles fill <b>6 cups</b>. Pick the line where BOTH results are right."
+            "en": "Careful, WHISK-9 — 6 ÷ 2/3 isn't 4. The head chef hands Sora the master ticket. It needs ONE fully correct line: first portion <b>3 3/4 cups</b> of bisque into <b>1/2-cup</b> cups, then confirm how many <b>2/3-cup</b> ladles fill <b>6 cups</b>. Pick the line where BOTH results are right."
           },
           "choices": [
             {
               "en": "3 3/4 ÷ 1/2 = 7 1/2 cups, &nbsp; 6 ÷ 2/3 = 4 ladles <span class=\"note\">(first is right; 6 ÷ 2/3 = 9, not 4)</span>",
               "correct": false,
               "why": {
-                "en": "❌ One quotient is off. Recheck: 15/4 × 2 = 7 1/2, and 6 × 3/2 = 9. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ One quotient is off. Recheck: 15/4 × 2 = 7 1/2, and 6 × 3/2 = 9. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -697,8 +730,8 @@ window.GN_STORY = {
               "en": "3 3/4 ÷ 1/2 = 1 7/8 cups, &nbsp; 6 ÷ 2/3 = 9 ladles <span class=\"note\">(first multiplied instead of dividing)</span>",
               "correct": false,
               "why": {
-                "en": "❌ One quotient is off. Recheck: 15/4 × 2 = 7 1/2, and 6 × 3/2 = 9. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ One quotient is off. Recheck: 15/4 × 2 = 7 1/2, and 6 × 3/2 = 9. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -744,16 +777,16 @@ window.GN_STORY = {
               "en": "WHISK-9 is deliberately sabotaging the kitchen so Aurora loses its star.",
               "correct": false,
               "why": {
-                "en": "❌ Reread WHISK-9's guesses: it keeps using “÷ n” instead of multiplying by the reciprocal, so the quotient is off. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Reread WHISK-9's guesses: it keeps using “÷ n” instead of multiplying by the reciprocal, so the quotient is off. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "WHISK-9 cannot read the order tickets because the print is too small.",
               "correct": false,
               "why": {
-                "en": "❌ Reread WHISK-9's guesses: it keeps using “÷ n” instead of multiplying by the reciprocal, so the quotient is off. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Reread WHISK-9's guesses: it keeps using “÷ n” instead of multiplying by the reciprocal, so the quotient is off. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -767,7 +800,7 @@ window.GN_STORY = {
           "bonusTag": "⭐ Captain's Challenge",
           "ask": {
             "who": "chef_log",
-            "en": "Optional: the banquet is already plated. Take the bow now, or crack this last puzzle first. After service, <b>3 1/3 cups</b> of soup remain. Kai pours them into <b>5/6-cup</b> staff bowls. How many full bowls, and how much soup is left over?"
+            "en": "Optional: the banquet is already plated. Take the bow now, or crack this last puzzle first. After service, <b>3 1/3 cups</b> of soup remain. Sora pours them into <b>5/6-cup</b> staff bowls. How many full bowls, and how much soup is left over?"
           },
           "choices": [
             {
@@ -778,16 +811,16 @@ window.GN_STORY = {
               "en": "3 full bowls, 5/6 cup left <span class=\"note\">(undercounts; 10/3 ÷ 5/6 = 4)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Convert 3 1/3 to 10/3, then 10/3 × 6/5 = 60/15 = 4 full bowls with nothing left. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Convert 3 1/3 to 10/3, then 10/3 × 6/5 = 60/15 = 4 full bowls with nothing left. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "2 7/9 bowls <span class=\"note\">(that is 10/3 × 5/6 — multiplied)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Convert 3 1/3 to 10/3, then 10/3 × 6/5 = 60/15 = 4 full bowls with nothing left. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Convert 3 1/3 to 10/3, then 10/3 × 6/5 = 60/15 = 4 full bowls with nothing left. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -826,27 +859,27 @@ window.GN_STORY = {
           },
           "choices": [
             {
-              "en": "The plates go out to the dining room and the critic finally tastes Kai's exact portions.",
+              "en": "The plates go out to the dining room and the critic finally tastes Sora's exact portions.",
               "correct": true
             },
             {
-              "en": "Kai relocks the pantry from Act 1 and restarts the dinner rush.",
+              "en": "Sora relocks the pantry from Act 1 and restarts the dinner rush.",
               "correct": false,
               "why": {
-                "en": "❌ Think about the moment: the course is verified, so the next step is sending those exact plates out to the room. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Think about the moment: the course is verified, so the next step is sending those exact plates out to the room. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "The kitchen abandons reciprocals and starts rounding every portion.",
               "correct": false,
               "why": {
-                "en": "❌ Think about the moment: the course is verified, so the next step is sending those exact plates out to the room. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Think about the moment: the course is verified, so the next step is sending those exact plates out to the room. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
-          "goodEn": "✅ Likely. With the course verified, the plates leave the pass and the critic tastes Kai's precise work.",
+          "goodEn": "✅ Likely. With the course verified, the plates leave the pass and the critic tastes Sora's precise work.",
           "badEn": "❌ Think about the moment: the course is verified, so the next step is sending those exact plates out to the room."
         }
       ]
@@ -916,10 +949,10 @@ window.GN_STORY = {
   ],
   "complete": {
     "art": "celebration.png",
-    "alt": "Kai proudly presents a banquet of finished dishes while chef friends cheer",
+    "alt": "Sora proudly presents a banquet of finished dishes while chef friends cheer",
     "badge": "🎉🛒⭐",
     "titleEn": "Service Saved — Five Stars!",
-    "en": "Aurora pulled off its biggest night. You interpreted division of fractions, portioned with reciprocals, and scaled every recipe with precision. The critics are raving, and the head chef just put your name on the specials board, Sora Kai.",
+    "en": "Aurora pulled off its biggest night. You interpreted division of fractions, portioned with reciprocals, and scaled every recipe with precision. The critics are raving, and the head chef just put your name on the specials board, Sora Sora.",
     "es": "",
     "master": {
       "headingEn": "Prove your rank to certify your Master Certificate!",

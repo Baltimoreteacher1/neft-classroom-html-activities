@@ -9,11 +9,37 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U9 #1: Treasure Map Navigator",
     "artBase": "../_art/unit9/",
-    "home": "../index.html"
+    "home": "../index.html",
+    "artFocus": {
+      "cover.png": [
+        40,
+        28
+      ],
+      "depth-dive.png": [
+        52,
+        40
+      ],
+      "elevation.png": [
+        35,
+        30
+      ],
+      "final-nav.png": [
+        45,
+        35
+      ],
+      "map-grid.png": [
+        40,
+        25
+      ],
+      "treasure-found.png": [
+        45,
+        40
+      ]
+    }
   },
   "cast": {
     "navigator": {
-      "name": "Rafael Santos",
+      "name": "Rafaela Santos",
       "role": "protagonist",
       "color": "#b45309",
       "tagIcon": "🧭",
@@ -34,7 +60,8 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#0284c7"
-      }
+      },
+      "figure": "../_art/characters/u10-coral.png"
     },
     "log": {
       "name": "Capt. Isolde Thorne",
@@ -43,17 +70,19 @@ window.GN_STORY = {
       "tagIcon": "⚓",
       "blurb": "Expedition Skipper · Absolute-Value Distance Master",
       "portrait": {
+        "outfit": "captain",
         "skin": "#f6d2b8",
-        "hair": "#7c2d12",
-        "hairStyle": 2
+        "hair": "#b45309",
+        "hairStyle": "braid",
+        "earrings": true
       }
     }
   },
   "cover": {
     "art": "cover.png",
-    "alt": "Maya the young explorer holds up a glowing treasure map on a tropical cliff above the sea",
+    "alt": "Rafaela the young explorer holds up a glowing treasure map on a tropical cliff above the sea",
     "blurbEn": "You are <b>the Navigator</b>. You found an old treasure map! To reach the treasure, you must <b>plot points</b> on a grid and use <b>integers</b> (numbers above and below zero). BARNACLE-4, your first mate, wants to help… but BARNACLE-4 keeps mixing up negative numbers. Catch the mistakes and find the gold!",
-    "blurbEs": "Eres el Navegante. Para llegar al tesoro, debes marcar puntos en una cuadrícula y usar números enteros (arriba y abajo de cero). MARLOW, tu primer oficial, quiere ayudar… pero confunde los números negativos. ¡Atrapa los errores!",
+    "blurbEs": "Eres la Navegante. Para llegar al tesoro, debes marcar puntos en una cuadrícula y usar números enteros (arriba y abajo de cero). BARNACLE-4, tu primer oficial, quiere ayudar… pero confunde los números negativos. ¡Atrapa los errores!",
     "startLabel": "Start the Hunt 🗺️"
   },
   "acts": [
@@ -67,7 +96,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "map-grid.png",
-          "alt": "Maya kneels over a treasure map with a glowing coordinate grid drawn on it",
+          "alt": "Rafaela kneels over a treasure map with a glowing coordinate grid drawn on it",
           "lastLabel": "Read the map ▶",
           "beats": [
             {
@@ -138,7 +167,7 @@ window.GN_STORY = {
               "es": "Cuadrante I (derecha + arriba)",
               "correct": false,
               "why": {
-                "en": "❌ Not quite. x = −4 means LEFT and y = 3 means UP. Use the hint and try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Not quite. x = −4 means LEFT and y = 3 means UP. Use the hint and try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Casi. x = −4 es izquierda, y = 3 es arriba. Usa la pista."
               }
             },
@@ -152,7 +181,7 @@ window.GN_STORY = {
               "es": "Cuadrante III (izquierda + abajo)",
               "correct": false,
               "why": {
-                "en": "❌ Not quite. x = −4 means LEFT and y = 3 means UP. Use the hint and try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Not quite. x = −4 means LEFT and y = 3 means UP. Use the hint and try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Casi. x = −4 es izquierda, y = 3 es arriba. Usa la pista."
               }
             }
@@ -203,7 +232,7 @@ window.GN_STORY = {
               "es": "(−3, 2)",
               "correct": false,
               "why": {
-                "en": "❌ Check the order: x first (right = +3), y second (down = −2). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Check the order: x first (right = +3), y second (down = −2). Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Revisa el orden: x primero (derecha = +3), y después (abajo = −2)."
               }
             },
@@ -217,7 +246,7 @@ window.GN_STORY = {
               "es": "(2, −3)",
               "correct": false,
               "why": {
-                "en": "❌ Check the order: x first (right = +3), y second (down = −2). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Check the order: x first (right = +3), y second (down = −2). Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Revisa el orden: x primero (derecha = +3), y después (abajo = −2)."
               }
             }
@@ -270,8 +299,8 @@ window.GN_STORY = {
               "es": "La pista del tesoro, (−4, 3).",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -279,8 +308,8 @@ window.GN_STORY = {
               "es": "El borde del acantilado, (3, −2).",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -296,7 +325,7 @@ window.GN_STORY = {
           "ask": {
             "who": "log",
             "en": "What is the Navigator mainly trying to do in this chapter?",
-            "es": "¿Qué intenta hacer el Navegante principalmente en este capítulo?"
+            "es": "¿Qué intenta hacer la Navegante principalmente en este capítulo?"
           },
           "choices": [
             {
@@ -309,17 +338,17 @@ window.GN_STORY = {
               "es": "Bucear 20 metros bajo el mar para hallar el cofre.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Teach BARNACLE-4 how to draw a treasure map.",
-              "es": "Enseñar a MARLOW a dibujar un mapa del tesoro.",
+              "es": "Enseñar a BARNACLE-4 a dibujar un mapa del tesoro.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -336,8 +365,8 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "depth-dive.png",
-          "alt": "Maya dives down past a cliff that shows sea level, with depths below and heights above",
-          "lastLabel": "Stop MARLOW ▶",
+          "alt": "Rafaela dives down past a cliff that shows sea level, with depths below and heights above",
+          "lastLabel": "Stop BARNACLE-4 ▶",
           "beats": [
             {
               "who": "navigator",
@@ -392,7 +421,7 @@ window.GN_STORY = {
               "es": "0, −8, −15, 6, 12",
               "correct": false,
               "why": {
-                "en": "❌ Remember: more negative = deeper = smaller. Order from the deepest up. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Remember: more negative = deeper = smaller. Order from the deepest up. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Recuerda: más negativo = más profundo = menor."
               }
             },
@@ -406,7 +435,7 @@ window.GN_STORY = {
               "es": "12, 6, 0, −8, −15",
               "correct": false,
               "why": {
-                "en": "❌ Remember: more negative = deeper = smaller. Order from the deepest up. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Remember: more negative = deeper = smaller. Order from the deepest up. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Recuerda: más negativo = más profundo = menor."
               }
             }
@@ -464,7 +493,7 @@ window.GN_STORY = {
               "es": "−20 m (la distancia nunca es negativa)",
               "correct": false,
               "why": {
-                "en": "❌ Absolute value is a DISTANCE, so it is never negative. |−20| = 20. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Absolute value is a DISTANCE, so it is never negative. |−20| = 20. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "El valor absoluto es una distancia, nunca negativa. |−20| = 20."
               }
             },
@@ -478,7 +507,7 @@ window.GN_STORY = {
               "es": "0 m (esa es la superficie)",
               "correct": false,
               "why": {
-                "en": "❌ Absolute value is a DISTANCE, so it is never negative. |−20| = 20. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Absolute value is a DISTANCE, so it is never negative. |−20| = 20. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "El valor absoluto es una distancia, nunca negativa. |−20| = 20."
               }
             }
@@ -535,8 +564,8 @@ window.GN_STORY = {
               "es": "Lo más profundo que un buzo puede nadar bajo el mar.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -544,8 +573,8 @@ window.GN_STORY = {
               "es": "El mayor de dos números en la recta numérica.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -561,7 +590,7 @@ window.GN_STORY = {
           "ask": {
             "who": "log",
             "en": "Tap the line that shows BARNACLE-4 <b>ordered the negatives the wrong way</b>.",
-            "es": "Toca la línea que muestra que MARLOW <b>ordenó mal los negativos</b>."
+            "es": "Toca la línea que muestra que BARNACLE-4 <b>ordenó mal los negativos</b>."
           },
           "choices": [
             {
@@ -574,8 +603,8 @@ window.GN_STORY = {
               "es": "“El nivel del mar es 0. Arriba es +, abajo es −.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -583,8 +612,8 @@ window.GN_STORY = {
               "es": "“Ahora me sumerjo. Necesito saber qué tan LEJOS estoy.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -604,18 +633,18 @@ window.GN_STORY = {
           },
           "items": [
             {
-              "en": "MARLOW guesses the order 0, −8, −15, 6, 12.",
-              "es": "MARLOW adivina el orden 0, −8, −15, 6, 12.",
+              "en": "BARNACLE-4 guesses the order 0, −8, −15, 6, 12.",
+              "es": "BARNACLE-4 adivina el orden 0, −8, −15, 6, 12.",
               "order": 1
             },
             {
               "en": "The Navigator orders the heights correctly: −15, −8, 0, 6, 12.",
-              "es": "El Navegante ordena bien las alturas: −15, −8, 0, 6, 12.",
+              "es": "La Navegante ordena bien las alturas: −15, −8, 0, 6, 12.",
               "order": 2
             },
             {
               "en": "The Navigator dives to −20 m and finds |−20| = 20 meters.",
-              "es": "El Navegante baja a −20 m y halla |−20| = 20 metros.",
+              "es": "La Navegante baja a −20 m y halla |−20| = 20 metros.",
               "order": 3
             }
           ]
@@ -632,7 +661,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "final-nav.png",
-          "alt": "Maya stands at a glowing X on the map grid near a steep cliff edge",
+          "alt": "Rafaela stands at a glowing X on the map grid near a steep cliff edge",
           "lastLabel": "Find the spot ▶",
           "beats": [
             {
@@ -682,7 +711,7 @@ window.GN_STORY = {
               "es": "Cuadrante II, |−5| = −5",
               "correct": false,
               "why": {
-                "en": "❌ One part is wrong. Left + down is Quadrant III, and absolute value is never negative: |−5| = 5. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ One part is wrong. Left + down is Quadrant III, and absolute value is never negative: |−5| = 5. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Una parte está mal. Izquierda y abajo = Cuadrante III, y |−5| = 5."
               }
             },
@@ -696,7 +725,7 @@ window.GN_STORY = {
               "es": "Cuadrante III, |−5| = −5",
               "correct": false,
               "why": {
-                "en": "❌ One part is wrong. Left + down is Quadrant III, and absolute value is never negative: |−5| = 5. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ One part is wrong. Left + down is Quadrant III, and absolute value is never negative: |−5| = 5. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Una parte está mal. Izquierda y abajo = Cuadrante III, y |−5| = 5."
               }
             }
@@ -708,7 +737,7 @@ window.GN_STORY = {
           "solveBeat": {
             "who": "navigator",
             "en": "The chest! We did it, BARNACLE-4 — even with your wild guesses. The gold is ours!",
-            "es": "¡El cofre! Lo logramos, MARLOW. ¡El oro es nuestro!"
+            "es": "¡El cofre! Lo logramos, BARNACLE-4. ¡El oro es nuestro!"
           },
           "help": {
             "conceptual": {
@@ -736,34 +765,34 @@ window.GN_STORY = {
           "ask": {
             "who": "log",
             "en": "BARNACLE-4 keeps ordering negatives the wrong way, like saying −8 is below −15. Why does BARNACLE-4 keep making this mistake?",
-            "es": "MARLOW sigue ordenando mal los negativos, como decir que −8 está debajo de −15. ¿Por qué comete MARLOW este error?"
+            "es": "BARNACLE-4 sigue ordenando mal los negativos, como decir que −8 está debajo de −15. ¿Por qué comete BARNACLE-4 este error?"
           },
           "hint": {
-            "en": "Look back: MARLOW only looks at the digits (8 and 15) and forgets the negative sign means below zero.",
-            "es": "Mira atrás: MARLOW solo mira los dígitos (8 y 15) y olvida que el signo negativo significa bajo cero."
+            "en": "Look back: BARNACLE-4 only looks at the digits (8 and 15) and forgets the negative sign means below zero.",
+            "es": "Mira atrás: BARNACLE-4 solo mira los dígitos (8 y 15) y olvida que el signo negativo significa bajo cero."
           },
           "choices": [
             {
               "en": "BARNACLE-4 judges a negative by the size of its digits and forgets that more negative means deeper and smaller.",
-              "es": "MARLOW juzga un negativo por el tamaño de sus dígitos y olvida que más negativo es más profundo y menor.",
+              "es": "BARNACLE-4 juzga un negativo por el tamaño de sus dígitos y olvida que más negativo es más profundo y menor.",
               "correct": true
             },
             {
               "en": "BARNACLE-4 cannot see the numbers on the map at all.",
-              "es": "MARLOW no puede ver los números en el mapa.",
+              "es": "BARNACLE-4 no puede ver los números en el mapa.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "BARNACLE-4 wants the Navigator to lose the treasure.",
-              "es": "MARLOW quiere que el Navegante pierda el tesoro.",
+              "es": "BARNACLE-4 quiere que la Navegante pierda el tesoro.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -779,7 +808,7 @@ window.GN_STORY = {
           "ask": {
             "who": "log",
             "en": "The X is found and the chest is dug up. What will the Navigator most likely do next?",
-            "es": "Se encontró la X y se desenterró el cofre. ¿Qué hará probablemente el Navegante después?"
+            "es": "Se encontró la X y se desenterró el cofre. ¿Qué hará probablemente la Navegante después?"
           },
           "choices": [
             {
@@ -792,8 +821,8 @@ window.GN_STORY = {
               "es": "Volver a enterrar el cofre en el punto (−4, 3).",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -801,8 +830,8 @@ window.GN_STORY = {
               "es": "Dejar de usar la cuadrícula de coordenadas para siempre.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -868,7 +897,7 @@ window.GN_STORY = {
   ],
   "complete": {
     "art": "treasure-found.png",
-    "alt": "Maya opens a glowing treasure chest full of gold on the beach at sunset",
+    "alt": "Rafaela opens a glowing treasure chest full of gold on the beach at sunset",
     "badge": "🎉💰⭐",
     "titleEn": "Treasure Found!",
     "en": "You did it, Navigator! You used the <b>coordinate plane</b> to plot the path and <b>integers</b> and <b>absolute value</b> to find how deep the chest was buried. The gold is yours. Amazing navigating!",

@@ -9,7 +9,41 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U1 #2: Decimal Docking Bay: Deep Space",
     "artBase": "../../_art/unit1/",
-    "home": "../../index.html"
+    "home": "../../index.html",
+    "artFocus": {
+      "airlock-locked.png": [
+        65,
+        22
+      ],
+      "airlock-open.png": [
+        50,
+        22
+      ],
+      "boss-door.png": [
+        50,
+        55
+      ],
+      "common-factor.png": [
+        50,
+        15
+      ],
+      "cover.png": [
+        45,
+        22
+      ],
+      "factor-tree.png": [
+        42,
+        30
+      ],
+      "mission-complete.png": [
+        32,
+        22
+      ],
+      "twin-engines.png": [
+        50,
+        45
+      ]
+    }
   },
   "cast": {
     "cadet": {
@@ -34,7 +68,9 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#d97706"
-      }
+      },
+      "figure": "../../_art/characters/u1-axis.png",
+      "figureTint": 150
     },
     "log": {
       "name": "Chief Yasmin Darzi",
@@ -43,9 +79,11 @@ window.GN_STORY = {
       "tagIcon": "🛰️",
       "blurb": "Starport Propulsion Architect · Estimation Check Pro",
       "portrait": {
-        "skin": "#d89668",
-        "hair": "#3b2314",
-        "hairStyle": 4
+        "outfit": "pilot",
+        "skin": "#f6d2b8",
+        "hair": "#7c2d12",
+        "hairStyle": "short",
+        "beard": "full"
       }
     }
   },
@@ -134,7 +172,7 @@ window.GN_STORY = {
               "es": "4.98 kg",
               "correct": false,
               "why": {
-                "en": "❌ Annex a zero (1.80) and add the hundredths column first: 5 + 0 + 5 = 10, carry the tenth. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Annex a zero (1.80) and add the hundredths column first: 5 + 0 + 5 = 10, carry the tenth. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Agrega un cero (1.80) y suma primero las centésimas."
               }
             },
@@ -143,7 +181,7 @@ window.GN_STORY = {
               "es": "5.28 kg",
               "correct": false,
               "why": {
-                "en": "❌ Annex a zero (1.80) and add the hundredths column first: 5 + 0 + 5 = 10, carry the tenth. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Annex a zero (1.80) and add the hundredths column first: 5 + 0 + 5 = 10, carry the tenth. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Agrega un cero (1.80) y suma primero las centésimas."
               }
             }
@@ -199,7 +237,7 @@ window.GN_STORY = {
               "es": "0.10 kg",
               "correct": false,
               "why": {
-                "en": "❌ Subtract 5.00 from 6.00: that leaves 1.00 kg. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Subtract 5.00 from 6.00: that leaves 1.00 kg. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Resta 5.00 de 6.00: queda 1.00 kg."
               }
             },
@@ -208,7 +246,7 @@ window.GN_STORY = {
               "es": "11 kg",
               "correct": false,
               "why": {
-                "en": "❌ Subtract 5.00 from 6.00: that leaves 1.00 kg. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Subtract 5.00 from 6.00: that leaves 1.00 kg. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Resta 5.00 de 6.00: queda 1.00 kg."
               }
             }
@@ -261,7 +299,7 @@ window.GN_STORY = {
               "es": "quitar el punto decimal y tratar los números como enteros.",
               "correct": false,
               "why": {
-                "en": "❌ Annexing a zero does not change a number's value — it just adds a place so the decimals line up. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Annexing a zero does not change a number's value — it just adds a place so the decimals line up. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Agregar un cero no cambia el valor; solo añade un lugar para alinear los decimales."
               }
             },
@@ -270,7 +308,7 @@ window.GN_STORY = {
               "es": "multiplicar cada valor por diez para hacerlo más grande.",
               "correct": false,
               "why": {
-                "en": "❌ Annexing a zero does not change a number's value — it just adds a place so the decimals line up. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Annexing a zero does not change a number's value — it just adds a place so the decimals line up. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Agregar un cero no cambia el valor; solo añade un lugar para alinear los decimales."
               }
             }
@@ -304,7 +342,7 @@ window.GN_STORY = {
               "es": "“Agregaré ceros para que todos tengan dos decimales.”",
               "correct": false,
               "why": {
-                "en": "❌ That line describes a method or a next step, not why the exact total matters. Find the line about the strict limit. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ That line describes a method or a next step, not why the exact total matters. Find the line about the strict limit. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Esa línea describe un método o un paso, no por qué importa el total exacto."
               }
             },
@@ -313,7 +351,7 @@ window.GN_STORY = {
               "es": "“Manifiesto confirmado. Ahora halla la diferencia con el límite de 6 kg.”",
               "correct": false,
               "why": {
-                "en": "❌ That line describes a method or a next step, not why the exact total matters. Find the line about the strict limit. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ That line describes a method or a next step, not why the exact total matters. Find the line about the strict limit. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Esa línea describe un método o un paso, no por qué importa el total exacto."
               }
             }
@@ -397,7 +435,7 @@ window.GN_STORY = {
               "es": "3.0 unidades",
               "correct": false,
               "why": {
-                "en": "❌ 12×25=300. Count places: 1+2=3, so 0.300 = 0.3. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ 12×25=300. Count places: 1+2=3, so 0.300 = 0.3. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ 12×25=300. Cuenta lugares: 1+2=3, así que 0.3."
               }
             },
@@ -406,7 +444,7 @@ window.GN_STORY = {
               "es": "0.03 unidades",
               "correct": false,
               "why": {
-                "en": "❌ 12×25=300. Count places: 1+2=3, so 0.300 = 0.3. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ 12×25=300. Count places: 1+2=3, so 0.300 = 0.3. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ 12×25=300. Cuenta lugares: 1+2=3, así que 0.3."
               }
             }
@@ -462,7 +500,7 @@ window.GN_STORY = {
               "es": "0.12 unidades",
               "correct": false,
               "why": {
-                "en": "❌ 4 × 3 = 12, with 1 decimal place that is 1.2. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ 4 × 3 = 12, with 1 decimal place that is 1.2. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ 4 × 3 = 12, con 1 lugar decimal es 1.2."
               }
             },
@@ -471,7 +509,7 @@ window.GN_STORY = {
               "es": "12 unidades",
               "correct": false,
               "why": {
-                "en": "❌ 4 × 3 = 12, with 1 decimal place that is 1.2. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ 4 × 3 = 12, with 1 decimal place that is 1.2. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ 4 × 3 = 12, con 1 lugar decimal es 1.2."
               }
             }
@@ -524,7 +562,7 @@ window.GN_STORY = {
               "es": "Sumar la masa de tres cajas para confirmar el manifiesto.",
               "correct": false,
               "why": {
-                "en": "❌ That belongs to the manifest chapter. This one is about multiplying decimals to calibrate the thrusters. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ That belongs to the manifest chapter. This one is about multiplying decimals to calibrate the thrusters. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Eso es del capítulo del manifiesto. Este trata de calibrar los propulsores."
               }
             },
@@ -533,7 +571,7 @@ window.GN_STORY = {
               "es": "Restar para hallar cuánto espacio queda bajo el límite.",
               "correct": false,
               "why": {
-                "en": "❌ That belongs to the manifest chapter. This one is about multiplying decimals to calibrate the thrusters. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ That belongs to the manifest chapter. This one is about multiplying decimals to calibrate the thrusters. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Eso es del capítulo del manifiesto. Este trata de calibrar los propulsores."
               }
             }
@@ -567,7 +605,7 @@ window.GN_STORY = {
               "es": "1.2 unidades de plasma.",
               "correct": false,
               "why": {
-                "en": "❌ Reread the opening: each thruster uses 0.25 units. The other numbers are firing time or thruster count. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Reread the opening: each thruster uses 0.25 units. The other numbers are firing time or thruster count. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Relee el inicio: cada propulsor usa 0.25 unidades."
               }
             },
@@ -576,7 +614,7 @@ window.GN_STORY = {
               "es": "4 unidades de plasma.",
               "correct": false,
               "why": {
-                "en": "❌ Reread the opening: each thruster uses 0.25 units. The other numbers are firing time or thruster count. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Reread the opening: each thruster uses 0.25 units. The other numbers are firing time or thruster count. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Relee el inicio: cada propulsor usa 0.25 unidades."
               }
             }
@@ -688,7 +726,7 @@ window.GN_STORY = {
               "es": "3.25 + 0.75 = 4.00, luego 4.00 × 0.5 = 20",
               "correct": false,
               "why": {
-                "en": "❌ Add first: 3.25 + 0.75 = 4.00. Then × 0.5 is HALF of 4, which is 2.0 — not 20. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Add first: 3.25 + 0.75 = 4.00. Then × 0.5 is HALF of 4, which is 2.0 — not 20. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Suma primero: 3.25 + 0.75 = 4.00. Luego × 0.5 es la MITAD de 4, o sea 2.0."
               }
             },
@@ -697,7 +735,7 @@ window.GN_STORY = {
               "es": "3.25 + 0.75 = 3.90, luego 3.90 × 0.5 = 1.95",
               "correct": false,
               "why": {
-                "en": "❌ Add first: 3.25 + 0.75 = 4.00. Then × 0.5 is HALF of 4, which is 2.0 — not 20. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Add first: 3.25 + 0.75 = 4.00. Then × 0.5 is HALF of 4, which is 2.0 — not 20. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Suma primero: 3.25 + 0.75 = 4.00. Luego × 0.5 es la MITAD de 4, o sea 2.0."
               }
             }
@@ -754,7 +792,7 @@ window.GN_STORY = {
               "es": "AXIS no puede hacer aritmética con números enteros para nada.",
               "correct": false,
               "why": {
-                "en": "❌ Look again — THRUST-AI 8 computes the digits correctly. The pattern is a misplaced decimal point. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Look again — THRUST-AI 8 computes the digits correctly. The pattern is a misplaced decimal point. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Mira otra vez: AXIS calcula bien los dígitos. El patrón es un punto decimal mal colocado."
               }
             },
@@ -763,7 +801,7 @@ window.GN_STORY = {
               "es": "AXIS reporta números de otra misión por accidente.",
               "correct": false,
               "why": {
-                "en": "❌ Look again — THRUST-AI 8 computes the digits correctly. The pattern is a misplaced decimal point. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Look again — THRUST-AI 8 computes the digits correctly. The pattern is a misplaced decimal point. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Mira otra vez: AXIS calcula bien los dígitos. El patrón es un punto decimal mal colocado."
               }
             }
@@ -797,7 +835,7 @@ window.GN_STORY = {
               "es": "Dejar que AXIS ingrese los códigos solo sin revisarlos.",
               "correct": false,
               "why": {
-                "en": "❌ The Devon succeeded by checking the decimal point, not by skipping it. She'll keep that habit. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ The Devon succeeded by checking the decimal point, not by skipping it. She'll keep that habit. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ La cadete tuvo éxito revisando el punto, no omitiéndolo. Mantendrá ese hábito."
               }
             },
@@ -806,7 +844,7 @@ window.GN_STORY = {
               "es": "Dejar de usar decimales y trabajar solo con enteros.",
               "correct": false,
               "why": {
-                "en": "❌ The Devon succeeded by checking the decimal point, not by skipping it. She'll keep that habit. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ The Devon succeeded by checking the decimal point, not by skipping it. She'll keep that habit. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ La cadete tuvo éxito revisando el punto, no omitiéndolo. Mantendrá ese hábito."
               }
             }

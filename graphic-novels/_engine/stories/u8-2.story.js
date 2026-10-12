@@ -9,7 +9,33 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U8 #2: Court Vision: The Data Analyst",
     "artBase": "../_art/unit8/",
-    "home": "../index.html"
+    "home": "../index.html",
+    "artFocus": {
+      "celebrate.png": [
+        50,
+        50
+      ],
+      "cover.png": [
+        45,
+        25
+      ],
+      "data-room.png": [
+        45,
+        30
+      ],
+      "final-analysis.png": [
+        45,
+        45
+      ],
+      "mean-median.png": [
+        50,
+        45
+      ],
+      "spread-mad.png": [
+        50,
+        45
+      ]
+    }
   },
   "cast": {
     "analyst": {
@@ -34,7 +60,9 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#0284c7"
-      }
+      },
+      "figure": "../_art/characters/u8-stats.png",
+      "figureTint": 150
     },
     "gm": {
       "name": "GM Marcus Bell",
@@ -43,9 +71,11 @@ window.GN_STORY = {
       "tagIcon": "🏆",
       "blurb": "Franchise General Manager · Outlier & Distribution Strategist",
       "portrait": {
-        "skin": "#b87244",
-        "hair": "#1e293b",
-        "hairStyle": 5,
+        "outfit": "suit",
+        "skin": "#693b1e",
+        "hair": "#0f172a",
+        "hairStyle": "bald",
+        "beard": "full",
         "glasses": true
       }
     }
@@ -68,7 +98,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "data-room.png",
-          "alt": "Maya at a glowing analyst desk studying holographic player statistics",
+          "alt": "Imani at a glowing analyst desk studying holographic player statistics",
           "lastLabel": "Frame the question ▶",
           "beats": [
             {
@@ -119,16 +149,16 @@ window.GN_STORY = {
               "en": "The data room is running low on holographic storage.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "TEMPO-8 refuses to work until the Analyst measures something.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -145,8 +175,8 @@ window.GN_STORY = {
               "en": "Did our point guard play in last night's game? <span class=\"calc\">(yes/no — a single answer)</span>",
               "correct": false,
               "why": {
-                "en": "❌ That question resolves to a single fixed answer, so it isn't statistical. Look for the one whose answers vary. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That question resolves to a single fixed answer, so it isn't statistical. Look for the one whose answers vary. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -157,8 +187,8 @@ window.GN_STORY = {
               "en": "What is the final score of last night's game? <span class=\"calc\">(one fixed value)</span>",
               "correct": false,
               "why": {
-                "en": "❌ That question resolves to a single fixed answer, so it isn't statistical. Look for the one whose answers vary. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That question resolves to a single fixed answer, so it isn't statistical. Look for the one whose answers vary. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -207,16 +237,16 @@ window.GN_STORY = {
               "en": "It guarantees every answer will be exactly the same.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "It can only be answered with a single yes-or-no value.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -241,8 +271,8 @@ window.GN_STORY = {
               "en": "12 <span class=\"calc\">(that is the maximum, not the range)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Range is greatest minus least: 12 − 4. Re-scan the row for the max and min. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Range is greatest minus least: 12 − 4. Re-scan the row for the max and min. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -253,8 +283,8 @@ window.GN_STORY = {
               "en": "7 <span class=\"calc\">(that is one data value)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Range is greatest minus least: 12 − 4. Re-scan the row for the max and min. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Range is greatest minus least: 12 − 4. Re-scan the row for the max and min. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -300,16 +330,16 @@ window.GN_STORY = {
               "en": "“A statistical question expects variability. If every answer is identical, it isn't statistical.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "“Now I read the set itself — range, gaps, and any value that looks out of place.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -328,8 +358,8 @@ window.GN_STORY = {
               "en": "A pie chart of the six game numbers <span class=\"calc\">(pie charts show parts of a whole)</span>",
               "correct": false,
               "why": {
-                "en": "❌ That display hides the spread. You want one that shows each value's position. (Optional — you can still advance.) Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That display hides the spread. You want one that shows each value's position. (Optional — you can still advance.) Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -340,8 +370,8 @@ window.GN_STORY = {
               "en": "A single bar showing the total rebounds <span class=\"calc\">(hides the spread entirely)</span>",
               "correct": false,
               "why": {
-                "en": "❌ That display hides the spread. You want one that shows each value's position. (Optional — you can still advance.) Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That display hides the spread. You want one that shows each value's position. (Optional — you can still advance.) Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -378,7 +408,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "spread-mad.png",
-          "alt": "Maya studies a holographic scatter of glowing dots spread around a center line",
+          "alt": "Imani studies a holographic scatter of glowing dots spread around a center line",
           "lastLabel": "Find the true center ▶",
           "beats": [
             {
@@ -429,16 +459,16 @@ window.GN_STORY = {
               "en": "Deciding which player should wear the captain's armband.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Drawing a pie chart of every game's final score.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -461,8 +491,8 @@ window.GN_STORY = {
               "en": "The mean (20), because it uses every value <span class=\"calc\">(but the 54 outlier inflates it)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Reconsider the outlier. The lone 54 inflates the mean — the median is the resistant, honest center here. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Reconsider the outlier. The lone 54 inflates the mean — the median is the resistant, honest center here. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -473,8 +503,8 @@ window.GN_STORY = {
               "en": "Neither — only the mode can describe typical values <span class=\"calc\">(this set has no repeated mode)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Reconsider the outlier. The lone 54 inflates the mean — the median is the resistant, honest center here. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Reconsider the outlier. The lone 54 inflates the mean — the median is the resistant, honest center here. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -511,8 +541,8 @@ window.GN_STORY = {
               "en": "3.0 <span class=\"calc\">(check each |value − 6| again)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Take |value − 6| for each: 2, 0, 2, 4, 4. Sum is 12, then divide by 5 — don't stop at the sum. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Take |value − 6| for each: 2, 0, 2, 4, 4. Sum is 12, then divide by 5 — don't stop at the sum. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -523,8 +553,8 @@ window.GN_STORY = {
               "en": "12 <span class=\"calc\">(that is the sum of distances, not the average)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Take |value − 6| for each: 2, 0, 2, 4, 4. Sum is 12, then divide by 5 — don't stop at the sum. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Take |value − 6| for each: 2, 0, 2, 4, 4. Sum is 12, then divide by 5 — don't stop at the sum. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -567,8 +597,8 @@ window.GN_STORY = {
               "en": "Guard Y — a larger MAD means more scoring <span class=\"calc\">(MAD measures spread, not total)</span>",
               "correct": false,
               "why": {
-                "en": "❌ MAD measures spread, not total points. The smaller MAD signals the more consistent scorer. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ MAD measures spread, not total points. The smaller MAD signals the more consistent scorer. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -579,8 +609,8 @@ window.GN_STORY = {
               "en": "They are equally consistent — same mean <span class=\"calc\">(equal means can hide very different spread)</span>",
               "correct": false,
               "why": {
-                "en": "❌ MAD measures spread, not total points. The smaller MAD signals the more consistent scorer. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ MAD measures spread, not total points. The smaller MAD signals the more consistent scorer. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -623,16 +653,16 @@ window.GN_STORY = {
               "en": "P's MAD = 4.8, Q's MAD = 1.2 — Q is more consistent <span class=\"calc\">(the values are swapped)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Compute each MAD: average the absolute distances from 10. P clusters tightly; Q is widely spread. (Optional — you can still advance.) Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Compute each MAD: average the absolute distances from 10. P clusters tightly; Q is widely spread. (Optional — you can still advance.) Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Both MADs = 0 because the means are equal <span class=\"calc\">(equal mean ≠ zero spread)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Compute each MAD: average the absolute distances from 10. P clusters tightly; Q is widely spread. (Optional — you can still advance.) Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Compute each MAD: average the absolute distances from 10. P clusters tightly; Q is widely spread. (Optional — you can still advance.) Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -696,7 +726,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "final-analysis.png",
-          "alt": "Maya before a giant wall of holographic data making a big decision",
+          "alt": "Imani before a giant wall of holographic data making a big decision",
           "lastLabel": "Build the profile ▶",
           "beats": [
             {
@@ -732,8 +762,8 @@ window.GN_STORY = {
               "en": "Mean = 10, Median = 10, MAD = 4 <span class=\"calc\">(distances are 4,2,0,2,4 → sum 12)</span>",
               "correct": false,
               "why": {
-                "en": "❌ One statistic is off. Mean and median are both 10; the MAD averages distances 4,2,0,2,4 → 12 ÷ 5 = 2.4. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ One statistic is off. Mean and median are both 10; the MAD averages distances 4,2,0,2,4 → 12 ÷ 5 = 2.4. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -744,8 +774,8 @@ window.GN_STORY = {
               "en": "Mean = 10, Median = 12, MAD = 2.4 <span class=\"calc\">(median of 6,8,10,12,14 is 10, not 12)</span>",
               "correct": false,
               "why": {
-                "en": "❌ One statistic is off. Mean and median are both 10; the MAD averages distances 4,2,0,2,4 → 12 ÷ 5 = 2.4. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ One statistic is off. Mean and median are both 10; the MAD averages distances 4,2,0,2,4 → 12 ÷ 5 = 2.4. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -788,16 +818,16 @@ window.GN_STORY = {
               "en": "Both equal — same mean and median means same reliability <span class=\"calc\">(spread can still differ)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Average the rival's absolute distances from 10 (9,5,0,5,9). A larger MAD means LESS consistency. (Optional — you can still finish.) Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Average the rival's absolute distances from 10 (9,5,0,5,9). A larger MAD means LESS consistency. (Optional — you can still finish.) Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Trust the rival — a larger MAD is better <span class=\"calc\">(larger MAD = less consistent)</span>",
               "correct": false,
               "why": {
-                "en": "❌ Average the rival's absolute distances from 10 (9,5,0,5,9). A larger MAD means LESS consistency. (Optional — you can still finish.) Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Average the rival's absolute distances from 10 (9,5,0,5,9). A larger MAD means LESS consistency. (Optional — you can still finish.) Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -846,16 +876,16 @@ window.GN_STORY = {
               "en": "TEMPO-8 has finally learned to weigh consistency above all else.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "TEMPO-8 believes the median is always wrong.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -881,16 +911,16 @@ window.GN_STORY = {
               "en": "Ignore the spread and pick whichever name TEMPO-8 shouts first.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Delete the report and start a brand-new statistical question.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -957,7 +987,7 @@ window.GN_STORY = {
   ],
   "complete": {
     "art": "celebrate.png",
-    "alt": "Maya celebrates on the court with the winning team holding her tablet high",
+    "alt": "Imani celebrates on the court with the winning team holding her tablet high",
     "badge": "🎉🏀⭐",
     "titleEn": "Series Clinched — Mission Complete!",
     "en": "Brilliant work, Analyst. You separated statistical questions from single-answer facts, recognized when an <b>outlier</b> makes the <b>median</b> the honest measure, and used the <b>MAD</b> to prove which player was truly reliable under pressure. Your data-driven call won the series.",

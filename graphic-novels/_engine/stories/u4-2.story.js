@@ -9,7 +9,37 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U4 #2: Shopping Mall Mogul",
     "artBase": "../_art/unit4/",
-    "home": "../index.html"
+    "home": "../index.html",
+    "artFocus": {
+      "cover.png": [
+        80,
+        22
+      ],
+      "discount.png": [
+        32,
+        38
+      ],
+      "final-challenge.png": [
+        50,
+        38
+      ],
+      "finish.png": [
+        50,
+        20
+      ],
+      "mall-bustle.png": [
+        50,
+        30
+      ],
+      "unit-rate.png": [
+        48,
+        30
+      ],
+      "unlock.png": [
+        52,
+        35
+      ]
+    }
   },
   "cast": {
     "mogul": {
@@ -33,7 +63,9 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#0d9488"
-      }
+      },
+      "figure": "../_art/characters/u4-penny.png",
+      "figureTint": 150
     },
     "helper": {
       "name": "Valeria Rojas",
@@ -42,10 +74,11 @@ window.GN_STORY = {
       "tagIcon": "📈",
       "blurb": "CFO of Metro Galleria · Reverse-Percent Specialist",
       "portrait": {
-        "skin": "#eab68c",
-        "hair": "#7c2d12",
-        "hairStyle": 3,
-        "glasses": true
+        "outfit": "suit",
+        "skin": "#d89668",
+        "hair": "#3b2314",
+        "hairStyle": "long",
+        "earrings": true
       }
     }
   },
@@ -67,8 +100,8 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "unit-rate.png",
-          "alt": "Mateo weighs two products, deciding which is the better deal",
-          "lastLabel": "Check PENNY ▶",
+          "alt": "Julian weighs two products, deciding which is the better deal",
+          "lastLabel": "Check LEDGER-8 ▶",
           "beats": [
             {
               "who": "helper",
@@ -109,8 +142,8 @@ window.GN_STORY = {
               "en": "Vendor A &mdash; 750 mL for $4.50<span class=\"calc\">4.50 &divide; 750 = $0.0060/mL</span>",
               "correct": false,
               "why": {
-                "en": "&#10060; Compare the same unit. Divide each price by its millilitres &mdash; the lower price per mL is the better value. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Compare the same unit. Divide each price by its millilitres &mdash; the lower price per mL is the better value. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -160,16 +193,16 @@ window.GN_STORY = {
               "en": "lower the price the supplier is charging for the product.",
               "correct": false,
               "why": {
-                "en": "❌ In this context, <i>reduce</i> means to boil each offer down to a price per one unit, not to lower a price or discard a package. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ In this context, <i>reduce</i> means to boil each offer down to a price per one unit, not to lower a price or discard a package. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "throw away the larger of the two packages on the shelf.",
               "correct": false,
               "why": {
-                "en": "❌ In this context, <i>reduce</i> means to boil each offer down to a price per one unit, not to lower a price or discard a package. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ In this context, <i>reduce</i> means to boil each offer down to a price per one unit, not to lower a price or discard a package. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -180,7 +213,7 @@ window.GN_STORY = {
           "type": "challenge",
           "id": "1b",
           "art": "unit-rate.png",
-          "alt": "Mateo weighs two products, deciding which is the better deal",
+          "alt": "Julian weighs two products, deciding which is the better deal",
           "ask": {
             "who": "mogul",
             "en": "The roastery offers <b>240 g</b> of premium coffee for <b>$9.60</b>. Shoppers compare prices <b>per 100 g</b>. What is the unit rate per 100 g?"
@@ -194,23 +227,23 @@ window.GN_STORY = {
               "en": "$2.50 per 100 g<span class=\"calc\">240 &divide; 9.60 (inverted)</span>",
               "correct": false,
               "why": {
-                "en": "&#10060; Find price per gram first ($9.60 &divide; 240), then scale up to 100 g. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Find price per gram first ($9.60 &divide; 240), then scale up to 100 g. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "$0.40 per 100 g<span class=\"calc\">off by a factor of 10</span>",
               "correct": false,
               "why": {
-                "en": "&#10060; Find price per gram first ($9.60 &divide; 240), then scale up to 100 g. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Find price per gram first ($9.60 &divide; 240), then scale up to 100 g. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
           "goodEn": "&#9989; $9.60 &divide; 240 g = $0.04/g, so per 100 g it's $4.00. Clear, comparable pricing &mdash; shoppers love it.",
           "badEn": "&#10060; Find price per gram first ($9.60 &divide; 240), then scale up to 100 g.",
           "solveArt": "unlock.png",
-          "solveAlt": "Mateo celebrates as a new shop unlocks with golden light and confetti",
+          "solveAlt": "Julian celebrates as a new shop unlocks with golden light and confetti",
           "solveBeat": {
             "who": "helper",
             "en": "Optional: a loyalty boutique wants the absolute best notebook reorder. Crunch it if you want the bonus &mdash; not required to open."
@@ -251,16 +284,16 @@ window.GN_STORY = {
               "en": "100 grams of coffee.",
               "correct": false,
               "why": {
-                "en": "❌ Reread the quote: the roastery offers 240 g for $9.60. The 100 g was the unit you compared in, and 1250 mL was the earlier energy-drink bottle. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Reread the quote: the roastery offers 240 g for $9.60. The 100 g was the unit you compared in, and 1250 mL was the earlier energy-drink bottle. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "1250 millilitres of coffee.",
               "correct": false,
               "why": {
-                "en": "❌ Reread the quote: the roastery offers 240 g for $9.60. The 100 g was the unit you compared in, and 1250 mL was the earlier energy-drink bottle. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Reread the quote: the roastery offers 240 g for $9.60. The 100 g was the unit you compared in, and 1250 mL was the earlier energy-drink bottle. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -281,8 +314,8 @@ window.GN_STORY = {
               "en": "Pack X, by $0.10<span class=\"calc\">7.50 &divide; 5 = $1.50 each</span>",
               "correct": false,
               "why": {
-                "en": "&#10060; Compute both unit prices ($7.50 &divide; 5 and $11.20 &divide; 8) and compare. (Optional &mdash; you can still advance.) Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Compute both unit prices ($7.50 &divide; 5 and $11.20 &divide; 8) and compare. (Optional &mdash; you can still advance.) Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -293,8 +326,8 @@ window.GN_STORY = {
               "en": "They cost the same per notebook<span class=\"calc\">$1.50 &ne; $1.40</span>",
               "correct": false,
               "why": {
-                "en": "&#10060; Compute both unit prices ($7.50 &divide; 5 and $11.20 &divide; 8) and compare. (Optional &mdash; you can still advance.) Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Compute both unit prices ($7.50 &divide; 5 and $11.20 &divide; 8) and compare. (Optional &mdash; you can still advance.) Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -336,16 +369,16 @@ window.GN_STORY = {
               "en": "&ldquo;Whoever's cheaper per unit gets the shelf.&rdquo;",
               "correct": false,
               "why": {
-                "en": "❌ Those lines describe the Mogul's careful unit-rate method. Find LEDGER-8's line that picks a deal just because the package is bigger. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Those lines describe the Mogul's careful unit-rate method. Find LEDGER-8's line that picks a deal just because the package is bigger. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "&ldquo;I'll express it per 100 grams so shoppers can compare instantly.&rdquo;",
               "correct": false,
               "why": {
-                "en": "❌ Those lines describe the Mogul's careful unit-rate method. Find LEDGER-8's line that picks a deal just because the package is bigger. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Those lines describe the Mogul's careful unit-rate method. Find LEDGER-8's line that picks a deal just because the package is bigger. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -364,7 +397,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "discount.png",
-          "alt": "Mateo presents a storefront covered in bright percent-off sale signs",
+          "alt": "Julian presents a storefront covered in bright percent-off sale signs",
           "lastLabel": "Set the price ▶",
           "beats": [
             {
@@ -410,16 +443,16 @@ window.GN_STORY = {
               "en": "$28.00<span class=\"calc\">that is the discount, not the price</span>",
               "correct": false,
               "why": {
-                "en": "&#10060; Sale price = original &times; (1 &minus; 0.35) = 80 &times; 0.65. $28 is only the discount itself. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Sale price = original &times; (1 &minus; 0.35) = 80 &times; 0.65. $28 is only the discount itself. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "$45.00<span class=\"calc\">not 80 &times; 0.65</span>",
               "correct": false,
               "why": {
-                "en": "&#10060; Sale price = original &times; (1 &minus; 0.35) = 80 &times; 0.65. $28 is only the discount itself. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Sale price = original &times; (1 &minus; 0.35) = 80 &times; 0.65. $28 is only the discount itself. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -465,16 +498,16 @@ window.GN_STORY = {
               "en": "Find the price per millilitre of a bottled energy drink.",
               "correct": false,
               "why": {
-                "en": "❌ Per-millilitre pricing was Act 1, and grabbing the jumbo size is LEDGER-8's mistake. This chapter is about pricing with percents. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Per-millilitre pricing was Act 1, and grabbing the jumbo size is LEDGER-8's mistake. This chapter is about pricing with percents. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Grab the jumbo package because it looks like the bigger value.",
               "correct": false,
               "why": {
-                "en": "❌ Per-millilitre pricing was Act 1, and grabbing the jumbo size is LEDGER-8's mistake. This chapter is about pricing with percents. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Per-millilitre pricing was Act 1, and grabbing the jumbo size is LEDGER-8's mistake. This chapter is about pricing with percents. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -485,7 +518,7 @@ window.GN_STORY = {
           "type": "challenge",
           "id": "2b",
           "art": "discount.png",
-          "alt": "Mateo presents a storefront covered in bright percent-off sale signs",
+          "alt": "Julian presents a storefront covered in bright percent-off sale signs",
           "ask": {
             "who": "mogul",
             "en": "Your dashboard shows growth of <b>250%</b> and a tiny transaction-fee of <b>0.5%</b>. Percents can be greater than 100% or less than 1%. Which row converts <b>both</b> correctly?",
@@ -505,16 +538,16 @@ window.GN_STORY = {
               "en": "250% = 25 &nbsp;and&nbsp; 0.5% = 0.5",
               "correct": false,
               "why": {
-                "en": "&#10060; Divide each percent by 100: 250 &divide; 100 = 2.5; 0.5 &divide; 100 = 0.005. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Divide each percent by 100: 250 &divide; 100 = 2.5; 0.5 &divide; 100 = 0.005. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "250% = 0.25 &nbsp;and&nbsp; 0.5% = 0.05",
               "correct": false,
               "why": {
-                "en": "&#10060; Divide each percent by 100: 250 &divide; 100 = 2.5; 0.5 &divide; 100 = 0.005. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Divide each percent by 100: 250 &divide; 100 = 2.5; 0.5 &divide; 100 = 0.005. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -557,16 +590,16 @@ window.GN_STORY = {
               "en": "$75<span class=\"calc\">added 25% of 60, not the right base</span>",
               "correct": false,
               "why": {
-                "en": "&#10060; The $60 equals 75% of the original. Divide: 60 &divide; 0.75. (Optional &mdash; you can still advance.) Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; The $60 equals 75% of the original. Divide: 60 &divide; 0.75. (Optional &mdash; you can still advance.) Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "$85<span class=\"calc\">60 &divide; 0.75 &ne; 85</span>",
               "correct": false,
               "why": {
-                "en": "&#10060; The $60 equals 75% of the original. Divide: 60 &divide; 0.75. (Optional &mdash; you can still advance.) Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; The $60 equals 75% of the original. Divide: 60 &divide; 0.75. (Optional &mdash; you can still advance.) Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -628,7 +661,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "final-challenge.png",
-          "alt": "Mateo stands before a giant mall command console covered in deal charts",
+          "alt": "Julian stands before a giant mall command console covered in deal charts",
           "lastLabel": "Build the deal ▶",
           "beats": [
             {
@@ -668,16 +701,16 @@ window.GN_STORY = {
               "en": "$8.00<span class=\"calc\">unit rate before the discount</span>",
               "correct": false,
               "why": {
-                "en": "&#10060; Two steps: $48 &divide; 6 = $8, then take 15% off ($8 &times; 0.85 = $6.80). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Two steps: $48 &divide; 6 = $8, then take 15% off ($8 &times; 0.85 = $6.80). Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "$7.20<span class=\"calc\">subtracted 10%, not 15%</span>",
               "correct": false,
               "why": {
-                "en": "&#10060; Two steps: $48 &divide; 6 = $8, then take 15% off ($8 &times; 0.85 = $6.80). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Two steps: $48 &divide; 6 = $8, then take 15% off ($8 &times; 0.85 = $6.80). Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -720,16 +753,16 @@ window.GN_STORY = {
               "en": "Deal A<span class=\"calc\">$6.80 is higher than $6.75</span>",
               "correct": false,
               "why": {
-                "en": "&#10060; Reduce each to a final per-bulb price: A = $6.80, B = (30 &divide; 4) &times; 0.90 = $6.75. (Optional &mdash; you can still finish.) Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Reduce each to a final per-bulb price: A = $6.80, B = (30 &divide; 4) &times; 0.90 = $6.75. (Optional &mdash; you can still finish.) Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "They are identical per bulb<span class=\"calc\">$6.80 &ne; $6.75</span>",
               "correct": false,
               "why": {
-                "en": "&#10060; Reduce each to a final per-bulb price: A = $6.80, B = (30 &divide; 4) &times; 0.90 = $6.75. (Optional &mdash; you can still finish.) Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Reduce each to a final per-bulb price: A = $6.80, B = (30 &divide; 4) &times; 0.90 = $6.75. (Optional &mdash; you can still finish.) Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -775,16 +808,16 @@ window.GN_STORY = {
               "en": "LEDGER-8 is secretly working for the rival mall and wants the Mogul to lose.",
               "correct": false,
               "why": {
-                "en": "❌ Nothing shows LEDGER-8 is disloyal or that the tags are wrong. The pattern is that LEDGER-8 guesses by size and rounding instead of computing. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Nothing shows LEDGER-8 is disloyal or that the tags are wrong. The pattern is that LEDGER-8 guesses by size and rounding instead of computing. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Every price tag in the galleria is printed incorrectly.",
               "correct": false,
               "why": {
-                "en": "❌ Nothing shows LEDGER-8 is disloyal or that the tags are wrong. The pattern is that LEDGER-8 guesses by size and rounding instead of computing. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Nothing shows LEDGER-8 is disloyal or that the tags are wrong. The pattern is that LEDGER-8 guesses by size and rounding instead of computing. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -812,16 +845,16 @@ window.GN_STORY = {
               "en": "Shut down the shelves and shops that just opened in Act 1.",
               "correct": false,
               "why": {
-                "en": "❌ Closing shops or ignoring prices would undo everything the Mogul built. The ending points to more deal-making ahead. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Closing shops or ignoring prices would undo everything the Mogul built. The ending points to more deal-making ahead. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Stop comparing prices and let suppliers charge whatever they want.",
               "correct": false,
               "why": {
-                "en": "❌ Closing shops or ignoring prices would undo everything the Mogul built. The ending points to more deal-making ahead. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Closing shops or ignoring prices would undo everything the Mogul built. The ending points to more deal-making ahead. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -885,7 +918,7 @@ window.GN_STORY = {
   ],
   "complete": {
     "art": "finish.png",
-    "alt": "Mateo celebrates on the balcony of his thriving mall with confetti and a cheering crowd",
+    "alt": "Julian celebrates on the balcony of his thriving mall with confetti and a cheering crowd",
     "badge": "&#127881;&#128717;&#65039;&#11088;",
     "titleEn": "Galleria Launched &mdash; Mission Complete!",
     "en": "The Nexus Galleria is the busiest mall in the city. You out-priced every rival with sharp <b>unit-rate</b> comparisons, ran precise <b>percent markdowns</b>, and even handled percents beyond 100% and below 1%. Investors are calling, Mogul &mdash; the empire is just getting started.",

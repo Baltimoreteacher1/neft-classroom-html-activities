@@ -1982,3 +1982,733 @@ body[data-tier="0"] .choice {
     display: none !important;
   }
 }
+
+/* ===========================================================================
+   COMIC PAGE LAYER — each beats step is a lettered page of inked panels.
+   Panel kinds: establish (whole scene), hero (push-in on the protagonist),
+   ally (companion cut-out), comm (mentor on a transmission monitor), caption.
+   =========================================================================== */
+@font-face {
+  font-family: "GN Letter";
+  src: url(/assets/fonts/fredoka-57044ac1.woff2) format("woff2");
+  font-weight: 500 700;
+  font-display: swap;
+}
+:root {
+  --letter: "GN Letter", "Fredoka", "Trebuchet MS", var(--font);
+  --gutter: 10px;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+body[data-lang="en"] .cp-bubble .es,
+body[data-lang="en"] .cp-caption .es {
+  display: none;
+}
+body[data-lang="es"] .cp-bubble .en,
+body[data-lang="es"] .cp-caption .en {
+  display: none;
+}
+body[data-lang="es"] .cp-bubble .es,
+body[data-lang="es"] .cp-caption .es {
+  font-style: normal;
+  color: var(--bubble-ink);
+  font-size: 1em;
+  margin-top: 0;
+}
+.gn-lang {
+  min-height: 40px;
+  border: 3px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  font-weight: 900;
+  font-size: 0.82rem;
+  padding: 4px 10px;
+  cursor: pointer;
+  box-shadow: var(--sh-sm);
+  font-family: var(--font);
+}
+
+/* act header: the X-Ray toggle is a header tool, the blueprint opens inline */
+.scene-head .xray-btn {
+  position: static;
+  margin-left: auto;
+}
+.panel-xray-layer {
+  position: relative;
+  inset: auto;
+  z-index: 1;
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  margin-bottom: 14px;
+  box-shadow: var(--sh);
+}
+.panel-xray-layer.open {
+  display: flex;
+}
+
+/* ---------- the page ---------- */
+.comic-page {
+  background: #fffdf8;
+  border: 3px solid var(--line);
+  border-radius: 4px;
+  padding: var(--gutter);
+  box-shadow: 6px 6px 0 rgba(15, 23, 42, 0.22);
+  margin-bottom: 18px;
+  position: relative;
+}
+.comic-page::before {
+  /* paper grain: a faint halftone so the page reads as print, not a web card */
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(15, 23, 42, 0.06) 1px, transparent 1.2px);
+  background-size: 6px 6px;
+  border-radius: 4px;
+}
+.cp-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--gutter);
+  position: relative;
+}
+.cp-panel {
+  grid-column: span var(--span, 6);
+  position: relative;
+  min-height: 300px;
+  margin: 0;
+  border: 4px solid var(--line);
+  background: #0f172a;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  cursor: default;
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease;
+}
+.cp-panel.establish {
+  min-height: 360px;
+}
+.cp-panel.pending {
+  background:
+    repeating-linear-gradient(135deg, rgba(15, 23, 42, 0.05) 0 8px, transparent 8px 16px),
+    #fffdf8;
+  cursor: pointer;
+}
+.cp-panel.pending > * {
+  visibility: hidden;
+}
+.cp-panel.pending::after {
+  content: attr(data-panel);
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font: 900 2.4rem var(--letter);
+  color: rgba(15, 23, 42, 0.18);
+}
+.cp-panel.on {
+  animation: cp-in 0.4s ease both;
+}
+@keyframes cp-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.cp-panel.speaking {
+  outline: 4px solid var(--gold);
+  outline-offset: 2px;
+}
+.cp-art {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.cp-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  max-width: none;
+}
+.cp-img.soft {
+  filter: blur(2px) saturate(0.85) brightness(0.8);
+}
+.kind-comm .cp-img.soft {
+  filter: blur(3px) saturate(0.5) brightness(0.45);
+}
+.cp-lines {
+  /* speed lines behind a close-up */
+  position: absolute;
+  inset: 0;
+  background: repeating-conic-gradient(from 0deg at 50% 45%, rgba(255, 255, 255, 0.13) 0 2deg, transparent 2deg 9deg);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+.cp-panel.misc .cp-art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 60%, transparent 40%, rgba(180, 35, 24, 0.35));
+}
+
+/* companion cut-out */
+.cp-figure {
+  position: absolute;
+  bottom: -4px;
+  height: 78%;
+  max-height: 340px;
+  width: auto;
+  max-width: 60%;
+  object-fit: contain;
+  z-index: 1;
+  filter: drop-shadow(4px 4px 0 rgba(15, 23, 42, 0.55));
+}
+.cp-figure.right {
+  right: 2%;
+}
+.cp-figure.left {
+  left: 2%;
+}
+.cp-figure.small {
+  height: 46%;
+}
+.cp-figure[style*="hue-rotate"] {
+  /* keep the drop shadow when a tint is applied inline */
+  -webkit-filter: inherit;
+}
+
+/* mentor transmission monitor */
+.cp-monitor {
+  position: absolute;
+  left: 4%;
+  bottom: 8%;
+  width: 40%;
+  max-width: 230px;
+  aspect-ratio: 200 / 220;
+  border: 5px solid #1e293b;
+  border-radius: 12px;
+  background: #0b1220;
+  box-shadow:
+    0 0 0 3px var(--line),
+    0 0 24px rgba(56, 189, 248, 0.55);
+  overflow: hidden;
+  z-index: 1;
+}
+.cp-monitor svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.cp-monitor::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, rgba(56, 189, 248, 0.12) 0 2px, transparent 2px 4px);
+  pointer-events: none;
+}
+.cp-monitor.small {
+  width: 26%;
+  max-width: 150px;
+}
+.cp-live {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: 2;
+  background: #b42318;
+  color: #fff;
+  font: 900 0.62rem var(--font);
+  letter-spacing: 0.08em;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ---------- lettering ---------- */
+.cp-letters {
+  position: relative;
+  z-index: 2;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  max-width: 64%;
+}
+.cp-letters.left {
+  align-self: flex-start;
+}
+.cp-letters.right {
+  align-self: flex-end;
+}
+.establish .cp-letters {
+  max-width: 52%;
+}
+.kind-comm .cp-letters {
+  max-width: 54%;
+}
+.cp-bubble {
+  position: relative;
+  background: #fff;
+  color: var(--bubble-ink);
+  border: 3px solid var(--line);
+  border-radius: 26px;
+  padding: 12px 16px 10px;
+  font-family: var(--letter);
+  font-size: 1.04rem;
+  line-height: 1.38;
+  box-shadow: 3px 3px 0 rgba(15, 23, 42, 0.35);
+}
+/* tail: a two-layer triangle aimed down toward the speaker */
+.cp-bubble::before,
+.cp-bubble::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+.tail-left .cp-bubble::before {
+  left: 26px;
+  border-width: 22px 22px 0 0;
+  border-color: var(--line) transparent transparent;
+  transform: skewX(-18deg);
+}
+.tail-left .cp-bubble::after {
+  left: 30px;
+  margin-top: -4px;
+  border-width: 16px 15px 0 0;
+  border-color: #fff transparent transparent;
+  transform: skewX(-18deg);
+}
+.tail-right .cp-bubble::before {
+  right: 26px;
+  border-width: 22px 0 0 22px;
+  border-color: var(--line) transparent transparent;
+  transform: skewX(18deg);
+}
+.tail-right .cp-bubble::after {
+  right: 30px;
+  margin-top: -4px;
+  border-width: 16px 0 0 15px;
+  border-color: #fff transparent transparent;
+  transform: skewX(18deg);
+}
+/* establishing shots on a hero: aim the tail sideways at the face */
+.establish.kind-hero.tail-left .cp-bubble::before,
+.establish.kind-hero.tail-right .cp-bubble::before {
+  top: 40%;
+}
+.establish.kind-hero.tail-left .cp-bubble::before {
+  left: -22px;
+  border-width: 12px 22px 12px 0;
+  border-color: transparent var(--line) transparent transparent;
+  transform: none;
+}
+.establish.kind-hero.tail-left .cp-bubble::after {
+  top: calc(40% + 4px);
+  left: -15px;
+  margin-top: 0;
+  border-width: 8px 16px 8px 0;
+  border-color: transparent #fff transparent transparent;
+  transform: none;
+}
+.establish.kind-hero.tail-right .cp-bubble::before {
+  right: -22px;
+  border-width: 12px 0 12px 22px;
+  border-color: transparent transparent transparent var(--line);
+  transform: none;
+}
+.establish.kind-hero.tail-right .cp-bubble::after {
+  top: calc(40% + 4px);
+  right: -15px;
+  margin-top: 0;
+  border-width: 8px 0 8px 16px;
+  border-color: transparent transparent transparent #fff;
+  transform: none;
+}
+/* radio bubble: a mentor talking through the monitor */
+.cp-bubble.radio {
+  border-style: dashed;
+  border-radius: 14px;
+  background: #f0f9ff;
+}
+.cp-bubble.radio::after {
+  border-top-color: #f0f9ff;
+}
+/* the companion's slip: a wobbly, alarmed balloon */
+.cp-bubble.misc {
+  border-color: var(--red);
+  border-width: 4px;
+  border-radius: 40% 30% 45% 28% / 32% 44% 30% 40%;
+  background: #fff7f5;
+}
+.cp-bubble.misc::before {
+  border-top-color: var(--red);
+}
+.cp-bubble.misc::after {
+  border-top-color: #fff7f5;
+}
+.cp-caption {
+  position: relative;
+  background: #fde68a;
+  color: var(--ink);
+  border: 3px solid var(--line);
+  border-radius: 2px;
+  padding: 10px 12px;
+  font-family: var(--letter);
+  font-size: 1rem;
+  line-height: 1.38;
+  box-shadow: 3px 3px 0 rgba(15, 23, 42, 0.35);
+}
+.cp-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: 900 0.72rem var(--font);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--spk, var(--accent));
+  margin-bottom: 3px;
+}
+.cp-name i {
+  font-style: normal;
+  color: var(--muted);
+}
+.cp-caption .cp-name {
+  color: var(--ink);
+}
+.cp-bubble .en,
+.cp-caption .en {
+  display: block;
+  font-weight: 600;
+}
+.cp-bubble .es,
+.cp-caption .es {
+  display: block;
+  font-family: var(--font);
+  font-style: italic;
+  font-size: 0.88em;
+  color: #475569;
+  margin-top: 4px;
+}
+.cp-bubble .tts,
+.cp-caption .tts {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+.cp-bubble .tts-btn,
+.cp-caption .tts-btn {
+  min-width: 34px;
+  min-height: 34px;
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  font-weight: 900;
+  cursor: pointer;
+}
+body[data-lang="en"] .tts-btn[data-tts="es"] {
+  display: none;
+}
+
+/* faces in tags */
+.face {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  overflow: hidden;
+  background: #e2e8f0;
+  flex: 0 0 auto;
+  vertical-align: middle;
+}
+.face img,
+.face svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 15%;
+  display: block;
+}
+.face-crop {
+  /* zoom the cover art to the hero's face (--fx/--fy = face position in %) */
+  background-repeat: no-repeat;
+  background-size: 820% auto;
+  background-position: calc(var(--fx) * 1% + (var(--fx) - 50) * 0.14%) calc(var(--fy) * 1% + (var(--fy) - 50) * 0.14%);
+}
+.cast-card-av .face {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+}
+.chal-speaker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.chal-question-text.misc {
+  border-left: 5px solid var(--red);
+  padding-left: 10px;
+}
+
+/* SFX lettering */
+.cp-sfx {
+  position: absolute;
+  z-index: 3;
+  right: 4%;
+  top: 6%;
+  font: 700 1.6rem var(--letter);
+  color: #fde047;
+  -webkit-text-stroke: 2px var(--line);
+  text-shadow: 3px 3px 0 var(--line);
+  transform: rotate(-8deg);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 4px 8px;
+  min-height: 44px;
+}
+.cp-sfx.boom {
+  animation: cp-boom 0.45s ease;
+}
+@keyframes cp-boom {
+  50% {
+    transform: rotate(-8deg) scale(1.35);
+  }
+}
+.cp-sfx.misc {
+  color: #fecaca;
+  font-size: 2.6rem;
+  cursor: default;
+  top: auto;
+  bottom: 10%;
+}
+.tail-right .cp-sfx.misc {
+  right: auto;
+  left: 6%;
+}
+.cp-callout-btn {
+  position: absolute;
+  z-index: 3;
+  right: 10px;
+  bottom: 10px;
+  min-height: 44px;
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  background: var(--red);
+  color: #fff;
+  font-weight: 900;
+  padding: 6px 12px;
+  cursor: pointer;
+  box-shadow: var(--sh-sm);
+}
+.tail-left .cp-callout-btn {
+  right: auto;
+  left: 10px;
+}
+.cp-panel.called .cp-callout-btn {
+  background: var(--ok);
+}
+.cp-panel.called::before {
+  content: "SLIP SPOTTED!";
+  position: absolute;
+  z-index: 4;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-12deg);
+  font: 700 1.8rem var(--letter);
+  color: var(--ok);
+  border: 5px solid var(--ok);
+  border-radius: 10px;
+  padding: 4px 14px;
+  background: rgba(255, 255, 255, 0.85);
+  pointer-events: none;
+}
+.cp-panel .callout {
+  z-index: 4;
+}
+
+/* ---------- page footer ---------- */
+.cp-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  position: relative;
+}
+.cp-pageno {
+  font: 900 0.72rem var(--font);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.cp-nav .next {
+  margin-left: auto;
+}
+.cp-nav .next:disabled {
+  background: #e2e8f0;
+  color: var(--muted);
+  cursor: default;
+  box-shadow: none;
+}
+.cp-read {
+  min-height: 44px;
+  border: 3px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  font-weight: 900;
+  padding: 6px 12px;
+  cursor: pointer;
+  box-shadow: var(--sh-sm);
+}
+.cp-read[aria-pressed="true"] {
+  background: var(--gold);
+}
+.cp-trap:empty {
+  display: none;
+}
+
+/* ---------- aftermath strip inside a solved challenge ---------- */
+.cp-strip {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+  padding: 8px;
+  background: #fffdf8;
+  border: 3px solid var(--line);
+}
+.cp-strip .cp-panel {
+  min-height: 240px;
+}
+.cp-strip.enter .cp-panel {
+  animation: cp-in 0.45s ease both;
+}
+.cp-strip.enter .cp-panel + .cp-panel {
+  animation-delay: 0.35s;
+}
+
+@media (max-width: 760px) {
+  .cp-panel,
+  .cp-strip .cp-panel {
+    grid-column: span 6;
+    min-height: 260px;
+  }
+  .cp-panel.establish {
+    min-height: 280px;
+  }
+  .cp-letters,
+  .establish .cp-letters,
+  .kind-comm .cp-letters {
+    max-width: 78%;
+  }
+  .kind-comm .cp-letters {
+    max-width: 62%;
+  }
+  .cp-bubble,
+  .cp-caption {
+    font-size: 0.98rem;
+  }
+  .cp-figure {
+    height: 62%;
+  }
+  .cp-monitor {
+    width: 34%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cp-panel.on,
+  .cp-strip.enter .cp-panel,
+  .cp-sfx.boom {
+    animation: none;
+  }
+}
+@media print {
+  .cp-panel.pending {
+    display: none;
+  }
+  .cp-nav,
+  .cp-callout-btn,
+  .tts {
+    display: none !important;
+  }
+}
+.kind-hero:not(.establish) .cp-letters {
+  max-width: 54%;
+}
+.cp-bubble.misc {
+  padding: 16px 20px 12px;
+}
+.cp-sfx.at-left {
+  right: auto;
+  left: 4%;
+  transform: rotate(-10deg);
+}
+.establish.kind-hero .cp-sfx {
+  top: auto;
+  bottom: 6%;
+}
+.cp-name i {
+  white-space: nowrap;
+}
+@media (max-width: 760px) {
+  /* phones: the mentor's monitor sits above the balloon instead of beside it */
+  .kind-comm .cp-monitor {
+    top: 10px;
+    bottom: auto;
+    left: 10px;
+    width: 30%;
+  }
+  .kind-comm .cp-letters {
+    max-width: 100%;
+    margin-top: 33vw;
+  }
+  .tail-left.kind-comm .cp-bubble::before,
+  .tail-left.kind-comm .cp-bubble::after {
+    top: auto;
+    bottom: 100%;
+    transform: scaleY(-1) skewX(18deg);
+  }
+  .tail-left.kind-comm .cp-bubble::after {
+    margin-bottom: -4px;
+    margin-top: 0;
+  }
+  .cp-sfx {
+    font-size: 1.2rem;
+  }
+}
+@media (max-width: 760px) {
+  .kind-hero:not(.establish) .cp-letters {
+    max-width: 68%;
+  }
+  .kind-comm.establish .cp-sfx {
+    top: auto;
+    bottom: 6%;
+  }
+}
+.gn-lab-note {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+  margin: 2px 0 8px;
+}
+@media (max-width: 760px) {
+  /* clear the site-wide floating Save/Resume button */
+  .scene-foot {
+    padding-bottom: 76px;
+  }
+}

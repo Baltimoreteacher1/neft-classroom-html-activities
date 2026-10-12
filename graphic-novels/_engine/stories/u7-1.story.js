@@ -9,14 +9,44 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U7 #1: Detective Case Files: The Equation Mysteries",
     "artBase": "../_art/unit7/",
-    "home": "../index.html"
+    "home": "../index.html",
+    "artFocus": {
+      "aha.png": [
+        52,
+        42
+      ],
+      "cover.png": [
+        45,
+        25
+      ],
+      "evidence-room.png": [
+        35,
+        25
+      ],
+      "final-case.png": [
+        55,
+        25
+      ],
+      "solved.png": [
+        65,
+        48
+      ],
+      "unlock-box.png": [
+        55,
+        35
+      ],
+      "write-equation.png": [
+        48,
+        30
+      ]
+    }
   },
   "cast": {
     "detective": {
-      "name": "Det. Clara Vance",
+      "name": "Det. Caleb Vance",
       "role": "protagonist",
       "color": "#334155",
-      "tagIcon": "🕵️‍♀️",
+      "tagIcon": "🕵️‍♂️",
       "blurb": "Precinct 6 Lead Investigator · Inverse-Operation Sleuth",
       "portrait": {
         "skin": "#f6d2b8",
@@ -34,7 +64,8 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#d97706"
-      }
+      },
+      "figure": "../_art/characters/u1-axis.png"
     },
     "log": {
       "name": "Insp. Arthur Pendelton",
@@ -43,17 +74,19 @@ window.GN_STORY = {
       "tagIcon": "⚖️",
       "blurb": "Chief Forensic Logician · Balance-Scale Veteran",
       "portrait": {
-        "skin": "#d89668",
-        "hair": "#475569",
-        "hairStyle": 5,
-        "glasses": true
+        "outfit": "detective",
+        "skin": "#f6d2b8",
+        "hair": "#6b7280",
+        "hairStyle": "short",
+        "beard": "mustache",
+        "gray": true
       }
     }
   },
   "cover": {
     "art": "cover.png",
     "alt": "A young detective stands in a cozy office at night with a board of clues and a locked evidence box",
-    "blurbEn": "You are <b>Det. Clara</b>. &#128373;&#65039; Each clue hides an unknown number. You write an <b>equation</b> and then <b>solve</b> it to open the locked evidence boxes. CLUE-BOT, your eager rookie partner, wants to help… but CLUE-BOT keeps changing only ONE side of the equation. Catch the mistakes and crack the case!",
+    "blurbEn": "You are <b>Det. Caleb</b>. &#128373;&#65039; Each clue hides an unknown number. You write an <b>equation</b> and then <b>solve</b> it to open the locked evidence boxes. CLUE-BOT, your eager rookie partner, wants to help… but CLUE-BOT keeps changing only ONE side of the equation. Catch the mistakes and crack the case!",
     "blurbEs": "Eres el Detective. Cada pista esconde un n&uacute;mero desconocido. Escribe una ecuaci&oacute;n y resu&eacute;lvela para abrir las cajas.",
     "startLabel": "Open the Case &#128373;&#65039;"
   },
@@ -135,10 +168,10 @@ window.GN_STORY = {
             },
             {
               "en": "You're right, CLUE-BOT — c + 7 = 12.",
-              "es": "Tienes raz&oacute;n, GUMSHOE: c + 7 = 12.",
+              "es": "Tienes raz&oacute;n, CLUE-BOT: c + 7 = 12.",
               "correct": false,
               "why": {
-                "en": "&#10060; Not quite. Coins were TAKEN, so we subtract from the start amount c. Try the equation with c &minus; 7. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; Not quite. Coins were TAKEN, so we subtract from the start amount c. Try the equation with c &minus; 7. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Casi. Se llevaron monedas, as&iacute; que restamos: c &minus; 7."
               }
             },
@@ -147,7 +180,7 @@ window.GN_STORY = {
               "es": "7 &minus; c = 12 (esto empieza con solo 7).",
               "correct": false,
               "why": {
-                "en": "&#10060; Not quite. Coins were TAKEN, so we subtract from the start amount c. Try the equation with c &minus; 7. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; Not quite. Coins were TAKEN, so we subtract from the start amount c. Try the equation with c &minus; 7. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Casi. Se llevaron monedas, as&iacute; que restamos: c &minus; 7."
               }
             }
@@ -204,8 +237,8 @@ window.GN_STORY = {
               "es": "La respuesta despu&eacute;s de resolver la ecuaci&oacute;n.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -213,8 +246,8 @@ window.GN_STORY = {
               "es": "Una pista escrita en una nota de papel.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -243,8 +276,8 @@ window.GN_STORY = {
               "es": "12 monedas.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -252,8 +285,8 @@ window.GN_STORY = {
               "es": "19 monedas.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -287,7 +320,7 @@ window.GN_STORY = {
               "es": "g + 3 = 24 (esto suma 3, no 3 grupos).",
               "correct": false,
               "why": {
-                "en": "&#10060; Equal bags means equal GROUPS, so we multiply: 3 &times; g = 3g. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; Equal bags means equal GROUPS, so we multiply: 3 &times; g = 3g. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Bolsas iguales son grupos iguales: multiplicamos, 3g."
               }
             },
@@ -296,7 +329,7 @@ window.GN_STORY = {
               "es": "g &minus; 3 = 24 (esto resta 3).",
               "correct": false,
               "why": {
-                "en": "&#10060; Equal bags means equal GROUPS, so we multiply: 3 &times; g = 3g. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; Equal bags means equal GROUPS, so we multiply: 3 &times; g = 3g. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Bolsas iguales son grupos iguales: multiplicamos, 3g."
               }
             },
@@ -311,7 +344,7 @@ window.GN_STORY = {
           "badEn": "&#10060; Equal bags means equal GROUPS, so we multiply: 3 &times; g = 3g. Try again.",
           "badEs": "Bolsas iguales son grupos iguales: multiplicamos, 3g.",
           "solveArt": "write-equation.png",
-          "solveAlt": "Detective Mateo writes an equation at his desk under a warm lamp",
+          "solveAlt": "Detective Caleb writes an equation at his desk under a warm lamp",
           "solveBeat": {
             "who": "detective",
             "en": "Both clues filed. Now to the evidence room — the locked boxes are next.",
@@ -356,8 +389,8 @@ window.GN_STORY = {
               "es": "“3 bolsas iguales tienen 24 gemas en total.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -365,8 +398,8 @@ window.GN_STORY = {
               "es": "“Ambas pistas archivadas.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -383,14 +416,14 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "unlock-box.png",
-          "alt": "Detective Mateo opens a locked evidence box with golden light pouring out",
+          "alt": "Detective Caleb opens a locked evidence box with golden light pouring out",
           "lastLabel": "Solve box one ▶",
           "beats": [
             {
               "who": "log",
               "caption": true,
               "en": "Now we find locked evidence boxes. Each code is the value of the variable.",
-              "es": "Ahora Mateo encuentra cajas cerradas. Cada c&oacute;digo es el valor de la variable."
+              "es": "Ahora Caleb encuentra cajas cerradas. Cada c&oacute;digo es el valor de la variable."
             },
             {
               "who": "detective",
@@ -442,8 +475,8 @@ window.GN_STORY = {
               "es": "Escribir la primera ecuaci&oacute;n a partir de una pista de papel.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -451,8 +484,8 @@ window.GN_STORY = {
               "es": "Contar cu&aacute;ntas bolsas de gemas faltan.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -481,10 +514,10 @@ window.GN_STORY = {
             },
             {
               "en": "You're right, CLUE-BOT — x = 29.",
-              "es": "Tienes raz&oacute;n, GUMSHOE: x = 29.",
+              "es": "Tienes raz&oacute;n, CLUE-BOT: x = 29.",
               "correct": false,
               "why": {
-                "en": "&#10060; To undo adding 8, do the OPPOSITE and subtract 8 from both sides. 21 &minus; 8 = ? Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; To undo adding 8, do the OPPOSITE and subtract 8 from both sides. 21 &minus; 8 = ? Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Para deshacer + 8, resta 8 de ambos lados. 21 &minus; 8 = ?"
               }
             },
@@ -493,7 +526,7 @@ window.GN_STORY = {
               "es": "x = 8 (eso ya estaba en la ecuaci&oacute;n).",
               "correct": false,
               "why": {
-                "en": "&#10060; To undo adding 8, do the OPPOSITE and subtract 8 from both sides. 21 &minus; 8 = ? Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; To undo adding 8, do the OPPOSITE and subtract 8 from both sides. 21 &minus; 8 = ? Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Para deshacer + 8, resta 8 de ambos lados. 21 &minus; 8 = ?"
               }
             }
@@ -551,7 +584,7 @@ window.GN_STORY = {
               "es": "n = 50 (esto sum&oacute; 5).",
               "correct": false,
               "why": {
-                "en": "&#10060; 5n means MULTIPLY. The opposite is DIVIDE. Divide both sides by 5: 45 &divide; 5 = ? Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; 5n means MULTIPLY. The opposite is DIVIDE. Divide both sides by 5: 45 &divide; 5 = ? Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "5n es multiplicar. Lo opuesto es dividir: 45 &divide; 5 = ?"
               }
             },
@@ -560,7 +593,7 @@ window.GN_STORY = {
               "es": "n = 40 (esto rest&oacute; 5).",
               "correct": false,
               "why": {
-                "en": "&#10060; 5n means MULTIPLY. The opposite is DIVIDE. Divide both sides by 5: 45 &divide; 5 = ? Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; 5n means MULTIPLY. The opposite is DIVIDE. Divide both sides by 5: 45 &divide; 5 = ? Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "5n es multiplicar. Lo opuesto es dividir: 45 &divide; 5 = ?"
               }
             },
@@ -609,8 +642,8 @@ window.GN_STORY = {
           },
           "items": [
             {
-              "en": "GUMSHOE guesses x = 29 by changing only one side.",
-              "es": "GUMSHOE adivina x = 29 cambiando solo un lado.",
+              "en": "CLUE-BOT guesses x = 29 by changing only one side.",
+              "es": "CLUE-BOT adivina x = 29 cambiando solo un lado.",
               "order": 1
             },
             {
@@ -637,7 +670,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "final-case.png",
-          "alt": "Detective Mateo faces a giant vault door covered in locks and dials",
+          "alt": "Detective Caleb faces a giant vault door covered in locks and dials",
           "lastLabel": "Crack it ▶",
           "beats": [
             {
@@ -687,7 +720,7 @@ window.GN_STORY = {
               "es": "v &minus; 9 = 23, v = 32 (rest&oacute; en vez de sumar).",
               "correct": false,
               "why": {
-                "en": "&#10060; One part is off. &ldquo;Plus 9&rdquo; means v + 9 = 23. To solve, SUBTRACT 9 from both sides: 23 &minus; 9 = 14. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; One part is off. &ldquo;Plus 9&rdquo; means v + 9 = 23. To solve, SUBTRACT 9 from both sides: 23 &minus; 9 = 14. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Una parte est&aacute; mal. Es v + 9 = 23. Resta 9: 23 &minus; 9 = 14."
               }
             },
@@ -698,10 +731,10 @@ window.GN_STORY = {
             },
             {
               "en": "Like CLUE-BOT said: v + 9 = 23, so v = 32 (this added instead of subtracted).",
-              "es": "Como dijo GUMSHOE: v + 9 = 23, v = 32 (sum&oacute; en vez de restar).",
+              "es": "Como dijo CLUE-BOT: v + 9 = 23, v = 32 (sum&oacute; en vez de restar).",
               "correct": false,
               "why": {
-                "en": "&#10060; One part is off. &ldquo;Plus 9&rdquo; means v + 9 = 23. To solve, SUBTRACT 9 from both sides: 23 &minus; 9 = 14. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; One part is off. &ldquo;Plus 9&rdquo; means v + 9 = 23. To solve, SUBTRACT 9 from both sides: 23 &minus; 9 = 14. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Una parte est&aacute; mal. Es v + 9 = 23. Resta 9: 23 &minus; 9 = 14."
               }
             }
@@ -713,7 +746,7 @@ window.GN_STORY = {
           "solveBeat": {
             "who": "detective",
             "en": "The vault swings open! Case solved — thanks for the help, CLUE-BOT, even the one-sided guesses.",
-            "es": "&iexcl;La b&oacute;veda se abre! Caso resuelto. Gracias, GUMSHOE."
+            "es": "&iexcl;La b&oacute;veda se abre! Caso resuelto. Gracias, CLUE-BOT."
           },
           "help": {
             "conceptual": {
@@ -741,7 +774,7 @@ window.GN_STORY = {
           "ask": {
             "who": "log",
             "en": "CLUE-BOT keeps changing only ONE side of each equation. Why does CLUE-BOT keep getting the wrong code?",
-            "es": "GUMSHOE sigue cambiando solo UN lado de cada ecuaci&oacute;n. &iquest;Por qu&eacute; GUMSHOE sigue obteniendo el c&oacute;digo incorrecto?"
+            "es": "CLUE-BOT sigue cambiando solo UN lado de cada ecuaci&oacute;n. &iquest;Por qu&eacute; CLUE-BOT sigue obteniendo el c&oacute;digo incorrecto?"
           },
           "hint": {
             "en": "Look back: the Case File says whatever you do to one side you must do to the OTHER side too.",
@@ -750,16 +783,16 @@ window.GN_STORY = {
           "choices": [
             {
               "en": "CLUE-BOT only changes one side, so the equation is no longer balanced and fair.",
-              "es": "GUMSHOE solo cambia un lado, as&iacute; que la ecuaci&oacute;n deja de estar balanceada y justa.",
+              "es": "CLUE-BOT solo cambia un lado, as&iacute; que la ecuaci&oacute;n deja de estar balanceada y justa.",
               "correct": true
             },
             {
               "en": "CLUE-BOT does not want the case to be solved.",
-              "es": "GUMSHOE no quiere que se resuelva el caso.",
+              "es": "CLUE-BOT no quiere que se resuelva el caso.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -767,8 +800,8 @@ window.GN_STORY = {
               "es": "Las pistas en las notas muestran n&uacute;meros equivocados.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -797,8 +830,8 @@ window.GN_STORY = {
               "es": "Cerrar otra vez la primera caja de evidencia del Acto 2.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -806,8 +839,8 @@ window.GN_STORY = {
               "es": "Dejar de escribir ecuaciones a partir de pistas para siempre.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -873,7 +906,7 @@ window.GN_STORY = {
   ],
   "complete": {
     "art": "solved.png",
-    "alt": "Detective Mateo celebrates with confetti as all the evidence boxes stand open",
+    "alt": "Detective Caleb celebrates with confetti as all the evidence boxes stand open",
     "badge": "&#127881;&#128373;&#65039;&#11088;",
     "titleEn": "Case Solved!",
     "en": "You cracked it, Detective! You <b>wrote equations</b> from the clues and <b>solved</b> them to open every locked box. The mystery is solved. Great detective work!",

@@ -9,11 +9,37 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U8 #1: Court Vision: The Data Analyst",
     "artBase": "../_art/unit8/",
-    "home": "../index.html"
+    "home": "../index.html",
+    "artFocus": {
+      "celebrate.png": [
+        50,
+        50
+      ],
+      "cover.png": [
+        45,
+        25
+      ],
+      "data-room.png": [
+        45,
+        30
+      ],
+      "final-analysis.png": [
+        45,
+        45
+      ],
+      "mean-median.png": [
+        50,
+        45
+      ],
+      "spread-mad.png": [
+        50,
+        45
+      ]
+    }
   },
   "cast": {
     "analyst": {
-      "name": "Jalen Brooks",
+      "name": "Jada Brooks",
       "role": "protagonist",
       "color": "#047857",
       "tagIcon": "🏀",
@@ -34,7 +60,8 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#ea580c"
-      }
+      },
+      "figure": "../_art/characters/u8-stats.png"
     },
     "coach": {
       "name": "Coach Elena Alvarez",
@@ -43,9 +70,11 @@ window.GN_STORY = {
       "tagIcon": "📋",
       "blurb": "Head Championship Coach · Five-Number Summary Pro",
       "portrait": {
-        "skin": "#eab68c",
+        "outfit": "coach",
+        "skin": "#c68453",
         "hair": "#3b2314",
-        "hairStyle": 3
+        "hairStyle": "braid",
+        "earrings": true
       }
     }
   },
@@ -67,7 +96,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "data-room.png",
-          "alt": "Maya sits at a glowing analyst desk studying holographic player statistics",
+          "alt": "Jada sits at a glowing analyst desk studying holographic player statistics",
           "lastLabel": "Pick the question ▶",
           "beats": [
             {
@@ -126,17 +155,17 @@ window.GN_STORY = {
               "es": "Para limpiar el escritorio holográfico de la sala de datos.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "To teach BUZZER-3 how to play basketball.",
-              "es": "Para enseñarle a STATS a jugar baloncesto.",
+              "es": "Para enseñarle a BUZZER-3 a jugar baloncesto.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -163,7 +192,7 @@ window.GN_STORY = {
               "es": "¿Cuántos puntos anotó Jordan anoche? (solo una respuesta)",
               "correct": false,
               "why": {
-                "en": "❌ That question has only ONE answer. A statistical question must have answers that vary. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ That question has only ONE answer. A statistical question must have answers that vary. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Esa pregunta tiene solo UNA respuesta. Una pregunta estadística varía. Intenta otra vez."
               }
             },
@@ -177,7 +206,7 @@ window.GN_STORY = {
               "es": "¿Qué altura tiene el jugador más alto del equipo? (solo una respuesta)",
               "correct": false,
               "why": {
-                "en": "❌ That question has only ONE answer. A statistical question must have answers that vary. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ That question has only ONE answer. A statistical question must have answers that vary. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Esa pregunta tiene solo UNA respuesta. Una pregunta estadística varía. Intenta otra vez."
               }
             }
@@ -234,8 +263,8 @@ window.GN_STORY = {
               "es": "Siempre tiene exactamente una respuesta correcta.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -243,8 +272,8 @@ window.GN_STORY = {
               "es": "Es la pregunta más difícil de la tabla de datos.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -280,7 +309,7 @@ window.GN_STORY = {
               "es": "8 puntos",
               "correct": false,
               "why": {
-                "en": "❌ Look again — find the Game 3 column, then the Points row. Use the hint. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Look again — find the Game 3 column, then the Points row. Use the hint. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Mira otra vez: busca la columna del Juego 3 y la fila de Puntos. Usa la pista."
               }
             },
@@ -294,7 +323,7 @@ window.GN_STORY = {
               "es": "14 puntos",
               "correct": false,
               "why": {
-                "en": "❌ Look again — find the Game 3 column, then the Points row. Use the hint. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Look again — find the Game 3 column, then the Points row. Use the hint. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Mira otra vez: busca la columna del Juego 3 y la fila de Puntos. Usa la pista."
               }
             }
@@ -334,7 +363,7 @@ window.GN_STORY = {
           "ask": {
             "who": "coach",
             "en": "Tap the line that shows BUZZER-3 reaching for the <b>wrong</b> kind of question.",
-            "es": "Toca la línea que muestra a STATS eligiendo el tipo de pregunta <b>equivocado</b>."
+            "es": "Toca la línea que muestra a BUZZER-3 eligiendo el tipo de pregunta <b>equivocado</b>."
           },
           "choices": [
             {
@@ -347,8 +376,8 @@ window.GN_STORY = {
               "es": "“Primero necesito una pregunta estadística: una con muchas respuestas.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -356,8 +385,8 @@ window.GN_STORY = {
               "es": "“¡Hora de llevar estos números al Coach!”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -374,7 +403,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "mean-median.png",
-          "alt": "Maya points at a holographic display showing numbers balancing to find a center",
+          "alt": "Jada points at a holographic display showing numbers balancing to find a center",
           "lastLabel": "Find the mean ▶",
           "beats": [
             {
@@ -433,8 +462,8 @@ window.GN_STORY = {
               "es": "Elegir qué jugador recibe la camiseta más nueva.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -442,8 +471,8 @@ window.GN_STORY = {
               "es": "Escribir una pregunta estadística por primera vez.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -470,7 +499,7 @@ window.GN_STORY = {
               "es": "50 (ese es el total, no la media)",
               "correct": false,
               "why": {
-                "en": "❌ Not quite. Add to get 50, then divide by 5 games. Check the hint. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Not quite. Add to get 50, then divide by 5 games. Check the hint. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Casi. Suma 50 y divide entre 5 juegos. Usa la pista."
               }
             },
@@ -484,7 +513,7 @@ window.GN_STORY = {
               "es": "5 (ese es el número de juegos)",
               "correct": false,
               "why": {
-                "en": "❌ Not quite. Add to get 50, then divide by 5 games. Check the hint. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Not quite. Add to get 50, then divide by 5 games. Check the hint. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Casi. Suma 50 y divide entre 5 juegos. Usa la pista."
               }
             }
@@ -542,7 +571,7 @@ window.GN_STORY = {
               "es": "6 (ese es el más pequeño)",
               "correct": false,
               "why": {
-                "en": "❌ The median is the MIDDLE number when in order. The middle of 5 numbers is the 3rd. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ The median is the MIDDLE number when in order. The middle of 5 numbers is the 3rd. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "La mediana es el número del MEDIO. En 5 números es el 3.º. Intenta otra vez."
               }
             },
@@ -551,7 +580,7 @@ window.GN_STORY = {
               "es": "14 (ese es el más grande)",
               "correct": false,
               "why": {
-                "en": "❌ The median is the MIDDLE number when in order. The middle of 5 numbers is the 3rd. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ The median is the MIDDLE number when in order. The middle of 5 numbers is the 3rd. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "La mediana es el número del MEDIO. En 5 números es el 3.º. Intenta otra vez."
               }
             },
@@ -614,7 +643,7 @@ window.GN_STORY = {
               "es": "4 (aparece solo una vez)",
               "correct": false,
               "why": {
-                "en": "❌ The mode appears MOST often. Count how many times each number shows up. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ The mode appears MOST often. Count how many times each number shows up. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "La moda aparece MÁS veces. Cuenta cada número. Intenta otra vez."
               }
             },
@@ -628,7 +657,7 @@ window.GN_STORY = {
               "es": "9 (aparece solo una vez)",
               "correct": false,
               "why": {
-                "en": "❌ The mode appears MOST often. Count how many times each number shows up. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ The mode appears MOST often. Count how many times each number shows up. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "La moda aparece MÁS veces. Cuenta cada número. Intenta otra vez."
               }
             }
@@ -700,7 +729,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "final-analysis.png",
-          "alt": "Maya stands before a giant wall of holographic data making a big decision",
+          "alt": "Jada stands before a giant wall of holographic data making a big decision",
           "lastLabel": "Make the call ▶",
           "beats": [
             {
@@ -750,7 +779,7 @@ window.GN_STORY = {
               "es": "Media = 25, Moda = 5 (25 es el total, no la media)",
               "correct": false,
               "why": {
-                "en": "❌ One part is off. Mean = total 25 ÷ 5 = 5 (not 25). The mode is the value that repeats most (5). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ One part is off. Mean = total 25 ÷ 5 = 5 (not 25). The mode is the value that repeats most (5). Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Una parte está mal. Media = 25 ÷ 5 = 5. La moda es 5."
               }
             },
@@ -764,7 +793,7 @@ window.GN_STORY = {
               "es": "Media = 5, Moda = 7 (el 7 aparece solo una vez)",
               "correct": false,
               "why": {
-                "en": "❌ One part is off. Mean = total 25 ÷ 5 = 5 (not 25). The mode is the value that repeats most (5). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ One part is off. Mean = total 25 ÷ 5 = 5 (not 25). The mode is the value that repeats most (5). Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Una parte está mal. Media = 25 ÷ 5 = 5. La moda es 5."
               }
             }
@@ -804,34 +833,34 @@ window.GN_STORY = {
           "ask": {
             "who": "coach",
             "en": "BUZZER-3 keeps reaching for the mean and ignoring the median and mode. What can you tell about how BUZZER-3 works?",
-            "es": "STATS siempre busca la media e ignora la mediana y la moda. ¿Qué puedes deducir sobre cómo trabaja STATS?"
+            "es": "BUZZER-3 siempre busca la media e ignora la mediana y la moda. ¿Qué puedes deducir sobre cómo trabaja BUZZER-3?"
           },
           "hint": {
-            "en": "Look back: every time, STATS jumps to the average instead of checking the other centers.",
-            "es": "Mira atrás: cada vez, STATS salta al promedio en lugar de revisar los otros centros."
+            "en": "Look back: every time, BUZZER-3 jumps to the average instead of checking the other centers.",
+            "es": "Mira atrás: cada vez, BUZZER-3 salta al promedio en lugar de revisar los otros centros."
           },
           "choices": [
             {
               "en": "BUZZER-3 trusts only the mean, so it misses what the median and mode reveal.",
-              "es": "STATS confía solo en la media, así que se pierde lo que muestran la mediana y la moda.",
+              "es": "BUZZER-3 confía solo en la media, así que se pierde lo que muestran la mediana y la moda.",
               "correct": true
             },
             {
               "en": "BUZZER-3 does not know how to add numbers at all.",
-              "es": "STATS no sabe sumar números en absoluto.",
+              "es": "BUZZER-3 no sabe sumar números en absoluto.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "BUZZER-3 wants the team to lose the game on purpose.",
-              "es": "STATS quiere que el equipo pierda el partido a propósito.",
+              "es": "BUZZER-3 quiere que el equipo pierda el partido a propósito.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -856,12 +885,12 @@ window.GN_STORY = {
               "correct": true
             },
             {
-              "en": "Jalen starts the data report over from the beginning.",
+              "en": "Jada starts the data report over from the beginning.",
               "es": "La Analista empieza el reporte de datos otra vez desde el principio.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -869,8 +898,8 @@ window.GN_STORY = {
               "es": "Coach tira a la basura todas las estadísticas de esta noche.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -936,7 +965,7 @@ window.GN_STORY = {
   ],
   "complete": {
     "art": "celebrate.png",
-    "alt": "Maya celebrates on the court with the winning team holding her tablet high",
+    "alt": "Jada celebrates on the court with the winning team holding her tablet high",
     "badge": "🎉🏀⭐",
     "titleEn": "Game Won!",
     "en": "You did it, Analyst! You found the <b>statistical question</b>, read the <b>data</b>, and used the <b>mean, median, and mode</b> to make the game-winning call. The team is celebrating — thanks to you!",

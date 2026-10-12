@@ -84,17 +84,22 @@
   /* Read-aloud (text-to-speech) via the Web Speech API. Offline, no assets. */
   var TTS = (function () {
     var synth = window.speechSynthesis;
-    function speak(text, lang) {
+    function speak(text, lang, onEnd) {
       if (!synth) return;
       synth.cancel();
-      var u = new SpeechSynthesisUtterance(
-        String(text).replace(/<[^>]+>/g, ""),
-      );
+      // decode entities (&iexcl;, &nbsp;) so the voice reads words, not codes
+      var d = document.createElement("div");
+      d.innerHTML = String(text);
+      var u = new SpeechSynthesisUtterance(d.textContent || "");
       u.lang = lang === "es" ? "es-ES" : "en-US";
       u.rate = 0.95;
+      if (onEnd) u.onend = u.onerror = onEnd;
       synth.speak(u);
     }
-    return { available: !!synth, speak: speak };
+    function stop() {
+      if (synth) synth.cancel();
+    }
+    return { available: !!synth, speak: speak, stop: stop };
   })();
 
   /* Offline Web Audio Comic SFX Synthesizer (zero external assets). */
@@ -454,16 +459,12 @@
   ];
 
   function isBotSpeaker(c, spkId) {
-    var p = c.portrait || {};
-    if (p.bot != null) return !!p.bot;
-    var nm = ((c.name || "") + " " + (c.blurb || "") + " " + spkId).toLowerCase();
-    return (
-      c.tagIcon === "🤖" ||
-      c.tagIcon === "🛸" ||
-      /\b(bot|drone|pip|byte|vex|zap|orb|rover|core|ai|unit|servo|flux|kip)\b/.test(
-        nm,
-      )
-    );
+    var p = c.portrait;
+    // Stories declare robots explicitly; guessing from names misfired
+    // ("Unit-Rate Specialist" drew a human captain as a robot).
+    if (p && p.bot != null) return !!p.bot;
+    if (p) return false;
+    return c.tagIcon === "🤖" || c.tagIcon === "🛸";
   }
 
   function renderPortraitSVG(spkId, pose) {
@@ -681,41 +682,667 @@
     );
   }
 
-  function avatarSrc(spkId) {
-    var c = speaker(spkId);
-    if (c.avatar) {
-      return c.avatar.charAt(0) === "/" || c.avatar.indexOf("../") === 0
-        ? c.avatar
-        : art(c.avatar);
-    }
-    return null;
+  /* ---------- adult mentor portrait (inked bust, cel-shaded) ----------
+       Mentors (role "specialist") have no illustrated cut-out art, so they are
+       drawn here from cast.portrait: { outfit, skin, hair, hairStyle, beard,
+       glasses, earrings, gray }. They appear on "transmission" monitors, the
+       comic convention for a character who speaks from somewhere else. */
+  var OUTFITS = {
+    chef: { body: "#f8fafc", trim: "#cbd5e1", hat: "toque" },
+    pilot: { body: "#1e3a5f", trim: "#f2b705", hat: "pilot" },
+    blazer: { body: "#334155", trim: "#e2e8f0", tie: "#b42318" },
+    suit: { body: "#111827", trim: "#f8fafc", tie: "#1d4ed8" },
+    lab: { body: "#f1f5f9", trim: "#94a3b8" },
+    hardhat: { body: "#f97316", trim: "#fde047", hat: "hardhat" },
+    dj: { body: "#7c3aed", trim: "#22d3ee", hat: "headphones" },
+    detective: { body: "#a16207", trim: "#78350f", hat: "fedora" },
+    judge: { body: "#111827", trim: "#f8fafc", collar: true },
+    coach: { body: "#b42318", trim: "#f8fafc", hat: "cap", whistle: true },
+    captain: { body: "#1e293b", trim: "#f2b705", hat: "captain" },
+    parka: { body: "#0e7490", trim: "#e2e8f0", hat: "beanie" },
+  };
+  var INK = "#0f172a";
+  function shade(hex, amt) {
+    var n = parseInt(String(hex).slice(1), 16);
+    var r = Math.max(0, Math.min(255, ((n >> 16) & 255) + amt));
+    var g = Math.max(0, Math.min(255, ((n >> 8) & 255) + amt));
+    var b = Math.max(0, Math.min(255, (n & 255) + amt));
+    return "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
   }
-  function whoTag(spkId, isMe) {
-    var c = speaker(spkId);
-    var svg = renderPortraitSVG(spkId, "hero");
-    var src = avatarSrc(spkId);
-    var inner = src
-      ? '<span class="av"><img src="' + src + '" alt="" loading="lazy" /></span>'
-      : svg
-        ? '<span class="av" aria-hidden="true">' + svg + "</span>"
-        : '<span class="av" aria-hidden="true">' +
-          (c.tagIcon || c.name.charAt(0)) +
-          "</span>";
+  function renderMentorSVG(c) {
+    var p = c.portrait || {};
+    var o = OUTFITS[p.outfit] || OUTFITS.blazer;
+    var skin = p.skin || "#c68453";
+    var skinD = shade(skin, -34);
+    var hair = p.gray ? "#9ca3af" : p.hair || "#1e293b";
+    var st = 'stroke="' + INK + '" stroke-width="4" stroke-linejoin="round"';
+    var s = [];
+    s.push(
+      '<rect width="200" height="220" fill="' +
+        shade(c.color || "#1d4ed8", 60) +
+        '"/>',
+    );
+    s.push(
+      '<circle cx="100" cy="96" r="84" fill="' +
+        (c.color || "#1d4ed8") +
+        '" opacity="0.28"/>',
+    );
+    // long hair falls behind the shoulders
+    if (p.hairStyle === "long" || p.hairStyle === "braid")
+      s.push(
+        '<path d="M52 92 Q48 168 70 196 L130 196 Q152 168 148 92 Z" fill="' +
+          hair +
+          '" ' +
+          st +
+          "/>",
+      );
+    if (p.hairStyle === "curly")
+      s.push('<circle cx="100" cy="78" r="58" fill="' + hair + '" ' + st + "/>");
+    // shoulders / outfit
+    s.push(
+      '<path d="M18 220 Q24 162 70 150 L130 150 Q176 162 182 220 Z" fill="' +
+        o.body +
+        '" ' +
+        st +
+        "/>",
+    );
+    if (o.collar)
+      s.push(
+        '<path d="M76 150 L100 196 L124 150 Z" fill="' +
+          o.trim +
+          '" ' +
+          st +
+          '/><path d="M86 152 L100 180 L114 152" fill="none" ' +
+          st +
+          "/>",
+      );
+    else
+      s.push(
+        '<path d="M78 150 L100 182 L122 150" fill="' + o.trim + '" ' + st + "/>",
+      );
+    if (o.tie)
+      s.push(
+        '<path d="M96 160 L104 160 L108 200 L100 210 L92 200 Z" fill="' +
+          o.tie +
+          '" ' +
+          st +
+          "/>",
+      );
+    if (p.outfit === "chef")
+      s.push(
+        '<circle cx="86" cy="190" r="4" fill="' +
+          INK +
+          '"/><circle cx="114" cy="190" r="4" fill="' +
+          INK +
+          '"/><circle cx="86" cy="208" r="4" fill="' +
+          INK +
+          '"/><circle cx="114" cy="208" r="4" fill="' +
+          INK +
+          '"/>',
+      );
+    if (p.outfit === "hardhat")
+      s.push(
+        '<rect x="40" y="186" width="120" height="10" fill="' +
+          o.trim +
+          '" stroke="' +
+          INK +
+          '" stroke-width="3"/>',
+      );
+    if (p.outfit === "pilot" || p.outfit === "captain")
+      s.push(
+        '<rect x="34" y="168" width="22" height="6" fill="' +
+          o.trim +
+          '"/><rect x="144" y="168" width="22" height="6" fill="' +
+          o.trim +
+          '"/>',
+      );
+    if (o.whistle)
+      s.push(
+        '<path d="M86 152 Q100 176 114 152" fill="none" stroke="#e2e8f0" stroke-width="3"/><rect x="94" y="172" width="16" height="10" rx="4" fill="#cbd5e1" ' +
+          st +
+          "/>",
+      );
+    // neck + head
+    s.push(
+      '<path d="M84 128 L84 154 Q100 164 116 154 L116 128 Z" fill="' +
+        skinD +
+        '" ' +
+        st +
+        "/>",
+    );
+    s.push(
+      '<ellipse cx="54" cy="96" rx="9" ry="13" fill="' +
+        skin +
+        '" ' +
+        st +
+        '/><ellipse cx="146" cy="96" rx="9" ry="13" fill="' +
+        skin +
+        '" ' +
+        st +
+        "/>",
+    );
+    s.push(
+      '<path d="M56 82 Q56 38 100 36 Q144 38 144 82 L142 110 Q136 144 100 148 Q64 144 58 110 Z" fill="' +
+        skin +
+        '" ' +
+        st +
+        "/>",
+    );
+    // cel shadow on the right cheek
+    s.push(
+      '<path d="M126 60 Q144 84 140 112 Q132 140 104 146 Q130 126 126 60 Z" fill="' +
+        skinD +
+        '" opacity="0.55"/>',
+    );
+    if (p.earrings)
+      s.push(
+        '<circle cx="54" cy="114" r="4" fill="#f2b705" stroke="' +
+          INK +
+          '" stroke-width="2"/><circle cx="146" cy="114" r="4" fill="#f2b705" stroke="' +
+          INK +
+          '" stroke-width="2"/>',
+      );
+    // eyes, brows, nose, mouth — adult proportions (smaller eyes, defined brows)
+    s.push(
+      '<ellipse cx="82" cy="92" rx="6" ry="5" fill="#fff" stroke="' +
+        INK +
+        '" stroke-width="2.5"/><ellipse cx="118" cy="92" rx="6" ry="5" fill="#fff" stroke="' +
+        INK +
+        '" stroke-width="2.5"/>',
+    );
+    s.push(
+      '<circle cx="83" cy="92" r="3" fill="' +
+        INK +
+        '"/><circle cx="119" cy="92" r="3" fill="' +
+        INK +
+        '"/>',
+    );
+    s.push(
+      '<path d="M70 80 Q82 72 94 79 M106 79 Q118 72 130 80" fill="none" stroke="' +
+        (p.gray ? "#6b7280" : hair) +
+        '" stroke-width="5" stroke-linecap="round"/>',
+    );
+    s.push(
+      '<path d="M100 96 Q96 112 102 116" fill="none" stroke="' +
+        INK +
+        '" stroke-width="3" stroke-linecap="round"/>',
+    );
+    s.push(
+      '<path d="M86 128 Q100 138 114 128" fill="none" stroke="' +
+        INK +
+        '" stroke-width="3.5" stroke-linecap="round"/>',
+    );
+    s.push(
+      '<path d="M76 118 Q78 124 82 126 M124 118 Q122 124 118 126" fill="none" stroke="' +
+        skinD +
+        '" stroke-width="2.5" stroke-linecap="round"/>',
+    );
+    if (p.beard === "full")
+      s.push(
+        '<path d="M60 108 Q64 150 100 152 Q136 150 140 108 Q130 132 112 134 Q100 142 88 134 Q70 132 60 108 Z" fill="' +
+          hair +
+          '" ' +
+          st +
+          '/><path d="M86 130 Q100 138 114 130" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>',
+      );
+    if (p.beard === "mustache" || p.beard === "goatee")
+      s.push(
+        '<path d="M84 122 Q100 114 116 122 Q100 128 84 122 Z" fill="' +
+          hair +
+          '" ' +
+          st +
+          "/>",
+      );
+    if (p.beard === "goatee")
+      s.push(
+        '<path d="M92 136 Q100 152 108 136 Z" fill="' + hair + '" ' + st + "/>",
+      );
+    if (p.glasses)
+      s.push(
+        '<g fill="none" stroke="' +
+          INK +
+          '" stroke-width="3.5"><rect x="68" y="82" width="28" height="20" rx="7"/><rect x="104" y="82" width="28" height="20" rx="7"/><path d="M96 90 L104 90"/></g>',
+      );
+    // hair (front) by style
+    var hs = typeof p.hairStyle === "string" ? p.hairStyle : "short";
+    if (hs === "short" || hs === "braid" || hs === "long")
+      s.push(
+        '<path d="M54 86 Q50 34 100 30 Q150 34 146 86 Q132 56 104 54 Q76 52 54 86 Z" fill="' +
+          hair +
+          '" ' +
+          st +
+          "/>",
+      );
+    if (hs === "bun")
+      s.push(
+        '<circle cx="100" cy="28" r="16" fill="' +
+          hair +
+          '" ' +
+          st +
+          '/><path d="M54 84 Q52 38 100 36 Q148 38 146 84 Q138 58 100 56 Q62 58 54 84 Z" fill="' +
+          hair +
+          '" ' +
+          st +
+          "/>",
+      );
+    if (hs === "curly")
+      s.push(
+        '<path d="M56 80 Q58 44 100 42 Q142 44 144 80 Q124 60 100 64 Q76 60 56 80 Z" fill="' +
+          shade(hair, 18) +
+          '" ' +
+          st +
+          "/>",
+      );
+    if (hs === "bald")
+      s.push(
+        '<path d="M58 90 Q56 74 62 64 M142 90 Q144 74 138 64" fill="none" stroke="' +
+          hair +
+          '" stroke-width="7" stroke-linecap="round"/>',
+      );
+    if (hs === "braid")
+      s.push(
+        '<path d="M150 104 Q164 140 152 182" fill="none" stroke="' +
+          hair +
+          '" stroke-width="12" stroke-linecap="round"/><path d="M150 104 Q164 140 152 182" fill="none" stroke="' +
+          INK +
+          '" stroke-width="2" stroke-dasharray="6 6"/>',
+      );
+    // headwear
+    var hat = o.hat;
+    if (hat === "toque")
+      s.push(
+        '<path d="M62 64 L62 40 Q50 14 78 14 Q86 -2 100 6 Q114 -2 122 14 Q150 14 138 40 L138 64 Z" fill="#fff" ' +
+          st +
+          '/><path d="M62 52 L138 52" stroke="' +
+          INK +
+          '" stroke-width="3"/>',
+      );
+    if (hat === "pilot" || hat === "captain")
+      s.push(
+        '<path d="M50 64 Q100 30 150 64 L148 72 Q100 60 52 72 Z" fill="' +
+          (hat === "captain" ? "#f8fafc" : o.body) +
+          '" ' +
+          st +
+          '/><path d="M54 70 Q100 82 146 70 L150 80 Q100 90 50 80 Z" fill="' +
+          INK +
+          '"/><circle cx="100" cy="56" r="7" fill="#f2b705" stroke="' +
+          INK +
+          '" stroke-width="2.5"/>',
+      );
+    if (hat === "hardhat")
+      s.push(
+        '<path d="M52 70 Q52 24 100 22 Q148 24 148 70 Z" fill="#facc15" ' +
+          st +
+          '/><rect x="40" y="66" width="120" height="10" rx="5" fill="#eab308" ' +
+          st +
+          '/><path d="M100 24 L100 66" stroke="#ca8a04" stroke-width="5"/>',
+      );
+    if (hat === "headphones")
+      s.push(
+        '<path d="M52 92 Q52 26 100 26 Q148 26 148 92" fill="none" stroke="' +
+          INK +
+          '" stroke-width="9"/><rect x="40" y="82" width="20" height="32" rx="8" fill="' +
+          o.trim +
+          '" ' +
+          st +
+          '/><rect x="140" y="82" width="20" height="32" rx="8" fill="' +
+          o.trim +
+          '" ' +
+          st +
+          "/>",
+      );
+    if (hat === "fedora")
+      s.push(
+        '<path d="M36 70 Q100 54 164 70 Q160 80 100 76 Q40 80 36 70 Z" fill="#57534e" ' +
+          st +
+          '/><path d="M64 70 Q62 30 100 28 Q138 30 136 70 Z" fill="#78716c" ' +
+          st +
+          '/><path d="M64 62 Q100 54 136 62 L136 70 Q100 62 64 70 Z" fill="' +
+          INK +
+          '"/>',
+      );
+    if (hat === "cap")
+      s.push(
+        '<path d="M54 72 Q54 28 100 28 Q146 28 146 72 Z" fill="' +
+          o.body +
+          '" ' +
+          st +
+          '/><path d="M54 70 Q100 62 168 76 Q150 86 100 80 Q70 80 54 78 Z" fill="' +
+          shade(o.body, -30) +
+          '" ' +
+          st +
+          "/>",
+      );
+    if (hat === "beanie")
+      s.push(
+        '<path d="M54 74 Q54 22 100 22 Q146 22 146 74 Z" fill="' +
+          o.body +
+          '" ' +
+          st +
+          '/><rect x="50" y="64" width="100" height="14" rx="6" fill="' +
+          o.trim +
+          '" ' +
+          st +
+          '/><circle cx="100" cy="20" r="9" fill="' +
+          o.trim +
+          '" ' +
+          st +
+          "/>",
+      );
     return (
-      '<span class="who" style="--spk:' +
-      (c.color || "#c2461d") +
+      '<svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="' +
+      stripTags(c.name) +
       '">' +
-      inner +
-      "<span>" +
-      c.name +
-      "</span>" +
-      (isMe || c.role === "protagonist"
-        ? '<span class="me">&middot; YOU</span>'
-        : c.title
-          ? '<span class="me">&middot; ' + c.title + "</span>"
-          : "") +
+      s.join("") +
+      "</svg>"
+    );
+  }
+  /* ---------- comic page layer ----------
+       A beats step is lettered as one comic PAGE: an inked grid of panels, one per
+       beat, revealed in reading order. Who speaks decides how the panel is shot:
+         hero    → close-up on the protagonist drawn in the scene art (meta.artFocus)
+         ally    → the companion's illustrated cut-out (cast.figure) in front of the scene
+         comm    → a mentor on a transmission monitor (renderMentorSVG)
+         caption → a narration box over the scene
+       The first panel of every page is the establishing shot (whole scene).
+       Bubbles carry tails that point at the speaker. */
+  var LANG_KEY = "nt_gn_lang";
+  var LANG_MODES = ["both", "en", "es"];
+  var LANG_LABEL = { both: "EN + ES", en: "EN", es: "ES" };
+  var langMode = (function () {
+    try {
+      var v = localStorage.getItem(LANG_KEY);
+      if (LANG_MODES.indexOf(v) >= 0) return v;
+    } catch (e) {}
+    return S.meta.version === 2 ? "en" : "both";
+  })();
+  function applyLang() {
+    document.body.setAttribute("data-lang", langMode);
+    var b = $("gn-lang-btn");
+    if (b) b.innerHTML = "&#128172; " + LANG_LABEL[langMode];
+  }
+  function cycleLang() {
+    langMode = LANG_MODES[(LANG_MODES.indexOf(langMode) + 1) % LANG_MODES.length];
+    try {
+      localStorage.setItem(LANG_KEY, langMode);
+    } catch (e) {}
+    applyLang();
+  }
+
+  function relSrc(p) {
+    return p.charAt(0) === "/" || p.indexOf("../") === 0 ? p : art(p);
+  }
+  function figureSrc(spkId) {
+    var c = speaker(spkId);
+    return c.figure ? relSrc(c.figure) : null;
+  }
+  function figureStyle(spkId) {
+    var t = speaker(spkId).figureTint;
+    return t ? ' style="filter:hue-rotate(' + t + 'deg) saturate(1.15)"' : "";
+  }
+  function focusOf(file) {
+    var f = S.meta.artFocus && S.meta.artFocus[file];
+    return f ? { x: f[0], y: f[1] } : { x: 50, y: 35 };
+  }
+  function panelKind(spkId) {
+    var c = speaker(spkId);
+    if (c.role === "narrator") return "caption";
+    if (c.role === "protagonist") return "hero";
+    if (c.role === "companion") return figureSrc(spkId) ? "ally" : "comm";
+    return "comm";
+  }
+  /* Small round face for name tags: protagonist = crop of the cover art at the
+       hero's face; companion = cut-out; mentor = drawn portrait. */
+  function faceHTML(spkId) {
+    var c = speaker(spkId);
+    if (c.role === "narrator") return "";
+    if (c.role === "protagonist" && S.cover && S.cover.art) {
+      var f = focusOf(S.cover.art);
+      return (
+        '<span class="face face-crop" style="background-image:url(' +
+        art(S.cover.art) +
+        ");--fx:" +
+        f.x +
+        ";--fy:" +
+        f.y +
+        '"></span>'
+      );
+    }
+    var fig = figureSrc(spkId);
+    if (fig)
+      return (
+        '<span class="face"><img src="' +
+        fig +
+        '" alt=""' +
+        figureStyle(spkId) +
+        "></span>"
+      );
+    if (c.portrait && !isBotSpeaker(c, spkId))
+      return '<span class="face">' + renderMentorSVG(c) + "</span>";
+    return '<span class="face">' + renderPortraitSVG(spkId, "hero") + "</span>";
+  }
+
+  /* 6-column page grid: establishing shot full width, then rows of pairs; a
+       trailing 3 short lines become thirds, a trailing 1 goes full width. */
+  function pageSpans(lens) {
+    // lens = visible text length of each beat; the wider slot of every pair
+    // goes to the longer line so long speeches never squeeze into a sliver.
+    var n = lens.length;
+    var spans = [6],
+      k = 1;
+    while (k < n) {
+      var rest = n - k;
+      if (rest === 1) {
+        spans.push(6);
+        k += 1;
+      } else if (rest === 3 && Math.max(lens[k], lens[k + 1], lens[k + 2]) < 150) {
+        spans.push(2, 2, 2);
+        k += 3;
+      } else {
+        var longFirst = lens[k] >= lens[k + 1];
+        var even = Math.abs(lens[k] - lens[k + 1]) < 40;
+        spans.push(even ? 3 : longFirst ? 4 : 2, even ? 3 : longFirst ? 2 : 4);
+        k += 2;
+      }
+    }
+    return spans;
+  }
+
+  function ttsButtons(en, es) {
+    if (!TTS.available) return "";
+    return (
+      '<span class="tts">' +
+      '<button class="tts-btn" type="button" data-tts="en" aria-label="Read aloud">&#128266;</button>' +
+      (es
+        ? '<button class="tts-btn" type="button" data-tts="es" aria-label="Leer en voz alta">ES</button>'
+        : "") +
       "</span>"
     );
+  }
+  function wireTTS(node, en, es) {
+    Array.prototype.forEach.call(
+      node.querySelectorAll("[data-tts]"),
+      function (b) {
+        b.addEventListener("click", function (e) {
+          e.stopPropagation();
+          TTS.speak(b.dataset.tts === "es" ? es : en, b.dataset.tts);
+        });
+      },
+    );
+  }
+
+  /* Lettering: speech bubble, radio bubble (mentor on a monitor), or caption box. */
+  function letter(beat, kind, side) {
+    var c = speaker(beat.who);
+    var isCap = kind === "caption" || (beat.caption && kind !== "comm");
+    var cls = isCap
+      ? "cp-caption"
+      : "cp-bubble side-" + side + (kind === "comm" ? " radio" : "");
+    if (beat.misconception) cls += " misc";
+    var b = el("div", cls);
+    b.style.setProperty("--spk", c.color || "#1d4ed8");
+    b.innerHTML =
+      '<span class="cp-name">' +
+      (isCap && c.role !== "narrator" ? faceHTML(beat.who) : "") +
+      c.name +
+      (c.role === "protagonist" ? " <i>&middot; YOU</i>" : "") +
+      "</span>" +
+      '<span class="en">' +
+      injectVocab(txt(beat.en), beat.vocab) +
+      "</span>" +
+      (beat.es ? '<span class="es" lang="es">' + beat.es + "</span>" : "") +
+      ttsButtons(beat.en, beat.es);
+    wireTTS(b, beat.en, beat.es);
+    return b;
+  }
+
+  function buildPanel(beat, file, alt, opts) {
+    opts = opts || {};
+    var kind = panelKind(beat.who);
+    var f = focusOf(file);
+    var heroLeft = f.x < 50;
+    var est = !!opts.establish;
+    var fig = el(
+      "figure",
+      "cp-panel kind-" +
+        kind +
+        (est ? " establish" : "") +
+        (beat.misconception ? " misc" : "") +
+        (opts.extra ? " " + opts.extra : ""),
+    );
+    // camera: establishing = whole scene; hero = push in on the face;
+    // ally/comm = the far side of the room, softened, so the speaker reads first.
+    var zoom = est ? 1 : kind === "hero" ? 2.15 : 1.45;
+    var ox = est || kind === "hero" ? f.x : heroLeft ? 85 : 15;
+    var oy = est || kind === "hero" ? f.y : 50;
+    var img = el("img", "cp-img" + (!est && kind !== "hero" ? " soft" : ""));
+    img.src = art(file);
+    img.alt = est ? txt(alt || "") : "";
+    img.loading = "lazy";
+    img.style.objectPosition = ox + "% " + oy + "%";
+    img.style.transformOrigin = ox + "% " + oy + "%";
+    if (kind === "hero" && !est) {
+      // slide the face to the open side of the panel so the balloon never covers it
+      var dx = (heroLeft ? 26 : 74) - f.x;
+      var dy = 40 - f.y;
+      img.style.transform = "translate(" + dx + "%, " + dy + "%) scale(" + zoom + ")";
+    } else if (zoom !== 1) img.style.transform = "scale(" + zoom + ")";
+    var artBox = el("div", "cp-art");
+    artBox.appendChild(img);
+    if (kind === "hero" && !est) artBox.appendChild(el("div", "cp-lines"));
+    fig.appendChild(artBox);
+
+    var bubbleSide;
+    if (kind === "ally") {
+      // the companion stands on the side the hero is NOT on
+      var figSide = heroLeft ? "right" : "left";
+      fig.insertAdjacentHTML(
+        "beforeend",
+        '<img class="cp-figure ' +
+          figSide +
+          (est ? " small" : "") +
+          '" src="' +
+          figureSrc(beat.who) +
+          '" alt=""' +
+          figureStyle(beat.who) +
+          ">",
+      );
+      bubbleSide = figSide === "right" ? "left" : "right";
+      fig.classList.add("tail-" + figSide);
+    } else if (kind === "comm") {
+      var c = speaker(beat.who);
+      fig.insertAdjacentHTML(
+        "beforeend",
+        '<div class="cp-monitor' +
+          (est ? " small" : "") +
+          '" aria-hidden="true">' +
+          '<span class="cp-live">&#9679; LIVE</span>' +
+          (c.portrait && !isBotSpeaker(c, beat.who)
+            ? renderMentorSVG(c)
+            : renderPortraitSVG(beat.who, "think")) +
+          "</div>",
+      );
+      bubbleSide = "right";
+      fig.classList.add("tail-left");
+    } else {
+      // hero (or caption): letter on the side away from the face, tail toward it
+      bubbleSide = heroLeft ? "right" : "left";
+      fig.classList.add("tail-" + (heroLeft ? "left" : "right"));
+    }
+    var lettering = el("div", "cp-letters " + bubbleSide);
+    lettering.appendChild(letter(beat, kind, bubbleSide));
+    fig.appendChild(lettering);
+
+    if (beat.misconception) {
+      fig.insertAdjacentHTML(
+        "beforeend",
+        '<span class="cp-sfx misc" aria-hidden="true">?!</span>',
+      );
+      var call = el("button", "cp-callout-btn", "&#128681; Call it out!");
+      call.type = "button";
+      call.setAttribute("aria-label", "Call out the mistake in this panel");
+      fig.appendChild(call);
+    } else if (est) {
+      var sfxText = beat.sfx || UNIT_SFX[S.meta.unit] || "POW!";
+      // letter the sound effect on the side away from the balloon
+      var sfx = el("button", "cp-sfx at-" + ((kind === "hero") === (bubbleSide === "right") ? "right" : "left"), sfxText);
+      sfx.type = "button";
+      sfx.setAttribute("aria-label", "Sound effect: " + stripTags(sfxText));
+      sfx.addEventListener("click", function (e) {
+        e.stopPropagation();
+        SFX_AUDIO.play("pop");
+        addXP(5, "sfx-" + stripTags(sfxText));
+        sfx.classList.remove("boom");
+        void sfx.offsetWidth;
+        sfx.classList.add("boom");
+      });
+      fig.appendChild(sfx);
+    }
+    if (beat.callout) {
+      var co = beat.callout;
+      var dot = el("button", "callout", co.icon || "!");
+      dot.type = "button";
+      dot.style.left = (co.x || 50) + "%";
+      dot.style.top = (co.y || 50) + "%";
+      dot.setAttribute(
+        "aria-label",
+        "Look closer: " + stripTags(co.title || co.en),
+      );
+      dot.addEventListener("click", function (e) {
+        e.stopPropagation();
+        openPop(dot, co.title || "", co.en, co.es);
+        addXP(5, "callout-" + stripTags(co.en).slice(0, 24));
+      });
+      fig.appendChild(dot);
+    }
+    return fig;
+  }
+
+  /* A short strip after a solved challenge: the hero says the answer, then the
+       scene reacts (solveBeat over solveArt). Pure storytelling — never scored. */
+  function buildAftermath(step, choiceText, file) {
+    var strip = el("div", "cp-strip");
+    strip.setAttribute("aria-label", "Comic strip: what happens next");
+    var heroId = Object.keys(S.cast).filter(function (k) {
+      return S.cast[k].role === "protagonist";
+    })[0];
+    var panels = [];
+    if (heroId && choiceText)
+      panels.push(
+        buildPanel({ who: heroId, en: choiceText.en, es: choiceText.es }, file, "", { extra: "reply" }),
+      );
+    if (step.solveBeat)
+      panels.push(
+        buildPanel(step.solveBeat, step.solveArt || file, step.solveAlt, {
+          establish: !!step.solveArt,
+          extra: "payoff",
+        }),
+      );
+    panels.forEach(function (p) {
+      p.style.setProperty("--span", panels.length === 1 ? 6 : 3);
+      strip.appendChild(p);
+    });
+    return panels.length ? strip : null;
   }
 
   /* ---------- vocab markup: wrap term occurrences with a tappable tag ----------
@@ -804,94 +1431,6 @@
     10: "SPLASH FILL! 🌊",
   };
 
-  /* ---------- bubble builder ----------
-     Returns a fragment: the speaking character's large SVG stage portrait pinned
-     to the panel (for non-narrator beats), a comic SFX burst, + the speech bubble. */
-  function bubble(beat) {
-    var c = speaker(beat.who);
-    var isCap = c.role === "narrator" || beat.caption;
-    var pos = beat.pos || (c.role === "protagonist" ? "right" : "left");
-    var frag = document.createDocumentFragment();
-    var pose = beat.misconception
-      ? "oops"
-      : beat.pose || (c.role === "protagonist" ? "hero" : "think");
-
-    if (!isCap) {
-      var svgStage = renderPortraitSVG(beat.who, pose);
-      if (svgStage) {
-        var stageWrap = el("div", "speaker-stage " + pos);
-        stageWrap.setAttribute("aria-hidden", "true");
-        stageWrap.innerHTML = svgStage;
-        frag.appendChild(stageWrap);
-      }
-    }
-
-    var sfxText =
-      beat.sfx ||
-      (beat.misconception
-        ? "HOLD UP! ⚡"
-        : isCap
-          ? "LOG ENTRY 📡"
-          : UNIT_SFX[S.meta.unit] || "POW!");
-    var sfxEl = el(
-      "button",
-      "comic-sfx" +
-        (pos === "right" ? " left" : "") +
-        (beat.misconception ? " misc-sfx" : ""),
-      sfxText,
-    );
-    sfxEl.type = "button";
-    sfxEl.setAttribute("aria-label", "Comic sound effect: " + stripTags(sfxText));
-    sfxEl.addEventListener("click", function (e) {
-      e.stopPropagation();
-      SFX_AUDIO.play(beat.misconception ? "warn" : "pop");
-      addXP(5, "sfx-" + stripTags(sfxText));
-      sfxEl.style.animation = "none";
-      void sfxEl.offsetWidth;
-      sfxEl.style.animation = "";
-    });
-    frag.appendChild(sfxEl);
-
-    var b = el(
-      "div",
-      "bubble " +
-        pos +
-        (isCap ? " caption" : "") +
-        (beat.misconception ? " misc" : ""),
-    );
-    var en = injectVocab(txt(beat.en), beat.vocab);
-    b.innerHTML =
-      whoTag(beat.who) +
-      '<div class="en">' +
-      en +
-      "</div>" +
-      (beat.es ? '<div class="es">' + beat.es + "</div>" : "");
-    if (TTS.available) {
-      var ctl =
-        '<span class="tts">' +
-        '<button class="tts-btn" type="button" data-tts-en aria-label="Read aloud">&#128266;</button>' +
-        (beat.es
-          ? '<button class="tts-btn" type="button" data-tts-es aria-label="Leer en voz alta">ES</button>'
-          : "") +
-        "</span>";
-      b.insertAdjacentHTML("beforeend", ctl);
-      b.querySelector("[data-tts-en]").addEventListener("click", function (e) {
-        e.stopPropagation();
-        TTS.speak(beat.en, "en");
-      });
-      if (beat.es)
-        b.querySelector("[data-tts-es]").addEventListener(
-          "click",
-          function (e) {
-            e.stopPropagation();
-            TTS.speak(beat.es, "es");
-          },
-        );
-    }
-    frag.appendChild(b);
-    return frag;
-  }
-
   /* =========================================================================
      BUILD DOM
      ========================================================================= */
@@ -909,6 +1448,8 @@
     main.appendChild(buildGloss());
     document.body.appendChild(main);
     wireTabs();
+    applyLang();
+    $("gn-lang-btn").addEventListener("click", cycleLang);
     buildGlossList();
     refreshLocks();
     updateProgress();
@@ -930,6 +1471,7 @@
       '<span class="progress-label" id="plabel">0%</span></div>' +
       '<span class="gn-xp-pill" id="gn-xp-pill" title="Mission XP &amp; Rank">&#11088; 0 XP &middot; CADET</span>' +
       '<button type="button" class="gn-sfx-toggle" id="gn-sfx-btn" aria-pressed="true" title="Toggle Comic Sound Effects">&#128266; SFX</button>' +
+      '<button type="button" class="gn-lang" id="gn-lang-btn" title="Bubble language: English, both, or Spanish">&#128172; EN + ES</button>' +
       '<button class="txtsize" id="txtsize" aria-label="Change text size" ' +
       'title="Text size">A+</button>';
     bar.appendChild(inner);
@@ -963,39 +1505,24 @@
     s.setAttribute("aria-labelledby", "tab-cover");
     SCENE_IDS.push("cover");
     var cv = S.cover;
-    var castChips = "";
     var dossierCards = "";
     Object.keys(S.cast || {}).forEach(function (k) {
       var c = S.cast[k];
       if (c.role === "narrator") return;
-      var svg = renderPortraitSVG(k, "hero");
-      var av =
-        '<span class="av" style="background:' +
-        (c.color || "#1d4ed8") +
-        '">' +
-        svg +
-        "</span>";
-      castChips +=
-        '<span class="cast-chip">' +
-        av +
-        "<b>" +
-        c.name +
-        "</b> <span>" +
-        (c.blurb || c.role) +
-        "</span></span>";
-
       var isYou = c.role === "protagonist";
       var roleBadge = isYou
         ? "Lead Hero &middot; You"
         : c.role === "companion"
           ? "Field Partner"
-          : "Specialist";
+          : "Mentor";
       dossierCards +=
-        '<div class="cast-card" style="--spk:' +
+        '<div class="cast-card role-' +
+        c.role +
+        '" style="--spk:' +
         (c.color || "#1d4ed8") +
         '">' +
         '<div class="cast-card-av">' +
-        svg +
+        faceHTML(k) +
         "</div>" +
         '<div class="cast-card-info">' +
         '<span class="cast-card-role' +
@@ -1040,9 +1567,6 @@
       dossierCards +
       "</div>" +
       "</div>" +
-      '<div class="cast-row" style="display:none">' +
-      castChips +
-      "</div>" +
       '<button class="start" id="start-btn">' +
       (cv.startLabel || "Start &#128640;") +
       "</button>";
@@ -1055,6 +1579,16 @@
   }
 
   /* Build a unit-tailored SVG Math X-Ray / Blueprint overlay for an Act panel */
+  /* Labs and the X-Ray model the METHOD on neighbouring numbers, never the
+     question's own: a lab loaded with the mission numbers printed the answer
+     (e.g. "12 × 5 = 60") beside the choices before the student picked one. */
+  function practiceNumbers(text) {
+    return String(text).replace(/\d+(?:\.\d+)?/g, function (m) {
+      var n = Number(m);
+      return String(m.indexOf(".") >= 0 ? +(n + 1).toFixed(2) : n + 1);
+    });
+  }
+
   function buildXRaySVG(act) {
     var mathStep = null;
     (act.steps || []).forEach(function (st) {
@@ -1062,7 +1596,9 @@
         mathStep = st;
       }
     });
-    var q = stripTags((mathStep && mathStep.ask && mathStep.ask.en) || act.title || "");
+    var q = practiceNumbers(
+      stripTags((mathStep && mathStep.ask && mathStep.ask.en) || act.title || ""),
+    );
     var nums = (q.match(/-?\d+(?:\.\d+)?/g) || []).map(Number);
     var a = nums[0] != null ? nums[0] : 12;
     var b = nums[1] != null ? nums[1] : 4;
@@ -1201,13 +1737,12 @@
       act.kicker +
       "</span><h2>" +
       act.title +
-      "</h2></div>" +
-      '<div class="panel" id="panel-' +
-      act.id +
-      '">' +
+      "</h2>" +
       '<button type="button" class="xray-btn" id="xray-btn-' +
       act.id +
-      '" aria-pressed="false" title="Toggle Math X-Ray Blueprint Overlay">&#128300; Math X-Ray</button>' +
+      '" aria-pressed="false" aria-controls="xray-layer-' +
+      act.id +
+      '">&#128300; Math X-Ray</button></div>' +
       '<div class="panel-xray-layer" id="xray-layer-' +
       act.id +
       '">' +
@@ -1215,25 +1750,7 @@
       '<div class="xray-caption">' +
       xrayData.caption +
       "</div></div>" +
-      '<img id="art-' +
-      act.id +
-      '" src="" alt="">' +
-      '<div class="speech" id="speech-' +
-      act.id +
-      '" aria-live="polite"></div></div>' +
-      '<div class="dlg-row"><div class="dots" id="dots-' +
-      act.id +
-      '"></div>' +
-      '<button class="next" id="next-' +
-      act.id +
-      '">Next &#9654;</button></div>' +
-      '<div class="comic-strip-ribbon" id="strip-' +
-      act.id +
-      '"></div>' +
-      '<div id="trap-' +
-      act.id +
-      '"></div>' +
-      '<div id="chal-' +
+      '<div class="act-flow" id="chal-' +
       act.id +
       '"></div>' +
       '<div class="scene-foot"><button class="advance" id="adv-' +
@@ -1252,11 +1769,6 @@
       SFX_AUDIO.play("zap");
       if (open) addXP(15, "xray-" + act.id);
     });
-    xrLayer.addEventListener("click", function () {
-      xrLayer.classList.remove("open");
-      xrBtn.setAttribute("aria-pressed", "false");
-    });
-
     return s;
   }
 
@@ -1588,7 +2100,7 @@
     var host = el("div", "gn-math-lab");
     host.setAttribute("role", "region");
     host.setAttribute("aria-label", "Interactive Math Lab");
-    var qText = stripTags((step.ask && step.ask.en) || "");
+    var qText = practiceNumbers(stripTags((step.ask && step.ask.en) || ""));
     var nums = (qText.match(/-?\d+(?:\.\d+)?/g) || []).map(Number);
 
     if (type === "fraction-slicer") {
@@ -2869,10 +3381,16 @@
   /* Attach "Snap to Mission Numbers" & "Pin Discovery to Log (+10 XP)" to any Math Lab */
   function attachLabFooter(host, step, act) {
     if (!host) return host;
+    var note = el(
+      "p",
+      "gn-lab-note",
+      "&#129514; Practice numbers loaded. Change them to your problem&rsquo;s numbers to test your idea.",
+    );
+    host.insertBefore(note, host.children[1] || null);
     var actBar = el("div", "gn-lab-actions");
     actBar.innerHTML =
       '<button type="button" class="gn-lab-btn" data-pin-lab>&#128204; Pin Discovery to Log (+10 XP)</button>' +
-      '<button type="button" class="gn-lab-btn" data-snap-lab>&#127919; Snap to Mission Numbers</button>';
+      '<button type="button" class="gn-lab-btn" data-snap-lab>&#8634; Reset the lab</button>';
     host.appendChild(actBar);
     var pinBtn = actBar.querySelector("[data-pin-lab]");
     pinBtn.addEventListener("click", function () {
@@ -3016,33 +3534,26 @@
        { type:"beats", art, alt, beats:[...] }   → panel + sequential bubbles
        { type:"challenge", ... }                 → voiced math, reply choices
      ========================================================================= */
+  var REDUCE_MOTION =
+    window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
   function runAct(act) {
     var stepIdx = 0;
-    var imgEl = $("art-" + act.id);
-    var speechEl = $("speech-" + act.id);
-    var dotsEl = $("dots-" + act.id);
-    var nextBtn = $("next-" + act.id);
-    var stripEl = $("strip-" + act.id);
-    var trapEl = $("trap-" + act.id);
-    var chalHost = $("chal-" + act.id);
+    var flow = $("chal-" + act.id);
     var advBtn = $("adv-" + act.id);
-    chalHost.innerHTML = "";
-    if (stripEl) stripEl.innerHTML = "";
-    if (trapEl) trapEl.innerHTML = "";
-
-    function clearCallouts() {
-      Array.prototype.slice
-        .call($("panel-" + act.id).querySelectorAll(".callout"))
-        .forEach(function (c) {
-          c.remove();
-        });
+    var curArt = null;
+    flow.innerHTML = "";
+    function setArt(file) {
+      if (file) curArt = file;
     }
-    function setArt(file, alt) {
-      if (file) {
-        imgEl.src = art(file);
-        imgEl.alt = txt(alt);
+    // the scene a challenge happens in = the last page's art
+    act.steps.some(function (st) {
+      if (st.art) {
+        curArt = st.art;
+        return true;
       }
-    }
+      return false;
+    });
 
     function playStep() {
       var step = act.steps[stepIdx];
@@ -3055,164 +3566,209 @@
       else playChallenge(step);
     }
 
-    /* ---- beats ---- */
-    function playBeats(step) {
-      setArt(step.art, step.alt);
-      clearCallouts();
-      nextBtn.style.display = "";
-      var bi = 0;
-      var beats = tierBeats(step); // Level 0 → fewer beats
-      dotsEl.innerHTML = "";
-      beats.forEach(function (b, idx) {
-        var dot = el("i");
-        dot.style.cursor = "pointer";
-        dot.title = "Jump to Beat " + (idx + 1);
-        dot.addEventListener("click", function () {
-          bi = idx;
-          renderBeat();
-        });
-        dotsEl.appendChild(dot);
+    /* ---- the misconception trap: the companion's slip, explained on demand ---- */
+    function trapBar(panelNo) {
+      var nextMath = null;
+      act.steps.forEach(function (st) {
+        if (!nextMath && st.type !== "beats" && !isComprehension(st)) nextMath = st;
       });
+      var explain =
+        (nextMath && nextMath.help && nextMath.help.conceptual && nextMath.help.conceptual.en) ||
+        "Look closely at the operation and units in this panel — shortcuts that skip the math structure lead to a classic trap!";
+      var bar = el("div", "trap-buster-bar");
+      bar.innerHTML =
+        '<div class="trap-buster-head">' +
+        '<span class="trap-badge">&#9995; HOLD IT! Math Trap in Panel ' +
+        panelNo +
+        "</span>" +
+        '<button type="button" class="trap-reveal-btn" data-trap-btn aria-expanded="false">&#128269; Why does this shortcut fail? (+20 XP)</button>' +
+        "</div>" +
+        '<div class="trap-card-body" data-trap-body><b>&#9889; Trap Analysis:</b> ' +
+        explain +
+        "</div>";
+      var btn = bar.querySelector("[data-trap-btn]");
+      btn.addEventListener("click", function () {
+        var open = bar.querySelector("[data-trap-body]").classList.toggle("open");
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+        addXP(20, "trap-" + act.id + "-" + panelNo);
+        SFX_AUDIO.play("zap");
+      });
+      return bar;
+    }
 
-      function renderStripAndTrap() {
-        if (stripEl) {
-          stripEl.innerHTML = "";
-          beats.forEach(function (b, idx) {
-            var spk = speaker(b.who);
-            var cell = el(
-              "button",
-              "strip-cell" +
-                (idx === bi ? " current" : "") +
-                (b.misconception ? " misc-cell" : ""),
-            );
-            cell.type = "button";
-            var avSvg =
-              spk.role === "narrator"
-                ? '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:16px">&#128225;</div>'
-                : renderPortraitSVG(b.who, b.misconception ? "oops" : "hero");
-            var shortTxt = stripTags(b.en || "");
-            if (shortTxt.length > 68) shortTxt = shortTxt.slice(0, 65) + "...";
-            cell.innerHTML =
-              '<span class="strip-av" aria-hidden="true">' +
-              avSvg +
-              "</span>" +
-              '<span class="strip-txt"><b>Panel ' +
-              (idx + 1) +
-              " &middot; " +
-              stripTags(spk.name || "Narrator") +
-              (b.misconception ? " &#9889;" : "") +
-              "</b>" +
-              shortTxt +
-              "</span>";
-            cell.addEventListener("click", function () {
-              bi = idx;
-              SFX_AUDIO.play("pop");
-              renderBeat();
+    /* ---- beats: lettered as one comic page, panels revealed in reading order ---- */
+    function playBeats(step) {
+      setArt(step.art);
+      var beats = tierBeats(step); // Level 0 → fewer beats
+      var spans = pageSpans(
+        beats.map(function (b) {
+          return stripTags(txt(b.en)).length;
+        }),
+      );
+      var pageNo = flow.querySelectorAll(".comic-page").length + 1;
+      var page = el("section", "comic-page");
+      page.setAttribute("aria-label", "Comic page " + pageNo);
+      var grid = el("div", "cp-grid");
+      var panels = beats.map(function (b, i) {
+        var p = buildPanel(b, step.art || curArt, step.alt, { establish: i === 0 });
+        p.style.setProperty("--span", spans[i]);
+        p.classList.add("pending");
+        p.setAttribute("aria-hidden", "true");
+        p.dataset.panel = i + 1;
+        grid.appendChild(p);
+        return p;
+      });
+      page.appendChild(grid);
+      var nav = el("div", "cp-nav");
+      nav.innerHTML =
+        '<span class="cp-pageno">Page ' +
+        pageNo +
+        "</span>" +
+        '<div class="dots" aria-hidden="true"></div>' +
+        (TTS.available
+          ? '<button type="button" class="cp-read" aria-pressed="false">&#128266; Read page to me</button>'
+          : "") +
+        '<button type="button" class="next">Next &#9654;</button>';
+      page.appendChild(nav);
+      var trapHost = el("div", "cp-trap");
+      page.appendChild(trapHost);
+      var live = el("p", "sr-only");
+      live.setAttribute("aria-live", "polite");
+      page.appendChild(live);
+      flow.appendChild(page);
+
+      var dots = nav.querySelector(".dots");
+      var nextBtn = nav.querySelector(".next");
+      var readBtn = nav.querySelector(".cp-read");
+      beats.forEach(function () {
+        dots.appendChild(el("i"));
+      });
+      var bi = -1;
+      var finished = false;
+
+      function reveal(i) {
+        var p = panels[i];
+        p.classList.remove("pending");
+        p.classList.add("on");
+        p.removeAttribute("aria-hidden");
+        dots.children[i].classList.add("on");
+        var b = beats[i];
+        live.textContent = speaker(b.who).name + ": " + stripTags(txt(b.en));
+        if (b.misconception && !trapHost.firstChild) {
+          trapHost.appendChild(trapBar(i + 1));
+          var call = p.querySelector(".cp-callout-btn");
+          if (call)
+            call.addEventListener("click", function (e) {
+              e.stopPropagation();
+              p.classList.add("called");
+              call.innerHTML = "&#9989; Slip spotted!";
+              call.disabled = true;
+              SFX_AUDIO.play("zap");
+              addXP(20, "callout-" + act.id + "-" + (i + 1));
+              var body = trapHost.querySelector("[data-trap-body]");
+              if (body) body.classList.add("open");
             });
-            stripEl.appendChild(cell);
-          });
         }
-
-        if (trapEl) {
-          trapEl.innerHTML = "";
-          var curBeat = beats[bi];
-          if (curBeat && curBeat.misconception) {
-            var nextMath = null;
-            (act.steps || []).forEach(function (st) {
-              if (!nextMath && st.type !== "beats" && !isComprehension(st)) {
-                nextMath = st;
-              }
-            });
-            var trapExplain =
-              (nextMath &&
-                nextMath.help &&
-                nextMath.help.conceptual &&
-                nextMath.help.conceptual.en) ||
-              (curBeat.callout && curBeat.callout.en) ||
-              "Look closely at the operation and units in this panel—shortcuts that skip the mathematical structure lead to a classic trap!";
-            var bar = el("div", "trap-buster-bar");
-            bar.innerHTML =
-              '<div class="trap-buster-head">' +
-              '<span class="trap-badge">&#9995; HOLD IT! Math Trap Detected in Panel ' +
-              (bi + 1) +
-              "</span>" +
-              '<button type="button" class="trap-reveal-btn" data-trap-btn>&#128269; Inspect Why This Shortcut Fails (+20 XP)</button>' +
-              "</div>" +
-              '<div class="trap-card-body" data-trap-body><b>&#9889; Trap Analysis:</b> ' +
-              trapExplain +
-              "</div>";
-            bar
-              .querySelector("[data-trap-btn]")
-              .addEventListener("click", function () {
-                var body = bar.querySelector("[data-trap-body]");
-                body.classList.toggle("open");
-                addXP(20, "trap-" + act.id + "-" + bi);
-                SFX_AUDIO.play("zap");
-              });
-            trapEl.appendChild(bar);
-          }
-        }
+        if (i > 0) p.scrollIntoView({ behavior: REDUCE_MOTION ? "auto" : "smooth", block: "nearest" });
       }
-
-      function renderBeat() {
-        var beat = beats[bi];
-        speechEl.innerHTML = "";
-        speechEl.appendChild(bubble(beat));
-        clearCallouts();
-        if (beat.callout) {
-          addCallout(beat.callout);
-        } else if (beat.misconception) {
-          addCallout({
-            x: 78,
-            y: 22,
-            icon: "⚡",
-            title: "Misconception Alert!",
-            en: "Watch closely! A character just made a classic math slip—get ready to spot and fix it in the challenge!",
-            es: "¡Atención! Un personaje acaba de cometer un error clásico de matemáticas.",
-          });
-        }
-        Array.prototype.slice.call(dotsEl.children).forEach(function (d, k) {
-          d.classList.toggle("on", k <= bi);
-        });
-        var last = bi === beats.length - 1;
-        nextBtn.innerHTML = last
-          ? step.lastLabel || "Continue &#9654;"
-          : "Next &#9654;";
-        renderStripAndTrap();
+      function label() {
+        nextBtn.innerHTML = bi >= beats.length - 1 ? step.lastLabel || "Continue &#9654;" : "Next &#9654;";
       }
-      nextBtn.onclick = function () {
-        SFX_AUDIO.play("pop");
+      function advance() {
+        if (finished) return;
         if (bi < beats.length - 1) {
           bi++;
-          renderBeat();
+          reveal(bi);
+          SFX_AUDIO.play("pop");
+          label();
         } else {
+          finished = true;
+          stopReading();
+          nextBtn.disabled = true;
+          nextBtn.innerHTML = "&#10003; Page read";
+          page.classList.add("read");
           stepIdx++;
           playStep();
         }
-      };
-      renderBeat();
-    }
-    function addCallout(co) {
-      var c = el("button", "callout", co.icon || "!");
-      c.style.left = (co.x || 50) + "%";
-      c.style.top = (co.y || 50) + "%";
-      c.setAttribute("aria-label", "Callout: " + stripTags(co.en));
-      c.addEventListener("click", function () {
-        openPop(c, co.title || "", co.en, co.es);
+      }
+      nextBtn.addEventListener("click", advance);
+      // tapping the next blank panel turns it over, like reading a real page
+      panels.forEach(function (p, i) {
+        p.addEventListener("click", function (e) {
+          if (e.target.closest("button")) return;
+          if (i === bi + 1) advance();
+        });
       });
-      $("panel-" + act.id).appendChild(c);
+
+      // "Read page to me": a motion-comic pass that reveals and voices each panel
+      var reading = false;
+      function stopReading() {
+        if (!reading) return;
+        reading = false;
+        TTS.stop();
+        panels.forEach(function (p) {
+          p.classList.remove("speaking");
+        });
+        if (readBtn) {
+          readBtn.setAttribute("aria-pressed", "false");
+          readBtn.innerHTML = "&#128266; Read page to me";
+        }
+      }
+      function readFrom(i) {
+        if (!reading) return;
+        if (i >= beats.length) return stopReading();
+        if (i > bi) {
+          bi = i;
+          reveal(i);
+          label();
+        }
+        panels.forEach(function (p, k) {
+          p.classList.toggle("speaking", k === i);
+        });
+        var b = beats[i];
+        var es = langMode === "es" && b.es;
+        TTS.speak(es ? b.es : b.en, es ? "es" : "en", function () {
+          readFrom(i + 1);
+        });
+      }
+      if (readBtn)
+        readBtn.addEventListener("click", function () {
+          if (reading) return stopReading();
+          reading = true;
+          readBtn.setAttribute("aria-pressed", "true");
+          readBtn.innerHTML = "&#9632; Stop reading";
+          addXP(5, "read-" + act.id + "-" + pageNo);
+          readFrom(Math.max(0, bi));
+        });
+
+      advance(); // the establishing shot is on the page as soon as it opens
+    }
+
+    /* the correct reply the hero says in the aftermath strip */
+    function correctReply(step) {
+      if (isComprehension(step)) return null;
+      if (step.interaction && step.interaction !== "mc") return null;
+      var c = tierChoices(step).filter(function (ch) {
+        return ch.correct;
+      })[0];
+      return c ? { en: c.en, es: c.es } : null;
+    }
+    function appendAftermath(step, card, artBefore) {
+      if (!card) return;
+      var strip = buildAftermath(step, correctReply(step), artBefore);
+      if (!strip) return;
+      card.appendChild(strip);
+      if (!REDUCE_MOTION) strip.classList.add("enter");
     }
 
     /* ---- challenge: gating (must solve to advance) ---- */
     function playChallenge(step) {
-      renderCard(step, false);
+      var artBefore = step.art || curArt;
+      var card = renderCard(step, false);
       var onSolve = function () {
         fire("onSolve", step);
-        if (step.solveArt) setArt(step.solveArt, step.solveAlt);
-        if (step.solveBeat) {
-          speechEl.innerHTML = "";
-          speechEl.appendChild(bubble(step.solveBeat));
-        }
+        appendAftermath(step, card, artBefore);
+        if (step.solveArt) setArt(step.solveArt);
         stepIdx++;
         // small beat so the success feedback is read before the next panel
         setTimeout(playStep, 400);
@@ -3232,13 +3788,11 @@
     /* ---- challenge: optional bonus (does NOT gate; still scored) ----
        Renders this and any consecutive optional steps, then reveals advance. */
     function playOptional(step) {
-      renderCard(step, true);
+      var artBefore = step.art || curArt;
+      var card = renderCard(step, true);
       var onSolve = function () {
         fire("onSolve", step);
-        if (step.solveBeat) {
-          speechEl.innerHTML = "";
-          speechEl.appendChild(bubble(step.solveBeat));
-        }
+        appendAftermath(step, card, artBefore);
       };
       var grp = "choices-" + act.id + "-" + step.id;
       if (
@@ -3258,27 +3812,7 @@
 
     /* ---- shared challenge-card renderer ---- */
     function renderCard(step, optional) {
-      if (step.art) setArt(step.art, step.alt);
-      clearCallouts();
-      nextBtn.style.display = "none";
-      dotsEl.innerHTML = "";
-      if (stripEl) stripEl.innerHTML = "";
-      if (trapEl) trapEl.innerHTML = "";
-      // the question is VOICED by a character, over the panel
-      if (step.ask) {
-        speechEl.innerHTML = "";
-        speechEl.appendChild(
-          bubble({
-            who: step.ask.who,
-            en: step.ask.en,
-            es: step.ask.es,
-            vocab: step.ask.vocab,
-            misconception: step.ask.misconception,
-            pos: step.ask.pos,
-          }),
-        );
-        if (step.ask.callout) addCallout(step.ask.callout);
-      }
+      if (step.art) setArt(step.art);
       var wrap = el("div", "challenge" + (optional ? " bonus" : ""));
       wrap.id = "chal-" + act.id + "-" + step.id;
 
@@ -3299,9 +3833,14 @@
           whoName = S.cast[step.ask.who].name;
         }
         qText =
-          '<div class="chal-question-text">' +
+          '<div class="chal-question-text' +
+          (step.ask.misconception ? " misc" : "") +
+          '">' +
           (whoName
-            ? '<span class="chal-speaker">' + whoName + ":</span> "
+            ? '<span class="chal-speaker">' +
+              faceHTML(step.ask.who) +
+              whoName +
+              "</span> "
             : "") +
           injectVocab(txt(step.ask.en), step.ask.vocab) +
           (step.ask.es
@@ -3402,7 +3941,7 @@
         var mentorSvg = mentorKey ? renderPortraitSVG(mentorKey, "think") : "";
         var move1 =
           (step.help && step.help.conceptual && step.help.conceptual.en) ||
-          "Model the problem visually first using the Interactive Math Lab on the left!";
+          "Model the problem visually first with the Math Lab in this card!";
         var move2 =
           (step.help && step.help.procedural && step.help.procedural.en) ||
           (step.hint && step.hint.en) ||
@@ -3525,9 +4064,20 @@
           });
         }
       }
-      chalHost.appendChild(wrap);
-      wrap.scrollIntoView({ behavior: "smooth", block: "center" });
+      flow.appendChild(wrap);
+      wrap.scrollIntoView({ behavior: REDUCE_MOTION ? "auto" : "smooth", block: "start" });
       wireFolds(wrap);
+      if (step.ask && step.ask.callout) {
+        var co = step.ask.callout;
+        var dot = el("button", "toolbtn", (co.icon || "!") + " " + (co.title || "Look closer"));
+        dot.type = "button";
+        dot.addEventListener("click", function () {
+          openPop(dot, co.title || "", co.en, co.es);
+        });
+        var tl = wrap.querySelector(".chal-tools");
+        if (tl) tl.appendChild(dot);
+      }
+      return wrap;
     }
 
     playStep();

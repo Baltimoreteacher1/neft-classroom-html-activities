@@ -9,11 +9,41 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U5 #2: Theme Park Engineer: Area Architect",
     "artBase": "../_art/unit5/",
-    "home": "../index.html"
+    "home": "../index.html",
+    "artFocus": {
+      "composite-challenge.png": [
+        48,
+        42
+      ],
+      "cover.png": [
+        33,
+        28
+      ],
+      "design-plaza.png": [
+        40,
+        36
+      ],
+      "grand-opening.png": [
+        45,
+        30
+      ],
+      "parallelogram-build.png": [
+        32,
+        28
+      ],
+      "ride-unlock.png": [
+        40,
+        28
+      ],
+      "triangle-trapezoid.png": [
+        68,
+        30
+      ]
+    }
   },
   "cast": {
     "engineer": {
-      "name": "Malik Baptiste",
+      "name": "Malia Baptiste",
       "role": "protagonist",
       "color": "#c2410c",
       "tagIcon": "🎢",
@@ -34,7 +64,9 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#d97706"
-      }
+      },
+      "figure": "../_art/characters/u5-bolt.png",
+      "figureTint": 150
     },
     "log": {
       "name": "Mei-Ling Zhou",
@@ -43,16 +75,17 @@ window.GN_STORY = {
       "tagIcon": "🏗️",
       "blurb": "Senior Theme Park Geometer · Cut-and-Subtract Specialist",
       "portrait": {
+        "outfit": "hardhat",
         "skin": "#f2c29b",
         "hair": "#0f172a",
-        "hairStyle": 2,
+        "hairStyle": "bun",
         "glasses": true
       }
     }
   },
   "cover": {
     "art": "cover.png",
-    "alt": "A young engineer named Maya stands on a hill looking at a glowing futuristic amusement park at sunset",
+    "alt": "A young engineer named Malia stands on a hill looking at a glowing futuristic amusement park at sunset",
     "blurbEn": "Lead <b>Engineer</b>, you have thirty days to deliver the most ambitious amusement park ever drafted. Every ride, plaza, and pavilion stays locked in the simulator until its <b>surface area</b> is calculated to the square meter. Master the area of parallelograms, triangles, and trapezoids &mdash; then fuse them into <b>composite figures</b> &mdash; to bring the whole park online. TORQUE-7 will help… but it keeps grabbing the slanted edge as the height.",
     "blurbEs": "",
     "startLabel": "Begin Build &#128640;"
@@ -68,7 +101,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "design-plaza.png",
-          "alt": "Maya designs a slanted parallelogram-shaped entry plaza on a glowing holographic table",
+          "alt": "Malia designs a slanted parallelogram-shaped entry plaza on a glowing holographic table",
           "lastLabel": "Compute area &#9654;",
           "beats": [
             {
@@ -120,8 +153,8 @@ window.GN_STORY = {
               "en": "98 m&sup2; &nbsp;(used the 7 m slant, not the height)",
               "correct": false,
               "why": {
-                "en": "&#10060; Area uses the PERPENDICULAR height (6 m), never the slanted edge (7 m). Recompute 14 &times; 6. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Area uses the PERPENDICULAR height (6 m), never the slanted edge (7 m). Recompute 14 &times; 6. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -132,8 +165,8 @@ window.GN_STORY = {
               "en": "27 m&sup2; &nbsp;(added 14 + 7 + 6)",
               "correct": false,
               "why": {
-                "en": "&#10060; Area uses the PERPENDICULAR height (6 m), never the slanted edge (7 m). Recompute 14 &times; 6. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Area uses the PERPENDICULAR height (6 m), never the slanted edge (7 m). Recompute 14 &times; 6. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -168,7 +201,7 @@ window.GN_STORY = {
           "passageRef": "act1.1a",
           "ask": {
             "who": "log",
-            "en": "Malik insists area uses the <b>perpendicular</b> height. In this build, <b>perpendicular</b> most nearly describes a measurement that &mdash;"
+            "en": "Malia insists area uses the <b>perpendicular</b> height. In this build, <b>perpendicular</b> most nearly describes a measurement that &mdash;"
           },
           "choices": [
             {
@@ -179,16 +212,16 @@ window.GN_STORY = {
               "en": "runs along the longest slanted edge of the figure.",
               "correct": false,
               "why": {
-                "en": "&#10060; In this context, <i>perpendicular</i> means meeting the base at a right angle (the straight drop), not the slant or the biggest number. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; In this context, <i>perpendicular</i> means meeting the base at a right angle (the straight drop), not the slant or the biggest number. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "is simply the largest number printed on the blueprint.",
               "correct": false,
               "why": {
-                "en": "&#10060; In this context, <i>perpendicular</i> means meeting the base at a right angle (the straight drop), not the slant or the biggest number. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; In this context, <i>perpendicular</i> means meeting the base at a right angle (the straight drop), not the slant or the biggest number. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -199,7 +232,7 @@ window.GN_STORY = {
           "type": "challenge",
           "id": "1b",
           "art": "design-plaza.png",
-          "alt": "Maya designs a slanted parallelogram-shaped entry plaza on a glowing holographic table",
+          "alt": "Malia designs a slanted parallelogram-shaped entry plaza on a glowing holographic table",
           "ask": {
             "who": "engineer",
             "en": "The walkway must cover exactly <b>96 m&sup2;</b> of ground, and the blueprint fixes the base at <b>12 m</b>. Working backward from <span class=\"formula\">A = b &times; h</span>, what height must the parallelogram have?",
@@ -215,8 +248,8 @@ window.GN_STORY = {
               "en": "108 m &nbsp;(added 96 + 12)",
               "correct": false,
               "why": {
-                "en": "&#10060; Reverse the formula: since A = b &times; h, solve h = A &divide; b = 96 &divide; 12. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Reverse the formula: since A = b &times; h, solve h = A &divide; b = 96 &divide; 12. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -227,15 +260,15 @@ window.GN_STORY = {
               "en": "1152 m &nbsp;(multiplied 96 &times; 12)",
               "correct": false,
               "why": {
-                "en": "&#10060; Reverse the formula: since A = b &times; h, solve h = A &divide; b = 96 &divide; 12. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Reverse the formula: since A = b &times; h, solve h = A &divide; b = 96 &divide; 12. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
           "goodEn": "&#9989; Exactly. Rearranged: h = A &divide; b = 96 &divide; 12 = 8 m. Walkway laid to spec. The plaza is open &mdash; advance whenever you like.",
           "badEn": "&#10060; Reverse the formula: since A = b &times; h, solve h = A &divide; b = 96 &divide; 12.",
           "solveArt": "parallelogram-build.png",
-          "solveAlt": "Maya watches the glowing slanted plaza floor light up as construction robots finish it",
+          "solveAlt": "Malia watches the glowing slanted plaza floor light up as construction robots finish it",
           "solveBeat": {
             "who": "log",
             "caption": true,
@@ -277,16 +310,16 @@ window.GN_STORY = {
               "en": "&ldquo;Standard A = b &times; h. The trap is the slanted edge.&rdquo;",
               "correct": false,
               "why": {
-                "en": "&#10060; That line states a general rule or only reacts. Find the line that supplies the walkway&rsquo;s required area and base. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; That line states a general rule or only reacts. Find the line that supplies the walkway&rsquo;s required area and base. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "&ldquo;Slab poured. Next the walkway is defined by its target area.&rdquo;",
               "correct": false,
               "why": {
-                "en": "&#10060; That line states a general rule or only reacts. Find the line that supplies the walkway&rsquo;s required area and base. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; That line states a general rule or only reacts. Find the line that supplies the walkway&rsquo;s required area and base. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -307,8 +340,8 @@ window.GN_STORY = {
               "en": "1500 m &nbsp;(150 &times; 10)",
               "correct": false,
               "why": {
-                "en": "&#10060; To find a base from area, divide: b = A &divide; h = 150 &divide; 10. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; To find a base from area, divide: b = A &divide; h = 150 &divide; 10. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -319,8 +352,8 @@ window.GN_STORY = {
               "en": "140 m &nbsp;(150 &minus; 10)",
               "correct": false,
               "why": {
-                "en": "&#10060; To find a base from area, divide: b = A &divide; h = 150 &divide; 10. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; To find a base from area, divide: b = A &divide; h = 150 &divide; 10. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -357,7 +390,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "triangle-trapezoid.png",
-          "alt": "Maya stands beside a triangular neon entrance sign and a trapezoid-shaped stage canopy",
+          "alt": "Malia stands beside a triangular neon entrance sign and a trapezoid-shaped stage canopy",
           "lastLabel": "Fabricate sign &#9654;",
           "beats": [
             {
@@ -398,8 +431,8 @@ window.GN_STORY = {
               "en": "144 m&sup2; &nbsp;(forgot the &frac12;: that is 16 &times; 9)",
               "correct": false,
               "why": {
-                "en": "&#10060; A triangle is HALF a parallelogram. Compute 16 &times; 9 = 144, then halve it. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; A triangle is HALF a parallelogram. Compute 16 &times; 9 = 144, then halve it. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -410,8 +443,8 @@ window.GN_STORY = {
               "en": "25 m&sup2; &nbsp;(added 16 + 9)",
               "correct": false,
               "why": {
-                "en": "&#10060; A triangle is HALF a parallelogram. Compute 16 &times; 9 = 144, then halve it. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; A triangle is HALF a parallelogram. Compute 16 &times; 9 = 144, then halve it. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -457,16 +490,16 @@ window.GN_STORY = {
               "en": "Base 9 m and height 16 m.",
               "correct": false,
               "why": {
-                "en": "&#10060; Reread the spec: the base is 16 m and the height is 9 m. (144 is the rectangle area before halving, not a side.) Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Reread the spec: the base is 16 m and the height is 9 m. (144 is the rectangle area before halving, not a side.) Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Base 16 m and height 144 m.",
               "correct": false,
               "why": {
-                "en": "&#10060; Reread the spec: the base is 16 m and the height is 9 m. (144 is the rectangle area before halving, not a side.) Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Reread the spec: the base is 16 m and the height is 9 m. (144 is the rectangle area before halving, not a side.) Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -477,7 +510,7 @@ window.GN_STORY = {
           "type": "challenge",
           "id": "2b",
           "art": "triangle-trapezoid.png",
-          "alt": "Maya stands beside a triangular neon entrance sign and a trapezoid-shaped stage canopy",
+          "alt": "Malia stands beside a triangular neon entrance sign and a trapezoid-shaped stage canopy",
           "ask": {
             "who": "engineer",
             "en": "The amphitheater canopy is a trapezoid: <span class=\"formula\">A = &frac12;(b&#8321; + b&#8322;)h</span>. The parallel edges are <b>8 m</b> and <b>14 m</b>, and the height between them is <b>10 m</b>. Compute the canopy area.",
@@ -493,8 +526,8 @@ window.GN_STORY = {
               "en": "220 m&sup2; &nbsp;(forgot the &frac12;)",
               "correct": false,
               "why": {
-                "en": "&#10060; Add BOTH parallel sides first (8 + 14 = 22), times height 10 = 220, then take half. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Add BOTH parallel sides first (8 + 14 = 22), times height 10 = 220, then take half. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -505,8 +538,8 @@ window.GN_STORY = {
               "en": "70 m&sup2; &nbsp;(only &frac12; &times; 14 &times; 10)",
               "correct": false,
               "why": {
-                "en": "&#10060; Add BOTH parallel sides first (8 + 14 = 22), times height 10 = 220, then take half. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Add BOTH parallel sides first (8 + 14 = 22), times height 10 = 220, then take half. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -553,16 +586,16 @@ window.GN_STORY = {
               "en": "The beacon sign and the canopy are both painted in neon colors.",
               "correct": false,
               "why": {
-                "en": "&#10060; That&rsquo;s a surface detail or an overgeneralization. The chapter is about applying each shape&rsquo;s correct area rule. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; That&rsquo;s a surface detail or an overgeneralization. The chapter is about applying each shape&rsquo;s correct area rule. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Every structure in the park can be built with a single area formula.",
               "correct": false,
               "why": {
-                "en": "&#10060; That&rsquo;s a surface detail or an overgeneralization. The chapter is about applying each shape&rsquo;s correct area rule. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; That&rsquo;s a surface detail or an overgeneralization. The chapter is about applying each shape&rsquo;s correct area rule. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -612,8 +645,8 @@ window.GN_STORY = {
               "en": "4.5 m &nbsp;(divided by base only: 54 &divide; 12)",
               "correct": false,
               "why": {
-                "en": "&#10060; Undo the &frac12; first: multiply the area by 2, THEN divide by the base. h = 2A &divide; b. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Undo the &frac12; first: multiply the area by 2, THEN divide by the base. h = 2A &divide; b. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -624,8 +657,8 @@ window.GN_STORY = {
               "en": "18 m &nbsp;(forgot to divide by the base)",
               "correct": false,
               "why": {
-                "en": "&#10060; Undo the &frac12; first: multiply the area by 2, THEN divide by the base. h = 2A &divide; b. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Undo the &frac12; first: multiply the area by 2, THEN divide by the base. h = 2A &divide; b. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -662,7 +695,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "composite-challenge.png",
-          "alt": "Maya faces a giant holographic master blueprint of the whole park made of combined shapes",
+          "alt": "Malia faces a giant holographic master blueprint of the whole park made of combined shapes",
           "lastLabel": "Run master calc &#9654;",
           "beats": [
             {
@@ -703,8 +736,8 @@ window.GN_STORY = {
               "en": "112 m&sup2; &nbsp;(only the trapezoid)",
               "correct": false,
               "why": {
-                "en": "&#10060; Solve each region: trapezoid = &frac12;(10+18)&times;8 = 112; triangle = &frac12;&times;18&times;6 = 54; then ADD: 112 + 54 = 166. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Solve each region: trapezoid = &frac12;(10+18)&times;8 = 112; triangle = &frac12;&times;18&times;6 = 54; then ADD: 112 + 54 = 166. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -715,8 +748,8 @@ window.GN_STORY = {
               "en": "220 m&sup2; &nbsp;(forgot both &frac12; factors)",
               "correct": false,
               "why": {
-                "en": "&#10060; Solve each region: trapezoid = &frac12;(10+18)&times;8 = 112; triangle = &frac12;&times;18&times;6 = 54; then ADD: 112 + 54 = 166. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; Solve each region: trapezoid = &frac12;(10+18)&times;8 = 112; triangle = &frac12;&times;18&times;6 = 54; then ADD: 112 + 54 = 166. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -763,16 +796,16 @@ window.GN_STORY = {
               "en": "It cannot multiply two numbers together at all.",
               "correct": false,
               "why": {
-                "en": "&#10060; The text shows TORQUE-7 multiplying fine but skipping each shape&rsquo;s special step &mdash; not malice or an inability to multiply. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; The text shows TORQUE-7 multiplying fine but skipping each shape&rsquo;s special step &mdash; not malice or an inability to multiply. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "It is intentionally sabotaging the park to delay opening day.",
               "correct": false,
               "why": {
-                "en": "&#10060; The text shows TORQUE-7 multiplying fine but skipping each shape&rsquo;s special step &mdash; not malice or an inability to multiply. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; The text shows TORQUE-7 multiplying fine but skipping each shape&rsquo;s special step &mdash; not malice or an inability to multiply. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -800,16 +833,16 @@ window.GN_STORY = {
               "en": "Trust TORQUE-7&rsquo;s 220 to save time on the final build.",
               "correct": false,
               "why": {
-                "en": "&#10060; TORQUE-7&rsquo;s pattern is dropping the &frac12;, so the Engineer must re-check that the spire was halved, not trust 220 or add slants. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; TORQUE-7&rsquo;s pattern is dropping the &frac12;, so the Engineer must re-check that the spire was halved, not trust 220 or add slants. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Add the slanted edges of every shape into the total for safety.",
               "correct": false,
               "why": {
-                "en": "&#10060; TORQUE-7&rsquo;s pattern is dropping the &frac12;, so the Engineer must re-check that the spire was halved, not trust 220 or add slants. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; TORQUE-7&rsquo;s pattern is dropping the &frac12;, so the Engineer must re-check that the spire was halved, not trust 220 or add slants. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -836,8 +869,8 @@ window.GN_STORY = {
               "en": "264 m&sup2; &nbsp;(added the pool instead of subtracting)",
               "correct": false,
               "why": {
-                "en": "&#10060; This is a SUBTRACTION composite: whole rectangle (240) minus the triangle cutout (&frac12;&times;8&times;6 = 24). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; This is a SUBTRACTION composite: whole rectangle (240) minus the triangle cutout (&frac12;&times;8&times;6 = 24). Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -848,8 +881,8 @@ window.GN_STORY = {
               "en": "192 m&sup2; &nbsp;(subtracted the full 8 &times; 6 = 48)",
               "correct": false,
               "why": {
-                "en": "&#10060; This is a SUBTRACTION composite: whole rectangle (240) minus the triangle cutout (&frac12;&times;8&times;6 = 24). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "&#10060; This is a SUBTRACTION composite: whole rectangle (240) minus the triangle cutout (&frac12;&times;8&times;6 = 24). Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -931,7 +964,7 @@ window.GN_STORY = {
   ],
   "complete": {
     "art": "grand-opening.png",
-    "alt": "Maya raises her arms in triumph as the finished theme park glows with rides and fireworks",
+    "alt": "Malia raises her arms in triumph as the finished theme park glows with rides and fireworks",
     "badge": "&#127881;&#127906;&#11088;",
     "titleEn": "Grand Opening &mdash; Mission Complete!",
     "en": "The park is fully online, Engineer. You computed parallelogram areas with the true perpendicular height, reverse-engineered missing dimensions, mastered triangles and trapezoids, and decomposed the pavilion into a composite figure. Every structure passed inspection to the square meter &mdash; a flawless launch.",

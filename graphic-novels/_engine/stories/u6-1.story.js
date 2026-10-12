@@ -9,7 +9,37 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U6 #1: Festival Producer: Power Up the Show",
     "artBase": "../_art/unit6/",
-    "home": "../index.html"
+    "home": "../index.html",
+    "artFocus": {
+      "celebration.png": [
+        40,
+        40
+      ],
+      "cover.png": [
+        50,
+        22
+      ],
+      "expression-build.png": [
+        40,
+        22
+      ],
+      "final-show.png": [
+        73,
+        22
+      ],
+      "speaker-power.png": [
+        40,
+        25
+      ],
+      "stage-lit.png": [
+        60,
+        40
+      ],
+      "stage-setup.png": [
+        35,
+        25
+      ]
+    }
   },
   "cast": {
     "producer": {
@@ -34,7 +64,8 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#0284c7"
-      }
+      },
+      "figure": "../_art/characters/u6-echo.png"
     },
     "log": {
       "name": "DJ Dante Morales",
@@ -43,18 +74,19 @@ window.GN_STORY = {
       "tagIcon": "🎸",
       "blurb": "Tour Production Director · Distributive Property Pro",
       "portrait": {
-        "skin": "#d89668",
-        "hair": "#1e293b",
-        "hairStyle": 1,
-        "glasses": true
+        "outfit": "dj",
+        "skin": "#b87244",
+        "hair": "#0f172a",
+        "hairStyle": "short",
+        "beard": "goatee"
       }
     }
   },
   "cover": {
     "art": "cover.png",
-    "alt": "Mika, a young festival producer, stands center stage at a glowing music festival with speakers and lights behind her",
-    "blurbEn": "You are <b>Mika</b>, a young music festival producer. The big show is tonight! But the stages are dark. To turn on the speakers, lights, and screens, you must solve <b>powers</b> and <b>expressions</b>. AMP-4, the soundboard AI, wants to help… but it keeps reading the math left-to-right. Power up the show!",
-    "blurbEs": "Eres Mika, productora de un festival de música. Usa <b>potencias</b> y <b>expresiones</b> para encender el escenario.",
+    "alt": "Zuri, a young festival producer, stands center stage at a glowing music festival with speakers and lights behind her",
+    "blurbEn": "You are <b>Zuri</b>, a young music festival producer. The big show is tonight! But the stages are dark. To turn on the speakers, lights, and screens, you must solve <b>powers</b> and <b>expressions</b>. AMP-4, the soundboard AI, wants to help… but it keeps reading the math left-to-right. Power up the show!",
+    "blurbEs": "Eres Zuri, productora de un festival de música. Usa <b>potencias</b> y <b>expresiones</b> para encender el escenario.",
     "startLabel": "Start the Show 🎉"
   },
   "acts": [
@@ -68,8 +100,8 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "speaker-power.png",
-          "alt": "Mika looks up at a giant wall of speakers with a glowing power gauge",
-          "lastLabel": "Stop ECHO ▶",
+          "alt": "Zuri looks up at a giant wall of speakers with a glowing power gauge",
+          "lastLabel": "Stop AMP-4 ▶",
           "beats": [
             {
               "who": "log",
@@ -127,17 +159,17 @@ window.GN_STORY = {
               "es": "Las torres de luz se encenderán solas.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "AMP-4 will fix the math correctly.",
-              "es": "ECHO arreglará las matemáticas correctamente.",
+              "es": "AMP-4 arreglará las matemáticas correctamente.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -161,7 +193,7 @@ window.GN_STORY = {
               "es": "(eso es solo 2 × 4)",
               "correct": false,
               "why": {
-                "en": "❌ An exponent means multiply, not add. 2⁴ is 2×2×2×2, not 2×4 or 2+4. Use the hint. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ An exponent means multiply, not add. 2⁴ is 2×2×2×2, not 2×4 or 2+4. Use the hint. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "El exponente significa multiplicar, no sumar. 2⁴ = 2×2×2×2. Usa la pista."
               }
             },
@@ -177,7 +209,7 @@ window.GN_STORY = {
               "es": "(eso es solo 2 + 4)",
               "correct": false,
               "why": {
-                "en": "❌ An exponent means multiply, not add. 2⁴ is 2×2×2×2, not 2×4 or 2+4. Use the hint. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ An exponent means multiply, not add. 2⁴ is 2×2×2×2, not 2×4 or 2+4. Use the hint. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "El exponente significa multiplicar, no sumar. 2⁴ = 2×2×2×2. Usa la pista."
               }
             }
@@ -234,8 +266,8 @@ window.GN_STORY = {
               "es": "Multiplicar la base por el exponente una sola vez.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -243,8 +275,8 @@ window.GN_STORY = {
               "es": "Sumar la base y el exponente.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -279,7 +311,7 @@ window.GN_STORY = {
               "es": "(eso es solo 5 × 3)",
               "correct": false,
               "why": {
-                "en": "❌ Remember 5³ means 5×5×5. First 5×5 = 25, then 25×5 = 125. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Remember 5³ means 5×5×5. First 5×5 = 25, then 25×5 = 125. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "5³ = 5×5×5 = 125. Inténtalo de nuevo."
               }
             },
@@ -289,7 +321,7 @@ window.GN_STORY = {
               "es": "(eso es solo 5 × 5)",
               "correct": false,
               "why": {
-                "en": "❌ Remember 5³ means 5×5×5. First 5×5 = 25, then 25×5 = 125. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Remember 5³ means 5×5×5. First 5×5 = 25, then 25×5 = 125. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "5³ = 5×5×5 = 125. Inténtalo de nuevo."
               }
             },
@@ -305,7 +337,7 @@ window.GN_STORY = {
           "badEn": "❌ Remember 5³ means 5×5×5. First 5×5 = 25, then 25×5 = 125. Try again.",
           "badEs": "5³ = 5×5×5 = 125. Inténtalo de nuevo.",
           "solveArt": "stage-lit.png",
-          "solveAlt": "Mika raises a fist as the stage blazes to life with lights and lasers",
+          "solveAlt": "Zuri raises a fist as the stage blazes to life with lights and lasers",
           "solveBeat": {
             "who": "producer",
             "en": "The whole stage is glowing! Now we have to pay for the stage and the lights.",
@@ -350,8 +382,8 @@ window.GN_STORY = {
               "es": "“Una potencia significa multiplicar la base por sí misma.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -359,8 +391,8 @@ window.GN_STORY = {
               "es": "“¡Todo el escenario brilla!”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -377,14 +409,14 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "expression-build.png",
-          "alt": "Mika builds a glowing budget expression from floating math blocks at a mixing console",
-          "lastLabel": "Stop ECHO ▶",
+          "alt": "Zuri builds a glowing budget expression from floating math blocks at a mixing console",
+          "lastLabel": "Stop AMP-4 ▶",
           "beats": [
             {
               "who": "log",
               "caption": true,
-              "en": "Great job, Mika! Now we have to pay for the stage and the lights. Watch your math!",
-              "es": "¡Buen trabajo, Mika! Ahora hay que pagar el escenario y las luces. ¡Cuidado con las matemáticas!"
+              "en": "Great job, Zuri! Now we have to pay for the stage and the lights. Watch your math!",
+              "es": "¡Buen trabajo, Zuri! Ahora hay que pagar el escenario y las luces. ¡Cuidado con las matemáticas!"
             },
             {
               "who": "log",
@@ -422,8 +454,8 @@ window.GN_STORY = {
           "passageRef": "act2.beat1",
           "ask": {
             "who": "log",
-            "en": "What is Mika mainly trying to do in this chapter?",
-            "es": "¿Qué intenta hacer Mika principalmente en este capítulo?"
+            "en": "What is Zuri mainly trying to do in this chapter?",
+            "es": "¿Qué intenta hacer Zuri principalmente en este capítulo?"
           },
           "choices": [
             {
@@ -436,17 +468,17 @@ window.GN_STORY = {
               "es": "Apagar otra vez el muro de bocinas para ahorrar energía.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Teach AMP-4 how to sing on stage.",
-              "es": "Enseñar a ECHO a cantar en el escenario.",
+              "es": "Enseñar a AMP-4 a cantar en el escenario.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -470,7 +502,7 @@ window.GN_STORY = {
               "es": "(sumó 3 + 4 primero — no se permite)",
               "correct": false,
               "why": {
-                "en": "❌ Multiply BEFORE you add. Do 4×5 = 20 first, then add the 3. Use the hint. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Multiply BEFORE you add. Do 4×5 = 20 first, then add the 3. Use the hint. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Multiplica ANTES de sumar. 4×5 = 20, luego suma 3. Usa la pista."
               }
             },
@@ -486,7 +518,7 @@ window.GN_STORY = {
               "es": "(eso es 3 × 4 + 5 — orden incorrecto)",
               "correct": false,
               "why": {
-                "en": "❌ Multiply BEFORE you add. Do 4×5 = 20 first, then add the 3. Use the hint. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Multiply BEFORE you add. Do 4×5 = 20 first, then add the 3. Use the hint. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Multiplica ANTES de sumar. 4×5 = 20, luego suma 3. Usa la pista."
               }
             }
@@ -545,7 +577,7 @@ window.GN_STORY = {
               "es": "(el 20 es la cuota fija, no por luz)",
               "correct": false,
               "why": {
-                "en": "❌ The 8 is the cost for EACH light, so it multiplies n: 8n. The 20 is added once. Try 8n + 20. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ The 8 is the cost for EACH light, so it multiplies n: 8n. The 20 is added once. Try 8n + 20. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "El 8 es por cada luz: 8n. El 20 se suma una vez. Prueba 8n + 20."
               }
             },
@@ -561,7 +593,7 @@ window.GN_STORY = {
               "es": "(no puedes sumar 8 y 20 aquí)",
               "correct": false,
               "why": {
-                "en": "❌ The 8 is the cost for EACH light, so it multiplies n: 8n. The 20 is added once. Try 8n + 20. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ The 8 is the cost for EACH light, so it multiplies n: 8n. The 20 is added once. Try 8n + 20. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "El 8 es por cada luz: 8n. El 20 se suma una vez. Prueba 8n + 20."
               }
             }
@@ -605,18 +637,18 @@ window.GN_STORY = {
           },
           "items": [
             {
-              "en": "ECHO adds 3 + 4 first and guesses the stage costs 35 coins.",
-              "es": "ECHO suma 3 + 4 primero y adivina que el escenario cuesta 35 monedas.",
+              "en": "AMP-4 adds 3 + 4 first and guesses the stage costs 35 coins.",
+              "es": "AMP-4 suma 3 + 4 primero y adivina que el escenario cuesta 35 monedas.",
               "order": 1
             },
             {
-              "en": "Mika multiplies first and finds the stage really costs 23 coins.",
-              "es": "Mika multiplica primero y halla que el escenario cuesta 23 monedas.",
+              "en": "Zuri multiplies first and finds the stage really costs 23 coins.",
+              "es": "Zuri multiplica primero y halla que el escenario cuesta 23 monedas.",
               "order": 2
             },
             {
-              "en": "Mika writes the expression 8n + 20 to pay for the lights.",
-              "es": "Mika escribe la expresión 8n + 20 para pagar las luces.",
+              "en": "Zuri writes the expression 8n + 20 to pay for the lights.",
+              "es": "Zuri escribe la expresión 8n + 20 para pagar las luces.",
               "order": 3
             }
           ]
@@ -633,14 +665,14 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "final-show.png",
-          "alt": "Mika at the master control booth ready to start the big headliner show",
-          "lastLabel": "Stop ECHO ▶",
+          "alt": "Zuri at the master control booth ready to start the big headliner show",
+          "lastLabel": "Stop AMP-4 ▶",
           "beats": [
             {
               "who": "log",
               "caption": true,
-              "en": "It's almost showtime! The master switch needs BOTH skills at once, Mika.",
-              "es": "¡Ya casi es hora del show! El interruptor maestro necesita AMBAS destrezas, Mika."
+              "en": "It's almost showtime! The master switch needs BOTH skills at once, Zuri.",
+              "es": "¡Ya casi es hora del show! El interruptor maestro necesita AMBAS destrezas, Zuri."
             },
             {
               "who": "log",
@@ -684,7 +716,7 @@ window.GN_STORY = {
               "es": "(sumó 8 + 6 primero, luego ×4 — orden incorrecto)",
               "correct": false,
               "why": {
-                "en": "❌ Order matters: do the power 2³ = 8 first, then multiply 6×4 = 24, then add. The total is 32. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Order matters: do the power 2³ = 8 first, then multiply 6×4 = 24, then add. The total is 32. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "El orden importa: 2³ = 8, luego 6×4 = 24, luego suma. El total es 32."
               }
             },
@@ -700,7 +732,7 @@ window.GN_STORY = {
               "es": "(usó 2 × 3 = 6 en vez de 2³)",
               "correct": false,
               "why": {
-                "en": "❌ Order matters: do the power 2³ = 8 first, then multiply 6×4 = 24, then add. The total is 32. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Order matters: do the power 2³ = 8 first, then multiply 6×4 = 24, then add. The total is 32. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "El orden importa: 2³ = 8, luego 6×4 = 24, luego suma. El total es 32."
               }
             }
@@ -712,7 +744,7 @@ window.GN_STORY = {
           "solveBeat": {
             "who": "producer",
             "en": "The headliner lights up the whole festival! Thanks for the help, AMP-4 — even the wrong guesses.",
-            "es": "¡El show principal ilumina todo el festival! Gracias, ECHO, hasta por los errores."
+            "es": "¡El show principal ilumina todo el festival! Gracias, AMP-4, hasta por los errores."
           },
           "help": {
             "conceptual": {
@@ -740,25 +772,25 @@ window.GN_STORY = {
           "ask": {
             "who": "log",
             "en": "AMP-4 keeps getting the math wrong. Why does AMP-4 keep guessing wrong?",
-            "es": "ECHO sigue equivocándose en las matemáticas. ¿Por qué ECHO sigue adivinando mal?"
+            "es": "AMP-4 sigue equivocándose en las matemáticas. ¿Por qué AMP-4 sigue adivinando mal?"
           },
           "hint": {
-            "en": "Look back: ECHO reads left-to-right and ignores powers and the order of operations.",
-            "es": "Mira atrás: ECHO lee de izquierda a derecha e ignora las potencias y el orden de operaciones."
+            "en": "Look back: AMP-4 reads left-to-right and ignores powers and the order of operations.",
+            "es": "Mira atrás: AMP-4 lee de izquierda a derecha e ignora las potencias y el orden de operaciones."
           },
           "choices": [
             {
               "en": "AMP-4 reads left-to-right and skips powers, so it does the steps in the wrong order.",
-              "es": "ECHO lee de izquierda a derecha y se salta las potencias, así que hace los pasos en el orden equivocado.",
+              "es": "AMP-4 lee de izquierda a derecha y se salta las potencias, así que hace los pasos en el orden equivocado.",
               "correct": true
             },
             {
               "en": "AMP-4 does not want the show to happen.",
-              "es": "ECHO no quiere que el show se realice.",
+              "es": "AMP-4 no quiere que el show se realice.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -766,8 +798,8 @@ window.GN_STORY = {
               "es": "Los paneles de control muestran números equivocados a propósito.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -782,8 +814,8 @@ window.GN_STORY = {
           "passageRef": "final",
           "ask": {
             "who": "log",
-            "en": "The headliner is starting. What will Mika most likely do next?",
-            "es": "El show principal está comenzando. ¿Qué hará Mika probablemente después?"
+            "en": "The headliner is starting. What will Zuri most likely do next?",
+            "es": "El show principal está comenzando. ¿Qué hará Zuri probablemente después?"
           },
           "choices": [
             {
@@ -796,8 +828,8 @@ window.GN_STORY = {
               "es": "Apagar otra vez el muro de bocinas del Acto 1.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -805,8 +837,8 @@ window.GN_STORY = {
               "es": "Dejar de usar el orden de operaciones para siempre.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -872,10 +904,10 @@ window.GN_STORY = {
   ],
   "complete": {
     "art": "celebration.png",
-    "alt": "Mika celebrates with arms raised as the festival crowd cheers under fireworks and lights",
+    "alt": "Zuri celebrates with arms raised as the festival crowd cheers under fireworks and lights",
     "badge": "🎉🎤⭐",
     "titleEn": "Show Complete!",
-    "en": "You powered up the whole festival! You used <b>powers and exponents</b> for the speakers and lights, and <b>expressions</b> to plan the costs. The crowd is cheering. Amazing work, Producer Mika!",
+    "en": "You powered up the whole festival! You used <b>powers and exponents</b> for the speakers and lights, and <b>expressions</b> to plan the costs. The crowd is cheering. Amazing work, Producer Zuri!",
     "es": "¡Encendiste todo el festival! Usaste potencias y expresiones. ¡Excelente trabajo!",
     "master": {
       "headingEn": "Prove your rank to certify your Master Certificate!",

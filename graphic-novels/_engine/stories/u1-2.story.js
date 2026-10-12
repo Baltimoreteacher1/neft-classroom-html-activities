@@ -9,7 +9,41 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U1 #2: Prime Station: The Factor Code",
     "artBase": "../_art/unit1/",
-    "home": "../index.html"
+    "home": "../index.html",
+    "artFocus": {
+      "airlock-locked.png": [
+        65,
+        22
+      ],
+      "airlock-open.png": [
+        50,
+        22
+      ],
+      "boss-door.png": [
+        50,
+        55
+      ],
+      "common-factor.png": [
+        50,
+        15
+      ],
+      "cover.png": [
+        45,
+        22
+      ],
+      "factor-tree.png": [
+        42,
+        30
+      ],
+      "mission-complete.png": [
+        32,
+        22
+      ],
+      "twin-engines.png": [
+        50,
+        45
+      ]
+    }
   },
   "cast": {
     "cadet": {
@@ -34,7 +68,9 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#0369a1"
-      }
+      },
+      "figure": "../_art/characters/u1-axis.png",
+      "figureTint": 150
     },
     "log": {
       "name": "Chief Kaelen Vos",
@@ -43,10 +79,11 @@ window.GN_STORY = {
       "tagIcon": "🛰️",
       "blurb": "Orbital Sync Strategist · Three-Cycle LCM Master",
       "portrait": {
-        "skin": "#8d522c",
-        "hair": "#1e293b",
-        "hairStyle": 5,
-        "glasses": true
+        "outfit": "pilot",
+        "skin": "#f6d2b8",
+        "hair": "#7c2d12",
+        "hairStyle": "short",
+        "beard": "full"
       }
     }
   },
@@ -111,8 +148,8 @@ window.GN_STORY = {
               "tree": "(missing a factor of 3)",
               "correct": false,
               "why": {
-                "en": "❌ That product doesn't equal 72 with only primes. Recount the powers of 2 and 3. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That product doesn't equal 72 with only primes. Recount the powers of 2 and 3. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -125,8 +162,8 @@ window.GN_STORY = {
               "tree": "(4 × 27 = 108)",
               "correct": false,
               "why": {
-                "en": "❌ That product doesn't equal 72 with only primes. Recount the powers of 2 and 3. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That product doesn't equal 72 with only primes. Recount the powers of 2 and 3. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -174,16 +211,16 @@ window.GN_STORY = {
               "en": "scramble the number so the lock can no longer read it.",
               "correct": false,
               "why": {
-                "en": "❌ In this context, <i>decompose</i> means to break the number down into its prime factors, not to scramble or round it. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ In this context, <i>decompose</i> means to break the number down into its prime factors, not to scramble or round it. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "round the number to the nearest power of ten.",
               "correct": false,
               "why": {
-                "en": "❌ In this context, <i>decompose</i> means to break the number down into its prime factors, not to scramble or round it. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ In this context, <i>decompose</i> means to break the number down into its prime factors, not to scramble or round it. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -210,8 +247,8 @@ window.GN_STORY = {
               "tree": "120 = 2 × 60, but 60 is not broken down into primes",
               "correct": false,
               "why": {
-                "en": "❌ That tree still has a composite leaf. Keep splitting until every end is prime. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That tree still has a composite leaf. Keep splitting until every end is prime. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -219,8 +256,8 @@ window.GN_STORY = {
               "tree": "120 = 4 × 5 × 6, but 4 and 6 are not prime",
               "correct": false,
               "why": {
-                "en": "❌ That tree still has a composite leaf. Keep splitting until every end is prime. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That tree still has a composite leaf. Keep splitting until every end is prime. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -268,16 +305,16 @@ window.GN_STORY = {
               "en": "“A holographic factor tree for 120 branches above the open bay.”",
               "correct": false,
               "why": {
-                "en": "❌ That line only sets the scene or reacts afterward. Find the line that states the rule the tree itself must satisfy. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That line only sets the scene or reacts afterward. Find the line that states the rule the tree itself must satisfy. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "“Bay breached. Systems coming back online.”",
               "correct": false,
               "why": {
-                "en": "❌ That line only sets the scene or reacts afterward. Find the line that states the rule the tree itself must satisfy. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That line only sets the scene or reacts afterward. Find the line that states the rule the tree itself must satisfy. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -299,8 +336,8 @@ window.GN_STORY = {
               "tree": "(2 appears 3 times — odd)",
               "correct": false,
               "why": {
-                "en": "❌ Check the exponents — a perfect square needs every prime to an EVEN power. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Check the exponents — a perfect square needs every prime to an EVEN power. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -313,8 +350,8 @@ window.GN_STORY = {
               "tree": "(2 and 3 appear once)",
               "correct": false,
               "why": {
-                "en": "❌ Check the exponents — a perfect square needs every prime to an EVEN power. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Check the exponents — a perfect square needs every prime to an EVEN power. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -395,8 +432,8 @@ window.GN_STORY = {
               "tree": "(took highest powers — that's the LCM)",
               "correct": false,
               "why": {
-                "en": "❌ For the GCF, take the LOWEST power of each shared prime (highest powers give the LCM). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ For the GCF, take the LOWEST power of each shared prime (highest powers give the LCM). Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -409,8 +446,8 @@ window.GN_STORY = {
               "tree": "(not the greatest)",
               "correct": false,
               "why": {
-                "en": "❌ For the GCF, take the LOWEST power of each shared prime (highest powers give the LCM). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ For the GCF, take the LOWEST power of each shared prime (highest powers give the LCM). Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -456,16 +493,16 @@ window.GN_STORY = {
               "en": "The station's engines are painted two different colors.",
               "correct": false,
               "why": {
-                "en": "❌ That's a minor or invented detail. The central idea is about syncing the drives by their greatest shared factor. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That's a minor or invented detail. The central idea is about syncing the drives by their greatest shared factor. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "QUASAR-7 is the only crew member who can repair the mounts.",
               "correct": false,
               "why": {
-                "en": "❌ That's a minor or invented detail. The central idea is about syncing the drives by their greatest shared factor. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That's a minor or invented detail. The central idea is about syncing the drives by their greatest shared factor. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -490,16 +527,16 @@ window.GN_STORY = {
               "en": "9 kits — uses a common factor, but not the greatest",
               "correct": false,
               "why": {
-                "en": "❌ That's a common factor but not the GREATEST — bigger identical kits are still possible. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That's a common factor but not the GREATEST — bigger identical kits are still possible. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "6 kits — 6 divides both, but larger kits are possible",
               "correct": false,
               "why": {
-                "en": "❌ That's a common factor but not the GREATEST — bigger identical kits are still possible. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That's a common factor but not the GREATEST — bigger identical kits are still possible. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -545,16 +582,16 @@ window.GN_STORY = {
               "en": "90 oxygen cells and 54 ration packs.",
               "correct": false,
               "why": {
-                "en": "❌ Reread the crate counts: 54 oxygen cells and 90 ration packs. (18 is the number of kits, not the supplies.) Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Reread the crate counts: 54 oxygen cells and 90 ration packs. (18 is the number of kits, not the supplies.) Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "18 oxygen cells and 18 ration packs.",
               "correct": false,
               "why": {
-                "en": "❌ Reread the crate counts: 54 oxygen cells and 90 ration packs. (18 is the number of kits, not the supplies.) Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Reread the crate counts: 54 oxygen cells and 90 ration packs. (18 is the number of kits, not the supplies.) Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -605,8 +642,8 @@ window.GN_STORY = {
               "tree": "(both share 7)",
               "correct": false,
               "why": {
-                "en": "❌ That pair shares a prime factor, so their GCF isn't 1. Look for a pair with nothing in common. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That pair shares a prime factor, so their GCF isn't 1. Look for a pair with nothing in common. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -619,8 +656,8 @@ window.GN_STORY = {
               "tree": "(share 2 and 3)",
               "correct": false,
               "why": {
-                "en": "❌ That pair shares a prime factor, so their GCF isn't 1. Look for a pair with nothing in common. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ That pair shares a prime factor, so their GCF isn't 1. Look for a pair with nothing in common. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -694,8 +731,8 @@ window.GN_STORY = {
               "tree": "(GCF is short a factor of 2)",
               "correct": false,
               "why": {
-                "en": "❌ One part is off — 84 must be ONLY primes, and the GCF is the product of ALL shared primes (42, not 21). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ One part is off — 84 must be ONLY primes, and the GCF is the product of ALL shared primes (42, not 21). Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -708,8 +745,8 @@ window.GN_STORY = {
               "tree": "(14 is not prime)",
               "correct": false,
               "why": {
-                "en": "❌ One part is off — 84 must be ONLY primes, and the GCF is the product of ALL shared primes (42, not 21). Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ One part is off — 84 must be ONLY primes, and the GCF is the product of ALL shared primes (42, not 21). Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -755,16 +792,16 @@ window.GN_STORY = {
               "en": "It deliberately lies to slow the Priya down.",
               "correct": false,
               "why": {
-                "en": "❌ The text doesn't show malice or total failure. QUASAR-7's pattern is rushing and dropping a shared prime. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ The text doesn't show malice or total failure. QUASAR-7's pattern is rushing and dropping a shared prime. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "It cannot factor any number at all.",
               "correct": false,
               "why": {
-                "en": "❌ The text doesn't show malice or total failure. QUASAR-7's pattern is rushing and dropping a shared prime. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ The text doesn't show malice or total failure. QUASAR-7's pattern is rushing and dropping a shared prime. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -792,16 +829,16 @@ window.GN_STORY = {
               "en": "Trust QUASAR-7's first answer to save time on the single attempt.",
               "correct": false,
               "why": {
-                "en": "❌ With a single attempt and a door that punishes a dropped prime, the Priya must verify every shared prime first. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ With a single attempt and a door that punishes a dropped prime, the Priya must verify every shared prime first. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Skip the GCF and send only the prime factorization of 84.",
               "correct": false,
               "why": {
-                "en": "❌ With a single attempt and a door that punishes a dropped prime, the Priya must verify every shared prime first. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ With a single attempt and a door that punishes a dropped prime, the Priya must verify every shared prime first. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -826,16 +863,16 @@ window.GN_STORY = {
               "en": "21 cm plates — a common factor, but not the largest",
               "correct": false,
               "why": {
-                "en": "❌ The largest square uses the GCF (42 cm); then count 2 across × 3 down = 6 plates. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ The largest square uses the GCF (42 cm); then count 2 across × 3 down = 6 plates. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "42 cm plates — 12 plates fit",
               "correct": false,
               "why": {
-                "en": "❌ The largest square uses the GCF (42 cm); then count 2 across × 3 down = 6 plates. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ The largest square uses the GCF (42 cm); then count 2 across × 3 down = 6 plates. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],

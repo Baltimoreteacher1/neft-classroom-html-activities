@@ -9,7 +9,37 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U5 #1: Theme Park Engineer: Area Architect",
     "artBase": "../_art/unit5/",
-    "home": "../index.html"
+    "home": "../index.html",
+    "artFocus": {
+      "composite-challenge.png": [
+        48,
+        42
+      ],
+      "cover.png": [
+        33,
+        28
+      ],
+      "design-plaza.png": [
+        40,
+        36
+      ],
+      "grand-opening.png": [
+        45,
+        30
+      ],
+      "parallelogram-build.png": [
+        32,
+        28
+      ],
+      "ride-unlock.png": [
+        40,
+        28
+      ],
+      "triangle-trapezoid.png": [
+        68,
+        30
+      ]
+    }
   },
   "cast": {
     "engineer": {
@@ -34,7 +64,8 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#0284c7"
-      }
+      },
+      "figure": "../_art/characters/u5-bolt.png"
     },
     "log": {
       "name": "Foreman Victor Garza",
@@ -43,18 +74,19 @@ window.GN_STORY = {
       "tagIcon": "📐",
       "blurb": "Chief Structural Inspector · Right-Angle Height Expert",
       "portrait": {
+        "outfit": "hardhat",
         "skin": "#c68453",
         "hair": "#1e293b",
-        "hairStyle": 5,
-        "gear": "hardhat"
+        "hairStyle": "short",
+        "beard": "mustache"
       }
     }
   },
   "cover": {
     "art": "cover.png",
-    "alt": "A young engineer named Maya stands on a hill looking at a glowing futuristic amusement park at sunset",
+    "alt": "A young engineer named Elena stands on a hill looking at a glowing futuristic amusement park at sunset",
     "blurbEn": "You are the <b>Engineer</b>. You will build a futuristic theme park! Each ride opens when you find the correct <b>area</b> &mdash; the space inside a shape. RIVET-3, your build-bot, is eager to help… but RIVET-3 keeps measuring the slanted side and forgetting to take half. Catch its mistakes and let&rsquo;s build!",
-    "blurbEs": "Eres la <b>Ingeniera</b>. Vas a construir un parque. Cada juego se abre cuando encuentras el &aacute;rea (el espacio dentro de una figura). BOLT, tu robot, quiere ayudar… pero usa el lado inclinado y olvida tomar la mitad. &iexcl;Atrapa sus errores y a construir!",
+    "blurbEs": "Eres la <b>Ingeniera</b>. Vas a construir un parque. Cada juego se abre cuando encuentras el &aacute;rea (el espacio dentro de una figura). RIVET-3, tu robot, quiere ayudar… pero usa el lado inclinado y olvida tomar la mitad. &iexcl;Atrapa sus errores y a construir!",
     "startLabel": "Start Building &#127906;"
   },
   "acts": [
@@ -68,7 +100,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "design-plaza.png",
-          "alt": "Maya designs a slanted parallelogram-shaped entry plaza on a glowing holographic table",
+          "alt": "Elena designs a slanted parallelogram-shaped entry plaza on a glowing holographic table",
           "lastLabel": "Build the plaza &#9654;",
           "beats": [
             {
@@ -135,8 +167,8 @@ window.GN_STORY = {
               "es": "Un tri&aacute;ngulo (un letrero de tres lados).",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -144,8 +176,8 @@ window.GN_STORY = {
               "es": "Un c&iacute;rculo (una fuente redonda).",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -179,7 +211,7 @@ window.GN_STORY = {
               "es": "Eso es 12 + 5, no por.",
               "correct": false,
               "why": {
-                "en": "&#10060; Not yet. For a parallelogram, MULTIPLY base &times; height: 12 &times; 5. Use the hint. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; Not yet. For a parallelogram, MULTIPLY base &times; height: 12 &times; 5. Use the hint. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "A&uacute;n no. Paralelogramo: multiplica base &times; altura (12 &times; 5)."
               }
             },
@@ -193,7 +225,7 @@ window.GN_STORY = {
               "es": "Eso es &frac12; &times; 12 &times; 5.",
               "correct": false,
               "why": {
-                "en": "&#10060; Not yet. For a parallelogram, MULTIPLY base &times; height: 12 &times; 5. Use the hint. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; Not yet. For a parallelogram, MULTIPLY base &times; height: 12 &times; 5. Use the hint. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "A&uacute;n no. Paralelogramo: multiplica base &times; altura (12 &times; 5)."
               }
             }
@@ -250,8 +282,8 @@ window.GN_STORY = {
               "es": "La distancia alrededor del borde de una figura.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -259,8 +291,8 @@ window.GN_STORY = {
               "es": "El largo del lado m&aacute;s largo e inclinado de una figura.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -283,7 +315,7 @@ window.GN_STORY = {
               "es": "Eso es 8 + 4.",
               "correct": false,
               "why": {
-                "en": "&#10060; Close &mdash; for area you MULTIPLY base &times; height: 8 &times; 4. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; Close &mdash; for area you MULTIPLY base &times; height: 8 &times; 4. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Multiplica base &times; altura: 8 &times; 4."
               }
             },
@@ -292,7 +324,7 @@ window.GN_STORY = {
               "es": "Eso es &frac12; &times; 8 &times; 4.",
               "correct": false,
               "why": {
-                "en": "&#10060; Close &mdash; for area you MULTIPLY base &times; height: 8 &times; 4. Try again. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; Close &mdash; for area you MULTIPLY base &times; height: 8 &times; 4. Try again. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Multiplica base &times; altura: 8 &times; 4."
               }
             },
@@ -307,7 +339,7 @@ window.GN_STORY = {
           "badEn": "&#10060; Close &mdash; for area you MULTIPLY base &times; height: 8 &times; 4. Try again.",
           "badEs": "Multiplica base &times; altura: 8 &times; 4.",
           "solveArt": "parallelogram-build.png",
-          "solveAlt": "Maya watches the glowing slanted plaza floor light up as construction robots finish it",
+          "solveAlt": "Elena watches the glowing slanted plaza floor light up as construction robots finish it",
           "solveBeat": {
             "who": "engineer",
             "en": "The plaza glows to life! Next up: the welcome sign and the stage roof.",
@@ -340,7 +372,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "triangle-trapezoid.png",
-          "alt": "Maya stands beside a triangular neon entrance sign and a trapezoid-shaped stage canopy",
+          "alt": "Elena stands beside a triangular neon entrance sign and a trapezoid-shaped stage canopy",
           "lastLabel": "Build the sign &#9654;",
           "beats": [
             {
@@ -353,7 +385,7 @@ window.GN_STORY = {
               "who": "log",
               "caption": true,
               "en": "These two shapes are not simple boxes, so the rules change a little. Watch for the HALF &mdash; RIVET-3 always forgets it.",
-              "es": "Estas dos figuras no son cajas simples, as&iacute; que las reglas cambian un poco. Cuidado con la MITAD: BOLT siempre la olvida."
+              "es": "Estas dos figuras no son cajas simples, as&iacute; que las reglas cambian un poco. Cuidado con la MITAD: RIVET-3 siempre la olvida."
             },
             {
               "who": "engineer",
@@ -399,17 +431,17 @@ window.GN_STORY = {
               "es": "Verter el piso inclinado de la plaza de entrada.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Teaching RIVET-3 how to drive the construction robots.",
-              "es": "Ense&ntilde;ar a BOLT a manejar los robots de construcci&oacute;n.",
+              "es": "Ense&ntilde;ar a RIVET-3 a manejar los robots de construcci&oacute;n.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -432,7 +464,7 @@ window.GN_STORY = {
               "es": "Olvidaste tomar la mitad.",
               "correct": false,
               "why": {
-                "en": "&#10060; Remember the HALF. First 10 &times; 6 = 60, then divide by 2 = 30. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; Remember the HALF. First 10 &times; 6 = 60, then divide by 2 = 30. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Recuerda la MITAD. 10 &times; 6 = 60, luego &divide; 2 = 30."
               }
             },
@@ -446,7 +478,7 @@ window.GN_STORY = {
               "es": "Eso es 10 + 6.",
               "correct": false,
               "why": {
-                "en": "&#10060; Remember the HALF. First 10 &times; 6 = 60, then divide by 2 = 30. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; Remember the HALF. First 10 &times; 6 = 60, then divide by 2 = 30. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Recuerda la MITAD. 10 &times; 6 = 60, luego &divide; 2 = 30."
               }
             }
@@ -486,7 +518,7 @@ window.GN_STORY = {
           "ask": {
             "who": "log",
             "en": "Tap the line that shows RIVET-3 <b>forgot to take half</b> for the triangle sign.",
-            "es": "Toca la l&iacute;nea que muestra que BOLT <b>olvid&oacute; tomar la mitad</b> del letrero triangular."
+            "es": "Toca la l&iacute;nea que muestra que RIVET-3 <b>olvid&oacute; tomar la mitad</b> del letrero triangular."
           },
           "choices": [
             {
@@ -499,8 +531,8 @@ window.GN_STORY = {
               "es": "&ldquo;Un tri&aacute;ngulo es la mitad de una caja.&rdquo;",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -508,8 +540,8 @@ window.GN_STORY = {
               "es": "&ldquo;El LETRERO es un tri&aacute;ngulo.&rdquo;",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -543,7 +575,7 @@ window.GN_STORY = {
               "es": "Olvidaste tomar la mitad.",
               "correct": false,
               "why": {
-                "en": "&#10060; Add BOTH parallel sides first (6 + 10 = 16), times 4 = 64, then take half = 32. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; Add BOTH parallel sides first (6 + 10 = 16), times 4 = 64, then take half = 32. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Suma los dos lados (6 + 10 = 16), &times; 4 = 64, mitad = 32."
               }
             },
@@ -552,7 +584,7 @@ window.GN_STORY = {
               "es": "Usaste solo un lado, 10 &times; 4.",
               "correct": false,
               "why": {
-                "en": "&#10060; Add BOTH parallel sides first (6 + 10 = 16), times 4 = 64, then take half = 32. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; Add BOTH parallel sides first (6 + 10 = 16), times 4 = 64, then take half = 32. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Suma los dos lados (6 + 10 = 16), &times; 4 = 64, mitad = 32."
               }
             },
@@ -601,8 +633,8 @@ window.GN_STORY = {
           },
           "items": [
             {
-              "en": "BOLT says the triangle sign is just 10 &times; 6 = 60.",
-              "es": "BOLT dice que el letrero triangular es solo 10 &times; 6 = 60.",
+              "en": "RIVET-3 says the triangle sign is just 10 &times; 6 = 60.",
+              "es": "RIVET-3 dice que el letrero triangular es solo 10 &times; 6 = 60.",
               "order": 1
             },
             {
@@ -629,7 +661,7 @@ window.GN_STORY = {
         {
           "type": "beats",
           "art": "composite-challenge.png",
-          "alt": "Maya faces a giant holographic master blueprint of the whole park made of combined shapes",
+          "alt": "Elena faces a giant holographic master blueprint of the whole park made of combined shapes",
           "lastLabel": "Build the pavilion &#9654;",
           "beats": [
             {
@@ -693,7 +725,7 @@ window.GN_STORY = {
               "es": "Solo el rect&aacute;ngulo.",
               "correct": false,
               "why": {
-                "en": "&#10060; Find EACH area, then ADD. Rectangle = 10 &times; 4 = 40. Triangle = &frac12; &times; 10 &times; 6 = 30. 40 + 30 = 70. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; Find EACH area, then ADD. Rectangle = 10 &times; 4 = 40. Triangle = &frac12; &times; 10 &times; 6 = 30. 40 + 30 = 70. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Halla cada &aacute;rea y s&uacute;malas: 40 + 30 = 70."
               }
             },
@@ -707,7 +739,7 @@ window.GN_STORY = {
               "es": "Olvidaste tomar la mitad del tri&aacute;ngulo.",
               "correct": false,
               "why": {
-                "en": "&#10060; Find EACH area, then ADD. Rectangle = 10 &times; 4 = 40. Triangle = &frac12; &times; 10 &times; 6 = 30. 40 + 30 = 70. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "&#10060; Find EACH area, then ADD. Rectangle = 10 &times; 4 = 40. Triangle = &frac12; &times; 10 &times; 6 = 30. 40 + 30 = 70. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "Halla cada &aacute;rea y s&uacute;malas: 40 + 30 = 70."
               }
             }
@@ -719,7 +751,7 @@ window.GN_STORY = {
           "solveBeat": {
             "who": "engineer",
             "en": "The Grand Pavilion rises! Time for the grand opening, RIVET-3 &mdash; thanks for the help, even the wrong guesses.",
-            "es": "&iexcl;El Gran Pabell&oacute;n se levanta! Hora de la gran apertura, BOLT. Gracias por la ayuda."
+            "es": "&iexcl;El Gran Pabell&oacute;n se levanta! Hora de la gran apertura, RIVET-3. Gracias por la ayuda."
           },
           "help": {
             "conceptual": {
@@ -747,25 +779,25 @@ window.GN_STORY = {
           "ask": {
             "who": "log",
             "en": "RIVET-3 keeps getting the wrong total. Why does RIVET-3 keep making mistakes?",
-            "es": "BOLT sigue dando el total equivocado. &iquest;Por qu&eacute; BOLT sigue cometiendo errores?"
+            "es": "RIVET-3 sigue dando el total equivocado. &iquest;Por qu&eacute; RIVET-3 sigue cometiendo errores?"
           },
           "hint": {
-            "en": "Look back: BOLT used the slanted side and forgot to take half of the triangle.",
-            "es": "Mira atr&aacute;s: BOLT us&oacute; el lado inclinado y olvid&oacute; tomar la mitad del tri&aacute;ngulo."
+            "en": "Look back: RIVET-3 used the slanted side and forgot to take half of the triangle.",
+            "es": "Mira atr&aacute;s: RIVET-3 us&oacute; el lado inclinado y olvid&oacute; tomar la mitad del tri&aacute;ngulo."
           },
           "choices": [
             {
               "en": "RIVET-3 forgets the special rules, like taking half for a triangle.",
-              "es": "BOLT olvida las reglas especiales, como tomar la mitad para un tri&aacute;ngulo.",
+              "es": "RIVET-3 olvida las reglas especiales, como tomar la mitad para un tri&aacute;ngulo.",
               "correct": true
             },
             {
               "en": "RIVET-3 wants the park to stay closed forever.",
-              "es": "BOLT quiere que el parque siga cerrado para siempre.",
+              "es": "RIVET-3 quiere que el parque siga cerrado para siempre.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -773,8 +805,8 @@ window.GN_STORY = {
               "es": "Los planos muestran todas las medidas equivocadas.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -803,8 +835,8 @@ window.GN_STORY = {
               "es": "Derribar el piso de la plaza del Acto 1.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -812,8 +844,8 @@ window.GN_STORY = {
               "es": "Dejar de usar las f&oacute;rmulas de &aacute;rea para siempre.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -879,7 +911,7 @@ window.GN_STORY = {
   ],
   "complete": {
     "art": "grand-opening.png",
-    "alt": "Maya raises her arms in triumph as the finished theme park glows with rides and fireworks",
+    "alt": "Elena raises her arms in triumph as the finished theme park glows with rides and fireworks",
     "badge": "&#127881;&#127906;&#11088;",
     "titleEn": "Grand Opening &mdash; Mission Complete!",
     "en": "You built the whole park! You used <b>A = b &times; h</b> for parallelograms, <b>A = &frac12;bh</b> for triangles, and <b>A = &frac12;(b&#8321;+b&#8322;)h</b> for trapezoids. You even added shapes together for the pavilion. Amazing work, Engineer!",

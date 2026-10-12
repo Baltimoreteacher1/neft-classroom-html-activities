@@ -9,7 +9,41 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U1 #1: Decimal Division Drive",
     "artBase": "../../_art/unit1/",
-    "home": "../../index.html"
+    "home": "../../index.html",
+    "artFocus": {
+      "airlock-locked.png": [
+        65,
+        22
+      ],
+      "airlock-open.png": [
+        50,
+        22
+      ],
+      "boss-door.png": [
+        50,
+        55
+      ],
+      "common-factor.png": [
+        50,
+        15
+      ],
+      "cover.png": [
+        45,
+        22
+      ],
+      "factor-tree.png": [
+        42,
+        30
+      ],
+      "mission-complete.png": [
+        32,
+        22
+      ],
+      "twin-engines.png": [
+        50,
+        45
+      ]
+    }
   },
   "cast": {
     "cadet": {
@@ -34,7 +68,8 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#e11d48"
-      }
+      },
+      "figure": "../../_art/characters/u1-axis.png"
     },
     "log": {
       "name": "Cmdr. Idris Cole",
@@ -43,9 +78,12 @@ window.GN_STORY = {
       "tagIcon": "🚀",
       "blurb": "Hyperdrive Division Chief · Whole-Divisor Strategist",
       "portrait": {
-        "skin": "#693b1e",
-        "hair": "#0f172a",
-        "hairStyle": 5
+        "outfit": "lab",
+        "skin": "#eab68c",
+        "hair": "#3b2314",
+        "hairStyle": "long",
+        "glasses": true,
+        "earrings": true
       }
     }
   },
@@ -126,8 +164,8 @@ window.GN_STORY = {
               "es": "9.6 unidades, en saltos de 0.8 cada uno.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -135,8 +173,8 @@ window.GN_STORY = {
               "es": "7.2 unidades, en saltos de 0.9 cada uno.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -168,7 +206,7 @@ window.GN_STORY = {
               "es": "0.9 saltos.",
               "correct": false,
               "why": {
-                "en": "❌ Make the divisor whole: multiply both by 10 to get 45 ÷ 5 = 9. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Make the divisor whole: multiply both by 10 to get 45 ÷ 5 = 9. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Haz el divisor entero: ×10 en ambos para 45 ÷ 5 = 9."
               }
             },
@@ -177,7 +215,7 @@ window.GN_STORY = {
               "es": "90 saltos.",
               "correct": false,
               "why": {
-                "en": "❌ Make the divisor whole: multiply both by 10 to get 45 ÷ 5 = 9. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Make the divisor whole: multiply both by 10 to get 45 ÷ 5 = 9. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Haz el divisor entero: ×10 en ambos para 45 ÷ 5 = 9."
               }
             }
@@ -234,8 +272,8 @@ window.GN_STORY = {
               "es": "4.5 — la distancia total que se reparte.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -243,8 +281,8 @@ window.GN_STORY = {
               "es": "9 — el número de saltos que obtienes.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -283,7 +321,7 @@ window.GN_STORY = {
               "es": "1.2 saltos.",
               "correct": false,
               "why": {
-                "en": "❌ Multiply both by 10: 9.6 ÷ 0.8 = 96 ÷ 8 = 12. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Multiply both by 10: 9.6 ÷ 0.8 = 96 ÷ 8 = 12. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ ×10 en ambos: 9.6 ÷ 0.8 = 96 ÷ 8 = 12."
               }
             },
@@ -292,7 +330,7 @@ window.GN_STORY = {
               "es": "8 saltos.",
               "correct": false,
               "why": {
-                "en": "❌ Multiply both by 10: 9.6 ÷ 0.8 = 96 ÷ 8 = 12. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Multiply both by 10: 9.6 ÷ 0.8 = 96 ÷ 8 = 12. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ ×10 en ambos: 9.6 ÷ 0.8 = 96 ÷ 8 = 12."
               }
             }
@@ -345,8 +383,8 @@ window.GN_STORY = {
               "es": "Elegir de qué color debe brillar el hiperimpulsor.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -354,8 +392,8 @@ window.GN_STORY = {
               "es": "Enseñar a AXIS los nombres de las estrellas.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -384,8 +422,8 @@ window.GN_STORY = {
               "es": "“Cruzamos 4.5 unidades en saltos de 0.5.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -393,8 +431,8 @@ window.GN_STORY = {
               "es": "“¡Rumbo trazado! Ahora un tramo más largo.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -473,7 +511,7 @@ window.GN_STORY = {
               "es": "7.2 ÷ 0.9 = 72 ÷ 9 = 0.8 saltos.",
               "correct": false,
               "why": {
-                "en": "❌ Move the decimal in BOTH numbers (×10): 7.2 ÷ 0.9 = 72 ÷ 9 = 8, not 0.8. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Move the decimal in BOTH numbers (×10): 7.2 ÷ 0.9 = 72 ÷ 9 = 8, not 0.8. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Mueve el punto en AMBOS números (×10): 72 ÷ 9 = 8, no 0.8."
               }
             },
@@ -482,7 +520,7 @@ window.GN_STORY = {
               "es": "7.2 ÷ 0.9 = 7.2 ÷ 9 = 0.8 saltos.",
               "correct": false,
               "why": {
-                "en": "❌ Move the decimal in BOTH numbers (×10): 7.2 ÷ 0.9 = 72 ÷ 9 = 8, not 0.8. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "en": "❌ Move the decimal in BOTH numbers (×10): 7.2 ÷ 0.9 = 72 ÷ 9 = 8, not 0.8. Use the Math Lab to test the quantities before choosing your reply.",
                 "es": "❌ Mueve el punto en AMBOS números (×10): 72 ÷ 9 = 8, no 0.8."
               }
             }
@@ -570,8 +608,8 @@ window.GN_STORY = {
               "es": "AXIS no quiere llevar a la tripulación a casa.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -579,8 +617,8 @@ window.GN_STORY = {
               "es": "La pantalla de navegación muestra distancias equivocadas.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -609,8 +647,8 @@ window.GN_STORY = {
               "es": "Empezar otra vez el primer tramo desde 4.5.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -618,8 +656,8 @@ window.GN_STORY = {
               "es": "Dejar de usar la división decimal para siempre.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]

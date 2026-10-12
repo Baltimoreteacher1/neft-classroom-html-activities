@@ -9,7 +9,37 @@ window.GN_STORY = {
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U10 #2: Aquarium Architect",
     "artBase": "../_art/unit10/",
-    "home": "../index.html"
+    "home": "../index.html",
+    "artFocus": {
+      "complete.png": [
+        40,
+        25
+      ],
+      "cover.png": [
+        52,
+        32
+      ],
+      "design.png": [
+        60,
+        32
+      ],
+      "final.png": [
+        62,
+        30
+      ],
+      "net.png": [
+        35,
+        30
+      ],
+      "unlock.png": [
+        35,
+        35
+      ],
+      "volume.png": [
+        40,
+        32
+      ]
+    }
   },
   "cast": {
     "architect": {
@@ -34,7 +64,9 @@ window.GN_STORY = {
       "portrait": {
         "bot": true,
         "accent": "#d97706"
-      }
+      },
+      "figure": "../_art/characters/u10-coral.png",
+      "figureTint": 150
     },
     "log": {
       "name": "Capt. Kenji Sato",
@@ -43,9 +75,11 @@ window.GN_STORY = {
       "tagIcon": "🔱",
       "blurb": "Chief Aquarium Engineer · Composite Tank Specialist",
       "portrait": {
+        "outfit": "captain",
         "skin": "#f2c29b",
         "hair": "#0f172a",
-        "hairStyle": 5
+        "hairStyle": "short",
+        "beard": "mustache"
       }
     }
   },
@@ -109,16 +143,16 @@ window.GN_STORY = {
               "en": "32 ft³ &nbsp;(rounded 3½ up to 4 — don't round)",
               "correct": false,
               "why": {
-                "en": "❌ Keep the fraction. 3½ = 7/2; multiply, don't round: 7/2 × 2 × 4 = 28. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Keep the fraction. 3½ = 7/2; multiply, don't round: 7/2 × 2 × 4 = 28. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "24 ft³ &nbsp;(used 3 for the length, dropping the ½)",
               "correct": false,
               "why": {
-                "en": "❌ Keep the fraction. 3½ = 7/2; multiply, don't round: 7/2 × 2 × 4 = 28. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Keep the fraction. 3½ = 7/2; multiply, don't round: 7/2 × 2 × 4 = 28. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -163,16 +197,16 @@ window.GN_STORY = {
               "en": "6 ft³ &nbsp;(used 2 × 1 × 2, dropping both fractions)",
               "correct": false,
               "why": {
-                "en": "❌ Multiply the fractions first: 5/2 × 3/2 = 15/4, then × 2 = 30/4 = 7½. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Multiply the fractions first: 5/2 × 3/2 = 15/4, then × 2 = 30/4 = 7½. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "15 ft³ &nbsp;(forgot to keep the /4 from 5/2 × 3/2)",
               "correct": false,
               "why": {
-                "en": "❌ Multiply the fractions first: 5/2 × 3/2 = 15/4, then × 2 = 30/4 = 7½. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Multiply the fractions first: 5/2 × 3/2 = 15/4, then × 2 = 30/4 = 7½. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -219,8 +253,8 @@ window.GN_STORY = {
               "en": "6 ft &nbsp;(90 ÷ 6 ignores the other base edge)",
               "correct": false,
               "why": {
-                "en": "❌ Use the WHOLE base: divide the volume by base area (5×6=30), not by a single edge. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Use the WHOLE base: divide the volume by base area (5×6=30), not by a single edge. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -231,8 +265,8 @@ window.GN_STORY = {
               "en": "15 ft &nbsp;(90 ÷ 6 = 15 uses only one edge)",
               "correct": false,
               "why": {
-                "en": "❌ Use the WHOLE base: divide the volume by base area (5×6=30), not by a single edge. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Use the WHOLE base: divide the volume by base area (5×6=30), not by a single edge. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -278,16 +312,16 @@ window.GN_STORY = {
               "en": "It is automatically rounded up to the next size.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "It is sold to a different aquarium.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -316,16 +350,16 @@ window.GN_STORY = {
               "en": "An edge you are allowed to round to the nearest whole number.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "The total amount of glass a tank needs.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -351,16 +385,16 @@ window.GN_STORY = {
               "en": "“The mangrove pool is 3½, 2, and 4 — that's awkward, so I'll round 3½ up to 4.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "“On to the glass.”",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -425,8 +459,8 @@ window.GN_STORY = {
               "en": "72 ft² &nbsp;(24+18+12 — counted only one of each pair)",
               "correct": false,
               "why": {
-                "en": "❌ Each face has a matching pair. Double every distinct face: 2(24)+2(18)+2(12) = 108. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Each face has a matching pair. Double every distinct face: 2(24)+2(18)+2(12) = 108. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -437,8 +471,8 @@ window.GN_STORY = {
               "en": "72 ft³ &nbsp;(that is the volume, and wrong units)",
               "correct": false,
               "why": {
-                "en": "❌ Each face has a matching pair. Double every distinct face: 2(24)+2(18)+2(12) = 108. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Each face has a matching pair. Double every distinct face: 2(24)+2(18)+2(12) = 108. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -479,16 +513,16 @@ window.GN_STORY = {
               "en": "46 ft² &nbsp;(24+16+6 — only one of each face)",
               "correct": false,
               "why": {
-                "en": "❌ Sum all six faces: 2(24)+2(16)+2(6) = 92 ft². Don't confuse it with volume. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Sum all six faces: 2(24)+2(16)+2(6) = 92 ft². Don't confuse it with volume. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "48 ft³ &nbsp;(that is the volume, not surface area)",
               "correct": false,
               "why": {
-                "en": "❌ Sum all six faces: 2(24)+2(16)+2(6) = 92 ft². Don't confuse it with volume. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Sum all six faces: 2(24)+2(16)+2(6) = 92 ft². Don't confuse it with volume. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -533,8 +567,8 @@ window.GN_STORY = {
               "en": "112 ft² &nbsp;(80 + 32 — forgot to remove the hidden faces)",
               "correct": false,
               "why": {
-                "en": "❌ The shared face is hidden on each prism, so subtract it TWICE: 80 + 32 − 2(6) = 100. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ The shared face is hidden on each prism, so subtract it TWICE: 80 + 32 − 2(6) = 100. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -545,8 +579,8 @@ window.GN_STORY = {
               "en": "106 ft² &nbsp;(only removed ONE shared face, not both)",
               "correct": false,
               "why": {
-                "en": "❌ The shared face is hidden on each prism, so subtract it TWICE: 80 + 32 − 2(6) = 100. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ The shared face is hidden on each prism, so subtract it TWICE: 80 + 32 − 2(6) = 100. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -592,16 +626,16 @@ window.GN_STORY = {
               "en": "Maya fills every tank with water down to the cubic foot.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "Maya reverses the volume formula to find missing heights.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -681,8 +715,8 @@ window.GN_STORY = {
               "en": "V = 84 ft³, SA = 61 ft² &nbsp;(SA only counted one of each face)",
               "correct": false,
               "why": {
-                "en": "❌ Volume multiplies the three edges (84). Surface area sums the six faces: 2(28+21+12)=122. Don't swap them. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Volume multiplies the three edges (84). Surface area sums the six faces: 2(28+21+12)=122. Don't swap them. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
@@ -693,8 +727,8 @@ window.GN_STORY = {
               "en": "V = 122 ft³, SA = 84 ft² &nbsp;(swapped volume and surface area)",
               "correct": false,
               "why": {
-                "en": "❌ Volume multiplies the three edges (84). Surface area sums the six faces: 2(28+21+12)=122. Don't swap them. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Volume multiplies the three edges (84). Surface area sums the six faces: 2(28+21+12)=122. Don't swap them. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -737,16 +771,16 @@ window.GN_STORY = {
               "en": "16 ft &nbsp;(96 ÷ 6 uses only one base edge)",
               "correct": false,
               "why": {
-                "en": "❌ Divide the volume by the FULL base area (6×4=24): 96 ÷ 24 = 4 ft. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Divide the volume by the FULL base area (6×4=24): 96 ÷ 24 = 4 ft. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "3 ft &nbsp;(6×4×3 = 72, not 96)",
               "correct": false,
               "why": {
-                "en": "❌ Divide the volume by the FULL base area (6×4=24): 96 ÷ 24 = 4 ft. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "❌ Divide the volume by the FULL base area (6×4=24): 96 ÷ 24 = 4 ft. Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ],
@@ -795,16 +829,16 @@ window.GN_STORY = {
               "en": "NAUTILUS-6 is deliberately sabotaging the aquarium so it never opens.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "NAUTILUS-6 cannot multiply or add at all.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
@@ -830,16 +864,16 @@ window.GN_STORY = {
               "en": "Maya re-rounds every fractional edge to a whole number.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             },
             {
               "en": "The city cancels the entire commission.",
               "correct": false,
               "why": {
-                "en": "Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+                "en": "Use the Math Lab to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
               }
             }
           ]
