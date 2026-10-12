@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { execFileSync } from "child_process";
+import { execFile, execFileSync } from "child_process";
 // Build the on-site Canvas SCORM hub: generate a SCORM package for every lesson
 // and assignable activity, copy them into the SERVED teacher dir, and emit the
 // data index the teacher page renders. One command keeps the whole "auto-grade
@@ -11,8 +11,10 @@ import { execFileSync } from "child_process";
 //   teacher-tools/canvas-scorm/packages/*.zip   (downloadable SCORM packages)
 //   teacher-tools/canvas-scorm/packages-index.json  (drives index.html)
 import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
+import { availableParallelism } from "os";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
+import { promisify } from "util";
 import { packageFileName } from "../../functions/_lib/scorm.js";
 import { pruneOutsideExpectedSet, reportPrune } from "./lib/prune-stale.mjs";
 
@@ -29,8 +31,29 @@ if (existsSync(pkgDir))
 mkdirSync(pkgDir, { recursive: true });
 mkdirSync(scormOut, { recursive: true });
 
-const build = (target, title, id) =>
-  execFileSync("node", [buildOne, target, title, id || ""], { stdio: "pipe" });
+const execFileAsync = promisify(execFile);
+const JOBS = Math.max(1, Number(process.env.SCORM_JOBS) || Math.min(8, availableParallelism() - 1));
+
+// Every package is its own `node build-scorm.mjs` process writing its own zip,
+// so they are independent; running them one at a time was ~16s of the build.
+const build = (target, title, id) => execFileAsync("node", [buildOne, target, title, id || ""]);
+
+/** Run `jobs` (async thunks) with at most JOBS in flight; results keep input order. */
+async function runPool(jobs) {
+  const settled = new Array(jobs.length);
+  let next = 0;
+  const worker = async () => {
+    while (next < jobs.length) {
+      const i = next++;
+      settled[i] = await jobs[i]().then(
+        (value) => ({ ok: true, value }),
+        (error) => ({ ok: false, error }),
+      );
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(JOBS, jobs.length) }, worker));
+  return settled;
+}
 
 // --- lessons (non-flagship) ---
 const manifest = JSON.parse(
@@ -78,60 +101,73 @@ let ok = 0,
 // package rather than losing it to the sweep below.
 const expectedZips = [];
 
-for (const l of lessons) {
+const lessonJobs = lessons.map((l) => {
   const title = l.title || `Lesson ${l.id}`;
   expectedZips.push(packageFileName(l.id, false));
-  try {
-    build(l.id, title);
-    const file = `${packageFileName(l.id, false)}`;
-    copyFileSync(resolve(scormOut, file), resolve(pkgDir, file));
-    index.lessons.push({
-      id: l.id,
-      unit: l.unit ?? null,
-      title,
-      file,
-      flagship: !!l.flagship,
-    });
-    ok++;
-  } catch (e) {
+  return () => build(l.id, title);
+});
+(await runPool(lessonJobs)).forEach((r, i) => {
+  const l = lessons[i];
+  const title = l.title || `Lesson ${l.id}`;
+  if (!r.ok) {
     fail++;
-    console.log(`  ✗ lesson ${l.id}: ${String(e.stderr || e.message).slice(0, 120)}`);
+    console.log(`  ✗ lesson ${l.id}: ${String(r.error.stderr || r.error.message).slice(0, 120)}`);
+    return;
   }
-}
+  const file = `${packageFileName(l.id, false)}`;
+  copyFileSync(resolve(scormOut, file), resolve(pkgDir, file));
+  index.lessons.push({ id: l.id, unit: l.unit ?? null, title, file, flagship: !!l.flagship });
+  ok++;
+});
 
 // --- interactive homework (one per lesson that ships homework.html) ---
-for (const l of allLessons) {
-  const rel = `lessons/${l.id}/homework.html`;
-  if (!existsSync(resolve(repoRoot, rel))) continue;
+const homeworkLessons = allLessons.filter((l) =>
+  existsSync(resolve(repoRoot, `lessons/${l.id}/homework.html`)),
+);
+const homeworkJobs = homeworkLessons.map((l) => {
   const slug = `homework-${l.id}`;
-  const title = `Homework ${l.id}: ${l.title || l.id}`;
   expectedZips.push(packageFileName(slug, false));
-  try {
-    build(`${SITE}/${rel}`, title, slug);
-    const file = `${packageFileName(slug, false)}`;
-    copyFileSync(resolve(scormOut, file), resolve(pkgDir, file));
-    index.homework.push({ id: l.id, unit: l.unit ?? null, title, file });
-    ok++;
-  } catch (e) {
+  return () =>
+    build(`${SITE}/lessons/${l.id}/homework.html`, `Homework ${l.id}: ${l.title || l.id}`, slug);
+});
+(await runPool(homeworkJobs)).forEach((r, i) => {
+  const l = homeworkLessons[i];
+  if (!r.ok) {
     fail++;
-    console.log(`  ✗ homework ${l.id}: ${String(e.stderr || e.message).slice(0, 120)}`);
+    console.log(`  ✗ homework ${l.id}: ${String(r.error.stderr || r.error.message).slice(0, 120)}`);
+    return;
   }
-}
+  const file = `${packageFileName(`homework-${l.id}`, false)}`;
+  copyFileSync(resolve(scormOut, file), resolve(pkgDir, file));
+  index.homework.push({
+    id: l.id,
+    unit: l.unit ?? null,
+    title: `Homework ${l.id}: ${l.title || l.id}`,
+    file,
+  });
+  ok++;
+});
 
-for (const a of activities) {
+const activityJobs = activities.map((a) => {
   const { url, slug } = resolveEntry(a);
   expectedZips.push(packageFileName(slug, false));
-  try {
-    build(url, a.title, slug);
-    const file = `${packageFileName(slug, false)}`;
-    copyFileSync(resolve(scormOut, file), resolve(pkgDir, file));
-    index.activities.push({ id: slug, title: a.title, grade: a.grade || "completion", file });
-    ok++;
-  } catch (e) {
+  return () => build(url, a.title, slug);
+});
+(await runPool(activityJobs)).forEach((r, i) => {
+  const a = activities[i];
+  if (!r.ok) {
     fail++;
-    console.log(`  ✗ activity ${a.path}: ${String(e.stderr || e.message).slice(0, 120)}`);
+    console.log(
+      `  ✗ activity ${a.path}: ${String(r.error.stderr || r.error.message).slice(0, 120)}`,
+    );
+    return;
   }
-}
+  const { slug } = resolveEntry(a);
+  const file = `${packageFileName(slug, false)}`;
+  copyFileSync(resolve(scormOut, file), resolve(pkgDir, file));
+  index.activities.push({ id: slug, title: a.title, grade: a.grade || "completion", file });
+  ok++;
+});
 
 // --- native QTI quizzes (item-scored — imported via "QTI .zip file", not SCORM) ---
 try {

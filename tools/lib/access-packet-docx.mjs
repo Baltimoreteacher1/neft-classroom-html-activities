@@ -67,13 +67,26 @@ const line = (keepNext = false) =>
     },
   });
 const rasterCache = new Map();
+// Keyed by the SVG text: the student and teacher packet of one level draw the
+// same charts. A render costs ~70ms because Resvg re-scans system fonts on every
+// call; an SVG with no <text> cannot depend on a font, so it skips the scan
+// (12ms) and renders the same bytes.
+const svgRasterCache = new Map();
+const hasText = (svg) => /<text[\s>]/i.test(svg);
 
 function raster(svg) {
-  const rendered = new Resvg(svg, {
-    fitTo: { mode: "width", value: 1440 },
-    font: { defaultFontFamily: "Arial", loadSystemFonts: true },
-  }).render();
-  return { data: rendered.asPng(), width: rendered.width, height: rendered.height };
+  if (!svgRasterCache.has(svg)) {
+    const rendered = new Resvg(svg, {
+      fitTo: { mode: "width", value: 1440 },
+      font: { defaultFontFamily: "Arial", loadSystemFonts: hasText(svg) },
+    }).render();
+    svgRasterCache.set(svg, {
+      data: rendered.asPng(),
+      width: rendered.width,
+      height: rendered.height,
+    });
+  }
+  return svgRasterCache.get(svg);
 }
 async function picture(source) {
   const path = resolve(LAB_DIR, source);

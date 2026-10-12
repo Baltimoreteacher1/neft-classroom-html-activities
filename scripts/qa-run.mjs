@@ -570,7 +570,7 @@ const COVERAGE = [
   ],
   // Families hub, bilingual weekly homework pages, and guided notes
   [
-    /^(families\/|assets\/homework\/|scripts\/(homework-guided-notes|generate-homework|generate-homework-html|generate-family-pages|generate-family-week-notes|verify-family-pages|validate-homework-guided-notes|audit-homework-alignment)\.mjs$|tools\/(validate-family-exit-ticket|validate-family-games)\.mjs$)/,
+    /^(families\/|assets\/homework\/|scripts\/(homework-[a-z-]+|generate-homework|generate-homework-html|generate-family-pages|generate-family-week-notes|verify-family-pages|validate-homework-guided-notes|audit-homework-alignment)\.mjs$|tools\/(validate-family-exit-ticket|validate-family-games)\.mjs$)/,
     [
       "verify:families",
       "validate:homework",
