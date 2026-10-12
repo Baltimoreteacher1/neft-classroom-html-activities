@@ -97,6 +97,7 @@ const DETAIL = [
   [/^(-?\d+) × \((-?\d+)\) = \?$|^(-?\d+) × (-?\d+) = \?$/, (...m) => {
     const [a, b] = m[0] !== undefined ? [n(m[0]), n(m[1])] : [n(m[2]), n(m[3])];
     const same = (a < 0) === (b < 0);
+    if (a === 0 || b === 0) return [`Look for a zero first: ${a} × ${b < 0 ? `(${b})` : b} has a zero factor.`, "Zero times any number is 0, so there is no sign to decide."];
     return [`Size first: multiply ${Math.abs(a)} × ${Math.abs(b)} without the signs. The signs only decide positive or negative.`, `Sign next: ${signWord(a)} × ${signWord(b)}. ${same ? "Same signs make a positive answer." : "Different signs make a negative answer."}`];
   }],
   [/^√(\d+) = \?$/, (value) => {

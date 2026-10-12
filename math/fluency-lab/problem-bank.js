@@ -53,12 +53,12 @@ const factorsOf = (n) => Array.from({ length: n }, (_, i) => i + 1).filter((f) =
 function gcfLcmSteps(find, a, b, answer) {
   if (find === "gcf") {
     const [fa, fb] = [factorsOf(a), factorsOf(b)];
-    const shared = fa.filter((f) => fb.includes(f));
-    return [`Factors of ${a}: ${listed(fa)}`, `Factors of ${b}: ${listed(fb)}`, `Shared factors: ${listed(shared)}`, `The greatest shared factor is ${answer}.`];
+    return [`Factors of ${a}: ${listed(fa)}`, `Factors of ${b}: ${listed(fb)}`, "Which factors are on both lists? Look for the ones that match.", `The greatest shared factor is ${answer}.`];
   }
   const [small, big] = a < b ? [a, b] : [b, a];
-  const multiples = Array.from({ length: answer / big }, (_, i) => big * (i + 1));
-  return [`Multiples of ${big}: ${listed(multiples, 6)}`, `Does ${small} divide each one? Check from the start.`, `The first multiple of ${big} that ${small} divides is ${answer}.`];
+  // Show a few multiples past the first match too, so the list is a search space and does not end on the answer.
+  const multiples = Array.from({ length: Math.min(6, Math.max(3, answer / big + 1)) }, (_, i) => big * (i + 1));
+  return [`Multiples of ${big}: ${listed(multiples, 5)}`, `Does ${small} divide each one? Check from the start.`, `The first multiple of ${big} that ${small} divides is ${answer}.`];
 }
 
 const FACT_SYMBOL = { add: "+", sub: "−", mul: "×", div: "÷" };
@@ -641,7 +641,9 @@ const generators = {
       explanation: `${a} ${symbol} ${b < 0 ? `(${b})` : b} = ${answer}.`,
       steps:
         op === "mul" || op === "div"
-          ? [`Size: multiply ${Math.abs(a)} ${symbol} ${Math.abs(b)} without the signs`, `Sign: ${(a < 0) === (b < 0) || answer === 0 ? "same signs, so positive" : "different signs, so negative"}`, `${a} ${symbol} ${b < 0 ? `(${b})` : b} = ${answer}`]
+          ? answer === 0
+            ? [`A zero is involved: ${op === "mul" ? "any number times 0 is 0" : "0 divided by any number is 0"}, so there is no sign to decide`, `${a} ${symbol} ${b < 0 ? `(${b})` : b} = ${answer}`]
+            : [`Size: ${op === "mul" ? "multiply" : "divide"} ${Math.abs(a)} ${symbol} ${Math.abs(b)} without the signs`, `Sign: ${(a < 0) === (b < 0) ? "same signs, so positive" : "different signs, so negative"}`, `${a} ${symbol} ${b < 0 ? `(${b})` : b} = ${answer}`]
           : op === "sub"
             ? [`Subtracting ${b} is adding ${-b}.`, `${a} + ${-b < 0 ? `(${-b})` : -b} = ${answer}`]
             : [`Start at ${a}. Move ${Math.abs(b)} ${b < 0 ? "left" : "right"}.`, `${a} + ${b < 0 ? `(${b})` : b} = ${answer}`],
@@ -1117,8 +1119,19 @@ export function generateProblem(skill, rng = Math.random) {
 }
 
 const compact = (value) => String(value).trim().toLowerCase().replace(/\s+/g, "");
+// "1 5/12" is a mixed number (17/12); compact() would fuse it into 15/12, so read it before whitespace goes.
+const MIXED = /^([+-]?)(\d+)\s+(\d+)\/(\d+)$/;
+const parseMixed = (value) => {
+  const match = MIXED.exec(String(value).trim().replaceAll("−", "-"));
+  if (!match) return NaN;
+  const [, sign, whole, n, d] = match;
+  if (Number(d) === 0) return NaN;
+  return (sign === "-" ? -1 : 1) * (Number(whole) + Number(n) / Number(d));
+};
 const parseFraction = (value) => {
-  const cleaned = compact(value).replace("−", "-");
+  const mixed = parseMixed(value);
+  if (!Number.isNaN(mixed)) return mixed;
+  const cleaned = compact(value).replaceAll("−", "-");
   if (cleaned.includes("/")) {
     if (!/^[+-]?\d+(?:\.\d+)?\/[+-]?\d+(?:\.\d+)?$/.test(cleaned)) return NaN;
     const [n, d] = cleaned.split("/").map(Number);
@@ -1129,10 +1142,10 @@ const parseFraction = (value) => {
 };
 
 export function validateAnswer(value, item) {
-  const submitted = compact(value).replace("−", "-");
+  const submitted = compact(value).replaceAll("−", "-");
   if (!submitted) return false;
   if (item.kind === "fraction") {
-    const candidate = parseFraction(submitted);
+    const candidate = parseFraction(value);
     return item.answers.some((answer) => Math.abs(candidate - parseFraction(answer)) < 1e-8);
   }
   if (item.kind === "number") {

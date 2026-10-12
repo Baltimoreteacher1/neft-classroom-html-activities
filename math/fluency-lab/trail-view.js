@@ -21,6 +21,7 @@ import { STRATEGIES, TEACH_BACK, tipOfDay } from "./strategies.js";
 import { t } from "./i18n.js";
 import { buddySvg } from "./buddy.js";
 import { canSpeak, speak } from "./speech.js";
+import { peekCap } from "./step-leak.js";
 import { handleModelInput, handleModelTap, interactivePicture, mathText, stepsBlock, trailPicture } from "./trail-pictures.js";
 
 const ROUND = 10;
@@ -61,7 +62,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
     const steps = item.steps || [];
     const slot = container.querySelector("#tr-peek-slot");
     if (!slot) return;
-    const body = steps.length > 1 ? stepsBlock(steps, round.peek, { id: "peek-steps", cap: steps.length - 1 }) : `<p class="tr-tip">${mathText(item.hint)}</p>`;
+    const body = peekCap(item) > 0 ? stepsBlock(steps, round.peek, { id: "peek-steps", cap: peekCap(item) }) : `<p class="tr-tip">${mathText(item.hint)}</p>`;
     slot.innerHTML = `<div class="tr-peek">${interactivePicture(item.model) ? "" : trailPicture(item.model)}${body}</div>`;
     slot.querySelector("[data-step]")?.focus();
   }
@@ -201,6 +202,14 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
     container.querySelector(shown >= example.steps.length ? "[data-start]" : "[data-step]")?.focus();
   }
 
+  function freshLike(item) {
+    for (let tries = 0; tries < 30; tries += 1) {
+      const next = makeProblem(grade, round.entry);
+      if (next.question !== item.question) return next;
+    }
+    return item;
+  }
+
   function startRound(id) {
     const entry = getStation(grade, id);
     const seen = new Set();
@@ -220,6 +229,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
       missed: [],
       phase: "ask",
       miss: false,
+      missTries: 0,
       results: [],
     };
     renderProblem();
@@ -275,7 +285,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
             ${round.miss ? "" : liveModel(item)}
             ${
               round.miss
-                ? `<div class="tr-help"><p class="tr-miss-title">${esc(t(words.miss))}</p><div class="tr-help-body">${stepsBlock(steps, steps.length, { id: "miss-steps" })}</div><p class="tr-retype">${esc(t(words.retype))}</p></div>`
+                ? `<div class="tr-help"><p class="tr-miss-title">${esc(t(words.miss))}</p><div class="tr-help-body">${peekCap(item) > 0 ? stepsBlock(steps, peekCap(item), { id: "miss-steps" }) : `<p class="tr-tip">${mathText(item.hint)}</p>`}</div><p class="tr-retype">${esc(t(words.retype))}</p></div>`
                 : ""
             }
           </div>
@@ -300,7 +310,11 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
     const correct = validateAnswer(value, current.item);
     if (round.miss) {
       if (!correct) {
-        feedback.textContent = t("Type {n} to keep going.", { n: current.item.displayAnswer });
+        round.missTries += 1;
+        feedback.textContent =
+          round.missTries < 2
+            ? t("Use the steps to find it, then try again.")
+            : t("Type {n} to keep going.", { n: current.item.displayAnswer });
         return;
       }
       round.miss = false;
@@ -324,10 +338,12 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
       round.missed.push(current.item);
       recordFact(data, current.item, false);
       recordMiss(data, current.item, grade);
+      // The "one more look" is a fresh problem of the same kind, so a copied answer cannot pass it.
       if (round.queue.filter((entry) => entry.review).length < 3)
-        round.queue.push({ item: current.item, review: true });
+        round.queue.push({ item: freshLike(current.item), review: true });
     }
     round.miss = true;
+    round.missTries = 0;
     round.peek = 0;
     saveTrail(data);
     renderProblem();

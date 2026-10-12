@@ -469,6 +469,7 @@ export const ES = {
   "Type the answer to continue.": "Escribe la respuesta para continuar.",
   "Type the answer to keep going.": "Escribe la respuesta para seguir.",
   "Type {n} to keep going.": "Escribe {n} para seguir.",
+  "Use the steps to find it, then try again.": "Usa los pasos para encontrarlo y vuelve a intentarlo.",
   "Undo adding or subtracting first. Then undo multiplying.":
     "Deshaz primero la suma o la resta. Luego deshaz la multiplicación.",
   "Undo to check": "Deshaz para comprobar",

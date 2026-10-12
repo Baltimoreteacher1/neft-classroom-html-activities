@@ -19,6 +19,7 @@ import { GAMES, mountGames } from "./games.js";
 import { getLang, setLang, t, translatePage } from "./i18n.js";
 import { factsReport, mountSnapshot } from "./class-snapshot.js";
 import { whyFor } from "./step-whys.js";
+import { loadRewards, noteToday, saveRewards } from "./rewards.js";
 import { certificateHtml } from "./certificate.js";
 import { chime, setSound, soundOn } from "./sounds.js";
 import { familySummaryDocument, familySummaryHtml } from "./family-page.js";
@@ -816,6 +817,12 @@ function finishSession() {
     state.tutor.diagnostics[state.grade] = { at: Date.now(), results: session.diagnosticResults };
     els.summaryTitle.textContent = "Your starting-point checkup";
     els.summaryCopy.textContent = "These ten samples suggest what to try next. A single answer cannot prove mastery or determine a grade level.";
+  }
+  // Any finished practice set counts as a practice day, the same as a trail round or a game.
+  if (session.answered > 0) {
+    const rewards = loadRewards();
+    noteToday(rewards);
+    saveRewards(rewards);
   }
   state.tutor.sessions.push({ at: Date.now(), grade: state.grade, mode: session.mode, answered: session.answered, correct: session.independentCorrect });
   state.tutor.sessions = state.tutor.sessions.slice(-60);

@@ -5,6 +5,7 @@ import { SCENES } from "./scenes.js";
 import { gameProblems } from "./game-pool.js";
 import { t } from "./i18n.js";
 import { canSpeak, speak, syncLive } from "./speech.js";
+import { peekCap } from "./step-leak.js";
 import { mathText, stepsBlock } from "./trail-pictures.js";
 
 const TILES = 12;
@@ -50,8 +51,8 @@ export function playPicture(host, { grade, stop, scene, calm, finish, onFact }) 
       </div>
       <p class="gm-note">${esc(note)}</p>
       ${misses ? `<p class="tr-tip">${mathText(item.hint)}</p>` : ""}
-      ${steps.length > 1 && peek ? stepsBlock(steps, peek, { id: "gm-steps", cap: steps.length - 1 }) : ""}
-      ${steps.length > 1 && !peek ? `<button type="button" class="tr-tool" data-gm-peek>${t("Show a step")}</button>` : ""}
+      ${peekCap(item) > 0 && peek ? stepsBlock(steps, peek, { id: "gm-steps", cap: peekCap(item) }) : ""}
+      ${peekCap(item) > 0 && !peek ? `<button type="button" class="tr-tool" data-gm-peek>${t("Show a step")}</button>` : ""}
     </form>`;
   }
 

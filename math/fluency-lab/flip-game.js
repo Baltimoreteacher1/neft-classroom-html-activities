@@ -6,6 +6,7 @@ import { t } from "./i18n.js";
 import { validateAnswer } from "./problem-bank.js";
 import { loadRewards, noteToday, saveRewards } from "./rewards.js";
 import { canSpeak, speak, syncLive } from "./speech.js";
+import { peekCap } from "./step-leak.js";
 import { mathText, stepsBlock } from "./trail-pictures.js";
 
 const flipStars = (first, total) => (first === total ? 3 : first * 2 >= total ? 2 : 1);
@@ -34,13 +35,13 @@ export function playFlip(host, { grade, calm, finish }) {
 
   function render() {
     const card = deck[at];
-    const steps = card.steps.length > 1 ? card.steps : [];
+    const steps = peekCap(card) > 0 ? card.steps : [];
     host.innerHTML = `<div class="gm-play gm-flip">
       <div class="gm-bar"><button type="button" class="tr-back" data-gm-menu>${t("← Games")}</button><b>${t("Tricky Facts")}</b><span>${t("Card {a} of {b}", { a: at + 1, b: deck.length })}</span></div>
       <form class="gm-ask-form" autocomplete="off"><p class="gm-q" id="gm-q">${mathText(card.question)}</p>${canSpeak() ? `<button type="button" class="tr-tool" data-gm-read>${t("Read to me")}</button>` : ""}
         <div class="tr-answer"><label class="tr-sr" for="gm-input">${t("Your answer")}</label><input id="gm-input" class="tr-input" inputmode="${card.kind === "number" ? "decimal" : "text"}" spellcheck="false" aria-describedby="gm-q" /><button type="submit" class="tr-check">${t("Check")}</button></div>
-        ${steps.length && tries ? stepsBlock(steps, Math.max(1, peek), { id: "gm-steps", cap: steps.length - 1 }) : ""}
-        ${steps.length > 1 && !tries ? `<button type="button" class="tr-tool" data-gm-peek>${t("Show a step")}</button>` : ""}
+        ${steps.length && tries ? stepsBlock(steps, Math.max(1, peek), { id: "gm-steps", cap: peekCap(card) }) : ""}
+        ${steps.length > 0 && !tries ? `<button type="button" class="tr-tool" data-gm-peek>${t("Show a step")}</button>` : ""}
         <button type="button" class="tr-link" data-skip>${t("Keep this card for later")}</button></form>
       <p class="gm-note">${esc(note)}</p></div>`;
     host.querySelector("#gm-input").focus();

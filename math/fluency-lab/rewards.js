@@ -19,7 +19,9 @@ const GAME_IDS = ["match", "hunt", "sort", "mistake", "make", "family", "balance
 // One suggested game per day; Fact Family Builder is a Grades 1-5 game, so it is skipped for older grades.
 export const dailyGame = (time = Date.now(), grade = 0) => {
   const list = GAME_IDS.filter((id) => id !== "flip" && !(id === "family" && grade > 5));
-  return list[Math.floor(time / DAY_MS) % list.length];
+  // Count local calendar days, so the pick changes at the learner's midnight and not at UTC midnight.
+  const date = new Date(time);
+  return list[Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / DAY_MS) % list.length];
 };
 
 export const RANKS = [
@@ -184,14 +186,14 @@ export const STICKERS = [
     icon: "🔥",
     name: "3 Days Running",
     hint: "Practice 3 days in a row",
-    test: (s) => s.streak >= 3,
+    test: (s) => s.bestStreak >= 3,
   },
   {
     id: "days-7",
     icon: "🚀",
     name: "Week Streak",
     hint: "Practice 7 days in a row",
-    test: (s) => s.streak >= 7,
+    test: (s) => s.bestStreak >= 7,
   },
 ];
 
@@ -214,6 +216,7 @@ export function cleanRewards(saved = {}) {
     buddy: cleanBuddy(saved.buddy),
     goal: [2, 3, 4, 5].includes(saved.goal) ? saved.goal : 3,
     retired: num(saved.retired),
+    bestStreak: num(saved.bestStreak),
     goalWeeks: Array.isArray(saved.goalWeeks) ? saved.goalWeeks.filter((day) => /^\d{4}-\d{2}-\d{2}$/.test(day)).slice(-60) : [],
   };
 }
@@ -249,6 +252,8 @@ export const saveRewards = (data) => writeLocal(key(), data);
 export function noteToday(data) {
   const today = localDay();
   if (!data.days.includes(today)) data.days = [...data.days, today].slice(-60);
+  // Earned streak stickers and buddy items stay earned after the run ends.
+  data.bestStreak = Math.max(data.bestStreak || 0, streakOf(data.days));
   const week = weekStart();
   if (daysThisWeek(data.days) >= data.goal && !data.goalWeeks.includes(week)) data.goalWeeks = [...data.goalWeeks, week].slice(-60);
 }
@@ -263,12 +268,13 @@ export function recordGame(data, game, stars, scene = null) {
 // Days in a row ending today (or yesterday, so an evening visit never erases the streak).
 export function streakOf(days) {
   const set = new Set(days);
-  let cursor = Date.now();
-  if (!set.has(localDay(cursor))) cursor -= DAY_MS;
+  // Step by calendar day (setDate), not by 24h: a daylight-saving change makes a day 23 or 25 hours long.
+  const cursor = new Date();
+  if (!set.has(localDay(cursor.getTime()))) cursor.setDate(cursor.getDate() - 1);
   let run = 0;
-  while (set.has(localDay(cursor))) {
+  while (set.has(localDay(cursor.getTime()))) {
     run += 1;
-    cursor -= DAY_MS;
+    cursor.setDate(cursor.getDate() - 1);
   }
   return run;
 }
@@ -291,6 +297,7 @@ export function summarize(trail = loadTrail(), data = loadRewards()) {
     retired: data.retired,
     strategyTotal: Object.values(data.strategies).reduce((sum, count) => sum + count, 0),
     streak: streakOf(data.days),
+    bestStreak: Math.max(data.bestStreak || 0, streakOf(data.days)),
   };
 }
 

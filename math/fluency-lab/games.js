@@ -27,6 +27,7 @@ import {
   summarize,
 } from "./rewards.js";
 import { t } from "./i18n.js";
+import { peekCap } from "./step-leak.js";
 import { mathText, stepsBlock } from "./trail-pictures.js";
 
 export const GAMES = [
@@ -107,7 +108,7 @@ const starRow = (count) =>
 // The review after a game shows the steps up to, but not including, the one that names the answer.
 function reviewBody(item, id, shown) {
   const steps = item.steps || [];
-  return `<p class="gm-review-q">${mathText(item.question)}</p>${stepsBlock(steps, shown, { id, cap: steps.length })}`;
+  return `<p class="gm-review-q">${mathText(item.question)}</p>${stepsBlock(steps, shown, { id, cap: Math.max(1, peekCap(item)) })}`;
 }
 
 export function mountGames(container, { grade, autostart = null, assignedStop = null }) {
@@ -257,7 +258,7 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
         <h2>${stars === 3 ? t("Amazing!") : stars === 2 ? t("Great game!") : t("Nice work!")}</h2>
         <p class="tr-score">${esc(t(info.name))}: ${esc(line)}</p>
         ${stickerToast(fresh)}
-        ${reviewItems.length ? `<section class="gm-review"><h3>${t("Facts to look at again")}</h3><p>${t("Tap “Next step” to work through each one. Try to finish it before the last step.")}</p><div>${reviewItems.map((item, i) => `<article data-review="${i}">${reviewBody(item, `gm-review-${i}`, Math.max(1, (item.steps || []).length - 1))}</article>`).join("")}</div></section>` : `<p class="tr-perfect">${t("No misses this game.")}</p>`}
+        ${reviewItems.length ? `<section class="gm-review"><h3>${t("Facts to look at again")}</h3><p>${t("Tap “Next step” to work through each one. Try to finish it before the last step.")}</p><div>${reviewItems.map((item, i) => `<article data-review="${i}">${reviewBody(item, `gm-review-${i}`, Math.max(1, peekCap(item)))}</article>`).join("")}</div></section>` : `<p class="tr-perfect">${t("No misses this game.")}</p>`}
         <div class="tr-done-actions">
           <button type="button" class="tr-go" data-again>${t("Play again")}</button>
           <button type="button" class="tr-link" data-gm-menu>${t("Back to the Game Room")}</button>

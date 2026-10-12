@@ -67,13 +67,16 @@ export function adaptiveProblem(skill, rng = Math.random, level = 1) {
     if (skill.generator === "fact") {
       if (["add", "sub"].includes(config.op)) {
         const floor = config.min ?? 0;
-        config.max = Math.max(floor, Math.min(config.max ?? 10, floor >= 100 ? 120 : 20));
+        // Smaller steps keep the skill's digit count: a 4-digit skill stays 4-digit instead of collapsing to its floor.
+        config.max = Math.max(floor, Math.min(config.max ?? 10, floor >= 100 ? floor + Math.max(20, floor / 2) : 20));
         if (config.op === "add") config.maxResult = Math.min(config.maxResult ?? config.max * 2, config.max * 2);
       } else if (config.op === "div") {
         config.maxDivisor = Math.min(config.maxDivisor ?? 6, 6); config.maxQuotient = Math.min(config.maxQuotient ?? 12, 12);
       } else {
-        config.maxB = Math.max(config.minB ?? 0, 5);
-        if (!config.factors) config.maxA = Math.max(config.minA ?? 0, Math.min(config.maxA ?? 10, 12));
+        const [minA, minB] = [config.minA ?? 0, config.minB ?? 0];
+        // Two- and three-digit factors shrink their span; clamping to the floor made one repeated problem.
+        config.maxB = minB >= 10 ? Math.min(config.maxB ?? minB + 9, minB + 9) : Math.max(minB, 5);
+        if (!config.factors) config.maxA = minA >= 10 ? Math.min(config.maxA ?? minA * 4 - 1, minA * 4 - 1) : Math.max(minA, Math.min(config.maxA ?? 10, 12));
       }
     }
     if (skill.generator === "solve") { config.minX = 1; config.maxX = 6; config.maxCoefficient = 3; }
