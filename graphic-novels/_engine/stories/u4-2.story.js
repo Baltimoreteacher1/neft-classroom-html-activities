@@ -5,7 +5,7 @@ window.GN_STORY = {
     "version": 2,
     "level": "Enrichment",
     "title": "Shopping Mall Mogul &#128717;&#65039;",
-    "standard": "6.AT.2",
+    "standard": "6.AT.4",
     "readingStandard": "RL.6.1",
     "assessment": "Graphic Novel U4 #2: Shopping Mall Mogul",
     "artBase": "../_art/unit4/",
@@ -47,7 +47,7 @@ window.GN_STORY = {
       "role": "protagonist",
       "color": "#be185d",
       "tagIcon": "🏬",
-      "blurb": "Flagship Plaza Director · Stacked Discount & Tax Architect",
+      "blurb": "Flagship Plaza Director · Percent Reasoning Architect",
       "portrait": {
         "skin": "#f2c29b",
         "hair": "#0f172a",
@@ -59,7 +59,7 @@ window.GN_STORY = {
       "role": "companion",
       "color": "#0d9488",
       "tagIcon": "🤖",
-      "blurb": "Audit drone · adds successive discounts instead of chaining",
+      "blurb": "Audit drone · treats a percent like a plain number",
       "portrait": {
         "bot": true,
         "accent": "#0d9488"
@@ -84,49 +84,54 @@ window.GN_STORY = {
   },
   "cover": {
     "art": "cover.png",
-    "alt": "A young entrepreneur smiles in front of a bright futuristic shopping mall with floating price tags",
-    "blurbEn": "You just took over the Nexus Galleria, the city&rsquo;s most ambitious smart-mall. Every shop you want to open is gated behind a pricing puzzle. To out-negotiate rival retailers and pack the galleria, you must master <b>unit rates</b>, <b>percent markdowns</b>, and the slippery world of percents <b>over 100%</b> and <b>under 1%</b>. LEDGER-8 rides along, always reaching for the jumbo size on instinct &mdash; sharpen your deal-making and the best bargain hunter wins the mall.",
-    "blurbEs": "",
+    "alt": "A young entrepreneur smiles in front of a bright futuristic shopping mall with floating percent-off tags",
+    "blurbEn": "The Nexus Galleria opens in days, and every shelf, sign, and sale depends on <b>percent reasoning</b>. As flagship director <b>Julian</b>, you will compare percents with fractions and decimals, estimate savings, set markdown prices, and work back to the whole. LEDGER-8, the audit drone, treats a percent like a plain number… Watch for the optional <b>⭐ Valeria&rsquo;s Challenge</b> in each act for extra credit.",
+    "blurbEs": "La Galería Nexus abre en unos días y cada estante, letrero y oferta depende del <b>razonamiento con porcentajes</b>. Como director Julian, compararás porcentajes con fracciones y decimales, estimarás ahorros, fijarás precios de rebaja y hallarás el total. LEDGER-8 trata el porcentaje como un número cualquiera. Busca el <b>⭐ Desafío de Valeria</b> opcional en cada acto.",
     "startLabel": "Take the Reins &#128717;&#65039;"
   },
   "acts": [
     {
       "id": "act1",
-      "tab": "Act 1: Best Buy",
-      "kicker": "Act 1 · Rates & Unit Rates",
-      "title": "The Best Buy",
+      "tab": "Act 1: Percent Power",
+      "kicker": "Act 1 · Percents, Fractions & Decimals",
+      "title": "Percent Power",
       "advanceLabel": "Open the shop &#128722;",
       "steps": [
         {
           "type": "beats",
           "art": "unit-rate.png",
-          "alt": "Julian weighs two products, deciding which is the better deal",
+          "alt": "Julian weighs two products tagged with different sale signs, deciding which is the bigger discount",
           "lastLabel": "Check LEDGER-8 ▶",
           "beats": [
             {
               "who": "helper",
-              "caption": true,
-              "en": "Welcome to the Nexus Galleria, boss. Suppliers are bidding for shelf space &mdash; but only the sharpest VALUE wins shoppers."
+              "en": "Welcome to the Nexus Galleria, boss. Suppliers send sale signs in every form: fractions, decimals, and percents.",
+              "es": "Bienvenido a la Galería Nexus, jefe. Los proveedores envían letreros en todas las formas: fracciones, decimales y porcentajes.",
+              "caption": true
             },
             {
               "who": "helper",
+              "en": "To compare signs fairly, write every one in the SAME form. A percent is a part out of 100, so percents make the easiest common form.",
+              "es": "Para comparar letreros con justicia, escribe todos en la MISMA forma. Un porcentaje es una parte de 100, así que es la forma común más fácil.",
               "caption": true,
-              "en": "Remember: a jumbo size only wins if its price per unit is lower. Bulk and value are not the same thing &mdash; the unit rate is what decides every shelf."
-            },
-            {
-              "who": "mogul",
-              "en": "Then I reduce every offer to a unit rate &mdash; price per millilitre, per gram, per item. Whoever's cheaper per unit gets the shelf.",
               "vocab": [
                 {
-                  "term": "unit rate",
-                  "en": "A rate expressed per single unit (per 1). Computed as quantity-A ÷ quantity-B, e.g. price ÷ amount = $0.04 per gram."
+                  "term": "percent",
+                  "en": "A part out of 100. 35% means 35 out of 100.",
+                  "es": "Una parte de 100. 35% significa 35 de 100."
                 }
               ]
             },
             {
+              "who": "mogul",
+              "en": "Then I convert each sign: fraction to decimal by dividing, decimal to percent by moving the dot two places. Equal forms, fair comparison.",
+              "es": "Entonces convierto cada letrero: fracción a decimal dividiendo, decimal a porcentaje moviendo el punto dos lugares."
+            },
+            {
               "who": "penny",
-              "misconception": true,
-              "en": "Vendor B's bottle is 1.25 litres — way more than 750 mL. Bigger bottle, better deal. Grab Vendor A? No, B's the cheap one because it's HUGE!"
+              "en": "Three signs: 3/5, 0.58, and 61%. The biggest number is 61, so 61% wins. I'll rank 3/5 last without converting it.",
+              "es": "Tres letreros: 3/5, 0.58 y 61%. El número más grande es 61, así que gana 61%. Pondré 3/5 al final sin convertirlo.",
+              "misconception": true
             }
           ]
         },
@@ -135,41 +140,60 @@ window.GN_STORY = {
           "id": "1a",
           "ask": {
             "who": "helper",
-            "en": "First bid is on the energy drinks. Two suppliers pitch the same energy drink. Vendor A: a <b>750 mL</b> bottle for <b>$4.50</b>. Vendor B: a <b>1.25 L</b> (1250 mL) bottle for <b>$6.25</b>. Comparing the price per millilitre, which vendor is the better value?"
+            "en": "Three suppliers send discount signs: <b>3/5</b>, <b>0.58</b>, and <b>61%</b>. Convert them to the same form. Which list orders them from <b>least to greatest</b>?",
+            "es": "Tres proveedores envían letreros de descuento: 3/5, 0.58 y 61%. Conviértelos a la misma forma. ¿Qué lista los ordena de menor a mayor?"
+          },
+          "hint": {
+            "en": "💡 <b>Hint:</b> 3/5 = 0.6 = 60%. 0.58 = 58%. 61% stays 61%. Compare 58%, 60%, 61%.",
+            "es": "💡 <b>Pista:</b> 3/5 = 0.6 = 60%. 0.58 = 58%. 61% queda 61%. Compara 58%, 60%, 61%."
           },
           "choices": [
             {
-              "en": "Vendor A &mdash; 750 mL for $4.50<span class=\"calc\">4.50 &divide; 750 = $0.0060/mL</span>",
+              "en": "0.58, 3/5, 61%<span class=\"calc\">58% &lt; 60% &lt; 61%</span>",
+              "es": "0.58, 3/5, 61% (58% < 60% < 61%)",
+              "correct": true
+            },
+            {
+              "en": "3/5, 0.58, 61%<span class=\"calc\">3/5 treated as the smallest number</span>",
+              "es": "3/5, 0.58, 61% (trata 3/5 como el menor)",
               "correct": false,
               "why": {
-                "en": "&#10060; Compare the same unit. Divide each price by its millilitres &mdash; the lower price per mL is the better value. Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
+                "en": "❌ 3/5 is not small: 3 ÷ 5 = 0.6 = 60%, which is MORE than 58%. Convert before you order.",
+                "es": "3/5 no es pequeño: 3 ÷ 5 = 0.6 = 60%, que es MÁS que 58%. Convierte antes de ordenar."
               }
             },
             {
-              "en": "Vendor B &mdash; 1.25 L for $6.25<span class=\"calc\">6.25 &divide; 1250 = $0.0050/mL (cheaper)</span>",
-              "correct": true
+              "en": "61%, 3/5, 0.58<span class=\"calc\">that is greatest to least</span>",
+              "es": "61%, 3/5, 0.58 (de mayor a menor)",
+              "correct": false,
+              "why": {
+                "en": "❌ That list goes from greatest to least. The question asks least to greatest.",
+                "es": "Esa lista va de mayor a menor. La pregunta pide de menor a mayor."
+              }
             }
           ],
-          "goodEn": "&#9989; Vendor B wins: $6.25 &divide; 1250 mL = $0.0050/mL beats $4.50 &divide; 750 mL = $0.0060/mL. Shelf secured.",
-          "badEn": "&#10060; Compare the same unit. Divide each price by its millilitres &mdash; the lower price per mL is the better value.",
-          "solveBeat": {
-            "who": "mogul",
-            "en": "Shelf secured. Next, the roastery quotes a bulk price &mdash; I'll express it per 100 grams so shoppers can compare instantly."
-          },
+          "goodEn": "✅ 0.58 = 58%, 3/5 = 60%, 61%. Least to greatest: 0.58, 3/5, 61%. Same form, fair comparison.",
+          "goodEs": "¡0.58 = 58%, 3/5 = 60%, 61%! De menor a mayor: 0.58, 3/5, 61%.",
+          "badEn": "❌ Convert all three to percents first: 3/5 = 60%, 0.58 = 58%. Then order them.",
+          "badEs": "Convierte los tres a porcentajes primero: 3/5 = 60%, 0.58 = 58%. Luego ordénalos.",
           "help": {
             "conceptual": {
-              "en": "&#10060; Compare the same unit. Divide each price by its millilitres &mdash; the lower price per mL is the better value.",
-              "es": "Haz una pausa y verifica qué cantidad es el total o la base."
+              "en": "❌ Convert all three to percents first: 3/5 = 60%, 0.58 = 58%. Then order them.",
+              "es": "Convierte los tres a porcentajes primero: 3/5 = 60%, 0.58 = 58%. Luego ordénalos."
             },
             "procedural": {
-              "en": "Step 1: Model the numbers in the Interactive Math Lab. Step 2: Check the readout equation.",
-              "es": "Paso 1: Modela los números en el laboratorio interactivo."
+              "en": "💡 <b>Hint:</b> 3/5 = 0.6 = 60%. 0.58 = 58%. 61% stays 61%. Compare 58%, 60%, 61%.",
+              "es": "💡 <b>Pista:</b> 3/5 = 0.6 = 60%. 0.58 = 58%. 61% queda 61%. Compara 58%, 60%, 61%."
             },
             "example": {
-              "en": "Try sliding the Interactive Math Lab controls to a simpler benchmark number first, observe the pattern, and then set it to the mission numbers!",
-              "es": "Prueba deslizar los controles del laboratorio a un número de referencia más simple primero."
+              "en": "Try the Math Lab with an easy benchmark first (10%, 25%, or 50%), watch the pattern, then test the mission numbers.",
+              "es": "Prueba el laboratorio con un valor fácil primero (10%, 25% o 50%), observa el patrón y luego prueba los números de la misión."
             }
+          },
+          "solveBeat": {
+            "who": "mogul",
+            "en": "Fair comparison done. Next, the roastery sign: I'll estimate the savings with a benchmark percent.",
+            "es": "Comparación justa lista. Ahora el letrero de la tostaduría: estimaré el ahorro con un porcentaje de referencia."
           }
         },
         {
@@ -182,85 +206,100 @@ window.GN_STORY = {
           "passageRef": "act1.1a",
           "ask": {
             "who": "helper",
-            "en": "Julian vows to <b>reduce</b> every offer to a unit rate. In this context, <b>reduce</b> most nearly means to &mdash;"
+            "en": "Julian vows to <b>convert</b> every sign to the same form. In this context, convert most nearly means to —",
+            "es": "Julian promete convertir cada letrero a la misma forma. En este contexto, convertir significa más o menos —"
           },
           "choices": [
             {
-              "en": "rewrite each offer as a single price per one unit so deals can be compared.",
+              "en": "rewrite a value in a different form that means the same amount.",
+              "es": "escribir un valor en otra forma que significa la misma cantidad.",
               "correct": true
             },
             {
-              "en": "lower the price the supplier is charging for the product.",
+              "en": "raise the price a supplier is charging.",
+              "es": "subir el precio que cobra un proveedor.",
               "correct": false,
               "why": {
-                "en": "❌ In this context, <i>reduce</i> means to boil each offer down to a price per one unit, not to lower a price or discard a package. Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
+                "en": "Use the Math Lab to test the numbers before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar los números antes de elegir tu respuesta."
               }
             },
             {
-              "en": "throw away the larger of the two packages on the shelf.",
+              "en": "throw away the sign with the smallest number.",
+              "es": "tirar el letrero con el número más pequeño.",
               "correct": false,
               "why": {
-                "en": "❌ In this context, <i>reduce</i> means to boil each offer down to a price per one unit, not to lower a price or discard a package. Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
+                "en": "Use the Math Lab to test the numbers before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar los números antes de elegir tu respuesta."
               }
             }
           ],
-          "goodEn": "✅ Exactly. Here <i>reduce</i> means to express each deal as one comparable rate &mdash; the price for a single unit.",
-          "badEn": "❌ In this context, <i>reduce</i> means to boil each offer down to a price per one unit, not to lower a price or discard a package."
+          "goodEn": "✅ Exactly. Here convert means to rewrite 3/5 as 0.6 or 60% — same value, different form.",
+          "goodEs": "Exacto. Aquí convertir es escribir 3/5 como 0.6 o 60%: el mismo valor en otra forma."
         },
         {
           "type": "challenge",
           "id": "1b",
-          "art": "unit-rate.png",
-          "alt": "Julian weighs two products, deciding which is the better deal",
           "ask": {
             "who": "mogul",
-            "en": "The roastery offers <b>240 g</b> of premium coffee for <b>$9.60</b>. Shoppers compare prices <b>per 100 g</b>. What is the unit rate per 100 g?"
+            "en": "The roastery lists a coffee bag at <b>$19.80</b> with a sign: <b>51% off</b>. Use a benchmark percent to <b>estimate</b> the discount. About how much do you save?",
+            "es": "La tostaduría ofrece una bolsa de café a $19.80 con 51% de descuento. Usa un porcentaje de referencia para estimar el descuento. ¿Cuánto ahorras aproximadamente?"
+          },
+          "hint": {
+            "en": "💡 <b>Hint:</b> 51% is close to 50%, which is half. $19.80 is close to $20. Half of $20 is $10.",
+            "es": "💡 <b>Pista:</b> 51% está cerca de 50%, la mitad. $19.80 está cerca de $20. La mitad de $20 es $10."
           },
           "choices": [
             {
-              "en": "$4.00 per 100 g<span class=\"calc\">9.60 &divide; 240 = $0.04/g &rarr; &times;100 = $4.00</span>",
+              "en": "About $10<span class=\"calc\">51% ≈ 50% = half; half of ≈$20 = $10</span>",
+              "es": "Aprox. $10 (51% ≈ la mitad de ≈$20)",
               "correct": true
             },
             {
-              "en": "$2.50 per 100 g<span class=\"calc\">240 &divide; 9.60 (inverted)</span>",
+              "en": "About $5<span class=\"calc\">that is about 25%</span>",
+              "es": "Aprox. $5 (eso es ≈25%)",
               "correct": false,
               "why": {
-                "en": "&#10060; Find price per gram first ($9.60 &divide; 240), then scale up to 100 g. Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
+                "en": "❌ $5 is about 25% of $20, a quarter. 51% is about HALF, so the savings should be about half of the price.",
+                "es": "$5 es ≈25% de $20, un cuarto. 51% es ≈ la MITAD."
               }
             },
             {
-              "en": "$0.40 per 100 g<span class=\"calc\">off by a factor of 10</span>",
+              "en": "About $50<span class=\"calc\">that is more than the whole price</span>",
+              "es": "Aprox. $50 (más que el precio total)",
               "correct": false,
               "why": {
-                "en": "&#10060; Find price per gram first ($9.60 &divide; 240), then scale up to 100 g. Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
+                "en": "❌ You cannot save more than the bag costs. A discount under 100% is less than the whole price.",
+                "es": "No puedes ahorrar más de lo que cuesta la bolsa. Un descuento menor de 100% es menos que el precio total."
               }
             }
           ],
-          "goodEn": "&#9989; $9.60 &divide; 240 g = $0.04/g, so per 100 g it's $4.00. Clear, comparable pricing &mdash; shoppers love it.",
-          "badEn": "&#10060; Find price per gram first ($9.60 &divide; 240), then scale up to 100 g.",
+          "goodEn": "✅ 51% ≈ 50% and $19.80 ≈ $20, so you save about $10. Benchmark estimates make sale signs easy to check.",
+          "goodEs": "¡51% ≈ 50% y $19.80 ≈ $20, así que ahorras aprox. $10! Las estimaciones con referencias facilitan revisar letreros.",
+          "badEn": "❌ Round to friendly numbers: 51% ≈ 50% and $19.80 ≈ $20. Then take that percent of $20.",
+          "badEs": "Redondea a números fáciles: 51% ≈ 50% y $19.80 ≈ $20. Luego toma ese porcentaje de $20.",
+          "help": {
+            "conceptual": {
+              "en": "❌ Round to friendly numbers: 51% ≈ 50% and $19.80 ≈ $20. Then take that percent of $20.",
+              "es": "Redondea a números fáciles: 51% ≈ 50% y $19.80 ≈ $20. Luego toma ese porcentaje de $20."
+            },
+            "procedural": {
+              "en": "💡 <b>Hint:</b> 51% is close to 50%, which is half. $19.80 is close to $20. Half of $20 is $10.",
+              "es": "💡 <b>Pista:</b> 51% está cerca de 50%, la mitad. $19.80 está cerca de $20. La mitad de $20 es $10."
+            },
+            "example": {
+              "en": "Try the Math Lab with an easy benchmark first (10%, 25%, or 50%), watch the pattern, then test the mission numbers.",
+              "es": "Prueba el laboratorio con un valor fácil primero (10%, 25% o 50%), observa el patrón y luego prueba los números de la misión."
+            }
+          },
+          "art": "unit-rate.png",
+          "alt": "Julian studies a product box with a half-off style sale tag",
           "solveArt": "unlock.png",
           "solveAlt": "Julian celebrates as a new shop unlocks with golden light and confetti",
           "solveBeat": {
             "who": "helper",
-            "en": "Optional: a loyalty boutique wants the absolute best notebook reorder. Crunch it if you want the bonus &mdash; not required to open."
-          },
-          "help": {
-            "conceptual": {
-              "en": "&#10060; Find price per gram first ($9.60 &divide; 240), then scale up to 100 g.",
-              "es": "Haz una pausa y verifica qué cantidad es el total o la base."
-            },
-            "procedural": {
-              "en": "Step 1: Model the numbers in the Interactive Math Lab. Step 2: Check the readout equation.",
-              "es": "Paso 1: Modela los números en el laboratorio interactivo."
-            },
-            "example": {
-              "en": "Try sliding the Interactive Math Lab controls to a simpler benchmark number first, observe the pattern, and then set it to the mission numbers!",
-              "es": "Prueba deslizar los controles del laboratorio a un número de referencia más simple primero."
-            }
+            "en": "Optional: Valeria wants a quick donation count. Try the bonus if you like — it is not required to open.",
+            "es": "Opcional: Valeria quiere un conteo rápido de donaciones. Prueba el bono si quieres; no es obligatorio para abrir."
           }
         },
         {
@@ -273,79 +312,97 @@ window.GN_STORY = {
           "passageRef": "act1.1b",
           "ask": {
             "who": "helper",
-            "en": "According to the roastery's quote, how much premium coffee do you get for $9.60?"
+            "en": "According to the roastery sign, what percent off is the coffee bag?",
+            "es": "Según el letrero de la tostaduría, ¿qué porcentaje de descuento tiene la bolsa de café?"
           },
           "choices": [
             {
-              "en": "240 grams of coffee.",
+              "en": "51% off.",
+              "es": "51% de descuento.",
               "correct": true
             },
             {
-              "en": "100 grams of coffee.",
+              "en": "15% off.",
+              "es": "15% de descuento.",
               "correct": false,
               "why": {
-                "en": "❌ Reread the quote: the roastery offers 240 g for $9.60. The 100 g was the unit you compared in, and 1250 mL was the earlier energy-drink bottle. Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
+                "en": "Use the Math Lab to test the numbers before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar los números antes de elegir tu respuesta."
               }
             },
             {
-              "en": "1250 millilitres of coffee.",
+              "en": "$19.80 off.",
+              "es": "$19.80 de descuento.",
               "correct": false,
               "why": {
-                "en": "❌ Reread the quote: the roastery offers 240 g for $9.60. The 100 g was the unit you compared in, and 1250 mL was the earlier energy-drink bottle. Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
+                "en": "Use the Math Lab to test the numbers before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar los números antes de elegir tu respuesta."
               }
             }
           ],
-          "goodEn": "✅ Correct &mdash; the roastery offers 240 g for $9.60, which is what you scaled to a per-100-g price.",
-          "badEn": "❌ Reread the quote: the roastery offers 240 g for $9.60. The 100 g was the unit you compared in, and 1250 mL was the earlier energy-drink bottle."
+          "goodEn": "✅ Correct — the sign says 51% off a $19.80 bag, which is how you estimated about $10.",
+          "goodEs": "Correcto: el letrero dice 51% de descuento en una bolsa de $19.80."
         },
         {
           "type": "challenge",
           "id": "B1",
-          "optional": true,
-          "bonusTag": "⭐ Captain's Challenge",
           "ask": {
             "who": "helper",
-            "en": "A boutique reorders notebooks. Pack X: <b>5</b> for <b>$7.50</b>. Pack Y: <b>8</b> for <b>$11.20</b>. Which is the better buy, and by how much per notebook?"
+            "en": "Optional: a boutique donates <b>12.5%</b> of its <b>80</b> notebooks to a school. 12.5% is the same as <b>1/8</b>. How many notebooks are donated?",
+            "es": "Opcional: una boutique dona el 12.5% de sus 80 cuadernos a una escuela. 12.5% es lo mismo que 1/8. ¿Cuántos cuadernos dona?"
+          },
+          "hint": {
+            "en": "💡 <b>Hint:</b> 12.5% = 1/8. One eighth of 80 is 80 ÷ 8 = 10.",
+            "es": "💡 <b>Pista:</b> 12.5% = 1/8. Un octavo de 80 es 80 ÷ 8 = 10."
           },
           "choices": [
             {
-              "en": "Pack X, by $0.10<span class=\"calc\">7.50 &divide; 5 = $1.50 each</span>",
-              "correct": false,
-              "why": {
-                "en": "&#10060; Compute both unit prices ($7.50 &divide; 5 and $11.20 &divide; 8) and compare. (Optional &mdash; you can still advance.) Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
-              }
-            },
-            {
-              "en": "Pack Y, by $0.10<span class=\"calc\">$1.50 vs 11.20 &divide; 8 = $1.40; saves $0.10/book</span>",
+              "en": "10 notebooks<span class=\"calc\">80 ÷ 8 = 10</span>",
+              "es": "10 cuadernos (80 ÷ 8 = 10)",
               "correct": true
             },
             {
-              "en": "They cost the same per notebook<span class=\"calc\">$1.50 &ne; $1.40</span>",
+              "en": "12.5 notebooks<span class=\"calc\">that uses the percent as the count</span>",
+              "es": "12.5 cuadernos (usa el porcentaje como cantidad)",
               "correct": false,
               "why": {
-                "en": "&#10060; Compute both unit prices ($7.50 &divide; 5 and $11.20 &divide; 8) and compare. (Optional &mdash; you can still advance.) Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
+                "en": "❌ The percent is not the number of notebooks. Take 12.5% OF 80, which is 1/8 of 80.",
+                "es": "El porcentaje no es la cantidad de cuadernos. Toma el 12.5% DE 80, que es 1/8 de 80."
+              }
+            },
+            {
+              "en": "100 notebooks<span class=\"calc\">that is more than all 80</span>",
+              "es": "100 cuadernos (más que los 80)",
+              "correct": false,
+              "why": {
+                "en": "❌ A donation of 12.5% must be less than all 80 notebooks.",
+                "es": "Una donación del 12.5% debe ser menor que los 80 cuadernos."
               }
             }
           ],
-          "goodEn": "&#11088; Pack Y: $11.20 &divide; 8 = $1.40 vs Pack X's $7.50 &divide; 5 = $1.50 &mdash; $0.10 cheaper per notebook. Bonus claimed!",
-          "badEn": "&#10060; Compute both unit prices ($7.50 &divide; 5 and $11.20 &divide; 8) and compare. (Optional &mdash; you can still advance.)",
+          "goodEn": "⭐ 12.5% = 1/8, and 80 ÷ 8 = 10 notebooks. Bonus claimed!",
+          "goodEs": "⭐ 12.5% = 1/8, y 80 ÷ 8 = 10 cuadernos. ¡Bono obtenido!",
+          "badEn": "❌ 12.5% = 1/8. Divide the total by 8.",
+          "badEs": "12.5% = 1/8. Divide el total entre 8.",
           "help": {
             "conceptual": {
-              "en": "&#10060; Compute both unit prices ($7.50 &divide; 5 and $11.20 &divide; 8) and compare. (Optional &mdash; you can still advance.)",
-              "es": "Haz una pausa y verifica qué cantidad es el total o la base."
+              "en": "❌ 12.5% = 1/8. Divide the total by 8.",
+              "es": "12.5% = 1/8. Divide el total entre 8."
             },
             "procedural": {
-              "en": "Step 1: Model the numbers in the Interactive Math Lab. Step 2: Check the readout equation.",
-              "es": "Paso 1: Modela los números en el laboratorio interactivo."
+              "en": "💡 <b>Hint:</b> 12.5% = 1/8. One eighth of 80 is 80 ÷ 8 = 10.",
+              "es": "💡 <b>Pista:</b> 12.5% = 1/8. Un octavo de 80 es 80 ÷ 8 = 10."
             },
             "example": {
-              "en": "Try sliding the Interactive Math Lab controls to a simpler benchmark number first, observe the pattern, and then set it to the mission numbers!",
-              "es": "Prueba deslizar los controles del laboratorio a un número de referencia más simple primero."
+              "en": "Try the Math Lab with an easy benchmark first (10%, 25%, or 50%), watch the pattern, then test the mission numbers.",
+              "es": "Prueba el laboratorio con un valor fácil primero (10%, 25% o 50%), observa el patrón y luego prueba los números de la misión."
             }
+          },
+          "optional": true,
+          "solveBeat": {
+            "who": "mogul",
+            "en": "A clean 10 notebooks. Fractions and percents really are the same thing in different clothes.",
+            "es": "10 cuadernos exactos. Las fracciones y los porcentajes son lo mismo con otra forma."
           }
         },
         {
@@ -353,44 +410,48 @@ window.GN_STORY = {
           "id": "c3",
           "skill": "cite_evidence",
           "standard": "RL.6.1",
-          "dok": 3,
+          "dok": 2,
           "interaction": "evidence",
-          "passageRef": "act1.beat1",
+          "passageRef": "act1.beats",
           "ask": {
             "who": "helper",
-            "en": "Claim: <b>LEDGER-8 chooses a deal by its size instead of its real value.</b> Tap the line that <b>best proves</b> this claim."
+            "en": "Claim: LEDGER-8 compares signs by their raw numbers instead of converting. Tap the line that best proves this claim.",
+            "es": "Afirmación: LEDGER-8 compara letreros por sus números en vez de convertirlos. Toca la línea que mejor lo demuestra."
           },
           "choices": [
             {
-              "en": "&ldquo;Bigger bottle, better deal&hellip; B's the cheap one because it's HUGE!&rdquo;",
+              "en": "“The biggest number is 61, so 61% wins. I'll rank 3/5 last without converting it.”",
+              "es": "“El número más grande es 61, así que gana 61%. Pondré 3/5 al final sin convertirlo.”",
               "correct": true
             },
             {
-              "en": "&ldquo;Whoever's cheaper per unit gets the shelf.&rdquo;",
+              "en": "“To compare signs fairly, write every one in the SAME form.”",
+              "es": "“Para comparar letreros con justicia, escribe todos en la MISMA forma.”",
               "correct": false,
               "why": {
-                "en": "❌ Those lines describe the Mogul's careful unit-rate method. Find LEDGER-8's line that picks a deal just because the package is bigger. Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
+                "en": "Use the Math Lab to test the numbers before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar los números antes de elegir tu respuesta."
               }
             },
             {
-              "en": "&ldquo;I'll express it per 100 grams so shoppers can compare instantly.&rdquo;",
+              "en": "“Fraction to decimal by dividing, decimal to percent by moving the dot.”",
+              "es": "“Fracción a decimal dividiendo, decimal a porcentaje moviendo el punto.”",
               "correct": false,
               "why": {
-                "en": "❌ Those lines describe the Mogul's careful unit-rate method. Find LEDGER-8's line that picks a deal just because the package is bigger. Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
+                "en": "Use the Math Lab to test the numbers before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar los números antes de elegir tu respuesta."
               }
             }
           ],
-          "goodEn": "✅ Strong evidence &mdash; LEDGER-8 calls the bottle &ldquo;the cheap one because it's HUGE,&rdquo; judging by size, not price per unit.",
-          "badEn": "❌ Those lines describe the Mogul's careful unit-rate method. Find LEDGER-8's line that picks a deal just because the package is bigger."
+          "goodEn": "✅ Strong evidence — LEDGER-8 ranks 3/5 last without converting it, judging by the raw number.",
+          "goodEs": "Evidencia sólida: LEDGER-8 pone 3/5 al final sin convertirlo."
         }
       ]
     },
     {
       "id": "act2",
       "tab": "Act 2: Markdowns",
-      "kicker": "Act 2 · Fractions, Decimals & Percents",
+      "kicker": "Act 2 · Percent of a Number",
       "title": "The Markdown War",
       "advanceLabel": "Launch the sale &#127881;",
       "steps": [
@@ -495,24 +556,26 @@ window.GN_STORY = {
               "correct": true
             },
             {
-              "en": "Find the price per millilitre of a bottled energy drink.",
+              "en": "Compare three sale signs by converting them to the same form.",
+              "es": "Comparar tres letreros de oferta convirtiéndolos a la misma forma.",
               "correct": false,
               "why": {
-                "en": "❌ Per-millilitre pricing was Act 1, and grabbing the jumbo size is LEDGER-8's mistake. This chapter is about pricing with percents. Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
+                "en": "Use the Math Lab to test the numbers before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar los números antes de elegir tu respuesta."
               }
             },
             {
-              "en": "Grab the jumbo package because it looks like the bigger value.",
+              "en": "Pick the biggest percent on the sign without checking the price.",
+              "es": "Elegir el porcentaje más grande del letrero sin revisar el precio.",
               "correct": false,
               "why": {
-                "en": "❌ Per-millilitre pricing was Act 1, and grabbing the jumbo size is LEDGER-8's mistake. This chapter is about pricing with percents. Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
+                "en": "Use the Math Lab to test the numbers before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar los números antes de elegir tu respuesta."
               }
             }
           ],
           "goodEn": "✅ Right &mdash; the whole chapter is about converting percents correctly to mark prices down and beat the rival.",
-          "badEn": "❌ Per-millilitre pricing was Act 1, and grabbing the jumbo size is LEDGER-8's mistake. This chapter is about pricing with percents."
+          "badEn": "❌ Comparing signs in different forms was Act 1. This chapter is about pricing sales with percents of a price."
         },
         {
           "type": "challenge",
@@ -666,22 +729,26 @@ window.GN_STORY = {
           "beats": [
             {
               "who": "helper",
-              "caption": true,
-              "en": "Grand opening, boss. The headline deal goes on every billboard &mdash; it has to fuse a unit rate with a percent markdown, flawlessly."
+              "en": "Grand opening, boss. The headline deal goes on every billboard, so it has to be exact: a percent OF a price, and the WHOLE behind a part.",
+              "es": "Gran inauguración, jefe. La oferta principal va en cada cartelera, así que debe ser exacta: un porcentaje DE un precio y el TODO detrás de una parte.",
+              "caption": true
             },
             {
               "who": "helper",
-              "caption": true,
-              "en": "Order matters here, boss. Find the price for ONE first, then apply the percent off &mdash; do it backward and the headline number will be wrong."
+              "en": "When you know a part and its percent, divide to get back to the whole. Adding the numbers will never work.",
+              "es": "Cuando conoces una parte y su porcentaje, divides para volver al todo. Sumar los números nunca funciona.",
+              "caption": true
             },
             {
               "who": "mogul",
-              "en": "Per-unit price first, then the discount. One clean number for one bulb. Let's give this city the deal of the year."
+              "en": "Part ÷ percent (as a decimal) = whole. Then I can check it by taking the percent of my answer. Let's give this city the deal of the year.",
+              "es": "Parte ÷ porcentaje (en decimal) = todo. Luego lo verifico tomando el porcentaje de mi respuesta."
             },
             {
               "who": "penny",
-              "misconception": true,
-              "en": "A 6-pack at $48 with 15% off? Just take 10% off — close enough — about $7.20 a bulb!"
+              "en": "$34 off at 40%? The original price is $34 + $40 = $74. Simple.",
+              "es": "¿$34 de descuento al 40%? El precio original es $34 + $40 = $74. Simple.",
+              "misconception": true
             }
           ]
         },
@@ -689,102 +756,123 @@ window.GN_STORY = {
           "type": "challenge",
           "id": "F",
           "ask": {
-            "who": "mogul",
-            "en": "The grand-opening special: a <b>6-pack</b> of smart bulbs at <b>$48</b>, then <b>15% off</b>. What is the final price for <b>one bulb</b>?"
+            "who": "helper",
+            "en": "The grand-opening special takes <b>$34</b> off a speaker system, and that discount is <b>40%</b> of the original price. What was the <b>original price</b>, and what is the <b>sale price</b>?",
+            "es": "La oferta de inauguración quita $34 a un sistema de bocinas, y ese descuento es el 40% del precio original. ¿Cuál era el precio original y cuál es el precio de oferta?"
+          },
+          "hint": {
+            "en": "💡 <b>Hint:</b> $34 is 40% of the original. Original = 34 ÷ 0.40 = 85. Sale price = 85 − 34.",
+            "es": "💡 <b>Pista:</b> $34 es el 40% del original. Original = 34 ÷ 0.40 = 85. Precio de oferta = 85 − 34."
           },
           "choices": [
             {
-              "en": "$6.80<span class=\"calc\">48 &divide; 6 = $8 &rarr; 8 &times; 0.85 = $6.80</span>",
+              "en": "Original $85, sale price $51<span class=\"calc\">34 ÷ 0.40 = 85; 85 − 34 = 51</span>",
+              "es": "Original $85, oferta $51 (34 ÷ 0.40 = 85)",
               "correct": true
             },
             {
-              "en": "$8.00<span class=\"calc\">unit rate before the discount</span>",
+              "en": "Original $74, sale price $40<span class=\"calc\">added 34 + 40</span>",
+              "es": "Original $74, oferta $40 (sumó 34 + 40)",
               "correct": false,
               "why": {
-                "en": "&#10060; Two steps: $48 &divide; 6 = $8, then take 15% off ($8 &times; 0.85 = $6.80). Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
+                "en": "❌ A percent is not a dollar amount, so 34 + 40 means nothing. $34 is 40% of the original: divide 34 by 0.40.",
+                "es": "Un porcentaje no es dólares, así que 34 + 40 no tiene sentido. $34 es el 40% del original: divide 34 entre 0.40."
               }
             },
             {
-              "en": "$7.20<span class=\"calc\">subtracted 10%, not 15%</span>",
+              "en": "Original $13.60, sale price −$20.40<span class=\"calc\">took 40% of 34 instead</span>",
+              "es": "Original $13.60, oferta −$20.40 (tomó el 40% de 34)",
               "correct": false,
               "why": {
-                "en": "&#10060; Two steps: $48 &divide; 6 = $8, then take 15% off ($8 &times; 0.85 = $6.80). Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
+                "en": "❌ 40% OF 34 would find a smaller part. We need the whole: the sale price can never be negative.",
+                "es": "El 40% DE 34 hallaría una parte menor. Buscamos el total: el precio no puede ser negativo."
               }
             }
           ],
-          "goodEn": "&#9989; $48 &divide; 6 = $8 per bulb, then $8 &times; 0.85 = $6.80. Unit rate and markdown fused perfectly.",
-          "badEn": "&#10060; Two steps: $48 &divide; 6 = $8, then take 15% off ($8 &times; 0.85 = $6.80).",
-          "solveBeat": {
-            "who": "helper",
-            "en": "Optional extra credit &mdash; the mall opens whether or not you solve it. A competitor counters your bulb deal."
-          },
+          "goodEn": "✅ HEADLINE DEAL! $34 ÷ 0.40 = $85 original, then $85 − $34 = $51 sale price. Check: 40% of $85 = $34. ✔",
+          "goodEs": "¡OFERTA PRINCIPAL! $34 ÷ 0.40 = $85 original y $85 − $34 = $51. Verifica: 40% de $85 = $34.",
+          "badEn": "❌ $34 is the PART and 40% is its percent. Divide the part by the decimal percent to find the whole.",
+          "badEs": "$34 es la PARTE y 40% es su porcentaje. Divide la parte entre el porcentaje en decimal para hallar el total.",
           "help": {
             "conceptual": {
-              "en": "&#10060; Two steps: $48 &divide; 6 = $8, then take 15% off ($8 &times; 0.85 = $6.80).",
-              "es": "Haz una pausa y verifica qué cantidad es el total o la base."
+              "en": "❌ $34 is the PART and 40% is its percent. Divide the part by the decimal percent to find the whole.",
+              "es": "$34 es la PARTE y 40% es su porcentaje. Divide la parte entre el porcentaje en decimal para hallar el total."
             },
             "procedural": {
-              "en": "Step 1: Model the numbers in the Interactive Math Lab. Step 2: Check the readout equation.",
-              "es": "Paso 1: Modela los números en el laboratorio interactivo."
+              "en": "💡 <b>Hint:</b> $34 is 40% of the original. Original = 34 ÷ 0.40 = 85. Sale price = 85 − 34.",
+              "es": "💡 <b>Pista:</b> $34 es el 40% del original. Original = 34 ÷ 0.40 = 85. Precio de oferta = 85 − 34."
             },
             "example": {
-              "en": "Try sliding the Interactive Math Lab controls to a simpler benchmark number first, observe the pattern, and then set it to the mission numbers!",
-              "es": "Prueba deslizar los controles del laboratorio a un número de referencia más simple primero."
+              "en": "Try the Math Lab with an easy benchmark first (10%, 25%, or 50%), watch the pattern, then test the mission numbers.",
+              "es": "Prueba el laboratorio con un valor fácil primero (10%, 25% o 50%), observa el patrón y luego prueba los números de la misión."
             }
+          },
+          "solveBeat": {
+            "who": "helper",
+            "en": "Optional extra credit — the mall opens whether or not you solve it. A competitor counters your deal.",
+            "es": "Crédito extra opcional: el centro comercial abre aunque no lo resuelvas. Un competidor responde a tu oferta."
           }
         },
         {
           "type": "challenge",
           "id": "BF",
-          "optional": true,
-          "bonusTag": "⭐ Captain's Challenge",
           "ask": {
             "who": "helper",
-            "en": "A competitor counters your bulb deal. <b>Deal A</b> (yours): 6 for $48, then 15% off. <b>Deal B</b> (theirs): 4 for $30, then 10% off. Which deal is the better value <b>per bulb</b>?"
+            "en": "A competitor counters. Deal A: a <b>$60</b> coat at <b>30% off</b>. Deal B: a <b>$50</b> coat at <b>20% off</b>. Which coat costs <b>less</b> after the discount?",
+            "es": "Un competidor responde. Oferta A: un abrigo de $60 con 30% de descuento. Oferta B: un abrigo de $50 con 20% de descuento. ¿Cuál abrigo cuesta menos después del descuento?"
+          },
+          "hint": {
+            "en": "💡 <b>Hint:</b> A: $60 × 0.70 = $42. B: $50 × 0.80 = $40.",
+            "es": "💡 <b>Pista:</b> A: $60 × 0.70 = $42. B: $50 × 0.80 = $40."
           },
           "choices": [
             {
-              "en": "Deal B<span class=\"calc\">B: (30 &divide; 4) &times; 0.90 = $6.75 &lt; A&rsquo;s $6.80</span>",
+              "en": "Deal B<span class=\"calc\">$50 × 0.80 = $40, less than A’s $42</span>",
+              "es": "Oferta B ($50 × 0.80 = $40, menos que $42)",
               "correct": true
             },
             {
-              "en": "Deal A<span class=\"calc\">$6.80 is higher than $6.75</span>",
+              "en": "Deal A<span class=\"calc\">bigger percent off, so it must cost less</span>",
+              "es": "Oferta A (mayor porcentaje, así que cuesta menos)",
               "correct": false,
               "why": {
-                "en": "&#10060; Reduce each to a final per-bulb price: A = $6.80, B = (30 &divide; 4) &times; 0.90 = $6.75. (Optional &mdash; you can still finish.) Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
+                "en": "❌ A bigger percent of a bigger price does not decide it. Find each sale price: A is $42, B is $40.",
+                "es": "Un porcentaje mayor de un precio mayor no decide. Halla cada precio de oferta: A es $42, B es $40."
               }
             },
             {
-              "en": "They are identical per bulb<span class=\"calc\">$6.80 &ne; $6.75</span>",
+              "en": "They cost the same<span class=\"calc\">$42 ≠ $40</span>",
+              "es": "Cuestan lo mismo ($42 ≠ $40)",
               "correct": false,
               "why": {
-                "en": "&#10060; Reduce each to a final per-bulb price: A = $6.80, B = (30 &divide; 4) &times; 0.90 = $6.75. (Optional &mdash; you can still finish.) Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
+                "en": "❌ Compute both: $60 × 0.70 = $42 and $50 × 0.80 = $40. They are different.",
+                "es": "Calcula ambos: $60 × 0.70 = $42 y $50 × 0.80 = $40. Son distintos."
               }
             }
           ],
-          "goodEn": "&#11088; Deal B: ($30 &divide; 4) &times; 0.90 = $7.50 &times; 0.90 = $6.75 per bulb, beating your $6.80. A true mogul knows when the rival is right!",
-          "badEn": "&#10060; Reduce each to a final per-bulb price: A = $6.80, B = (30 &divide; 4) &times; 0.90 = $6.75. (Optional &mdash; you can still finish.)",
-          "solveBeat": {
-            "who": "mogul",
-            "en": "Even the rival's deal teaches me something. The galleria opens stronger than ever."
-          },
+          "goodEn": "⭐ Deal B: $50 × 0.80 = $40 beats Deal A's $60 × 0.70 = $42. A bigger percent off does not always mean a lower price!",
+          "goodEs": "⭐ Oferta B: $50 × 0.80 = $40 gana a $42. ¡Un porcentaje mayor no siempre significa un precio menor!",
+          "badEn": "❌ Compare the actual sale prices, not just the percents.",
+          "badEs": "Compara los precios de oferta reales, no solo los porcentajes.",
           "help": {
             "conceptual": {
-              "en": "&#10060; Reduce each to a final per-bulb price: A = $6.80, B = (30 &divide; 4) &times; 0.90 = $6.75. (Optional &mdash; you can still finish.)",
-              "es": "Haz una pausa y verifica qué cantidad es el total o la base."
+              "en": "❌ Compare the actual sale prices, not just the percents.",
+              "es": "Compara los precios de oferta reales, no solo los porcentajes."
             },
             "procedural": {
-              "en": "Step 1: Model the numbers in the Interactive Math Lab. Step 2: Check the readout equation.",
-              "es": "Paso 1: Modela los números en el laboratorio interactivo."
+              "en": "💡 <b>Hint:</b> A: $60 × 0.70 = $42. B: $50 × 0.80 = $40.",
+              "es": "💡 <b>Pista:</b> A: $60 × 0.70 = $42. B: $50 × 0.80 = $40."
             },
             "example": {
-              "en": "Try sliding the Interactive Math Lab controls to a simpler benchmark number first, observe the pattern, and then set it to the mission numbers!",
-              "es": "Prueba deslizar los controles del laboratorio a un número de referencia más simple primero."
+              "en": "Try the Math Lab with an easy benchmark first (10%, 25%, or 50%), watch the pattern, then test the mission numbers.",
+              "es": "Prueba el laboratorio con un valor fácil primero (10%, 25% o 50%), observa el patrón y luego prueba los números de la misión."
             }
+          },
+          "optional": true,
+          "solveBeat": {
+            "who": "mogul",
+            "en": "Even the rival's deal teaches me something: compare the actual prices. The galleria opens stronger than ever.",
+            "es": "Hasta la oferta del rival me enseña algo: comparar los precios reales. La galería abre más fuerte que nunca."
           }
         },
         {
@@ -792,37 +880,41 @@ window.GN_STORY = {
           "id": "c6",
           "skill": "inference",
           "standard": "RL.6.1",
-          "dok": 3,
+          "dok": 2,
           "interaction": "mc",
           "passageRef": "final",
           "ask": {
             "who": "helper",
-            "en": "Throughout the galleria, LEDGER-8 reaches for the jumbo size and rounds the percent. What can you <b>infer</b> about why LEDGER-8's deals keep coming out wrong?"
+            "en": "LEDGER-8 compares raw numbers and adds a percent to dollars. What can you infer about why LEDGER-8's deals keep coming out wrong?",
+            "es": "LEDGER-8 compara números sin convertir y suma un porcentaje a dólares. ¿Qué puedes inferir sobre por qué sus ofertas salen mal?"
           },
           "choices": [
             {
-              "en": "LEDGER-8 trusts quick instincts about size and rounding instead of doing the per-unit and percent math, so the real best deal slips by.",
+              "en": "LEDGER-8 treats a percent like a plain number instead of a part out of 100, so its answers do not match the real amounts.",
+              "es": "LEDGER-8 trata el porcentaje como un número cualquiera en vez de una parte de 100, así que sus respuestas no coinciden con las cantidades reales.",
               "correct": true
             },
             {
               "en": "LEDGER-8 is secretly working for the rival mall and wants the Mogul to lose.",
+              "es": "LEDGER-8 trabaja en secreto para el centro rival y quiere que el Mogul pierda.",
               "correct": false,
               "why": {
-                "en": "❌ Nothing shows LEDGER-8 is disloyal or that the tags are wrong. The pattern is that LEDGER-8 guesses by size and rounding instead of computing. Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
+                "en": "Use the Math Lab to test the numbers before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar los números antes de elegir tu respuesta."
               }
             },
             {
               "en": "Every price tag in the galleria is printed incorrectly.",
+              "es": "Todas las etiquetas de la galería están impresas mal.",
               "correct": false,
               "why": {
-                "en": "❌ Nothing shows LEDGER-8 is disloyal or that the tags are wrong. The pattern is that LEDGER-8 guesses by size and rounding instead of computing. Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
+                "en": "Use the Math Lab to test the numbers before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar los números antes de elegir tu respuesta."
               }
             }
           ],
-          "goodEn": "✅ Good inference &mdash; LEDGER-8 leans on gut reactions (bigger = cheaper, round the percent) rather than the unit-rate and percent steps, so the numbers miss.",
-          "badEn": "❌ Nothing shows LEDGER-8 is disloyal or that the tags are wrong. The pattern is that LEDGER-8 guesses by size and rounding instead of computing."
+          "goodEn": "✅ Good inference — LEDGER-8 skips the conversion and the division steps, so the numbers never match the real amounts.",
+          "goodEs": "Buena inferencia: LEDGER-8 se salta la conversión y la división."
         },
         {
           "type": "comprehension",
@@ -834,86 +926,88 @@ window.GN_STORY = {
           "passageRef": "final",
           "ask": {
             "who": "helper",
-            "en": "The Nexus Galleria is open and investors are calling. What will the Mogul most likely need to do next?"
+            "en": "The Nexus Galleria is open and investors are calling. What will the Mogul most likely need to do next?",
+            "es": "La Galería Nexus está abierta y los inversionistas llaman. ¿Qué necesitará hacer el Mogul probablemente después?"
           },
           "choices": [
             {
-              "en": "Keep using unit rates and percent markdowns to negotiate new deals and grow the empire.",
+              "en": "Keep using percents to price sales, compare deals, and grow the empire.",
+              "es": "Seguir usando porcentajes para fijar ofertas, comparar y hacer crecer el imperio.",
               "correct": true
             },
             {
               "en": "Shut down the shelves and shops that just opened in Act 1.",
+              "es": "Cerrar los estantes y tiendas que recién abrieron en el Acto 1.",
               "correct": false,
               "why": {
-                "en": "❌ Closing shops or ignoring prices would undo everything the Mogul built. The ending points to more deal-making ahead. Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
+                "en": "Use the Math Lab to test the numbers before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar los números antes de elegir tu respuesta."
               }
             },
             {
               "en": "Stop comparing prices and let suppliers charge whatever they want.",
+              "es": "Dejar de comparar precios y permitir que los proveedores cobren lo que quieran.",
               "correct": false,
               "why": {
-                "en": "❌ Closing shops or ignoring prices would undo everything the Mogul built. The ending points to more deal-making ahead. Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Usa el laboratorio de matemáticas para comprobar las cantidades."
+                "en": "Use the Math Lab to test the numbers before choosing your reply.",
+                "es": "Usa el laboratorio de matemáticas para comprobar los números antes de elegir tu respuesta."
               }
             }
           ],
-          "goodEn": "✅ Likely &mdash; the story ends with the empire &ldquo;just getting started,&rdquo; so the Mogul keeps using these pricing skills to grow.",
-          "badEn": "❌ Closing shops or ignoring prices would undo everything the Mogul built. The ending points to more deal-making ahead."
+          "goodEn": "✅ Likely — the story ends with the empire just getting started, so the Mogul keeps using these percent skills.",
+          "goodEs": "Probable: la historia termina con el imperio apenas comenzando."
         }
       ]
     }
   ],
   "glossary": [
     {
-      "ico": "&#128181;",
-      "en": "Rate",
-      "def": "A ratio comparing two quantities with different units, such as $6.25 per 1250 mL or 240 g per $9.60."
-    },
-    {
-      "ico": "&#49;&#65039;&#8419;",
-      "en": "Unit rate",
-      "def": "A rate expressed per single unit (per 1). Computed as quantity-A &divide; quantity-B, e.g. price &divide; amount = $0.04 per gram."
-    },
-    {
-      "ico": "&#128722;",
-      "en": "Best buy",
-      "def": "The option with the lowest unit rate. Comparisons are only valid in the same unit (per mL, per 100 g, per item)."
-    },
-    {
       "ico": "&#37;",
       "en": "Percent",
-      "def": "A ratio out of 100. 35% = 35/100 = 0.35. Percents can exceed 100% or be less than 1%."
-    },
-    {
-      "ico": "&#128201;",
-      "en": "Markdown / Discount",
-      "def": "An amount subtracted from the original price. A p% discount gives sale price = original &times; (1 &minus; p/100)."
-    },
-    {
-      "ico": "&#128200;",
-      "en": "Percent over 100%",
-      "def": "Values greater than the whole. 250% = 2.5 = 5/2; e.g. 250% of 40 is 100."
-    },
-    {
-      "ico": "&#128302;",
-      "en": "Percent under 1%",
-      "def": "Values smaller than one hundredth of the whole. 0.5% = 0.005 = 1/200."
+      "es": "por ciento",
+      "def": "A part out of 100. 35% means 35 out of 100, or 35/100."
     },
     {
       "ico": "&#128260;",
       "en": "Equivalent forms",
-      "def": "Fractions, decimals, and percents can name the same value: 3/4 = 0.75 = 75%."
+      "es": "formas equivalentes",
+      "def": "A fraction, a decimal, and a percent that name the same value. 3/5 = 0.6 = 60%."
     },
     {
-      "ico": "&#9194;",
+      "ico": "&#127919;",
+      "en": "Benchmark percent",
+      "es": "porcentaje de referencia",
+      "def": "An easy percent (10%, 25%, 50%) you use to estimate harder ones. 51% is about half."
+    },
+    {
+      "ico": "&#128200;",
+      "en": "Percent over 100%",
+      "es": "porcentaje mayor que 100%",
+      "def": "A percent can be more than 100% when a quantity grows past the whole. 250% = 2.5 times the whole."
+    },
+    {
+      "ico": "&#128201;",
+      "en": "Percent under 1%",
+      "es": "porcentaje menor que 1%",
+      "def": "A percent can be less than 1%. 0.5% = 0.005 = 1/200."
+    },
+    {
+      "ico": "&#127991;&#65039;",
+      "en": "Markdown / Discount",
+      "es": "rebaja / descuento",
+      "def": "The amount taken off the price. 35% off $80 means you pay 65% of $80."
+    },
+    {
+      "ico": "&#8634;",
       "en": "Reverse percent",
-      "def": "Finding an original amount from a result. If $60 is 75% of the original, original = 60 &divide; 0.75 = $80."
+      "es": "porcentaje inverso",
+      "def": "Finding the whole when you know a part and its percent. If $60 is 75% of the price, the price is $60 ÷ 0.75 = $80."
     },
     {
       "ico": "&#9878;&#65039;",
       "en": "Value comparison",
-      "def": "Comparing deals by reducing each to a final unit price, then choosing the lowest."
+      "es": "comparación de valores",
+      "def": "Compare percents of different wholes by finding the actual amounts first."
     }
   ],
   "complete": {
@@ -921,8 +1015,8 @@ window.GN_STORY = {
     "alt": "Julian celebrates on the balcony of his thriving mall with confetti and a cheering crowd",
     "badge": "&#127881;&#128717;&#65039;&#11088;",
     "titleEn": "Galleria Launched &mdash; Mission Complete!",
-    "en": "The Nexus Galleria is the busiest mall in the city. You out-priced every rival with sharp <b>unit-rate</b> comparisons, ran precise <b>percent markdowns</b>, and even handled percents beyond 100% and below 1%. Investors are calling, Mogul &mdash; the empire is just getting started.",
-    "es": "",
+    "en": "The Nexus Galleria is open and investors are calling. You converted between fractions, decimals, and percents, estimated with benchmarks, set markdown prices, handled percents over 100% and under 1%, and worked back to the whole. The empire is just getting started!",
+    "es": "La Galería Nexus está abierta y los inversionistas llaman. Convertiste entre fracciones, decimales y porcentajes, estimaste con referencias, fijaste precios de rebaja y hallaste el total. ¡El imperio apenas comienza!",
     "master": {
       "headingEn": "Prove your rank to certify your Master Certificate!",
       "promptEn": "Calculate complex savings: A designer coat costs <strong>$80</strong> but is on sale for <strong>25% off</strong>. If the store charges <strong>5% sales tax</strong> on the final sale price, what is the final cost?",

@@ -81,7 +81,7 @@ window.GN_STORY = {
   "cover": {
     "art": "cover.png",
     "alt": "A young sports data analyst stands in an arena data room surrounded by glowing holographic basketball stats",
-    "blurbEn": "You are the team's new <b>data analyst</b>! The coach needs your help. Read the <b>data</b>, find the <b>mean, median, and mode</b>, and make the right call to win the game! BUZZER-3, the courtside bot, will help… but it reaches for the mean every time, even when the median tells the truth.",
+    "blurbEn": "You are the team's new <b>data analyst</b>! The coach needs your help. Read the <b>data</b>, find the <b>mean, median, and range</b>, and make the right call to win the game! BUZZER-3, the courtside bot, will help… but it reaches for the mean every time, even when the median tells the truth.",
     "blurbEs": "Eres la analista de datos del equipo. Lee los datos y haz la jugada correcta para ganar el partido.",
     "startLabel": "Start the Game 🏀"
   },
@@ -396,7 +396,7 @@ window.GN_STORY = {
     {
       "id": "act2",
       "tab": "Act 2: Center of the Game",
-      "kicker": "Act 2 · Mean, Median & Mode",
+      "kicker": "Act 2 · Mean, Median & Range",
       "title": "Center of the Game",
       "advanceLabel": "Report the stats ⚡",
       "steps": [
@@ -420,7 +420,7 @@ window.GN_STORY = {
             },
             {
               "who": "analyst",
-              "en": "Mean, median, and mode all describe the center. I'll compute each one step by step.",
+              "en": "The mean and median describe the center, and the range tells how spread out the data is. I'll compute each one step by step.",
               "es": "La media, la mediana y la moda describen el centro. Calcularé cada una paso a paso.",
               "vocab": [
                 {
@@ -433,7 +433,7 @@ window.GN_STORY = {
             {
               "who": "stats",
               "misconception": true,
-              "en": "Why bother with median or mode? The mean is the only center anyone needs. Just average it!",
+              "en": "Why bother with the median or the range? The mean is the only center anyone needs. Just average it!",
               "es": "¿Para qué la mediana o la moda? La media es el único centro que se necesita. ¡Solo promédialo!"
             }
           ]
@@ -453,7 +453,7 @@ window.GN_STORY = {
           },
           "choices": [
             {
-              "en": "Finding the center of the data using the mean, median, and mode.",
+              "en": "Finding the center of the data using the mean and median, and the spread using the range.",
               "es": "Encontrar el centro de los datos usando la media, la mediana y la moda.",
               "correct": true
             },
@@ -596,7 +596,7 @@ window.GN_STORY = {
           "badEs": "La mediana es el número del MEDIO. En 5 números es el 3.º. Intenta otra vez.",
           "solveBeat": {
             "who": "analyst",
-            "en": "Median found! Last is the MODE — the number that shows up the most often.",
+            "en": "Median found! Last is the RANGE — greatest minus least.",
             "es": "¡Mediana lista! Por último, la moda: el número que aparece más veces."
           },
           "help": {
@@ -619,71 +619,64 @@ window.GN_STORY = {
           "id": "2c",
           "ask": {
             "who": "analyst",
-            "en": "In a new game series, I wrote the assists: <b>7, 7, 9, 4, 7</b>. The <b>mode</b> is the number that appears <b>most often</b>. What is the mode?",
-            "es": "La moda es el número que aparece más veces.",
-            "vocab": [
-              {
-                "term": "mode",
-                "en": "The value that appears the most often. Mode of 7,7,9,4,7 is 7.",
-                "es": "El valor que aparece con más frecuencia. La moda de 7,7,9,4,7 es 7."
-              }
-            ]
+            "en": "Jordan's points were <b>8, 12, 10, 6, 14</b>. The <b>range</b> is the greatest value minus the least value. It tells how spread out the data is. What is the range?",
+            "es": "Los puntos de Jordan fueron 8, 12, 10, 6, 14. El rango es el valor mayor menos el valor menor. ¿Cuál es el rango?"
           },
           "hint": {
-            "en": "Count each number. 7 appears three times. Every other number appears once.",
-            "es": "Cuenta cada número. El 7 aparece tres veces. Los demás aparecen una vez."
-          },
-          "frame": {
-            "en": "“The mode (most often) is ____.”",
-            "es": "“La moda (la que más aparece) es ____.”"
+            "en": "💡 <b>Hint:</b> The greatest is 14 and the least is 6. Now do 14 − 6.",
+            "es": "💡 <b>Pista:</b> El mayor es 14 y el menor es 6. Calcula 14 − 6."
           },
           "choices": [
             {
-              "en": "4 <span class=\"calc\">(appears only once)</span>",
-              "es": "4 (aparece solo una vez)",
-              "correct": false,
-              "why": {
-                "en": "❌ The mode appears MOST often. Count how many times each number shows up. Try again. Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "La moda aparece MÁS veces. Cuenta cada número. Intenta otra vez."
-              }
-            },
-            {
-              "en": "7 <span class=\"calc\">(appears 3 times — the most)</span>",
-              "es": "7 (aparece 3 veces — la mayoría)",
+              "en": "8<span class=\"calc\">14 − 6 = 8</span>",
+              "es": "8 (14 − 6 = 8)",
               "correct": true
             },
             {
-              "en": "9 <span class=\"calc\">(appears only once)</span>",
-              "es": "9 (aparece solo una vez)",
+              "en": "20<span class=\"calc\">that adds 14 + 6</span>",
+              "es": "20 (suma 14 + 6)",
               "correct": false,
               "why": {
-                "en": "❌ The mode appears MOST often. Count how many times each number shows up. Try again. Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "La moda aparece MÁS veces. Cuenta cada número. Intenta otra vez."
+                "en": "❌ The range SUBTRACTS: greatest minus least, not plus.",
+                "es": "El rango RESTA: mayor menos menor."
+              }
+            },
+            {
+              "en": "14<span class=\"calc\">that is only the greatest value</span>",
+              "es": "14 (solo el valor mayor)",
+              "correct": false,
+              "why": {
+                "en": "❌ 14 is the greatest value. The range is how far it is from the least value (6).",
+                "es": "14 es el valor mayor. El rango es la distancia hasta el menor (6)."
               }
             }
           ],
-          "goodEn": "✅ The mode is 7 — it appears 3 times, more than any other number. Stats complete!",
-          "goodEs": "¡La moda es 7! Aparece 3 veces, más que las demás.",
-          "badEn": "❌ The mode appears MOST often. Count how many times each number shows up. Try again.",
-          "badEs": "La moda aparece MÁS veces. Cuenta cada número. Intenta otra vez.",
-          "solveBeat": {
-            "who": "analyst",
-            "en": "Mean, median, and mode all reported. Now for the game-winning call!",
-            "es": "Media, mediana y moda reportadas. ¡Ahora la jugada que gana el partido!"
-          },
+          "goodEn": "✅ The range is 8! 14 − 6 = 8. Stats complete!",
+          "goodEs": "✅ ¡El rango es 8! 14 − 6 = 8. ¡Estadísticas completas!",
+          "badEn": "❌ Range = greatest − least. Find both, then subtract.",
+          "badEs": "Rango = mayor − menor. Halla ambos y resta.",
           "help": {
             "conceptual": {
-              "en": "❌ The mode appears MOST often. Count how many times each number shows up. Try again.",
-              "es": "La moda aparece MÁS veces. Cuenta cada número. Intenta otra vez."
+              "en": "❌ Range = greatest − least. Find both, then subtract.",
+              "es": "Rango = mayor − menor. Halla ambos y resta."
             },
             "procedural": {
-              "en": "Count each number. 7 appears three times. Every other number appears once.",
-              "es": "Cuenta cada número. El 7 aparece tres veces. Los demás aparecen una vez."
+              "en": "💡 <b>Hint:</b> The greatest is 14 and the least is 6. Now do 14 − 6.",
+              "es": "💡 <b>Pista:</b> El mayor es 14 y el menor es 6. Calcula 14 − 6."
             },
             "example": {
-              "en": "Try sliding the Interactive Math Lab controls to a simpler benchmark number first, observe the pattern, and then set it to the mission numbers!",
-              "es": "Prueba deslizar los controles del laboratorio a un número de referencia más simple primero."
+              "en": "Try the Math Lab with an easy benchmark first (10%, 25%, or 50%), watch the pattern, then test the mission numbers.",
+              "es": "Prueba el laboratorio con un valor fácil primero (10%, 25% o 50%), observa el patrón y luego prueba los números de la misión."
             }
+          },
+          "frame": {
+            "en": "&ldquo;The range is ____ − ____ = ____.&rdquo;",
+            "es": "“El rango es ____ − ____ = ____.”"
+          },
+          "solveBeat": {
+            "who": "analyst",
+            "en": "Mean, median, and range all reported. Now for the game-winning call!",
+            "es": "Media, mediana y rango listos. ¡Ahora la jugada decisiva!"
           }
         },
         {
@@ -711,8 +704,8 @@ window.GN_STORY = {
               "order": 2
             },
             {
-              "en": "Count which value appears most often — the mode.",
-              "es": "Cuenta qué valor aparece más veces: la moda.",
+              "en": "Subtract the least from the greatest to find the range.",
+              "es": "Resta el menor del mayor para hallar el rango.",
               "order": 3
             }
           ]
@@ -746,7 +739,7 @@ window.GN_STORY = {
             },
             {
               "who": "analyst",
-              "en": "I'll use the mean AND the mode together. If both point to the same number, that player is steady.",
+              "en": "I'll use the mean AND the range together. A good average with a small range means that player is steady.",
               "es": "Usaré la media Y la moda juntas. Si ambas apuntan al mismo número, ese jugador es estable."
             },
             {
@@ -761,65 +754,65 @@ window.GN_STORY = {
           "type": "challenge",
           "id": "F",
           "ask": {
-            "who": "analyst",
-            "en": "Careful, BUZZER-3 — 25 is the total, not the mean. Coach asks for the <b>most reliable</b> scorer. Maya's last 5 shots scored: <b>5, 5, 5, 7, 3</b>. What are the <b>mean</b> and the <b>mode</b> of her shots?",
-            "es": "Encuentra la media Y la moda. Elige la línea correcta."
+            "who": "coach",
+            "en": "Careful, BUZZER-3 — 25 is the total, not the mean. Coach asks for the <b>most reliable</b> scorer. Maya&rsquo;s last 5 shots scored: <b>5, 5, 5, 7, 3</b>. What are the <b>mean</b> and the <b>range</b> of her shots?",
+            "es": "Cuidado, BUZZER-3: 25 es el total, no la media. El entrenador pide la anotadora más confiable. Los últimos 5 tiros de Maya: 5, 5, 5, 7, 3. ¿Cuáles son la media y el rango?"
           },
           "hint": {
-            "en": "Sum = 5+5+5+7+3 = 25, and 25 ÷ 5 = mean. The number that repeats most is the mode.",
-            "es": "Suma = 5+5+5+7+3 = 25, y 25 ÷ 5 = media. El número que más se repite es la moda."
-          },
-          "frame": {
-            "en": "“The mean is ____. The mode is ____. So Maya is a reliable scorer because her scores stay near ____.”",
-            "es": "“La media es ____. La moda es ____. Maya es confiable porque sus tiros se mantienen cerca de ____.”"
+            "en": "💡 <b>Hint:</b> Sum = 5+5+5+7+3 = 25, and 25 ÷ 5 = the mean. Range = greatest − least = 7 − 3.",
+            "es": "💡 <b>Pista:</b> Suma = 25 y 25 ÷ 5 = la media. Rango = mayor − menor = 7 − 3."
           },
           "choices": [
             {
-              "en": "Mean = 25, Mode = 5 <span class=\"calc\">(25 is the total, not the mean)</span>",
-              "es": "Media = 25, Moda = 5 (25 es el total, no la media)",
-              "correct": false,
-              "why": {
-                "en": "❌ One part is off. Mean = total 25 ÷ 5 = 5 (not 25). The mode is the value that repeats most (5). Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Una parte está mal. Media = 25 ÷ 5 = 5. La moda es 5."
-              }
-            },
-            {
-              "en": "Mean = 5, Mode = 5 <span class=\"calc\">(25 ÷ 5 = 5; 5 repeats most)</span>",
-              "es": "Media = 5, Moda = 5 (25 ÷ 5 = 5; el 5 se repite más)",
+              "en": "Mean = 5, Range = 4<span class=\"calc\">25 ÷ 5 = 5; 7 − 3 = 4</span>",
+              "es": "Media = 5, Rango = 4",
               "correct": true
             },
             {
-              "en": "Mean = 5, Mode = 7 <span class=\"calc\">(7 appears only once)</span>",
-              "es": "Media = 5, Moda = 7 (el 7 aparece solo una vez)",
+              "en": "Mean = 25, Range = 4<span class=\"calc\">25 is the total, not the mean</span>",
+              "es": "Media = 25, Rango = 4 (25 es el total)",
               "correct": false,
               "why": {
-                "en": "❌ One part is off. Mean = total 25 ÷ 5 = 5 (not 25). The mode is the value that repeats most (5). Use the Math Lab to test the quantities before choosing your reply.",
-                "es": "Una parte está mal. Media = 25 ÷ 5 = 5. La moda es 5."
+                "en": "❌ One part is off. Mean = total 25 ÷ 5 = 5 (not 25).",
+                "es": "Una parte está mal. Media = 25 ÷ 5 = 5 (no 25)."
+              }
+            },
+            {
+              "en": "Mean = 5, Range = 10<span class=\"calc\">that adds 7 + 3</span>",
+              "es": "Media = 5, Rango = 10 (suma 7 + 3)",
+              "correct": false,
+              "why": {
+                "en": "❌ One part is off. The range subtracts: 7 − 3 = 4, not 7 + 3.",
+                "es": "Una parte está mal. El rango resta: 7 − 3 = 4."
               }
             }
           ],
-          "goodEn": "✅ PERFECT CALL! Mean = 25 ÷ 5 = 5, and 5 is the mode (it repeats most). Maya is the reliable scorer!",
-          "goodEs": "¡JUGADA PERFECTA! Media = 5 y moda = 5. ¡Maya es la anotadora confiable!",
-          "badEn": "❌ One part is off. Mean = total 25 ÷ 5 = 5 (not 25). The mode is the value that repeats most (5).",
-          "badEs": "Una parte está mal. Media = 25 ÷ 5 = 5. La moda es 5.",
+          "goodEn": "✅ PERFECT CALL! Mean = 25 ÷ 5 = 5 and range = 7 − 3 = 4: a steady scorer. Maya is the reliable scorer!",
+          "goodEs": "✅ ¡JUGADA PERFECTA! Media = 5 y rango = 4: una anotadora constante. ¡Maya es la confiable!",
+          "badEn": "❌ Mean = total ÷ number of shots. Range = greatest − least.",
+          "badEs": "Media = total ÷ número de tiros. Rango = mayor − menor.",
+          "help": {
+            "conceptual": {
+              "en": "❌ Mean = total ÷ number of shots. Range = greatest − least.",
+              "es": "Media = total ÷ número de tiros. Rango = mayor − menor."
+            },
+            "procedural": {
+              "en": "💡 <b>Hint:</b> Sum = 5+5+5+7+3 = 25, and 25 ÷ 5 = the mean. Range = greatest − least = 7 − 3.",
+              "es": "💡 <b>Pista:</b> Suma = 25 y 25 ÷ 5 = la media. Rango = mayor − menor = 7 − 3."
+            },
+            "example": {
+              "en": "Try the Math Lab with an easy benchmark first (10%, 25%, or 50%), watch the pattern, then test the mission numbers.",
+              "es": "Prueba el laboratorio con un valor fácil primero (10%, 25% o 50%), observa el patrón y luego prueba los números de la misión."
+            }
+          },
+          "frame": {
+            "en": "&ldquo;The mean is ____. The range is ____. So Maya is reliable because her scores stay near ____.&rdquo;",
+            "es": "“La media es ____. El rango es ____. Maya es confiable porque sus tiros se mantienen cerca de ____.”"
+          },
           "solveBeat": {
             "who": "analyst",
             "en": "That's the call, Coach! The data says Maya — give her the ball!",
             "es": "¡Esa es la jugada, Coach! Los datos dicen Maya: ¡denle el balón!"
-          },
-          "help": {
-            "conceptual": {
-              "en": "❌ One part is off. Mean = total 25 ÷ 5 = 5 (not 25). The mode is the value that repeats most (5).",
-              "es": "Una parte está mal. Media = 25 ÷ 5 = 5. La moda es 5."
-            },
-            "procedural": {
-              "en": "Sum = 5+5+5+7+3 = 25, and 25 ÷ 5 = mean. The number that repeats most is the mode.",
-              "es": "Suma = 5+5+5+7+3 = 25, y 25 ÷ 5 = media. El número que más se repite es la moda."
-            },
-            "example": {
-              "en": "Try sliding the Interactive Math Lab controls to a simpler benchmark number first, observe the pattern, and then set it to the mission numbers!",
-              "es": "Prueba deslizar los controles del laboratorio a un número de referencia más simple primero."
-            }
           }
         },
         {
@@ -832,7 +825,7 @@ window.GN_STORY = {
           "passageRef": "act2.beat1",
           "ask": {
             "who": "coach",
-            "en": "BUZZER-3 keeps reaching for the mean and ignoring the median and mode. What can you tell about how BUZZER-3 works?",
+            "en": "BUZZER-3 keeps reaching for the mean and ignoring the median and the range. What can you tell about how BUZZER-3 works?",
             "es": "BUZZER-3 siempre busca la media e ignora la mediana y la moda. ¿Qué puedes deducir sobre cómo trabaja BUZZER-3?"
           },
           "hint": {
@@ -841,7 +834,7 @@ window.GN_STORY = {
           },
           "choices": [
             {
-              "en": "BUZZER-3 trusts only the mean, so it misses what the median and mode reveal.",
+              "en": "BUZZER-3 trusts only the mean, so it misses what the median and the range reveal.",
               "es": "BUZZER-3 confía solo en la media, así que se pierde lo que muestran la mediana y la moda.",
               "correct": true
             },
@@ -939,10 +932,10 @@ window.GN_STORY = {
       "def": "The middle value when the numbers are in order from least to greatest. Median of 6,8,10,12,14 is 10."
     },
     {
-      "ico": "🔥",
-      "en": "Mode",
-      "es": "moda",
-      "def": "The value that appears the most often. Mode of 7,7,9,4,7 is 7."
+      "ico": "&#8596;",
+      "en": "Range",
+      "es": "rango",
+      "def": "The greatest value minus the least value. The range of 6, 8, 10, 12, 14 is 14 − 6 = 8."
     },
     {
       "ico": "📏",
@@ -968,7 +961,7 @@ window.GN_STORY = {
     "alt": "Jada celebrates on the court with the winning team holding her tablet high",
     "badge": "🎉🏀⭐",
     "titleEn": "Game Won!",
-    "en": "You did it, Analyst! You found the <b>statistical question</b>, read the <b>data</b>, and used the <b>mean, median, and mode</b> to make the game-winning call. The team is celebrating — thanks to you!",
+    "en": "You did it, Analyst! You found the <b>statistical question</b>, read the <b>data</b>, and used the <b>mean, median, and range</b> to make the game-winning call. The team is celebrating — thanks to you!",
     "es": "¡Lo lograste! Usaste la media, la mediana y la moda para ganar. ¡Excelente trabajo!",
     "master": {
       "headingEn": "Prove your rank to certify your Master Certificate!",
@@ -976,7 +969,7 @@ window.GN_STORY = {
       "promptEs": "Los puntajes de Jordan son 3, 5, 7, 8, 12. Encuentra la mediana.",
       "choices": [
         {
-          "en": "A) 8 &nbsp;(confused median with mode or upper values)",
+          "en": "A) 8 &nbsp;(confused the median with a value near the top)",
           "correct": false
         },
         {

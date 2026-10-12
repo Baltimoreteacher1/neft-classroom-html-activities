@@ -197,8 +197,8 @@ window.LESSON_PROJECTS = {
       "href": "/math/unit-4/unit-rate-duel/index.html"
     },
     {
-      "text": "📖 Graphic Novel — Shopping Mall Mogul",
-      "href": "/graphic-novels/unit4/graphic-novel-1.html"
+      "text": "📖 Graphic Novel — Global Travel Planner",
+      "href": "/graphic-novels/unit3/graphic-novel-1.html"
     }
   ],
   "3-3": [
