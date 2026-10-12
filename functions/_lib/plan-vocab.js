@@ -2240,6 +2240,12 @@ export const ACTIVITIES = [
     unit: 4,
   },
   {
+    path: "/math/unit-4/percent-practice-studio/",
+    title: "Percent & Equivalent Ratios · Interactive Practice Studio (Grade 6)",
+    category: "Activity",
+    unit: 4,
+  },
+  {
     path: "/math/unit-4/percent-shadow-caster/",
     title: "Percent Shadow-Caster | Neft Studio",
     category: "Activity",

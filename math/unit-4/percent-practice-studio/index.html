@@ -1,0 +1,2831 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Percent &amp; Equivalent Ratios · Interactive Practice Studio (Grade 6)</title>
+  <meta name="description" content="Clean, student-friendly Grade 6 interactive percent practice covering 100-grids, scaling equivalent ratios to 100, ratio tables and percent bars, word problems, and mastery check.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2317324D'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia,serif' font-weight='bold' font-size='32' fill='%23F7F4EC'%3E%25%3C/text%3E%3C/svg%3E">
+  <style>
+    /* ==========================================================================
+       CLEAN STUDENT-FRIENDLY DESIGN SYSTEM (GRADE 6 · REVEAL MATH UNIT 4)
+       Palette: Navy #17324D · Teal #0F766E / #1FA6A2 · Warm Paper #F7F4EC
+       ========================================================================== */
+    :root {
+      --bg-paper: #F7F4EC;
+      --bg-well: #EFECE3;
+      --surface: #FFFFFF;
+      --surface-soft: #FAF8F3;
+      --surface-teal: #F0FAF9;
+
+      --navy: #17324D;
+      --navy-dark: #0F2337;
+      --navy-tint: #E8F0F7;
+      --navy-line: #C4D5E5;
+
+      --teal: #0F766E;
+      --teal-bright: #1FA6A2;
+      --teal-tint: #E3F6F5;
+      --teal-line: #94DFDC;
+
+      --amber: #B45309;
+      --amber-bright: #D97706;
+      --amber-tint: #FEF3C7;
+      --amber-line: #FCD34D;
+
+      --green: #047857;
+      --green-tint: #ECFDF5;
+      --green-line: #A7F3D0;
+
+      --red: #B91C1C;
+      --red-tint: #FEF2F2;
+      --red-line: #FECACA;
+
+      --ink: #1E293B;
+      --ink-muted: #475569;
+      --ink-light: #64748B;
+
+      --border: #D8D3C6;
+      --border-strong: #B8B1A0;
+
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-display: Georgia, 'Iowan Old Style', serif;
+      --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-pill: 999px;
+
+      --shadow-card: 0 2px 8px rgba(23, 50, 77, 0.06), 0 1px 2px rgba(23, 50, 77, 0.04);
+      --shadow-pop: 0 10px 24px rgba(23, 50, 77, 0.12);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--bg-paper);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      line-height: 1.55;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--amber-bright);
+      outline-offset: 2px;
+    }
+
+    /* Spanish Support Toggle */
+    .es-text {
+      display: none;
+      color: var(--teal);
+      font-style: italic;
+      font-size: 0.94rem;
+      margin-top: 4px;
+    }
+    body.show-es .es-text {
+      display: block;
+    }
+
+    /* ==========================================================================
+       HEADER & NAVIGATION
+       ========================================================================== */
+    .app-header {
+      background: var(--navy);
+      color: #FFFFFF;
+      padding: 12px 24px;
+      border-bottom: 3px solid var(--teal-bright);
+    }
+
+    .header-wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--teal-bright);
+      color: var(--navy-dark);
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .brand-sub {
+      font-size: 0.8rem;
+      color: #CBD5E1;
+      margin-top: 1px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .score-pill {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: var(--radius-pill);
+      padding: 5px 14px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .top-btn {
+      background: rgba(255, 255, 255, 0.14);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .top-btn:hover {
+      background: rgba(255, 255, 255, 0.24);
+    }
+    .top-btn[aria-pressed="true"] {
+      background: var(--teal-bright);
+      color: var(--navy-dark);
+      border-color: #FFFFFF;
+      font-weight: 700;
+    }
+
+    /* 5-Tab Bar */
+    .tab-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 80;
+      box-shadow: 0 2px 4px rgba(23, 50, 77, 0.04);
+    }
+
+    .tab-list {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 16px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+    }
+
+    .tab-btn {
+      appearance: none;
+      background: transparent;
+      border: none;
+      border-bottom: 4px solid transparent;
+      padding: 12px 10px 10px;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--ink-muted);
+      text-align: left;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .tab-btn:hover {
+      background: var(--surface-soft);
+      color: var(--navy);
+    }
+    .tab-btn[aria-selected="true"] {
+      color: var(--navy);
+      border-bottom-color: var(--teal);
+      background: var(--surface-teal);
+      font-weight: 700;
+    }
+
+    .tab-badge {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--bg-well);
+      color: var(--navy);
+      font-size: 0.82rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .tab-btn[aria-selected="true"] .tab-badge {
+      background: var(--navy);
+      color: #FFFFFF;
+    }
+    .tab-btn.tab-complete .tab-badge {
+      background: var(--green);
+      color: #FFFFFF;
+    }
+
+    .tab-text {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .tab-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tab-desc {
+      font-size: 0.74rem;
+      color: var(--ink-light);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ==========================================================================
+       MAIN CONTAINER & STEPPER ARCHITECTURE
+       ========================================================================== */
+    .main-container {
+      max-width: 1080px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px 20px 48px;
+      flex: 1;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* Clean Topic Intro Strip */
+    .topic-strip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 6px solid var(--navy);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .topic-strip h2 {
+      margin: 0 0 4px 0;
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      color: var(--navy);
+    }
+
+    .topic-strip p {
+      margin: 0;
+      font-size: 0.96rem;
+      color: var(--ink-muted);
+    }
+
+    .key-rule-pill {
+      background: var(--surface-teal);
+      border: 1px solid var(--teal-line);
+      color: var(--navy);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    /* Problem Stepper Bar (Used across Tabs 1, 2, 3, 4, 5) */
+    .stepper-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      margin-bottom: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .dots-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .step-dot {
+      min-width: 34px;
+      height: 34px;
+      padding: 0 8px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border-strong);
+      background: var(--surface-soft);
+      color: var(--navy);
+      font-weight: 700;
+      font-size: 0.86rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+    .step-dot:hover {
+      border-color: var(--navy);
+      background: #FFFFFF;
+    }
+    .step-dot.active {
+      background: var(--navy);
+      color: #FFFFFF;
+      border-color: var(--navy);
+    }
+    .step-dot.solved {
+      background: var(--green-tint);
+      border-color: var(--green);
+      color: var(--green);
+    }
+    .step-dot.solved.active {
+      background: var(--green);
+      color: #FFFFFF;
+    }
+
+    /* Cards */
+    .stage-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .two-col-stage {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    /* Buttons */
+    .btn {
+      appearance: none;
+      border: 1.5px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--navy);
+      font-family: inherit;
+      font-size: 0.94rem;
+      font-weight: 700;
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .btn:hover {
+      background: var(--surface-soft);
+      border-color: var(--navy);
+    }
+    .btn-primary {
+      background: var(--navy);
+      color: #FFFFFF;
+      border-color: var(--navy);
+    }
+    .btn-primary:hover {
+      background: var(--navy-dark);
+      color: #FFFFFF;
+    }
+    .btn-teal {
+      background: var(--teal);
+      color: #FFFFFF;
+      border-color: var(--teal);
+    }
+    .btn-teal:hover {
+      background: #0B5E58;
+      color: #FFFFFF;
+    }
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.84rem;
+    }
+
+    .speak-btn {
+      background: var(--navy-tint);
+      color: var(--navy);
+      border: 1px solid var(--navy-line);
+      border-radius: var(--radius-pill);
+      padding: 5px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .speak-btn:hover {
+      background: var(--navy);
+      color: #FFFFFF;
+    }
+
+    /* Inputs & Feedback */
+    .num-input {
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      font-weight: 800;
+      width: 96px;
+      padding: 8px 10px;
+      border: 2px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      text-align: center;
+      color: var(--navy);
+      background: #FFFFFF;
+    }
+    .num-input:focus {
+      border-color: var(--navy);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(23, 50, 77, 0.15);
+    }
+    .num-input.ok {
+      border-color: var(--green);
+      background: var(--green-tint);
+      color: var(--green);
+    }
+    .num-input.err {
+      border-color: var(--red);
+      background: var(--red-tint);
+      color: var(--red);
+    }
+
+    .feedback-box {
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: none;
+    }
+    .feedback-box.show {
+      display: block;
+    }
+    .feedback-box.ok {
+      background: var(--green-tint);
+      border: 1.5px solid var(--green-line);
+      color: #065F46;
+    }
+    .feedback-box.warn {
+      background: var(--amber-tint);
+      border: 1.5px solid var(--amber-line);
+      color: #92400E;
+    }
+    .feedback-box.err {
+      background: var(--red-tint);
+      border: 1.5px solid var(--red-line);
+      color: #991B1B;
+    }
+
+    /* ==========================================================================
+       TAB 1: 100-GRID EXPLORER + GUIDED TASKS
+       ========================================================================== */
+    .grid-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .hundredths-svg {
+      width: 260px;
+      height: 260px;
+      background: #FFFFFF;
+      border: 2.5px solid var(--navy);
+      border-radius: 4px;
+      cursor: pointer;
+      touch-action: none;
+      user-select: none;
+    }
+
+    .grid-cell {
+      fill: #FFFFFF;
+      stroke: #CBD5E1;
+      stroke-width: 1;
+    }
+    .grid-cell.shaded {
+      fill: var(--teal-bright);
+      stroke: var(--teal);
+    }
+    .grid-cell:hover {
+      stroke: var(--navy);
+      stroke-width: 2;
+    }
+    .tenths-line {
+      stroke: var(--navy);
+      stroke-width: 2.2;
+      pointer-events: none;
+    }
+
+    .grid-summary-strip {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      text-align: center;
+    }
+
+    .summary-tile {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 6px;
+    }
+    .summary-tile span {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--ink-light);
+    }
+    .summary-tile strong {
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      color: var(--navy);
+    }
+
+    /* ==========================================================================
+       TAB 2: CLEAN EQUIVALENT RATIO SCALING DIAGRAM
+       ========================================================================== */
+    .scaling-visual-card {
+      background: var(--surface-soft);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      margin: 18px 0;
+    }
+
+    .ratio-machine {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .big-fraction {
+      background: #FFFFFF;
+      border: 2px solid var(--navy);
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 110px;
+      box-shadow: var(--shadow-card);
+    }
+    .big-fraction .num,
+    .big-fraction .den {
+      font-family: var(--font-mono);
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: var(--navy);
+      line-height: 1.2;
+    }
+    .big-fraction .f-bar {
+      width: 100%;
+      height: 3px;
+      background: var(--navy);
+      margin: 6px 0;
+      border-radius: 2px;
+    }
+    .big-fraction .role-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--ink-light);
+    }
+
+    .arrow-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      align-items: center;
+    }
+
+    .scale-arrow-pill {
+      background: var(--amber-tint);
+      border: 2px solid var(--amber-bright);
+      color: var(--amber);
+      padding: 5px 14px;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .guided-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .step-box {
+      background: var(--surface-soft);
+      border: 1.5px solid var(--border);
+      border-top: 4px solid var(--navy);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .step-box.step-2 {
+      border-top-color: var(--teal);
+    }
+    .step-box.step-3 {
+      border-top-color: var(--amber-bright);
+    }
+
+    .step-box-label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--navy);
+    }
+
+    .step-box-desc {
+      font-size: 0.92rem;
+      color: var(--ink);
+      margin: 4px 0 0 0;
+    }
+
+    .step-box-Equation {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--navy);
+    }
+
+    /* ==========================================================================
+       TAB 3: RATIO TABLES & PERCENT BARS (SPACIOUS, CLEAR, STEP-BY-STEP)
+       ========================================================================== */
+    .clean-ratio-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 2px solid var(--navy);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: #FFFFFF;
+      margin: 16px 0;
+    }
+
+    .clean-ratio-table th,
+    .clean-ratio-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      text-align: center;
+      font-size: 1.02rem;
+    }
+    .clean-ratio-table tr:last-child td {
+      border-bottom: none;
+    }
+    .clean-ratio-table th:last-child,
+    .clean-ratio-table td:last-child {
+      border-right: none;
+    }
+
+    .clean-ratio-table th {
+      background: var(--navy);
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    .clean-ratio-table th.bridge-col {
+      background: var(--teal);
+    }
+    .clean-ratio-table th.target-col {
+      background: var(--amber);
+    }
+
+    .clean-ratio-table td.row-label {
+      background: var(--navy-tint);
+      color: var(--navy);
+      font-weight: 800;
+      text-align: left;
+      width: 180px;
+    }
+
+    .op-chip {
+      display: inline-block;
+      background: var(--amber-tint);
+      border: 1px solid var(--amber-bright);
+      color: var(--amber);
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 0.82rem;
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      margin-left: 6px;
+    }
+
+    /* Multiple Choice Option Buttons */
+    .choice-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .choice-btn {
+      appearance: none;
+      background: var(--surface-soft);
+      border: 2px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      padding: 13px 16px;
+      text-align: left;
+      font-family: inherit;
+      font-size: 0.98rem;
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.15s ease;
+    }
+    .choice-btn:hover {
+      background: #FFFFFF;
+      border-color: var(--navy);
+    }
+    .choice-btn.selected {
+      background: var(--navy-tint);
+      border-color: var(--navy);
+      font-weight: 700;
+    }
+    .choice-btn.correct {
+      background: var(--green-tint);
+      border-color: var(--green);
+      color: #065F46;
+      font-weight: 700;
+    }
+    .choice-btn.wrong {
+      background: var(--red-tint);
+      border-color: var(--red);
+      color: #991B1B;
+    }
+
+    .choice-letter {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      border: 2px solid var(--navy);
+      color: var(--navy);
+      font-weight: 800;
+      font-size: 0.84rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Footer */
+    .app-footer {
+      background: var(--navy);
+      color: #CBD5E1;
+      padding: 14px 24px;
+      font-size: 0.82rem;
+      margin-top: auto;
+    }
+    .footer-wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    @media (max-width: 860px) {
+      .two-col-stage,
+      .guided-steps-grid {
+        grid-template-columns: 1fr;
+      }
+      .tab-list {
+        grid-template-columns: repeat(5, minmax(135px, 1fr));
+        overflow-x: auto;
+      }
+    }
+
+    @media print {
+      .app-header, .tab-bar, .speak-btn, .no-print {
+        display: none !important;
+      }
+      body {
+        background: #FFFFFF !important;
+      }
+      .tab-panel {
+        display: block !important;
+        margin-bottom: 24px;
+      }
+    }
+  </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+
+  <!-- ========================================================================
+       TOP HEADER
+       ======================================================================== -->
+  <header class="app-header">
+    <div class="header-wrap">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">%</div>
+        <div>
+          <h1 class="brand-title">Understand Percent &amp; Equivalent Ratios</h1>
+          <div class="brand-sub">Grade 6 Math · Unit 4 Interactive Practice Studio (6.RP.A.3.C · 6.AT.4)</div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="score-pill" aria-live="polite">
+          <span>⭐ Progress: <span id="header-progress-count">0 / 46</span></span>
+        </div>
+        <button type="button" class="top-btn" id="toggle-es-btn" aria-pressed="false">🌐 Español</button>
+        <button type="button" class="top-btn" id="print-btn">🖨️ Print</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       5-TAB NAVIGATION BAR
+       ======================================================================== -->
+  <nav class="tab-bar" aria-label="Practice sections">
+    <div class="tab-list" role="tablist">
+      <button type="button" class="tab-btn" role="tab" id="tab-1" aria-selected="true" aria-controls="panel-1" tabindex="0" data-tab="1">
+        <span class="tab-badge" id="badge-1">1</span>
+        <span class="tab-text">
+          <span class="tab-name">What Is Percent?</span>
+          <span class="tab-desc">100-Grid &amp; Essentials (8)</span>
+        </span>
+      </button>
+
+      <button type="button" class="tab-btn" role="tab" id="tab-2" aria-selected="false" aria-controls="panel-2" tabindex="-1" data-tab="2">
+        <span class="tab-badge" id="badge-2">2</span>
+        <span class="tab-text">
+          <span class="tab-name">Scale to 100</span>
+          <span class="tab-desc">Equivalent Ratios (12)</span>
+        </span>
+      </button>
+
+      <button type="button" class="tab-btn" role="tab" id="tab-3" aria-selected="false" aria-controls="panel-3" tabindex="-1" data-tab="3">
+        <span class="tab-badge" id="badge-3">3</span>
+        <span class="tab-text">
+          <span class="tab-name">Tables &amp; Bars</span>
+          <span class="tab-desc">Step-by-Step Models (8)</span>
+        </span>
+      </button>
+
+      <button type="button" class="tab-btn" role="tab" id="tab-4" aria-selected="false" aria-controls="panel-4" tabindex="-1" data-tab="4">
+        <span class="tab-badge" id="badge-4">4</span>
+        <span class="tab-text">
+          <span class="tab-name">Word Problems</span>
+          <span class="tab-desc">Apply &amp; Fix Errors (8)</span>
+        </span>
+      </button>
+
+      <button type="button" class="tab-btn" role="tab" id="tab-5" aria-selected="false" aria-controls="panel-5" tabindex="-1" data-tab="5">
+        <span class="tab-badge" id="badge-5">5</span>
+        <span class="tab-text">
+          <span class="tab-name">Mastery Check</span>
+          <span class="tab-desc">10-Question Quiz</span>
+        </span>
+      </button>
+    </div>
+  </nav>
+
+  <div id="sr-live" class="sr-only" aria-live="polite"></div>
+
+  <!-- ========================================================================
+       MAIN WORKSPACE
+       ======================================================================== -->
+  <main class="main-container">
+
+    <!-- ======================================================================
+         TAB 1: WHAT IS A PERCENT? (100-GRID EXPLORER + 8 STEP-BY-STEP TASKS)
+         ====================================================================== -->
+    <section id="panel-1" class="tab-panel active" role="tabpanel" aria-labelledby="tab-1">
+      <div class="topic-strip">
+        <div>
+          <h2>1. Percent Means “Out of 100”</h2>
+          <p>Explore the 100-square grid on the left, then step through the 8 practice cards on the right.</p>
+          <p class="es-text">Explora la cuadrícula de 100 cuadrados a la izquierda y completa las 8 tarjetas de práctica a la derecha.</p>
+        </div>
+        <div class="key-rule-pill">
+          💡 <strong>1 Whole Grid = 100 Squares = 100%</strong> &nbsp;·&nbsp; Every 1 square = <strong>1%</strong>
+        </div>
+      </div>
+
+      <div class="two-col-stage">
+        <!-- Left: Clean Interactive 10x10 Grid -->
+        <div class="grid-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <strong style="color: var(--navy); font-size: 0.96rem;">Interactive 10 × 10 Grid</strong>
+            <button type="button" class="btn btn-sm" id="t1-tenths-btn" aria-pressed="true">10 Columns: ON</button>
+          </div>
+
+          <svg id="t1-grid-svg" class="hundredths-svg" viewBox="0 0 200 200" role="img" aria-label="10 by 10 hundredths grid"></svg>
+
+          <div style="width: 100%;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.86rem; font-weight: 700; color: var(--navy); margin-bottom: 4px;">
+              <label for="t1-slider">Shade Squares:</label>
+              <span id="t1-slider-label">40 / 100 squares</span>
+            </div>
+            <input type="range" id="t1-slider" min="0" max="100" value="40" style="width: 100%; accent-color: var(--teal); cursor: pointer;">
+          </div>
+
+          <!-- 3 Crisp Summary Tiles (Square Counts — Scaffolds Without Giving Away Answers) -->
+          <div class="grid-summary-strip">
+            <div class="summary-tile">
+              <span>Shaded</span>
+              <strong id="t1-stat-pct" style="color: var(--teal);">40 sq</strong>
+            </div>
+            <div class="summary-tile">
+              <span>Not Shaded</span>
+              <strong id="t1-stat-unshaded" style="color: var(--amber);">60 sq</strong>
+            </div>
+            <div class="summary-tile">
+              <span>Whole Grid</span>
+              <strong id="t1-stat-fd">100 sq</strong>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; width: 100%;">
+            <button type="button" class="btn btn-sm" data-grid-set="9">9 sq</button>
+            <button type="button" class="btn btn-sm" data-grid-set="23">23 sq</button>
+            <button type="button" class="btn btn-sm" data-grid-set="40">40 sq (4 cols)</button>
+            <button type="button" class="btn btn-sm" data-grid-set="62">62 sq</button>
+            <button type="button" class="btn btn-sm" data-grid-set="100">100 sq</button>
+          </div>
+        </div>
+
+        <!-- Right: One-at-a-Time Guided Practice Card (8 Tasks) -->
+        <div>
+          <div class="stepper-bar">
+            <div class="dots-row" id="t1-dots" role="group" aria-label="Tab 1 problem selector"></div>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="btn btn-sm" id="t1-prev-btn">← Back</button>
+              <button type="button" class="btn btn-sm" id="t1-next-btn">Next →</button>
+            </div>
+          </div>
+
+          <div class="stage-card" id="t1-task-card">
+            <!-- Dynamically rendered clean single task -->
+          </div>
+
+          <details style="margin-top: 14px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 12px 16px;">
+            <summary style="font-weight: 800; color: var(--navy); cursor: pointer; font-size: 0.95rem;">📘 Quick Reference: Percent Essentials &amp; Benchmarks (Click to open)</summary>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 12px; font-size: 0.88rem; color: var(--ink-soft);">
+              <div style="background: var(--surface-soft); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
+                <strong style="color: var(--navy); display: block;">Percent (%)</strong>
+                Means “per hundred” or “out of 100.” Example: <strong>40% = 40/100 = 0.40</strong>.
+              </div>
+              <div style="background: var(--surface-soft); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
+                <strong style="color: var(--navy); display: block;">100% = 1 Whole</strong>
+                Less than 100% is less than 1 whole. Greater than 100% (like 150%) is more than 1 whole!
+              </div>
+              <div style="background: var(--surface-soft); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
+                <strong style="color: var(--navy); display: block;">Shaded + Unshaded = 100%</strong>
+                If 62 squares are shaded (62%), then <strong>100 − 62 = 38</strong> squares (38%) are NOT shaded.
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 2: SCALE RATIOS TO 100 (12 EQUIVALENT RATIO PRACTICE PROBLEMS)
+         ====================================================================== -->
+    <section id="panel-2" class="tab-panel" role="tabpanel" aria-labelledby="tab-2">
+      <div class="topic-strip">
+        <div>
+          <h2>2. Finding Percents with Equivalent Ratios</h2>
+          <p>Multiply the <strong>whole (bottom)</strong> and the <strong>part (top)</strong> by the exact same scale factor so the bottom number becomes <strong>100</strong>.</p>
+          <p class="es-text">Multiplica el entero (abajo) y la parte (arriba) por el mismo factor para que el denominador sea 100.</p>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button type="button" class="btn btn-teal btn-sm" id="t2-random-btn">🎲 New Random Ratio</button>
+        </div>
+      </div>
+
+      <div class="stepper-bar">
+        <div class="dots-row" id="t2-dots" role="group" aria-label="Tab 2 problem selector"></div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-sm" id="t2-prev-btn">← Back</button>
+          <button type="button" class="btn btn-sm" id="t2-next-btn">Next →</button>
+        </div>
+      </div>
+
+      <div class="stage-card" id="t2-stage-card">
+        <!-- Populated dynamically with one clean equivalent ratio problem at a time -->
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 3: RATIO TABLES & PERCENT BARS (REDESIGNED — SUPER CLEAR, 8 PROBLEMS)
+         ====================================================================== -->
+    <section id="panel-3" class="tab-panel" role="tabpanel" aria-labelledby="tab-3">
+      <div class="topic-strip">
+        <div>
+          <h2>3. Ratio Tables &amp; Percent Bars</h2>
+          <p>What if the whole does not multiply into 100 in one step? Use a <strong>Percent Bar</strong> (find 1 block first) or a <strong>Bridge Ratio Table</strong> (simplify first, then scale to 100)!</p>
+          <p class="es-text">Usa una barra de porcentaje (halla 1 bloque primero) o una tabla puente (simplifica primero y luego multiplica para llegar a 100).</p>
+        </div>
+        <div class="key-rule-pill">
+          🧭 <strong>Two Easy Strategies:</strong> &nbsp;1) Find 1 Block on a Bar &nbsp;·&nbsp; 2) Divide to Simplify, Then Multiply to 100
+        </div>
+      </div>
+
+      <div class="stepper-bar">
+        <div class="dots-row" id="t3-dots" role="group" aria-label="Tab 3 problem selector"></div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-sm" id="t3-prev-btn">← Back</button>
+          <button type="button" class="btn btn-sm" id="t3-next-btn">Next →</button>
+        </div>
+      </div>
+
+      <div class="stage-card" id="t3-stage-card">
+        <!-- Populated dynamically with one crystal-clear Bar or Table problem at a time -->
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 4: WORD PROBLEMS & ERROR DETECTIVE (8 CASES — ONE AT A TIME)
+         ====================================================================== -->
+    <section id="panel-4" class="tab-panel" role="tabpanel" aria-labelledby="tab-4">
+      <div class="topic-strip">
+        <div>
+          <h2>4. Real-World Problems &amp; Error Detective</h2>
+          <p>Apply equivalent ratios to real-world stories, percents over 100%, and spot common mistakes.</p>
+          <p class="es-text">Resuelve problemas del mundo real, porcentajes mayores que 100% y corrige errores comunes.</p>
+        </div>
+        <div class="key-rule-pill">
+          🔍 <strong>Ask First:</strong> What number is the <strong>whole (100%)</strong>? Does the question ask for the part or the complement?
+        </div>
+      </div>
+
+      <div class="stepper-bar">
+        <div class="dots-row" id="t4-dots" role="group" aria-label="Tab 4 problem selector"></div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-sm" id="t4-prev-btn">← Back</button>
+          <button type="button" class="btn btn-sm" id="t4-next-btn">Next →</button>
+        </div>
+      </div>
+
+      <div class="stage-card" id="t4-stage-card">
+        <!-- Populated dynamically with one Word Problem / Error Detective card at a time -->
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 5: MASTERY QUIZ (10 QUESTIONS — ONE AT A TIME OR SHOW ALL)
+         ====================================================================== -->
+    <section id="panel-5" class="tab-panel" role="tabpanel" aria-labelledby="tab-5">
+      <div class="topic-strip">
+        <div>
+          <h2>5. Percent &amp; Equivalent Ratios Mastery Check</h2>
+          <p>Check your understanding across all 10 questions. Each choice gives immediate explanations.</p>
+          <p class="es-text">Comprueba tu comprensión en las 10 preguntas con retroalimentación inmediata.</p>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <span class="key-rule-pill" id="t5-score-pill">Score: 0 / 10</span>
+          <button type="button" class="btn btn-sm" id="t5-reset-btn">Reset Quiz</button>
+        </div>
+      </div>
+
+      <div class="stepper-bar">
+        <div class="dots-row" id="t5-dots" role="group" aria-label="Quiz question selector"></div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-sm" id="t5-prev-btn">← Back</button>
+          <button type="button" class="btn btn-sm" id="t5-next-btn">Next →</button>
+        </div>
+      </div>
+
+      <div class="stage-card" id="t5-stage-card">
+        <!-- Populated dynamically with one clean quiz question at a time -->
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-wrap">
+      <span><strong>Grade 6 Mathematics · Unit 4: Understand Percent &amp; Equivalent Ratios</strong> (Standards 6.RP.A.3.C · 6.AT.4)</span>
+      <span>100% Offline Interactive Practice Studio · Progress Auto-Saved in Browser</span>
+    </div>
+  </footer>
+
+  <!-- ========================================================================
+       APPLICATION SCRIPT
+       ======================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      const STORAGE_KEY = 'neft_percent_clean_v2';
+
+      const state = {
+        activeTab: 1,
+        showEs: false,
+        gridCount: 40,
+        showTenths: true,
+        idx1: 0,
+        idx2: 0,
+        idx3: 0,
+        idx4: 0,
+        idx5: 0,
+        solved1: {},
+        solved2: {},
+        solved3: {},
+        solved4: {},
+        solved5: {},
+        quizChoice: {}
+      };
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return;
+          const d = JSON.parse(raw);
+          if (d && typeof d === 'object') {
+            state.showEs = !!d.showEs;
+            state.solved1 = d.solved1 || {};
+            state.solved2 = d.solved2 || {};
+            state.solved3 = d.solved3 || {};
+            state.solved4 = d.solved4 || {};
+            state.solved5 = d.solved5 || {};
+            state.quizChoice = d.quizChoice || {};
+          }
+        } catch (e) {}
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            showEs: state.showEs,
+            solved1: state.solved1,
+            solved2: state.solved2,
+            solved3: state.solved3,
+            solved4: state.solved4,
+            solved5: state.solved5,
+            quizChoice: state.quizChoice
+          }));
+        } catch (e) {}
+      }
+
+      function announce(msg) {
+        const el = document.getElementById('sr-live');
+        if (el) {
+          el.textContent = '';
+          setTimeout(() => { el.textContent = msg; }, 25);
+        }
+      }
+
+      function speak(text) {
+        if (!('speechSynthesis' in window)) return;
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = 0.96;
+        window.speechSynthesis.speak(u);
+      }
+
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-speak]');
+        if (btn) speak(btn.getAttribute('data-speak'));
+      });
+
+      /* ----------------------------------------------------------------------
+         HEADER CONTROLS & TAB NAVIGATION
+         ---------------------------------------------------------------------- */
+      const esBtn = document.getElementById('toggle-es-btn');
+      esBtn.addEventListener('click', () => {
+        state.showEs = !state.showEs;
+        document.body.classList.toggle('show-es', state.showEs);
+        esBtn.setAttribute('aria-pressed', String(state.showEs));
+        saveState();
+      });
+
+      document.getElementById('print-btn').addEventListener('click', () => window.print());
+
+      const tabBtns = Array.from(document.querySelectorAll('.tab-btn'));
+      const tabPanels = Array.from(document.querySelectorAll('.tab-panel'));
+
+      function selectTab(num, focusBtn = false) {
+        state.activeTab = Number(num);
+        tabBtns.forEach((b) => {
+          const active = Number(b.dataset.tab) === state.activeTab;
+          b.setAttribute('aria-selected', String(active));
+          b.setAttribute('tabindex', active ? '0' : '-1');
+          if (active && focusBtn) b.focus();
+        });
+        tabPanels.forEach((p, i) => {
+          p.classList.toggle('active', i + 1 === state.activeTab);
+        });
+      }
+
+      tabBtns.forEach((b, idx) => {
+        b.addEventListener('click', () => selectTab(b.dataset.tab, false));
+        b.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            selectTab(tabBtns[(idx + 1) % tabBtns.length].dataset.tab, true);
+          } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            selectTab(tabBtns[(idx - 1 + tabBtns.length) % tabBtns.length].dataset.tab, true);
+          }
+        });
+      });
+
+      function updateProgressHeader() {
+        const c1 = Object.keys(state.solved1).length; // 8
+        const c2 = Object.keys(state.solved2).filter(k => !k.startsWith('rand')).length; // 12
+        const c3 = Object.keys(state.solved3).length; // 8
+        const c4 = Object.keys(state.solved4).length; // 8
+        const c5 = Object.keys(state.solved5).filter(k => state.solved5[k]).length; // 10
+
+        const total = c1 + c2 + c3 + c4 + c5;
+        document.getElementById('header-progress-count').textContent = `${total} / 46`;
+        document.getElementById('t5-score-pill').textContent = `Score: ${c5} / 10`;
+
+        const checks = [c1 === 8, c2 >= 10, c3 === 8, c4 === 8, c5 >= 8];
+        checks.forEach((done, i) => {
+          const btn = document.getElementById(`tab-${i + 1}`);
+          const badge = document.getElementById(`badge-${i + 1}`);
+          btn.classList.toggle('tab-complete', done);
+          badge.textContent = done ? '✓' : String(i + 1);
+        });
+
+        saveState();
+      }
+
+      function renderDots(containerId, items, activeIdx, solvedMap, onSelect) {
+        const wrap = document.getElementById(containerId);
+        wrap.innerHTML = '';
+        items.forEach((item, idx) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          const isSolved = !!solvedMap[item.id];
+          btn.className = `step-dot ${idx === activeIdx ? 'active' : ''} ${isSolved ? 'solved' : ''}`;
+          btn.textContent = isSolved ? `${idx + 1} ✓` : String(idx + 1);
+          btn.setAttribute('aria-label', `Problem ${idx + 1}${isSolved ? ' completed' : ''}`);
+          btn.addEventListener('click', () => onSelect(idx));
+          wrap.appendChild(btn);
+        });
+      }
+
+      /* ----------------------------------------------------------------------
+         TAB 1: 100-GRID EXPLORER & 8 ESSENTIALS TASKS
+         ---------------------------------------------------------------------- */
+      const t1Svg = document.getElementById('t1-grid-svg');
+      const t1Slider = document.getElementById('t1-slider');
+      let gridDragging = false;
+
+      function initT1Grid() {
+        t1Svg.innerHTML = '';
+        const gCells = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        for (let col = 0; col < 10; col++) {
+          for (let row = 0; row < 10; row++) {
+            const idx = col * 10 + row + 1;
+            const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            r.setAttribute('x', String(col * 20));
+            r.setAttribute('y', String(row * 20));
+            r.setAttribute('width', '20');
+            r.setAttribute('height', '20');
+            r.setAttribute('class', 'grid-cell');
+            r.dataset.idx = String(idx);
+            gCells.appendChild(r);
+          }
+        }
+        t1Svg.appendChild(gCells);
+
+        const gLines = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        gLines.id = 't1-tenths-lines';
+        for (let col = 1; col < 10; col++) {
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', String(col * 20));
+          line.setAttribute('y1', '0');
+          line.setAttribute('x2', String(col * 20));
+          line.setAttribute('y2', '200');
+          line.setAttribute('class', 'tenths-line');
+          gLines.appendChild(line);
+        }
+        t1Svg.appendChild(gLines);
+
+        function paintFromEvent(e) {
+          const el = document.elementFromPoint(e.clientX, e.clientY);
+          if (el && el.dataset && el.dataset.idx) {
+            setT1Grid(Number(el.dataset.idx));
+          }
+        }
+
+        t1Svg.addEventListener('pointerdown', (e) => {
+          gridDragging = true;
+          paintFromEvent(e);
+        });
+        t1Svg.addEventListener('pointermove', (e) => {
+          if (gridDragging) paintFromEvent(e);
+        });
+        window.addEventListener('pointerup', () => { gridDragging = false; });
+      }
+
+      function setT1Grid(val) {
+        state.gridCount = Math.max(0, Math.min(100, Math.round(val)));
+        t1Slider.value = String(state.gridCount);
+        const c = state.gridCount;
+        document.getElementById('t1-slider-label').textContent = `${c} / 100 squares`;
+        document.getElementById('t1-stat-pct').textContent = `${c} sq`;
+        document.getElementById('t1-stat-unshaded').textContent = `${100 - c} sq`;
+        document.getElementById('t1-stat-fd').textContent = `100 sq`;
+
+        t1Svg.querySelectorAll('.grid-cell').forEach((cell) => {
+          cell.classList.toggle('shaded', Number(cell.dataset.idx) <= c);
+        });
+        const lines = document.getElementById('t1-tenths-lines');
+        if (lines) lines.style.display = state.showTenths ? 'block' : 'none';
+      }
+
+      t1Slider.addEventListener('input', () => setT1Grid(Number(t1Slider.value)));
+      document.getElementById('t1-tenths-btn').addEventListener('click', (e) => {
+        state.showTenths = !state.showTenths;
+        e.currentTarget.setAttribute('aria-pressed', String(state.showTenths));
+        e.currentTarget.textContent = state.showTenths ? '10 Columns: ON' : '10 Columns: OFF';
+        setT1Grid(state.gridCount);
+      });
+      document.querySelectorAll('[data-grid-set]').forEach((btn) => {
+        btn.addEventListener('click', () => setT1Grid(Number(btn.dataset.gridSet)));
+      });
+
+      const T1_TASKS = [
+        {
+          id: 't1_1',
+          gridPreset: 40,
+          title: 'Task 1 of 8 · The Meaning of Percent',
+          stem: 'What does the word percent (%) mean?',
+          stemEs: '¿Qué significa la palabra porcentaje (%)?',
+          type: 'mc',
+          choices: [
+            'Out of 10 (per ten)',
+            'Out of 100 (per hundred)',
+            'Out of 1,000 (per thousand)',
+            'Adding 100 to a number'
+          ],
+          correct: 1,
+          hint: 'Look at the total number of squares in the 10 × 10 grid on the left.',
+          explain: '✓ Correct! Percent means “per hundred” or “out of 100.” One whole grid of 100 squares is 100%.'
+        },
+        {
+          id: 't1_2',
+          gridPreset: 9,
+          title: 'Task 2 of 8 · Reading Shaded Squares',
+          stem: '9 out of 100 squares on the decimal grid are shaded. What percent of the grid is shaded?',
+          stemEs: '9 de 100 cuadrados en la cuadrícula están sombreados. ¿Qué porcentaje está sombreado?',
+          type: 'single',
+          unit: '%',
+          answer: '9',
+          hint: 'Each square is 1 out of 100, which is 1%. Count the 9 shaded squares.',
+          explain: '✓ Correct! Because the grid has 100 squares in all, 9 shaded squares is 9 out of 100 = 9%.'
+        },
+        {
+          id: 't1_3',
+          gridPreset: 53,
+          title: 'Task 3 of 8 · Writing a Per-100 Ratio as a Fraction',
+          stem: '53 out of 100 squares are shaded. Write 53 out of 100 as a fraction (use a slash like a/b).',
+          stemEs: '53 de 100 cuadrados están sombreados. Escribe 53 de 100 como una fracción (usa a/b).',
+          type: 'single',
+          unit: '(fraction)',
+          answer: '53/100',
+          hint: 'Put the shaded part (53) in the numerator and the whole grid (100) in the denominator.',
+          explain: '✓ Correct! 53 out of 100 is written as the fraction 53/100.'
+        },
+        {
+          id: 't1_4',
+          gridPreset: 71,
+          title: 'Task 4 of 8 · Connecting Hundredths to Decimals',
+          stem: '71 out of 100 squares (71 hundredths) are shaded. Write 71 hundredths as a decimal.',
+          stemEs: '71 de 100 cuadrados (71 centésimas) están sombreados. Escribe 71 centésimas como un decimal.',
+          type: 'single',
+          unit: '(decimal)',
+          answer: '0.71',
+          altAnswer: '.71',
+          hint: '71 hundredths has 7 tenths and 1 hundredth: write 0. followed by 71.',
+          explain: '✓ Correct! 71 out of 100 is 71 hundredths, written as 0.71 (which equals 71%).'
+        },
+        {
+          id: 't1_5',
+          gridPreset: 23,
+          title: 'Task 5 of 8 · Eagle Mascot Voters (All Three Forms)',
+          stem: 'In the school mascot vote, 23 out of 100 students voted for the eagle. Fill in the fraction out of 100, the decimal, and the percent.',
+          stemEs: 'En la votación de la mascota, 23 de 100 estudiantes votaron por el águila. Completa la fracción, el decimal y el porcentaje.',
+          type: 'dual',
+          labelA: 'Numerator over 100:',
+          suffixA: '/ 100',
+          ansA: '23',
+          labelB: 'As a Percent:',
+          suffixB: '%',
+          ansB: '23',
+          hint: '23 out of 100 means 23/100, which is 23%.',
+          explain: '✓ Correct! 23 out of 100 = 23/100 = 0.23 = 23%.'
+        },
+        {
+          id: 't1_6',
+          gridPreset: 62,
+          title: 'Task 6 of 8 · Shaded vs. NOT Shaded (Amaya’s Grid)',
+          stem: 'Amaya shades 62 squares on a 100-square grid. What percent IS shaded, and what percent is NOT shaded?',
+          stemEs: 'Amaya sombrea 62 cuadrados en una cuadrícula de 100. ¿Qué porcentaje ESTÁ sombreado y qué porcentaje NO está sombreado?',
+          type: 'dual',
+          labelA: 'Percent Shaded:',
+          suffixA: '%',
+          ansA: '62',
+          labelB: 'Percent NOT Shaded (100 − 62):',
+          suffixB: '%',
+          ansB: '38',
+          hint: 'Look at the summary tiles under the grid when 62 squares are shaded! 62% + 38% = 100%.',
+          explain: '✓ Spot on! 62% is shaded, and the remaining 100 − 62 = 38 squares (38%) are NOT shaded.'
+        },
+        {
+          id: 't1_7',
+          gridPreset: 40,
+          title: 'Task 7 of 8 · Columns of Ten (Tiger Mascot Voters)',
+          stem: '4 out of 10 columns on the grid are shaded. Since each column has 10 squares, how many squares out of 100 are shaded, and what percent is that?',
+          stemEs: '4 de 10 columnas están sombreadas. Como cada columna tiene 10 cuadrados, ¿cuántos cuadrados de 100 están sombreados y qué porcentaje es?',
+          type: 'dual',
+          labelA: 'Squares out of 100:',
+          suffixA: 'squares',
+          ansA: '40',
+          labelB: 'Percent:',
+          suffixB: '%',
+          ansB: '40',
+          hint: '4 columns × 10 squares per column = 40 squares out of 100.',
+          explain: '✓ Correct! 4 out of 10 columns equals 40 out of 100 squares, or 40%.'
+        },
+        {
+          id: 't1_8',
+          gridPreset: 100,
+          title: 'Task 8 of 8 · Less Than, Equal To, or More Than 1 Whole?',
+          stem: 'Since 100% is 1 whole, which statement below is true about 40%, 100%, and 150%?',
+          stemEs: 'Como 100% es 1 entero, ¿cuál afirmación es verdadera sobre 40%, 100% y 150%?',
+          type: 'mc',
+          choices: [
+            '40% is more than 1 whole, and 150% is less than 1 whole.',
+            '40% is less than 1 whole, 100% is exactly 1 whole, and 150% is more than 1 whole (1.5 wholes).',
+            'A percent can never be greater than 100%.'
+          ],
+          correct: 1,
+          hint: 'Compare each number to 100%: under 100% is part of a whole; over 100% is more than one whole.',
+          explain: '✓ You got it! 40% < 1 whole, 100% = 1 whole, and 150% > 1 whole (1 whole plus half of another).'
+        }
+      ];
+
+      function renderT1Task() {
+        const task = T1_TASKS[state.idx1];
+        setT1Grid(task.gridPreset);
+
+        renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (newIdx) => {
+          state.idx1 = newIdx;
+          renderT1Task();
+        });
+
+        const card = document.getElementById('t1-task-card');
+        const isDone = !!state.solved1[task.id];
+
+        let bodyHtml = '';
+        if (task.type === 'mc') {
+          const letters = ['A', 'B', 'C', 'D'];
+          bodyHtml = `<div class="choice-list">` + task.choices.map((c, i) => `
+            <button type="button" class="choice-btn ${isDone && i === task.correct ? 'correct' : ''}" data-t1-mc="${i}">
+              <span class="choice-letter">${letters[i]}</span>
+              <span>${c}</span>
+            </button>
+          `).join('') + `</div>`;
+        } else if (task.type === 'single') {
+          bodyHtml = `
+            <div style="display: flex; align-items: center; gap: 10px; margin: 18px 0; flex-wrap: wrap;">
+              <label for="t1-inp-single" style="font-weight: 700; color: var(--navy);">Your Answer:</label>
+              <input type="text" id="t1-inp-single" class="num-input ${isDone ? 'ok' : ''}" value="${isDone ? task.answer : ''}" placeholder="?">
+              <strong style="color: var(--navy); font-size: 1.05rem;">${task.unit}</strong>
+              <button type="button" class="btn btn-primary" id="t1-check-btn">Check Answer</button>
+              <button type="button" class="btn" id="t1-hint-btn">💡 Hint</button>
+            </div>
+          `;
+        } else if (task.type === 'dual') {
+          bodyHtml = `
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 18px 0;">
+              <div style="background: var(--surface-soft); padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+                <label for="t1-inp-a" style="display: block; font-weight: 700; color: var(--navy); font-size: 0.9rem; margin-bottom: 8px;">${task.labelA}</label>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <input type="text" id="t1-inp-a" class="num-input ${isDone ? 'ok' : ''}" value="${isDone ? task.ansA : ''}" placeholder="?">
+                  <strong style="color: var(--navy);">${task.suffixA}</strong>
+                </div>
+              </div>
+              <div style="background: var(--surface-soft); padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+                <label for="t1-inp-b" style="display: block; font-weight: 700; color: var(--navy); font-size: 0.9rem; margin-bottom: 8px;">${task.labelB}</label>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <input type="text" id="t1-inp-b" class="num-input ${isDone ? 'ok' : ''}" value="${isDone ? task.ansB : ''}" placeholder="?">
+                  <strong style="color: var(--navy);">${task.suffixB}</strong>
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button type="button" class="btn btn-primary" id="t1-check-btn">Check Answer</button>
+              <button type="button" class="btn" id="t1-hint-btn">💡 Hint</button>
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px;">
+            <span style="font-size: 0.82rem; font-weight: 800; text-transform: uppercase; color: var(--teal); letter-spacing: 0.04em;">${task.title}</span>
+            <button type="button" class="speak-btn" data-speak="${task.stem}">🔊 Read</button>
+          </div>
+          <p style="font-size: 1.12rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${task.stem}</p>
+          <p class="es-text">${task.stemEs}</p>
+          ${bodyHtml}
+          <div id="t1-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">${isDone ? task.explain : ''}</div>
+        `;
+
+        // Wire events
+        if (task.type === 'mc') {
+          card.querySelectorAll('[data-t1-mc]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const idx = Number(btn.dataset.t1Mc);
+              const fb = document.getElementById('t1-fb');
+              card.querySelectorAll('[data-t1-mc]').forEach(b => b.classList.remove('correct', 'wrong'));
+              if (idx === task.correct) {
+                btn.classList.add('correct');
+                fb.className = 'feedback-box show ok';
+                fb.textContent = task.explain;
+                state.solved1[task.id] = true;
+                renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (ni) => { state.idx1 = ni; renderT1Task(); });
+                updateProgressHeader();
+              } else {
+                btn.classList.add('wrong');
+                fb.className = 'feedback-box show err';
+                fb.textContent = `Not quite. Hint: ${task.hint}`;
+              }
+            });
+          });
+        } else {
+          const checkBtn = document.getElementById('t1-check-btn');
+          const hintBtn = document.getElementById('t1-hint-btn');
+          const fb = document.getElementById('t1-fb');
+
+          function verifyT1Input() {
+            if (task.type === 'single') {
+              const inp = document.getElementById('t1-inp-single');
+              const val = inp.value.replace(/%/g, '').replace(/\s+/g, '').trim();
+              const ok = val === task.answer || (task.altAnswer && val === task.altAnswer);
+              inp.classList.toggle('ok', ok);
+              inp.classList.toggle('err', !ok);
+              fb.className = `feedback-box show ${ok ? 'ok' : 'err'}`;
+              fb.textContent = ok ? task.explain : `Check your answer. Hint: ${task.hint}`;
+              if (ok) {
+                state.solved1[task.id] = true;
+                renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (ni) => { state.idx1 = ni; renderT1Task(); });
+                updateProgressHeader();
+              }
+            } else if (task.type === 'dual') {
+              const inpA = document.getElementById('t1-inp-a');
+              const inpB = document.getElementById('t1-inp-b');
+              const okA = inpA.value.replace(/%/g, '').trim() === task.ansA;
+              const okB = inpB.value.replace(/%/g, '').trim() === task.ansB;
+              inpA.classList.toggle('ok', okA);
+              inpA.classList.toggle('err', !okA);
+              inpB.classList.toggle('ok', okB);
+              inpB.classList.toggle('err', !okB);
+              if (okA && okB) {
+                fb.className = 'feedback-box show ok';
+                fb.textContent = task.explain;
+                state.solved1[task.id] = true;
+                renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (ni) => { state.idx1 = ni; renderT1Task(); });
+                updateProgressHeader();
+              } else {
+                fb.className = 'feedback-box show err';
+                fb.textContent = `Check both boxes. Hint: ${task.hint}`;
+              }
+            }
+          }
+
+          checkBtn.addEventListener('click', verifyT1Input);
+          hintBtn.addEventListener('click', () => {
+            fb.className = 'feedback-box show warn';
+            fb.textContent = `💡 Hint: ${task.hint}`;
+          });
+          card.querySelectorAll('input').forEach((inp) => {
+            inp.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter' && !e.isComposing) {
+                e.preventDefault();
+                verifyT1Input();
+              }
+            });
+          });
+        }
+      }
+
+      document.getElementById('t1-prev-btn').addEventListener('click', () => {
+        state.idx1 = (state.idx1 - 1 + T1_TASKS.length) % T1_TASKS.length;
+        renderT1Task();
+      });
+      document.getElementById('t1-next-btn').addEventListener('click', () => {
+        state.idx1 = (state.idx1 + 1) % T1_TASKS.length;
+        renderT1Task();
+      });
+
+      /* ----------------------------------------------------------------------
+         TAB 2: SCALE RATIOS TO 100 (12 PROGRESSIVE PROBLEMS + RANDOM GENERATOR)
+         ---------------------------------------------------------------------- */
+      const T2_PROBLEMS = [
+        { id: 't2_1', title: '1. School Mascot Vote (Out of 10)', stem: '4 out of every 10 voters chose the tiger. Scale the ratio 4 out of 10 to a whole of 100 to find the percent.', stemEs: '4 de cada 10 votantes eligieron el tigre. Escala 4 de 10 a un entero de 100.', part: 4, whole: 10 },
+        { id: 't2_2', title: '2. Arcade Bonus Level (Out of 10)', stem: '3 out of every 10 arcade players reach the bonus level. What percent of players reach the bonus level?', stemEs: '3 de cada 10 jugadores alcanzan el nivel de bonificación. ¿Qué porcentaje es?', part: 3, whole: 10 },
+        { id: 't2_3', title: '3. Bus Commuters (Out of 50)', stem: 'In a survey of 50 commuters, 21 ride the bus. Scale 21 out of 50 so the whole is 100.', stemEs: 'De 50 pasajeros, 21 toman el autobús. Escala 21 de 50 para que el entero sea 100.', part: 21, whole: 50 },
+        { id: 't2_4', title: '4. Sneaker Survey (Out of 50)', stem: 'Out of every 50 sixth graders, 33 wear sneakers with laces. What percent wear sneakers with laces?', stemEs: 'De cada 50 estudiantes de sexto grado, 33 usan tenis con cordones. ¿Qué porcentaje es?', part: 33, whole: 50 },
+        { id: 't2_5', title: '5. Garden Tomato Plants (Out of 25)', stem: 'A garden has 25 plants, and 8 of them are tomato plants. Write 8 out of 25 as a percent.', stemEs: 'Un jardín tiene 25 plantas y 8 son de tomate. Escribe 8 de 25 como porcentaje.', part: 8, whole: 25 },
+        { id: 't2_6', title: '6. Museum Visitors (Out of 25)', stem: '12 out of every 25 visitors at the science museum bought a planetarium ticket. What percent is that?', stemEs: '12 de cada 25 visitantes compraron un boleto. ¿Qué porcentaje es?', part: 12, whole: 25 },
+        { id: 't2_7', title: '7. Summer Camp Canoeing (Out of 25)', stem: 'Of 25 campers, 14 signed up for canoeing. Scale 14 out of 25 to find the percent who chose canoeing.', stemEs: 'De 25 campistas, 14 eligieron canotaje. Halla el porcentaje.', part: 14, whole: 25 },
+        { id: 't2_8', title: '8. Guided Practice Ratio (Out of 20)', stem: 'Write the ratio 3 out of 20 as an equivalent ratio out of 100, then write the percent.', stemEs: 'Escribe la razón 3 de 20 como una razón sobre 100 y escribe el porcentaje.', part: 3, whole: 20 },
+        { id: 't2_9', title: '9. Farmer’s Market Coupons (Out of 20)', stem: 'At a market, 11 out of every 20 shoppers used a coupon. What percent of shoppers used a coupon?', stemEs: 'En un mercado, 11 de cada 20 compradores usaron un cupón. ¿Qué porcentaje usó un cupón?', part: 11, whole: 20 },
+        { id: 't2_10', title: '10. Homework Check (Out of 20)', stem: '17 out of 20 students finished their practice early. What percent of the students is that?', stemEs: '17 de 20 estudiantes terminaron temprano. ¿Qué porcentaje es?', part: 17, whole: 20 },
+        { id: 't2_11', title: '11. Guided Practice Ratio (Out of 5)', stem: '2 out of every 5 songs on a playlist are hip-hop. Scale 2 out of 5 to a denominator of 100.', stemEs: '2 de cada 5 canciones son de hip-hop. Escala 2 de 5 a un denominador de 100.', part: 2, whole: 5 },
+        { id: 't2_12', title: '12. Reusable Water Bottles (Out of 4)', stem: '3 out of every 4 students brought a reusable water bottle. Write 3 out of 4 as a percent.', stemEs: '3 de cada 4 estudiantes trajeron una botella reutilizable. Escribe 3 de 4 como porcentaje.', part: 3, whole: 4 }
+      ];
+
+      let currentT2 = T2_PROBLEMS[0];
+
+      function renderT2Problem() {
+        const p = currentT2;
+        const factor = 100 / p.whole;
+        const targetPct = p.part * factor;
+        const isDone = !!state.solved2[p.id];
+
+        renderDots('t2-dots', T2_PROBLEMS, state.idx2, state.solved2, (ni) => {
+          state.idx2 = ni;
+          currentT2 = T2_PROBLEMS[ni];
+          renderT2Problem();
+        });
+
+        const stage = document.getElementById('t2-stage-card');
+
+        // Build clean Partitioned Bar SVG
+        const blocks = p.whole <= 25 ? p.whole : 10;
+        const shadedBlocks = p.whole <= 25 ? p.part : Math.round((p.part / p.whole) * 10);
+        const barW = 520;
+        const blockW = barW / blocks;
+        let rectsHtml = '';
+        for (let i = 0; i < blocks; i++) {
+          const isShaded = i < shadedBlocks;
+          rectsHtml += `<rect x="${40 + i * blockW}" y="28" width="${blockW}" height="34" fill="${isShaded ? '#1FA6A2' : '#F1F5F9'}" stroke="#17324D" stroke-width="1.5"/>`;
+        }
+
+        stage.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
+            <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal); letter-spacing: 0.04em;">${p.title}</span>
+            <button type="button" class="speak-btn" data-speak="${p.stem}">🔊 Read</button>
+          </div>
+          <p style="font-size: 1.15rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${p.stem}</p>
+          <p class="es-text">${p.stemEs}</p>
+
+          <!-- Clean Visual Equivalence Diagram -->
+          <div class="scaling-visual-card">
+            <div class="ratio-machine">
+              <div class="big-fraction">
+                <span class="role-tag">Part</span>
+                <span class="num">${p.part}</span>
+                <span class="f-bar"></span>
+                <span class="den">${p.whole}</span>
+                <span class="role-tag">Whole</span>
+              </div>
+
+              <div class="arrow-stack">
+                <div class="scale-arrow-pill">
+                  <span>× <strong id="t2-live-top-f">${isDone ? factor : '?'}</strong> &rarr;</span>
+                </div>
+                <div class="scale-arrow-pill">
+                  <span>× <strong id="t2-live-bot-f">${isDone ? factor : '?'}</strong> &rarr;</span>
+                </div>
+              </div>
+
+              <div class="big-fraction" style="border-color: var(--teal);">
+                <span class="role-tag">Per 100</span>
+                <span class="num" id="t2-live-num" style="color: var(--teal);">${isDone ? targetPct : '?'}</span>
+                <span class="f-bar" style="background: var(--teal);"></span>
+                <span class="den" style="color: var(--teal);">100</span>
+                <span class="role-tag">Whole = 100</span>
+              </div>
+
+              <div style="font-size: 1.8rem; font-weight: 800; color: var(--navy);">=</div>
+
+              <div class="big-fraction" style="background: var(--navy); border-color: var(--navy);">
+                <span class="role-tag" style="color: #CBD5E1;">Percent</span>
+                <span class="num" id="t2-live-pct" style="color: #FFFFFF; font-size: 1.9rem;">${isDone ? targetPct + '%' : '?%'}</span>
+              </div>
+            </div>
+
+            <!-- Clean Single Partitioned Percent Bar -->
+            <svg viewBox="0 0 600 92" style="width: 100%; max-width: 640px; height: auto; display: block; margin: 0 auto; background: #FFFFFF; border: 1px solid var(--border); border-radius: 8px;" role="img" aria-label="Visual fraction bar model">
+              <text x="40" y="20" font-size="12" font-weight="700" fill="#17324D">Shaded Part: ${p.part} out of ${p.whole}</text>
+              <text x="560" y="20" text-anchor="end" font-size="12" font-weight="700" fill="#0F766E">Whole Bar = ${p.whole} = 100%</text>
+              ${rectsHtml}
+              <text x="40" y="80" font-size="11.5" font-weight="700" fill="#0F766E">0%</text>
+              <text x="${40 + (p.part / p.whole) * barW}" y="80" text-anchor="middle" font-size="12" font-weight="800" fill="#0F766E">${isDone ? targetPct + '%' : '?%'}</text>
+              <text x="560" y="80" text-anchor="end" font-size="11.5" font-weight="700" fill="#17324D">100%</text>
+            </svg>
+          </div>
+
+          <!-- 3 Clear Student-Friendly Step Cards -->
+          <div class="guided-steps-grid">
+            <div class="step-box">
+              <div>
+                <div class="step-box-label">Step 1 · Scale the Whole</div>
+                <p class="step-box-desc">What number do you multiply <strong>${p.whole}</strong> by to make <strong>100</strong>?</p>
+              </div>
+              <div class="step-box-Equation">
+                <span>${p.whole} ×</span>
+                <input type="text" id="t2-inp-factor" class="num-input ${isDone ? 'ok' : ''}" style="width: 78px;" inputmode="numeric" value="${isDone ? factor : ''}" aria-label="Scale factor" placeholder="?">
+                <span>= 100</span>
+              </div>
+            </div>
+
+            <div class="step-box step-2">
+              <div>
+                <div class="step-box-label" style="color: var(--teal);">Step 2 · Scale the Part</div>
+                <p class="step-box-desc">Multiply the part (<strong>${p.part}</strong>) by that same scale factor:</p>
+              </div>
+              <div class="step-box-Equation">
+                <span>${p.part} × ${isDone ? factor : 'factor'} =</span>
+                <input type="text" id="t2-inp-num" class="num-input ${isDone ? 'ok' : ''}" style="width: 78px;" inputmode="numeric" value="${isDone ? targetPct : ''}" aria-label="Amount out of 100" placeholder="?">
+              </div>
+            </div>
+
+            <div class="step-box step-3">
+              <div>
+                <div class="step-box-label" style="color: var(--amber);">Step 3 · Write the Percent</div>
+                <p class="step-box-desc">Since the ratio is now out of 100, write the percent:</p>
+              </div>
+              <div class="step-box-Equation">
+                <input type="text" id="t2-inp-pct" class="num-input ${isDone ? 'ok' : ''}" style="width: 86px;" inputmode="numeric" value="${isDone ? targetPct : ''}" aria-label="Percent" placeholder="?">
+                <span>%</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 18px; align-items: center; flex-wrap: wrap;">
+            <button type="button" class="btn btn-primary" id="t2-check-btn">Check My Steps</button>
+            <button type="button" class="btn" id="t2-hint-btn">💡 Hint</button>
+          </div>
+
+          <div id="t2-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">
+            ${isDone ? `✓ Great job! Multiplying both terms of ${p.part}/${p.whole} by ${factor} gives ${targetPct}/100 = ${targetPct}%.` : ''}
+          </div>
+        `;
+
+        const fInp = document.getElementById('t2-inp-factor');
+        const nInp = document.getElementById('t2-inp-num');
+        const pInp = document.getElementById('t2-inp-pct');
+        const fb = document.getElementById('t2-fb');
+
+        // Live preview in the diagram as student types
+        fInp.addEventListener('input', () => {
+          const v = fInp.value.trim() || '?';
+          document.getElementById('t2-live-top-f').textContent = v;
+          document.getElementById('t2-live-bot-f').textContent = v;
+        });
+        nInp.addEventListener('input', () => {
+          document.getElementById('t2-live-num').textContent = nInp.value.trim() || '?';
+        });
+        pInp.addEventListener('input', () => {
+          const v = pInp.value.replace(/%/g, '').trim();
+          document.getElementById('t2-live-pct').textContent = v ? `${v}%` : '?%';
+        });
+
+        function checkT2() {
+          const fVal = Number(fInp.value.trim());
+          const nVal = Number(nInp.value.trim());
+          const pVal = Number(pInp.value.replace(/%/g, '').trim());
+
+          const okF = fVal === factor;
+          const okN = nVal === targetPct;
+          const okP = pVal === targetPct;
+
+          fInp.classList.toggle('ok', okF);
+          fInp.classList.toggle('err', !okF);
+          nInp.classList.toggle('ok', okN);
+          nInp.classList.toggle('err', !okN);
+          pInp.classList.toggle('ok', okP);
+          pInp.classList.toggle('err', !okP);
+
+          if (okF && okN && okP) {
+            state.solved2[p.id] = true;
+            updateProgressHeader();
+            renderT2Problem();
+            announce(`Correct! ${p.part} out of ${p.whole} equals ${targetPct} percent.`);
+            return;
+          }
+
+          // Helpful misconception diagnostics
+          if (pVal === p.part && p.whole !== 100) {
+            fb.className = 'feedback-box show err';
+            fb.textContent = `Careful! ${p.part} is out of ${p.whole}, not out of 100. First multiply ${p.whole} × ${factor} = 100, then multiply ${p.part} × ${factor}.`;
+            return;
+          }
+          if (nVal === p.part + (100 - p.whole)) {
+            fb.className = 'feedback-box show err';
+            fb.textContent = `Remember: we scale ratios by MULTIPLYING, not adding ${100 - p.whole}. Multiply ${p.part} × ${factor}.`;
+            return;
+          }
+
+          fb.className = 'feedback-box show err';
+          fb.textContent = `Check each step: Step 1 factor is ${factor} (because ${p.whole} × ${factor} = 100). Step 2 is ${p.part} × ${factor} = ${targetPct}.`;
+        }
+
+        document.getElementById('t2-check-btn').addEventListener('click', checkT2);
+        document.getElementById('t2-hint-btn').addEventListener('click', () => {
+          fb.className = 'feedback-box show warn';
+          fb.textContent = `💡 Hint: Ask “How many ${p.whole}s fit into 100?” (${p.whole} × ${factor} = 100). Then multiply ${p.part} × ${factor}.`;
+        });
+        [fInp, nInp, pInp].forEach((inp) => {
+          inp.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.isComposing) {
+              e.preventDefault();
+              checkT2();
+            }
+          });
+        });
+      }
+
+      document.getElementById('t2-prev-btn').addEventListener('click', () => {
+        state.idx2 = (state.idx2 - 1 + T2_PROBLEMS.length) % T2_PROBLEMS.length;
+        currentT2 = T2_PROBLEMS[state.idx2];
+        renderT2Problem();
+      });
+      document.getElementById('t2-next-btn').addEventListener('click', () => {
+        state.idx2 = (state.idx2 + 1) % T2_PROBLEMS.length;
+        currentT2 = T2_PROBLEMS[state.idx2];
+        renderT2Problem();
+      });
+      document.getElementById('t2-random-btn').addEventListener('click', () => {
+        const wholes = [4, 5, 10, 20, 25, 50];
+        const whole = wholes[Math.floor(Math.random() * wholes.length)];
+        const part = Math.floor(Math.random() * (whole - 1)) + 1;
+        currentT2 = {
+          id: 'rand_' + Date.now(),
+          title: `Random Practice Challenge (${part} out of ${whole})`,
+          stem: `Scale the ratio ${part} out of ${whole} so the whole is 100, and find the percent.`,
+          stemEs: `Escala la razón ${part} de ${whole} para que el entero sea 100 y halla el porcentaje.`,
+          part,
+          whole
+        };
+        renderT2Problem();
+      });
+
+      /* ----------------------------------------------------------------------
+         TAB 3: RATIO TABLES & PERCENT BARS (8 CRYSTAL-CLEAR STEP-BY-STEP PROBLEMS)
+         ---------------------------------------------------------------------- */
+      const T3_PROBLEMS = [
+        {
+          id: 't3_1',
+          kind: 'bar',
+          title: 'Problem 1 of 8 · Percent Bar with 4 Equal Blocks',
+          stem: 'A game has 20 total points split into 4 equal blocks on the percent bar. You scored 15 points (3 blocks). Find the percent for 1 block first, then for 3 blocks!',
+          stemEs: 'Un juego tiene 20 puntos divididos en 4 bloques iguales en la barra. Anotaste 15 puntos (3 bloques). Halla el porcentaje de 1 bloque primero y luego de 3 bloques.',
+          whole: 20,
+          part: 15,
+          blocks: 4,
+          shadedBlocks: 3,
+          oneBlockQty: 5,
+          oneBlockPct: 25,
+          finalPct: 75,
+          hint: '100% split into 4 equal blocks is 100% ÷ 4 = 25% per block. Then 3 blocks × 25% = 75%.'
+        },
+        {
+          id: 't3_2',
+          kind: 'bar',
+          title: 'Problem 2 of 8 · Percent Bar with 5 Equal Blocks',
+          stem: 'A bus has 40 seats split into 5 equal blocks on the percent bar. 24 seats (3 blocks) are filled. Find the percent for 1 block, then for 3 blocks!',
+          stemEs: 'Un autobús tiene 40 asientos divididos en 5 bloques iguales. 24 asientos (3 bloques) están ocupados. Halla el porcentaje de 1 bloque y luego de 3 bloques.',
+          whole: 40,
+          part: 24,
+          blocks: 5,
+          shadedBlocks: 3,
+          oneBlockQty: 8,
+          oneBlockPct: 20,
+          finalPct: 60,
+          hint: '100% ÷ 5 blocks = 20% for each block of 8 seats. Three blocks is 3 × 20% = 60%.'
+        },
+        {
+          id: 't3_3',
+          kind: 'bar',
+          title: 'Problem 3 of 8 · Percent Bar with 10 Equal Blocks (10% Benchmark)',
+          stem: 'Deshawn’s goal was 50 jump-rope jumps (10 equal blocks of 5 jumps). He completed 35 jumps (7 blocks). Use the 10% benchmark to find his percent!',
+          stemEs: 'La meta de Deshawn era 50 saltos (10 bloques iguales de 5 saltos). Completó 35 saltos (7 bloques). ¡Usa el bloque del 10% para hallar su porcentaje!',
+          whole: 50,
+          part: 35,
+          blocks: 10,
+          shadedBlocks: 7,
+          oneBlockQty: 5,
+          oneBlockPct: 10,
+          finalPct: 70,
+          hint: 'Each block is 1/10 of the bar, so 1 block (5 jumps) = 10%. Seven blocks is 7 × 10% = 70%.'
+        },
+        {
+          id: 't3_4',
+          kind: 'bridge',
+          title: 'Problem 4 of 8 · Bridge Ratio Table: Field Day (9 out of 12)',
+          stem: 'A team finished 9 out of 12 challenges. 12 does not multiply evenly into 100 by a whole number—so divide by 3 first to get a friendly denominator of 4, then multiply by 25 to reach 100!',
+          stemEs: 'Un equipo terminó 9 de 12 retos. Primero divide entre 3 para obtener cuartos (sobre 4) y luego multiplica por 25 para llegar a 100.',
+          part: 9,
+          whole: 12,
+          divBy: 3,
+          midPart: 3,
+          midWhole: 4,
+          multBy: 25,
+          finalPct: 75,
+          hint: 'Step 1 (Divide by 3): 9 ÷ 3 = 3. Step 2 (Multiply by 25): 3 × 25 = 75, so 75 out of 100 = 75%.'
+        },
+        {
+          id: 't3_5',
+          kind: 'bridge',
+          title: 'Problem 5 of 8 · Bridge Ratio Table: Jordan’s Free Throws (12 out of 16)',
+          stem: 'Jordan made 12 out of 16 free throws. Use the Bridge Ratio Table: first divide both numbers by 4 to simplify to fourths, then multiply by 25 to get 100!',
+          stemEs: 'Jordan encestó 12 de 16 tiros libres. Primero divide ambos números entre 4, y luego multiplica por 25 para llegar a 100.',
+          part: 12,
+          whole: 16,
+          divBy: 4,
+          midPart: 3,
+          midWhole: 4,
+          multBy: 25,
+          finalPct: 75,
+          hint: 'Step 1: 12 ÷ 4 = 3 (giving 3/4). Step 2: 3 × 25 = 75 (giving 75/100 = 75%).'
+        },
+        {
+          id: 't3_6',
+          kind: 'bridge',
+          title: 'Problem 6 of 8 · Bridge Ratio Table: Kira’s Free Throws (36 out of 60)',
+          stem: 'Kira made 36 out of 60 free throws. Divide both numbers by 6 to get a friendly denominator of 10, then multiply by 10 to reach 100!',
+          stemEs: 'Kira encestó 36 de 60 tiros libres. Divide entre 6 para llegar a 10, y luego multiplica por 10 para llegar a 100.',
+          part: 36,
+          whole: 60,
+          divBy: 6,
+          midPart: 6,
+          midWhole: 10,
+          multBy: 10,
+          finalPct: 60,
+          hint: 'Step 1: 36 ÷ 6 = 6 (so 6 out of 10). Step 2: 6 × 10 = 60 (so 60 out of 100 = 60%).'
+        },
+        {
+          id: 't3_7',
+          kind: 'bridge',
+          title: 'Problem 7 of 8 · Bridge Ratio Table: Dev’s Free Throws (32 out of 40)',
+          stem: 'Dev made 32 out of 40 free throws. Divide both numbers by 4 to get a denominator of 10, then multiply by 10 to reach 100!',
+          stemEs: 'Dev encestó 32 de 40 tiros libres. Divide ambos números entre 4 para llegar a 10, y luego multiplica por 10 para llegar a 100.',
+          part: 32,
+          whole: 40,
+          divBy: 4,
+          midPart: 8,
+          midWhole: 10,
+          multBy: 10,
+          finalPct: 80,
+          hint: 'Step 1: 32 ÷ 4 = 8 (so 8 out of 10). Step 2: 8 × 10 = 80 (so 80 out of 100 = 80%).'
+        },
+        {
+          id: 't3_8',
+          kind: 'campTable',
+          title: 'Problem 8 of 8 · Multi-Row Ratio Table: Camp Sign-Ups (Whole = 25)',
+          stem: 'Out of 25 campers, 14 chose Canoeing, 7 chose Archery, and 4 chose Crafts. Since 25 × 4 = 100, multiply each activity count by 4 to find its percent!',
+          stemEs: 'De 25 campistas, 14 eligieron Canotaje, 7 Tiro con arco y 4 Manualidades. Como 25 × 4 = 100, multiplica cada grupo por 4.',
+          hint: 'Multiply each number in the “Out of 25” column by 4: 14 × 4 = 56%, 7 × 4 = 28%, and 4 × 4 = 16%.'
+        }
+      ];
+
+      function renderT3Problem() {
+        const p = T3_PROBLEMS[state.idx3];
+        const isDone = !!state.solved3[p.id];
+
+        renderDots('t3-dots', T3_PROBLEMS, state.idx3, state.solved3, (ni) => {
+          state.idx3 = ni;
+          renderT3Problem();
+        });
+
+        const stage = document.getElementById('t3-stage-card');
+
+        if (p.kind === 'bar') {
+          const barW = 540;
+          const bw = barW / p.blocks;
+          let blocksSvg = '';
+          for (let i = 0; i < p.blocks; i++) {
+            const shaded = i < p.shadedBlocks;
+            const x = 40 + i * bw;
+            let tickLabel = '';
+            if (isDone) {
+              tickLabel = `${(i + 1) * p.oneBlockPct}%`;
+            } else if (i === 0) {
+              tickLabel = '?%';
+            } else if (i + 1 === p.shadedBlocks) {
+              tickLabel = '?%';
+            } else if (i + 1 === p.blocks) {
+              tickLabel = '100%';
+            }
+            const tickId = i === 0 ? 'id="t3-svg-tick-one"' : (i + 1 === p.shadedBlocks ? 'id="t3-svg-tick-fin"' : '');
+            blocksSvg += `
+              <rect x="${x}" y="42" width="${bw}" height="42" fill="${shaded ? '#1FA6A2' : '#F1F5F9'}" stroke="#17324D" stroke-width="2"/>
+              <text x="${x + bw / 2}" y="68" text-anchor="middle" font-size="13" font-weight="800" fill="${shaded ? '#0F2337' : '#64748B'}">${p.oneBlockQty}</text>
+              ${tickLabel ? `<text ${tickId} x="${x + bw}" y="106" text-anchor="middle" font-size="12" font-weight="800" fill="${i + 1 === p.shadedBlocks ? '#D97706' : '#0F766E'}">${tickLabel}</text>` : ''}
+            `;
+          }
+
+          stage.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
+              <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal);">${p.title}</span>
+              <button type="button" class="speak-btn" data-speak="${p.stem}">🔊 Read</button>
+            </div>
+            <p style="font-size: 1.12rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${p.stem}</p>
+            <p class="es-text">${p.stemEs}</p>
+
+            <!-- Crystal-Clear Segmented Percent Bar -->
+            <div class="scaling-visual-card" style="padding: 18px;">
+              <svg viewBox="0 0 620 124" style="width: 100%; max-width: 680px; height: auto; display: block; margin: 0 auto; background: #FFFFFF; border-radius: 8px; border: 1px solid var(--border);" role="img" aria-label="Segmented percent bar">
+                <text x="40" y="26" font-size="12.5" font-weight="800" fill="#17324D">Shaded: ${p.shadedBlocks} blocks = ${p.part}</text>
+                <text x="580" y="26" text-anchor="end" font-size="12.5" font-weight="800" fill="#17324D">Whole (${p.blocks} blocks) = ${p.whole}</text>
+                <text x="40" y="106" text-anchor="middle" font-size="12" font-weight="700" fill="#0F766E">0%</text>
+                ${blocksSvg}
+              </svg>
+            </div>
+
+            <div class="guided-steps-grid" style="grid-template-columns: 1fr 1fr;">
+              <div class="step-box">
+                <div>
+                  <div class="step-box-label">Step 1 · Find 1 Block (%)</div>
+                  <p class="step-box-desc">The whole bar (<strong>100%</strong>) is split into <strong>${p.blocks} equal blocks</strong>. What percent is <strong>1 block</strong> (${p.oneBlockQty})?</p>
+                </div>
+                <div class="step-box-Equation">
+                  <span>100% ÷ ${p.blocks} =</span>
+                  <input type="text" id="t3-bar-one" class="num-input ${isDone ? 'ok' : ''}" style="width: 82px;" inputmode="numeric" value="${isDone ? p.oneBlockPct : ''}" placeholder="?">
+                  <span>%</span>
+                </div>
+              </div>
+
+              <div class="step-box step-2">
+                <div>
+                  <div class="step-box-label" style="color: var(--teal);">Step 2 · Multiply by Shaded Blocks</div>
+                  <p class="step-box-desc"><strong>${p.part}</strong> fills <strong>${p.shadedBlocks} blocks</strong>. Multiply ${p.shadedBlocks} blocks by the percent for 1 block:</p>
+                </div>
+                <div class="step-box-Equation">
+                  <span>${p.shadedBlocks} × <strong id="t3-live-step1-val">${isDone ? p.oneBlockPct + '%' : '(Step 1)'}</strong> =</span>
+                  <input type="text" id="t3-bar-final" class="num-input ${isDone ? 'ok' : ''}" style="width: 82px;" inputmode="numeric" value="${isDone ? p.finalPct : ''}" placeholder="?">
+                  <span>%</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 18px;">
+              <button type="button" class="btn btn-primary" id="t3-check-btn">Check Bar Steps</button>
+              <button type="button" class="btn" id="t3-hint-btn">💡 Hint</button>
+            </div>
+            <div id="t3-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">
+              ${isDone ? `✓ Awesome! Each block is ${p.oneBlockPct}%, so ${p.shadedBlocks} blocks (${p.part} out of ${p.whole}) is ${p.finalPct}%.` : ''}
+            </div>
+          `;
+
+          const inpOne = document.getElementById('t3-bar-one');
+          const inpFin = document.getElementById('t3-bar-final');
+          const fb = document.getElementById('t3-fb');
+
+          inpOne.addEventListener('input', () => {
+            const v = inpOne.value.replace(/%/g, '').trim();
+            const t1 = document.getElementById('t3-svg-tick-one');
+            const s1 = document.getElementById('t3-live-step1-val');
+            if (t1) t1.textContent = v ? `${v}%` : '?%';
+            if (s1) s1.textContent = v ? `${v}%` : '(Step 1)';
+          });
+          inpFin.addEventListener('input', () => {
+            const v = inpFin.value.replace(/%/g, '').trim();
+            const tf = document.getElementById('t3-svg-tick-fin');
+            if (tf) tf.textContent = v ? `${v}%` : '?%';
+          });
+
+          function checkBar() {
+            const ok1 = Number(inpOne.value.replace(/%/g, '').trim()) === p.oneBlockPct;
+            const ok2 = Number(inpFin.value.replace(/%/g, '').trim()) === p.finalPct;
+            inpOne.classList.toggle('ok', ok1);
+            inpOne.classList.toggle('err', !ok1);
+            inpFin.classList.toggle('ok', ok2);
+            inpFin.classList.toggle('err', !ok2);
+            if (ok1 && ok2) {
+              state.solved3[p.id] = true;
+              updateProgressHeader();
+              renderT3Problem();
+            } else {
+              fb.className = 'feedback-box show err';
+              fb.textContent = `Check your steps: 100% ÷ ${p.blocks} = ${p.oneBlockPct}% for 1 block. Then ${p.shadedBlocks} × ${p.oneBlockPct}% = ${p.finalPct}%.`;
+            }
+          }
+
+          document.getElementById('t3-check-btn').addEventListener('click', checkBar);
+          document.getElementById('t3-hint-btn').addEventListener('click', () => {
+            fb.className = 'feedback-box show warn';
+            fb.textContent = `💡 Hint: ${p.hint}`;
+          });
+        } else if (p.kind === 'bridge') {
+          const barW = 520;
+          const bw = barW / p.midWhole;
+          let bridgeRects = '';
+          for (let i = 0; i < p.midWhole; i++) {
+            const shaded = i < p.midPart;
+            const x = 40 + i * bw;
+            bridgeRects += `
+              <rect x="${x}" y="30" width="${bw}" height="32" fill="${shaded ? '#1FA6A2' : '#F1F5F9'}" stroke="#17324D" stroke-width="1.8"/>
+              <text x="${x + bw / 2}" y="51" text-anchor="middle" font-size="11.5" font-weight="800" fill="${shaded ? '#0F2337' : '#64748B'}">${p.divBy}</text>
+            `;
+          }
+
+          stage.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
+              <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal);">${p.title}</span>
+              <button type="button" class="speak-btn" data-speak="${p.stem}">🔊 Read</button>
+            </div>
+            <p style="font-size: 1.12rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${p.stem}</p>
+            <p class="es-text">${p.stemEs}</p>
+
+            <!-- Companion Percent Bar showing how dividing by ${p.divBy} creates ${p.midWhole} equal blocks -->
+            <div class="scaling-visual-card" style="padding: 14px 18px; margin-bottom: 14px;">
+              <svg viewBox="0 0 600 88" style="width: 100%; max-width: 640px; height: auto; display: block; margin: 0 auto; background: #FFFFFF; border-radius: 8px; border: 1px solid var(--border);" role="img" aria-label="Simplified block bar">
+                <text x="40" y="20" font-size="12" font-weight="800" fill="#17324D">Grouped by ${p.divBy}s: ${p.part} is ${isDone ? p.midPart : '?'} blocks out of ${p.midWhole} blocks</text>
+                <text x="560" y="20" text-anchor="end" font-size="12" font-weight="800" fill="#0F766E">Whole = ${p.whole} (${p.midWhole} blocks of ${p.divBy}) = 100%</text>
+                ${bridgeRects}
+                <text x="40" y="78" font-size="11.5" font-weight="700" fill="#0F766E">0%</text>
+                <text x="${40 + p.midPart * bw}" y="78" text-anchor="middle" font-size="12" font-weight="800" fill="#D97706">${isDone ? p.finalPct + '%' : '?%'}</text>
+                <text x="560" y="78" text-anchor="end" font-size="11.5" font-weight="700" fill="#17324D">100%</text>
+              </svg>
+            </div>
+
+            <!-- Spacious 3-Column Bridge Ratio Table -->
+            <table class="clean-ratio-table" aria-label="Bridge Ratio Table">
+              <thead>
+                <tr>
+                  <th>Ratio Row</th>
+                  <th>1. Start Ratio</th>
+                  <th class="bridge-col">2. Simplify (÷ ${p.divBy})</th>
+                  <th class="target-col">3. Scale to 100 (× ${p.multBy})</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="row-label">Part (Top)</td>
+                  <td><strong>${p.part}</strong> <span class="op-chip">÷ ${p.divBy} &rarr;</span></td>
+                  <td>
+                    <label for="t3-br-mid" class="sr-only">Simplified part</label>
+                    <input type="text" id="t3-br-mid" class="num-input ${isDone ? 'ok' : ''}" style="width: 82px;" inputmode="numeric" value="${isDone ? p.midPart : ''}" placeholder="?">
+                    <span class="op-chip">× ${p.multBy} &rarr;</span>
+                  </td>
+                  <td>
+                    <label for="t3-br-fin" class="sr-only">Part out of 100</label>
+                    <input type="text" id="t3-br-fin" class="num-input ${isDone ? 'ok' : ''}" style="width: 86px;" inputmode="numeric" value="${isDone ? p.finalPct : ''}" placeholder="?">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="row-label">Whole (Bottom)</td>
+                  <td><strong>${p.whole}</strong> <span class="op-chip">÷ ${p.divBy} &rarr;</span></td>
+                  <td><strong>${p.midWhole}</strong> <span class="op-chip">× ${p.multBy} &rarr;</span></td>
+                  <td><strong style="color: var(--teal); font-size: 1.2rem;">100</strong></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div style="background: var(--surface-soft); border: 1.5px solid var(--border); border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+              <strong style="color: var(--navy); font-size: 1.02rem;">Final Answer: What percent is ${p.part} out of ${p.whole}?</strong>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <label for="t3-br-pct" class="sr-only">Final percent</label>
+                <input type="text" id="t3-br-pct" class="num-input ${isDone ? 'ok' : ''}" style="width: 90px;" inputmode="numeric" value="${isDone ? p.finalPct : ''}" placeholder="?">
+                <strong style="font-size: 1.25rem; color: var(--navy);">%</strong>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 18px;">
+              <button type="button" class="btn btn-primary" id="t3-check-btn">Check Bridge Table</button>
+              <button type="button" class="btn" id="t3-hint-btn">💡 Hint</button>
+            </div>
+            <div id="t3-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">
+              ${isDone ? `✓ Bridge Table Complete! ${p.part}/${p.whole} simplifies to ${p.midPart}/${p.midWhole}, which scales (×${p.multBy}) to ${p.finalPct}/100 = ${p.finalPct}%.` : ''}
+            </div>
+          `;
+
+          const inpMid = document.getElementById('t3-br-mid');
+          const inpFin = document.getElementById('t3-br-fin');
+          const inpPct = document.getElementById('t3-br-pct');
+          const fb = document.getElementById('t3-fb');
+
+          function checkBridge() {
+            const okM = Number(inpMid.value.trim()) === p.midPart;
+            const okF = Number(inpFin.value.trim()) === p.finalPct;
+            const okP = Number(inpPct.value.replace(/%/g, '').trim()) === p.finalPct;
+            inpMid.classList.toggle('ok', okM);
+            inpMid.classList.toggle('err', !okM);
+            inpFin.classList.toggle('ok', okF);
+            inpFin.classList.toggle('err', !okF);
+            inpPct.classList.toggle('ok', okP);
+            inpPct.classList.toggle('err', !okP);
+
+            if (okM && okF && okP) {
+              state.solved3[p.id] = true;
+              updateProgressHeader();
+              renderT3Problem();
+            } else {
+              fb.className = 'feedback-box show err';
+              fb.textContent = `Check each column: ${p.part} ÷ ${p.divBy} = ${p.midPart} in Column 2. Then ${p.midPart} × ${p.multBy} = ${p.finalPct} in Column 3 (${p.finalPct}%).`;
+            }
+          }
+
+          document.getElementById('t3-check-btn').addEventListener('click', checkBridge);
+          document.getElementById('t3-hint-btn').addEventListener('click', () => {
+            fb.className = 'feedback-box show warn';
+            fb.textContent = `💡 Hint: ${p.hint}`;
+          });
+        } else if (p.kind === 'campTable') {
+          stage.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
+              <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal);">${p.title}</span>
+              <button type="button" class="speak-btn" data-speak="${p.stem}">🔊 Read</button>
+            </div>
+            <p style="font-size: 1.12rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${p.stem}</p>
+            <p class="es-text">${p.stemEs}</p>
+
+            <table class="clean-ratio-table" aria-label="Camp Sign-Ups Ratio Table">
+              <thead>
+                <tr>
+                  <th>Camp Activity</th>
+                  <th>Campers (Out of 25)</th>
+                  <th class="bridge-col">Scale by × 4 (Out of 100)</th>
+                  <th class="target-col">Percent (%)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="row-label">🛶 Canoeing</td>
+                  <td><strong>14</strong> out of 25</td>
+                  <td>14 × 4 = <strong>56</strong> out of 100</td>
+                  <td><input type="text" id="t3-camp-1" class="num-input ${isDone ? 'ok' : ''}" style="width: 84px;" inputmode="numeric" value="${isDone ? '56' : ''}" aria-label="Canoeing percent" placeholder="?"> <strong>%</strong></td>
+                </tr>
+                <tr>
+                  <td class="row-label">🎯 Archery</td>
+                  <td><strong>7</strong> out of 25</td>
+                  <td>7 × 4 = <input type="text" id="t3-camp-2a" class="num-input ${isDone ? 'ok' : ''}" style="width: 76px;" inputmode="numeric" value="${isDone ? '28' : ''}" aria-label="Archery out of 100" placeholder="?"> out of 100</td>
+                  <td><input type="text" id="t3-camp-2b" class="num-input ${isDone ? 'ok' : ''}" style="width: 84px;" inputmode="numeric" value="${isDone ? '28' : ''}" aria-label="Archery percent" placeholder="?"> <strong>%</strong></td>
+                </tr>
+                <tr>
+                  <td class="row-label">🎨 Crafts</td>
+                  <td><strong>4</strong> out of 25</td>
+                  <td>4 × 4 = <input type="text" id="t3-camp-3a" class="num-input ${isDone ? 'ok' : ''}" style="width: 76px;" inputmode="numeric" value="${isDone ? '16' : ''}" aria-label="Crafts out of 100" placeholder="?"> out of 100</td>
+                  <td><input type="text" id="t3-camp-3b" class="num-input ${isDone ? 'ok' : ''}" style="width: 84px;" inputmode="numeric" value="${isDone ? '16' : ''}" aria-label="Crafts percent" placeholder="?"> <strong>%</strong></td>
+                </tr>
+                <tr style="background: var(--surface-teal);">
+                  <td class="row-label">Total Whole</td>
+                  <td><strong>25</strong> Campers</td>
+                  <td><strong>100</strong> Campers</td>
+                  <td><strong>100%</strong> (56% + 28% + 16%)</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div style="display: flex; gap: 10px; margin-top: 18px;">
+              <button type="button" class="btn btn-primary" id="t3-check-btn">Check Camp Table</button>
+              <button type="button" class="btn" id="t3-hint-btn">💡 Hint</button>
+            </div>
+            <div id="t3-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">
+              ${isDone ? '✓ Camp Ratio Table Complete! 56% Canoeing + 28% Archery + 16% Crafts = 100% of the campers.' : ''}
+            </div>
+          `;
+
+          const fb = document.getElementById('t3-fb');
+          document.getElementById('t3-check-btn').addEventListener('click', () => {
+            const c1 = Number(document.getElementById('t3-camp-1').value.replace(/%/g, '').trim()) === 56;
+            const c2a = Number(document.getElementById('t3-camp-2a').value.trim()) === 28;
+            const c2b = Number(document.getElementById('t3-camp-2b').value.replace(/%/g, '').trim()) === 28;
+            const c3a = Number(document.getElementById('t3-camp-3a').value.trim()) === 16;
+            const c3b = Number(document.getElementById('t3-camp-3b').value.replace(/%/g, '').trim()) === 16;
+
+            if (c1 && c2a && c2b && c3a && c3b) {
+              state.solved3[p.id] = true;
+              updateProgressHeader();
+              renderT3Problem();
+            } else {
+              fb.className = 'feedback-box show err';
+              fb.textContent = 'Multiply each camper count by 4: Canoeing = 56%, Archery = 7 × 4 = 28%, and Crafts = 4 × 4 = 16%.';
+            }
+          });
+          document.getElementById('t3-hint-btn').addEventListener('click', () => {
+            fb.className = 'feedback-box show warn';
+            fb.textContent = `💡 Hint: ${p.hint}`;
+          });
+        }
+      }
+
+      document.getElementById('t3-prev-btn').addEventListener('click', () => {
+        state.idx3 = (state.idx3 - 1 + T3_PROBLEMS.length) % T3_PROBLEMS.length;
+        renderT3Problem();
+      });
+      document.getElementById('t3-next-btn').addEventListener('click', () => {
+        state.idx3 = (state.idx3 + 1) % T3_PROBLEMS.length;
+        renderT3Problem();
+      });
+
+      /* ----------------------------------------------------------------------
+         TAB 4: WORD PROBLEMS & ERROR DETECTIVE (8 PROBLEMS — ONE AT A TIME)
+         ---------------------------------------------------------------------- */
+      const T4_PROBLEMS = [
+        {
+          id: 't4_1',
+          badge: 'Word Problem 1 of 8 · Used vs. Did Not Use (Complement)',
+          title: 'Farmer’s Market Coupons',
+          story: 'At a farmer’s market, 11 out of every 20 shoppers used a coupon. The rest of the shoppers did NOT use a coupon.',
+          question: 'What percent of the shoppers did NOT use a coupon?',
+          stemEs: 'En un mercado, 11 de cada 20 compradores usaron un cupón y el resto no. ¿Qué porcentaje NO usó un cupón?',
+          ans: '45',
+          unit: '%',
+          hint: '11 out of 20 used a coupon (11 × 5 = 55%), so 9 out of 20 did not. Subtract 100% − 55% (or multiply 9 × 5).',
+          explain: '✓ Correct! 11/20 = 55% used a coupon, so 100% − 55% = 45% (9 out of 20) did NOT use a coupon.'
+        },
+        {
+          id: 't4_2',
+          badge: 'Word Problem 2 of 8 · Finding the Missing Part First',
+          title: 'Class Pet Election (Out of 50 Students)',
+          story: 'A class of 50 students voted for a class pet. 16 students chose a hamster, 24 chose a fish, and the rest chose a turtle.',
+          question: 'What percent of the 50 students voted for a turtle?',
+          stemEs: 'De 50 estudiantes, 16 eligieron un hámster, 24 un pez y el resto una tortuga. ¿Qué porcentaje eligió la tortuga?',
+          ans: '20',
+          unit: '%',
+          hint: 'First find how many students chose a turtle: 50 − 16 − 24 = 10 students. Then scale 10 out of 50 to 100 by multiplying by 2.',
+          explain: '✓ Correct! 50 − 16 − 24 = 10 turtle votes, and 10 out of 50 scales by ×2 to 20 out of 100 = 20%.'
+        },
+        {
+          id: 't4_3',
+          badge: 'Word Problem 3 of 8 · Percents Greater Than 100%',
+          title: 'Robotics Club Fundraising Goal ($750 out of $500)',
+          story: 'A robotics club set a fundraising goal of $500 (the whole = 100%). By Friday, they collected $750!',
+          question: 'What percent of their $500 goal did the robotics club achieve?',
+          stemEs: 'Un club de robótica tenía una meta de $500 (100%) y recaudó $750. ¿Qué porcentaje de su meta lograron?',
+          ans: '150',
+          unit: '%',
+          hint: 'Write the ratio 750/500 and divide both terms by 5 so the denominator is 100.',
+          explain: '✓ Correct! 750/500 ÷ 5/5 = 150/100 = 150% (1.5 times their goal).'
+        },
+        {
+          id: 't4_4',
+          badge: 'Word Problem 4 of 8 · Comparing Rates with Different Wholes',
+          title: 'Who Had the Better Free-Throw Rate?',
+          story: 'At basketball practice, Kira made 36 out of 60 free throws, and Dev made 32 out of 40 free throws.',
+          question: 'By how many percentage points was Dev’s free-throw percent higher than Kira’s?',
+          stemEs: 'Kira encestó 36 de 60 tiros libres y Dev encestó 32 de 40. ¿Por cuántos puntos porcentuales fue mayor el porcentaje de Dev?',
+          ans: '20',
+          unit: '% higher',
+          hint: 'Find each player’s percent first (Kira: 36/60 = 6/10 = 60%; Dev: 32/40 = 8/10 = 80%), then subtract.',
+          explain: '✓ Correct! Dev made 80% (32/40) and Kira made 60% (36/60), so Dev’s rate was 80% − 60% = 20 percentage points higher.'
+        },
+        {
+          id: 't4_5',
+          badge: 'Error Detective 5 of 8 · Spot & Fix Trey’s Mistake',
+          title: 'Trey’s Claim: “12 out of 25 is 12%”',
+          story: '🔍 Trey says: “12 out of every 25 museum visitors bought a postcard, so that means 12% bought a postcard.” Trey forgot that the whole is 25, not 100!',
+          question: 'Scale 12 out of 25 to a denominator of 100 to find the TRUE percent of visitors:',
+          stemEs: 'Trey dice que 12 de 25 es 12%. Escala 12 de 25 a un denominador de 100 para hallar el porcentaje verdadero:',
+          ans: '48',
+          unit: '%',
+          hint: 'Since 25 × 4 = 100, multiply the numerator 12 by 4 as well.',
+          explain: '✓ Case Solved! 12/25 × 4/4 = 48/100 = 48%, not 12%.'
+        },
+        {
+          id: 't4_6',
+          badge: 'Error Detective 6 of 8 · Spot & Fix Sam’s Addition Trap',
+          title: 'Sam’s Claim: “Add 90 to Top and Bottom”',
+          story: '🔍 Sam wants to turn 4 out of 10 into a percent. He writes: “10 + 90 = 100, so 4 + 90 = 94%.” Adding breaks the ratio!',
+          question: 'Scale 4 out of 10 by multiplying to find the TRUE percent:',
+          stemEs: 'Sam sumó 90 arriba y abajo en 4/10 y obtuvo 94%. Multiplica para hallar el porcentaje verdadero de 4 de 10:',
+          ans: '40',
+          unit: '%',
+          hint: 'Multiply both terms of 4/10 by 10 so the denominator becomes 100.',
+          explain: '✓ Case Solved! Equivalent ratios scale by multiplication: 4/10 × 10/10 = 40/100 = 40%.'
+        },
+        {
+          id: 't4_7',
+          badge: 'Error Detective 7 of 8 · Spot & Fix Mia’s Grid Mix-Up',
+          title: 'Mia’s Claim: Shaded vs. Not Shaded',
+          story: '🔍 On a 100-square grid, 35 squares are shaded. The question asks what percent is NOT shaded, and Mia wrote 35%.',
+          question: 'What is the TRUE percent of the grid that is NOT shaded?',
+          stemEs: 'En una cuadrícula de 100, 35 cuadrados están sombreados. ¿Qué porcentaje NO está sombreado?',
+          ans: '65',
+          unit: '%',
+          hint: 'Subtract the 35 shaded squares from the 100 total squares.',
+          explain: '✓ Case Solved! 35% is the shaded part; 100% − 35% = 65% is NOT shaded.'
+        },
+        {
+          id: 't4_8',
+          badge: 'Error Detective 8 of 8 · Spot & Fix Ali’s Kitten Claim (>100%)',
+          title: 'Ali’s Claim: “Percents Can’t Pass 100%”',
+          story: '🔍 A gray kitten weighs 8 ounces (100%). Its brother weighs 14 ounces. Ali says: “14 ounces cannot be a percent of 8 ounces because a percent cannot be over 100%.”',
+          question: 'Write 14 out of 8 as a percent to find the brother’s TRUE weight compared to the gray kitten:',
+          stemEs: 'Un gatito gris pesa 8 oz (100%) y su hermano 14 oz. Escribe 14 de 8 como porcentaje:',
+          ans: '175',
+          unit: '%',
+          hint: 'Simplify 14/8 by dividing both terms by 2 to get 7/4, then multiply both terms by 25 to get a denominator of 100.',
+          explain: '✓ Case Solved! 14/8 simplifies to 7/4, and 7/4 × 25/25 = 175/100 = 175%.'
+        }
+      ];
+
+      function renderT4Problem() {
+        const p = T4_PROBLEMS[state.idx4];
+        const isDone = !!state.solved4[p.id];
+
+        renderDots('t4-dots', T4_PROBLEMS, state.idx4, state.solved4, (ni) => {
+          state.idx4 = ni;
+          renderT4Problem();
+        });
+
+        const stage = document.getElementById('t4-stage-card');
+        stage.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
+            <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--amber);">${p.badge}</span>
+            <button type="button" class="speak-btn" data-speak="${p.story} ${p.question}">🔊 Read</button>
+          </div>
+          <h3 style="font-family: var(--font-display); font-size: 1.35rem; color: var(--navy); margin: 0 0 12px 0;">${p.title}</h3>
+
+          <div style="background: var(--surface-soft); border-left: 5px solid var(--navy); padding: 16px 18px; border-radius: 8px; font-size: 1.04rem; margin-bottom: 16px;">
+            ${p.story}
+            <p class="es-text">${p.stemEs}</p>
+          </div>
+
+          <p style="font-weight: 700; font-size: 1.05rem; color: var(--navy); margin-bottom: 12px;">${p.question}</p>
+
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <label for="t4-inp" class="sr-only">${p.question}</label>
+            <input type="text" id="t4-inp" class="num-input ${isDone ? 'ok' : ''}" inputmode="numeric" value="${isDone ? p.ans : ''}" placeholder="?">
+            <strong style="font-size: 1.15rem; color: var(--navy);">${p.unit}</strong>
+            <button type="button" class="btn btn-primary" id="t4-check-btn">Check Answer</button>
+            <button type="button" class="btn" id="t4-hint-btn">💡 Hint</button>
+          </div>
+
+          <div id="t4-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">
+            ${isDone ? p.explain : ''}
+          </div>
+        `;
+
+        const inp = document.getElementById('t4-inp');
+        const fb = document.getElementById('t4-fb');
+
+        function checkT4() {
+          const val = inp.value.replace(/%/g, '').trim();
+          const ok = val === p.ans;
+          inp.classList.toggle('ok', ok);
+          inp.classList.toggle('err', !ok);
+          fb.className = `feedback-box show ${ok ? 'ok' : 'err'}`;
+          fb.textContent = ok ? p.explain : `Not quite yet. Hint: ${p.hint}`;
+          if (ok) {
+            state.solved4[p.id] = true;
+            updateProgressHeader();
+            renderDots('t4-dots', T4_PROBLEMS, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4Problem(); });
+          }
+        }
+
+        document.getElementById('t4-check-btn').addEventListener('click', checkT4);
+        document.getElementById('t4-hint-btn').addEventListener('click', () => {
+          fb.className = 'feedback-box show warn';
+          fb.textContent = `💡 Hint: ${p.hint}`;
+        });
+        inp.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && !e.isComposing) {
+            e.preventDefault();
+            checkT4();
+          }
+        });
+      }
+
+      document.getElementById('t4-prev-btn').addEventListener('click', () => {
+        state.idx4 = (state.idx4 - 1 + T4_PROBLEMS.length) % T4_PROBLEMS.length;
+        renderT4Problem();
+      });
+      document.getElementById('t4-next-btn').addEventListener('click', () => {
+        state.idx4 = (state.idx4 + 1) % T4_PROBLEMS.length;
+        renderT4Problem();
+      });
+
+      /* ----------------------------------------------------------------------
+         TAB 5: 10-QUESTION MASTERY QUIZ (ONE QUESTION AT A TIME)
+         ---------------------------------------------------------------------- */
+      const QUIZ_QUESTIONS = [
+        {
+          id: 'q1',
+          skill: 'Meaning of Percent',
+          stem: 'What does the word percent mean?',
+          stemEs: '¿Qué significa la palabra porcentaje?',
+          choices: ['Per ten', 'Per thousand', 'Per hundred', 'Per part'],
+          correct: 2,
+          feedback: [
+            'Per ten describes tenths, not percent.',
+            'Per thousand is ten times too large.',
+            '✓ Correct! Percent means “per hundred” (out of 100).',
+            'A percent specifically compares a number to 100.'
+          ]
+        },
+        {
+          id: 'q2',
+          skill: 'Scaling Tenths to 100',
+          stem: '3 out of every 10 arcade players reach the bonus level. What percent is that?',
+          stemEs: '3 de cada 10 jugadores alcanzan el nivel de bonificación. ¿Qué porcentaje es?',
+          choices: ['3%', '10%', '13%', '30%'],
+          correct: 3,
+          feedback: [
+            '3% means 3 out of 100. Multiply both terms of 3/10 by 10!',
+            '10 is the whole, not the percent.',
+            'Multiply both terms by 10 instead of adding 3 + 10.',
+            '✓ Correct! 3/10 × 10/10 = 30/100 = 30%.'
+          ]
+        },
+        {
+          id: 'q3',
+          skill: '100-Square Grid',
+          stem: 'A decimal grid has 100 squares and 65 are shaded. What percent is shaded?',
+          stemEs: 'Una cuadrícula tiene 100 cuadrados y 65 están sombreados. ¿Qué porcentaje está sombreado?',
+          choices: ['6.5%', '35%', '65%', '100%'],
+          correct: 2,
+          feedback: [
+            '6.5% would be 6 and a half squares.',
+            '35% is the unshaded part. The question asks for the shaded percent.',
+            '✓ Correct! 65 shaded squares out of 100 is 65%.',
+            '100% is the entire grid.'
+          ]
+        },
+        {
+          id: 'q4',
+          skill: 'Comparing to One Whole',
+          stem: 'Which percent represents an amount that is MORE than one whole?',
+          stemEs: '¿Qué porcentaje significa MÁS de un entero?',
+          choices: ['0.8%', '80%', '100%', '120%'],
+          correct: 3,
+          feedback: [
+            '0.8% is less than 1 square out of 100.',
+            '80% is less than one whole (100%).',
+            '100% is exactly one whole.',
+            '✓ Correct! Any percent greater than 100% (such as 120%) is more than one whole.'
+          ]
+        },
+        {
+          id: 'q5',
+          skill: 'Percents Over 100%',
+          stem: 'The orange kitten weighs 1.5 times as much as the gray kitten. What percent of the gray kitten’s weight is that?',
+          stemEs: 'El gatito naranja pesa 1.5 veces lo que pesa el gatito gris. ¿Qué porcentaje es?',
+          choices: ['1.5%', '15%', '50%', '150%'],
+          correct: 3,
+          feedback: [
+            'Since 1 whole = 100%, multiply 1.5 × 100%.',
+            'Check place value: 1.5 × 100% = 150%, not 15%.',
+            '50% is half of the weight; 1.5 times is 100% + 50%.',
+            '✓ Correct! 1.5 wholes × 100% = 150%.'
+          ]
+        },
+        {
+          id: 'q6',
+          skill: 'Scaling Twenty-Fifths to 100',
+          stem: 'At a museum, 9 out of every 25 visitors are students. What percent of the visitors are students?',
+          stemEs: 'En un museo, 9 de cada 25 visitantes son estudiantes. ¿Qué porcentaje son estudiantes?',
+          choices: ['9%', '25%', '36%', '84%'],
+          correct: 2,
+          feedback: [
+            '9 is out of 25, not out of 100. Multiply both terms by 4!',
+            '25 is the original denominator, not the percent.',
+            '✓ Correct! 9/25 × 4/4 = 36/100 = 36%.',
+            '84 comes from adding 75 instead of multiplying by 4.'
+          ]
+        },
+        {
+          id: 'q7',
+          skill: 'Scaling Fiftieths to 100',
+          stem: 'Out of every 50 sixth graders, 33 wear sneakers with laces. What percent is that?',
+          stemEs: 'De cada 50 estudiantes de sexto grado, 33 usan tenis con cordones. ¿Qué porcentaje es?',
+          choices: ['33%', '50%', '66%', '83%'],
+          correct: 2,
+          feedback: [
+            'Scale 33/50 so the denominator is 100 by multiplying by 2.',
+            '50 is the original whole.',
+            '✓ Correct! 33/50 × 2/2 = 66/100 = 66%.',
+            'Multiply by 2 instead of adding 33 + 50.'
+          ]
+        },
+        {
+          id: 'q8',
+          skill: 'Bridge Ratio (Simplify First)',
+          stem: 'A team finished 9 of 12 challenges at field day. What percent of the challenges did the team finish?',
+          stemEs: 'Un equipo terminó 9 de 12 retos. ¿Qué porcentaje de los retos terminó?',
+          choices: ['9%', '12%', '75%', '90%'],
+          correct: 2,
+          feedback: [
+            '9 is out of 12, not 100.',
+            '12 is the total number of challenges.',
+            '✓ Correct! 9/12 simplifies (÷3) to 3/4, and 3/4 × 25/25 = 75/100 = 75%.',
+            '90% would be 9 out of 10, not 9 out of 12.'
+          ]
+        },
+        {
+          id: 'q9',
+          skill: 'Complementary Percent',
+          stem: 'At a market, 11 out of every 20 shoppers (55%) used a coupon. What percent of shoppers did NOT use a coupon?',
+          stemEs: 'En un mercado, 11 de cada 20 compradores (55%) usaron un cupón. ¿Qué porcentaje NO usó un cupón?',
+          choices: ['9%', '45%', '55%', '89%'],
+          correct: 1,
+          feedback: [
+            '9 out of 20 did not use a coupon, which scales (×5) to 45%, not 9%.',
+            '✓ Correct! 100% − 55% = 45% (or 9/20 × 5/5 = 45/100 = 45%).',
+            '55% is the percent who USED a coupon.',
+            'Subtract 55% from 100%, not 11 from 100.'
+          ]
+        },
+        {
+          id: 'q10',
+          skill: 'Justification & Scaling >100%',
+          stem: 'A robotics club had a $500 goal and collected $750 (150% of their goal). Which explanation best justifies 150%?',
+          stemEs: 'Un club tenía una meta de $500 y recaudó $750 (150%). ¿Qué explicación justifica mejor el 150%?',
+          choices: [
+            'Subtracting $500 from $750 gives $250.',
+            'Since $500 is half of $1,000, the percent is 50%.',
+            'Dividing both terms of 750/500 by 5 gives 150/100 = 150%, or 1.5 times the $500 whole.',
+            'Adding 750 + 500 gives 1,250%.'
+          ],
+          correct: 2,
+          feedback: [
+            'Subtracting finds the extra dollars, not the ratio per 100.',
+            'The whole goal is $500, and $750 is more than the whole.',
+            '✓ Correct! 750/500 scales down (÷5) to 150/100 = 150%.',
+            'Percents compare the part to the whole by scaling, not adding.'
+          ]
+        }
+      ];
+
+      function renderT5Question() {
+        const q = QUIZ_QUESTIONS[state.idx5];
+        const chosen = state.quizChoice[q.id];
+        const letters = ['A', 'B', 'C', 'D'];
+
+        renderDots('t5-dots', QUIZ_QUESTIONS, state.idx5, state.solved5, (ni) => {
+          state.idx5 = ni;
+          renderT5Question();
+        });
+
+        const stage = document.getElementById('t5-stage-card');
+        const choicesHtml = q.choices.map((c, i) => {
+          let cls = '';
+          if (chosen === i) {
+            cls = (i === q.correct) ? 'correct' : 'wrong';
+          }
+          return `
+            <button type="button" class="choice-btn ${cls}" data-q-choice="${i}">
+              <span class="choice-letter">${letters[i]}</span>
+              <span>${c}</span>
+            </button>
+          `;
+        }).join('');
+
+        const hasChoice = chosen !== undefined;
+        const isOk = chosen === q.correct;
+
+        stage.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
+            <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal);">Question ${state.idx5 + 1} of 10 · ${q.skill}</span>
+            <button type="button" class="speak-btn" data-speak="${q.stem}">🔊 Read</button>
+          </div>
+          <p style="font-size: 1.15rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${q.stem}</p>
+          <p class="es-text">${q.stemEs}</p>
+
+          <div class="choice-list">${choicesHtml}</div>
+
+          <div class="feedback-box ${hasChoice ? 'show ' + (isOk ? 'ok' : 'err') : ''}" role="status">
+            ${hasChoice ? q.feedback[chosen] : ''}
+          </div>
+        `;
+
+        stage.querySelectorAll('[data-q-choice]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const cIdx = Number(btn.dataset.qChoice);
+            state.quizChoice[q.id] = cIdx;
+            state.solved5[q.id] = (cIdx === q.correct);
+            updateProgressHeader();
+            renderT5Question();
+          });
+        });
+      }
+
+      document.getElementById('t5-prev-btn').addEventListener('click', () => {
+        state.idx5 = (state.idx5 - 1 + QUIZ_QUESTIONS.length) % QUIZ_QUESTIONS.length;
+        renderT5Question();
+      });
+      document.getElementById('t5-next-btn').addEventListener('click', () => {
+        state.idx5 = (state.idx5 + 1) % QUIZ_QUESTIONS.length;
+        renderT5Question();
+      });
+      document.getElementById('t5-reset-btn').addEventListener('click', () => {
+        state.quizChoice = {};
+        state.solved5 = {};
+        state.idx5 = 0;
+        updateProgressHeader();
+        renderT5Question();
+      });
+
+      /* ----------------------------------------------------------------------
+         BOOT
+         ---------------------------------------------------------------------- */
+      loadState();
+      if (state.showEs) {
+        document.body.classList.add('show-es');
+        esBtn.setAttribute('aria-pressed', 'true');
+      }
+      initT1Grid();
+      renderT1Task();
+      renderT2Problem();
+      renderT3Problem();
+      renderT4Problem();
+      renderT5Question();
+      updateProgressHeader();
+    })();
+  </script>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>

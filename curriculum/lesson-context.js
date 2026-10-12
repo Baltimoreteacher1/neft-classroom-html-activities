@@ -327,6 +327,10 @@ window.LESSON_PROJECTS = {
       "href": "/math/unit-4/projects/"
     },
     {
+      "text": "🧮 Percent & Equivalent Ratios Practice Studio",
+      "href": "/math/unit-4/percent-practice-studio/index.html"
+    },
+    {
       "text": "🎯 Percent Shadow-Caster",
       "href": "/math/unit-4/percent-shadow-caster/index.html"
     },
