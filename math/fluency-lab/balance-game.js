@@ -1,7 +1,7 @@
 // Balance It: a scale shows one side as a problem and the other as a part plus a missing number. The learner
 // picks the number that balances it. The beam tilts toward the heavier side after each try, so the scale gives
 // direction ("too small" or "too big") but never the answer.
-import { answerOf, cardText, gameProblem, shuffle } from "./game-pool.js";
+import { ALL_STOPS, answerOf, cardText, gameProblem, shuffle } from "./game-pool.js";
 import { t } from "./i18n.js";
 import { canSpeak, speak, syncLive } from "./speech.js";
 import { mathText } from "./trail-pictures.js";
@@ -12,8 +12,10 @@ const MAX_TILT = 14;
 
 // V (the left pan) is split as part + missing; the learner finds the missing number.
 export function balanceRound(grade, stop) {
-  for (let tries = 0; tries < 300; tries += 1) {
-    const item = gameProblem(grade, stop);
+  // A decimal stop rarely lands on a whole-number total (about 1 in 100), so after a fair number of tries this
+  // round borrows a whole-number problem from the grade's other stops rather than failing the game.
+  for (let tries = 0; tries < 600; tries += 1) {
+    const item = gameProblem(grade, tries < 200 ? stop : ALL_STOPS);
     const total = answerOf(item);
     if (!Number.isInteger(total) || total < 6 || total > 400) continue;
     const step = total > 40 ? 10 : total > 15 ? 5 : 1;

@@ -7,7 +7,7 @@ const num = (text) => Number(String(text).replaceAll(",", "").replace("−", "-"
 
 export function likelyMistake(item, raw) {
   if (item?.kind !== "number") return "";
-  const match = String(item.question || "").match(ARITHMETIC);
+  const match = String(item.expr || item.question || "").match(ARITHMETIC);
   const submitted = num(raw);
   const answer = num(item.answers?.[0]);
   if (!match || !Number.isFinite(submitted) || !Number.isFinite(answer) || submitted === answer) return "";

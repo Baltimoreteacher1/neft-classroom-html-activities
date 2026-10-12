@@ -7,8 +7,10 @@ const num = (value) => Number(value.toFixed(6));
 export function createLesson(skill, variant = 0) {
   const k = Math.abs(variant) % 5;
   const grade = skill.grade || 1;
-  const config = skill.config;
-  const gen = skill.generator;
+  // A combined skill ("addsub", "muldiv") shows one operation per variant; "expression" teaches as evaluate.
+  const MIXED = { addsub: ["add", "sub"], muldiv: ["mul", "div"] };
+  const config = MIXED[skill.config.op] ? { ...skill.config, op: MIXED[skill.config.op][k % 2] } : skill.config;
+  const gen = skill.generator === "expression" ? "evaluate" : skill.generator;
   if (gen === "fact") {
     const op = config.op;
     if (op === "div") {

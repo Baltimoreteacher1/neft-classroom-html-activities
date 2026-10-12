@@ -19,6 +19,7 @@ import { GAMES, mountGames } from "./games.js";
 import { getLang, setLang, t, translatePage } from "./i18n.js";
 import { factsReport, mountSnapshot } from "./class-snapshot.js";
 import { whyFor } from "./step-whys.js";
+import { storyFor } from "./story-problems.js";
 import { loadRewards, noteToday, saveRewards } from "./rewards.js";
 import { certificateHtml } from "./certificate.js";
 import { chime, setSound, soundOn } from "./sounds.js";
@@ -526,6 +527,8 @@ function nextProblem(restoredItem = null) {
   else {
     for (let attempt = 0; attempt < 20; attempt++) {
       state.item = adaptiveProblem(skill, state.session.rng, level);
+      // About one problem in four is a story version of the same numbers, never in the checkup.
+      if (state.session.mode !== "diagnostic" && level >= 1 && state.session.rng() < 0.25) state.item = storyFor(state.item, state.session.rng) || state.item;
       if (!state.recentQuestions.includes(state.item.question)) break;
     }
     state.recentQuestions = [...state.recentQuestions, state.item.question].slice(-8);
@@ -542,7 +545,8 @@ function nextProblem(restoredItem = null) {
   els.nextButton.textContent = "Next problem";
   els.hintButton.hidden = state.initialSupport || state.session.mode === "diagnostic";
   els.skip.hidden = state.session.mode !== "diagnostic";
-  mountProblemModel(state.session.mode !== "diagnostic");
+  // A stretch problem (level 2) starts without the model; opening it before the first answer counts as help.
+  mountProblemModel(state.session.mode !== "diagnostic", adapting && (state.item.level ?? level) === 2);
   els.repair.hidden = !adapting;
   els.checkButton.hidden = false;
   els.answerInput.value = "";
@@ -569,7 +573,7 @@ function workbenchFits(item) {
   return wb.state.tool !== "model" || Boolean(renderInlineProblemModel(item.skill, item));
 }
 
-function mountProblemModel(show) {
+function mountProblemModel(show, collapsed = false) {
   const host = els.problemVisualScaffold;
   if (!host) return;
   host.hidden = !show;
@@ -589,8 +593,9 @@ function mountProblemModel(show) {
     els.toggleProblemVisual.hidden = true;
     return;
   }
-  els.toggleProblemVisual.setAttribute("aria-expanded", "true");
-  els.toggleProblemVisual.textContent = "Hide the model";
+  host.hidden = collapsed;
+  els.toggleProblemVisual.setAttribute("aria-expanded", String(!collapsed));
+  els.toggleProblemVisual.textContent = collapsed ? "Show the model" : "Hide the model";
 }
 
 function guidedStepContent() {
@@ -1254,6 +1259,10 @@ els.toggleProblemVisual?.addEventListener("click", () => {
   const host = els.problemVisualScaffold;
   if (!host || !state.item) return;
   host.hidden = !host.hidden;
+  if (!host.hidden && state.item.level === 2 && state.itemAttempts === 0 && !state.hintBeforeFirst) {
+    state.hintBeforeFirst = true;
+    els.insight.textContent = "Using the model counts as help on this one. You can still solve it.";
+  }
   els.toggleProblemVisual.setAttribute("aria-expanded", String(!host.hidden));
   els.toggleProblemVisual.textContent = host.hidden ? "Show the model" : "Hide the model";
 });

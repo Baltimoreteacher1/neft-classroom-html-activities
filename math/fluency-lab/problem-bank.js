@@ -124,9 +124,14 @@ export function factSteps(op, a, b, answer, strategy) {
     if (big >= 6 && big <= 8) return [`5 × ${small} = ${5 * small}`, `${big - 5} × ${small} = ${(big - 5) * small}`, `${5 * small} + ${(big - 5) * small} = ${answer}`];
     return [`Count by ${big}s:`, Array.from({ length: small }, (_, i) => big * (i + 1)).join(", ")];
   }
-  if (answer <= 12) return [`${b} × ? = ${fmt(a)}`, `${b} × ${answer} = ${fmt(a)}`, `So ${fmt(a)} ÷ ${b} = ${answer}`];
+  // Division is "what times the divisor makes the dividend?" Ask that first and let the learner search; the
+  // quotient only appears in the last steps (the old first step, "16 × 20 = 320", already stated it).
+  if (answer <= 12) {
+    const multiples = Array.from({ length: answer }, (_, i) => fmt(b * (i + 1)));
+    return [`${b} × ? = ${fmt(a)}`, `Count by ${b}s until you reach ${fmt(a)}: ${multiples.join(", ")}`, `${b} × ${answer} = ${fmt(a)}`, `So ${fmt(a)} ÷ ${b} = ${answer}`];
+  }
   const tens = Math.floor(answer / 10) * 10;
-  return [`${b} × ${fmt(tens)} = ${fmt(b * tens)}`, `${b} × ${answer - tens} = ${fmt(b * (answer - tens))}`, `${fmt(tens)} + ${answer - tens} = ${fmt(answer)}`];
+  return [`${b} × ? = ${fmt(a)}`, `${b} × ${fmt(tens)} = ${fmt(b * tens)}`, `${b} × ${answer - tens} = ${fmt(b * (answer - tens))}`, `${fmt(tens)} + ${answer - tens} = ${fmt(answer)}`];
 }
 
 function factModel(op, a, b, answer, config) {
@@ -611,7 +616,7 @@ const generators = {
     const percent = pick(config.percents || [10, 20, 25, 50], rng);
     const baseUnit = 100 / gcd(percent, 100);
     const original = baseUnit * randInt(2, config.maxMultiplier ?? 20, rng);
-    const decrease = config.type !== "increase";
+    const decrease = config.type === "either" ? rng() < 0.5 : config.type !== "increase";
     const change = (original * percent) / 100;
     const answer = decrease ? original - change : original + change;
     return problem(
@@ -673,6 +678,11 @@ const generators = {
       hint: "Do grouping symbols first, then multiplication or division, then addition or subtraction.",
       explanation: grouped ? `Add first: ${a + b} × ${c} = ${answer}.` : `Multiply first: ${a} + ${b * c} = ${answer}.`,
     });
+  },
+
+  // Evaluate expressions covers both substitution and the order of operations (6.EE.A.1-2).
+  expression(config, rng) {
+    return rng() < 0.4 ? generators.orderOps(config, rng) : generators.evaluate(config, rng);
   },
 
   evaluate(config, rng) {
@@ -993,7 +1003,7 @@ export const GRADES = [
       // ×10–12 facts belong to Grade 4, so this skill teaches 3.NBT.A.3 (one-digit × multiples of 10).
       S("mul-10-12", "Multiply by multiples of 10", "Multiplication", "fact", { op: "mul", minA: 2, maxA: 9, minB: 1, maxB: 9, tens: true, coach: true }, "3.NBT.A.3", L("Multiplying by a multiple of 10 is a basic fact with tens.", ["Cover the zero and solve the basic fact.", "Say the answer in tens.", "Write the zero back."], "7 × 40 is 7 × 4 tens = 28 tens = 280.", "The zero is not a trick. It shows the answer is counted in tens.")),
       S("division-facts", "Division facts", "Division", "fact", { op: "div", minDivisor: 2, maxDivisor: 9, minQuotient: 2, maxQuotient: 9, coach: true }, "3.OA.C.7", L("Division asks how many equal groups or how many in each group.", ["Identify divisor and dividend.", "Recall the related multiplication fact.", "Check by multiplying quotient × divisor."], "56 ÷ 7 = 8 because 7 × 8 = 56.", "Do not reverse the dividend and divisor.")),
-      S("add-sub-1000", "Add within 1,000", "Operations", "fact", { op: "add", min: 100, max: 499, maxResult: 999 }, "3.NBT.A.2", L("Add equal place values and regroup when a place reaches 10.", ["Line up ones, tens, and hundreds.", "Add from right to left.", "Estimate to check."], "368 + 247 = 615", "A carried ten belongs in the next place to the left.")),
+      S("add-sub-1000", "Add and subtract within 1,000", "Operations", "fact", { op: "addsub", min: 100, max: 499, maxResult: 999 }, "3.NBT.A.2", L("Add equal place values and regroup when a place reaches 10.", ["Line up ones, tens, and hundreds.", "Add from right to left.", "Estimate to check."], "368 + 247 = 615", "A carried ten belongs in the next place to the left.")),
       S("round", "Round to tens and hundreds", "Place value", "round", { places: [10, 100], max: 999 }, "3.NBT.A.1", L("Rounding names the closest benchmark number.", ["Find the rounding place.", "Check the digit to its right.", "Keep or increase, then replace later digits with zeros."], "347 rounds to 300 to the nearest hundred.", "A 5 rounds up because it is halfway to the next benchmark.")),
       S("fraction-equivalence", "Equivalent fractions", "Fractions", "fractionEquivalent", { maxDenominator: 10, maxFactor: 5 }, "3.NF.A.3", L("Equivalent fractions name the same amount with different-sized parts.", ["Choose one scale factor.", "Multiply numerator and denominator by it.", "Check with a model or cross products."], "2/3 = 4/6 by multiplying both parts by 2.", "Never scale only the numerator or only the denominator.")),
       S("fraction-compare", "Compare fractions", "Fractions", "fractionCompare", { maxDenominator: 10 }, "3.NF.A.3", L("Compare fractions using common parts, benchmarks, or cross products.", ["Notice whether denominators or numerators match.", "Choose a comparison strategy.", "State <, =, or >."], "3/4 > 2/3 because 9/12 > 8/12.", "A larger denominator means smaller pieces when numerators match.")),
@@ -1031,7 +1041,7 @@ export const GRADES = [
       S("decimal-add", "Add decimals", "Decimals", "decimalOp", { op: "add", places: 2 }, "5.NBT.B.7", L("Line up decimal points so equal place values combine.", ["Write numbers vertically.", "Add placeholder zeros if helpful.", "Add and bring the decimal straight down."], "4.8 + 2.35 = 7.15", "Do not line up the final digits instead of the decimal points.")),
       S("decimal-sub", "Subtract decimals", "Decimals", "decimalOp", { op: "sub", places: 2 }, "5.NBT.B.7", L("Subtract decimals by place value.", ["Align decimal points.", "Add placeholder zeros.", "Regroup and subtract."], "9.2 − 3.47 = 5.73", "A placeholder zero can make regrouping visible.")),
       S("decimal-mul", "Multiply decimals", "Decimals", "decimalOp", { op: "mul" }, "5.NBT.B.7", L("The product's decimal place follows the size and place values of the factors.", ["Estimate the product.", "Multiply as whole numbers.", "Place the decimal and compare with the estimate."], "2.4 × 0.5 = 1.2", "Count decimal places only after understanding the product's size.")),
-      S("fraction-add", "Add and subtract fractions", "Fractions", "fractionOp", { op: "add", maxDenominator: 12 }, "5.NF.A.1", L("Fractions can combine only after their parts are the same size.", ["Find a common denominator.", "Rename both fractions.", "Combine numerators and simplify."], "1/3 + 1/4 = 4/12 + 3/12 = 7/12", "Never add the denominators.")),
+      S("fraction-add", "Add and subtract fractions", "Fractions", "fractionOp", { op: "addsub", maxDenominator: 12 }, "5.NF.A.1", L("Fractions can combine only after their parts are the same size.", ["Find a common denominator.", "Rename both fractions.", "Combine numerators and simplify."], "1/3 + 1/4 = 4/12 + 3/12 = 7/12", "Never add the denominators.")),
       S("fraction-mul", "Multiply fractions", "Fractions", "fractionOp", { op: "mul", maxDenominator: 12 }, "5.NF.B.4", L("Multiplying fractions finds a part of a part.", ["Multiply numerators.", "Multiply denominators.", "Simplify, or cross-cancel first."], "2/3 × 3/5 = 6/15 = 2/5", "Multiplication does not require common denominators.")),
       S("fraction-of", "Find a fraction of a whole", "Fractions", "fractionOf", { maxDenominator: 10 }, "5.NF.B.4", L("Find one equal part, then take the needed number of parts.", ["Divide the whole by the denominator.", "Multiply by the numerator.", "Check the answer is reasonable."], "3/4 of 20: 20 ÷ 4 × 3 = 15", "The denominator tells how many equal parts.")),
       S("volume", "Rectangular prism volume", "Geometry", "geometry", { shape: "volume", max: 15 }, "5.MD.C.5", L("Volume counts unit cubes filling a solid.", ["Find the base area.", "Multiply by the height.", "Label cubic units."], "4 × 3 × 8 = 96 cubic units.", "Volume uses three dimensions and cubic units.")),
@@ -1046,11 +1056,11 @@ export const GRADES = [
       S("gcf", "Greatest common factor", "Number system", "gcfLcm", { find: "gcf", max: 60 }, "6.NS.B.4", L("The GCF is the greatest factor shared by two numbers.", ["List factors or use prime factorization.", "Identify shared factors.", "Choose the greatest shared factor."], "GCF(24, 36) = 12", "Do not choose the greatest factor from only one number.")),
       S("lcm", "Least common multiple", "Number system", "gcfLcm", { find: "lcm", max: 24 }, "6.NS.B.4", L("The LCM is the first positive multiple shared by both numbers.", ["List multiples or use prime factors.", "Find the first common value.", "Check both numbers divide it evenly."], "LCM(6, 8) = 24", "A common multiple must be divisible by both numbers.")),
       S("divide-fractions", "Divide fractions", "Number system", "fractionOp", { op: "div", maxDenominator: 10 }, "6.NS.A.1", L("Dividing by a fraction is multiplying by its reciprocal.", ["Keep the first fraction.", "Change division to multiplication and flip the second fraction.", "Multiply and simplify."], "2/3 ÷ 4/5 = 2/3 × 5/4 = 5/6", "Flip only the divisor, not both fractions.")),
-      S("decimal-ops", "Decimal multiplication", "Number system", "decimalOp", { op: "mul" }, "6.NS.B.3", L("Estimate, multiply, and place the decimal by value.", ["Estimate the size.", "Multiply as whole numbers.", "Place the decimal so the result matches the estimate."], "3.2 × 1.5 = 4.8", "A product can be smaller when a factor is less than 1.")),
+      S("decimal-ops", "Multiply and divide decimals", "Number system", "decimalOp", { op: "muldiv" }, "6.NS.B.3", L("Estimate, multiply, and place the decimal by value.", ["Estimate the size.", "Multiply as whole numbers.", "Place the decimal so the result matches the estimate."], "3.2 × 1.5 = 4.8", "A product can be smaller when a factor is less than 1.")),
       S("ratios", "Equivalent ratios", "Ratios", "ratio", { maxPart: 12, maxFactor: 9 }, "6.RP.A.1", L("Equivalent ratios scale both quantities by the same factor.", ["Find the scale factor.", "Multiply or divide both quantities.", "Check the comparison stayed the same."], "3:5 scaled by 4 is 12:20.", "Adding the same amount to both terms does not preserve the ratio.")),
       S("unit-rates", "Unit rates", "Ratios", "unitRate", { maxCount: 12, maxRate: 25 }, "6.RP.A.2", L("A unit rate tells the amount for exactly one unit.", ["Write the rate as a division.", "Divide by the number of units.", "Label per 1."], "72 miles in 3 hours is 24 miles per hour.", "Keep units attached so the rate is not reversed.")),
       S("percent", "Percent of a number", "Ratios", "percent", {}, "6.RP.A.3", L("Percent means per 100.", ["Rewrite the percent as a decimal or fraction.", "Multiply by the whole.", "Check against useful benchmarks."], "25% of 60 = 1/4 of 60 = 15", "Use the original whole as the base.")),
-      S("evaluate", "Evaluate expressions", "Expressions", "evaluate", {}, "6.EE.A.2", L("Evaluation replaces a variable with its given value.", ["Substitute using parentheses.", "Follow order of operations.", "Simplify carefully."], "3x + 2 when x = 4 is 3(4) + 2 = 14.", "Substitution changes the variable, not the operation signs.")),
+      S("evaluate", "Evaluate expressions", "Expressions", "expression", {}, "6.EE.A.2", L("Evaluation replaces a variable with its given value.", ["Substitute using parentheses.", "Follow order of operations.", "Simplify carefully."], "3x + 2 when x = 4 is 3(4) + 2 = 14.", "Substitution changes the variable, not the operation signs.")),
       S("one-step", "Solve one-step equations", "Equations", "solve", { oneStep: true }, "6.EE.B.7", L("An equation stays balanced when the same operation is used on both sides.", ["Identify the operation on x.", "Use its inverse on both sides.", "Substitute to check."], "x + 7 = 19, so x = 12.", "The goal is to isolate the variable, not move symbols without meaning.")),
       S("integers", "Absolute value of integers", "Number system", "absolute", { min: -100, max: 100 }, "6.NS.C.7", L("Absolute value is a number's distance from zero.", ["Locate the number relative to zero.", "Count the distance.", "Write the distance as nonnegative."], "|−18| = 18", "Absolute value is not the same as making every number positive in an equation.")),
     ],
@@ -1061,12 +1071,12 @@ export const GRADES = [
     label: "Grade 7",
     promise: "Build speed and precision with rational numbers, proportions, equations, and probability.",
     skills: [
-      S("integer-add", "Add and subtract integers", "Rational numbers", "integerOp", { op: "add", min: -30, max: 30 }, "7.NS.A.1", L("Integer addition combines direction and distance.", ["Use a number line or sign strategy.", "Combine or compare absolute values.", "Keep the sign that matches the direction."], "−8 + 13 = 5", "Different signs mean find a difference, not always add absolute values.")),
-      S("integer-mul", "Multiply and divide integers", "Rational numbers", "integerOp", { op: "mul", min: -12, max: 12 }, "7.NS.A.2", L("Multiply magnitudes, then determine the sign.", ["Multiply absolute values.", "Same signs give positive; different signs give negative.", "Check with a pattern."], "−6 × 4 = −24", "Sign rules come after finding the magnitude.")),
+      S("integer-add", "Add and subtract integers", "Rational numbers", "integerOp", { op: "addsub", min: -30, max: 30 }, "7.NS.A.1", L("Integer addition combines direction and distance.", ["Use a number line or sign strategy.", "Combine or compare absolute values.", "Keep the sign that matches the direction."], "−8 + 13 = 5", "Different signs mean find a difference, not always add absolute values.")),
+      S("integer-mul", "Multiply and divide integers", "Rational numbers", "integerOp", { op: "muldiv", min: -12, max: 12 }, "7.NS.A.2", L("Multiply magnitudes, then determine the sign.", ["Multiply absolute values.", "Same signs give positive; different signs give negative.", "Check with a pattern."], "−6 × 4 = −24", "Sign rules come after finding the magnitude.")),
       S("fraction-ops", "Operations with rational numbers", "Rational numbers", "fractionOp", { op: "sub", maxDenominator: 12 }, "7.NS.A.3", L("Rational-number operations follow fraction rules and integer sign rules.", ["Find common denominators for addition or subtraction.", "Apply signs carefully.", "Simplify the result."], "5/6 − 1/4 = 10/12 − 3/12 = 7/12", "Subtracting a negative changes the operation to addition.")),
       S("proportions", "Solve proportions", "Proportions", "proportion", {}, "7.RP.A.2", L("A proportion states that two ratios are equal.", ["Find a scale factor or use cross products.", "Solve for the unknown.", "Check both ratios have the same value."], "3/4 = x/20, so x = 15.", "Match corresponding quantities in the same positions.")),
       S("unit-rate", "Unit rates with decimals", "Proportions", "unitRate", { decimals: true, maxCount: 15, maxRate: 99 }, "7.RP.A.1", L("Complex unit rates still mean an amount per one.", ["Write the two quantities as a quotient.", "Divide accurately.", "Label both units."], "$7.50 for 3 pounds is $2.50 per pound.", "Decide which quantity should be per one before dividing.")),
-      S("percent-change", "Discounts and percent change", "Percents", "percentChange", {}, "7.RP.A.3", L("A percent change is a portion of the original amount.", ["Find the change amount.", "Add for increase or subtract for decrease.", "Check the direction of change."], "$80 with 25% off is $60.", "The final amount is not the same as the discount amount.")),
+      S("percent-change", "Discounts and percent change", "Percents", "percentChange", { type: "either" }, "7.RP.A.3", L("A percent change is a portion of the original amount.", ["Find the change amount.", "Add for increase or subtract for decrease.", "Check the direction of change."], "$80 with 25% off is $60.", "The final amount is not the same as the discount amount.")),
       S("equations", "Two-step equations", "Equations", "solve", {}, "7.EE.B.4", L("Undo operations in reverse order while keeping the equation balanced.", ["Undo addition or subtraction.", "Undo multiplication or division.", "Substitute to verify."], "3x + 5 = 20 → 3x = 15 → x = 5", "Perform each inverse operation on both sides.")),
       S("inequalities", "Test inequality solutions", "Equations", "inequality", {}, "7.EE.B.4", L("A solution makes an inequality statement true.", ["Substitute the test value.", "Compare the two sides.", "Answer yes or no."], "8 is a solution to x > 5 because 8 > 5.", "The open side of the symbol faces the greater value.")),
       S("circle-area", "Circle area fluency", "Geometry", "geometry", { shape: "circle" }, "7.G.B.4", L("A circle's area is π times the square of its radius.", ["Identify the radius.", "Square the radius.", "Multiply by π or leave the answer in terms of π."], "r = 6 gives A = 36π.", "Square the radius, not πr.")),
@@ -1107,10 +1117,26 @@ export function getSkill(grade, skillId) {
   return getGrade(grade).skills.find((skill) => skill.id === skillId) || null;
 }
 
+// "addsub" / "muldiv" let one skill practise an operation and its inverse (the title says "add and subtract").
+const MIXED_OPS = { addsub: ["add", "sub"], muldiv: ["mul", "div"] };
+export function resolveOp(config, rng) {
+  const pair = MIXED_OPS[config.op];
+  return pair ? { ...config, op: pair[rng() < 0.5 ? 0 : 1] } : config;
+}
+export const opsOf = (config) => MIXED_OPS[config?.op] || [config?.op];
+
+// Filler no learner needs to compute: a zero operand, a number minus itself, or times one. Zero facts still
+// appear (about one problem in ten) because they are real facts; they just stop dominating early grades.
+const FILLER = /^(0|\d+ [−×] 0|\d+ [+−] 0|0 [+−×÷]|(\d+) − \2|1 ×|\d+ × 1)\b.*= \?$/;
+const isFiller = (question) => FILLER.test(String(question).replaceAll(",", "")) || /\+ 0 = |□ \+ 0\b|^0 \+ □/.test(question);
+
 export function generateProblem(skill, rng = Math.random) {
   const generator = generators[skill.generator];
   if (!generator) throw new Error(`Unknown fluency generator: ${skill.generator}`);
-  const item = generator(skill.config || {}, rng);
+  let item = generator(resolveOp(skill.config || {}, rng), rng);
+  for (let attempt = 0; attempt < 8 && isFiller(item.question) && rng() > 0.1; attempt += 1) {
+    item = generator(resolveOp(skill.config || {}, rng), rng);
+  }
   item.steps = detailSteps(item) || item.steps;
   // A generator with no authored steps would otherwise open "Watch me solve it" on the answer itself:
   // lead with the skill's own strategy lines and state the worked line last.

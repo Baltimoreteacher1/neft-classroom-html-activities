@@ -65,7 +65,8 @@ export function createWorkbenchState() {
 
   function resetToItem(item) {
     s = fresh();
-    const q = item?.question ?? "";
+    // A story problem keeps its bare expression in `expr`; the tools set up from that.
+    const q = item?.expr ?? item?.question ?? "";
     const parsed = parseProblem(q);
     if (parsed && !parsed.error) apply(parsed);
     else if (q.includes("/")) s.tool = "fractions";

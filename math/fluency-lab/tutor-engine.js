@@ -1,5 +1,5 @@
 import { likelyMistake } from "./mistake-notes.js";
-import { ALL_SKILLS, generateProblem, getGrade, seededRandom } from "./problem-bank.js";
+import { ALL_SKILLS, generateProblem, getGrade, opsOf, resolveOp, seededRandom } from "./problem-bank.js";
 
 export const DAY = 86400000;
 const SPACING_MS = 18 * 3600 * 1000;
@@ -30,7 +30,8 @@ const FOUNDATIONS = {
 export function prerequisites(skill) {
   const explicit = (FOUNDATIONS[skillKey(skill)] || []).map(findSkill).filter(Boolean);
   if (explicit.length) return explicit;
-  const earlier = ALL_SKILLS.filter((candidate) => candidate.grade < skill.grade && candidate.generator === skill.generator && candidate.config.op === skill.config.op);
+  // A mixed skill ("add and subtract") builds on an earlier skill that practised either operation.
+  const earlier = ALL_SKILLS.filter((candidate) => candidate.grade < skill.grade && candidate.generator === skill.generator && opsOf(candidate.config).some((op) => opsOf(skill.config).includes(op)));
   return earlier.length ? [earlier.at(-1)] : [];
 }
 
@@ -61,7 +62,7 @@ export function difficulty(tutor, skill) {
 }
 
 export function adaptiveProblem(skill, rng = Math.random, level = 1) {
-  const config = { ...skill.config };
+  const config = { ...resolveOp(skill.config, rng) };
   if (level === 0) {
     // Reduce number size while preserving the operation and the intended topic.
     const limits = { maxDenominator: 5, maxFactor: 3, maxPart: 5, maxCount: 5, maxRate: 10,
