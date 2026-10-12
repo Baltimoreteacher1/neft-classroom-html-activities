@@ -995,17 +995,17 @@ function injectVocabLearnStyles() {
       margin: 0;
       padding: 0;
       display: grid;
-      gap: 12px;
+      gap: 6px;
     }
     .vl-solve-step {
       display: grid;
       grid-template-columns: auto 1fr auto;
-      gap: 12px;
+      gap: 8px;
       align-items: start;
-      padding: 14px 16px;
+      padding: 8px 10px;
       background: #f8fafc;
       border: 1px solid #e2e8f0;
-      border-radius: 14px;
+      border-radius: 10px;
     }
     .vl-solve-step.vl-hidden { display: none; }
     .vl-hidden { display: none; }
@@ -2017,7 +2017,7 @@ export function renderLearnItPanel(container, config, options = {}) {
     steps.push({
       icon: "👀",
       label: isEs ? "Mírame resolverlo" : "Watch Me Solve It",
-      sub: isEs ? "Lee un paso, luego muestra el siguiente" : "Read one step, then show the next",
+      sub: isEs ? "La solución completa, en una sola vista" : "The whole solution, on one screen",
       build(host) {
         // THE FIGURE HERE IS THIS PROBLEM, OR THERE IS NO FIGURE.
         //
@@ -2057,7 +2057,7 @@ export function renderLearnItPanel(container, config, options = {}) {
         // host is seeded with the first REAL figure and an empty entry means
         // "no change", so the problem is on screen from the start and never
         // blanks out mid-solve.
-        const firstLiveFig = liveFigs ? liveFigs.find(Boolean) || "" : "";
+        const firstLiveFig = liveFigs ? [...liveFigs].reverse().find(Boolean) || "" : "";
         if (liveFigs) {
           visualElemHtml = `
             <figure class="vl-stepfig vl-livefig" data-live-fig>
@@ -2066,27 +2066,12 @@ export function renderLearnItPanel(container, config, options = {}) {
             </figure>`;
         }
 
-        const crumbsHtml =
-          iLines.length > 1
-            ? `<div class="vl-step-crumbs">
-               ${iLines
-                 .map(
-                   (_, idx) => `
-                 <button type="button" class="vl-crumb-pill ${idx === 0 ? "active" : ""}" data-crumb-step="${idx}">
-                   <span>${isEs ? "Paso" : "Step"} ${idx + 1}</span>
-                 </button>
-               `,
-                 )
-                 .join("")}
-             </div>`
-            : "";
-
         const stepsHtml = `
           <ol class="vl-solve-steps">
             ${iLines
               .map(
                 (line, idx) => `
-              <li class="vl-solve-step${idx === 0 ? "" : " vl-hidden"}">
+              <li class="vl-solve-step">
                 <span class="vl-step-num">${isEs ? "Paso" : "Step"} ${idx + 1}</span>
                 <div class="vl-solve-body">
                   ${(() => {
@@ -2112,10 +2097,6 @@ export function renderLearnItPanel(container, config, options = {}) {
               )
               .join("")}
           </ol>
-          <div class="vl-pace no-print">
-            <button type="button" class="vl-pace-next">${isEs ? "Muestra el siguiente paso" : "Show the next step"} ▸ <span class="vl-pace-count"></span></button>
-            <button type="button" class="vl-pace-all">${isEs ? "Mostrar todos" : "Show all steps"}</button>
-          </div>
         `;
 
         // ONE COLUMN. The problem on top, the steps under it. Side by side, the
@@ -2134,12 +2115,10 @@ export function renderLearnItPanel(container, config, options = {}) {
                 <div class="vl-stage-visual-head">${liveFigs ? `🧮 ${isEs ? "El problema" : "The problem"}` : `🎨 ${isEs ? "Modelo visual del problema" : "Problem Visual Model"}`}</div>
                 ${visualElemHtml}
               </div>
-              ${crumbsHtml}
               ${stepsHtml}
             </div>
           `
               : `
-            ${crumbsHtml}
             ${stepsHtml}
           `
           }
@@ -2243,7 +2222,7 @@ export function renderLearnItPanel(container, config, options = {}) {
               ? `<details class="vl-check-reveal"><summary>✓ ${isEs ? "Comprueba" : "Check"}</summary><div class="vl-check-body">${renderMathText(step.tell)}</div></details>`
               : lineEquation(step.enAsk);
             return `
-              <li class="vl-solve-step${idx === 0 ? "" : " vl-hidden"}">
+              <li class="vl-solve-step">
                 <span class="vl-step-num">${idx + 1}</span>
                 <div class="vl-solve-body">
                   <span class="vl-step-text">${renderMathText(step.ask)}</span>
@@ -2258,7 +2237,7 @@ export function renderLearnItPanel(container, config, options = {}) {
         // told to DIVIDE, MULTIPLY, SUBTRACT and BRING DOWN with no division on
         // screen to do it on.
         const weLive = weDivFigs.filter(Boolean).length ? weDivFigs : null;
-        const weFirst = weLive ? weLive.find(Boolean) || "" : "";
+        const weFirst = weLive ? [...weLive].reverse().find(Boolean) || "" : "";
         const weWiden = (svg) => String(svg || "").replace(/style="max-width:\s*\d+px"/g, "");
         host.innerHTML = `
           ${
@@ -2272,11 +2251,7 @@ export function renderLearnItPanel(container, config, options = {}) {
                  </div></div>`
               : ""
           }
-          <ol class="vl-solve-steps">${guided}</ol>
-          <div class="vl-pace no-print">
-            <button type="button" class="vl-pace-next">${isEs ? "Muestra el siguiente paso" : "Show the next step"} ▸ <span class="vl-pace-count"></span></button>
-            <button type="button" class="vl-pace-all">${isEs ? "Mostrar todos" : "Show all steps"}</button>
-          </div>`
+          <ol class="vl-solve-steps">${guided}</ol>`
               : ""
           }
           ${

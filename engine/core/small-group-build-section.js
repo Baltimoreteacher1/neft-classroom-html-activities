@@ -308,17 +308,17 @@ export const BUILD_CSS = `
 .sgb [hidden]{display:none!important}
 .sgb .sgb-label{display:block;font-family:var(--sg-display);font-size:14px;font-weight:700;letter-spacing:.01em;color:var(--sg-deep);margin:0 0 4px}
 .sgb-today{margin:0 0 20px;padding:14px 18px;background:var(--sg-soft);border-radius:var(--sg-radius);font-size:19px;line-height:1.5}
-.sgb-ex{background:var(--sg-card);border:1px solid var(--sg-line);border-radius:var(--sg-radius-lg);padding:20px 22px;margin:0 0 18px}
+.sgb-ex{background:var(--sg-card);border:1px solid var(--sg-line);border-radius:var(--sg-radius-lg);padding:14px 16px;margin:0 0 12px}
 .sgb-title{font-size:21px;margin:0 0 12px}
 .sgb-problem{border-left:4px solid var(--sg);background:var(--sg-soft);padding:12px 16px;border-radius:0 var(--sg-radius-sm) var(--sg-radius-sm) 0;margin:0 0 16px}
 .sgb-problem p,.sgb-answer p{margin:0;font-size:19px;line-height:1.5;font-weight:600}
 .sgb-work{display:grid;gap:18px;align-items:start}
 @media (min-width:900px){.sgb-work.has-figure{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr)}.sgb-work.has-figure .sgb-figure{order:2;position:sticky;top:12px}}
 .sgb-figure{display:flex;justify-content:center;min-width:0}
-.sgb-steps{list-style:none;margin:0;padding:0;display:grid;gap:12px}
-.sgb-step{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start}
-.sgb-num{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--sg);color:#fff;font-family:var(--sg-display);font-weight:700;font-size:16px}
-.sgb-do{margin:2px 0 6px;font-size:18px;font-weight:600;line-height:1.45}
+.sgb-steps{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.sgb-step{display:grid;grid-template-columns:28px 1fr;gap:8px;align-items:start}
+.sgb-num{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--sg);color:#fff;font-family:var(--sg-display);font-weight:700;font-size:14px}
+.sgb-do{margin:0 0 4px;font-size:17px;font-weight:600;line-height:1.35}
 .sgb-math{display:inline-flex;flex-direction:column;gap:4px;padding:8px 14px;background:var(--sg-fill);border-radius:var(--sg-radius-sm);font-size:20px;font-weight:600;font-variant-numeric:tabular-nums lining-nums;line-height:1.6}
 .sgb-why{margin:6px 0 0;font-size:16px;color:var(--sg-muted);line-height:1.5}
 .sgb-answer{margin:18px 0 0;padding:12px 16px;border:2px solid var(--sg-good);background:var(--sg-good-bg);border-radius:var(--sg-radius-sm)}

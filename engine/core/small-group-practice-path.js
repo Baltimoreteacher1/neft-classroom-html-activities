@@ -64,6 +64,7 @@ function cardTitle(text, lesson) {
 
 /** The worked solution, folded until the student asks for it (or the check closes). */
 function solution(it) {
+  if (!Array.isArray(it.steps) || !it.steps.length) return null;
   const wrap = el("div", "sgp-solution");
   wrap.hidden = true;
   wrap.innerHTML = label("The steps");
@@ -199,12 +200,15 @@ function practiceCard(it, { n, key, store, score, mode, onAnswered, model, tick 
   const stepsBtn = el("button", "btn ghost sgp-steps-btn", "Show the steps");
   stepsBtn.type = "button";
   stepsBtn.hidden = true;
-  stepsBtn.addEventListener("click", () => {
-    steps.hidden = false;
-    stepsBtn.hidden = true;
-  });
+  if (steps) {
+    stepsBtn.addEventListener("click", () => {
+      steps.hidden = false;
+      stepsBtn.hidden = true;
+    });
+  }
   if (mode === "check") hintBtn.hidden = true;
-  tools.append(hintBtn, stepsBtn);
+  tools.append(hintBtn);
+  if (steps) tools.append(stepsBtn);
 
   let explain = null;
   if (it.explain) {
@@ -243,7 +247,7 @@ function practiceCard(it, { n, key, store, score, mode, onAnswered, model, tick 
     for (const c of card.querySelectorAll(".sgp-choice, .sgb-input, .sgb-submit"))
       c.disabled = true;
     if (correct && counted) score.solved();
-    if (mode === "check") {
+    if (mode === "check" && steps) {
       hintBtn.hidden = true;
       stepsBtn.hidden = false;
       stepsBtn.textContent = "See the solution";
@@ -279,13 +283,14 @@ function practiceCard(it, { n, key, store, score, mode, onAnswered, model, tick 
       misses >= 2 ? "Not yet. Read the hint and the steps, then try again." : "Not yet. Try again.";
     if (misses >= 2) hintText.hidden = false;
     hintBtn.hidden = !hintText.hidden;
-    if (mode !== "check") stepsBtn.hidden = !steps.hidden;
+    if (mode !== "check" && steps) stepsBtn.hidden = !steps.hidden;
   };
 
   const answerArea = it.choices
     ? choiceControl(it, key, store, grade)
     : boxControl(it, key, store, grade);
-  card.append(answerArea, feedback, tools, hintText, steps);
+  card.append(answerArea, feedback, tools, hintText);
+  if (steps) card.appendChild(steps);
   if (explain) card.appendChild(explain);
   const lens = teacherLens(it);
   if (lens) card.appendChild(lens);
@@ -473,49 +478,53 @@ function togetherStep(s, i, key, store, score, t, onDone) {
     onDone();
   };
   if (!s.accept) {
-    body.append(revealButton("Show", complete), shown);
-  } else {
-    const row = el("div", "sgp-step-row");
-    const input = el("input", "sgb-input sgp-step-input");
-    input.type = "text";
-    input.autocomplete = "off";
-    input.setAttribute("aria-label", `Step ${i + 1} answer`);
-    const check = el("button", "sgb-check", "Check");
-    check.type = "button";
-    const fb = el("span", "sgp-step-fb");
-    fb.setAttribute("aria-live", "polite");
-    let misses = 0;
-    const run = () => {
-      const value = input.value.trim();
-      if (!value) return;
-      const ok = isAccepted(value, s.accept);
-      score.attempt({ problem: `${t.problem} — ${s.ask}` }, ok, value);
-      if (ok) {
-        fb.textContent = "✓";
-        fb.className = "sgp-step-fb is-right";
+    shown.hidden = false;
+    li.classList.add("is-done");
+    body.appendChild(shown);
+    li.appendChild(body);
+    queueMicrotask(complete);
+    return li;
+  }
+  const row = el("div", "sgp-step-row");
+  const input = el("input", "sgb-input sgp-step-input");
+  input.type = "text";
+  input.autocomplete = "off";
+  input.setAttribute("aria-label", `Step ${i + 1} answer`);
+  const check = el("button", "sgb-check", "Check");
+  check.type = "button";
+  const fb = el("span", "sgp-step-fb");
+  fb.setAttribute("aria-live", "polite");
+  let misses = 0;
+  const run = () => {
+    const value = input.value.trim();
+    if (!value) return;
+    const ok = isAccepted(value, s.accept);
+    score.attempt({ problem: `${t.problem} — ${s.ask}` }, ok, value);
+    if (ok) {
+      fb.textContent = "✓";
+      fb.className = "sgp-step-fb is-right";
+      row.remove();
+      complete();
+      return;
+    }
+    misses++;
+    fb.className = "sgp-step-fb is-wrong";
+    fb.textContent = misses >= 2 ? "Not yet — tap Show me." : "Not yet. Try again.";
+    if (misses >= 2 && !row.querySelector(".sgp-showme")) {
+      const show = revealButton("Show me", () => {
         row.remove();
         complete();
-        return;
-      }
-      misses++;
-      fb.className = "sgp-step-fb is-wrong";
-      fb.textContent = misses >= 2 ? "Not yet — tap Show me." : "Not yet. Try again.";
-      if (misses >= 2 && !row.querySelector(".sgp-showme")) {
-        const show = revealButton("Show me", () => {
-          row.remove();
-          complete();
-        });
-        show.classList.add("sgp-showme");
-        row.appendChild(show);
-      }
-    };
-    check.addEventListener("click", run);
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") run();
-    });
-    row.append(input, check, fb);
-    body.append(row, shown);
-  }
+      });
+      show.classList.add("sgp-showme");
+      row.appendChild(show);
+    }
+  };
+  check.addEventListener("click", run);
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") run();
+  });
+  row.append(input, check, fb);
+  body.append(row, shown);
   li.appendChild(body);
   if (store?.get(key))
     queueMicrotask(() => {
@@ -565,6 +574,56 @@ function intro(text) {
   return el("p", "sgb-today sgp-intro", text);
 }
 
+const normStem = (s) =>
+  String(s || "")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim();
+
+/**
+ * Extra multiple-choice problems from this lesson's own practice bank
+ * (approaching / on level). The studio's authored set stays the path;
+ * these are more reps of the same lesson, skipped when the stem is
+ * already on that path.
+ */
+function extraFromLessonBank(config) {
+  const bank = config.practice || {};
+  const group2 = String(config.lessonId || "").includes("group2");
+  const pool = group2
+    ? [...(bank.onLevel || []), ...(bank.approaching || [])]
+    : [...(bank.approaching || []), ...(bank.onLevel || [])];
+  const used = new Set();
+  const launch = config.launch?.practice || {};
+  for (const list of [launch.together, launch.onMyOwn, launch.check]) {
+    for (const it of list || []) if (it?.problem) used.add(normStem(it.problem));
+  }
+  if (launch.stretch?.problem) used.add(normStem(launch.stretch.problem));
+  const out = [];
+  for (const it of pool) {
+    if (it?.type !== "multiple-choice" || !it.stem || !Array.isArray(it.choices)) continue;
+    if (typeof it.correctIndex !== "number") continue;
+    const key = normStem(it.stem);
+    if (!key || used.has(key)) continue;
+    used.add(key);
+    out.push({
+      problem: it.stem,
+      problemEs: it.stemEs || "",
+      choices: it.choices,
+      choicesEs: it.choicesEs,
+      correct: it.correctIndex,
+      choiceWhy: it.choiceFeedback || [],
+      choiceWhyEs: it.choiceFeedbackEs,
+      hint: Array.isArray(it.hints) ? it.hints[0] || "" : "",
+      hintEs: Array.isArray(it.hintsEs) ? it.hintsEs[0] || "" : "",
+      steps: it.explanation
+        ? [{ do: "Look back at the choices.", why: it.explanation, whyEs: it.explanationEs || "" }]
+        : [],
+    });
+    if (out.length >= 4) break;
+  }
+  return out;
+}
+
 /** Step 3 — two problems solved together, step by step. */
 export function createTogetherSection(config, ctx) {
   const p = config.launch?.practice;
@@ -573,9 +632,7 @@ export function createTogetherSection(config, ctx) {
   section.id = "sg-together";
   section.appendChild(sectionHeading(3, "Practice together", "Solve it with your group"));
   section.appendChild(
-    intro(
-      "Do each step, then type what you got. Talk about each step with your group before you check it.",
-    ),
+    intro("The worked lines are already filled in. Type only the steps that ask for a number."),
   );
   const score = scorer(ctx);
   let left = p.together.length;
@@ -630,6 +687,22 @@ export function createOnMyOwnSection(config, ctx) {
       }),
     ),
   );
+  const extra = extraFromLessonBank(config);
+  if (extra.length) {
+    section.appendChild(el("h3", "sgb-title", "More practice"));
+    extra.forEach((it, i) =>
+      section.appendChild(
+        practiceCard(it, {
+          n: p.onMyOwn.length + i + 1,
+          key: `px-${i}`,
+          store: ctx.store,
+          score,
+          mode: "own",
+          onAnswered: () => {},
+        }),
+      ),
+    );
+  }
   // The talk prompt comes last: it often names a mistake from these problems.
   if (p.talk) section.appendChild(talkCard(p.talk, ctx));
   return section;

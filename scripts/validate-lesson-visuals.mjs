@@ -484,13 +484,10 @@ async function probeLesson(browser, id) {
           kind,
         );
         await page.waitForTimeout(1400);
-        // Opening the tab is not reaching the tool. The Learn It panel paces its
-        // worked example one line at a time, and vocab-learn-panel.js only calls
-        // mountInteractiveVisuals() from the wirePaced() completion callback —
-        // until every line is shown, the host sits in .vl-hidden with no mount
-        // flag, which reads exactly like a REGISTRY miss. Snapshotting here
-        // condemned 60 lessons whose tools mount perfectly once paced. Walk the
-        // panel to its end the way a student does, THEN collect.
+        // The worked example is on screen all at once. The interactive model
+        // mounts when this step is built (wirePaced finishes immediately when
+        // there is no pace row). Keep walking .vl-next-btn so a later step's
+        // tool is reached, then collect.
         for (let guard = 0; guard < PACE_CLICK_LIMIT; guard++) {
           const advanced = await page.evaluate(() => {
             const live = (el) =>

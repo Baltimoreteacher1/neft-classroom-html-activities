@@ -25,7 +25,7 @@ import { buildSection } from "./small-group-build-section.js";
 import { createVocabularySection, selectedTalk } from "./small-group-engagement.js";
 import { syncSmallGroupEvidence, trackSmallGroupStep } from "./small-group-evidence.js";
 import { createMisconceptionCard, createTeacherEvidenceConsole } from "./small-group-innovation.js";
-import { createApplyLab } from "./small-group-labs.js";
+import { createApplyLab, figureBlock } from "./small-group-labs.js";
 import { installSmallGroupPassport } from "./small-group-passport.js";
 import {
   createChallengeCard,
@@ -684,6 +684,7 @@ function renderStudio(config) {
     store,
   );
   const build = buildSection(config, phaseDone("sg-tab-learn", "buildDone"), { store });
+  const models = lessonModels(config, store);
   const together = createTogetherSection(config, practiceCtx("sg-tab-together", "togetherDone"));
   const own = createOnMyOwnSection(config, practiceCtx("sg-tab-own", "ownDone"));
   const check = createExitCheckSection(config, state, {
@@ -735,7 +736,7 @@ function renderStudio(config) {
       id: "sg-tab-learn",
       label: "Learn It",
       sub: "See how it works",
-      panel: makePanel("sg-tab-learn", [build]),
+      panel: makePanel("sg-tab-learn", [build, models]),
     },
     {
       id: "sg-tab-together",
@@ -1019,6 +1020,38 @@ function loadLearningSignals(config) {
   } catch {
     /* signals must never break a studio */
   }
+}
+
+/**
+ * The lesson's own interactive models, on Learn It, without a second lab
+ * to click through. Connect and Explore diagrams only — the hands-on
+ * drag-sort stays out so the model is the work, not another checklist.
+ */
+function lessonModels(config, store) {
+  const picks = [];
+  const seen = new Set();
+  const add = (diagram) => {
+    if (!diagram?.kind) return;
+    if (diagram.kind === "data-chips") return;
+    const id = `${diagram.kind}:${diagram.manip || ""}:${diagram.title || ""}`;
+    if (seen.has(id)) return;
+    seen.add(id);
+    picks.push(diagram);
+  };
+  add(config.explore?.diagram);
+  add(config.connect?.diagram);
+  if (!picks.length) return null;
+  const section = el("section", "sg-sec");
+  section.id = "sg-models";
+  section.appendChild(sectionHeading(2, "Models", "Move the math"));
+  let mounted = 0;
+  picks.forEach((diagram, i) => {
+    const node = figureBlock(diagram, { store, slot: `learn-model-${i}` });
+    if (!node) return;
+    mounted += 1;
+    section.appendChild(node);
+  });
+  return mounted ? section : null;
 }
 
 export function bootSmallGroup(config) {
