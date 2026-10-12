@@ -421,6 +421,13 @@ const COVERAGE = [
     ["test"],
   ],
   [/^scripts\/generate-warmups\.mjs$/, ["test"]],
+  // Test files and the two small-group validators: nothing else imports them,
+  // and the validators' own gates plus the test run exercise them.
+  [/^engine\/core\/[^/]+\.test\.mjs$/, ["test", "validate:js-syntax"]],
+  [
+    /^tools\/validate-small-group-(build|practice)\.mjs$/,
+    ["test", "validate:small-group-build", "validate:small-group-practice", "validate:js-syntax"],
+  ],
   // The deploy driver is covered by tools/deploy-path.test.mjs (bash -n, lock,
   // per-worktree engine link, manifest regeneration); nothing else reads it.
   [/^(scripts\/ship\.sh|tools\/deploy-path\.test\.mjs)$/, ["test"]],
