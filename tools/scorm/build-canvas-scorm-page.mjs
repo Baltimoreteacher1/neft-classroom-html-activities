@@ -32,7 +32,10 @@ mkdirSync(pkgDir, { recursive: true });
 mkdirSync(scormOut, { recursive: true });
 
 const execFileAsync = promisify(execFile);
-const JOBS = Math.max(1, Number(process.env.SCORM_JOBS) || Math.min(8, availableParallelism() - 1));
+const JOBS = Math.max(
+  1,
+  Number(process.env.SCORM_JOBS) || Math.min(8, Math.max(2, availableParallelism())),
+);
 
 // Every package is its own `node build-scorm.mjs` process writing its own zip,
 // so they are independent; running them one at a time was ~16s of the build.
