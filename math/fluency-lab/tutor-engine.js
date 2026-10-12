@@ -20,7 +20,7 @@ const FOUNDATIONS = {
   "5:fraction-add": ["4:fraction-equiv"], "5:fraction-mul": ["3:mul-0-5"],
   "6:divide-fractions": ["5:fraction-mul"], "6:ratios": ["3:mul-0-5"],
   "6:unit-rates": ["4:division"], "6:percent": ["5:fraction-of"],
-  "7:equations": ["6:one-step"], "7:proportions": ["6:ratios"],
+  "7:equations": ["6:one-step"], "7:proportions": ["6:ratios"], "7:fraction-ops": ["5:fraction-add"],
   "7:percent-change": ["6:percent"], "7:unit-rate": ["6:unit-rates"],
   "8:linear-equations": ["7:equations"], "8:systems": ["7:equations"],
   "8:slope": ["7:integer-add", "6:unit-rates"], "8:functions": ["6:evaluate"],

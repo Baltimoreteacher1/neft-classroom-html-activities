@@ -10,8 +10,8 @@ export function createLesson(skill, variant = 0) {
   const k = Math.abs(variant) % 5;
   const grade = skill.grade || 1;
   // A combined skill ("addsub", "muldiv") shows one operation per variant; a mixed generator teaches as its main part.
-  const MIXED = { addsub: ["add", "sub"], muldiv: ["mul", "div"] };
-  const config = MIXED[skill.config.op] ? { ...skill.config, op: MIXED[skill.config.op][k % 2] } : skill.config;
+  const MIXED = { addsub: ["add", "sub"], muldiv: ["mul", "div"], rational: ["add", "sub", "mul", "div"] };
+  const config = MIXED[skill.config.op] ? { ...skill.config, op: MIXED[skill.config.op][k % MIXED[skill.config.op].length] } : skill.config;
   const gen = baseGenerator(skill);
   if (gen === "fact") {
     const op = config.op;
@@ -115,10 +115,18 @@ export function createLesson(skill, variant = 0) {
     return lesson(subtract ? "Subtract equal-sized pieces" : "Combine equal-sized pieces", "Rename both fractions so each piece has the same size.", { type: "fractions", fractions: subtract ? [[3, 4], [1, 3]] : [[1, 3], [1, 4]], caption: subtract ? "3/4 − 1/3" : "1/3 + 1/4" }, [step(subtract ? "Rename 3/4 in twelfths. What is the numerator?" : "Rename 1/3 in twelfths. What is the numerator?", subtract ? 9 : 4, "Multiply both parts of the fraction by the same factor.", subtract ? "3/4 = 9/12." : "1/3 = 4/12."), step(subtract ? "Rename 1/3 in twelfths. What is the numerator?" : "Rename 1/4 in twelfths. What is the numerator?", subtract ? 4 : 3, "Use a denominator of 12.", subtract ? "1/3 = 4/12." : "1/4 = 3/12."), step(subtract ? "Find 3/4 − 1/3." : "Find 1/3 + 1/4.", subtract ? "5/12" : "7/12", "Combine the numerators; keep the size of the pieces.", subtract ? "9/12 − 4/12 = 5/12." : "4/12 + 3/12 = 7/12.", "fraction")]);
   }
   if (gen === "decimalOp") {
+    if (config.op === "div") {
+      const divisor = 3; const eachTenths = 12 + k; const totalTenths = divisor * eachTenths; const total = totalTenths / 10;
+      return lesson("Divide tenths into equal groups", "Think in tenths: the decimal point only says what size each piece is. Share the tenths equally, then write the answer as a decimal.", { type: "place", numbers: [total.toFixed(1), String(divisor)], caption: `${total} ÷ ${divisor}` }, [step(`How many tenths are in ${total}?`, totalTenths, "Multiply the number by 10.", `${total} is ${totalTenths} tenths.`), step(`Share ${totalTenths} tenths into ${divisor} equal groups. How many tenths in each group?`, eachTenths, "Divide the count of tenths by the divisor.", `${totalTenths} ÷ ${divisor} = ${eachTenths} tenths.`), step("Write the answer as a decimal.", num(eachTenths / 10), "Tenths are one place right of the decimal point.", `${eachTenths} tenths is ${num(eachTenths / 10)}.`)]);
+    }
     const a = num(2.4 + k / 10); const mul = config.op === "mul";
     const b = mul ? 0.5 : 1.35; const subtract = config.op === "sub";
     const total = num(mul ? a * b : subtract ? a - b : a + b);
     return lesson(mul ? "Use a benchmark: one half" : "Line up equal places", mul ? "Multiplying by 0.5 finds half. Use that meaning to check the decimal position." : "Align the decimal points so ones, tenths, and hundredths match.", { type: "place", numbers: [a.toFixed(2), b.toFixed(2)], caption: `${a} ${mul ? "×" : subtract ? "−" : "+"} ${b}` }, [step(mul ? "What denominator makes 0.5 = 1/□?" : `Write ${a} in hundredths. How many hundredths?`, mul ? 2 : Math.round(a * 100), mul ? "0.5 is one half." : "Multiply the number by 100.", mul ? "0.5 = 1/2." : `${a} is ${Math.round(a * 100)} hundredths.`), step(mul ? `How much is half of ${Math.round(a * 10)} tenths, in tenths?` : `${subtract ? "Subtract" : "Add"} 135 hundredths. How many hundredths result?`, mul ? a * 5 : Math.round(total * 100), mul ? "Divide the number of tenths by 2." : "Work with the whole-number counts of hundredths.", mul ? `Half of ${Math.round(a * 10)} tenths is ${a * 5} tenths.` : `You have ${Math.round(total * 100)} hundredths.`), step("Write the final value as a decimal.", total, "Convert back to the correct place value.", `The result is ${total}.`)]);
+  }
+  if (gen === "factorMultiple") {
+    const rows = 3; const columns = 4 + k; const total = rows * columns;
+    return lesson("Find factor pairs", "A factor pair multiplies to make the number. Multiples come from counting by a number.", { type: "array", a: rows, b: columns, split: rows, caption: `${rows} rows of ${columns}` }, [step("How many counters are in the array?", total, "Multiply rows by counters in a row.", `${rows} × ${columns} = ${total}.`), step(`${rows} × □ = ${total}. What is the other factor?`, columns, "Count the counters in one row.", `${rows} × ${columns} = ${total}, so ${columns} is the other factor.`), step(`Is ${rows} a factor of ${total}?`, "yes", `Does ${rows} divide ${total} evenly?`, `${total} ÷ ${rows} = ${columns} with nothing left over.`, "choice", ["yes", "no"])]);
   }
   if (gen === "gcfLcm") {
     const a = 12; const b = 18; const lcm = config.find === "lcm";

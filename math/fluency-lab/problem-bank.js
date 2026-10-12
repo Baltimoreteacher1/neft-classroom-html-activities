@@ -47,6 +47,51 @@ function problem(question, answer, options = {}) {
   };
 }
 
+const plural = (count, word) => `${count} ${word}${count === 1 ? "" : "s"}`;
+const decimalPlaces = (text) => (String(text).split(".")[1] || "").length;
+
+// Steps before the worked line: move the divisor's decimal point first, or keep the point in line.
+function decimalDivisionSteps(dividend, divisor) {
+  const shift = decimalPlaces(divisor);
+  if (!shift) {
+    return [
+      `The divisor ${divisor} is already a whole number, so no decimal point has to move. Set up long division and write the decimal point in the quotient straight above the one in ${dividend}${decimalPlaces(dividend) ? "" : ` (write ${dividend} as ${dividend}.0 to see it)`}.`,
+      "Divide one place at a time. If a remainder is left, bring down a zero and keep going.",
+    ];
+  }
+  const factor = 10 ** shift;
+  return [
+    `The divisor ${divisor} has ${plural(shift, "decimal place")}. Multiply both ${dividend} and ${divisor} by ${factor} so the divisor becomes a whole number. Doing the same thing to both numbers keeps the quotient the same.`,
+    `Now divide as whole numbers: ${decimalText(Number(dividend) * factor, 4)} ÷ ${decimalText(Number(divisor) * factor, 4)}.`,
+  ];
+}
+
+// Sign and size are separate decisions with rational numbers; each step names one of them and the worked line comes last.
+function signedFractionSteps(op, [n1, d1], [n2, d2], worked) {
+  const text = (n, d) => (n < 0 ? `(${n}/${d})` : `${n}/${d}`);
+  const sameSign = n1 < 0 === n2 < 0;
+  if (op === "mul" || op === "div") {
+    const flip = op === "div";
+    const [mn, md] = flip ? [d2 * Math.sign(n2), Math.abs(n2)] : [n2, d2];
+    return [
+      ...(flip ? [`Dividing by ${text(n2, d2)} is the same as multiplying by its reciprocal: ${text(n1, d1)} × ${text(mn, md)}.`] : []),
+      `Size first, ignoring the signs: multiply the tops (${Math.abs(n1)} × ${Math.abs(mn)}) and the bottoms (${d1} × ${md}), then simplify.`,
+      `Sign next: ${sameSign ? "the signs are the same, so the answer is positive" : "the signs are different, so the answer is negative"}.`,
+      worked,
+    ];
+  }
+  const second = op === "sub" ? [-n2, d2] : [n2, d2];
+  const same = n1 < 0 === second[0] < 0;
+  return [
+    ...(op === "sub" ? [`Subtracting ${text(n2, d2)} is the same as adding its opposite: ${text(n1, d1)} + ${text(second[0], second[1])}.`] : []),
+    `${same ? "Same signs: add the sizes and keep that sign" : "Different signs: subtract the smaller size from the larger and keep the sign of the larger"}.`,
+    `Rename both fractions with a common denominator (${lcm(d1, d2)}) so the pieces are the same size, then combine the tops.`,
+    worked,
+  ];
+}
+
+const ordinal = (n) => `${n}${["th", "st", "nd", "rd"][n % 10 > 3 || Math.floor(n / 10) === 1 ? 0 : n % 10]}`;
+
 const listed = (values, cap = 10) => (values.length > cap ? `${values.slice(0, cap).join(", ")}, …` : values.join(", "));
 const factorsOf = (n) => Array.from({ length: n }, (_, i) => i + 1).filter((f) => n % f === 0);
 
@@ -451,17 +496,26 @@ const generators = {
 
   fractionOp(config, rng) {
     const op = config.op || "add";
+    const signed = Boolean(config.signed);
     let d1 = randInt(2, config.maxDenominator ?? 12, rng);
     let d2 = config.likeDenominators ? d1 : randInt(2, config.maxDenominator ?? 12, rng);
     let n1 = randInt(1, d1 - 1, rng);
     let n2 = randInt(1, d2 - 1, rng);
+    if (signed) {
+      // Rational-number practice is mostly signed: two positives are drawn only about one time in eight.
+      let negatives;
+      do negatives = [rng() < 0.5, rng() < 0.5];
+      while (!negatives[0] && !negatives[1] && rng() < 0.75);
+      if (negatives[0]) n1 = -n1;
+      if (negatives[1]) n2 = -n2;
+    }
     let n;
     let d;
     if (op === "add") {
       n = n1 * d2 + n2 * d1;
       d = d1 * d2;
     } else if (op === "sub") {
-      if (n1 / d1 < n2 / d2) {
+      if (!signed && n1 / d1 < n2 / d2) {
         [n1, n2] = [n2, n1];
         [d1, d2] = [d2, d1];
       }
@@ -476,15 +530,17 @@ const generators = {
     }
     const answer = fractionText(n, d);
     const symbol = FACT_SYMBOL[op];
-    return problem(`${n1}/${d1} ${symbol} ${n2}/${d2} = ?`, answer, {
+    const second = n2 < 0 ? `(${n2}/${d2})` : `${n2}/${d2}`;
+    return problem(`${n1}/${d1} ${symbol} ${second} = ?`, answer, {
       kind: "fraction",
+      steps: signed ? signedFractionSteps(op, [n1, d1], [n2, d2], `${n1}/${d1} ${symbol} ${second} = ${answer}.`) : undefined,
       hint:
         op === "add" || op === "sub"
           ? "Rename the fractions with a common denominator before combining them."
           : op === "mul"
             ? "Multiply numerators, multiply denominators, then simplify."
             : "Keep the first fraction, multiply by the reciprocal of the second, then simplify.",
-      explanation: `${n1}/${d1} ${symbol} ${n2}/${d2} = ${answer}.`,
+      explanation: `${n1}/${d1} ${symbol} ${second} = ${answer}.`,
     });
   },
 
@@ -531,9 +587,14 @@ const generators = {
       b = randInt(1, config.maxB ?? 99, rng) / 10;
       answer = a * b;
     } else {
-      b = randInt(2, config.maxDivisor ?? 12, rng) / (config.decimalDivisor ? 10 : 1);
-      answer = randInt(1, config.maxQuotient ?? 20, rng) / (config.decimalQuotient ? 10 : 1);
-      a = b * answer;
+      // mixedDivision alternates the two decimal shapes: a decimal divisor (7.2 ÷ 0.6) or a decimal quotient (4.5 ÷ 3).
+      do {
+        const decimalDivisor = config.mixedDivision ? rng() < 0.5 : config.decimalDivisor;
+        const decimalQuotient = config.mixedDivision ? !decimalDivisor : config.decimalQuotient;
+        b = randInt(2, config.maxDivisor ?? 12, rng) / (decimalDivisor ? 10 : 1);
+        answer = randInt(1, config.maxQuotient ?? 20, rng) / (decimalQuotient ? 10 : 1);
+        a = Math.round(b * answer * 100) / 100;
+      } while (config.mixedDivision && Number.isInteger(a) && Number.isInteger(b));
     }
     const symbol = FACT_SYMBOL[op];
     const shownA = decimalText(a, 4);
@@ -545,8 +606,11 @@ const generators = {
           ? "Line up the decimal points and work by place value."
           : op === "mul"
             ? "Multiply as whole numbers, then place the decimal using the total decimal places."
-            : "Make the divisor a whole number by moving both decimal points the same distance.",
+            : Number.isInteger(b)
+              ? "Divide as usual and keep the decimal point in the quotient straight above the one in the dividend."
+              : "Make the divisor a whole number by moving both decimal points the same distance.",
       explanation: `${shownA} ${symbol} ${shownB} = ${shownAnswer}.`,
+      steps: op === "div" ? [...decimalDivisionSteps(shownA, shownB), `${shownA} ${symbol} ${shownB} = ${shownAnswer}.`] : undefined,
       model:
         op === "add" || op === "sub"
           ? { type: "numberline", start: Number(shownA), jumps: [op === "add" ? Number(shownB) : -Number(shownB)] }
@@ -560,6 +624,68 @@ const generators = {
                 ],
               }
             : null,
+    });
+  },
+
+  factorMultiple(config, rng) {
+    const form = pick(["isFactor", "isMultiple", "nthMultiple", "countFactors", "primeComposite"], rng);
+    const yesNo = (question, yes, hint, explanation, steps) =>
+      problem(question, yes ? "yes" : "no", { kind: "choice", choices: ["yes", "no"], hint, explanation, steps: [...steps, explanation] });
+    if (form === "isFactor") {
+      const n = randInt(12, config.max ?? 100, rng);
+      const dividers = factorsOf(n).filter((f) => f >= 2 && f <= 12);
+      const yes = dividers.length > 0 && rng() < 0.5;
+      const f = yes ? pick(dividers, rng) : pick(Array.from({ length: 11 }, (_, i) => i + 2).filter((v) => n % v), rng);
+      return yesNo(`Is ${f} a factor of ${n}?`, yes, "A factor divides the number evenly, with no remainder.", yes ? `${n} ÷ ${f} = ${n / f} with nothing left over, so ${f} is a factor of ${n}.` : `${n} ÷ ${f} leaves a remainder of ${n % f}, so ${f} is not a factor of ${n}.`, [
+        `A factor of ${n} divides it evenly, with nothing left over. So check whether ${n} ÷ ${f} comes out even.`,
+        `Another way: count up by ${f}s toward ${n} and see whether you land exactly on it.`,
+      ]);
+    }
+    if (form === "isMultiple") {
+      const f = randInt(2, 12, rng);
+      const yes = rng() < 0.5;
+      const n = f * randInt(2, Math.floor(100 / f), rng) + (yes ? 0 : randInt(1, f - 1, rng));
+      return yesNo(`Is ${n} a multiple of ${f}?`, yes, `A multiple of ${f} is what you get counting by ${f}s.`, yes ? `${f} × ${n / f} = ${n}, so ${n} is a multiple of ${f}.` : `${n} is between ${f * Math.floor(n / f)} and ${f * Math.ceil(n / f)}, which are multiples of ${f}, so it is not one.`, [
+        `Multiples of ${f} come from counting by ${f}s: ${f}, ${2 * f}, ${3 * f}, and so on.`,
+        `Ask whether ${n} is on that list, or check whether ${n} ÷ ${f} comes out even.`,
+      ]);
+    }
+    if (form === "nthMultiple") {
+      const f = randInt(2, 9, rng);
+      const m = randInt(3, 10, rng);
+      return problem(`What is the ${ordinal(m)} multiple of ${f}?`, f * m, {
+        hint: `Count by ${f}s, or multiply ${f} by ${m}.`,
+        explanation: `The ${ordinal(m)} multiple of ${f} is ${f} × ${m} = ${f * m}.`,
+        steps: [`Multiples of ${f} come from counting by ${f}s: ${f}, ${2 * f}, ${3 * f}, …`, `The ${ordinal(m)} multiple is ${m} jumps of ${f}, which is ${f} × ${m}.`, `The ${ordinal(m)} multiple of ${f} is ${f} × ${m} = ${f * m}.`],
+      });
+    }
+    if (form === "countFactors") {
+      const n = pick([12, 16, 18, 20, 24, 28, 30, 32, 36, 40, 42, 45, 48, 50, 54, 56, 60, 64, 72, 80], rng);
+      const all = factorsOf(n);
+      return problem(`How many factors does ${n} have?`, all.length, {
+        hint: "List factor pairs: 1 × the number, then test 2, 3, 4, … for pairs that multiply to it.",
+        explanation: `The factors of ${n} are ${all.join(", ")}, so it has ${all.length}.`,
+        steps: [
+          `A factor pair multiplies to make ${n}. Start with 1 × ${n}, then test 2, 3, 4, … to see which numbers divide ${n} evenly.`,
+          "Stop when the pairs start to repeat. Count every number in the pairs, each only once.",
+          `The factors of ${n} are ${all.join(", ")}, so it has ${all.length}.`,
+        ],
+      });
+    }
+    const prime = rng() < 0.4;
+    const pool = Array.from({ length: 88 }, (_, i) => i + 11).filter((v) => (factorsOf(v).length === 2) === prime);
+    const n = pick(pool, rng);
+    const divider = factorsOf(n).find((f) => f > 1);
+    return problem(`Is ${n} prime or composite?`, prime ? "prime" : "composite", {
+      kind: "choice",
+      choices: ["prime", "composite"],
+      hint: "A prime number has exactly two factors: 1 and itself.",
+      explanation: prime ? `${n} has no factor besides 1 and ${n}, so it is prime.` : `${n} ÷ ${divider} = ${n / divider}, so ${n} has a factor besides 1 and itself and is composite.`,
+      steps: [
+        "A prime number has exactly two factors, 1 and itself. A composite number has more than two.",
+        `Test small numbers (2, 3, 5, 7) to see whether any of them divides ${n} evenly.`,
+        prime ? `${n} has no factor besides 1 and ${n}, so it is prime.` : `${n} ÷ ${divider} = ${n / divider}, so ${n} has a factor besides 1 and itself and is composite.`,
+      ],
     });
   },
 
@@ -715,9 +841,28 @@ const generators = {
   },
 
   solve(config, rng) {
-    const x = randInt(config.minX ?? -10, config.maxX ?? 20, rng);
+    // A one-step skill covers adding, subtracting, multiplying and dividing: x + 3 = 9, x − 4 = 2, 3x = 12, x ÷ 4 = 5.
+    const form = config.oneStep ? pick(["shift", "shift", "mul", "div"], rng) : "two";
+    if (form === "mul" || form === "div") {
+      const k = randInt(2, 9, rng);
+      const quotient = randInt(2, 12, rng);
+      const [x, c] = form === "mul" ? [quotient, k * quotient] : [k * quotient, quotient];
+      const verb = form === "mul" ? "multiplied" : "divided";
+      const undo = form === "mul" ? "divide" : "multiply";
+      return problem(form === "mul" ? `${k}x = ${c}. Find x.` : `x ÷ ${k} = ${c}. Find x.`, x, {
+        hint: `Undo ${form === "mul" ? "multiplying" : "dividing"} by ${k}: ${undo} both sides by ${k}.`,
+        explanation: `The value x = ${x} makes both sides equal ${c}.`,
+        steps: [
+          `The goal is to get x alone. Right now x is being ${verb} by ${k}.`,
+          `Undo it with the opposite operation: ${undo} both sides by ${k}. Doing the same thing to both sides keeps the equation balanced.`,
+          `${form === "mul" ? `${c} ÷ ${k}` : `${c} × ${k}`} = ${x}, so x = ${x}.`,
+        ],
+      });
+    }
+    const x = config.nonNegative ? randInt(1, config.maxX ?? 20, rng) : randInt(config.minX ?? -10, config.maxX ?? 20, rng);
     const a = config.oneStep ? 1 : randInt(2, config.maxCoefficient ?? 9, rng);
-    const b = randInt(-12, 15, rng);
+    // nonNegative keeps every number in the equation at or above zero (grade 6 works with nonnegative values).
+    const b = config.nonNegative ? (rng() < 0.5 ? randInt(1, 15, rng) : -randInt(1, Math.min(12, x), rng)) : randInt(-12, 15, rng);
     const c = a * x + b;
     return problem(`${a === 1 ? "x" : `${a}x`} ${b < 0 ? "−" : "+"} ${Math.abs(b)} = ${c}. Find x.`, x, {
       hint: `Undo ${b < 0 ? `subtracting ${Math.abs(b)}` : `adding ${b}`} first${a === 1 ? "." : `, then divide by ${a}.`}`,
@@ -1047,7 +1192,7 @@ export const GRADES = [
       S("multiply-1digit", "Multiply by one digit", "Multiplication", "fact", { op: "mul", minA: 100, maxA: 999, minB: 2, maxB: 9 }, "4.NBT.B.5", L("Use place value and partial products.", ["Multiply each place by the one-digit factor.", "Regroup as needed.", "Add partial products or use the standard algorithm."], "326 × 4 = 1,304", "Regrouped tens must be added to the next partial product.")),
       S("multiply-2digit", "Multiply two-digit numbers", "Multiplication", "fact", { op: "mul", minA: 10, maxA: 99, minB: 10, maxB: 99 }, "4.NBT.B.5", L("Break one factor into tens and ones.", ["Multiply by the ones part.", "Multiply by the tens part.", "Add the partial products."], "23 × 14 = 23 × 10 + 23 × 4 = 322", "The tens partial product is ten times its digit product.")),
       S("division", "Whole-number division", "Division", "fact", { op: "div", minDivisor: 2, maxDivisor: 9, minQuotient: 10, maxQuotient: 99 }, "4.NBT.B.6", L("Division undoes multiplication.", ["Estimate the quotient.", "Use multiplication facts for each place.", "Multiply to check."], "384 ÷ 6 = 64 because 64 × 6 = 384.", "A quotient digit must match its place value.")),
-      S("factors", "Factors and multiples", "Number theory", "gcfLcm", { find: "gcf", max: 50 }, "4.OA.B.4", L("Factors divide a number evenly; multiples come from repeated multiplication.", ["List factor pairs.", "Circle shared factors.", "Choose the greatest one when finding GCF."], "Factors shared by 18 and 24 include 1, 2, 3, and 6; GCF = 6.", "A factor is not the same as a multiple.")),
+      S("factors", "Factors and multiples", "Number theory", "factorMultiple", { max: 100 }, "4.OA.B.4", L("Factors divide a number evenly; multiples come from repeated multiplication.", ["List factor pairs, or check whether dividing leaves a remainder.", "Count by the number to list its multiples.", "A prime number has only two factors: 1 and itself."], "Factors of 12: 1, 2, 3, 4, 6, 12. Multiples of 4: 4, 8, 12, 16.", "A factor is not the same as a multiple.")),
       S("fraction-equiv", "Generate equivalent fractions", "Fractions", "fractionEquivalent", { maxDenominator: 12, maxFactor: 8 }, "4.NF.A.1", L("Scale numerator and denominator by the same nonzero number.", ["Find the scale factor.", "Apply it to both parts.", "Check that the value stayed equal."], "3/5 = 12/20 using ×4.", "Adding the same number to both parts does not preserve a fraction.")),
       S("fraction-compare", "Compare fractions", "Fractions", "fractionCompare", { maxDenominator: 12 }, "4.NF.A.2", L("Fractions need a common whole before they can be compared.", ["Use a benchmark or common denominator.", "Compare equal-sized parts.", "Write the correct symbol."], "5/8 > 3/5 because 25/40 > 24/40.", "Do not compare denominators by themselves.")),
     ],
@@ -1079,12 +1224,12 @@ export const GRADES = [
       S("gcf", "Greatest common factor", "Number system", "gcfLcm", { find: "gcf", max: 60 }, "6.NS.B.4", L("The GCF is the greatest factor shared by two numbers.", ["List factors or use prime factorization.", "Identify shared factors.", "Choose the greatest shared factor."], "GCF(24, 36) = 12", "Do not choose the greatest factor from only one number.")),
       S("lcm", "Least common multiple", "Number system", "gcfLcm", { find: "lcm", max: 24 }, "6.NS.B.4", L("The LCM is the first positive multiple shared by both numbers.", ["List multiples or use prime factors.", "Find the first common value.", "Check both numbers divide it evenly."], "LCM(6, 8) = 24", "A common multiple must be divisible by both numbers.")),
       S("divide-fractions", "Divide fractions", "Number system", "fractionOp", { op: "div", maxDenominator: 10 }, "6.NS.A.1", L("Dividing by a fraction is multiplying by its reciprocal.", ["Keep the first fraction.", "Change division to multiplication and flip the second fraction.", "Multiply and simplify."], "2/3 ÷ 4/5 = 2/3 × 5/4 = 5/6", "Flip only the divisor, not both fractions.")),
-      S("decimal-ops", "Multiply and divide decimals", "Number system", "decimalOp", { op: "muldiv" }, "6.NS.B.3", L("Estimate, multiply, and place the decimal by value.", ["Estimate the size.", "Multiply as whole numbers.", "Place the decimal so the result matches the estimate."], "3.2 × 1.5 = 4.8", "A product can be smaller when a factor is less than 1.")),
+      S("decimal-ops", "Multiply and divide decimals", "Number system", "decimalOp", { op: "muldiv", mixedDivision: true, maxDivisor: 9, maxQuotient: 60 }, "6.NS.B.3", L("Estimate, multiply, and place the decimal by value.", ["Estimate the size.", "Multiply as whole numbers.", "Place the decimal so the result matches the estimate."], "3.2 × 1.5 = 4.8", "A product can be smaller when a factor is less than 1.")),
       S("ratios", "Equivalent ratios", "Ratios", "ratio", { maxPart: 12, maxFactor: 9 }, "6.RP.A.1", L("Equivalent ratios scale both quantities by the same factor.", ["Find the scale factor.", "Multiply or divide both quantities.", "Check the comparison stayed the same."], "3:5 scaled by 4 is 12:20.", "Adding the same amount to both terms does not preserve the ratio.")),
       S("unit-rates", "Unit rates and unit conversions", "Ratios", "rateConversion", { maxCount: 12, maxRate: 25 }, "6.RP.A.2", L("A unit rate tells the amount for exactly one unit.", ["Write the rate as a division.", "Divide by the number of units.", "Label per 1."], "72 miles in 3 hours is 24 miles per hour.", "Keep units attached so the rate is not reversed.")),
       S("percent", "Percent of a number", "Ratios", "percent", {}, "6.RP.A.3", L("Percent means per 100.", ["Rewrite the percent as a decimal or fraction.", "Multiply by the whole.", "Check against useful benchmarks."], "25% of 60 = 1/4 of 60 = 15", "Use the original whole as the base.")),
       S("evaluate", "Evaluate expressions", "Expressions", "expression", {}, "6.EE.A.2", L("Evaluation replaces a variable with its given value.", ["Substitute using parentheses.", "Follow order of operations.", "Simplify carefully."], "3x + 2 when x = 4 is 3(4) + 2 = 14.", "Substitution changes the variable, not the operation signs.")),
-      S("one-step", "Solve one-step equations", "Equations", "solve", { oneStep: true }, "6.EE.B.7", L("An equation stays balanced when the same operation is used on both sides.", ["Identify the operation on x.", "Use its inverse on both sides.", "Substitute to check."], "x + 7 = 19, so x = 12.", "The goal is to isolate the variable, not move symbols without meaning.")),
+      S("one-step", "Solve one-step equations", "Equations", "solve", { oneStep: true, nonNegative: true }, "6.EE.B.7", L("An equation stays balanced when the same operation is used on both sides.", ["Identify the operation on x.", "Use its inverse on both sides.", "Substitute to check."], "x + 7 = 19, so x = 12.", "The goal is to isolate the variable, not move symbols without meaning.")),
       S("integers", "Absolute value and the coordinate plane", "Number system", "numberPlane", { min: -100, max: 100 }, "6.NS.C.7", L("Absolute value is a number's distance from zero.", ["Locate the number relative to zero.", "Count the distance.", "Write the distance as nonnegative."], "|−18| = 18", "Absolute value is not the same as making every number positive in an equation.")),
     ],
   },
@@ -1096,7 +1241,7 @@ export const GRADES = [
     skills: [
       S("integer-add", "Add and subtract integers", "Rational numbers", "integerOp", { op: "addsub", min: -30, max: 30 }, "7.NS.A.1", L("Integer addition combines direction and distance.", ["Use a number line or sign strategy.", "Combine or compare absolute values.", "Keep the sign that matches the direction."], "−8 + 13 = 5", "Different signs mean find a difference, not always add absolute values.")),
       S("integer-mul", "Multiply and divide integers", "Rational numbers", "integerOp", { op: "muldiv", min: -12, max: 12 }, "7.NS.A.2", L("Multiply magnitudes, then determine the sign.", ["Multiply absolute values.", "Same signs give positive; different signs give negative.", "Check with a pattern."], "−6 × 4 = −24", "Sign rules come after finding the magnitude.")),
-      S("fraction-ops", "Operations with rational numbers", "Rational numbers", "fractionOp", { op: "sub", maxDenominator: 12 }, "7.NS.A.3", L("Rational-number operations follow fraction rules and integer sign rules.", ["Find common denominators for addition or subtraction.", "Apply signs carefully.", "Simplify the result."], "5/6 − 1/4 = 10/12 − 3/12 = 7/12", "Subtracting a negative changes the operation to addition.")),
+      S("fraction-ops", "Operations with rational numbers", "Rational numbers", "fractionOp", { op: "rational", signed: true, maxDenominator: 10 }, "7.NS.A.3", L("Rational-number operations follow fraction rules and integer sign rules.", ["Find common denominators for addition or subtraction.", "Apply signs carefully.", "Simplify the result."], "5/6 − 1/4 = 10/12 − 3/12 = 7/12", "Subtracting a negative changes the operation to addition.")),
       S("proportions", "Solve proportions", "Proportions", "proportion", {}, "7.RP.A.2", L("A proportion states that two ratios are equal.", ["Find a scale factor or use cross products.", "Solve for the unknown.", "Check both ratios have the same value."], "3/4 = x/20, so x = 15.", "Match corresponding quantities in the same positions.")),
       S("unit-rate", "Unit rates with decimals", "Proportions", "unitRate", { decimals: true, maxCount: 15, maxRate: 99 }, "7.RP.A.1", L("Complex unit rates still mean an amount per one.", ["Write the two quantities as a quotient.", "Divide accurately.", "Label both units."], "$7.50 for 3 pounds is $2.50 per pound.", "Decide which quantity should be per one before dividing.")),
       S("percent-change", "Discounts and percent change", "Percents", "percentChange", { type: "either" }, "7.RP.A.3", L("A percent change is a portion of the original amount.", ["Find the change amount.", "Add for increase or subtract for decrease.", "Check the direction of change."], "$80 with 25% off is $60.", "The final amount is not the same as the discount amount.")),
@@ -1178,10 +1323,10 @@ export function getSkill(grade, skillId) {
 }
 
 // "addsub" / "muldiv" let one skill practise an operation and its inverse (the title says "add and subtract").
-const MIXED_OPS = { addsub: ["add", "sub"], muldiv: ["mul", "div"] };
+const MIXED_OPS = { addsub: ["add", "sub"], muldiv: ["mul", "div"], rational: ["add", "sub", "mul", "div"] };
 export function resolveOp(config, rng) {
   const pair = MIXED_OPS[config.op];
-  return pair ? { ...config, op: pair[rng() < 0.5 ? 0 : 1] } : config;
+  return pair ? { ...config, op: pair[Math.floor(rng() * pair.length)] } : config;
 }
 export const opsOf = (config) => MIXED_OPS[config?.op] || [config?.op];
 // A mixed generator draws from two generators; lessons and prerequisites follow its main (first) part.
