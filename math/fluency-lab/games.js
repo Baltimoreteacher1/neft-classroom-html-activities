@@ -103,7 +103,7 @@ const esc = (value) =>
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
 const starRow = (count) =>
-  `<span class="tr-stars big" aria-label="${t("{n} of 3 stars", { n: count })}">${[1, 2, 3].map((n) => `<span class="tr-star${n <= count ? " on" : ""}" aria-hidden="true">★</span>`).join("")}</span>`;
+  `<span class="tr-stars big" role="img" aria-label="${t("{n} of 3 stars", { n: count })}">${[1, 2, 3].map((n) => `<span class="tr-star${n <= count ? " on" : ""}" aria-hidden="true">★</span>`).join("")}</span>`;
 
 // The review after a game shows the steps up to, but not including, the one that names the answer.
 function reviewBody(item, id, shown) {

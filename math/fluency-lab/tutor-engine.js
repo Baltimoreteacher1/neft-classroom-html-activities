@@ -1,6 +1,7 @@
 import { ALL_SKILLS, generateProblem, getGrade, seededRandom } from "./problem-bank.js";
 
 export const DAY = 86400000;
+const SPACING_MS = 18 * 3600 * 1000;
 export const skillKey = (skill) => `${skill.grade}:${skill.id}`;
 export const findSkill = (key) => ALL_SKILLS.find((skill) => skillKey(skill) === key);
 export const localDay = (time = Date.now()) => {
@@ -38,8 +39,10 @@ export function evidence(tutor, skill, now = Date.now()) {
   const independent = recent.filter((entry) => entry.independent && entry.level >= 1);
   const successes = independent.filter((entry) => entry.correct).length;
   const ratio = independent.length ? successes / independent.length : 0;
-  const days = new Set(independent.filter((entry) => entry.correct).map((entry) => localDay(entry.at)));
-  const secure = independent.length >= 8 && ratio >= 0.85 && days.size >= 2 && recent.slice(-3).every((entry) => entry.correct);
+  // "Remembered" needs correct answers that are really apart in time: 7 at 11:50 pm and one at 12:05 am is one sitting.
+  const times = independent.filter((entry) => entry.correct).map((entry) => entry.at);
+  const spaced = times.length >= 2 && Math.max(...times) - Math.min(...times) >= SPACING_MS;
+  const secure = independent.length >= 8 && ratio >= 0.85 && spaced && recent.slice(-3).every((entry) => entry.correct);
   const due = Boolean(record.dueAt && record.dueAt <= now);
   let label = "Not checked yet";
   if (record.lessonCompleted && !recent.length) label = "Lesson explored";
@@ -99,7 +102,11 @@ export function recordAnswer(tutor, skill, result, now = Date.now()) {
     if (previousDay !== localDay(now)) record.interval = previousDay ? Math.min(14, Math.max(1, record.interval) * 2) : 1;
     record.lastSuccessfulDay = localDay(now);
     record.dueAt = now + Math.max(1, record.interval) * DAY;
-  } else { record.interval = 1; record.dueAt = now + DAY; }
+  } else {
+    // An independent miss means the skill needs a short recheck; a hinted or easier-level success only halves the wait.
+    record.interval = independent || !result.correct ? 1 : Math.max(1, Math.floor((record.interval || 1) / 2));
+    record.dueAt = now + record.interval * DAY;
+  }
   record.lastAt = now;
   tutor.records[key] = record;
 }
@@ -140,7 +147,9 @@ export function recommendations(tutor, grade, now = Date.now()) {
   return skills.map((skill, index) => {
     const status = evidence(tutor, skill, now);
     const misses = tutor.mistakes.filter((entry) => entry.key === skillKey(skill) && !entry.resolvedAt).length;
-    const diagnosticMiss = diagnostic[skillKey(skill)] === false;
+    // A checkup miss is a starting point, not a verdict: it stops counting once independent practice shows the skill is working.
+    const practiced = status.independent >= 3 && status.ratio >= 0.75;
+    const diagnosticMiss = diagnostic[skillKey(skill)] === false && !practiced;
     const priority = misses * 5 + (diagnosticMiss ? 10 : 0) + (status.due ? 8 : 0) + (status.recent.length && status.ratio < 0.75 ? 6 : 0) + (!status.recent.length ? 2 : 0);
     const reason = misses ? "Revisit a tricky idea" : status.due ? "Time for a memory refresh" : diagnosticMiss ? "A useful next step from your checkup" : !status.recent.length ? "Explore something new" : status.secure ? "Keep this skill fresh" : "Build independent confidence";
     return { skill, status, reason, priority, index };

@@ -32,7 +32,7 @@ export function playMatch(host, { grade, stop, calm, finish }) {
           const faceUp = open.includes(i) || matched.has(card.id);
           const label = faceUp
             ? `${card.side === "q" ? t("Problem") : t("Answer")} ${card.text}${matched.has(card.id) ? t(", matched") : ""}`
-            : t("Face-down card");
+            : t("Card {a} of {b}, face down", { a: i + 1, b: cards.length });
           return `<button type="button" class="gm-card ${card.side}${faceUp ? " up" : ""}${matched.has(card.id) ? " done" : ""}" data-i="${i}" aria-label="${label}" ${matched.has(card.id) ? "disabled" : ""}><span>${faceUp ? mathText(card.text) : "?"}</span></button>`;
         })
         .join("")}</div></div>`;

@@ -32,7 +32,7 @@ const esc = (value) =>
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
 const starRow = (count, size = "") =>
-  `<span class="tr-stars ${size}" aria-label="${t("{n} of 3 stars", { n: count })}">${[1, 2, 3].map((n) => `<span class="tr-star${n <= count ? " on" : ""}" aria-hidden="true">★</span>`).join("")}</span>`;
+  `<span class="tr-stars ${size}" role="img" aria-label="${t("{n} of 3 stars", { n: count })}">${[1, 2, 3].map((n) => `<span class="tr-star${n <= count ? " on" : ""}" aria-hidden="true">★</span>`).join("")}</span>`;
 export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
   const trail = TRAILS[grade];
   const words = BANDS[bandFor(grade)];
@@ -97,7 +97,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
           <h2 id="trail-title">${esc(t(words.trail))}</h2>
           <p class="tr-focus">${t("Grade {n}", { n: grade })}: ${esc(t(trail.focus))}</p>
         </div>
-        <div class="tr-tally" aria-label="${t("{a} of {b} stops done, {c} stars", { a: done, b: trail.stations.length, c: earned })}">
+        <div class="tr-tally" role="group" aria-label="${t("{a} of {b} stops done, {c} stars", { a: done, b: trail.stations.length, c: earned })}">
           <span><b>${done}</b> ${t("of {n} stops", { n: trail.stations.length })}</span>
           <span><b class="tr-gold">★ ${earned}</b> ${t("stars")}</span>
         </div>
@@ -278,7 +278,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
             <p class="tr-q" id="tr-q">${mathText(item.question)}</p>
             <form class="tr-answer" autocomplete="off">
               <label class="tr-sr" for="tr-input">${t("Your answer")}</label>
-              <input id="tr-input" class="tr-input" inputmode="${bandFor(grade) === "upper" ? "text" : "numeric"}" enterkeyhint="done" spellcheck="false" />
+              <input id="tr-input" class="tr-input" aria-describedby="tr-q" inputmode="${bandFor(grade) === "upper" ? "text" : "numeric"}" enterkeyhint="done" spellcheck="false" />
               <button type="submit" class="tr-check">${esc(t(words.check))}</button>
             </form>
             <p class="tr-feedback" role="status" aria-live="polite"></p>
@@ -370,8 +370,8 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
     container.innerHTML = `
       <div class="tr-done">
         ${starRow(stars, "big")}
-        <h2>${round.entry.boss ? (stars >= 2 ? t("Boss defeated!") : t("Good try on the boss!")) : stars === 3 ? t("Amazing round!") : stars === 2 ? t("Great round!") : t("Good practice!")}</h2>
-        <p class="tr-score">${t("You got {n} on the first try.", { n: `<b>${t("{a} of {b}", { a: round.firstTry, b: ROUND })}</b>` })}</p>
+        <h2 id="tr-done-title" tabindex="-1" aria-describedby="tr-done-score">${round.entry.boss ? (stars >= 2 ? t("Boss defeated!") : t("Good try on the boss!")) : stars === 3 ? t("Amazing round!") : stars === 2 ? t("Great round!") : t("Good practice!")}</h2>
+        <p class="tr-score" id="tr-done-score">${t("You got {n} on the first try.", { n: `<b>${t("{a} of {b}", { a: round.firstTry, b: ROUND })}</b>` })}</p>
         ${stickerToast(fresh)}
         ${teachBack()}
         ${practice.length ? `<div class="tr-review"><p>${t("Facts to practice again:")}</p><ul>${practice.map((fact) => `<li>${mathText(fact)}</li>`).join("")}</ul></div>` : `<p class="tr-perfect">${t("Every fact on the first try.")}</p>`}
@@ -382,7 +382,8 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
         </div>
       </div>`;
     if (stars === 3 || fresh.length) celebrate(container);
-    container.querySelector(".tr-done-actions .tr-go").focus();
+    // Land on the result first, so a screen reader hears the round outcome before the buttons.
+    container.querySelector("#tr-done-title").focus();
   }
 
   on("click", (event) => {

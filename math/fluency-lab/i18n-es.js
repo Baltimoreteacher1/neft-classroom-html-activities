@@ -186,7 +186,6 @@ export const ES = {
     "Estima primero con números amigables y luego ajusta.",
   "Every fact on the first try.": "Todos los datos al primer intento.",
   "Exponents, roots, and equations": "Exponentes, raíces y ecuaciones",
-  "Face-down card": "Carta boca abajo",
   "Fact Hero": "Héroe de los datos",
   "Fact Keeper": "Guardián de datos",
   "Fact Master": "Maestro de datos",
@@ -469,6 +468,7 @@ export const ES = {
   "Type the answer to continue.": "Escribe la respuesta para continuar.",
   "Type the answer to keep going.": "Escribe la respuesta para seguir.",
   "Type {n} to keep going.": "Escribe {n} para seguir.",
+  "Card {a} of {b}, face down": "Carta {a} de {b}, boca abajo",
   "Use the steps to find it, then try again.": "Usa los pasos para encontrarlo y vuelve a intentarlo.",
   "Undo adding or subtracting first. Then undo multiplying.":
     "Deshaz primero la suma o la resta. Luego deshaz la multiplicación.",

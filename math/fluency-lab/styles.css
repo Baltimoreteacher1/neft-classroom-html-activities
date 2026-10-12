@@ -66,8 +66,15 @@ button {
 }
 
 :focus-visible {
-  outline: 4px solid #f1b82d;
+  outline: 4px solid #1f5fbf;
   outline-offset: 3px;
+  box-shadow: 0 0 0 2px #fff;
+}
+
+/* Gold stays on the dark header, where blue would not show. */
+.site-header :focus-visible {
+  outline-color: #f1b82d;
+  box-shadow: none;
 }
 
 .skip-link {
@@ -117,6 +124,7 @@ button {
 
 .brand-button:focus-visible {
   outline: 3px solid #f1b82d;
+  box-shadow: none;
   outline-offset: 4px;
   border-radius: 6px;
 }
@@ -1212,8 +1220,9 @@ main {
   }
 
   .site-header nav {
-    align-items: stretch;
-    flex-direction: column;
+    align-items: center;
+    flex-flow: row wrap;
+    gap: 0.4rem;
   }
 
   .site-header nav a {
@@ -1221,9 +1230,9 @@ main {
   }
 
   .quiet-button {
-    min-height: 38px;
-    padding: 0.4rem 0.55rem;
-    font-size: 0.78rem;
+    min-height: 44px;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
   }
 
   main {

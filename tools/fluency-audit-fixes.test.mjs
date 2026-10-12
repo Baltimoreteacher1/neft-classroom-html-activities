@@ -16,7 +16,9 @@ const { ALL_SKILLS, generateProblem, seededRandom, validateAnswer } = await impo
   "../math/fluency-lab/problem-bank.js"
 );
 const { peekCap, stepLeaks } = await import("../math/fluency-lab/step-leak.js");
-const { adaptiveProblem } = await import("../math/fluency-lab/tutor-engine.js");
+const { adaptiveProblem, emptyTutor, evidence, recommendations, recordAnswer } = await import(
+  "../math/fluency-lab/tutor-engine.js"
+);
 const { STICKERS, cleanRewards, dailyGame, noteToday, streakOf, summarize } = await import(
   "../math/fluency-lab/rewards.js"
 );
@@ -110,6 +112,45 @@ assert.equal(
   dailyGame(lateEvening),
   "pick is stable through the local day",
 );
+
+// 6. Mastery: spacing is elapsed time, a stale checkup miss fades, a hinted success only halves the review wait.
+const skill = ALL_SKILLS.find((entry) => entry.grade === 3 && entry.id === "mul-0-5");
+const tutor = emptyTutor();
+const night = new Date(2026, 9, 5, 23, 50).getTime();
+for (let i = 0; i < 7; i += 1)
+  recordAnswer(tutor, skill, { correct: true, independent: true, level: 1 }, night + i * 60000);
+recordAnswer(tutor, skill, { correct: true, independent: true, level: 1 }, night + 15 * 60000);
+assert.equal(
+  evidence(tutor, skill, night + 20 * 60000).secure,
+  false,
+  "one late-night sitting is not two days",
+);
+recordAnswer(tutor, skill, { correct: true, independent: true, level: 1 }, night + 25 * 3600000);
+assert.equal(
+  evidence(tutor, skill, night + 26 * 3600000).secure,
+  true,
+  "correct answers a day apart are spaced",
+);
+
+const checkup = emptyTutor();
+checkup.diagnostics[3] = { at: night, results: { [`3:${skill.id}`]: false } };
+const top = () =>
+  recommendations(checkup, 3, night + 30 * 3600000).find((entry) => entry.skill === skill);
+assert.equal(top().reason, "A useful next step from your checkup");
+for (let i = 0; i < 4; i += 1)
+  recordAnswer(checkup, skill, { correct: true, independent: true, level: 1 }, night + i * 3600000);
+assert.notEqual(
+  top().reason,
+  "A useful next step from your checkup",
+  "checkup miss fades once practice is going well",
+);
+
+const review = emptyTutor();
+review.records[`3:${skill.id}`] = { recent: [], interval: 14 };
+recordAnswer(review, skill, { correct: true, independent: false, level: 1 }, night);
+assert.equal(review.records[`3:${skill.id}`].interval, 7, "hinted success halves the interval");
+recordAnswer(review, skill, { correct: false, independent: true, level: 1 }, night);
+assert.equal(review.records[`3:${skill.id}`].interval, 1, "an independent miss rechecks soon");
 
 console.log(
   "fluency audit fixes: mixed numbers, answer-free peeks, level-0 variety, zero signs, streak rewards hold",
