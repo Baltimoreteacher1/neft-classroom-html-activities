@@ -1,3 +1,4 @@
+import { likelyMistake } from "./mistake-notes.js";
 import { ALL_SKILLS, generateProblem, getGrade, seededRandom } from "./problem-bank.js";
 
 export const DAY = 86400000;
@@ -121,6 +122,8 @@ export function rememberMistake(tutor, skill, item, submitted, now = Date.now())
 }
 
 export function feedbackFor(skill, item, raw) {
+  const slip = likelyMistake(item, raw);
+  if (slip) return slip;
   const submitted = Number(String(raw).replaceAll(",", "").replace("−", "-"));
   const answer = Number(item.answers[0]);
   if (Number.isFinite(submitted) && Number.isFinite(answer) && answer !== 0 && submitted === -answer) return "The size matches. Check the sign: which direction or sign does this operation require?";

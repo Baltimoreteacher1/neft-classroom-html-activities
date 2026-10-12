@@ -21,6 +21,7 @@ import { STRATEGIES, TEACH_BACK, tipOfDay } from "./strategies.js";
 import { t } from "./i18n.js";
 import { buddySvg } from "./buddy.js";
 import { canSpeak, speak } from "./speech.js";
+import { likelyMistake } from "./mistake-notes.js";
 import { peekCap } from "./step-leak.js";
 import { handleModelInput, handleModelTap, interactivePicture, mathText, stepsBlock, trailPicture } from "./trail-pictures.js";
 
@@ -285,7 +286,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
             ${round.miss ? "" : liveModel(item)}
             ${
               round.miss
-                ? `<div class="tr-help"><p class="tr-miss-title">${esc(t(words.miss))}</p><div class="tr-help-body">${peekCap(item) > 0 ? stepsBlock(steps, peekCap(item), { id: "miss-steps" }) : `<p class="tr-tip">${mathText(item.hint)}</p>`}</div><p class="tr-retype">${esc(t(words.retype))}</p></div>`
+                ? `<div class="tr-help"><p class="tr-miss-title">${esc(t(words.miss))}</p>${round.note ? `<p class="tr-mistake-note">${esc(round.note)}</p>` : ""}<div class="tr-help-body">${peekCap(item) > 0 ? stepsBlock(steps, peekCap(item), { id: "miss-steps" }) : `<p class="tr-tip">${mathText(item.hint)}</p>`}</div><p class="tr-retype">${esc(t(words.retype))}</p></div>`
                 : ""
             }
           </div>
@@ -343,6 +344,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
         round.queue.push({ item: freshLike(current.item), review: true });
     }
     round.miss = true;
+    round.note = likelyMistake(current.item, value);
     round.missTries = 0;
     round.peek = 0;
     saveTrail(data);

@@ -48,3 +48,7 @@ Every guided step says what to do and why, in plain words. `detail-steps.js` wri
 ## Comfort and keepsakes
 
 The header has a Reading font switch (Lexend, more letter and line spacing) and an optional Sound switch (soft chimes for a right answer or a finished game; nothing plays for a wrong answer; off by default). The Progress area can print a Certificate of Achievement with the learner's rank, trail stops, stars, and stickers, in English or Spanish.
+
+## Answer-free steps and wrong-answer notes
+
+`step-leak.js` (`peekCap`) decides how many guided steps can show before one states the answer; "Show a step", the trail miss screen, Tricky Facts, Mystery Picture and the post-game review all use it, and `tools/fluency-audit-fixes.test.mjs` fails if any of the 80 skills leaks. A step that is only a list ("Factors of 48: 1, 2, 3…") counts as a search space, not an answer. When a problem has no safe step the hint shows instead. After a trail miss the learner sees the safe steps, then a fresh problem of the same kind returns as the "one more look". `mistake-notes.js` adds a one-line note on the likely slip (adding instead of subtracting, a reversed order, one group off, a place-value slip); it never contains a number. Mixed numbers ("1 5/12") are read as mixed numbers. A practice day counts for any finished practice set, trail round or game, and earned streak stickers stay earned (`bestStreak`).

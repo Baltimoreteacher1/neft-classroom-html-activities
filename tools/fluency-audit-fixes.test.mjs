@@ -15,6 +15,7 @@ Object.defineProperty(globalThis, "window", { configurable: true, value: globalT
 const { ALL_SKILLS, generateProblem, seededRandom, validateAnswer } = await import(
   "../math/fluency-lab/problem-bank.js"
 );
+const { likelyMistake } = await import("../math/fluency-lab/mistake-notes.js");
 const { peekCap, stepLeaks } = await import("../math/fluency-lab/step-leak.js");
 const { adaptiveProblem, emptyTutor, evidence, recommendations, recordAnswer } = await import(
   "../math/fluency-lab/tutor-engine.js"
@@ -151,6 +152,37 @@ recordAnswer(review, skill, { correct: true, independent: false, level: 1 }, nig
 assert.equal(review.records[`3:${skill.id}`].interval, 7, "hinted success halves the interval");
 recordAnswer(review, skill, { correct: false, independent: true, level: 1 }, night);
 assert.equal(review.records[`3:${skill.id}`].interval, 1, "an independent miss rechecks soon");
+
+// 7. Wrong-answer notes name the likely slip and never contain a number, so they cannot give the answer away.
+const probe = (question, answer) => ({
+  kind: "number",
+  question,
+  answers: [String(answer)],
+  displayAnswer: String(answer),
+});
+assert.match(likelyMistake(probe("12 − 5 = ?", 7), "17"), /together/);
+assert.match(likelyMistake(probe("6 × 7 = ?", 42), "13"), /adds/);
+assert.match(likelyMistake(probe("56 ÷ 7 = ?", 8), "49"), /take|group/i);
+assert.match(likelyMistake(probe("8 + 5 = ?", 13), "3"), /apart/);
+assert.match(likelyMistake(probe("48 + 25 = ?", 73), "83"), /place values/);
+assert.equal(likelyMistake(probe("12 − 5 = ?", 7), "7"), "", "no note for a right answer");
+assert.equal(
+  likelyMistake({ kind: "fraction", question: "1/2 + 1/3 = ?", answers: ["5/6"] }, "2/5"),
+  "",
+);
+for (const skill of ALL_SKILLS) {
+  for (let i = 0; i < 40; i += 1) {
+    const item = generateProblem(skill, seededRandom(i + 5));
+    for (const wrong of [
+      Number(item.answers[0]) + 1,
+      Number(item.answers[0]) + 10,
+      Number(item.answers[0]) * 2,
+    ]) {
+      const note = likelyMistake(item, String(wrong));
+      assert.doesNotMatch(note, /\d/, `${skill.id}: ${note}`);
+    }
+  }
+}
 
 console.log(
   "fluency audit fixes: mixed numbers, answer-free peeks, level-0 variety, zero signs, streak rewards hold",
