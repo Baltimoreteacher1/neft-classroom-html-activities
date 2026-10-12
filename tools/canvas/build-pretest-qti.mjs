@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import { execSync } from "child_process";
 /**
  * build-pretest-qti.mjs — convert the 10 unit pre-tests into ONE native Canvas
  * quiz package (QTI .zip): a "Unit N Pre-Test" quiz per unit, item-scored, in a
@@ -20,10 +19,11 @@ import { execSync } from "child_process";
  * Output: <outDir|canvas-packages>/neft-pretest-quizzes.zip
  * Import: Canvas → Settings → Import Course Content → "QTI .zip file".
  */
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 import vm from "vm";
+import { zipStore } from "../../assets/lib/zip-store.js";
 import { assessmentMeta, LETTERS, qtiAssessment, xml } from "./lib/qti.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -236,7 +236,26 @@ ${resources.join("\n")}
 mkdirSync(outDir, { recursive: true });
 const outFile = resolve(outDir, "neft-pretest-quizzes.zip");
 rmSync(outFile, { force: true });
-execSync(`cd "${stage}" && zip -r -q -X "${outFile}" . -x ".*"`);
+// Packaged with the repo's own zip writer, not a system `zip`: Cloudflare's build
+// image has no `zip`, so this step failed on every deploy ("zip: not found") and
+// the pre-test quiz pack never shipped. The writer is deterministic (fixed date,
+// sorted entries), so the package is also byte-stable between builds.
+const isDirectory = (path) => {
+  try {
+    readdirSync(path);
+    return true;
+  } catch {
+    return false;
+  }
+};
+const entries = {};
+for (const rel of readdirSync(stage, { recursive: true }).sort()) {
+  if (rel.split("/").some((segment) => segment.startsWith("."))) continue; // `zip -x ".*"`
+  const full = resolve(stage, rel);
+  if (isDirectory(full)) continue; // directories carry no entry of their own
+  entries[rel] = readFileSync(full);
+}
+writeFileSync(outFile, zipStore(entries));
 rmSync(stage, { recursive: true, force: true });
 
 const total = built.reduce((n, b) => n + b.questions, 0);

@@ -100,6 +100,11 @@
       "file": "tools/test-scope.test.mjs",
       "targets": "tmpdir",
       "reason": "every write (fixture tests, data files, the recorded manifest, the changed-files list) lands under mkdtempSync(join(tmpdir(), 'test-scope-')); the throwaway repo's GIT_* variables are stripped so it can never reach this repository's index, and the test asserts the caller's index is untouched"
+    },
+    {
+      "file": "tools/pretest-qti-no-system-zip.test.mjs",
+      "targets": "tmpdir",
+      "reason": "the builder is run with an explicit output directory under mkdtempSync(join(tmpdir(), 'pretest-qti-')); its staging folder and the zip land there and the directory is removed afterwards; nothing is written into the repository"
     }
   ]
 }
