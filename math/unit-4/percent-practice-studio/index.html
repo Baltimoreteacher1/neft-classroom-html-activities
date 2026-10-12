@@ -876,6 +876,70 @@
       gap: 10px;
     }
 
+    /* Two-box answer rows (Tab 1) and wide tables (Tab 3) */
+    .dual-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 18px 0;
+    }
+    .dual-grid > div {
+      background: var(--surface-soft);
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .table-scroll {
+      position: relative; /* contains the absolutely-positioned .sr-only labels so they cannot widen the page */
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .table-scroll .clean-ratio-table {
+      min-width: 560px;
+    }
+
+    /* After a problem is solved: next-step button, all-done banner, quiz results */
+    .next-btn {
+      display: flex;
+      margin-top: 10px;
+    }
+    .complete-banner {
+      background: var(--green-tint);
+      border: 2px solid var(--green);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      color: #065F46;
+      font-weight: 700;
+    }
+    .complete-banner[hidden],
+    .results-card[hidden] {
+      display: none;
+    }
+    .results-card {
+      margin-top: 18px;
+      background: var(--surface);
+      border: 2px solid var(--navy);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-card);
+    }
+    .results-card h3 {
+      margin: 0 0 6px 0;
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      color: var(--navy);
+    }
+    .results-card p {
+      margin: 0 0 12px 0;
+    }
+    .review-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 8px 0 14px;
+    }
+
     @media (max-width: 860px) {
       .two-col-stage,
       .guided-steps-grid {
@@ -887,7 +951,31 @@
       }
     }
 
+    @media (max-width: 560px) {
+      .app-header {
+        padding: 10px 14px;
+      }
+      .main-container {
+        padding: 16px 12px 36px;
+      }
+      .stage-card {
+        padding: 16px;
+      }
+      .dual-grid {
+        grid-template-columns: 1fr;
+      }
+      .clean-ratio-table td.row-label {
+        width: auto;
+      }
+      .guided-steps-grid[style] {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
     @media print {
+      .next-btn, .results-card button {
+        display: none !important;
+      }
       .app-header, .tab-bar, .speak-btn, .no-print {
         display: none !important;
       }
@@ -982,6 +1070,10 @@
        MAIN WORKSPACE
        ======================================================================== -->
   <main class="main-container">
+
+    <div id="complete-banner" class="complete-banner" role="status" hidden>
+      🎉 All five sections are complete! Print this page or show your teacher what you finished.
+    </div>
 
     <!-- ======================================================================
          TAB 1: WHAT IS A PERCENT? (100-GRID EXPLORER + 8 STEP-BY-STEP TASKS)
@@ -1187,6 +1279,8 @@
       <div class="stage-card" id="t5-stage-card">
         <!-- Populated dynamically with one clean quiz question at a time -->
       </div>
+
+      <div id="t5-results" class="results-card" role="region" aria-label="Mastery check results" hidden></div>
     </section>
 
   </main>
@@ -1222,8 +1316,13 @@
         solved3: {},
         solved4: {},
         solved5: {},
-        quizChoice: {}
+        quizChoice: {},
+        quizFirst: {},
+        hasSavedPosition: false
       };
+
+      const SOLVED_KEYS = ['solved1', 'solved2', 'solved3', 'solved4', 'solved5'];
+      const IDX_KEYS = ['idx1', 'idx2', 'idx3', 'idx4', 'idx5'];
 
       function loadState() {
         try {
@@ -1232,26 +1331,42 @@
           const d = JSON.parse(raw);
           if (d && typeof d === 'object') {
             state.showEs = !!d.showEs;
-            state.solved1 = d.solved1 || {};
-            state.solved2 = d.solved2 || {};
-            state.solved3 = d.solved3 || {};
-            state.solved4 = d.solved4 || {};
-            state.solved5 = d.solved5 || {};
+            SOLVED_KEYS.forEach((k) => { state[k] = d[k] || {}; });
+            Object.keys(state.solved2).forEach((k) => {
+              if (k.startsWith('rand')) delete state.solved2[k];
+            });
             state.quizChoice = d.quizChoice || {};
+            state.quizFirst = d.quizFirst || {};
+            IDX_KEYS.forEach((k) => {
+              if (Number.isInteger(d[k]) && d[k] >= 0) state[k] = d[k];
+            });
+            if (Number.isInteger(d.activeTab) && d.activeTab >= 1 && d.activeTab <= 5) state.activeTab = d.activeTab;
+            state.hasSavedPosition = Number.isInteger(d.idx1);
           }
         } catch (e) {}
       }
 
       function saveState() {
         try {
+          const solved2 = {};
+          Object.keys(state.solved2).forEach((k) => {
+            if (!k.startsWith('rand')) solved2[k] = true;
+          });
           localStorage.setItem(STORAGE_KEY, JSON.stringify({
             showEs: state.showEs,
             solved1: state.solved1,
-            solved2: state.solved2,
+            solved2,
             solved3: state.solved3,
             solved4: state.solved4,
             solved5: state.solved5,
-            quizChoice: state.quizChoice
+            quizChoice: state.quizChoice,
+            quizFirst: state.quizFirst,
+            activeTab: state.activeTab,
+            idx1: state.idx1,
+            idx2: state.idx2,
+            idx3: state.idx3,
+            idx4: state.idx4,
+            idx5: state.idx5
           }));
         } catch (e) {}
       }
@@ -1261,6 +1376,49 @@
         if (el) {
           el.textContent = '';
           setTimeout(() => { el.textContent = msg; }, 25);
+        }
+      }
+
+      /* "9", "9.0", " 9 % ", "$750" and "1,000" all read as numbers. */
+      function parseNum(raw) {
+        const t = String(raw).replace(/[%$,\s]/g, '');
+        return /^(\d+\.?\d*|\.\d+)$/.test(t) ? Number(t) : NaN;
+      }
+
+      /* Wrong tries per problem this visit: the first miss gets a nudge, the worked answer waits for repeat misses. */
+      const misses = {};
+      function bumpMiss(id) {
+        misses[id] = (misses[id] || 0) + 1;
+        return misses[id];
+      }
+
+      let justSolved = false;
+      function markSolved(map, id) {
+        map[id] = true;
+        justSolved = true;
+      }
+
+      /* "Next" button under the feedback of a solved problem; the last one hands off to the next section. */
+      function appendNext(fb, tab, len, render, onNext) {
+        if (!fb) return;
+        fb.querySelectorAll('.next-btn').forEach((x) => x.remove());
+        const idxKey = `idx${tab}`;
+        const last = !onNext && state[idxKey] === len - 1;
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'btn btn-teal btn-sm next-btn';
+        if (!last) b.textContent = tab === 5 ? 'Next question →' : 'Next problem →';
+        else b.textContent = tab < 5 ? `Continue to Section ${tab + 1} →` : 'See my results →';
+        b.addEventListener('click', () => {
+          if (onNext) onNext();
+          else if (!last) { state[idxKey] += 1; render(); }
+          else if (tab < 5) selectTab(tab + 1, false);
+          else renderResults(true);
+        });
+        fb.appendChild(b);
+        if (justSolved) {
+          b.focus();
+          justSolved = false;
         }
       }
 
@@ -1304,6 +1462,7 @@
         tabPanels.forEach((p, i) => {
           p.classList.toggle('active', i + 1 === state.activeTab);
         });
+        saveState();
       }
 
       tabBtns.forEach((b, idx) => {
@@ -1312,6 +1471,12 @@
           if (e.key === 'ArrowRight') {
             e.preventDefault();
             selectTab(tabBtns[(idx + 1) % tabBtns.length].dataset.tab, true);
+          } else if (e.key === 'Home') {
+            e.preventDefault();
+            selectTab(1, true);
+          } else if (e.key === 'End') {
+            e.preventDefault();
+            selectTab(tabBtns.length, true);
           } else if (e.key === 'ArrowLeft') {
             e.preventDefault();
             selectTab(tabBtns[(idx - 1 + tabBtns.length) % tabBtns.length].dataset.tab, true);
@@ -1338,6 +1503,9 @@
           badge.textContent = done ? '✓' : String(i + 1);
         });
 
+        const banner = document.getElementById('complete-banner');
+        if (banner) banner.hidden = !checks.every(Boolean);
+
         saveState();
       }
 
@@ -1351,6 +1519,7 @@
           btn.className = `step-dot ${idx === activeIdx ? 'active' : ''} ${isSolved ? 'solved' : ''}`;
           btn.textContent = isSolved ? `${idx + 1} ✓` : String(idx + 1);
           btn.setAttribute('aria-label', `Problem ${idx + 1}${isSolved ? ' completed' : ''}`);
+          if (idx === activeIdx) btn.setAttribute('aria-current', 'step');
           btn.addEventListener('click', () => onSelect(idx));
           wrap.appendChild(btn);
         });
@@ -1592,15 +1761,15 @@
           `;
         } else if (task.type === 'dual') {
           bodyHtml = `
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 18px 0;">
-              <div style="background: var(--surface-soft); padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+            <div class="dual-grid">
+              <div>
                 <label for="t1-inp-a" style="display: block; font-weight: 700; color: var(--navy); font-size: 0.9rem; margin-bottom: 8px;">${task.labelA}</label>
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <input type="text" id="t1-inp-a" class="num-input ${isDone ? 'ok' : ''}" value="${isDone ? task.ansA : ''}" placeholder="?">
                   <strong style="color: var(--navy);">${task.suffixA}</strong>
                 </div>
               </div>
-              <div style="background: var(--surface-soft); padding: 14px; border-radius: 10px; border: 1px solid var(--border);">
+              <div>
                 <label for="t1-inp-b" style="display: block; font-weight: 700; color: var(--navy); font-size: 0.9rem; margin-bottom: 8px;">${task.labelB}</label>
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <input type="text" id="t1-inp-b" class="num-input ${isDone ? 'ok' : ''}" value="${isDone ? task.ansB : ''}" placeholder="?">
@@ -1626,10 +1795,13 @@
           <div id="t1-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">${isDone ? task.explain : ''}</div>
         `;
 
+        if (isDone) appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
+
         // Wire events
         if (task.type === 'mc') {
           card.querySelectorAll('[data-t1-mc]').forEach((btn) => {
             btn.addEventListener('click', () => {
+              if (state.solved1[task.id]) return;
               const idx = Number(btn.dataset.t1Mc);
               const fb = document.getElementById('t1-fb');
               card.querySelectorAll('[data-t1-mc]').forEach(b => b.classList.remove('correct', 'wrong'));
@@ -1637,9 +1809,10 @@
                 btn.classList.add('correct');
                 fb.className = 'feedback-box show ok';
                 fb.textContent = task.explain;
-                state.solved1[task.id] = true;
+                markSolved(state.solved1, task.id);
                 renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (ni) => { state.idx1 = ni; renderT1Task(); });
                 updateProgressHeader();
+                appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
               } else {
                 btn.classList.add('wrong');
                 fb.className = 'feedback-box show err';
@@ -1656,21 +1829,27 @@
             if (task.type === 'single') {
               const inp = document.getElementById('t1-inp-single');
               const val = inp.value.replace(/%/g, '').replace(/\s+/g, '').trim();
-              const ok = val === task.answer || (task.altAnswer && val === task.altAnswer);
+              if (!val) {
+                fb.className = 'feedback-box show warn';
+                fb.textContent = 'Type your answer in the box, then press Check Answer.';
+                return;
+              }
+              const ok = task.answer.includes('/') ? val === task.answer : parseNum(val) === Number(task.answer);
               inp.classList.toggle('ok', ok);
               inp.classList.toggle('err', !ok);
               fb.className = `feedback-box show ${ok ? 'ok' : 'err'}`;
               fb.textContent = ok ? task.explain : `Check your answer. Hint: ${task.hint}`;
               if (ok) {
-                state.solved1[task.id] = true;
+                markSolved(state.solved1, task.id);
                 renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (ni) => { state.idx1 = ni; renderT1Task(); });
                 updateProgressHeader();
+                appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
               }
             } else if (task.type === 'dual') {
               const inpA = document.getElementById('t1-inp-a');
               const inpB = document.getElementById('t1-inp-b');
-              const okA = inpA.value.replace(/%/g, '').trim() === task.ansA;
-              const okB = inpB.value.replace(/%/g, '').trim() === task.ansB;
+              const okA = parseNum(inpA.value) === Number(task.ansA);
+              const okB = parseNum(inpB.value) === Number(task.ansB);
               inpA.classList.toggle('ok', okA);
               inpA.classList.toggle('err', !okA);
               inpB.classList.toggle('ok', okB);
@@ -1678,9 +1857,10 @@
               if (okA && okB) {
                 fb.className = 'feedback-box show ok';
                 fb.textContent = task.explain;
-                state.solved1[task.id] = true;
+                markSolved(state.solved1, task.id);
                 renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (ni) => { state.idx1 = ni; renderT1Task(); });
                 updateProgressHeader();
+                appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
               } else {
                 fb.className = 'feedback-box show err';
                 fb.textContent = `Check both boxes. Hint: ${task.hint}`;
@@ -1739,7 +1919,7 @@
         const targetPct = p.part * factor;
         const isDone = !!state.solved2[p.id];
 
-        renderDots('t2-dots', T2_PROBLEMS, state.idx2, state.solved2, (ni) => {
+        renderDots('t2-dots', T2_PROBLEMS, currentT2.id.startsWith('rand') ? -1 : state.idx2, state.solved2, (ni) => {
           state.idx2 = ni;
           currentT2 = T2_PROBLEMS[ni];
           renderT2Problem();
@@ -1880,9 +2060,15 @@
         });
 
         function checkT2() {
-          const fVal = Number(fInp.value.trim());
-          const nVal = Number(nInp.value.trim());
-          const pVal = Number(pInp.value.replace(/%/g, '').trim());
+          const fVal = parseNum(fInp.value);
+          const nVal = parseNum(nInp.value);
+          const pVal = parseNum(pInp.value);
+
+          if (Number.isNaN(fVal) && Number.isNaN(nVal) && Number.isNaN(pVal)) {
+            fb.className = 'feedback-box show warn';
+            fb.textContent = 'Type a number in each box, then press Check My Steps.';
+            return;
+          }
 
           const okF = fVal === factor;
           const okN = nVal === targetPct;
@@ -1896,27 +2082,31 @@
           pInp.classList.toggle('err', !okP);
 
           if (okF && okN && okP) {
-            state.solved2[p.id] = true;
+            markSolved(state.solved2, p.id);
             updateProgressHeader();
             renderT2Problem();
             announce(`Correct! ${p.part} out of ${p.whole} equals ${targetPct} percent.`);
             return;
           }
 
-          // Helpful misconception diagnostics
-          if (pVal === p.part && p.whole !== 100) {
-            fb.className = 'feedback-box show err';
-            fb.textContent = `Careful! ${p.part} is out of ${p.whole}, not out of 100. First multiply ${p.whole} × ${factor} = 100, then multiply ${p.part} × ${factor}.`;
-            return;
-          }
-          if (nVal === p.part + (100 - p.whole)) {
-            fb.className = 'feedback-box show err';
-            fb.textContent = `Remember: we scale ratios by MULTIPLYING, not adding ${100 - p.whole}. Multiply ${p.part} × ${factor}.`;
-            return;
-          }
-
+          // Nudge first; the worked numbers wait for repeat misses.
+          const n = bumpMiss(p.id);
           fb.className = 'feedback-box show err';
-          fb.textContent = `Check each step: Step 1 factor is ${factor} (because ${p.whole} × ${factor} = 100). Step 2 is ${p.part} × ${factor} = ${targetPct}.`;
+          if (pVal === p.part && p.whole !== 100) {
+            fb.textContent = `Careful! ${p.part} is out of ${p.whole}, not out of 100. Scale the whole to 100 first, then scale the part by the same factor.`;
+          } else if (nVal === p.part + (100 - p.whole)) {
+            fb.textContent = 'Remember: we scale ratios by MULTIPLYING, not adding.';
+          } else if (!okF) {
+            fb.textContent = n < 2
+              ? `Step 1: how many ${p.whole}s fit into 100? Fix the red box and try again.`
+              : `Step 1: ${p.whole} × ${factor} = 100, so the scale factor is ${factor}.`;
+          } else if (!okN) {
+            fb.textContent = n < 3
+              ? `Good scale factor! Now multiply the part (${p.part}) by the same factor.`
+              : `Step 2: ${p.part} × ${factor} = ${targetPct}.`;
+          } else {
+            fb.textContent = 'Once the whole is 100, the part is the percent. Copy your Step 2 answer into Step 3.';
+          }
         }
 
         document.getElementById('t2-check-btn').addEventListener('click', checkT2);
@@ -1924,6 +2114,12 @@
           fb.className = 'feedback-box show warn';
           fb.textContent = `💡 Hint: Ask “How many ${p.whole}s fit into 100?” (${p.whole} × ${factor} = 100). Then multiply ${p.part} × ${factor}.`;
         });
+        if (isDone) {
+          appendNext(fb, 2, T2_PROBLEMS.length, () => {
+            currentT2 = T2_PROBLEMS[state.idx2];
+            renderT2Problem();
+          }, p.id.startsWith('rand') ? newRandomT2 : undefined);
+        }
         [fInp, nInp, pInp].forEach((inp) => {
           inp.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.isComposing) {
@@ -1944,10 +2140,14 @@
         currentT2 = T2_PROBLEMS[state.idx2];
         renderT2Problem();
       });
-      document.getElementById('t2-random-btn').addEventListener('click', () => {
+      function newRandomT2() {
         const wholes = [4, 5, 10, 20, 25, 50];
-        const whole = wholes[Math.floor(Math.random() * wholes.length)];
-        const part = Math.floor(Math.random() * (whole - 1)) + 1;
+        let whole;
+        let part;
+        do {
+          whole = wholes[Math.floor(Math.random() * wholes.length)];
+          part = Math.floor(Math.random() * (whole - 1)) + 1;
+        } while (currentT2.whole === whole && currentT2.part === part);
         currentT2 = {
           id: 'rand_' + Date.now(),
           title: `Random Practice Challenge (${part} out of ${whole})`,
@@ -1957,7 +2157,8 @@
           whole
         };
         renderT2Problem();
-      });
+      }
+      document.getElementById('t2-random-btn').addEventListener('click', newRandomT2);
 
       /* ----------------------------------------------------------------------
          TAB 3: RATIO TABLES & PERCENT BARS (8 CRYSTAL-CLEAR STEP-BY-STEP PROBLEMS)
@@ -2185,19 +2386,31 @@
           });
 
           function checkBar() {
-            const ok1 = Number(inpOne.value.replace(/%/g, '').trim()) === p.oneBlockPct;
-            const ok2 = Number(inpFin.value.replace(/%/g, '').trim()) === p.finalPct;
+            const ok1 = parseNum(inpOne.value) === p.oneBlockPct;
+            const ok2 = parseNum(inpFin.value) === p.finalPct;
             inpOne.classList.toggle('ok', ok1);
             inpOne.classList.toggle('err', !ok1);
             inpFin.classList.toggle('ok', ok2);
             inpFin.classList.toggle('err', !ok2);
             if (ok1 && ok2) {
-              state.solved3[p.id] = true;
+              markSolved(state.solved3, p.id);
               updateProgressHeader();
               renderT3Problem();
             } else {
+              const empty = !inpOne.value.trim() && !inpFin.value.trim();
+              const n = empty ? 0 : bumpMiss(p.id);
               fb.className = 'feedback-box show err';
-              fb.textContent = `Check your steps: 100% ÷ ${p.blocks} = ${p.oneBlockPct}% for 1 block. Then ${p.shadedBlocks} × ${p.oneBlockPct}% = ${p.finalPct}%.`;
+              if (empty) {
+                fb.textContent = 'Type a number in each box, then check.';
+              } else if (!ok1) {
+                fb.textContent = n < 2
+                  ? `Think: the whole bar is 100%, split into ${p.blocks} equal blocks. What percent is 1 block?`
+                  : `100% ÷ ${p.blocks} = ${p.oneBlockPct}% for 1 block.`;
+              } else {
+                fb.textContent = n < 3
+                  ? `Good: 1 block is ${p.oneBlockPct}%. Now multiply by the ${p.shadedBlocks} shaded blocks.`
+                  : `${p.shadedBlocks} × ${p.oneBlockPct}% = ${p.finalPct}%.`;
+              }
             }
           }
 
@@ -2240,7 +2453,7 @@
             </div>
 
             <!-- Spacious 3-Column Bridge Ratio Table -->
-            <table class="clean-ratio-table" aria-label="Bridge Ratio Table">
+            <div class="table-scroll"><table class="clean-ratio-table" aria-label="Bridge Ratio Table">
               <thead>
                 <tr>
                   <th>Ratio Row</th>
@@ -2270,7 +2483,7 @@
                   <td><strong style="color: var(--teal); font-size: 1.2rem;">100</strong></td>
                 </tr>
               </tbody>
-            </table>
+            </table></div>
 
             <div style="background: var(--surface-soft); border: 1.5px solid var(--border); border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
               <strong style="color: var(--navy); font-size: 1.02rem;">Final Answer: What percent is ${p.part} out of ${p.whole}?</strong>
@@ -2296,9 +2509,9 @@
           const fb = document.getElementById('t3-fb');
 
           function checkBridge() {
-            const okM = Number(inpMid.value.trim()) === p.midPart;
-            const okF = Number(inpFin.value.trim()) === p.finalPct;
-            const okP = Number(inpPct.value.replace(/%/g, '').trim()) === p.finalPct;
+            const okM = parseNum(inpMid.value) === p.midPart;
+            const okF = parseNum(inpFin.value) === p.finalPct;
+            const okP = parseNum(inpPct.value) === p.finalPct;
             inpMid.classList.toggle('ok', okM);
             inpMid.classList.toggle('err', !okM);
             inpFin.classList.toggle('ok', okF);
@@ -2307,12 +2520,26 @@
             inpPct.classList.toggle('err', !okP);
 
             if (okM && okF && okP) {
-              state.solved3[p.id] = true;
+              markSolved(state.solved3, p.id);
               updateProgressHeader();
               renderT3Problem();
             } else {
+              const empty = !inpMid.value.trim() && !inpFin.value.trim() && !inpPct.value.trim();
+              const n = empty ? 0 : bumpMiss(p.id);
               fb.className = 'feedback-box show err';
-              fb.textContent = `Check each column: ${p.part} ÷ ${p.divBy} = ${p.midPart} in Column 2. Then ${p.midPart} × ${p.multBy} = ${p.finalPct} in Column 3 (${p.finalPct}%).`;
+              if (empty) {
+                fb.textContent = 'Type a number in each box, then check.';
+              } else if (!okM) {
+                fb.textContent = n < 2
+                  ? `Column 2: divide the part (${p.part}) by ${p.divBy}.`
+                  : `${p.part} ÷ ${p.divBy} = ${p.midPart} in Column 2.`;
+              } else if (!okF) {
+                fb.textContent = n < 3
+                  ? `Column 3: multiply your Column 2 part by ${p.multBy}.`
+                  : `${p.midPart} × ${p.multBy} = ${p.finalPct} in Column 3.`;
+              } else {
+                fb.textContent = 'Out of 100, the part is the percent. Copy your Column 3 answer into the Final Answer box.';
+              }
             }
           }
 
@@ -2330,7 +2557,7 @@
             <p style="font-size: 1.12rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${p.stem}</p>
             <p class="es-text">${p.stemEs}</p>
 
-            <table class="clean-ratio-table" aria-label="Camp Sign-Ups Ratio Table">
+            <div class="table-scroll"><table class="clean-ratio-table" aria-label="Camp Sign-Ups Ratio Table">
               <thead>
                 <tr>
                   <th>Camp Activity</th>
@@ -2365,7 +2592,7 @@
                   <td><strong>100%</strong> (56% + 28% + 16%)</td>
                 </tr>
               </tbody>
-            </table>
+            </table></div>
 
             <div style="display: flex; gap: 10px; margin-top: 18px;">
               <button type="button" class="btn btn-primary" id="t3-check-btn">Check Camp Table</button>
@@ -2378,19 +2605,28 @@
 
           const fb = document.getElementById('t3-fb');
           document.getElementById('t3-check-btn').addEventListener('click', () => {
-            const c1 = Number(document.getElementById('t3-camp-1').value.replace(/%/g, '').trim()) === 56;
-            const c2a = Number(document.getElementById('t3-camp-2a').value.trim()) === 28;
-            const c2b = Number(document.getElementById('t3-camp-2b').value.replace(/%/g, '').trim()) === 28;
-            const c3a = Number(document.getElementById('t3-camp-3a').value.trim()) === 16;
-            const c3b = Number(document.getElementById('t3-camp-3b').value.replace(/%/g, '').trim()) === 16;
+            const camp = [['t3-camp-1', 56], ['t3-camp-2a', 28], ['t3-camp-2b', 28], ['t3-camp-3a', 16], ['t3-camp-3b', 16]];
+            let allOk = true;
+            let anyTyped = false;
+            camp.forEach(([id, want]) => {
+              const el = document.getElementById(id);
+              const ok = parseNum(el.value) === want;
+              if (el.value.trim()) anyTyped = true;
+              el.classList.toggle('ok', ok);
+              el.classList.toggle('err', !ok);
+              if (!ok) allOk = false;
+            });
 
-            if (c1 && c2a && c2b && c3a && c3b) {
-              state.solved3[p.id] = true;
+            if (allOk) {
+              markSolved(state.solved3, p.id);
               updateProgressHeader();
               renderT3Problem();
             } else {
+              const n = anyTyped ? bumpMiss(p.id) : 0;
               fb.className = 'feedback-box show err';
-              fb.textContent = 'Multiply each camper count by 4: Canoeing = 56%, Archery = 7 × 4 = 28%, and Crafts = 4 × 4 = 16%.';
+              if (!anyTyped) fb.textContent = 'Type a number in each box, then check.';
+              else if (n < 2) fb.textContent = 'Multiply each camper count by 4. Fix the red boxes and try again.';
+              else fb.textContent = 'Canoeing: 14 × 4 = 56. Archery: 7 × 4 = 28. Crafts: 4 × 4 = 16.';
             }
           });
           document.getElementById('t3-hint-btn').addEventListener('click', () => {
@@ -2398,6 +2634,7 @@
             fb.textContent = `💡 Hint: ${p.hint}`;
           });
         }
+        if (isDone) appendNext(document.getElementById('t3-fb'), 3, T3_PROBLEMS.length, renderT3Problem);
       }
 
       document.getElementById('t3-prev-btn').addEventListener('click', () => {
@@ -2457,7 +2694,7 @@
           question: 'By how many percentage points was Dev’s free-throw percent higher than Kira’s?',
           stemEs: 'Kira encestó 36 de 60 tiros libres y Dev encestó 32 de 40. ¿Por cuántos puntos porcentuales fue mayor el porcentaje de Dev?',
           ans: '20',
-          unit: '% higher',
+          unit: 'percentage points',
           hint: 'Find each player’s percent first (Kira: 36/60 = 6/10 = 60%; Dev: 32/40 = 8/10 = 80%), then subtract.',
           explain: '✓ Correct! Dev made 80% (32/40) and Kira made 60% (36/60), so Dev’s rate was 80% − 60% = 20 percentage points higher.'
         },
@@ -2550,18 +2787,24 @@
 
         const inp = document.getElementById('t4-inp');
         const fb = document.getElementById('t4-fb');
+        if (isDone) appendNext(fb, 4, T4_PROBLEMS.length, renderT4Problem);
 
         function checkT4() {
-          const val = inp.value.replace(/%/g, '').trim();
-          const ok = val === p.ans;
+          if (!inp.value.trim()) {
+            fb.className = 'feedback-box show warn';
+            fb.textContent = 'Type your answer in the box, then press Check Answer.';
+            return;
+          }
+          const ok = parseNum(inp.value) === Number(p.ans);
           inp.classList.toggle('ok', ok);
           inp.classList.toggle('err', !ok);
           fb.className = `feedback-box show ${ok ? 'ok' : 'err'}`;
           fb.textContent = ok ? p.explain : `Not quite yet. Hint: ${p.hint}`;
           if (ok) {
-            state.solved4[p.id] = true;
+            markSolved(state.solved4, p.id);
             updateProgressHeader();
             renderDots('t4-dots', T4_PROBLEMS, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4Problem(); });
+            appendNext(fb, 4, T4_PROBLEMS.length, renderT4Problem);
           }
         }
 
@@ -2738,6 +2981,52 @@
         }
       ];
 
+      const QUIZ_REVIEW_TAB = { q1: 1, q2: 2, q3: 1, q4: 1, q5: 4, q6: 2, q7: 2, q8: 3, q9: 4, q10: 4 };
+
+      function resetQuiz() {
+        state.quizChoice = {};
+        state.quizFirst = {};
+        state.solved5 = {};
+        state.idx5 = 0;
+        updateProgressHeader();
+        renderT5Question();
+      }
+
+      /* Results appear once every question has been answered at least once. */
+      function renderResults(scroll) {
+        const box = document.getElementById('t5-results');
+        const unanswered = QUIZ_QUESTIONS.findIndex((q) => !(q.id in state.quizFirst));
+        if (unanswered !== -1) {
+          box.hidden = true;
+          if (scroll) {
+            state.idx5 = unanswered;
+            renderT5Question();
+          }
+          return;
+        }
+        const firstTry = QUIZ_QUESTIONS.filter((q) => state.quizFirst[q.id]).length;
+        const missed = QUIZ_QUESTIONS.filter((q) => !state.quizFirst[q.id]);
+        let verdict = 'Keep practicing: work back through the sections below, then retake the quiz.';
+        if (firstTry >= 9) verdict = 'Mastery! You are ready to move on.';
+        else if (firstTry >= 7) verdict = 'Almost there. Review the skills below, then try again.';
+        const review = missed.length
+          ? `<strong>Skills to review:</strong>
+             <div class="review-list">${missed.map((q) => `<button type="button" class="btn btn-sm" data-review-tab="${QUIZ_REVIEW_TAB[q.id]}">${q.skill} → Section ${QUIZ_REVIEW_TAB[q.id]}</button>`).join('')}</div>`
+          : '<p><strong>No misses: every question was right on the first try.</strong></p>';
+        box.innerHTML = `
+          <h3>Your results: ${firstTry} of 10 right on the first try</h3>
+          <p>${verdict}</p>
+          ${review}
+          <button type="button" class="btn btn-sm" id="t5-retake-btn">Retake the quiz</button>
+        `;
+        box.hidden = false;
+        box.querySelectorAll('[data-review-tab]').forEach((b) => {
+          b.addEventListener('click', () => selectTab(Number(b.dataset.reviewTab), false));
+        });
+        document.getElementById('t5-retake-btn').addEventListener('click', resetQuiz);
+        if (scroll) box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
       function renderT5Question() {
         const q = QUIZ_QUESTIONS[state.idx5];
         const chosen = state.quizChoice[q.id];
@@ -2775,20 +3064,26 @@
 
           <div class="choice-list">${choicesHtml}</div>
 
-          <div class="feedback-box ${hasChoice ? 'show ' + (isOk ? 'ok' : 'err') : ''}" role="status">
+          <div id="t5-fb" class="feedback-box ${hasChoice ? 'show ' + (isOk ? 'ok' : 'err') : ''}" role="status">
             ${hasChoice ? q.feedback[chosen] : ''}
           </div>
         `;
 
         stage.querySelectorAll('[data-q-choice]').forEach((btn) => {
           btn.addEventListener('click', () => {
+            if (state.solved5[q.id]) return;
             const cIdx = Number(btn.dataset.qChoice);
+            if (!(q.id in state.quizFirst)) state.quizFirst[q.id] = (cIdx === q.correct);
+            if (cIdx === q.correct) justSolved = true;
             state.quizChoice[q.id] = cIdx;
             state.solved5[q.id] = (cIdx === q.correct);
             updateProgressHeader();
             renderT5Question();
           });
         });
+
+        if (isOk) appendNext(document.getElementById('t5-fb'), 5, QUIZ_QUESTIONS.length, renderT5Question);
+        renderResults(false);
       }
 
       document.getElementById('t5-prev-btn').addEventListener('click', () => {
@@ -2799,18 +3094,34 @@
         state.idx5 = (state.idx5 + 1) % QUIZ_QUESTIONS.length;
         renderT5Question();
       });
-      document.getElementById('t5-reset-btn').addEventListener('click', () => {
-        state.quizChoice = {};
-        state.solved5 = {};
-        state.idx5 = 0;
-        updateProgressHeader();
-        renderT5Question();
-      });
+      document.getElementById('t5-reset-btn').addEventListener('click', resetQuiz);
 
       /* ----------------------------------------------------------------------
          BOOT
          ---------------------------------------------------------------------- */
       loadState();
+
+      // Resume where the student left off; progress saved before positions were stored opens on the first unsolved item.
+      const firstUnsolved = (items, map) => {
+        const i = items.findIndex((it) => !map[it.id]);
+        return i === -1 ? 0 : i;
+      };
+      if (!state.hasSavedPosition) {
+        state.idx1 = firstUnsolved(T1_TASKS, state.solved1);
+        state.idx2 = firstUnsolved(T2_PROBLEMS, state.solved2);
+        state.idx3 = firstUnsolved(T3_PROBLEMS, state.solved3);
+        state.idx4 = firstUnsolved(T4_PROBLEMS, state.solved4);
+        state.idx5 = firstUnsolved(QUIZ_QUESTIONS, state.solved5);
+      }
+      [['idx1', T1_TASKS], ['idx2', T2_PROBLEMS], ['idx3', T3_PROBLEMS], ['idx4', T4_PROBLEMS], ['idx5', QUIZ_QUESTIONS]].forEach(([k, arr]) => {
+        if (state[k] >= arr.length) state[k] = 0;
+      });
+      currentT2 = T2_PROBLEMS[state.idx2];
+      QUIZ_QUESTIONS.forEach((q) => {
+        if (state.solved5[q.id] && !(q.id in state.quizFirst)) state.quizFirst[q.id] = true;
+      });
+      selectTab(state.activeTab, false);
+
       if (state.showEs) {
         document.body.classList.add('show-es');
         esBtn.setAttribute('aria-pressed', 'true');
