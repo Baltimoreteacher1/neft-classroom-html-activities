@@ -104,14 +104,14 @@ const REQUIRED_MARKERS = [
     test: (h) => h.includes("help_modal_overlay") && h.includes("openHelpModalFromBtn"),
   },
   {
-    id: "family-single-path",
+    id: "family-route",
     test: (h) =>
-      // Decision "family-homework-single-path" in data/product-decisions.json:
-      // one path, no time choice, no minute labels, no Together stop.
-      !h.includes("hw-route-chooser") &&
-      !h.includes("data-route-mode") &&
-      !h.includes('class="tab-min"') &&
-      !h.includes("hw_time_remaining") &&
+      // Decision "family-homework-route-choices" in data/product-decisions.json:
+      // three explicit, bilingual paths with real stop/problem behavior.
+      h.includes('class="hw-route-chooser"') &&
+      ["quick", "core", "full"].every((mode) => h.includes(`data-route-mode="${mode}"`)) &&
+      h.includes("setHomeworkRoute") &&
+      h.includes("restoreHomeworkRoute") &&
       h.includes("goNextHomeworkStop"),
   },
   {

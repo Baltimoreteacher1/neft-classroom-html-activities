@@ -380,16 +380,115 @@ function initFamilyGames() {
   resetWyrGame();
 }
 
-/* ── Homework path ─────────────────────────────────────────────────────
-   One path for every family: every stop and every problem. */
-var HOMEWORK_PATH = { tabs: ['learn', 'words', 'check', 'play', 'done'], problemLimit: 6 };
+/* ── Family practice paths ──────────────────────────────────────────────
+   Each path is a complete, optional experience. Time values are estimates,
+   never timers; the student and family can pause or stop at any point. */
+var HOMEWORK_ROUTES = {
+  quick: { tabs: ['learn', 'check', 'done'], problemLimit: 2 },
+  core: { tabs: ['learn', 'words', 'check', 'done'], problemLimit: 6 },
+  full: { tabs: ['learn', 'words', 'check', 'play', 'done'], problemLimit: 6 }
+};
+
+function routeStorageKey() {
+  return 'hw_route_' + (window.LESSON_ID || location.pathname);
+}
 
 function activeHomeworkRoute() {
-  return HOMEWORK_PATH;
+  var id = document.body.dataset.homeworkRoute || 'core';
+  return HOMEWORK_ROUTES[id] || HOMEWORK_ROUTES.core;
+}
+
+function setHomeworkRoute(mode, options) {
+  options = options || {};
+  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'core';
+  var route = HOMEWORK_ROUTES[mode];
+  document.body.dataset.homeworkRoute = mode;
+
+  document.querySelectorAll('[data-route-mode]').forEach(function (btn) {
+    var active = btn.dataset.routeMode === mode;
+    btn.classList.toggle('is-active', active);
+    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+
+  var visibleIndex = 0;
+  document.querySelectorAll('.homework-tab-btn').forEach(function (btn) {
+    var included = route.tabs.indexOf(btn.dataset.tab) !== -1;
+    btn.hidden = !included;
+    if (!included) {
+      btn.setAttribute('aria-selected', 'false');
+      btn.removeAttribute('aria-current');
+      return;
+    }
+    visibleIndex++;
+    var step = btn.querySelector('.tab-step');
+    if (step) step.textContent = String(visibleIndex);
+    var labelEn = btn.querySelector('.tab-en');
+    var labelEs = btn.querySelector('.tab-es');
+    btn.dataset.ariaEn = (labelEn ? labelEn.textContent : btn.dataset.tab) + ' — stop ' + visibleIndex + ' of ' + route.tabs.length;
+    btn.dataset.ariaEs = (labelEs ? labelEs.textContent : btn.dataset.tab) + ' — parada ' + visibleIndex + ' de ' + route.tabs.length;
+    btn.setAttribute('aria-label', document.documentElement.lang === 'es' ? btn.dataset.ariaEs : btn.dataset.ariaEn);
+  });
+  document.querySelectorAll('.homework-tab-extra').forEach(function (btn) {
+    btn.hidden = mode !== 'full';
+  });
+  var shell = document.querySelector('.homework-tabs-shell');
+  if (shell) shell.dataset.tabCount = String(route.tabs.length);
+  ['hw_hero_stop_count', 'hw_hero_stop_count_es'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = String(route.tabs.length);
+  });
+
+  var warmups = document.querySelectorAll('.practice-tier-warmup .problem-section');
+  warmups.forEach(function (problem, index) { problem.hidden = index >= route.problemLimit; });
+  var challenge = document.querySelector('.practice-tier-challenge');
+  if (challenge) challenge.hidden = mode === 'quick';
+  var more = document.querySelector('.more-practice');
+  if (more) more.hidden = mode === 'quick';
+  ['hw_goal_count', 'hw_goal_count_es', 'hw_check_problem_count', 'hw_check_problem_count_es'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = String(route.problemLimit);
+  });
+  var progress = document.getElementById('progress_text');
+  if (progress) {
+    var completed = Array.from(document.querySelectorAll('.problem-section.correct, .problem-section.reviewed'))
+      .filter(function (problem) { return !problem.hidden && !problem.closest('[hidden]') && !problem.closest('.more-practice'); }).length;
+    progress.textContent = completed + ' / ' + route.problemLimit;
+  }
+  if (typeof updateProgress === 'function') updateProgress();
+
+  var note = document.getElementById('hw_route_note');
+  if (note) {
+    var copy = {
+      quick: ['Quick practice selected: one example, 2 problems, and one explanation. Pause or stop whenever you need.', 'Práctica breve seleccionada: un ejemplo, 2 problemas y una explicación. Pueden pausar o terminar cuando lo necesiten.'],
+      core: ['Learn & practice selected: 6 problems, key words, and an explanation. Pause or stop whenever you need.', 'Ruta de aprendizaje seleccionada: 6 problemas, palabras clave y una explicación. Pueden pausar o terminar cuando lo necesiten.'],
+      full: ['Family Math Studio selected: add one home mission and one math game. Everything is optional.', 'Estudio familiar seleccionado: agrega una misión en casa y un juego de matemáticas. Todo es opcional.']
+    }[mode];
+    setBiText(note, copy[0], copy[1]);
+  }
+
+  try { localStorage.setItem(routeStorageKey(), mode); } catch (e) {}
+  initHomeworkShareLinks();
+  var current = document.body.dataset.activeTab;
+  if (current && route.tabs.indexOf(current) === -1 && !options.keepTab) switchHomeworkTab(route.tabs[0]);
+  else if (current) switchHomeworkTab(current);
+  if (!options.silent) {
+    var chooser = document.querySelector('.hw-route-chooser');
+    if (chooser) chooser.classList.add('route-just-changed');
+    setTimeout(function () { if (chooser) chooser.classList.remove('route-just-changed'); }, 450);
+  }
+}
+
+function restoreHomeworkRoute() {
+  var mode = 'core';
+  try { mode = localStorage.getItem(routeStorageKey()) || 'core'; } catch (e) {}
+  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'core';
+  var requested = new URLSearchParams(location.search).get('route');
+  if (Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, requested)) mode = requested;
+  setHomeworkRoute(mode, { silent: true, keepTab: true });
 }
 
 function goNextHomeworkStop(current) {
-  var tabs = HOMEWORK_PATH.tabs;
+  var tabs = activeHomeworkRoute().tabs;
   var index = tabs.indexOf(current);
   var next = tabs[Math.min(index + 1, tabs.length - 1)] || tabs[0];
   switchHomeworkTab(next);
@@ -876,7 +975,11 @@ function toggleSignoffSubmitBtn() {
 
 function homeworkShareUrl() {
   var url = new URL(window.location.href);
-  url.searchParams.delete('route');
+  var route = document.body.dataset.homeworkRoute || 'core';
+  ['answers', 'responses', 'reflection', 'studentData', 'work', 'progress', 'photo', 'voiceMemo'].forEach(function (key) {
+    url.searchParams.delete(key);
+  });
+  url.searchParams.set('route', Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, route) ? route : 'core');
   url.searchParams.set('lang', document.body.dataset.homeworkLanguage || preferredLanguageMode());
   return url.href;
 }
@@ -1233,6 +1336,7 @@ function initHomeworkPage() {
   if (utilities && help) utilities.appendChild(help);
   syncHomeworkChromeHeights();
   window.addEventListener('resize', syncHomeworkChromeHeights);
+  restoreHomeworkRoute();
   initHomeworkShareLinks();
   // Measure again once fonts and images have settled: a reading taken mid
   // layout reported the status bar three times its rendered height, and the
@@ -1270,7 +1374,7 @@ function initHomeworkPage() {
   restoreParentSignoff();
   initHomeworkShareLinks();
   var start = document.getElementById('hw_start_button');
-  if (start && document.body.dataset.activeTab !== 'learn') setBiText(start, 'Continue homework', 'Continuar la tarea');
+  if (start && document.body.dataset.activeTab !== 'learn') setBiText(start, 'Continue this path', 'Continuar esta ruta');
   restoreFamilyMission();
   initDrawCanvases();
   initHomeworkVocabPopups();

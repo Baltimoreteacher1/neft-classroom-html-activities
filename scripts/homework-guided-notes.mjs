@@ -2809,6 +2809,8 @@ export function renderWelcomeBanner(config, lessonId) {
           )}</span></span>
         </p>
 
+        ${renderFamilyPairLink(lessonId)}
+
         <div class="hw-hero-controls">
           <div class="lang-selector-card">
             <span class="lang-selector-title">Language / Idioma</span>
@@ -2866,12 +2868,77 @@ export function renderWelcomeBanner(config, lessonId) {
     </header>`;
 }
 
+/* A lightweight bridge between the two family pages for a two-session lesson.
+   This stays on family homework; the separate classroom lesson exit remains
+   intentionally free of a next-day navigation prompt. */
+function renderFamilyPairLink(lessonId) {
+  const match = String(lessonId || "").match(/^(\d+-\d+)(-part2)?$/);
+  if (!match) return "";
+  const baseId = match[1];
+  const isPart2 = Boolean(match[2]);
+  const otherId = isPart2 ? baseId : `${baseId}-part2`;
+  if (!existsSync(lessonPath(otherId, "homework.html"))) return "";
+  let partnerTitle = "";
+  try {
+    const partnerConfig = JSON.parse(readFileSync(lessonPath(otherId, "config.json"), "utf8"));
+    const notesPath = join(
+      dirname(fileURLToPath(import.meta.url)),
+      "../data/family-homework-notes",
+      `${otherId}.json`,
+    );
+    const notes = existsSync(notesPath) ? JSON.parse(readFileSync(notesPath, "utf8")) : {};
+    partnerTitle = notes.sessionTitle || partnerConfig.title || "";
+  } catch {}
+  const esTitle = familyTitlesEs[otherId] || "";
+  const labelEn = isPart2 ? "Review Part 1" : "Explore Part 2";
+  const labelEs = isPart2 ? "Repasar la Parte 1" : "Explorar la Parte 2";
+  const sentenceEn = isPart2
+    ? "This page builds on Part 1. You can revisit it any time."
+    : "This lesson has an optional second part. Open it when it is assigned.";
+  const sentenceEs = isPart2
+    ? "Esta página se basa en la Parte 1. Puedes volver a ella cuando quieras."
+    : "Esta lección tiene una segunda parte opcional. Ábrela cuando te la asignen.";
+  return `<aside class="hw-pair-note" aria-label="Two-part lesson">
+    <p><span class="lang-en">${sentenceEn}</span><span class="lang-es" lang="es">${sentenceEs}</span></p>
+    <a href="/lessons/${otherId}/homework.html" class="hw-pair-link">
+      <span class="lang-en">${labelEn}${partnerTitle ? " · " + esc(partnerTitle) : " · Lesson " + baseId}</span>
+      <span class="lang-es" lang="es">${labelEs}${esTitle ? " · " + esc(esTitle) : " · Lección " + baseId}</span>
+      <span aria-hidden="true">→</span>
+    </a>
+  </aside>`;
+}
+
 /* The start panel lives inside the hero, before secondary controls. */
 export function renderQuickPlan() {
   return `
-      <section class="hw-start-panel">
+      <section class="hw-route-chooser" aria-labelledby="hw_route_title">
+        <div class="hw-route-heading">
+          <span class="hw-route-icon" aria-hidden="true">🧭</span>
+          <div>
+            <h2 id="hw_route_title"><span class="lang-en">Choose a practice path</span><span class="lang-es" lang="es">Elige una ruta de práctica</span></h2>
+            <p><span class="lang-en">All practice is optional and ungraded. Choose the time that works for your family; your route choice is saved on this device.</span><span class="lang-es" lang="es">Toda la práctica es opcional y no lleva calificación. Elijan el tiempo que les funcione; la ruta queda guardada en este dispositivo.</span></p>
+          </div>
+        </div>
+        <div class="hw-route-options" role="group" aria-label="Choose a practice path" data-aria-en="Choose a practice path" data-aria-es="Elige una ruta de práctica">
+          <button type="button" class="hw-route-option" data-route-mode="quick" aria-pressed="false" onclick="setHomeworkRoute('quick')">
+            <span class="hw-route-time">5–10 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Quick practice</span><span class="lang-es" lang="es">Práctica breve</span></strong><small><span class="lang-en">One example, 2 problems, and one explanation.</span><span class="lang-es" lang="es">Un ejemplo, 2 problemas y una explicación.</span></small></span>
+          </button>
+          <button type="button" class="hw-route-option is-active" data-route-mode="core" aria-pressed="true" onclick="setHomeworkRoute('core')">
+            <span class="hw-route-time">15–20 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Learn, explore key words, practice 6 problems, and explain.</span><span class="lang-es" lang="es">Aprende, explora palabras clave, practica 6 problemas y explica.</span></small></span>
+          </button>
+          <button type="button" class="hw-route-option" data-route-mode="full" aria-pressed="false" onclick="setHomeworkRoute('full')">
+            <span class="hw-route-time">20–30 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Family Math Studio</span><span class="lang-es" lang="es">Estudio familiar de matemáticas</span></strong><small><span class="lang-en">Add one home mission and one math game. Go at your own pace.</span><span class="lang-es" lang="es">Agrega una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span></small></span>
+          </button>
+        </div>
+        <p class="hw-route-note" id="hw_route_note" aria-live="polite">
+          <span class="lang-en">Learn &amp; practice selected: 6 problems, with time to pause or stop whenever you need.</span>
+          <span class="lang-es" lang="es">Ruta de aprendizaje seleccionada: 6 problemas, con tiempo para pausar o terminar cuando lo necesiten.</span>
+        </p>
         <p id="hw_resume_note" role="status" aria-live="polite"></p>
-        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start homework</span><span class="lang-es" lang="es">Empezar la tarea</span></button>
+        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start this path</span><span class="lang-es" lang="es">Empezar esta ruta</span></button>
       </section>`;
 }
 
@@ -9459,16 +9526,115 @@ function initFamilyGames() {
   resetWyrGame();
 }
 
-/* ── Homework path ─────────────────────────────────────────────────────
-   One path for every family: every stop and every problem. */
-var HOMEWORK_PATH = { tabs: ['learn', 'words', 'check', 'play', 'done'], problemLimit: 6 };
+/* ── Family practice paths ──────────────────────────────────────────────
+   Each path is a complete, optional experience. Time values are estimates,
+   never timers; the student and family can pause or stop at any point. */
+var HOMEWORK_ROUTES = {
+  quick: { tabs: ['learn', 'check', 'done'], problemLimit: 2 },
+  core: { tabs: ['learn', 'words', 'check', 'done'], problemLimit: 6 },
+  full: { tabs: ['learn', 'words', 'check', 'play', 'done'], problemLimit: 6 }
+};
+
+function routeStorageKey() {
+  return 'hw_route_' + (window.LESSON_ID || location.pathname);
+}
 
 function activeHomeworkRoute() {
-  return HOMEWORK_PATH;
+  var id = document.body.dataset.homeworkRoute || 'core';
+  return HOMEWORK_ROUTES[id] || HOMEWORK_ROUTES.core;
+}
+
+function setHomeworkRoute(mode, options) {
+  options = options || {};
+  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'core';
+  var route = HOMEWORK_ROUTES[mode];
+  document.body.dataset.homeworkRoute = mode;
+
+  document.querySelectorAll('[data-route-mode]').forEach(function (btn) {
+    var active = btn.dataset.routeMode === mode;
+    btn.classList.toggle('is-active', active);
+    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+
+  var visibleIndex = 0;
+  document.querySelectorAll('.homework-tab-btn').forEach(function (btn) {
+    var included = route.tabs.indexOf(btn.dataset.tab) !== -1;
+    btn.hidden = !included;
+    if (!included) {
+      btn.setAttribute('aria-selected', 'false');
+      btn.removeAttribute('aria-current');
+      return;
+    }
+    visibleIndex++;
+    var step = btn.querySelector('.tab-step');
+    if (step) step.textContent = String(visibleIndex);
+    var labelEn = btn.querySelector('.tab-en');
+    var labelEs = btn.querySelector('.tab-es');
+    btn.dataset.ariaEn = (labelEn ? labelEn.textContent : btn.dataset.tab) + ' — stop ' + visibleIndex + ' of ' + route.tabs.length;
+    btn.dataset.ariaEs = (labelEs ? labelEs.textContent : btn.dataset.tab) + ' — parada ' + visibleIndex + ' de ' + route.tabs.length;
+    btn.setAttribute('aria-label', document.documentElement.lang === 'es' ? btn.dataset.ariaEs : btn.dataset.ariaEn);
+  });
+  document.querySelectorAll('.homework-tab-extra').forEach(function (btn) {
+    btn.hidden = mode !== 'full';
+  });
+  var shell = document.querySelector('.homework-tabs-shell');
+  if (shell) shell.dataset.tabCount = String(route.tabs.length);
+  ['hw_hero_stop_count', 'hw_hero_stop_count_es'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = String(route.tabs.length);
+  });
+
+  var warmups = document.querySelectorAll('.practice-tier-warmup .problem-section');
+  warmups.forEach(function (problem, index) { problem.hidden = index >= route.problemLimit; });
+  var challenge = document.querySelector('.practice-tier-challenge');
+  if (challenge) challenge.hidden = mode === 'quick';
+  var more = document.querySelector('.more-practice');
+  if (more) more.hidden = mode === 'quick';
+  ['hw_goal_count', 'hw_goal_count_es', 'hw_check_problem_count', 'hw_check_problem_count_es'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = String(route.problemLimit);
+  });
+  var progress = document.getElementById('progress_text');
+  if (progress) {
+    var completed = Array.from(document.querySelectorAll('.problem-section.correct, .problem-section.reviewed'))
+      .filter(function (problem) { return !problem.hidden && !problem.closest('[hidden]') && !problem.closest('.more-practice'); }).length;
+    progress.textContent = completed + ' / ' + route.problemLimit;
+  }
+  if (typeof updateProgress === 'function') updateProgress();
+
+  var note = document.getElementById('hw_route_note');
+  if (note) {
+    var copy = {
+      quick: ['Quick practice selected: one example, 2 problems, and one explanation. Pause or stop whenever you need.', 'Práctica breve seleccionada: un ejemplo, 2 problemas y una explicación. Pueden pausar o terminar cuando lo necesiten.'],
+      core: ['Learn & practice selected: 6 problems, key words, and an explanation. Pause or stop whenever you need.', 'Ruta de aprendizaje seleccionada: 6 problemas, palabras clave y una explicación. Pueden pausar o terminar cuando lo necesiten.'],
+      full: ['Family Math Studio selected: add one home mission and one math game. Everything is optional.', 'Estudio familiar seleccionado: agrega una misión en casa y un juego de matemáticas. Todo es opcional.']
+    }[mode];
+    setBiText(note, copy[0], copy[1]);
+  }
+
+  try { localStorage.setItem(routeStorageKey(), mode); } catch (e) {}
+  initHomeworkShareLinks();
+  var current = document.body.dataset.activeTab;
+  if (current && route.tabs.indexOf(current) === -1 && !options.keepTab) switchHomeworkTab(route.tabs[0]);
+  else if (current) switchHomeworkTab(current);
+  if (!options.silent) {
+    var chooser = document.querySelector('.hw-route-chooser');
+    if (chooser) chooser.classList.add('route-just-changed');
+    setTimeout(function () { if (chooser) chooser.classList.remove('route-just-changed'); }, 450);
+  }
+}
+
+function restoreHomeworkRoute() {
+  var mode = 'core';
+  try { mode = localStorage.getItem(routeStorageKey()) || 'core'; } catch (e) {}
+  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'core';
+  var requested = new URLSearchParams(location.search).get('route');
+  if (Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, requested)) mode = requested;
+  setHomeworkRoute(mode, { silent: true, keepTab: true });
 }
 
 function goNextHomeworkStop(current) {
-  var tabs = HOMEWORK_PATH.tabs;
+  var tabs = activeHomeworkRoute().tabs;
   var index = tabs.indexOf(current);
   var next = tabs[Math.min(index + 1, tabs.length - 1)] || tabs[0];
   switchHomeworkTab(next);
@@ -9955,7 +10121,11 @@ function toggleSignoffSubmitBtn() {
 
 function homeworkShareUrl() {
   var url = new URL(window.location.href);
-  url.searchParams.delete('route');
+  var route = document.body.dataset.homeworkRoute || 'core';
+  ['answers', 'responses', 'reflection', 'studentData', 'work', 'progress', 'photo', 'voiceMemo'].forEach(function (key) {
+    url.searchParams.delete(key);
+  });
+  url.searchParams.set('route', Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, route) ? route : 'core');
   url.searchParams.set('lang', document.body.dataset.homeworkLanguage || preferredLanguageMode());
   return url.href;
 }
@@ -10312,6 +10482,7 @@ function initHomeworkPage() {
   if (utilities && help) utilities.appendChild(help);
   syncHomeworkChromeHeights();
   window.addEventListener('resize', syncHomeworkChromeHeights);
+  restoreHomeworkRoute();
   initHomeworkShareLinks();
   // Measure again once fonts and images have settled: a reading taken mid
   // layout reported the status bar three times its rendered height, and the
@@ -10349,7 +10520,7 @@ function initHomeworkPage() {
   restoreParentSignoff();
   initHomeworkShareLinks();
   var start = document.getElementById('hw_start_button');
-  if (start && document.body.dataset.activeTab !== 'learn') setBiText(start, 'Continue homework', 'Continuar la tarea');
+  if (start && document.body.dataset.activeTab !== 'learn') setBiText(start, 'Continue this path', 'Continuar esta ruta');
   restoreFamilyMission();
   initDrawCanvases();
   initHomeworkVocabPopups();
@@ -14628,6 +14799,58 @@ body.hw-drawer-open { overflow: hidden; }
      Corner and the printable practice instead. */
   .fam-game-break { display: none; }
 }
+
+/* Family Math Studio: clear choices, comfortable touch targets, no pressure. */
+.hw-route-chooser {
+  margin: 16px 0 0;
+  padding: 16px;
+  color: #102a43;
+  background: #f8fbff;
+  border: 1px solid #bfd7ee;
+  border-radius: 16px;
+}
+.hw-route-heading { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+.hw-route-icon { font-size: 25px; line-height: 1; }
+.hw-route-heading h2 { margin: 0 0 4px; font-size: 18px; color: #12355b; }
+.hw-route-heading p { margin: 0; color: #486581; font-size: 14px; line-height: 1.45; }
+.hw-route-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.hw-route-option {
+  display: flex; align-items: center; gap: 10px; min-height: 82px; padding: 10px 12px;
+  text-align: left; color: #243b53; background: #fff; border: 1.5px solid #b8c9d9;
+  border-radius: 12px; cursor: pointer; font: inherit;
+}
+.hw-route-option:hover { border-color: #138a86; background: #f0fdfa; }
+.hw-route-option:focus-visible, .hw-pair-link:focus-visible { outline: 3px solid #f2c15b; outline-offset: 2px; }
+.hw-route-option.is-active { color: #0f4f4d; background: #e7f7f3; border-color: #138a86; box-shadow: inset 0 0 0 1px #138a86; }
+.hw-route-time {
+  display: flex; flex-direction: column; justify-content: center; align-items: center; flex: 0 0 58px;
+  min-height: 58px; color: #fff; background: #12355b; border-radius: 14px;
+  font: 800 18px/1.1 var(--font-display); text-align: center;
+}
+.hw-route-option.is-active .hw-route-time { background: #0f766e; }
+.hw-route-time small { margin-top: 3px; font-size: 11px; font-weight: 700; }
+.hw-route-copy { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.hw-route-copy strong { font: 800 14px/1.2 var(--font-display); }
+.hw-route-copy small { color: #52677b; font-size: 12px; line-height: 1.4; }
+.hw-route-note { margin: 10px 2px; color: #334e68; font-size: 13.5px; line-height: 1.45; }
+.hw-route-chooser.route-just-changed { box-shadow: 0 0 0 4px rgba(31,166,162,.18); }
+.hw-route-option[hidden], .homework-tab-btn[hidden], .homework-tab-extra[hidden],
+.problem-section[hidden], .practice-tier[hidden], .more-practice[hidden] { display: none !important; }
+.hw-pair-note {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+  margin: -4px 0 12px; padding: 10px 12px; color: #12355b; background: #fffdf5;
+  border: 1px solid #e5d8a7; border-radius: 12px;
+}
+.hw-pair-note p { margin: 0; font-size: 13.5px; line-height: 1.45; }
+.hw-pair-link { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; padding: 7px 10px;
+  color: #075e59; background: #e7f7f3; border-radius: 9px; font-weight: 800; text-decoration: none; }
+.hw-pair-link:hover { background: #c9eee6; }
+@media (max-width: 760px) {
+  .hw-route-options { grid-template-columns: 1fr; }
+  .hw-route-option { min-height: 72px; }
+}
+@media (prefers-reduced-motion: reduce) { .hw-route-chooser.route-just-changed { box-shadow: none; } }
+@media print { .hw-route-chooser, .hw-pair-note { display: none !important; } }
 `;
 
 export const BIG_IDEA_CSS = `

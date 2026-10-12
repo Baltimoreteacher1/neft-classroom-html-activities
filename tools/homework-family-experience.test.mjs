@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import test from "node:test";
 import { JSDOM } from "jsdom";
 import { familyGuidance } from "../scripts/homework-family-guidance.mjs";
@@ -46,46 +46,108 @@ function runtime(query = "") {
   return dom;
 }
 
-test("share links carry the language but no route, and old route links change nothing", () => {
+test("share links retain the selected route and language without sharing local progress", () => {
   const dom = runtime();
   const w = dom.window;
-  w.history.replaceState(null, "", "?route=quick&lang=es&section=class-1");
+  w.history.replaceState(
+    null,
+    "",
+    "?route=quick&lang=es&section=class-1&responses=private&reflection=private&studentData=private",
+  );
   w.localStorage.setItem("hw_lang_mode", "en");
+  w.restoreHomeworkRoute();
   w.setLanguageMode(w.preferredLanguageMode());
   assert.equal(w.document.documentElement.lang, "es");
-  assert.equal(w.document.body.dataset.homeworkRoute, undefined);
+  assert.equal(w.document.body.dataset.homeworkRoute, "quick");
   assert.match(w.document.getElementById("hw_tab_check").getAttribute("aria-label"), /parada/);
   const shared = new URL(w.homeworkShareUrl());
-  assert.equal(shared.searchParams.get("route"), null);
+  assert.equal(shared.searchParams.get("route"), "quick");
   assert.equal(shared.searchParams.get("lang"), "es");
   assert.equal(shared.searchParams.get("section"), "class-1");
+  assert.equal(w.activeHomeworkRoute().problemLimit, 2);
+  assert.equal(w.localStorage.getItem("hw_route_3-2"), "quick");
+  for (const key of [
+    "answers",
+    "responses",
+    "reflection",
+    "studentData",
+    "work",
+    "progress",
+    "photo",
+    "voiceMemo",
+  ]) {
+    assert.equal(shared.searchParams.has(key), false, `${key} is not included in shared links`);
+  }
+
+  w.setHomeworkRoute("full");
+  assert.equal(w.document.getElementById("hw_tab_words").hidden, false);
+  assert.equal(w.document.getElementById("hw_tab_play").hidden, false);
   assert.equal(w.activeHomeworkRoute().problemLimit, 6);
+  w.setHomeworkRoute("core");
+  assert.equal(w.document.getElementById("hw_tab_words").hidden, false);
+  assert.equal(w.document.getElementById("hw_tab_play").hidden, true);
+  assert.equal(w.localStorage.getItem("hw_route_3-2"), "core");
+
+  w.history.replaceState(null, "", "?route=__proto__&lang=bad");
+  w.localStorage.setItem("hw_route_3-2", "broken");
+  w.restoreHomeworkRoute();
+  assert.equal(w.document.body.dataset.homeworkRoute, "core");
   dom.window.close();
 });
 
-test("family homework is one path: every stop, no time choice, no minute labels, no Together stop", () => {
+test("family homework offers three real practice paths without a Together stop", () => {
   for (const id of ["2-1", "3-3"]) {
     const page = readFileSync(lessonPath(id, "homework.html"), "utf8");
     const d = new JSDOM(page).window.document;
+    assert.equal(d.querySelectorAll(".hw-route-option[data-route-mode]").length, 3, id);
     assert.deepEqual(
-      [...d.querySelectorAll(".homework-tab-btn")].map((b) => b.dataset.tab),
-      ["learn", "words", "check", "play", "done"],
+      [...d.querySelectorAll(".hw-route-option[data-route-mode]")].map((b) => b.dataset.routeMode),
+      ["quick", "core", "full"],
       id,
     );
+    assert.match(d.querySelector(".hw-route-chooser").textContent, /5–10/);
+    assert.match(d.querySelector(".hw-route-chooser").textContent, /15–20/);
+    assert.match(d.querySelector(".hw-route-chooser").textContent, /20–30/);
+    assert.equal(d.querySelectorAll(".homework-tab-btn").length, 5, id);
     assert.equal(d.querySelector("#hw_panel_together"), null, id);
-    assert.equal(
-      d.querySelectorAll("[data-route-mode], .hw-route-chooser, .tab-min").length,
-      0,
-      id,
-    );
-    assert.equal(d.getElementById("hw_time_remaining"), null, id);
-    assert.doesNotMatch(d.body.textContent, /\b(10|20|30) min/i, id);
+    assert.equal(d.querySelectorAll("#hw_time_remaining").length, 0, id);
+    assert.doesNotMatch(d.body.textContent, /time remaining|tiempo restante/i, id);
     assert.doesNotMatch(d.querySelector(".homework-tab-bar").textContent, /together|juntos/i, id);
+    assert.ok(
+      d.querySelector(".hw-pair-note a[href*='-part2/homework.html']"),
+      `${id} links to its Part 2 family page`,
+    );
     assert.ok(
       d.querySelector("#hw_panel_play [data-family-activity]"),
       `${id} keeps the home activity`,
     );
   }
+});
+
+test("all Unit 2–6 Part 1 and Part 2 pages have bilingual titles and a useful pair link", () => {
+  let checked = 0;
+  for (let unit = 2; unit <= 6; unit++) {
+    for (let lesson = 1; lesson <= 15; lesson++) {
+      for (const id of [`${unit}-${lesson}`, `${unit}-${lesson}-part2`]) {
+        const file = lessonPath(id, "homework.html");
+        if (!existsSync(file)) continue;
+        const d = new JSDOM(readFileSync(file, "utf8")).window.document;
+        const titleEn = d.querySelector(".hw-hero-lesson-title .lang-en")?.textContent.trim();
+        const titleEs = d.querySelector(".hw-hero-lesson-title .lang-es")?.textContent.trim();
+        assert.ok(titleEn, `${id} has an English family-facing title`);
+        assert.ok(titleEs, `${id} has a Spanish family-facing title`);
+        assert.notEqual(titleEs, titleEn, `${id} Spanish title is not an English fallback`);
+        const mate = id.endsWith("-part2") ? id.replace(/-part2$/, "") : `${id}-part2`;
+        assert.equal(
+          d.querySelector(`.hw-pair-note a[href="/lessons/${mate}/homework.html"]`) != null,
+          existsSync(lessonPath(mate, "homework.html")),
+          `${id} points to its matching family page when the pair exists`,
+        );
+        checked++;
+      }
+    }
+  }
+  assert.equal(checked, 104, "Units 2–6 currently contain 52 lesson pairs");
 });
 
 test("Words stop is cards, then a picture quiz, then matching — no filter bar or mastery stars", () => {
