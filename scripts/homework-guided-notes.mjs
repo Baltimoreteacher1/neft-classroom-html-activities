@@ -2924,18 +2924,18 @@ export function renderQuickPlan() {
             <span class="hw-route-time">5–10 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
             <span class="hw-route-copy"><strong><span class="lang-en">Quick practice</span><span class="lang-es" lang="es">Práctica breve</span></strong><small><span class="lang-en">One example, 2 problems, and one explanation.</span><span class="lang-es" lang="es">Un ejemplo, 2 problemas y una explicación.</span></small></span>
           </button>
-          <button type="button" class="hw-route-option is-active" data-route-mode="core" aria-pressed="true" onclick="setHomeworkRoute('core')">
+          <button type="button" class="hw-route-option" data-route-mode="core" aria-pressed="false" onclick="setHomeworkRoute('core')">
             <span class="hw-route-time">15–20 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
             <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Learn, explore key words, practice 6 problems, and explain.</span><span class="lang-es" lang="es">Aprende, explora palabras clave, practica 6 problemas y explica.</span></small></span>
           </button>
-          <button type="button" class="hw-route-option" data-route-mode="full" aria-pressed="false" onclick="setHomeworkRoute('full')">
+          <button type="button" class="hw-route-option is-active" data-route-mode="full" aria-pressed="true" onclick="setHomeworkRoute('full')">
             <span class="hw-route-time">20–30 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
             <span class="hw-route-copy"><strong><span class="lang-en">Family Math Studio</span><span class="lang-es" lang="es">Estudio familiar de matemáticas</span></strong><small><span class="lang-en">Add one home mission and one math game. Go at your own pace.</span><span class="lang-es" lang="es">Agrega una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span></small></span>
           </button>
         </div>
         <p class="hw-route-note" id="hw_route_note" aria-live="polite">
-          <span class="lang-en">Learn &amp; practice selected: 6 problems, with time to pause or stop whenever you need.</span>
-          <span class="lang-es" lang="es">Ruta de aprendizaje seleccionada: 6 problemas, con tiempo para pausar o terminar cuando lo necesiten.</span>
+          <span class="lang-en">Family Math Studio selected: 6 problems, key words, one home mission, and one math game. Go at your own pace.</span>
+          <span class="lang-es" lang="es">Estudio familiar seleccionado: 6 problemas, palabras clave, una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span>
         </p>
         <p id="hw_resume_note" role="status" aria-live="polite"></p>
         <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start this path</span><span class="lang-es" lang="es">Empezar esta ruta</span></button>
@@ -9540,13 +9540,13 @@ function routeStorageKey() {
 }
 
 function activeHomeworkRoute() {
-  var id = document.body.dataset.homeworkRoute || 'core';
-  return HOMEWORK_ROUTES[id] || HOMEWORK_ROUTES.core;
+  var id = document.body.dataset.homeworkRoute || 'full';
+  return HOMEWORK_ROUTES[id] || HOMEWORK_ROUTES.full;
 }
 
 function setHomeworkRoute(mode, options) {
   options = options || {};
-  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'core';
+  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'full';
   var route = HOMEWORK_ROUTES[mode];
   document.body.dataset.homeworkRoute = mode;
 
@@ -9612,7 +9612,10 @@ function setHomeworkRoute(mode, options) {
     setBiText(note, copy[0], copy[1]);
   }
 
-  try { localStorage.setItem(routeStorageKey(), mode); } catch (e) {}
+  try {
+    localStorage.setItem(routeStorageKey(), mode);
+    if (!options.silent) localStorage.setItem(routeStorageKey() + '_chosen', '1');
+  } catch (e) {}
   initHomeworkShareLinks();
   var current = document.body.dataset.activeTab;
   if (current && route.tabs.indexOf(current) === -1 && !options.keepTab) switchHomeworkTab(route.tabs[0]);
@@ -9625,9 +9628,15 @@ function setHomeworkRoute(mode, options) {
 }
 
 function restoreHomeworkRoute() {
-  var mode = 'core';
-  try { mode = localStorage.getItem(routeStorageKey()) || 'core'; } catch (e) {}
-  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'core';
+  var mode = 'full';
+  try {
+    var saved = localStorage.getItem(routeStorageKey());
+    // The previous default wrote "core" even when nobody made a choice.
+    // Migrate that automatic default; retain explicitly selected new choices
+    // and old quick/full choices, which were never the previous default.
+    if (localStorage.getItem(routeStorageKey() + '_chosen') === '1' || saved === 'quick' || saved === 'full') mode = saved || 'full';
+  } catch (e) {}
+  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'full';
   var requested = new URLSearchParams(location.search).get('route');
   if (Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, requested)) mode = requested;
   setHomeworkRoute(mode, { silent: true, keepTab: true });
@@ -10121,11 +10130,11 @@ function toggleSignoffSubmitBtn() {
 
 function homeworkShareUrl() {
   var url = new URL(window.location.href);
-  var route = document.body.dataset.homeworkRoute || 'core';
+  var route = document.body.dataset.homeworkRoute || 'full';
   ['answers', 'responses', 'reflection', 'studentData', 'work', 'progress', 'photo', 'voiceMemo'].forEach(function (key) {
     url.searchParams.delete(key);
   });
-  url.searchParams.set('route', Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, route) ? route : 'core');
+  url.searchParams.set('route', Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, route) ? route : 'full');
   url.searchParams.set('lang', document.body.dataset.homeworkLanguage || preferredLanguageMode());
   return url.href;
 }

@@ -1,3 +1,9 @@
+import {
+  QUESTION_MODEL_CSS,
+  QUESTION_MODEL_JS,
+  renderQuestionLab,
+} from "./homework-question-model.mjs";
+
 /**
  * Visual-first, concept-specific manipulatives for family homework.
  * Generated pages keep a static SVG fallback and progressively enhance it with
@@ -776,8 +782,26 @@ function renderRatioComparisonLab() {
   </section>`;
 }
 
+function renderPercentBeyondWhole() {
+  const examples = [150, 250, 300]
+    .map((percent) => {
+      const wholes = Math.ceil(percent / 100);
+      const bars = Array.from({ length: wholes }, (_, i) => {
+        const shaded = Math.max(0, Math.min(100, percent - i * 100));
+        return `<rect x="${i * 130 + 5}" y="5" width="120" height="40" fill="#fff" stroke="#12355b" stroke-width="2"/><rect x="${i * 130 + 5}" y="5" width="${1.2 * shaded}" height="40" fill="#0f766e"/><path d="M${i * 130 + 65} 5v40" stroke="#12355b" stroke-dasharray="3 3"/>`;
+      }).join("");
+      return `<article class="question-model-card"><h4>${percent}%</h4><svg viewBox="0 0 400 55" role="img" aria-label="${percent}% shown as whole boxes and halves" data-aria-en="${percent}% shown as whole boxes and halves" data-aria-es="${percent}% representado con cajas enteras y mitades">${bars}</svg><p><span class="lang-en">${percent === 150 ? "One whole and one half" : percent === 250 ? "Two wholes and one half" : "Three wholes"}</span><span class="lang-es" lang="es">${percent === 150 ? "Un entero y una mitad" : percent === 250 ? "Dos enteros y una mitad" : "Tres enteros"}</span></p><details><summary><span class="lang-en">Check the number of books</span><span class="lang-es" lang="es">Comprueba la cantidad de libros</span></summary><p>${percent}/100 × 20 = ${percent / 5} <span class="lang-en">books</span><span class="lang-es" lang="es">libros</span></p></details></article>`;
+    })
+    .join("");
+  return `<section class="family-visual-lab" data-family-paper-model="percent-over-whole"><h3><span class="lang-en">Beyond one whole</span><span class="lang-es" lang="es">Más de un entero</span></h3><p><span class="lang-en">A reading goal is 20 books. That goal is 100%: one outlined box. The shaded boxes below show amounts above the goal. Count the wholes and halves, then work out the number of books before opening the check.</span><span class="lang-es" lang="es">Una meta de lectura es 20 libros. Esa meta es el 100%: una caja delineada. Las cajas sombreadas muestran cantidades mayores que la meta. Cuenta los enteros y las mitades y calcula los libros antes de abrir la comprobación.</span></p><div class="question-model-grid">${examples}</div><p><span class="lang-en">Explain: 150% is 1.5 times the goal because ___. Draw your own model for 200%.</span><span class="lang-es" lang="es">Explica: el 150% es 1.5 veces la meta porque ___. Dibuja tu propio modelo del 200%.</span></p></section>`;
+}
+
 export function renderVisualMathLab(topic, config, lessonModel = null) {
   const id = String(config.lessonId || config.id || "");
+  if (id === "2-1") return renderQuestionLab();
+  if (id === "4-1-part2") return renderPercentBeyondWhole();
+  if (id === "4-5-part2")
+    return `<section class="family-visual-lab card-ish" data-family-paper-model="missing-whole-equation"><h3><span class="lang-en">Find the whole with a percent equation</span><span class="lang-es" lang="es">Halla el total con una ecuación de porcentaje</span></h3><p><span class="lang-en">Six beads are 25% of a bag. One shaded box is the known part; all four boxes are the unknown whole, w. Write 0.25w = 6. What operation undoes multiplication by 0.25?</span><span class="lang-es" lang="es">Seis cuentas son el 25% de una bolsa. Una caja sombreada es la parte conocida; las cuatro cajas forman el total desconocido, w. Escribe 0.25w = 6. ¿Qué operación deshace la multiplicación por 0.25?</span></p><svg viewBox="0 0 330 65" role="img" aria-label="One of four equal boxes represents 25 percent, or six beads" data-aria-en="One of four equal boxes represents 25 percent, or six beads" data-aria-es="Una de cuatro cajas iguales representa el 25 por ciento, o seis cuentas"><rect x="5" y="5" width="80" height="50" fill="#0f766e"/><path d="M5 5h320v50H5zM85 5v50M165 5v50M245 5v50" fill="none" stroke="#12355b" stroke-width="2"/></svg><p><span class="lang-en">Known part: 25% = 6 beads. Whole: 100% = w beads.</span><span class="lang-es" lang="es">Parte conocida: 25% = 6 cuentas. Total: 100% = w cuentas.</span></p><details><summary><span class="lang-en">Check the equation and solution</span><span class="lang-es" lang="es">Comprueba la ecuación y la solución</span></summary><p>0.25w = 6 → w = 6 ÷ 0.25 = 24<br>0.25 × 24 = 6</p></details></section>`;
   if (id === "4-5")
     return '<section class="family-visual-lab card-ish" data-family-paper-model="missing-whole"><h3><span class="lang-en">Build the missing whole</span><span class="lang-es" lang="es">Construye el total que falta</span></h3><p><span class="lang-en">Six beads are 25% of the bag. Draw a bar with four equal boxes. Label one box 25% and 6 beads. What belongs in each other box? Label the whole bar 100% and find the total. Check by finding one fourth of it.</span><span class="lang-es" lang="es">Seis cuentas son el 25% de la bolsa. Dibuja una barra con cuatro cajas iguales. Indica 25% y 6 cuentas en una caja. ¿Qué va en las otras? Indica 100% en toda la barra y halla el total. Comprueba hallando su cuarta parte.</span></p></section>';
   if (id === "7-6" || id === "7-6-part2")
@@ -869,7 +893,9 @@ export function renderVisualMathLab(topic, config, lessonModel = null) {
   </section>`;
 }
 
-export const VISUAL_LABS_CSS = String.raw`
+export const VISUAL_LABS_CSS =
+  QUESTION_MODEL_CSS +
+  String.raw`
 .ratio-compare-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.ratio-compare-recipe{min-width:0;margin:0;padding:18px;border:2px solid #173a5e;border-radius:18px;background:#eef8f4}.ratio-compare-recipe legend{padding:0 8px;font-size:20px;font-weight:800}.ratio-compare-recipe label{display:grid;gap:5px;margin:10px 0;font-size:16px;font-weight:700}.ratio-compare-recipe input{width:100%;max-width:160px;min-height:44px;padding:7px 10px;border:2px solid #173a5e;border-radius:9px;background:#fff;color:#173a5e;font:inherit;font-size:20px}.ratio-compare-recipe input:focus-visible{outline:3px solid #b45309;outline-offset:2px}.ratio-compare-result{min-height:68px;margin-top:14px;font-size:17px;line-height:1.4}.ratio-compare-bar{height:22px;margin-top:10px;border:1px solid #173a5e;border-radius:12px;background:#fff;overflow:hidden}.ratio-compare-bar span{display:block;height:100%;background:#0b8f87;transition:width .2s}.ratio-compare-recipe:nth-child(2) .ratio-compare-bar span{background:#c65d43}.ratio-compare-verdict{margin:18px 0 8px;padding:16px;border:2px solid #173a5e;border-radius:14px;background:#fff2c2;font-size:19px;font-weight:800;line-height:1.4}.ratio-compare-coach{margin:8px 0 0;font-size:17px;line-height:1.45}@media(max-width:650px){.ratio-compare-grid{grid-template-columns:1fr}}
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
 .visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
@@ -899,7 +925,9 @@ export const VISUAL_LABS_CSS = String.raw`
 @media print{.family-visual-lab{box-shadow:none;break-inside:avoid}.visual-lab-controls,.visual-lab-actions{display:none}.visual-lab-layout{grid-template-columns:1fr}.visual-representation-grid{grid-template-columns:repeat(3,1fr)}}
 `;
 
-export const VISUAL_LABS_JS = String.raw`
+export const VISUAL_LABS_JS =
+  QUESTION_MODEL_JS +
+  String.raw`
 (function () {
   "use strict";
   function initRatioComparison(lab) {

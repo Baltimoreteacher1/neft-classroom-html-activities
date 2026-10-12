@@ -3,13 +3,15 @@
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 //
 // The `focus` config tunes the emphasis and coaching per lesson:
-//   "variability" (8-1) · "center" (8-2) · "spread" (8-3) · "choose" (8-4)
+//   "shape", "mean", and "median" isolate a lesson skill; broader center,
+//   spread, choose, and variability modes remain available to other surfaces.
 //
 // Pure SVG + DOM, no dependencies. Public API:
 //   renderStatsDataLab(container, cfg) -> { destroy }
 //     cfg.data    : starting values (default sample set)
 //     cfg.unit    : what the values measure, e.g. "points"
-//     cfg.focus   : "center" (default) | "spread" | "choose" | "variability"
+//     cfg.focus   : "shape" | "mean" | "median" | "center" (default) | "spread" | "choose" | "variability"
+//     cfg.measures: optional measure labels to show; includes opt-in IQR
 //     cfg.max     : largest allowed value (default 40)
 //     cfg.presets : optional [{ label, data, unit? }]
 //     cfg.intro   : optional coaching sentence under the title
@@ -67,6 +69,10 @@ function mad(a) {
 }
 
 const FOCUS_COPY = {
+  shape: "Each dot is one observation. Compare the stacks, peaks, gaps, and shape of the data.",
+  mean: "The mean is the total divided by the number of observations. Change a value and check the fair share.",
+  median:
+    "Order the values. Find the middle value, or average the two middle values when the count is even.",
   variability:
     "These are answers to a statistical question — they vary from case to case. Add or remove values and watch how spread out the data is.",
   center:
@@ -78,7 +84,9 @@ const FOCUS_COPY = {
 };
 
 export function renderStatsDataLab(container, cfg = {}) {
-  const focus = ["variability", "center", "spread", "choose"].includes(cfg.focus)
+  const focus = ["shape", "mean", "median", "variability", "center", "spread", "choose"].includes(
+    cfg.focus,
+  )
     ? cfg.focus
     : "center";
   const MAXV = Number(cfg.max) > 0 ? Number(cfg.max) : 40;
@@ -93,7 +101,7 @@ export function renderStatsDataLab(container, cfg = {}) {
   const root = document.createElement("div");
   root.className = "sdlab";
   root.innerHTML =
-    `<div class="sdlab-head"><span class="sdlab-title">📈 Data Lab</span></div>` +
+    `<div class="sdlab-head"><span class="sdlab-title">📈 ${esc(cfg.title || "Data Lab")}</span></div>` +
     `<p class="sdlab-hint">${esc(cfg.intro || FOCUS_COPY[focus])}</p>` +
     (presets.length
       ? `<div class="sdlab-presets" role="group" aria-label="Pick a data set">` +
@@ -165,12 +173,13 @@ export function renderStatsDataLab(container, cfg = {}) {
         `<line x1="${x(t)}" y1="${AX - 4}" x2="${x(t)}" y2="${AX + 4}" stroke="${C.navy}"/>` +
         `<text x="${x(t)}" y="${AX + 20}" text-anchor="middle" font-size="11" fill="${C.muted}">${t}</text>`;
     }
-    const m = mean(data);
+    const m = focus === "median" ? median(data) : mean(data);
+    const marker = focus === "median" ? "median" : "mean";
     const meanLine =
       `<line x1="${x(m)}" y1="18" x2="${x(m)}" y2="${AX}" stroke="${C.mean}" stroke-width="2" stroke-dasharray="4 3"/>` +
       `<polygon points="${x(m)},${AX} ${x(m) - 7},${AX + 11} ${x(m) + 7},${AX + 11}" fill="${C.mean}"/>` +
-      `<text x="${x(m)}" y="14" text-anchor="middle" font-size="11" font-weight="800" fill="${C.mean}">mean ${fmt(m)}</text>`;
-    plot.innerHTML = `<svg viewBox="0 0 ${W} 150" role="img" aria-label="Dot plot of the data with the mean marked as a balance point">${axis}${dots}${meanLine}</svg>`;
+      `<text x="${x(m)}" y="14" text-anchor="middle" font-size="11" font-weight="800" fill="${C.mean}">${marker} ${fmt(m)}</text>`;
+    plot.innerHTML = `<svg viewBox="0 0 ${W} 150" role="img" aria-label="${focus === "shape" ? "Dot plot with one dot for each observation" : focus === "median" ? "Dot plot with the median marked" : "Dot plot of the data with the mean marked as a balance point"}">${axis}${dots}${focus === "shape" ? "" : meanLine}</svg>`;
   }
 
   function measureCard(label, value, hi = false) {
@@ -185,6 +194,33 @@ export function renderStatsDataLab(container, cfg = {}) {
     }
     const md = modes(data);
     const modeText = md.length ? md.map(fmt).join(", ") : "none";
+    if (focus === "shape") {
+      el("measures").innerHTML = measureCard("Observations", data.length);
+      el("note").textContent =
+        "One dot represents one observation. Describe the peaks, gaps, and whether the two sides look similar.";
+      return;
+    }
+    if (focus === "mean") {
+      const total = data.reduce((sum, value) => sum + value, 0);
+      el("measures").innerHTML =
+        measureCard("Total", fmt(total)) +
+        measureCard("Count", data.length) +
+        measureCard("Mean", fmt(mean(data)), true);
+      el("note").textContent =
+        `${fmt(total)} ÷ ${data.length} = ${fmt(mean(data))}. The mean is the fair share for each observation.`;
+      return;
+    }
+    if (focus === "median") {
+      const sorted = [...data].sort((a, b) => a - b);
+      const mid = Math.floor(sorted.length / 2);
+      el("measures").innerHTML = measureCard("Median", fmt(median(data)), true);
+      el("note").textContent =
+        `Ordered data: ${sorted.join(", ")}. ` +
+        (sorted.length % 2
+          ? `The middle value is ${sorted[mid]}.`
+          : `The two middle values are ${sorted[mid - 1]} and ${sorted[mid]}. Their mean is (${sorted[mid - 1]} + ${sorted[mid]}) ÷ 2 = ${fmt(median(data))}.`);
+      return;
+    }
     const cards = [
       measureCard("Mean", fmt(mean(data)), focus === "center" || focus === "choose"),
       measureCard("Median", fmt(median(data)), focus === "center" || focus === "choose"),
@@ -192,7 +228,18 @@ export function renderStatsDataLab(container, cfg = {}) {
       measureCard("Range", fmt(Math.max(...data) - Math.min(...data)), focus === "variability"),
       measureCard("MAD", fmt(mad(data)), focus === "spread" || focus === "choose"),
     ];
-    el("measures").innerHTML = cards.join("");
+    if (Array.isArray(cfg.measures) && cfg.measures.includes("IQR") && data.length >= 2) {
+      const sorted = [...data].sort((a, b) => a - b);
+      const mid = Math.floor(sorted.length / 2);
+      const lower = sorted.slice(0, mid),
+        upper = sorted.slice(Math.ceil(sorted.length / 2));
+      cards.push(measureCard("IQR", fmt(median(upper) - median(lower)), true));
+    }
+    el("measures").innerHTML = Array.isArray(cfg.measures)
+      ? cards
+          .filter((card) => cfg.measures.some((name) => card.includes(`>${name}</span>`)))
+          .join("")
+      : cards.join("");
     renderNote();
   }
 

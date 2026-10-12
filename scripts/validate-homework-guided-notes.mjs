@@ -299,7 +299,9 @@ for (const id of lessonIds) {
 
   const paperModelIds = new Set([
     "1-2",
+    "4-1-part2",
     "4-5",
+    "4-5-part2",
     "7-6",
     "7-6-part2",
     "9-3-part2",
@@ -310,6 +312,19 @@ for (const id of lessonIds) {
   if (paperModel && !html.includes('data-family-paper-model="'))
     issues.push({ id, level: "CRITICAL", msg: "Missing lesson-specific paper model" });
   const ratioComparison = id === "3-5" || id === "3-5-part2";
+  const questionModel = id === "2-1";
+  if (
+    questionModel &&
+    (!html.includes("data-family-question-lab") ||
+      !html.includes('data-lesson-model="statistical-questions"') ||
+      (html.match(/data-question-card="/g) || []).length !== 6)
+  ) {
+    issues.push({
+      id,
+      level: "CRITICAL",
+      msg: "Statistical-question model must include six classification situations",
+    });
+  }
   const sharedModelMarkers = new Set([
     'class="family-visual-lab"',
     'data-visual-lab="',
@@ -320,7 +335,8 @@ for (const id of lessonIds) {
     'class="visual-representation-grid"',
   ]);
   for (const marker of REQUIRED_MARKERS) {
-    if ((ratioComparison || paperModel) && sharedModelMarkers.has(marker)) continue;
+    if ((ratioComparison || paperModel || questionModel) && sharedModelMarkers.has(marker))
+      continue;
     if (paperModel && ["TOUCH &amp; TRY", "TOCA Y PRUEBA"].includes(marker)) continue;
     if (!html.includes(marker)) {
       issues.push({ id, level: "CRITICAL", msg: `Missing marker: ${marker}` });
@@ -424,7 +440,7 @@ for (const id of lessonIds) {
       msg: `Expected one shared lesson model, found ${lessonModels}`,
     });
   }
-  if (representationCards !== (ratioComparison || paperModel ? 0 : 3)) {
+  if (representationCards !== (ratioComparison || paperModel || questionModel ? 0 : 3)) {
     issues.push({
       id,
       level: "HIGH",

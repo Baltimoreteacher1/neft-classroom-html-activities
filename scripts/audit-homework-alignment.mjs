@@ -115,6 +115,23 @@ const REQUIRED_MARKERS = [
       h.includes("goNextHomeworkStop"),
   },
   {
+    id: "lesson-skill-model",
+    test: (h, config) => {
+      const expected = {
+        "2-1": 'data-lesson-model="statistical-questions"',
+        "2-1-part2": "&quot;focus&quot;:&quot;shape&quot;",
+        "2-3": "&quot;focus&quot;:&quot;median&quot;",
+        "2-3-part2": "&quot;focus&quot;:&quot;median&quot;",
+        "2-8": "&quot;focus&quot;:&quot;mean&quot;",
+        "2-8-part2": "&quot;focus&quot;:&quot;mean&quot;",
+        "4-1-part2": 'data-family-paper-model="percent-over-whole"',
+        "4-5-part2": 'data-family-paper-model="missing-whole-equation"',
+        "6-8-part2": 'data-lesson-model="algebra-expand"',
+      }[config.familyHomeworkId];
+      return !expected || h.includes(expected);
+    },
+  },
+  {
     id: "graduated-coaching",
     test: (h) =>
       h.includes('class="problem-coach-ladder"') &&
@@ -245,7 +262,7 @@ for (const { id, config, html } of lessons) {
   const lessonFails = [];
 
   for (const marker of REQUIRED_MARKERS) {
-    if (!marker.test(html, config)) {
+    if (!marker.test(html, { ...config, familyHomeworkId: id })) {
       lessonFails.push(marker.id);
     }
   }

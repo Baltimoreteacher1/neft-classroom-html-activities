@@ -1,3 +1,5 @@
+import { renderQuestionComparison } from "./homework-question-model.mjs";
+
 /** Lesson-specific family examples. A unit/standard is too broad to choose a
  * sibling lesson's operation, statistic, or shape. IDs also cover later sessions. */
 const pair = (en, es, cue) => ({ en, es, ...(cue ? { cue } : {}) });
@@ -829,6 +831,71 @@ function graphic(kind, equation) {
 
 export function exactConceptVisual(config) {
   const rawId = String(config?.lessonId || config?.id || "").replace(/^lesson-/, "");
+  if (rawId === "2-1")
+    return {
+      svg: renderQuestionComparison(),
+      capEn:
+        "One shelf has one count. A statistical question collects data and anticipates variation, such as book counts across several shelves.",
+      capEs:
+        "Un estante tiene una sola cantidad. Una pregunta estadística recopila datos y espera variación, como las cantidades de libros en varios estantes.",
+    };
+  const specific = (kind, html, en, es) => ({
+    svg: `<div class="question-model-card" data-family-static-model="${kind}">${html}</div>`,
+    capEn: en,
+    capEs: es,
+  });
+  if (rawId === "2-1-part2") {
+    const values = [0, 2, 1, 2, 3, 2, 4, 1, 2, 3, 0, 2];
+    const counts = new Map();
+    const dots = values
+      .map((value) => {
+        const count = counts.get(value) || 0;
+        counts.set(value, count + 1);
+        return `<circle cx="${50 + value * 100}" cy="${135 - count * 22}" r="8" fill="#0f766e"/>`;
+      })
+      .join("");
+    return specific(
+      "dot-plot-shape",
+      `<h3><span class="lang-en">One dot for each student</span><span class="lang-es" lang="es">Un punto por estudiante</span></h3><svg viewBox="0 0 500 180" role="img" aria-label="Twelve students' book counts: two at zero, two at one, five at two, two at three, one at four"><path d="M30 150h440" stroke="#12355b" stroke-width="2"/>${dots}${[0, 1, 2, 3, 4].map((n) => `<text x="${50 + n * 100}" y="175" text-anchor="middle" font-size="18">${n}</text>`).join("")}</svg><p><span class="lang-en">Books finished: 0, 2, 1, 2, 3, 2, 4, 1, 2, 3, 0, 2. The tallest stack is at 2 books. Describe the shape on either side.</span><span class="lang-es" lang="es">Libros terminados: 0, 2, 1, 2, 3, 2, 4, 1, 2, 3, 0, 2. La pila más alta está en 2 libros. Describe la forma de ambos lados.</span></p>`,
+      "Each dot represents one student. The peak is at 2 books; the two sides are nearly symmetric.",
+      "Cada punto representa un estudiante. El pico está en 2 libros; ambos lados son casi simétricos.",
+    );
+  }
+  if (rawId === "2-3-part2")
+    return specific(
+      "even-median",
+      `<h3><span class="lang-en">Order, locate the middle pair, then average</span><span class="lang-es" lang="es">Ordena, ubica el par central y calcula su media</span></h3><p>52 · 55 · <strong>58 · 62</strong> · 67 · 70</p><p>(58 + 62) ÷ 2 = 60</p><p><span class="lang-en">Three values sit on each side of the median. The median can be a value that does not appear in the data.</span><span class="lang-es" lang="es">Hay tres valores a cada lado de la mediana. La mediana puede ser un valor que no aparece en los datos.</span></p>`,
+      "With six ordered ride times, average the two middle values, 58 and 62: the median is 60 minutes.",
+      "Con seis tiempos de viaje ordenados, calcula la media de los dos valores centrales, 58 y 62: la mediana es 60 minutos.",
+    );
+  if (rawId === "2-8-part2")
+    return specific(
+      "target-mean",
+      `<h3><span class="lang-en">Turn the target mean into a total</span><span class="lang-es" lang="es">Convierte la media objetivo en un total</span></h3><p><span class="lang-en">Four games: 12 + 18 + 14 + 16 = 60 points.</span><span class="lang-es" lang="es">Cuatro partidos: 12 + 18 + 14 + 16 = 60 puntos.</span></p><p><span class="lang-en">Target for five games: 16 × 5 = 80 points.</span><span class="lang-es" lang="es">Meta para cinco partidos: 16 × 5 = 80 puntos.</span></p><p>60 + ? = 80</p><details><summary><span class="lang-en">Check the missing score</span><span class="lang-es" lang="es">Comprueba la puntuación faltante</span></summary><p>80 − 60 = 20 · (60 + 20) ÷ 5 = 16</p></details>`,
+      "A target mean of 16 over five games needs 80 total points. Subtract the 60 already scored to find the missing 20.",
+      "Una media objetivo de 16 en cinco partidos necesita 80 puntos en total. Resta los 60 ya anotados para hallar los 20 faltantes.",
+    );
+  if (rawId === "2-9-part2")
+    return specific(
+      "compare-mad",
+      `<h3><span class="lang-en">Same mean, different distances</span><span class="lang-es" lang="es">La misma media, distancias distintas</span></h3><p><span class="lang-en">Both city means are 52 degrees.</span><span class="lang-es" lang="es">Las medias de ambas ciudades son 52 grados.</span></p><table><thead><tr><th scope="col"><span class="lang-en">City</span><span class="lang-es" lang="es">Ciudad</span></th><th scope="col"><span class="lang-en">Distances from 52</span><span class="lang-es" lang="es">Distancias desde 52</span></th><th scope="col"><span class="lang-en">MAD</span><span class="lang-es" lang="es">DAM</span></th></tr></thead><tbody><tr><th scope="row">A</th><td>6, 2, 2, 6</td><td>16 ÷ 4 = 4</td></tr><tr><th scope="row">B</th><td>16, 4, 4, 16</td><td>40 ÷ 4 = 10</td></tr></tbody></table>`,
+      "City B's MAD is 10 degrees versus City A's 4 degrees, so City B's temperatures vary more despite the same mean.",
+      "La DAM de la ciudad B es 10 grados y la de A es 4 grados, así que las temperaturas de B varían más aunque las medias sean iguales.",
+    );
+  if (rawId === "2-10-part2")
+    return specific(
+      "choose-measures",
+      `<h3><span class="lang-en">Look at shape before choosing measures</span><span class="lang-es" lang="es">Observa la forma antes de elegir medidas</span></h3><p>60, 62, 64, 66, 68 → <span class="lang-en">symmetric, no outlier: mean + MAD</span><span class="lang-es" lang="es">simétrico, sin valor atípico: media + DAM</span></p><p>60, 62, 64, 66, <strong>210</strong> → <span class="lang-en">outlier: median + IQR</span><span class="lang-es" lang="es">valor atípico: mediana + RIC</span></p>`,
+      "Match center with spread: mean and MAD for a roughly symmetric set without outliers; median and IQR when outliers affect the data.",
+      "Relaciona centro y dispersión: media y DAM para datos aproximadamente simétricos sin valores atípicos; mediana y RIC cuando los valores atípicos afectan los datos.",
+    );
+  if (rawId === "6-8-part2")
+    return specific(
+      "expand-factor",
+      `<h3><span class="lang-en">Two ways to name the same area</span><span class="lang-es" lang="es">Dos formas de nombrar la misma área</span></h3><svg viewBox="0 0 300 140" role="img" aria-label="A rectangle of height four split into widths x and three"><rect x="40" y="20" width="150" height="90" fill="#99f6e4" stroke="#12355b"/><rect x="190" y="20" width="70" height="90" fill="#bae6fd" stroke="#12355b"/><g font-size="20" text-anchor="middle"><text x="115" y="75">4x</text><text x="225" y="75">12</text><text x="115" y="135">x</text><text x="225" y="135">3</text><text x="20" y="75">4</text></g></svg><p><span class="lang-en">Expand: multiply 4 by both widths.</span><span class="lang-es" lang="es">Desarrolla: multiplica 4 por ambas anchuras.</span> 4(x + 3) = 4x + 12</p><p><span class="lang-en">Factor: take the common factor 4 out of both terms.</span><span class="lang-es" lang="es">Factoriza: saca el factor común 4 de ambos términos.</span> 4x + 12 = 4(x + 3)</p>`,
+      "Expanding and factoring work in opposite directions and keep the expression equivalent.",
+      "Desarrollar y factorizar funcionan en sentidos opuestos y mantienen la expresión equivalente.",
+    );
   if (/^4-/.test(rawId)) return null;
   const content = exactFamilySupport(config);
   if (!content) return null;

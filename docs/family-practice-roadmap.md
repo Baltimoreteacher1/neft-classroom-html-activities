@@ -9,6 +9,8 @@ Shipped in this release:
 
 - Three clearly described, optional routes: Quick Practice, Learn & Practice,
   and Family Math Studio. Estimates are guidance only; there is no countdown.
+- Family Math Studio is the default. Old automatically initialized shorter
+  defaults migrate to Studio; explicit choices and shared links take precedence.
 - Each route controls the visible stops and practice count. The learner can
   switch routes without losing answers; the route choice is saved on that
   device.
@@ -20,6 +22,9 @@ Shipped in this release:
   back to English.
 - Existing topic visuals, graduated hints, print options, read-alouds, and
   family missions remain part of the experience.
+- The follow-up model correction adds a statistical-question classifier for
+  2.1, focused statistics models, and session-specific replacements for
+  percentages above 100%, finding an unknown whole, and expanding/factoring.
 
 ## Version 2 — Topic-matched studio activities
 

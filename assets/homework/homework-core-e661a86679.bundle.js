@@ -394,13 +394,13 @@ function routeStorageKey() {
 }
 
 function activeHomeworkRoute() {
-  var id = document.body.dataset.homeworkRoute || 'core';
-  return HOMEWORK_ROUTES[id] || HOMEWORK_ROUTES.core;
+  var id = document.body.dataset.homeworkRoute || 'full';
+  return HOMEWORK_ROUTES[id] || HOMEWORK_ROUTES.full;
 }
 
 function setHomeworkRoute(mode, options) {
   options = options || {};
-  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'core';
+  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'full';
   var route = HOMEWORK_ROUTES[mode];
   document.body.dataset.homeworkRoute = mode;
 
@@ -466,7 +466,10 @@ function setHomeworkRoute(mode, options) {
     setBiText(note, copy[0], copy[1]);
   }
 
-  try { localStorage.setItem(routeStorageKey(), mode); } catch (e) {}
+  try {
+    localStorage.setItem(routeStorageKey(), mode);
+    if (!options.silent) localStorage.setItem(routeStorageKey() + '_chosen', '1');
+  } catch (e) {}
   initHomeworkShareLinks();
   var current = document.body.dataset.activeTab;
   if (current && route.tabs.indexOf(current) === -1 && !options.keepTab) switchHomeworkTab(route.tabs[0]);
@@ -479,9 +482,15 @@ function setHomeworkRoute(mode, options) {
 }
 
 function restoreHomeworkRoute() {
-  var mode = 'core';
-  try { mode = localStorage.getItem(routeStorageKey()) || 'core'; } catch (e) {}
-  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'core';
+  var mode = 'full';
+  try {
+    var saved = localStorage.getItem(routeStorageKey());
+    // The previous default wrote "core" even when nobody made a choice.
+    // Migrate that automatic default; retain explicitly selected new choices
+    // and old quick/full choices, which were never the previous default.
+    if (localStorage.getItem(routeStorageKey() + '_chosen') === '1' || saved === 'quick' || saved === 'full') mode = saved || 'full';
+  } catch (e) {}
+  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'full';
   var requested = new URLSearchParams(location.search).get('route');
   if (Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, requested)) mode = requested;
   setHomeworkRoute(mode, { silent: true, keepTab: true });
@@ -975,11 +984,11 @@ function toggleSignoffSubmitBtn() {
 
 function homeworkShareUrl() {
   var url = new URL(window.location.href);
-  var route = document.body.dataset.homeworkRoute || 'core';
+  var route = document.body.dataset.homeworkRoute || 'full';
   ['answers', 'responses', 'reflection', 'studentData', 'work', 'progress', 'photo', 'voiceMemo'].forEach(function (key) {
     url.searchParams.delete(key);
   });
-  url.searchParams.set('route', Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, route) ? route : 'core');
+  url.searchParams.set('route', Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, route) ? route : 'full');
   url.searchParams.set('lang', document.body.dataset.homeworkLanguage || preferredLanguageMode());
   return url.href;
 }
@@ -2502,6 +2511,20 @@ function hwGameCheckSort() {
   if (ok && typeof triggerCelebration === 'function') triggerCelebration();
 }
 
+
+(function(){
+  function init(lab){
+    if(lab.dataset.questionReady)return;
+    lab.dataset.questionReady='1';
+    var select=lab.querySelector('[data-question-case]'),cards=Array.from(lab.querySelectorAll('[data-question-card]')),buttons=Array.from(lab.querySelectorAll('[data-question-choice]')),verdict=lab.querySelector('[data-question-verdict]');
+    function reset(){cards.forEach(function(card){card.hidden=card.dataset.questionCard!==select.value;card.querySelector('[data-question-result]').hidden=true;});buttons.forEach(function(btn){btn.setAttribute('aria-pressed','false');});verdict.hidden=true;verdict.textContent='';}
+    select.addEventListener('change',reset);
+    buttons.forEach(function(btn){btn.addEventListener('click',function(){var card=cards.find(function(c){return c.dataset.questionCard===select.value;});if(!card)return;var correct=btn.dataset.questionChoice===card.dataset.statistical;buttons.forEach(function(b){b.setAttribute('aria-pressed',b===btn?'true':'false');});verdict.innerHTML=correct?'<span class="lang-en">Yes. Explain why using the data and expected variation.</span><span class="lang-es" lang="es">Sí. Explica por qué usando los datos y la variación esperada.</span>':'<span class="lang-en">Reconsider: what data does the question ask for, and can those answers vary?</span><span class="lang-es" lang="es">Reconsidera: ¿qué datos pide la pregunta y pueden variar esas respuestas?</span>';verdict.hidden=false;card.querySelector('[data-question-result]').hidden=false;});});
+    reset();
+  }
+  function initAll(){document.querySelectorAll('[data-family-question-lab]').forEach(init);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initAll);else initAll();
+})();
 
 (function () {
   "use strict";

@@ -140,6 +140,16 @@ export function familyGuidance(config = {}) {
   const id = String(config.lessonId || config.id || "");
   const unit = Number(id.split("-")[0]) || Number(config.unit) || 1;
   let [question, frame, mission] = GUIDES[unit] || GUIDES[1];
+  if (id === "2-1") {
+    question = pair(
+      "What data would answer this question, and why might those answers vary?",
+      "¿Qué datos responderían esta pregunta y por qué podrían variar esas respuestas?",
+    );
+    frame = pair(
+      "I would collect ___ from ___. I expect variation because ___.",
+      "Recopilaría ___ de ___. Espero variación porque ___.",
+    );
+  }
   if (/^3-(6|7|10)(-|$)/.test(id)) {
     question = pair(
       "What stays the same when the unit changes? Should the number get larger or smaller?",

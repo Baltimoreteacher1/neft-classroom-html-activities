@@ -1125,7 +1125,7 @@ function selectLessonInteractiveModel(config) {
         titleEs:
           candidate.titleEs ||
           (!candidate.title && meta.catalogued ? meta.nameEs : meta.nameEs || ""),
-        purposeEs: meta.purposeEs,
+        purposeEs: candidate.purposeEs || meta.purposeEs,
         html,
       };
     }

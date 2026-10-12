@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import test from "node:test";
+import { renderStatsDataLab } from "@eduwonderlab/engine/components/stats-data-lab.js";
 import { JSDOM } from "jsdom";
 import { familyGuidance } from "../scripts/homework-family-guidance.mjs";
 import { exactFamilyMission, exactFamilySupport } from "../scripts/homework-family-support.mjs";
@@ -91,8 +92,117 @@ test("share links retain the selected route and language without sharing local p
   w.history.replaceState(null, "", "?route=__proto__&lang=bad");
   w.localStorage.setItem("hw_route_3-2", "broken");
   w.restoreHomeworkRoute();
+  assert.equal(w.document.body.dataset.homeworkRoute, "full");
+  dom.window.close();
+});
+
+test("Studio is the default, migrates the old automatic core path, and retains explicit choices", () => {
+  const dom = runtime();
+  const w = dom.window;
+  w.restoreHomeworkRoute();
+  assert.equal(w.document.body.dataset.homeworkRoute, "full");
+  assert.equal(w.document.getElementById("hw_tab_play").hidden, false);
+  w.localStorage.setItem("hw_route_3-2", "core");
+  w.restoreHomeworkRoute();
+  assert.equal(w.document.body.dataset.homeworkRoute, "full");
+  w.setHomeworkRoute("core");
+  w.restoreHomeworkRoute();
   assert.equal(w.document.body.dataset.homeworkRoute, "core");
   dom.window.close();
+});
+
+test("2.1 models statistical questions and handles the common classification misconceptions", () => {
+  const dom = new JSDOM(readFileSync(lessonPath("2-1", "homework.html"), "utf8"), {
+    runScripts: "outside-only",
+  });
+  const d = dom.window.document;
+  dom.window.eval(VISUAL_LABS_JS);
+  d.dispatchEvent(new dom.window.Event("DOMContentLoaded"));
+  const lab = d.querySelector("[data-family-question-lab]");
+  assert.ok(lab, "2.1 uses the question classifier, not a statistics calculator");
+  assert.equal(d.querySelector("[data-lesson-model='stats-data-lab']"), null);
+  const select = lab.querySelector("[data-question-case]");
+  for (const [index, statistical] of [false, true, true, true, false, true].entries()) {
+    select.value = String(index);
+    select.dispatchEvent(new dom.window.Event("change", { bubbles: true }));
+    const card = lab.querySelector(`[data-question-card='${index}']`);
+    assert.equal(card.querySelector("[data-question-result]").hidden, true);
+    lab.querySelector(`[data-question-choice='${!statistical}']`).click();
+    assert.match(lab.querySelector("[data-question-verdict]").textContent, /Reconsider/);
+    lab.querySelector(`[data-question-choice='${statistical}']`).click();
+    assert.match(lab.querySelector("[data-question-verdict]").textContent, /Yes/);
+    assert.equal(card.querySelector("[data-question-result]").hidden, false);
+  }
+  assert.match(lab.querySelector("[data-question-card='2']").textContent, /repeated observations/);
+  assert.match(lab.querySelector("[data-question-card='5']").textContent, /Matching answers/);
+  dom.window.close();
+});
+
+test("statistics model focus changes what is taught, not just the heading", () => {
+  const dom = new JSDOM("<main></main>");
+  const previousDocument = globalThis.document;
+  globalThis.document = dom.window.document;
+  try {
+    const host = dom.window.document.querySelector("main");
+    const mount = (cfg) => {
+      host.innerHTML = "";
+      renderStatsDataLab(host, cfg);
+      return host;
+    };
+    let root = mount({ focus: "shape", data: [0, 2, 1, 2, 3, 2, 4, 1, 2, 3, 0, 2] });
+    assert.equal(root.querySelectorAll(".sdlab-plot circle").length, 12);
+    assert.doesNotMatch(root.querySelector(".sdlab-plot").textContent, /mean|median/);
+    assert.deepEqual(
+      [...root.querySelectorAll(".sdlab-mlabel")].map((x) => x.textContent),
+      ["Observations"],
+    );
+    root = mount({ focus: "median", data: [52, 67, 58, 62, 55, 70], max: 100 });
+    assert.equal(root.querySelector(".sdlab-mval").textContent, "60");
+    assert.match(root.querySelector(".sdlab-note").textContent, /58 and 62/);
+    assert.match(root.querySelector(".sdlab-plot").textContent, /median 60/);
+    root = mount({ focus: "mean", data: [12, 18, 14, 16] });
+    assert.deepEqual(
+      [...root.querySelectorAll(".sdlab-mval")].map((x) => x.textContent),
+      ["60", "4", "15"],
+    );
+    root.querySelector('[data-el="add"]').value = "20";
+    root.querySelector('[data-el="addbtn"]').click();
+    assert.deepEqual(
+      [...root.querySelectorAll(".sdlab-mval")].map((x) => x.textContent),
+      ["80", "5", "16"],
+    );
+    root = mount({ focus: "choose", data: [2, 4, 6, 8, 10, 12], measures: ["IQR"] });
+    assert.equal(root.querySelector(".sdlab-mval").textContent, "6");
+    assert.deepEqual(
+      [...root.querySelectorAll(".sdlab-mlabel")].map((x) => x.textContent),
+      ["IQR"],
+    );
+    root = mount({ focus: "spread", data: [6, 8, 10, 12], measures: ["Mean", "MAD"] });
+    assert.deepEqual(
+      [...root.querySelectorAll(".sdlab-mval")].map((x) => x.textContent),
+      ["9", "2"],
+    );
+  } finally {
+    globalThis.document = previousDocument;
+    dom.window.close();
+  }
+});
+
+test("later sessions use their own concept models instead of inherited first-session tasks", () => {
+  for (const [id, selector] of [
+    ["2-1-part2", "[data-family-static-model='dot-plot-shape']"],
+    ["2-3-part2", "[data-family-static-model='even-median']"],
+    ["2-8-part2", "[data-family-static-model='target-mean']"],
+    ["2-9-part2", "[data-family-static-model='compare-mad']"],
+    ["2-10-part2", "[data-family-static-model='choose-measures']"],
+    ["4-1-part2", "[data-family-paper-model='percent-over-whole']"],
+    ["4-5-part2", "[data-family-paper-model='missing-whole-equation']"],
+    ["6-8-part2", "[data-lesson-model='algebra-expand']"],
+  ]) {
+    const dom = new JSDOM(readFileSync(lessonPath(id, "homework.html"), "utf8"));
+    assert.ok(dom.window.document.querySelector(selector), `${id} uses the session-specific model`);
+    dom.window.close();
+  }
 });
 
 test("family homework offers three real practice paths without a Together stop", () => {
