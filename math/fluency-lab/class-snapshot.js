@@ -2,7 +2,8 @@
 // to see the class picture. Reports hold no names and never leave the device unless someone shares the file.
 import { loadTrail } from "./fact-trail.js";
 import { loadRewards } from "./rewards.js";
-import { localDay } from "./tutor-engine.js";
+import { evidence, localDay } from "./tutor-engine.js";
+import { getGrade } from "./problem-bank.js";
 import { STRATEGIES } from "./strategies.js";
 
 const APP = "EduWonderLab Fluency Lab facts report";
@@ -10,19 +11,34 @@ const MAX_FILES = 60;
 const escapeHtml = (value) =>
   String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 
+// Facts are "add:7:8" / "mul:6:7"; a whole skill (Grades 4-8 have skills, not facts) is "skill:6:gcf".
+const skillTitle = (grade, id) => getGrade(Number(grade))?.skills.find((skill) => skill.id === id)?.title;
 export const factLabel = (key) => {
   const [kind, a, b] = key.split(":");
+  if (kind === "skill") return `Grade ${a}: ${skillTitle(a, b) || b}`;
   return `${a} ${kind === "add" ? "+" : "×"} ${b}`;
 };
+const SKILL_KEY = /^skill:[1-8]:[a-z0-9-]{1,40}$/;
+
+// A skill is "stuck" when two or more independent tries are mostly wrong; "secure" means remembered on its own.
+function skillStatus(tutor, skill) {
+  const record = evidence(tutor, skill);
+  if (record.secure) return "secure";
+  if (record.independent >= 2 && record.ratio < 0.6) return "stuck";
+  return record.recent.length ? "growing" : null;
+}
 
 // A fact is "tricky" when the learner has missed it more often than they got it, or missed it last.
-export function factsReport(grade) {
+export function factsReport(grade, tutor = null) {
   const trail = loadTrail();
   const tricky = Object.entries(trail.facts)
     .filter(([, entry]) => entry.missed > entry.right || entry.last === false)
     .map(([key, entry]) => ({ key, right: entry.right || 0, missed: entry.missed || 0 }));
   const known = Object.entries(trail.facts).filter(([, entry]) => entry.right >= 2 && entry.last).length;
-  return { app: APP, version: 1, grade, savedOn: localDay(), tricky, known, strategies: loadRewards().strategies };
+  const skills = tutor
+    ? (getGrade(grade)?.skills || []).map((skill) => ({ key: `skill:${grade}:${skill.id}`, status: skillStatus(tutor, skill) })).filter((entry) => entry.status)
+    : [];
+  return { app: APP, version: 1, grade, savedOn: localDay(), tricky, known, skills, strategies: loadRewards().strategies };
 }
 
 export function parseFactsReport(value) {
@@ -34,24 +50,38 @@ export function parseFactsReport(value) {
   const strategies = {};
   for (const id of Object.keys(STRATEGIES)) if (Number(value.strategies?.[id]) > 0) strategies[id] = Math.min(Number(value.strategies[id]), 100000);
   const savedOn = /^\d{4}-\d{2}-\d{2}$/.test(value.savedOn) ? value.savedOn : "";
-  return { grade: Number(value.grade) || 0, savedOn, tricky, known: Number(value.known) || 0, strategies };
+  // Reports saved before skills were added have none; they still count for facts.
+  const skills = (Array.isArray(value.skills) ? value.skills : [])
+    .filter((entry) => SKILL_KEY.test(entry?.key) && ["stuck", "growing", "secure"].includes(entry.status))
+    .slice(0, 20)
+    .map((entry) => ({ key: entry.key, status: entry.status }));
+  return { grade: Number(value.grade) || 0, savedOn, tricky, known: Number(value.known) || 0, skills, strategies };
 }
 
 export function summarizeReports(reports) {
   const counts = new Map();
+  const skills = new Map();
   const strategies = {};
   for (const report of reports) {
     for (const { key } of report.tricky) counts.set(key, (counts.get(key) || 0) + 1);
+    for (const { key, status } of report.skills || []) {
+      const row = skills.get(key) || { key, stuck: 0, growing: 0, secure: 0 };
+      row[status] += 1;
+      skills.set(key, row);
+    }
     for (const [id, n] of Object.entries(report.strategies)) strategies[id] = (strategies[id] || 0) + n;
   }
   const facts = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 12);
-  return { students: reports.length, facts, strategies };
+  const skillRows = [...skills.values()].sort((a, b) => b.stuck - a.stuck || b.growing - a.growing || a.key.localeCompare(b.key));
+  return { students: reports.length, facts, skills: skillRows, strategies };
 }
 
 export function snapshotHtml(summary) {
   const strategyRows = Object.entries(summary.strategies).sort((a, b) => b[1] - a[1]);
-  return `<h3>Class facts snapshot</h3><p>${summary.students} learner report${summary.students === 1 ? "" : "s"} read on this device. Nothing was uploaded.</p>
-    ${summary.facts.length ? `<ol class="snap-facts">${summary.facts.map(([key, n]) => `<li><b>${escapeHtml(factLabel(key))}</b> <span>${n} of ${summary.students} learners still finding this tricky</span></li>`).join("")}</ol>` : "<p>No tricky facts showed up in these reports.</p>"}
+  const skills = summary.skills || [];
+  return `<h3>Class snapshot</h3><p>${summary.students} learner report${summary.students === 1 ? "" : "s"} read on this device. Nothing was uploaded.</p>
+    ${summary.facts.length ? `<ol class="snap-facts">${summary.facts.map(([key, n]) => `<li><b>${escapeHtml(factLabel(key))}</b> <span>${n} of ${summary.students} learners still finding this tricky</span></li>`).join("")}</ol>` : skills.length ? "" : "<p>No tricky facts showed up in these reports.</p>"}
+    ${skills.length ? `<h4>Skills</h4><table class="snap-skills"><thead><tr><th scope="col">Skill</th><th scope="col">Stuck</th><th scope="col">Still growing</th><th scope="col">Remembered</th></tr></thead><tbody>${skills.map((row) => `<tr><th scope="row">${escapeHtml(factLabel(row.key))}</th><td>${row.stuck}</td><td>${row.growing}</td><td>${row.secure}</td></tr>`).join("")}</tbody></table>` : ""}
     ${strategyRows.length ? `<h4>How learners say they think</h4><ul class="snap-strategies">${strategyRows.map(([id, n]) => `<li>${STRATEGIES[id].icon} ${escapeHtml(STRATEGIES[id].label)}: ${n}</li>`).join("")}</ul>` : ""}`;
 }
 
@@ -59,7 +89,10 @@ export function snapshotHtml(summary) {
 export function compareReports(before, after) {
   const count = (reports) => {
     const map = new Map();
-    for (const report of reports) for (const { key } of report.tricky) map.set(key, (map.get(key) || 0) + 1);
+    for (const report of reports) {
+      for (const { key } of report.tricky) map.set(key, (map.get(key) || 0) + 1);
+      for (const { key, status } of report.skills || []) if (status === "stuck") map.set(key, (map.get(key) || 0) + 1);
+    }
     return map;
   };
   const [was, now] = [count(before), count(after)];
@@ -99,7 +132,7 @@ async function readReports(files) {
 }
 
 export function mountSnapshot(container) {
-  container.innerHTML = `<section class="class-snapshot" aria-labelledby="snap-title"><h3 id="snap-title">Class facts snapshot</h3><p>Ask learners to use “Download my facts report” on the practice page, then open several of their files here. The reports hold no names.</p><label class="outline-action file-button">Open facts reports<input id="snap-files" type="file" multiple accept="application/json,.json"/></label><div id="snap-result" aria-live="polite"></div>
+  container.innerHTML = `<section class="class-snapshot" aria-labelledby="snap-title"><h3 id="snap-title">Class snapshot</h3><p>Ask learners to use “Download my facts report” on the practice page, then open several of their files here. Each report lists tricky facts and how each skill in its grade is going. The reports hold no names.</p><label class="outline-action file-button">Open facts reports<input id="snap-files" type="file" multiple accept="application/json,.json"/></label><div id="snap-result" aria-live="polite"></div>
     <h3>Compare two weeks</h3><p>Open last week\u2019s reports, then this week\u2019s, to see which facts got easier.</p>
     <div class="button-row"><label class="outline-action file-button">Earlier reports<input id="snap-before" type="file" multiple accept="application/json,.json"/></label><span id="snap-before-count" aria-live="polite"></span><label class="outline-action file-button">Newer reports<input id="snap-after" type="file" multiple accept="application/json,.json"/></label><span id="snap-after-count" aria-live="polite"></span></div><div id="snap-compare-result" aria-live="polite"></div></section>`;
   container.querySelector("#snap-files").addEventListener("change", async (event) => {

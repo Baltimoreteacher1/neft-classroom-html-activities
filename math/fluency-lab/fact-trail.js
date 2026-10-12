@@ -613,6 +613,9 @@ export function recordRound(data, grade, stationId, firstTry, total) {
 }
 
 export function recordFact(data, item, firstTry) {
+  // Trail and game answers are also skill evidence: the page records them in the tutor, so one learner has one
+  // picture of what they know rather than trail stars on one screen and "Getting started" on another.
+  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("fluency-fact", { detail: { item, firstTry } }));
   const key = chartKey(item);
   if (!key) return;
   const entry = data.facts[key] || { right: 0, missed: 0 };

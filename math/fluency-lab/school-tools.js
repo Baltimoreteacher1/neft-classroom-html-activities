@@ -17,13 +17,22 @@ export function writeLocal(key, value) {
     return false;
   }
 }
+// The learner in use belongs to the tab: two tabs on one device can hold two learners without one tab's trail
+// stars or stickers landing in the other learner's record. localStorage keeps the last choice for new tabs.
+const TAB_PROFILE_KEY = "ewl-fluency-tab-profile";
+const tabProfile = () => { try { const raw = sessionStorage.getItem(TAB_PROFILE_KEY); return raw == null ? null : Number(raw); } catch { return null; } };
 export function profiles() {
   const stored = readLocal(PROFILE_KEY, {});
   const ids = [...new Set((Array.isArray(stored.ids) ? stored.ids : [0]).filter((id) => Number.isInteger(id) && id >= 0 && id < PROFILE_NAMES.length))];
   if (!ids.length) ids.push(0);
-  return { ids, active: ids.includes(stored.active) ? stored.active : ids[0] };
+  const tab = tabProfile();
+  const active = ids.includes(tab) ? tab : ids.includes(stored.active) ? stored.active : ids[0];
+  return { ids, active };
 }
-export function selectProfile(id) { const data = profiles(); if (!data.ids.includes(id)) data.ids.push(id); data.active = id; writeLocal(PROFILE_KEY, data); }
+export function selectProfile(id) {
+  const data = profiles(); if (!data.ids.includes(id)) data.ids.push(id); data.active = id; writeLocal(PROFILE_KEY, data);
+  try { sessionStorage.setItem(TAB_PROFILE_KEY, String(id)); } catch { /* the tab then follows the device's last choice */ }
+}
 export const profileKey = (base, id) => id === 0 ? base : `${base}:profile-${id}`;
 
 export function cleanProgress(value) {

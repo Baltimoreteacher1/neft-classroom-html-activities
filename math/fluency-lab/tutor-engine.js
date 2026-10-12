@@ -1,5 +1,5 @@
 import { likelyMistake } from "./mistake-notes.js";
-import { ALL_SKILLS, generateProblem, getGrade, opsOf, resolveOp, seededRandom } from "./problem-bank.js";
+import { ALL_SKILLS, GENERATOR_PARTS, baseGenerator, generateProblem, getGrade, opsOf, resolveOp, seededRandom } from "./problem-bank.js";
 
 export const DAY = 86400000;
 const SPACING_MS = 18 * 3600 * 1000;
@@ -27,11 +27,43 @@ const FOUNDATIONS = {
   "8:pythagorean": ["8:square-roots", "8:exponents"],
 };
 
+// Which of a grade's skills a trail or game answer is evidence for. A whole-number fact goes to the fact skill
+// with that operation whose number ranges hold it; any other item goes to the skill built on its generator.
+const FACT_OPS = { "+": "add", "−": "sub", "×": "mul", "÷": "div" };
+const within = (value, low, high) => value >= (low ?? 0) && value <= (high ?? Infinity);
+function factFits(config, op, a, b, answer, turned = true) {
+  const c = config || {};
+  if (op === "add") return within(a, c.min, c.max) && within(b, c.min, c.max) && answer <= (c.maxResult ?? (c.max ?? 10) * 2);
+  if (op === "sub") return within(answer, c.min, c.max) && within(b, c.min, c.max);
+  if (op === "mul") {
+    const [lowA, highA] = c.factors ? [Math.min(...c.factors), Math.max(...c.factors)] : [c.minA ?? c.min, c.maxA ?? c.max];
+    const [lowB, highB] = [c.minB ?? c.min, c.maxB ?? c.max];
+    const tens = (n) => (c.tens ? n % 10 === 0 && within(n / 10, lowB, highB) : within(n, lowB, highB));
+    return (within(a, lowA, highA) && tens(b)) || (turned && within(b, lowA, highA) && tens(a));
+  }
+  return within(b, c.minDivisor ?? 1, c.maxDivisor ?? c.max) && within(answer, c.minQuotient ?? 1, c.maxQuotient ?? c.max);
+}
+export function skillForItem(grade, item) {
+  const skills = getGrade(grade)?.skills || [];
+  const fact = String(item?.question || "").replaceAll(",", "").match(/^(\d+) ([+−×÷]) (\d+) = \?$/);
+  if (fact && ["fact", "factPool"].includes(item.generator)) {
+    const [a, b, op, answer] = [Number(fact[1]), Number(fact[3]), FACT_OPS[fact[2]], Number(item.answers?.[0])];
+    const facts = skills.filter((skill) => skill.generator === "fact" && opsOf(skill.config).includes(op));
+    // 7 × 4 is a ×6–9 fact as written; it only counts as a ×4 fact when no skill holds it the way it is written.
+    return facts.find((skill) => factFits(skill.config, op, a, b, answer, false)) || facts.find((skill) => factFits(skill.config, op, a, b, answer)) || facts[0] || null;
+  }
+  // An operation skill ("Multiply and divide integers") only takes items with one of its operations.
+  const op = FACT_OPS[String(item?.question || "").match(/ ([+−×÷]) /)?.[1]];
+  return skills.find((skill) =>
+    (skill.generator === item?.generator || GENERATOR_PARTS[skill.generator]?.includes(item?.generator)) &&
+    (!skill.config?.op || !op || opsOf(skill.config).includes(op))) || null;
+}
+
 export function prerequisites(skill) {
   const explicit = (FOUNDATIONS[skillKey(skill)] || []).map(findSkill).filter(Boolean);
   if (explicit.length) return explicit;
   // A mixed skill ("add and subtract") builds on an earlier skill that practised either operation.
-  const earlier = ALL_SKILLS.filter((candidate) => candidate.grade < skill.grade && candidate.generator === skill.generator && opsOf(candidate.config).some((op) => opsOf(skill.config).includes(op)));
+  const earlier = ALL_SKILLS.filter((candidate) => candidate.grade < skill.grade && baseGenerator(candidate) === baseGenerator(skill) && opsOf(candidate.config).some((op) => opsOf(skill.config).includes(op)));
   return earlier.length ? [earlier.at(-1)] : [];
 }
 

@@ -66,7 +66,7 @@ export function renderModel(model, { counters, counterPositions, partitions = 1,
 export function renderInlineProblemModel(skill, item) {
   if (item?.model) return renderModel(item.model, { counters: item.model.shown });
   const point = item?.question?.match(/\((-?\d+),\s*(-?\d+)\)/);
-  if (point && ["coordinate", "transform"].includes(skill?.generator)) {
+  if (point && ["coordinate", "transform", "numberPlane"].includes(skill?.generator)) {
     const [x, y] = [Number(point[1]), Number(point[2])];
     return renderModel({ type: "coordinate", points: [[x, y]], caption: `Coordinate plane showing point (${x}, ${y})` });
   }

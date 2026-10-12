@@ -1,3 +1,5 @@
+import { baseGenerator } from "./problem-bank.js";
+
 const step = (prompt, answer, hint, explanation, kind = "number", choices = null) => ({ prompt, answers: [String(answer)], kind, choices, hint, explanation });
 const lesson = (title, idea, model, steps) => ({ title, idea, model, steps });
 const num = (value) => Number(value.toFixed(6));
@@ -7,10 +9,10 @@ const num = (value) => Number(value.toFixed(6));
 export function createLesson(skill, variant = 0) {
   const k = Math.abs(variant) % 5;
   const grade = skill.grade || 1;
-  // A combined skill ("addsub", "muldiv") shows one operation per variant; "expression" teaches as evaluate.
+  // A combined skill ("addsub", "muldiv") shows one operation per variant; a mixed generator teaches as its main part.
   const MIXED = { addsub: ["add", "sub"], muldiv: ["mul", "div"] };
   const config = MIXED[skill.config.op] ? { ...skill.config, op: MIXED[skill.config.op][k % 2] } : skill.config;
-  const gen = skill.generator === "expression" ? "evaluate" : skill.generator;
+  const gen = baseGenerator(skill);
   if (gen === "fact") {
     const op = config.op;
     if (op === "div") {

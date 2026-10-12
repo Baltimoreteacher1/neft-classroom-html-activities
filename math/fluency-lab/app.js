@@ -7,7 +7,7 @@ import {
   seededRandom,
   validateAnswer,
 } from "./problem-bank.js";
-import { adaptiveProblem, dailyPlan, diagnosticPlan, difficulty, emptyTutor, evidence, feedbackFor, findSkill, localDay, prerequisites, recommendations, recordAnswer, rememberMistake, sanitizeTutor, skillKey as tutorSkillKey } from "./tutor-engine.js";
+import { adaptiveProblem, dailyPlan, diagnosticPlan, difficulty, emptyTutor, evidence, feedbackFor, findSkill, localDay, prerequisites, recommendations, recordAnswer, rememberMistake, sanitizeTutor, skillForItem, skillKey as tutorSkillKey } from "./tutor-engine.js";
 import { mountVisualLesson, renderModel, renderInlineProblemModel } from "./visual-lab.js";
 import { transferPrompt } from "./lesson-content.js";
 import { handleModelInput, handleModelTap, interactivePicture, mathText, openFillRow, stepVisual, stepWaiting, stepsBlock, trailPicture } from "./trail-pictures.js";
@@ -35,6 +35,8 @@ const SESSION_KEY = "ewl-fluency-session-v2";
 const STREAK_GOAL = 10;
 const initialParams = new URLSearchParams(location.search);
 let activeProfile = profiles().active;
+// Pin this tab to its learner now, so another tab switching learners later cannot move this one.
+selectProfile(activeProfile);
 let cleanupVisual = null;
 let cleanupTrail = null;
 let cleanupGames = null;
@@ -203,7 +205,7 @@ function setUrl() {
 function renderGradeTabs() {
   els.gradeTabs.innerHTML = GRADES.map(
     (grade) => `
-      <button class="grade-tab" role="tab" aria-selected="${grade.grade === state.grade}" data-grade="${grade.grade}" style="--grade:${grade.color}">
+      <button class="grade-tab" role="tab" aria-selected="${grade.grade === state.grade}" tabindex="${grade.grade === state.grade ? 0 : -1}" aria-controls="library-view" data-grade="${grade.grade}" style="--grade:${grade.color}">
         <span>${t("Grade")}</span><strong>${grade.grade}</strong>
       </button>`,
   ).join("");
@@ -332,7 +334,7 @@ function openSkill(skillId, mode = "learn", targetGrade = null) {
   document.documentElement.style.setProperty("--grade", grade.color);
   els.workspaceGrade.textContent = grade.label;
   els.workspaceTitle.textContent = state.skill.title;
-  els.workspaceStandard.textContent = `${state.skill.strand} · ${state.skill.standard}`;
+  els.workspaceStandard.textContent = `${state.skill.strand} · ${state.skill.standard}${state.skill.formerStandard ? ` (was ${state.skill.formerStandard})` : ""}`;
   renderMastery();
   renderModeTabs();
   renderLearn();
@@ -375,9 +377,11 @@ function renderMastery() {
     : status.label;
 }
 
+// Each mode tab shows one panel; a tab list is one stop for Tab, and the arrow keys move between its tabs.
+const MODE_PANEL = { learn: "learn-panel", visual: "visual-panel", guided: "drill-panel", practice: "drill-panel", streak: "drill-panel" };
 function renderModeTabs(mixed = false) {
   els.modeTabs.innerHTML = mixed
-    ? `<button role="tab" aria-selected="true" data-mode="${state.mode}">${state.mode === "daily" ? "Today's 10" : "Mixed review"}</button>`
+    ? `<button role="tab" aria-selected="true" aria-controls="drill-panel" data-mode="${state.mode}">${state.mode === "daily" ? "Today's 10" : "Mixed review"}</button>`
     : [
         ["learn", "Learn it"],
         ["visual", "Build it"],
@@ -387,7 +391,7 @@ function renderModeTabs(mixed = false) {
       ]
         .map(
           ([mode, label]) =>
-            `<button role="tab" aria-selected="${mode === state.mode}" data-mode="${mode}">${label}</button>`,
+            `<button role="tab" aria-selected="${mode === state.mode}" tabindex="${mode === state.mode ? 0 : -1}" aria-controls="${MODE_PANEL[mode]}" data-mode="${mode}">${label}</button>`,
         )
         .join("");
 }
@@ -428,6 +432,7 @@ function setMode(mode) {
   state.mode = mode;
   els.modeTabs.querySelectorAll("[role=tab]").forEach((tab) => {
     tab.setAttribute("aria-selected", String(tab.dataset.mode === mode));
+    tab.tabIndex = tab.dataset.mode === mode ? 0 : -1;
   });
   const isLearn = mode === "learn" || mode === "visual";
   els.visualPanel.hidden = mode !== "visual";
@@ -954,7 +959,7 @@ function openPlanned(mode, queue) {
   document.title = `${els.workspaceTitle.textContent} | Math Fluency Lab`;
   els.workspaceStandard.textContent = mode === "diagnostic" ? "Ten samples to help you choose your next step" : "Fresh problems from your selected skills";
   els.masteryMeter.value = 0; els.masteryLabel.textContent = "Learning across skills";
-  els.modeTabs.innerHTML = `<button role="tab" aria-selected="true">${mode === 'diagnostic' ? 'Checkup' : mode === 'daily' ? "Today's 10" : mode === 'assignment' ? 'Class practice' : 'Repair practice'}</button>`;
+  els.modeTabs.innerHTML = `<button role="tab" aria-selected="true" aria-controls="drill-panel">${mode === 'diagnostic' ? 'Checkup' : mode === 'daily' ? "Today's 10" : mode === 'assignment' ? 'Class practice' : 'Repair practice'}</button>`;
   beginSession(mode, queue.length, queue); setUrl();
   els.workspace.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -1221,7 +1226,7 @@ document.querySelector("#sound-toggle").addEventListener("click", () => { setSou
 document.querySelector("#print-certificate").addEventListener("click", () => printHtml(certificateHtml({ grade: state.grade, name: PROFILE_NAMES[activeProfile] })));
 document.querySelector("#print-family").addEventListener("click", () => printHtml(familySummaryHtml({ grade: state.grade, name: PROFILE_NAMES[activeProfile] })));
 document.querySelector("#download-family").addEventListener("click", () => downloadFile(`fluency-family-${PROFILE_NAMES[activeProfile].toLowerCase()}-${localDay()}.html`, familySummaryDocument({ grade: state.grade, name: PROFILE_NAMES[activeProfile] }), "text/html"));
-document.querySelector("#download-facts").addEventListener("click", () => downloadFile(`fluency-facts-grade-${state.grade}-${localDay()}.json`, JSON.stringify(factsReport(state.grade), null, 2)));
+document.querySelector("#download-facts").addEventListener("click", () => downloadFile(`fluency-facts-grade-${state.grade}-${localDay()}.json`, JSON.stringify(factsReport(state.grade, state.tutor), null, 2)));
 document.querySelector("#download-report").addEventListener("click", () => downloadFile(`fluency-grade-${state.grade}-${localDay()}.csv`, progressReport(state.tutor, state.grade), "text/csv"));
 document.querySelector("#restore-progress").addEventListener("change", async (event) => {
   const file = event.target.files?.[0]; if (!file) return;
@@ -1245,7 +1250,21 @@ document.querySelector("#restore-preview").addEventListener("click", (event) => 
     pendingRestore = null; event.currentTarget.hidden = true; announce("Progress restored into the current learner profile.");
   }
 });
+// A trail stop or game answer counts toward the matching skill, so the dashboard and the trail agree. Games are
+// untimed and offer no hints, so a first-try answer there is independent evidence, like one in practice.
+window.addEventListener("fluency-fact", ({ detail }) => {
+  const skill = detail?.item && skillForItem(state.grade, detail.item);
+  if (!skill) return;
+  recordAnswer(state.tutor, skill, { correct: Boolean(detail.firstTry), independent: true, level: 1 });
+  saveProgress();
+});
 window.addEventListener("fluency-storage-unavailable", () => { document.querySelector("#storage-warning").hidden = false; });
+// Another tab practising as the same learner saved: adopt its progress before this tab writes again, so the
+// later save builds on it instead of replacing it with this tab's older copy.
+window.addEventListener("storage", (event) => {
+  if (event.key === profileKey(STORAGE_KEY, activeProfile)) state.progress = cleanProgress(loadJson(STORAGE_KEY, {}));
+  else if (event.key === profileKey(TUTOR_KEY, activeProfile)) state.tutor = sanitizeTutor(loadJson(TUTOR_KEY, emptyTutor()));
+});
 window.addEventListener("pagehide", saveActiveSession);
 for (const tablist of [els.gradeTabs, els.modeTabs]) tablist.addEventListener("keydown", (event) => {
   if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;

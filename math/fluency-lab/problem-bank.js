@@ -680,6 +680,22 @@ const generators = {
     });
   },
 
+  // Grade 6 absolute value shares the skill with plotting in four quadrants (6.NS.C.6-7): both read a signed
+  // number as a position relative to zero.
+  numberPlane(config, rng) {
+    return rng() < 0.35 ? generators.coordinate(config, rng) : generators.absolute(config, rng);
+  },
+
+  // Grade 6 unit rates include converting measurement units with the same ratio reasoning (6.RP.A.3d).
+  rateConversion(config, rng) {
+    return rng() < 0.35 ? generators.conversion(config, rng) : generators.unitRate(config, rng);
+  },
+
+  // Grade 7 probability sits beside the measures of centre used to compare data sets (7.SP.B.4, 7.SP.C.7).
+  dataChance(config, rng) {
+    return rng() < 0.35 ? generators.stats(config, rng) : generators.probability(config, rng);
+  },
+
   // Evaluate expressions covers both substitution and the order of operations (6.EE.A.1-2).
   expression(config, rng) {
     return rng() < 0.4 ? generators.orderOps(config, rng) : generators.evaluate(config, rng);
@@ -803,6 +819,8 @@ const generators = {
       choices: ["I", "II", "III", "IV"],
       hint: "Read x first (left/right), then y (down/up).",
       explanation: `(${x}, ${y}) is in Quadrant ${answer}.`,
+      model: { type: "coordinate", points: [[x, y]], caption: "Find the point: x tells left or right, y tells down or up" },
+      steps: [`x = ${x} is ${x > 0 ? "positive, so the point is right of" : "negative, so the point is left of"} the y-axis.`, `y = ${y} is ${y > 0 ? "positive, so the point is above" : "negative, so the point is below"} the x-axis.`, "The quadrants are numbered counterclockwise from the top right: right and up, left and up, left and down, right and down.", `(${x}, ${y}) is in Quadrant ${answer}.`],
     });
   },
 
@@ -860,25 +878,28 @@ const generators = {
       hint: `Each ${from.replace(/s$/, "")} has ${factor} ${to}. Multiply.`,
       explanation: `${amount} × ${factor} = ${amount * factor} ${to}.`,
       unit: to,
+      steps: [`1 ${from.replace(/s$/, "")} = ${factor} ${to}.`, `${amount} ${from} is ${amount} groups of ${factor} ${to}: ${amount} × ${factor}.`, `${amount} × ${factor} = ${amount * factor} ${to}.`],
     });
   },
 
   stats(config, rng) {
     const type = config.type || pick(["mean", "median", "range"], rng);
     if (type === "mean") {
-      const mean = randInt(3, 20, rng);
+      const mean = randInt(5, 20, rng);
       const d1 = randInt(1, 5, rng);
       const d2 = randInt(1, 5, rng);
       const values = [mean - d1, mean + d1, mean - d2, mean + d2];
-      return problem(`Find the mean: ${values.join(", ")}.`, mean, { hint: "Add the values, then divide by how many values there are.", explanation: `The sum is ${mean * 4}; ${mean * 4} ÷ 4 = ${mean}.` });
+      return problem(`Find the mean: ${values.join(", ")}.`, mean, { hint: "Add the values, then divide by how many values there are.", explanation: `The sum is ${mean * 4}; ${mean * 4} ÷ 4 = ${mean}.`, steps: [`Add the values: ${values.join(" + ")} = ${mean * 4}.`, "There are 4 values, so share the sum equally among 4: divide by 4.", `${mean * 4} ÷ 4 = ${mean}.`] });
     }
     if (type === "median") {
-      const values = Array.from({ length: 5 }, () => randInt(1, 30, rng)).sort((a, b) => a - b);
-      return problem(`Find the median: ${values.join(", ")}.`, values[2], { hint: "Put values in order and choose the middle one.", explanation: `${values[2]} is the middle value.` });
+      // Shown unordered: putting the values in order is the first step of finding a median.
+      const shown = Array.from({ length: 5 }, () => randInt(1, 30, rng));
+      const values = [...shown].sort((a, b) => a - b);
+      return problem(`Find the median: ${shown.join(", ")}.`, values[2], { hint: "Put values in order and choose the middle one.", explanation: `${values[2]} is the middle value.`, steps: [`Put the values in order: ${values.join(", ")}.`, "There are 5 values, so the middle one is the 3rd: two values sit on each side of it.", `The median is ${values[2]}.`] });
     }
     const values = Array.from({ length: 5 }, () => randInt(1, 40, rng));
     const answer = Math.max(...values) - Math.min(...values);
-    return problem(`Find the range: ${values.join(", ")}.`, answer, { hint: "Range = greatest value − least value.", explanation: `${Math.max(...values)} − ${Math.min(...values)} = ${answer}.` });
+    return problem(`Find the range: ${values.join(", ")}.`, answer, { hint: "Range = greatest value − least value.", explanation: `${Math.max(...values)} − ${Math.min(...values)} = ${answer}.`, steps: [`The greatest value is ${Math.max(...values)}.`, `The least value is ${Math.min(...values)}.`, `${Math.max(...values)} − ${Math.min(...values)} = ${answer}.`] });
   },
 
   association(_config, rng) {
@@ -1058,11 +1079,11 @@ export const GRADES = [
       S("divide-fractions", "Divide fractions", "Number system", "fractionOp", { op: "div", maxDenominator: 10 }, "6.NS.A.1", L("Dividing by a fraction is multiplying by its reciprocal.", ["Keep the first fraction.", "Change division to multiplication and flip the second fraction.", "Multiply and simplify."], "2/3 ÷ 4/5 = 2/3 × 5/4 = 5/6", "Flip only the divisor, not both fractions.")),
       S("decimal-ops", "Multiply and divide decimals", "Number system", "decimalOp", { op: "muldiv" }, "6.NS.B.3", L("Estimate, multiply, and place the decimal by value.", ["Estimate the size.", "Multiply as whole numbers.", "Place the decimal so the result matches the estimate."], "3.2 × 1.5 = 4.8", "A product can be smaller when a factor is less than 1.")),
       S("ratios", "Equivalent ratios", "Ratios", "ratio", { maxPart: 12, maxFactor: 9 }, "6.RP.A.1", L("Equivalent ratios scale both quantities by the same factor.", ["Find the scale factor.", "Multiply or divide both quantities.", "Check the comparison stayed the same."], "3:5 scaled by 4 is 12:20.", "Adding the same amount to both terms does not preserve the ratio.")),
-      S("unit-rates", "Unit rates", "Ratios", "unitRate", { maxCount: 12, maxRate: 25 }, "6.RP.A.2", L("A unit rate tells the amount for exactly one unit.", ["Write the rate as a division.", "Divide by the number of units.", "Label per 1."], "72 miles in 3 hours is 24 miles per hour.", "Keep units attached so the rate is not reversed.")),
+      S("unit-rates", "Unit rates and unit conversions", "Ratios", "rateConversion", { maxCount: 12, maxRate: 25 }, "6.RP.A.2", L("A unit rate tells the amount for exactly one unit.", ["Write the rate as a division.", "Divide by the number of units.", "Label per 1."], "72 miles in 3 hours is 24 miles per hour.", "Keep units attached so the rate is not reversed.")),
       S("percent", "Percent of a number", "Ratios", "percent", {}, "6.RP.A.3", L("Percent means per 100.", ["Rewrite the percent as a decimal or fraction.", "Multiply by the whole.", "Check against useful benchmarks."], "25% of 60 = 1/4 of 60 = 15", "Use the original whole as the base.")),
       S("evaluate", "Evaluate expressions", "Expressions", "expression", {}, "6.EE.A.2", L("Evaluation replaces a variable with its given value.", ["Substitute using parentheses.", "Follow order of operations.", "Simplify carefully."], "3x + 2 when x = 4 is 3(4) + 2 = 14.", "Substitution changes the variable, not the operation signs.")),
       S("one-step", "Solve one-step equations", "Equations", "solve", { oneStep: true }, "6.EE.B.7", L("An equation stays balanced when the same operation is used on both sides.", ["Identify the operation on x.", "Use its inverse on both sides.", "Substitute to check."], "x + 7 = 19, so x = 12.", "The goal is to isolate the variable, not move symbols without meaning.")),
-      S("integers", "Absolute value of integers", "Number system", "absolute", { min: -100, max: 100 }, "6.NS.C.7", L("Absolute value is a number's distance from zero.", ["Locate the number relative to zero.", "Count the distance.", "Write the distance as nonnegative."], "|−18| = 18", "Absolute value is not the same as making every number positive in an equation.")),
+      S("integers", "Absolute value and the coordinate plane", "Number system", "numberPlane", { min: -100, max: 100 }, "6.NS.C.7", L("Absolute value is a number's distance from zero.", ["Locate the number relative to zero.", "Count the distance.", "Write the distance as nonnegative."], "|−18| = 18", "Absolute value is not the same as making every number positive in an equation.")),
     ],
   },
   {
@@ -1080,7 +1101,7 @@ export const GRADES = [
       S("equations", "Two-step equations", "Equations", "solve", {}, "7.EE.B.4", L("Undo operations in reverse order while keeping the equation balanced.", ["Undo addition or subtraction.", "Undo multiplication or division.", "Substitute to verify."], "3x + 5 = 20 → 3x = 15 → x = 5", "Perform each inverse operation on both sides.")),
       S("inequalities", "Test inequality solutions", "Equations", "inequality", {}, "7.EE.B.4", L("A solution makes an inequality statement true.", ["Substitute the test value.", "Compare the two sides.", "Answer yes or no."], "8 is a solution to x > 5 because 8 > 5.", "The open side of the symbol faces the greater value.")),
       S("circle-area", "Circle area fluency", "Geometry", "geometry", { shape: "circle" }, "7.G.B.4", L("A circle's area is π times the square of its radius.", ["Identify the radius.", "Square the radius.", "Multiply by π or leave the answer in terms of π."], "r = 6 gives A = 36π.", "Square the radius, not πr.")),
-      S("probability", "Simple probability", "Statistics", "probability", { maxTotal: 24 }, "7.SP.C.7", L("Probability compares favorable outcomes with all possible outcomes.", ["Count favorable outcomes.", "Count total outcomes.", "Write and simplify the fraction."], "3 winning sections out of 8 gives P(win) = 3/8.", "The denominator counts all equally likely outcomes.")),
+      S("probability", "Probability and measures of center", "Statistics", "dataChance", { maxTotal: 24 }, "7.SP.C.7", L("Probability compares favorable outcomes with all possible outcomes.", ["Count favorable outcomes.", "Count total outcomes.", "Write and simplify the fraction."], "3 winning sections out of 8 gives P(win) = 3/8.", "The denominator counts all equally likely outcomes.")),
     ],
   },
   {
@@ -1105,6 +1126,19 @@ export const GRADES = [
 
 for (const grade of GRADES) for (const skill of grade.skills) skill.grade = grade.grade;
 
+// Maryland re-coded Grade 6 for SY 2026-27 (2025 MCCRS). Codes from the verified MSDE crosswalk in
+// data/standards-crosswalk-2025.json, in the short form the site's lessons use. Other grades keep their CCSS
+// codes until a verified crosswalk for them exists.
+const MCCRS_2025 = {
+  "6.NS.A.1": "6.NOS.1", "6.NS.B.3": "6.NOS.3", "6.NS.B.4": "6.NOS.4", "6.NS.C.7": "6.NOS.8",
+  "6.RP.A.1": "6.AT.1", "6.RP.A.2": "6.AT.2", "6.RP.A.3": "6.AT.3", "6.EE.A.2": "6.AT.6", "6.EE.B.7": "6.AT.8",
+};
+for (const skill of GRADES.find((grade) => grade.grade === 6).skills) {
+  if (!MCCRS_2025[skill.standard]) continue;
+  skill.formerStandard = skill.standard;
+  skill.standard = MCCRS_2025[skill.standard];
+}
+
 export const ALL_SKILLS = GRADES.flatMap((grade) =>
   grade.skills.map((skill) => ({ ...skill, grade: grade.grade, gradeLabel: grade.label, color: grade.color })),
 );
@@ -1124,6 +1158,9 @@ export function resolveOp(config, rng) {
   return pair ? { ...config, op: pair[rng() < 0.5 ? 0 : 1] } : config;
 }
 export const opsOf = (config) => MIXED_OPS[config?.op] || [config?.op];
+// A mixed generator draws from two generators; lessons and prerequisites follow its main (first) part.
+export const GENERATOR_PARTS = { expression: ["evaluate", "orderOps"], numberPlane: ["absolute", "coordinate"], rateConversion: ["unitRate", "conversion"], dataChance: ["probability", "stats"] };
+export const baseGenerator = (skill) => GENERATOR_PARTS[skill?.generator]?.[0] || skill?.generator;
 
 // Filler no learner needs to compute: a zero operand, a number minus itself, or times one. Zero facts still
 // appear (about one problem in ten) because they are real facts; they just stop dominating early grades.
@@ -1137,6 +1174,8 @@ export function generateProblem(skill, rng = Math.random) {
   for (let attempt = 0; attempt < 8 && isFiller(item.question) && rng() > 0.1; attempt += 1) {
     item = generator(resolveOp(skill.config || {}, rng), rng);
   }
+  // The trail and games record answers by generator, so the tutor can credit the matching skill.
+  item.generator = skill.generator;
   item.steps = detailSteps(item) || item.steps;
   // A generator with no authored steps would otherwise open "Watch me solve it" on the answer itself:
   // lead with the skill's own strategy lines and state the worked line last.

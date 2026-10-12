@@ -449,7 +449,8 @@ function gridSvg(points, { rise = null } = {}) {
     body += `<path class="tp-run" d="M${x(x1)},${y(y1)} H${x(x2)}"/><path class="tp-rise" d="M${x(x2)},${y(y1)} V${y(y2)}"/>`;
   }
   body += points.map(([px, py, label]) => `<circle class="tp-pt" cx="${x(px)}" cy="${y(py)}" r="6"/><text class="tp-pt-label" x="${x(px) + 8}" y="${y(py) - 9}">${esc(label)}</text>`).join("");
-  return `<svg class="tp-gridsvg" viewBox="0 0 300 300" role="img" aria-label="Coordinate grid">${body}</svg>`;
+  const named = points.map(([px, py]) => `(${fmtN(px)}, ${fmtN(py)})`).join(", ");
+  return `<svg class="tp-gridsvg" viewBox="0 0 300 300" role="img" aria-label="${esc(`Coordinate grid with ${points.length === 1 ? "the point" : "the points"} ${named}, one square per unit`)}">${body}</svg>`;
 }
 
 function picture(kind, model) {
@@ -473,7 +474,7 @@ function picture(kind, model) {
     const [lo, hi] = [Math.min(...ys), Math.max(...ys)];
     const px = (i) => 30 + (i / Math.max(1, xs.length - 1)) * 220;
     const py = (v) => 130 - ((v - lo) / Math.max(1, hi - lo)) * 100;
-    return `<svg class="tp-shape" viewBox="0 0 280 150" role="img" aria-label="Scatter plot of the data"><path class="tp-grid axis" d="M20,140 H270 M20,140 V10"/>${xs.map((_, i) => `<circle class="tp-pt" cx="${px(i)}" cy="${py(ys[i])}" r="5"/>`).join("")}<text x="262" y="134">x</text><text x="26" y="18">y</text></svg>`;
+    return `<svg class="tp-shape" viewBox="0 0 280 150" role="img" aria-label="${esc(`Scatter plot of the points ${xs.map((xv, i) => `(${fmtN(xv)}, ${fmtN(ys[i])})`).join(", ")}`)}"><path class="tp-grid axis" d="M20,140 H270 M20,140 V10"/>${xs.map((_, i) => `<circle class="tp-pt" cx="${px(i)}" cy="${py(ys[i])}" r="5"/>`).join("")}<text x="262" y="134">x</text><text x="26" y="18">y</text></svg>`;
   }
   if (kind === "clock") {
     const minuteAngle = (model.minute / 60) * 2 * Math.PI;
@@ -483,7 +484,7 @@ function picture(kind, model) {
       const a = ((i + 1) / 12) * 2 * Math.PI;
       return `<text x="${75 + 52 * Math.sin(a)}" y="${80 - 52 * Math.cos(a)}">${i + 1}</text>`;
     }).join("");
-    return `<svg class="tp-spinner tp-clock" viewBox="0 0 150 150" role="img" aria-label="Clock showing the start time"><circle cx="75" cy="75" r="68"/>${numbers}<path class="hour" d="${hand(hourAngle, 32)}"/><path class="minute" d="${hand(minuteAngle, 50)}"/></svg>`;
+    return `<svg class="tp-spinner tp-clock" viewBox="0 0 150 150" role="img" aria-label="Clock showing the start time, ${model.hour}:${String(model.minute).padStart(2, "0")}"><circle cx="75" cy="75" r="68"/>${numbers}<path class="hour" d="${hand(hourAngle, 32)}"/><path class="minute" d="${hand(minuteAngle, 50)}"/></svg>`;
   }
   if (kind === "inequality") {
     const lo = Math.min(model.boundary, model.test) - 3;
