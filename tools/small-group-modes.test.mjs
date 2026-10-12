@@ -29,12 +29,10 @@ assert.doesNotMatch(renderer, /localStorage\.getItem\("nt-teacher-mode"\)/);
 //
 // The assertion itself is retired rather than moved, with a reason. One problem
 // at a time existed because the generated pool ran 12-18 items and opening on
-// all of them buried the variety authored further down. The authored sets are
-// uniformly small — 2 Practice Together, 4 On My Own, 2 Check across all 168
-// group variants — and a teacher working a table wants the set in view, so
-// paginating four short problems would cost a tap per problem and hide nothing
-// worth hiding. What still matters is that the path does not silently truncate
-// an authored set, which is what the old slice(0, 6) guard was for.
+// all of them buried the variety authored further down.
+// The authored sets stay the path — 2 Practice Together, 4 On My Own, 2 Check —
+// and a teacher working a table wants that set in view. More problems from
+// this lesson's own bank may follow the four; they must not replace them.
 const practice = readFileSync(
   new URL("../engine/core/small-group-practice-path.js", import.meta.url),
   "utf8",
@@ -274,7 +272,10 @@ assert.ok(
 );
 assert.ok(document.querySelector("#sg-own .sgp-talk .sg-frame"), "talk prompt with frames");
 const ownCards = document.querySelectorAll("#sg-own .sgp-card");
-assert.equal(ownCards.length, 4, "On My Own renders four authored problems");
+assert.ok(
+  ownCards.length >= 4,
+  "On My Own keeps the four authored problems, and may add more from this lesson",
+);
 // A correct typed answer is accepted; a wrong one is not.
 const firstOwn = practiceData.onMyOwn.findIndex((it) => !it.choices);
 const ownCard = ownCards[firstOwn];
