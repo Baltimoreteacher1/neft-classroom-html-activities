@@ -69,14 +69,33 @@ const median = sample(getSkill(7, "probability"), 300).find((item) =>
 );
 assert.match(median.steps[0], /^Put the values in order/, "a median starts by ordering the values");
 
-// 2. Grade 6 shows the 2025 Maryland codes and keeps the former CCSS code beside it.
-for (const skill of ALL_SKILLS.filter((s) => s.grade === 6)) {
-  assert.match(skill.standard, /^6\.(AT|NOS|GR|DS)\.\d+$/, `${skill.id}: ${skill.standard}`);
-  assert.match(skill.formerStandard, /^6\.(RP|EE|NS|G|SP)\./, `${skill.id} keeps its former code`);
+// 2. Every grade shows the 2025 Maryland codes (MSDE crosswalks) and keeps the former CCSS code beside it.
+for (const skill of ALL_SKILLS) {
+  if (skill.standardNote) {
+    assert.equal(skill.standard, "8.G.A.3", "only reflections lost their grade-level standard");
+    continue;
+  }
+  assert.match(
+    skill.standard,
+    new RegExp(`^${skill.grade}\\.(NOS|AT|GR|DS)\\.\\d+$`),
+    `${skill.id}: ${skill.standard}`,
+  );
+  assert.match(
+    skill.formerStandard,
+    /^\d\.(OA|NBT|NF|MD|G|RP|EE|NS|F|SP)\.[A-D]\.\d+$/,
+    `${skill.id} keeps its former code`,
+  );
 }
 assert.equal(getSkill(6, "unit-rates").standard, "6.AT.2");
 assert.equal(getSkill(6, "integers").standard, "6.NOS.8");
-assert.ok(ALL_SKILLS.filter((s) => s.grade !== 6).every((s) => !s.formerStandard));
+assert.equal(getSkill(3, "mul-6-9").standard, "3.NOS.9", "3.OA.C.7 fluency is 3.NOS.E.9");
+assert.equal(getSkill(7, "equations").standard, "7.AT.8");
+assert.equal(
+  getSkill(7, "inequalities").standard,
+  "7.AT.9",
+  "7.EE.B.4 splits into equations and inequalities",
+);
+assert.equal(getSkill(4, "round-large").standard, "4.NOS.1", "rounding is folded into 4.NOS.A.1");
 
 // 3. A trail or game answer belongs to the skill that practises it.
 const as = (question, answer, generator) => ({ question, answers: [String(answer)], generator });
@@ -86,20 +105,18 @@ assert.equal(skillOf(3, as("4 × 7 = ?", 28, "factPool")), "mul-0-5");
 assert.equal(skillOf(3, as("56 ÷ 7 = ?", 8, "factPool")), "division-facts");
 assert.equal(skillOf(7, as("−6 × 4 = ?", -24, "integerOp")), "integer-mul");
 assert.equal(skillOf(7, as("−6 + 4 = ?", -2, "integerOp")), "integer-add");
-assert.equal(
-  skillOf(6, as("2.5 + 1.25 = ?", 3.75, "decimalOp")),
-  null,
-  "no Grade 6 skill adds decimals",
-);
+// A stop with no skill in its own grade credits the nearest earlier grade's skill.
+assert.equal(skillForItem(6, as("2.5 + 1.25 = ?", 3.75, "decimalOp"))?.grade, 5);
+assert.equal(skillOf(6, as("2.5 + 1.25 = ?", 3.75, "decimalOp")), "decimal-add");
+assert.equal(skillOf(6, as("1,734 ÷ 6 = ?", 289, "fact")), "divide-whole");
+assert.equal(skillForItem(8, as("−9 × 12 = ?", -108, "integerOp"))?.id, "integer-mul");
 const unmapped = new Set();
 for (const [grade, trail] of Object.entries(TRAILS))
   for (const entry of trail.stations)
     for (let i = 0; i < 20; i += 1)
       if (!skillForItem(Number(grade), makeProblem(Number(grade), entry, seededRandom(i))))
         unmapped.add(`${grade}:${entry.id}`);
-// Whole-number long division (Grade 6) and the Grade 8 integer review have no skill of their own to credit.
-for (const key of unmapped)
-  assert.match(key, /^6:(div-1|div-2|dec-add|mix)$|^8:int-review$/, `unmapped ${key}`);
+assert.deepEqual([...unmapped], [], "every trail stop credits a skill");
 
 // 4. Every grade gets a class picture: skills come with the facts, and older reports still read.
 const tutor = { version: 2, records: {}, mistakes: [] };

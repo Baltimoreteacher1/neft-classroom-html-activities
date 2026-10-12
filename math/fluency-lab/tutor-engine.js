@@ -43,8 +43,7 @@ function factFits(config, op, a, b, answer, turned = true) {
   }
   return within(b, c.minDivisor ?? 1, c.maxDivisor ?? c.max) && within(answer, c.minQuotient ?? 1, c.maxQuotient ?? c.max);
 }
-export function skillForItem(grade, item) {
-  const skills = getGrade(grade)?.skills || [];
+function matchSkill(skills, item) {
   const fact = String(item?.question || "").replaceAll(",", "").match(/^(\d+) ([+−×÷]) (\d+) = \?$/);
   if (fact && ["fact", "factPool"].includes(item.generator)) {
     const [a, b, op, answer] = [Number(fact[1]), Number(fact[3]), FACT_OPS[fact[2]], Number(item.answers?.[0])];
@@ -57,6 +56,15 @@ export function skillForItem(grade, item) {
   return skills.find((skill) =>
     (skill.generator === item?.generator || GENERATOR_PARTS[skill.generator]?.includes(item?.generator)) &&
     (!skill.config?.op || !op || opsOf(skill.config).includes(op))) || null;
+}
+// A review or foundation stop (Grade 8 integer review, Grade 6 decimal addition) practises a skill taught in an
+// earlier grade, so when the learner's grade has no skill for it, the nearest earlier grade's skill gets the credit.
+export function skillForItem(grade, item) {
+  for (let g = grade; g >= 1; g -= 1) {
+    const skill = matchSkill(getGrade(g)?.skills || [], item);
+    if (skill) return skill;
+  }
+  return null;
 }
 
 export function prerequisites(skill) {

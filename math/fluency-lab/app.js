@@ -334,7 +334,7 @@ function openSkill(skillId, mode = "learn", targetGrade = null) {
   document.documentElement.style.setProperty("--grade", grade.color);
   els.workspaceGrade.textContent = grade.label;
   els.workspaceTitle.textContent = state.skill.title;
-  els.workspaceStandard.textContent = `${state.skill.strand} · ${state.skill.standard}${state.skill.formerStandard ? ` (was ${state.skill.formerStandard})` : ""}`;
+  els.workspaceStandard.textContent = `${state.skill.strand} · ${state.skill.standard}${state.skill.formerStandard ? ` (was ${state.skill.formerStandard})` : ""}${state.skill.standardNote ? ` (${state.skill.standardNote})` : ""}`;
   renderMastery();
   renderModeTabs();
   renderLearn();
