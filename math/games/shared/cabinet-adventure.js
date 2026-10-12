@@ -182,6 +182,19 @@
     const description=svg.replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim();
     return `<svg viewBox="0 0 720 260" role="img" aria-label="${description || type + ' mission diagram'}">${svg}</svg>`;
   }
+  const curriculum = {
+    'u1-decimal-dash': { unit: 'Unit 6 · Lessons 6-5 to 6-6', topic: 'Multi-Digit Decimal Operations & Number Lines (6.NOS.3)', tip: 'Count the 10 tenths or 100 hundredths between whole numbers and line up decimal points by place value.' },
+    'u1-factor-frenzy': { unit: 'Unit 6 · Lesson 6-2', topic: 'Prime Factorization, GCF & LCM (6.NOS.4)', tip: 'Split any composite number into a factor pair until every branch ends in a prime number (2, 3, 5, 7, 11).' },
+    'u2-fraction-frenzy': { unit: 'Unit 6 · Lessons 6-7 to 6-10', topic: 'Dividing Fractions & Visual Tape Models (6.NOS.1)', tip: 'Partition each whole to match the divisor denominator, then count how many divisor-sized groups fit.' },
+    'u3-ratio-rush': { unit: 'Unit 3 · Lessons 3-1 to 3-7', topic: 'Ratios, Double Number Lines & Unit Rates (6.AT.1–3)', tip: 'Multiply or divide both quantities by the same scale factor so the multiplicative ratio stays constant.' },
+    'u4-percent-power': { unit: 'Unit 4 · Lessons 4-1 to 4-6', topic: 'Percents as Rates per 100 & Benchmark Percents (6.AT.3c)', tip: 'Find 10% (÷10) or 1% (÷100) of the whole first, then scale to the target percent.' },
+    'u5-area-attack': { unit: 'Unit 5 · Lessons 5-1 to 5-4', topic: 'Area of Parallelograms, Triangles & Composite Polygons (6.GR.1)', tip: 'Decompose composite shapes into non-overlapping rectangles (A = bh) and triangles (A = ½bh).' },
+    'u6-expression-express': { unit: 'Unit 6 · Lessons 6-1, 6-3, 6-4', topic: 'Exponents, Order of Operations & Algebraic Expressions (6.AT.4–6)', tip: 'Evaluate grouping symbols first, then exponents, then multiply/divide, then add/subtract.' },
+    'u7-equation-quest': { unit: 'Unit 8 · Lessons 8-1 to 8-5', topic: 'One-Step Equations & Balance Scale Models (6.AT.7–9)', tip: 'Apply the inverse operation to BOTH sides of the balance scale to isolate a single x.' },
+    'u8-data-dash': { unit: 'Unit 2 · Lessons 2-1 to 2-9', topic: 'Statistical Questions, Dot Plots, Mean, Median, IQR & MAD (6.DS.1–5)', tip: 'Mean is the fair-share balance point (sum ÷ count); median is the ordered middle value.' },
+    'u9-coordinate-quest': { unit: 'Unit 7 · Lessons 7-5 to 7-7', topic: 'Four-Quadrant Coordinate Plane, Reflections & Distance (6.NOS.6–8)', tip: 'From (0, 0), move horizontally along the x-axis first, then vertically along the y-axis.' },
+    'u10-volume-blast': { unit: 'Unit 5 · Lessons 5-5 to 5-7', topic: 'Volume with Fractional Edges & Surface Area Nets (6.GR.2, 6.GR.4)', tip: 'Multiply length × width for the base layer area (B), then multiply by height (V = l · w · h).' }
+  };
   function create({id,host,onView,storageId=id,title,chapters,artId=id}) {
     const sourceWorld=window.CabinetWorlds.worlds[artId],type=typeOf(id);
     const world=sourceWorld ? sourceWorld.slice() : null;
@@ -197,8 +210,10 @@
         if(Array.isArray(stored.history))history=stored.history.slice(-50).filter(entry=>entry && (entry.cost===0||entry.cost===1) && validData(type,entry.data,Math.min(2,state.chapter)));
       }
     }catch(_error){saved=false;}
+    const curr=curriculum[id]||curriculum[artId];
+    const topicSummary=curr?`${curr.unit} · ${curr.topic} — 💡 ${curr.tip}`:'Correct math earns 4 mission supplies';
     const nav=document.createElement('nav');nav.className='mission-nav';nav.setAttribute('aria-label','Adventure views');
-    nav.innerHTML=`<span class="mission-world-name">${world[1]}<small>Correct math earns 4 mission supplies</small></span><button type="button" data-view="math" aria-pressed="true">Math challenge</button><button type="button" data-view="mission" aria-pressed="false">Mission chart <span class="mission-nav-count"></span></button>`;
+    nav.innerHTML=`<span class="mission-world-name">${world[1]}<small>${topicSummary}</small></span><button type="button" data-view="math" aria-pressed="true">Math challenge</button><button type="button" data-view="mission" aria-pressed="false">Mission chart <span class="mission-nav-count"></span></button>`;
     host.before(nav);
     const root=document.createElement('section');root.className='cabinet-adventure';root.hidden=true;root.setAttribute('aria-label',world[1]+' mission');root.style.setProperty('--mission-accent',world[2]);host.append(root);
     const background=document.createElement('canvas');let imageChapter=-1,backgroundURL='';

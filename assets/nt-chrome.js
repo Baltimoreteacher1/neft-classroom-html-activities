@@ -16,6 +16,18 @@
 
   function init() {
     if (document.getElementById("nt-chrome-style")) return;
+    var path = (location.pathname || "").toLowerCase();
+    if (
+      /^\/math\/(?:games|review-arcade|unit-\d+\/(?:games|6-|supplemental|parallelogram|game-|variable|cloudflare)|statistics\/(?:games|6-|mean-median))/.test(
+        path,
+      ) ||
+      /^\/curriculum\/(?:arcade|review-expeditions|unit-\d+-adventure-review|unit-\d+-test-review|class-boss|division-foundry|ratio-quest|unit-rate-market-mission|ratio-rate-review-mission|teach-the-machine|almost-right-lab)/.test(
+        path,
+      ) ||
+      /^\/games\//.test(path)
+    ) {
+      return;
+    }
 
     var prefersReduced =
       window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;

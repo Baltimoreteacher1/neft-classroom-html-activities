@@ -8,24 +8,34 @@
   const isFactor = slug.includes('factor-frenzy');
   const isVolume = slug.includes('volume-vault');
   const config = {
-    'unit2-fraction-foundry': {levels:['Whole ÷ unit fraction','Whole ÷ unit fraction in context','Whole ÷ fraction','Fraction ÷ fraction','Mixed number ÷ fraction'],data:n=>({level:n-1,score:0,lives:3})},
-    'unit9-variable-velocity': {levels:['Proportional rules','Tables and equations','Predict the next point','Rules with a starting value','Master rover'],data:n=>({level:n-1,score:0,lives:3})},
-    'unit6-expression-engine': {levels:['Guided: exponents','Standard: mixed expressions','Challenge: mixed expressions'],data:n=>({difficulty:n-1})},
-    'unit5-area-architect': {levels:['Guided construction','Composite city'],data:n=>({level:n})},
-    'unit3-ratio-rally': {levels:['Support','Standard','Challenge'],data:n=>({difficulty:['easy','medium','hard'][n-1]})},
-    'unit9-coordinate-quest': {levels:['Support: fundamentals','Standard: full mission','Challenge: advanced navigation'],data:n=>({studioTier:n})},
-    'unit7-equation-escape': {levels:['Support: one-step rooms','Standard: full dungeon','Challenge: advanced rooms'],data:n=>({studioTier:n})},
-    'unit8-stats-slam': {levels:['Support: mean, median, mode, range','Standard: full season','Challenge: advanced statistics'],data:n=>({studioTier:n})},
-    'unit4-discount-dash': {levels:['Support: friendly prices','Challenge: mixed discounts'],data:n=>({studioTier:n})},
-    'unit2-fraction-kitchen': {levels:['Support: basic fractions','Challenge: equivalent fractions'],data:n=>({studioTier:n})},
-  }[slug] || {levels:isFactor?['Apprentice smith','Journeyman smith','Master smith']:isVolume?['Bronze vault','Silver vault','Gold vault']:['Guided recipes','Challenge recipes'],data:n=>({tier:n})};
+    'unit1-factor-frenzy': {unit:'Unit 6 · Lesson 6-2 (6.NOS.4)',topic:'Prime Factorization, GCF & LCM',coach:'Split each composite number into a factor pair until every branch is prime (2, 3, 5, 7, 11). GCF shares common primes; LCM combines highest prime powers.',levels:['Apprentice smith','Journeyman smith','Master smith'],data:n=>({tier:n})},
+    'unit2-fraction-foundry': {unit:'Unit 6 · Lessons 6-7 to 6-10 (6.NOS.1)',topic:'Dividing Fractions & Mixed Numbers',coach:'To divide by a fraction, partition each whole into equal parts matching the divisor denominator, or multiply by the reciprocal (a/b ÷ c/d = a/b × d/c).',levels:['Whole ÷ unit fraction','Whole ÷ unit fraction in context','Whole ÷ fraction','Fraction ÷ fraction','Mixed number ÷ fraction'],data:n=>({level:n-1,score:0,lives:3})},
+    'unit9-variable-velocity': {unit:'Unit 9 · Lessons 9-1 to 9-4 (6.AT.10)',topic:'Independent & Dependent Variables, Tables & Equations',coach:'Check how y changes for each 1-unit increase in x. Proportional rules multiply (y = kx); additive rules add a starting offset (y = x + b).',levels:['Proportional rules','Tables and equations','Predict the next point','Rules with a starting value','Master rover'],data:n=>({level:n-1,score:0,lives:3})},
+    'unit6-expression-engine': {unit:'Unit 6 · Lessons 6-1, 6-3, 6-4 (6.AT.4–6)',topic:'Exponents, Order of Operations & Algebraic Expressions',coach:'Follow GEMDAS: evaluate grouping symbols first, then exponents, then multiply/divide left to right, then add/subtract left to right.',levels:['Guided: exponents','Standard: mixed expressions','Challenge: mixed expressions'],data:n=>({difficulty:n-1})},
+    'unit5-area-architect': {unit:'Unit 5 · Lessons 5-1 to 5-4 (6.GR.1)',topic:'Area of Parallelograms, Triangles & Composite Polygons',coach:'Parallelogram area is A = b · h and triangle area is A = ½ · b · h (always use the perpendicular height). Split composite shapes into rectangles and triangles.',levels:['Guided construction','Composite city'],data:n=>({level:n})},
+    'unit3-ratio-rally': {unit:'Unit 3 · Lessons 3-1 to 3-7 (6.AT.1–3)',topic:'Ratios, Tables, Tape Diagrams & Unit Rates',coach:'Scale both parts of a ratio by the same multiplier. To find a unit rate, divide to find the amount per 1 unit.',levels:['Support','Standard','Challenge'],data:n=>({difficulty:['easy','medium','hard'][n-1]})},
+    '6-rp-1game': {unit:'Unit 3 · Lessons 3-1 to 3-7 (6.AT.1–3)',topic:'Equivalent Ratios & Proportional Mixtures',coach:'Multiply or divide both ingredient amounts by the same scale factor to keep the mixture in the exact target ratio.',levels:['Guided recipes','Challenge recipes'],data:n=>({tier:n})},
+    'unit9-coordinate-quest': {unit:'Unit 7 · Lessons 7-5 to 7-7 (6.NOS.6–8)',topic:'Four-Quadrant Coordinate Plane, Reflections & Distance',coach:'Plot (x, y) from (0, 0): move horizontally first (x), then vertically (y). Reflecting across the x-axis flips y; reflecting across the y-axis flips x.',levels:['Support: fundamentals','Standard: full mission','Challenge: advanced navigation'],data:n=>({studioTier:n})},
+    'unit7-equation-escape': {unit:'Unit 8 · Lessons 8-1 to 8-6 (6.AT.7–9)',topic:'One-Step Equations & Inequalities',coach:'Use inverse operations on BOTH sides to isolate the variable: undo addition with subtraction, and undo multiplication with division.',levels:['Support: one-step rooms','Standard: full dungeon','Challenge: advanced rooms'],data:n=>({studioTier:n})},
+    'unit8-stats-slam': {unit:'Unit 2 · Lessons 2-1 to 2-9 (6.DS.1–5)',topic:'Mean, Median, Mode, Range, IQR & MAD',coach:'Order the data from least to greatest first! Mean = sum ÷ count; Median = middle value; Range = max − min; IQR = Q3 − Q1.',levels:['Support: mean, median, mode, range','Standard: full season','Challenge: advanced statistics'],data:n=>({studioTier:n})},
+    'unit4-discount-dash': {unit:'Unit 4 · Lessons 4-1 to 4-6 (6.AT.3c)',topic:'Percents, Discounts & Sale Price Comparisons',coach:'Find the discount by multiplying original price × (percent ÷ 100), then subtract from the original price (or multiply by 100% − discount%).',levels:['Support: friendly prices','Challenge: mixed discounts'],data:n=>({studioTier:n})},
+    'unit2-fraction-kitchen': {unit:'Unit 6 · Lessons 6-7 to 6-10 (6.NOS.1)',topic:'Equivalent Fractions & Visual Fraction Models',coach:'Multiply or divide the numerator and denominator by the same nonzero number to match the jug divisions.',levels:['Support: basic fractions','Challenge: equivalent fractions'],data:n=>({studioTier:n})},
+    'unit10-volume-vault': {unit:'Unit 5 · Lessons 5-5 to 5-7 (6.GR.2, 6.GR.4)',topic:'Volume of Rectangular Prisms & Surface Area Nets',coach:'Volume is length × width × height (V = l · w · h = B · h). Surface area is the sum of all 6 rectangular faces: 2(lw + lh + wh).',levels:['Bronze vault','Silver vault','Gold vault'],data:n=>({tier:n})},
+  }[slug] || {unit:'Grade 6 Math Curriculum',topic:'Interactive Concept Practice',coach:'Use the visual model to check your mathematical reasoning step by step.',levels:isFactor?['Apprentice smith','Journeyman smith','Master smith']:isVolume?['Bronze vault','Silver vault','Gold vault']:['Guided recipes','Challenge recipes'],data:n=>({tier:n})};
   const panel = document.createElement('section');
   panel.className = 'flagship-mission';
   panel.setAttribute('aria-label', 'Mission controls');
-  panel.innerHTML = '<div class="fm-top"><div><span class="fm-eyebrow">MISSION CONTROL</span><h2>Build your next achievement</h2></div><div class="fm-launch"><label for="fm-level">Mission level</label><select id="fm-level"></select><button id="fm-start" type="button">Launch mission</button></div></div><div class="fm-stats" aria-label="Session progress"></div><p class="fm-question"></p><div class="fm-actions"></div><p class="fm-feedback" role="status" aria-live="polite"></p><div class="fm-progress" aria-hidden="true"><span></span></div>';
+  panel.innerHTML = `<div class="fm-top"><div><span class="fm-eyebrow">${config.unit} • ${config.topic}</span><h2>Build your next achievement</h2></div><div class="fm-launch"><label for="fm-level">Mission level</label><select id="fm-level"></select><button id="fm-start" type="button">Launch mission</button></div></div><div class="fm-stats" aria-label="Session progress"></div><p class="fm-question"></p><div class="fm-actions"></div><p class="fm-feedback" role="status" aria-live="polite"></p><div class="fm-progress" aria-hidden="true"><span></span></div>`;
   const header = document.querySelector('.ewl-arcade-header-bar');
   if (header) header.after(panel); else document.body.prepend(panel);
   panel.querySelector('h2').textContent=document.title.split('—')[0].trim();
+  const coachTitle = document.getElementById('ewl-coach-title');
+  const coachText = document.getElementById('ewl-coach-text');
+  if (coachTitle) coachTitle.textContent = `Strategy Coach · ${config.unit} (${config.topic})`;
+  if (coachText) {
+    coachText.textContent = config.coach;
+    coachText.setAttribute('data-en', config.coach);
+  }
   let stage=null;
   function mountStage(){
     if(!game?.canvas || stage)return;

@@ -126,12 +126,19 @@
   }
 
   function init() {
-    // Never show the launcher on the Workbench page itself or on school planner pages/domains.
+    // Never show the launcher on the Workbench page itself, on student arcade games, or on school planner pages/domains.
     var path = location.pathname.toLowerCase();
     if (
       path.indexOf("/curriculum/math-workbench") === 0 ||
       path.indexOf("/noam-school") >= 0 ||
-      path.indexOf("/focus-school") >= 0
+      path.indexOf("/focus-school") >= 0 ||
+      /^\/math\/(?:games|review-arcade|unit-\d+\/(?:games|6-|supplemental|parallelogram|game-|variable|cloudflare)|statistics\/(?:games|6-|mean-median))/.test(
+        path,
+      ) ||
+      /^\/curriculum\/(?:arcade|review-expeditions|unit-\d+-adventure-review|unit-\d+-test-review|class-boss|division-foundry|ratio-quest|unit-rate-market-mission|ratio-rate-review-mission|teach-the-machine|almost-right-lab)/.test(
+        path,
+      ) ||
+      /^\/games\//.test(path)
     )
       return;
 

@@ -64,7 +64,12 @@ const GAME_DIRS = [
   "games/3d/boss-battle-3d",
   "games/3d/boss-battle-3d/play",
 ];
-const GAME_FILES = ["math/games/practice-arcade/index.html"];
+const GAME_FILES = [
+  "math/games/practice-arcade/index.html",
+  "math/games/practice-arcade/map.html",
+  "math/review-arcade/index.html",
+  "assets/game-studio.js",
+];
 /**
  * Student practice surfaces that are not games but fall under the same no-timer
  * decision. Swept for COUNTDOWN only: their navigation back to a hub is normal
@@ -88,7 +93,7 @@ function missionDirs() {
 }
 
 // ── detectors ──────────────────────────────────────────────────────────────
-const HUB_TARGET = String.raw`\/(?:curriculum\/?|math\/?|math\/games\/?|math\/games\/index\.html|math\/unit-\d+\/?|math\/unit-\d+\/index\.html)`;
+const HUB_TARGET = String.raw`\/(?:curriculum\/?|curriculum\/arcade\/?|math\/?|math\/games\/?|math\/games\/index\.html|math\/games\/practice-arcade\/map\.html|math\/unit-\d+\/?|math\/unit-\d+\/index\.html)`;
 const HUB_PATTERNS = [
   new RegExp(String.raw`href\s*=\s*["']${HUB_TARGET}["']`, "g"),
   new RegExp(String.raw`location(?:\.href)?\s*=\s*["']${HUB_TARGET}["']`, "g"),

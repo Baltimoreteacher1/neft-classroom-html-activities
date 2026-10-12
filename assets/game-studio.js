@@ -251,10 +251,10 @@
     toolbar = document.createElement("nav");
     toolbar.className = "studio-toolbar";
     toolbar.setAttribute("aria-label", "Game player controls");
-    const home = document.createElement("a");
-    home.href = "/curriculum/arcade/";
-    home.textContent = "← Games";
-    toolbar.append(home);
+    const brand = document.createElement("span");
+    brand.className = "studio-badge";
+    brand.textContent = adapter.title || "Arcade Studio";
+    toolbar.append(brand);
     const controls = document.createElement("div");
     soundButton = button("Sound off", () => {
       preferences.muted = !preferences.muted;

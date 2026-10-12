@@ -54,7 +54,8 @@
   destination.append(missionTitle, briefing, routes, progress, enter, status);
   section.append(banner, map, destination);
   panel.before(section);
-  panel.querySelector('.fm-eyebrow').textContent = 'FIELDWORK • BUILD YOUR SKILLS';
+  const eb = panel.querySelector('.fm-eyebrow');
+  if (eb) eb.textContent = 'FIELDWORK • ' + (eb.textContent || 'BUILD YOUR SKILLS');
   const details = el('details', 'adventure-fieldwork');
   details.append(el('summary', '', 'Mission controls and accessible game controls'));
   // Keep the launch controls visible; collapse only the redundant mirror controls.
