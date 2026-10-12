@@ -876,14 +876,21 @@
       gap: 10px;
     }
 
-    /* Two-box answer rows (Tab 1) and wide tables (Tab 3) */
+    /* Two-box and three-box answer rows (Tab 1) and wide tables (Tab 3) */
     .dual-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 14px;
       margin: 18px 0;
     }
-    .dual-grid > div {
+    .triple-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 18px 0;
+    }
+    .dual-grid > div,
+    .triple-grid > div {
       background: var(--surface-soft);
       padding: 14px;
       border-radius: 10px;
@@ -896,6 +903,53 @@
     }
     .table-scroll .clean-ratio-table {
       min-width: 560px;
+    }
+
+    /* Interactive Ratio Scratchpad (Tab 4) */
+    .scratchpad-details {
+      margin: 14px 0 16px;
+      background: var(--surface-soft);
+      border: 1.5px dashed var(--border-strong);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+    }
+    .scratchpad-details summary {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--teal);
+      cursor: pointer;
+      user-select: none;
+    }
+    .scratchpad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .scratchpad-cell {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .scratchpad-cell span {
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--ink-light);
+    }
+    .scratchpad-cell input {
+      width: 100%;
+      font-size: 0.96rem;
+      padding: 6px 8px;
+    }
+
+    /* Print-only summary report */
+    .print-only {
+      display: none;
     }
 
     /* After a problem is solved: next-step button, all-done banner, quiz results */
@@ -949,6 +1003,10 @@
         grid-template-columns: repeat(5, minmax(135px, 1fr));
         overflow-x: auto;
       }
+      .triple-grid,
+      .scratchpad-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 560px) {
@@ -961,7 +1019,9 @@
       .stage-card {
         padding: 16px;
       }
-      .dual-grid {
+      .dual-grid,
+      .triple-grid,
+      .scratchpad-grid {
         grid-template-columns: 1fr;
       }
       .clean-ratio-table td.row-label {
@@ -973,18 +1033,25 @@
     }
 
     @media print {
-      .next-btn, .results-card button {
+      .print-only {
+        display: block !important;
+      }
+      .next-btn, .results-card button, .stepper-bar, .scratchpad-details, #t2-random-btn, #t3-random-btn, #t5-reset-btn {
         display: none !important;
       }
-      .app-header, .tab-bar, .speak-btn, .no-print {
+      .app-header, .tab-bar, .speak-btn, .no-print, #nsr-root {
         display: none !important;
       }
       body {
         background: #FFFFFF !important;
       }
+      .main-container {
+        padding: 0 !important;
+      }
       .tab-panel {
         display: block !important;
-        margin-bottom: 24px;
+        margin-bottom: 20px;
+        break-inside: avoid;
       }
     }
   </style>
@@ -1013,6 +1080,7 @@
         </div>
         <button type="button" class="top-btn" id="toggle-es-btn" aria-pressed="false">🌐 Español</button>
         <button type="button" class="top-btn" id="print-btn">🖨️ Print</button>
+        <button type="button" class="top-btn" id="reset-all-btn" title="Clear saved progress and start fresh">↺ Reset</button>
       </div>
     </div>
   </header>
@@ -1071,6 +1139,20 @@
        ======================================================================== -->
   <main class="main-container">
 
+    <section id="print-summary-sheet" class="print-only" aria-label="Printable student progress summary" style="border: 2px solid var(--navy); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; background: #FFFFFF;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--border); padding-bottom: 10px; margin-bottom: 12px; gap: 16px; flex-wrap: wrap;">
+        <div>
+          <h2 style="margin: 0; font-family: var(--font-display); font-size: 1.35rem; color: var(--navy);">Understand Percent &amp; Equivalent Ratios · Practice Summary</h2>
+          <div style="font-size: 0.85rem; color: var(--ink-muted);">Grade 6 Math · Unit 4 Interactive Practice Studio (Standards 6.RP.A.3.C · 6.AT.4)</div>
+        </div>
+        <div style="font-size: 0.88rem; color: var(--navy); text-align: right;">
+          <div><strong>Student:</strong> <span id="print-student-name">________________________</span></div>
+          <div><strong>Total Completed:</strong> <span id="print-total-score">0 / 46 (0%)</span></div>
+        </div>
+      </div>
+      <div id="print-section-breakdown" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; font-size: 0.84rem; text-align: center;"></div>
+    </section>
+
     <div id="complete-banner" class="complete-banner" role="status" hidden>
       🎉 All five sections are complete! Print this page or show your teacher what you finished.
     </div>
@@ -1098,14 +1180,14 @@
             <button type="button" class="btn btn-sm" id="t1-tenths-btn" aria-pressed="true">10 Columns: ON</button>
           </div>
 
-          <svg id="t1-grid-svg" class="hundredths-svg" viewBox="0 0 200 200" role="img" aria-label="10 by 10 hundredths grid"></svg>
+          <svg id="t1-grid-svg" class="hundredths-svg" viewBox="0 0 200 200" style="background:white" width="260" height="260" role="img" aria-label="10 by 10 hundredths grid"></svg>
 
           <div style="width: 100%;">
             <div style="display: flex; justify-content: space-between; font-size: 0.86rem; font-weight: 700; color: var(--navy); margin-bottom: 4px;">
               <label for="t1-slider">Shade Squares:</label>
               <span id="t1-slider-label">40 / 100 squares</span>
             </div>
-            <input type="range" id="t1-slider" min="0" max="100" value="40" style="width: 100%; accent-color: var(--teal); cursor: pointer;">
+            <input type="range" id="t1-slider" data-nsr-ignore="true" min="0" max="100" value="40" style="width: 100%; accent-color: var(--teal); cursor: pointer;">
           </div>
 
           <!-- 3 Crisp Summary Tiles (Square Counts — Scaffolds Without Giving Away Answers) -->
@@ -1125,6 +1207,10 @@
           </div>
 
           <div style="display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; width: 100%;">
+            <button type="button" class="btn btn-sm" data-grid-set="0">0 sq</button>
+            <button type="button" class="btn btn-sm" data-grid-step="-1" aria-label="Remove 1 shaded square">−1</button>
+            <button type="button" class="btn btn-sm" data-grid-step="1" aria-label="Add 1 shaded square">+1</button>
+            <button type="button" class="btn btn-sm" data-grid-step="10" aria-label="Add 1 column of 10 squares">+10</button>
             <button type="button" class="btn btn-sm" data-grid-set="9">9 sq</button>
             <button type="button" class="btn btn-sm" data-grid-set="23">23 sq</button>
             <button type="button" class="btn btn-sm" data-grid-set="40">40 sq (4 cols)</button>
@@ -1161,6 +1247,10 @@
               <div style="background: var(--surface-soft); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
                 <strong style="color: var(--navy); display: block;">Shaded + Unshaded = 100%</strong>
                 If 62 squares are shaded (62%), then <strong>100 − 62 = 38</strong> squares (38%) are NOT shaded.
+              </div>
+              <div style="background: var(--surface-soft); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
+                <strong style="color: var(--navy); display: block;">Less Than 1% (like 0.5%)</strong>
+                1 square = 1%. Splitting 1 square in half gives <strong>0.5% = 0.5/100 = 1/200</strong>!
               </div>
             </div>
           </details>
@@ -1206,8 +1296,11 @@
           <p>What if the whole does not multiply into 100 in one step? Use a <strong>Percent Bar</strong> (find 1 block first) or a <strong>Bridge Ratio Table</strong> (simplify first, then scale to 100)!</p>
           <p class="es-text">Usa una barra de porcentaje (halla 1 bloque primero) o una tabla puente (simplifica primero y luego multiplica para llegar a 100).</p>
         </div>
-        <div class="key-rule-pill">
-          🧭 <strong>Two Easy Strategies:</strong> &nbsp;1) Find 1 Block on a Bar &nbsp;·&nbsp; 2) Divide to Simplify, Then Multiply to 100
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <div class="key-rule-pill">
+            🧭 <strong>Two Easy Strategies:</strong> &nbsp;1) Find 1 Block on a Bar &nbsp;·&nbsp; 2) Divide to Simplify, Then Multiply to 100
+          </div>
+          <button type="button" class="btn btn-teal btn-sm" id="t3-random-btn">🎲 New Random Model</button>
         </div>
       </div>
 
@@ -1331,43 +1424,55 @@
           const d = JSON.parse(raw);
           if (d && typeof d === 'object') {
             state.showEs = !!d.showEs;
-            SOLVED_KEYS.forEach((k) => { state[k] = d[k] || {}; });
-            Object.keys(state.solved2).forEach((k) => {
-              if (k.startsWith('rand')) delete state.solved2[k];
+            SOLVED_KEYS.forEach((k) => { state[k] = (d[k] && typeof d[k] === 'object') ? { ...d[k] } : {}; });
+            ['solved2', 'solved3'].forEach((sk) => {
+              Object.keys(state[sk]).forEach((k) => {
+                if (k.startsWith('rand')) delete state[sk][k];
+              });
             });
-            state.quizChoice = d.quizChoice || {};
-            state.quizFirst = d.quizFirst || {};
+            state.quizChoice = (d.quizChoice && typeof d.quizChoice === 'object') ? { ...d.quizChoice } : {};
+            state.quizFirst = (d.quizFirst && typeof d.quizFirst === 'object') ? { ...d.quizFirst } : {};
             IDX_KEYS.forEach((k) => {
               if (Number.isInteger(d[k]) && d[k] >= 0) state[k] = d[k];
             });
             if (Number.isInteger(d.activeTab) && d.activeTab >= 1 && d.activeTab <= 5) state.activeTab = d.activeTab;
+            if (Number.isInteger(d.gridCount) && d.gridCount >= 0 && d.gridCount <= 100) state.gridCount = d.gridCount;
             state.hasSavedPosition = Number.isInteger(d.idx1);
           }
         } catch (e) {}
       }
 
+      function getCleanStateSnapshot() {
+        const solved2 = {};
+        Object.keys(state.solved2).forEach((k) => {
+          if (!k.startsWith('rand')) solved2[k] = true;
+        });
+        const solved3 = {};
+        Object.keys(state.solved3).forEach((k) => {
+          if (!k.startsWith('rand')) solved3[k] = true;
+        });
+        return {
+          showEs: state.showEs,
+          gridCount: state.gridCount,
+          solved1: { ...state.solved1 },
+          solved2,
+          solved3,
+          solved4: { ...state.solved4 },
+          solved5: { ...state.solved5 },
+          quizChoice: { ...state.quizChoice },
+          quizFirst: { ...state.quizFirst },
+          activeTab: state.activeTab,
+          idx1: state.idx1,
+          idx2: state.idx2,
+          idx3: state.idx3,
+          idx4: state.idx4,
+          idx5: state.idx5
+        };
+      }
+
       function saveState() {
         try {
-          const solved2 = {};
-          Object.keys(state.solved2).forEach((k) => {
-            if (!k.startsWith('rand')) solved2[k] = true;
-          });
-          localStorage.setItem(STORAGE_KEY, JSON.stringify({
-            showEs: state.showEs,
-            solved1: state.solved1,
-            solved2,
-            solved3: state.solved3,
-            solved4: state.solved4,
-            solved5: state.solved5,
-            quizChoice: state.quizChoice,
-            quizFirst: state.quizFirst,
-            activeTab: state.activeTab,
-            idx1: state.idx1,
-            idx2: state.idx2,
-            idx3: state.idx3,
-            idx4: state.idx4,
-            idx5: state.idx5
-          }));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(getCleanStateSnapshot()));
         } catch (e) {}
       }
 
@@ -1422,17 +1527,19 @@
         }
       }
 
-      function speak(text) {
+      function speak(text, textEs) {
         if (!('speechSynthesis' in window)) return;
         window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(text);
+        const useEs = state.showEs && textEs;
+        const u = new SpeechSynthesisUtterance(useEs ? textEs : text);
+        u.lang = useEs ? 'es-ES' : 'en-US';
         u.rate = 0.96;
         window.speechSynthesis.speak(u);
       }
 
       document.addEventListener('click', (e) => {
         const btn = e.target.closest('[data-speak]');
-        if (btn) speak(btn.getAttribute('data-speak'));
+        if (btn) speak(btn.getAttribute('data-speak'), btn.getAttribute('data-speak-es'));
       });
 
       /* ----------------------------------------------------------------------
@@ -1447,6 +1554,33 @@
       });
 
       document.getElementById('print-btn').addEventListener('click', () => window.print());
+
+      const resetAllBtn = document.getElementById('reset-all-btn');
+      if (resetAllBtn) {
+        resetAllBtn.addEventListener('click', () => {
+          if (!window.confirm('Reset all 46 practice problems and quiz scores to start fresh?')) return;
+          SOLVED_KEYS.forEach((k) => { state[k] = {}; });
+          state.quizChoice = {};
+          state.quizFirst = {};
+          IDX_KEYS.forEach((k) => { state[k] = 0; });
+          Object.keys(misses).forEach((k) => { delete misses[k]; });
+          currentT2 = T2_PROBLEMS[0];
+          currentT3 = T3_PROBLEMS[0];
+          try {
+            localStorage.removeItem(STORAGE_KEY);
+            if (window.NeftSaveResume && typeof window.NeftSaveResume.clearAll === 'function') {
+              window.NeftSaveResume.clearAll();
+            }
+          } catch (e) {}
+          renderT1Task();
+          renderT2Problem();
+          renderT3Problem();
+          renderT4Problem();
+          renderT5Question();
+          updateProgressHeader();
+          announce('All practice progress has been reset.');
+        });
+      }
 
       const tabBtns = Array.from(document.querySelectorAll('.tab-btn'));
       const tabPanels = Array.from(document.querySelectorAll('.tab-panel'));
@@ -1484,10 +1618,33 @@
         });
       });
 
+      function updatePrintSummary(c1, c2, c3, c4, c5, total) {
+        const sheet = document.getElementById('print-summary-sheet');
+        if (!sheet) return;
+        const firstTry = Object.keys(state.quizFirst).filter((k) => state.quizFirst[k]).length;
+        const dateStr = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+        sheet.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #17324D; padding-bottom:8px; margin-bottom:10px;">
+            <div>
+              <strong style="font-size:1.1rem; color:#17324D;">Understand Percent — Student Progress Summary</strong>
+              <div style="font-size:0.82rem; color:#4A607A;">Grade 6 Math · Unit 4, Lesson 4-1 (Standards 6.RP.A.3.C · 6.AT.4) · Printed ${dateStr}</div>
+            </div>
+            <div style="font-size:1.1rem; font-weight:800; color:#0F766E;">Total: ${total} / 46 (${Math.round((total / 46) * 100)}%)</div>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:8px; font-size:0.82rem;">
+            <div style="border:1px solid #CBD5E1; border-radius:6px; padding:6px 8px;"><strong>1. 100-Grid</strong><div>${c1} / 8 tasks</div></div>
+            <div style="border:1px solid #CBD5E1; border-radius:6px; padding:6px 8px;"><strong>2. Scale to 100</strong><div>${c2} / 12 problems</div></div>
+            <div style="border:1px solid #CBD5E1; border-radius:6px; padding:6px 8px;"><strong>3. Tables &amp; Bars</strong><div>${c3} / 8 models</div></div>
+            <div style="border:1px solid #CBD5E1; border-radius:6px; padding:6px 8px;"><strong>4. Word Problems</strong><div>${c4} / 8 solved</div></div>
+            <div style="border:1px solid #CBD5E1; border-radius:6px; padding:6px 8px;"><strong>5. Mastery Quiz</strong><div>${c5} / 10 (${firstTry}/10 1st try)</div></div>
+          </div>
+        `;
+      }
+
       function updateProgressHeader() {
         const c1 = Object.keys(state.solved1).length; // 8
         const c2 = Object.keys(state.solved2).filter(k => !k.startsWith('rand')).length; // 12
-        const c3 = Object.keys(state.solved3).length; // 8
+        const c3 = Object.keys(state.solved3).filter(k => !k.startsWith('rand')).length; // 8
         const c4 = Object.keys(state.solved4).length; // 8
         const c5 = Object.keys(state.solved5).filter(k => state.solved5[k]).length; // 10
 
@@ -1506,6 +1663,7 @@
         const banner = document.getElementById('complete-banner');
         if (banner) banner.hidden = !checks.every(Boolean);
 
+        updatePrintSummary(c1, c2, c3, c4, c5, total);
         saveState();
       }
 
@@ -1606,6 +1764,9 @@
       document.querySelectorAll('[data-grid-set]').forEach((btn) => {
         btn.addEventListener('click', () => setT1Grid(Number(btn.dataset.gridSet)));
       });
+      document.querySelectorAll('[data-grid-step]').forEach((btn) => {
+        btn.addEventListener('click', () => setT1Grid(state.gridCount + Number(btn.dataset.gridStep)));
+      });
 
       const T1_TASKS = [
         {
@@ -1621,9 +1782,17 @@
             'Out of 1,000 (per thousand)',
             'Adding 100 to a number'
           ],
+          choicesEs: [
+            'De cada 10 (por diez)',
+            'De cada 100 (por ciento)',
+            'De cada 1,000 (por mil)',
+            'Sumar 100 a un número'
+          ],
           correct: 1,
           hint: 'Look at the total number of squares in the 10 × 10 grid on the left.',
-          explain: '✓ Correct! Percent means “per hundred” or “out of 100.” One whole grid of 100 squares is 100%.'
+          hintEs: 'Mira el número total de cuadrados en la cuadrícula de 10 × 10 a la izquierda.',
+          explain: '✓ Correct! Percent means “per hundred” or “out of 100.” One whole grid of 100 squares is 100%.',
+          explainEs: '✓ ¡Correcto! Porcentaje significa “por ciento” o “de cada 100”. Una cuadrícula entera de 100 cuadrados es 100%.'
         },
         {
           id: 't1_2',
@@ -1635,7 +1804,9 @@
           unit: '%',
           answer: '9',
           hint: 'Each square is 1 out of 100, which is 1%. Count the 9 shaded squares.',
-          explain: '✓ Correct! Because the grid has 100 squares in all, 9 shaded squares is 9 out of 100 = 9%.'
+          hintEs: 'Cada cuadrado es 1 de 100, que es 1%. Cuenta los 9 cuadrados sombreados.',
+          explain: '✓ Correct! Because the grid has 100 squares in all, 9 shaded squares is 9 out of 100 = 9%.',
+          explainEs: '✓ ¡Correcto! Como la cuadrícula tiene 100 cuadrados en total, 9 cuadrados sombreados es 9 de 100 = 9%.'
         },
         {
           id: 't1_3',
@@ -1647,7 +1818,9 @@
           unit: '(fraction)',
           answer: '53/100',
           hint: 'Put the shaded part (53) in the numerator and the whole grid (100) in the denominator.',
-          explain: '✓ Correct! 53 out of 100 is written as the fraction 53/100.'
+          hintEs: 'Pon la parte sombreada (53) en el numerador y toda la cuadrícula (100) en el denominador.',
+          explain: '✓ Correct! 53 out of 100 is written as the fraction 53/100.',
+          explainEs: '✓ ¡Correcto! 53 de 100 se escribe como la fracción 53/100.'
         },
         {
           id: 't1_4',
@@ -1660,7 +1833,9 @@
           answer: '0.71',
           altAnswer: '.71',
           hint: '71 hundredths has 7 tenths and 1 hundredth: write 0. followed by 71.',
-          explain: '✓ Correct! 71 out of 100 is 71 hundredths, written as 0.71 (which equals 71%).'
+          hintEs: '71 centésimas tiene 7 décimas y 1 centésima: escribe 0. seguido de 71.',
+          explain: '✓ Correct! 71 out of 100 is 71 hundredths, written as 0.71 (which equals 71%).',
+          explainEs: '✓ ¡Correcto! 71 de 100 son 71 centésimas, escrito como 0.71 (que equivale a 71%).'
         },
         {
           id: 't1_5',
@@ -1668,15 +1843,21 @@
           title: 'Task 5 of 8 · Eagle Mascot Voters (All Three Forms)',
           stem: 'In the school mascot vote, 23 out of 100 students voted for the eagle. Fill in the fraction out of 100, the decimal, and the percent.',
           stemEs: 'En la votación de la mascota, 23 de 100 estudiantes votaron por el águila. Completa la fracción, el decimal y el porcentaje.',
-          type: 'dual',
-          labelA: 'Numerator over 100:',
+          type: 'triple',
+          labelA: '1. Fraction (out of 100):',
           suffixA: '/ 100',
           ansA: '23',
-          labelB: 'As a Percent:',
-          suffixB: '%',
-          ansB: '23',
-          hint: '23 out of 100 means 23/100, which is 23%.',
-          explain: '✓ Correct! 23 out of 100 = 23/100 = 0.23 = 23%.'
+          labelB: '2. As a Decimal:',
+          suffixB: '(hundredths)',
+          ansB: '0.23',
+          altB: '.23',
+          labelC: '3. As a Percent:',
+          suffixC: '%',
+          ansC: '23',
+          hint: '23 out of 100 means 23/100, which is 23 hundredths (0.23) and 23%.',
+          hintEs: '23 de 100 significa 23/100, que son 23 centésimas (0.23) y 23%.',
+          explain: '✓ Correct! 23 out of 100 = 23/100 = 0.23 = 23%.',
+          explainEs: '✓ ¡Correcto! 23 de 100 = 23/100 = 0.23 = 23%.'
         },
         {
           id: 't1_6',
@@ -1692,7 +1873,9 @@
           suffixB: '%',
           ansB: '38',
           hint: 'Look at the summary tiles under the grid when 62 squares are shaded! 62% + 38% = 100%.',
-          explain: '✓ Spot on! 62% is shaded, and the remaining 100 − 62 = 38 squares (38%) are NOT shaded.'
+          hintEs: '¡Mira los cuadros resumen debajo de la cuadrícula cuando hay 62 sombreados! 62% + 38% = 100%.',
+          explain: '✓ Spot on! 62% is shaded, and the remaining 100 − 62 = 38 squares (38%) are NOT shaded.',
+          explainEs: '✓ ¡Exacto! El 62% está sombreado y los 100 − 62 = 38 cuadrados restantes (38%) NO están sombreados.'
         },
         {
           id: 't1_7',
@@ -1708,7 +1891,9 @@
           suffixB: '%',
           ansB: '40',
           hint: '4 columns × 10 squares per column = 40 squares out of 100.',
-          explain: '✓ Correct! 4 out of 10 columns equals 40 out of 100 squares, or 40%.'
+          hintEs: '4 columnas × 10 cuadrados por columna = 40 cuadrados de 100.',
+          explain: '✓ Correct! 4 out of 10 columns equals 40 out of 100 squares, or 40%.',
+          explainEs: '✓ ¡Correcto! 4 de 10 columnas equivalen a 40 de 100 cuadrados, o 40%.'
         },
         {
           id: 't1_8',
@@ -1717,14 +1902,44 @@
           stem: 'Since 100% is 1 whole, which statement below is true about 40%, 100%, and 150%?',
           stemEs: 'Como 100% es 1 entero, ¿cuál afirmación es verdadera sobre 40%, 100% y 150%?',
           type: 'mc',
+          visualSvg: `
+            <svg viewBox="0 0 580 112" width="580" height="112" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:12px auto 4px; border:1px solid #CBD5E1; border-radius:8px;" role="img" aria-label="Visual comparison of 40 percent, 100 percent, and 150 percent on 100-square grids">
+              <g transform="translate(18, 12)">
+                <text x="35" y="12" text-anchor="middle" font-size="11.5" font-weight="800" fill="#17324D">40% (&lt; 1 whole)</text>
+                <rect x="0" y="18" width="70" height="70" fill="#F1F5F9" stroke="#17324D" stroke-width="1.5"/>
+                <rect x="0" y="18" width="28" height="70" fill="#1FA6A2"/>
+                <text x="35" y="102" text-anchor="middle" font-size="10.5" font-weight="700" fill="#4A607A">40 / 100</text>
+              </g>
+              <g transform="translate(160, 12)">
+                <text x="35" y="12" text-anchor="middle" font-size="11.5" font-weight="800" fill="#0F766E">100% (= 1 whole)</text>
+                <rect x="0" y="18" width="70" height="70" fill="#1FA6A2" stroke="#17324D" stroke-width="1.5"/>
+                <text x="35" y="102" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0F766E">100 / 100 = 1</text>
+              </g>
+              <g transform="translate(310, 12)">
+                <text x="76" y="12" text-anchor="middle" font-size="11.5" font-weight="800" fill="#B45309">150% (&gt; 1 whole: 1 whole + half)</text>
+                <rect x="0" y="18" width="70" height="70" fill="#1FA6A2" stroke="#17324D" stroke-width="1.5"/>
+                <text x="76" y="58" text-anchor="middle" font-size="14" font-weight="800" fill="#17324D">+</text>
+                <rect x="82" y="18" width="70" height="70" fill="#F1F5F9" stroke="#17324D" stroke-width="1.5"/>
+                <rect x="82" y="18" width="35" height="70" fill="#F59E0B"/>
+                <text x="76" y="102" text-anchor="middle" font-size="10.5" font-weight="700" fill="#B45309">100% + 50% = 150% (1.5 wholes)</text>
+              </g>
+            </svg>
+          `,
           choices: [
             '40% is more than 1 whole, and 150% is less than 1 whole.',
             '40% is less than 1 whole, 100% is exactly 1 whole, and 150% is more than 1 whole (1.5 wholes).',
             'A percent can never be greater than 100%.'
           ],
+          choicesEs: [
+            '40% es más de 1 entero y 150% es menos de 1 entero.',
+            '40% es menos de 1 entero, 100% es exactamente 1 entero y 150% es más de 1 entero (1.5 enteros).',
+            'Un porcentaje nunca puede ser mayor que 100%.'
+          ],
           correct: 1,
           hint: 'Compare each number to 100%: under 100% is part of a whole; over 100% is more than one whole.',
-          explain: '✓ You got it! 40% < 1 whole, 100% = 1 whole, and 150% > 1 whole (1 whole plus half of another).'
+          hintEs: 'Compara cada número con 100%: menos de 100% es parte de un entero; más de 100% es más de un entero.',
+          explain: '✓ You got it! 40% < 1 whole, 100% = 1 whole, and 150% > 1 whole (1 whole plus half of another).',
+          explainEs: '✓ ¡Lo lograste! 40% < 1 entero, 100% = 1 entero y 150% > 1 entero (1 entero más la mitad de otro).'
         }
       ];
 
@@ -1740,17 +1955,17 @@
         const card = document.getElementById('t1-task-card');
         const isDone = !!state.solved1[task.id];
 
-        let bodyHtml = '';
+        let bodyHtml = task.visualSvg || '';
         if (task.type === 'mc') {
           const letters = ['A', 'B', 'C', 'D'];
-          bodyHtml = `<div class="choice-list">` + task.choices.map((c, i) => `
+          bodyHtml += `<div class="choice-list">` + task.choices.map((c, i) => `
             <button type="button" class="choice-btn ${isDone && i === task.correct ? 'correct' : ''}" data-t1-mc="${i}">
               <span class="choice-letter">${letters[i]}</span>
-              <span>${c}</span>
+              <span>${c}${task.choicesEs && task.choicesEs[i] ? `<span class="es-text" style="display:block; margin-top:2px; font-size:0.86rem;">${task.choicesEs[i]}</span>` : ''}</span>
             </button>
           `).join('') + `</div>`;
         } else if (task.type === 'single') {
-          bodyHtml = `
+          bodyHtml += `
             <div style="display: flex; align-items: center; gap: 10px; margin: 18px 0; flex-wrap: wrap;">
               <label for="t1-inp-single" style="font-weight: 700; color: var(--navy);">Your Answer:</label>
               <input type="text" id="t1-inp-single" class="num-input ${isDone ? 'ok' : ''}" value="${isDone ? task.answer : ''}" placeholder="?">
@@ -1760,7 +1975,7 @@
             </div>
           `;
         } else if (task.type === 'dual') {
-          bodyHtml = `
+          bodyHtml += `
             <div class="dual-grid">
               <div>
                 <label for="t1-inp-a" style="display: block; font-weight: 700; color: var(--navy); font-size: 0.9rem; margin-bottom: 8px;">${task.labelA}</label>
@@ -1782,17 +1997,49 @@
               <button type="button" class="btn" id="t1-hint-btn">💡 Hint</button>
             </div>
           `;
+        } else if (task.type === 'triple') {
+          bodyHtml += `
+            <div class="triple-grid">
+              <div>
+                <label for="t1-inp-a" style="display: block; font-weight: 700; color: var(--navy); font-size: 0.88rem; margin-bottom: 8px;">${task.labelA}</label>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <input type="text" id="t1-inp-a" class="num-input ${isDone ? 'ok' : ''}" style="width: 78px;" value="${isDone ? task.ansA : ''}" placeholder="?">
+                  <strong style="color: var(--navy); font-size: 0.92rem;">${task.suffixA}</strong>
+                </div>
+              </div>
+              <div>
+                <label for="t1-inp-b" style="display: block; font-weight: 700; color: var(--navy); font-size: 0.88rem; margin-bottom: 8px;">${task.labelB}</label>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <input type="text" id="t1-inp-b" class="num-input ${isDone ? 'ok' : ''}" style="width: 84px;" value="${isDone ? task.ansB : ''}" placeholder="0.__">
+                  <strong style="color: var(--slate); font-size: 0.84rem;">${task.suffixB}</strong>
+                </div>
+              </div>
+              <div>
+                <label for="t1-inp-c" style="display: block; font-weight: 700; color: var(--navy); font-size: 0.88rem; margin-bottom: 8px;">${task.labelC}</label>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <input type="text" id="t1-inp-c" class="num-input ${isDone ? 'ok' : ''}" style="width: 78px;" value="${isDone ? task.ansC : ''}" placeholder="?">
+                  <strong style="color: var(--navy); font-size: 0.98rem;">${task.suffixC}</strong>
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button type="button" class="btn btn-primary" id="t1-check-btn">Check All 3 Forms</button>
+              <button type="button" class="btn" id="t1-hint-btn">💡 Hint</button>
+            </div>
+          `;
         }
+
+        const doneMsg = state.showEs && task.explainEs ? `${task.explain} (${task.explainEs})` : task.explain;
 
         card.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px;">
             <span style="font-size: 0.82rem; font-weight: 800; text-transform: uppercase; color: var(--teal); letter-spacing: 0.04em;">${task.title}</span>
-            <button type="button" class="speak-btn" data-speak="${task.stem}">🔊 Read</button>
+            <button type="button" class="speak-btn" data-speak="${task.stem}" data-speak-es="${task.stemEs}">🔊 Read</button>
           </div>
           <p style="font-size: 1.12rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${task.stem}</p>
           <p class="es-text">${task.stemEs}</p>
           ${bodyHtml}
-          <div id="t1-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">${isDone ? task.explain : ''}</div>
+          <div id="t1-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">${isDone ? doneMsg : ''}</div>
         `;
 
         if (isDone) appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
@@ -1808,7 +2055,7 @@
               if (idx === task.correct) {
                 btn.classList.add('correct');
                 fb.className = 'feedback-box show ok';
-                fb.textContent = task.explain;
+                fb.textContent = state.showEs && task.explainEs ? `${task.explain} (${task.explainEs})` : task.explain;
                 markSolved(state.solved1, task.id);
                 renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (ni) => { state.idx1 = ni; renderT1Task(); });
                 updateProgressHeader();
@@ -1816,7 +2063,8 @@
               } else {
                 btn.classList.add('wrong');
                 fb.className = 'feedback-box show err';
-                fb.textContent = `Not quite. Hint: ${task.hint}`;
+                const hintTxt = state.showEs && task.hintEs ? `${task.hint} (${task.hintEs})` : task.hint;
+                fb.textContent = `Not quite. Hint: ${hintTxt}`;
               }
             });
           });
@@ -1826,6 +2074,9 @@
           const fb = document.getElementById('t1-fb');
 
           function verifyT1Input() {
+            const hintTxt = state.showEs && task.hintEs ? `${task.hint} (${task.hintEs})` : task.hint;
+            const explainTxt = state.showEs && task.explainEs ? `${task.explain} (${task.explainEs})` : task.explain;
+
             if (task.type === 'single') {
               const inp = document.getElementById('t1-inp-single');
               const val = inp.value.replace(/%/g, '').replace(/\s+/g, '').trim();
@@ -1837,17 +2088,28 @@
               const ok = task.answer.includes('/') ? val === task.answer : parseNum(val) === Number(task.answer);
               inp.classList.toggle('ok', ok);
               inp.classList.toggle('err', !ok);
-              fb.className = `feedback-box show ${ok ? 'ok' : 'err'}`;
-              fb.textContent = ok ? task.explain : `Check your answer. Hint: ${task.hint}`;
               if (ok) {
+                fb.className = 'feedback-box show ok';
+                fb.textContent = explainTxt;
                 markSolved(state.solved1, task.id);
                 renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (ni) => { state.idx1 = ni; renderT1Task(); });
                 updateProgressHeader();
                 appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
+              } else {
+                const n = bumpMiss(task.id);
+                fb.className = 'feedback-box show err';
+                fb.textContent = n < 2
+                  ? 'Not quite yet—look closely at the 100-square grid on the left and try again.'
+                  : `Check your answer. Hint: ${hintTxt}`;
               }
             } else if (task.type === 'dual') {
               const inpA = document.getElementById('t1-inp-a');
               const inpB = document.getElementById('t1-inp-b');
+              if (!inpA.value.trim() && !inpB.value.trim()) {
+                fb.className = 'feedback-box show warn';
+                fb.textContent = 'Type a number in both boxes, then press Check Answer.';
+                return;
+              }
               const okA = parseNum(inpA.value) === Number(task.ansA);
               const okB = parseNum(inpB.value) === Number(task.ansB);
               inpA.classList.toggle('ok', okA);
@@ -1856,14 +2118,53 @@
               inpB.classList.toggle('err', !okB);
               if (okA && okB) {
                 fb.className = 'feedback-box show ok';
-                fb.textContent = task.explain;
+                fb.textContent = explainTxt;
                 markSolved(state.solved1, task.id);
                 renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (ni) => { state.idx1 = ni; renderT1Task(); });
                 updateProgressHeader();
                 appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
               } else {
+                const n = bumpMiss(task.id);
                 fb.className = 'feedback-box show err';
-                fb.textContent = `Check both boxes. Hint: ${task.hint}`;
+                fb.textContent = n < 2
+                  ? 'One or more boxes need another look. Check the red box(es) against the 100-grid.'
+                  : `Check both boxes. Hint: ${hintTxt}`;
+              }
+            } else if (task.type === 'triple') {
+              const inpA = document.getElementById('t1-inp-a');
+              const inpB = document.getElementById('t1-inp-b');
+              const inpC = document.getElementById('t1-inp-c');
+              if (!inpA.value.trim() && !inpB.value.trim() && !inpC.value.trim()) {
+                fb.className = 'feedback-box show warn';
+                fb.textContent = 'Fill in the fraction numerator, decimal, and percent boxes, then check.';
+                return;
+              }
+              const okA = parseNum(inpA.value) === Number(task.ansA);
+              const okB = parseNum(inpB.value) === Number(task.ansB);
+              const okC = parseNum(inpC.value) === Number(task.ansC);
+              inpA.classList.toggle('ok', okA);
+              inpA.classList.toggle('err', !okA);
+              inpB.classList.toggle('ok', okB);
+              inpB.classList.toggle('err', !okB);
+              inpC.classList.toggle('ok', okC);
+              inpC.classList.toggle('err', !okC);
+              if (okA && okB && okC) {
+                fb.className = 'feedback-box show ok';
+                fb.textContent = explainTxt;
+                markSolved(state.solved1, task.id);
+                renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (ni) => { state.idx1 = ni; renderT1Task(); });
+                updateProgressHeader();
+                appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
+              } else {
+                const n = bumpMiss(task.id);
+                fb.className = 'feedback-box show err';
+                if (!okB && parseNum(inpB.value) === Number(task.ansA)) {
+                  fb.textContent = 'Careful on Box 2 (Decimal): 23 hundredths is written with a decimal point as 0.23, not 23.';
+                } else {
+                  fb.textContent = n < 2
+                    ? 'Check the red box(es): remember that 23 out of 100 is 23/100, 0.23, and 23%.'
+                    : `Hint: ${hintTxt}`;
+                }
               }
             }
           }
@@ -1871,7 +2172,8 @@
           checkBtn.addEventListener('click', verifyT1Input);
           hintBtn.addEventListener('click', () => {
             fb.className = 'feedback-box show warn';
-            fb.textContent = `💡 Hint: ${task.hint}`;
+            const hintTxt = state.showEs && task.hintEs ? `${task.hint} (${task.hintEs})` : task.hint;
+            fb.textContent = `💡 Hint: ${hintTxt}`;
           });
           card.querySelectorAll('input').forEach((inp) => {
             inp.addEventListener('keydown', (e) => {
@@ -1918,8 +2220,9 @@
         const factor = 100 / p.whole;
         const targetPct = p.part * factor;
         const isDone = !!state.solved2[p.id];
+        const isRand = p.id.startsWith('rand');
 
-        renderDots('t2-dots', T2_PROBLEMS, currentT2.id.startsWith('rand') ? -1 : state.idx2, state.solved2, (ni) => {
+        renderDots('t2-dots', T2_PROBLEMS, isRand ? -1 : state.idx2, state.solved2, (ni) => {
           state.idx2 = ni;
           currentT2 = T2_PROBLEMS[ni];
           renderT2Problem();
@@ -1941,7 +2244,7 @@
         stage.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
             <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal); letter-spacing: 0.04em;">${p.title}</span>
-            <button type="button" class="speak-btn" data-speak="${p.stem}">🔊 Read</button>
+            <button type="button" class="speak-btn" data-speak="${p.stem}" data-speak-es="${p.stemEs}">🔊 Read</button>
           </div>
           <p style="font-size: 1.15rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${p.stem}</p>
           <p class="es-text">${p.stemEs}</p>
@@ -1983,12 +2286,12 @@
             </div>
 
             <!-- Clean Single Partitioned Percent Bar -->
-            <svg viewBox="0 0 600 92" style="width: 100%; max-width: 640px; height: auto; display: block; margin: 0 auto; background: #FFFFFF; border: 1px solid var(--border); border-radius: 8px;" role="img" aria-label="Visual fraction bar model">
+            <svg viewBox="0 0 600 92" width="600" height="92" style="background:white; width: 100%; max-width: 640px; height: auto; display: block; margin: 0 auto; border: 1px solid var(--border); border-radius: 8px;" role="img" aria-label="Visual fraction bar model">
               <text x="40" y="20" font-size="12" font-weight="700" fill="#17324D">Shaded Part: ${p.part} out of ${p.whole}</text>
               <text x="560" y="20" text-anchor="end" font-size="12" font-weight="700" fill="#0F766E">Whole Bar = ${p.whole} = 100%</text>
               ${rectsHtml}
               <text x="40" y="80" font-size="11.5" font-weight="700" fill="#0F766E">0%</text>
-              <text x="${40 + (p.part / p.whole) * barW}" y="80" text-anchor="middle" font-size="12" font-weight="800" fill="#0F766E">${isDone ? targetPct + '%' : '?%'}</text>
+              <text id="t2-svg-bar-pct" x="${40 + (p.part / p.whole) * barW}" y="80" text-anchor="middle" font-size="12" font-weight="800" fill="#0F766E">${isDone ? targetPct + '%' : '?%'}</text>
               <text x="560" y="80" text-anchor="end" font-size="11.5" font-weight="700" fill="#17324D">100%</text>
             </svg>
           </div>
@@ -2013,7 +2316,7 @@
                 <p class="step-box-desc">Multiply the part (<strong>${p.part}</strong>) by that same scale factor:</p>
               </div>
               <div class="step-box-Equation">
-                <span>${p.part} × ${isDone ? factor : 'factor'} =</span>
+                <span>${p.part} × <strong id="t2-live-step2-f" style="color: var(--teal);">${isDone ? factor : 'factor'}</strong> =</span>
                 <input type="text" id="t2-inp-num" class="num-input ${isDone ? 'ok' : ''}" style="width: 78px;" inputmode="numeric" value="${isDone ? targetPct : ''}" aria-label="Amount out of 100" placeholder="?">
               </div>
             </div>
@@ -2033,6 +2336,7 @@
           <div style="display: flex; gap: 10px; margin-top: 18px; align-items: center; flex-wrap: wrap;">
             <button type="button" class="btn btn-primary" id="t2-check-btn">Check My Steps</button>
             <button type="button" class="btn" id="t2-hint-btn">💡 Hint</button>
+            ${isRand ? `<button type="button" class="btn btn-sm" id="t2-back-seq-btn">← Back to Problem #${state.idx2 + 1}</button>` : ''}
           </div>
 
           <div id="t2-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">
@@ -2045,18 +2349,33 @@
         const pInp = document.getElementById('t2-inp-pct');
         const fb = document.getElementById('t2-fb');
 
-        // Live preview in the diagram as student types
+        const backSeqBtn = document.getElementById('t2-back-seq-btn');
+        if (backSeqBtn) {
+          backSeqBtn.addEventListener('click', () => {
+            currentT2 = T2_PROBLEMS[state.idx2];
+            renderT2Problem();
+          });
+        }
+
+        // Live preview in the diagram & Step 2 as student types
         fInp.addEventListener('input', () => {
           const v = fInp.value.trim() || '?';
           document.getElementById('t2-live-top-f').textContent = v;
           document.getElementById('t2-live-bot-f').textContent = v;
+          const step2F = document.getElementById('t2-live-step2-f');
+          if (step2F) step2F.textContent = fInp.value.trim() || 'factor';
         });
         nInp.addEventListener('input', () => {
-          document.getElementById('t2-live-num').textContent = nInp.value.trim() || '?';
+          const v = nInp.value.trim();
+          document.getElementById('t2-live-num').textContent = v || '?';
+          const barTxt = document.getElementById('t2-svg-bar-pct');
+          if (barTxt && !pInp.value.trim()) barTxt.textContent = v ? `${v}%` : '?%';
         });
         pInp.addEventListener('input', () => {
           const v = pInp.value.replace(/%/g, '').trim();
           document.getElementById('t2-live-pct').textContent = v ? `${v}%` : '?%';
+          const barTxt = document.getElementById('t2-svg-bar-pct');
+          if (barTxt) barTxt.textContent = v ? `${v}%` : '?%';
         });
 
         function checkT2() {
@@ -2112,13 +2431,15 @@
         document.getElementById('t2-check-btn').addEventListener('click', checkT2);
         document.getElementById('t2-hint-btn').addEventListener('click', () => {
           fb.className = 'feedback-box show warn';
-          fb.textContent = `💡 Hint: Ask “How many ${p.whole}s fit into 100?” (${p.whole} × ${factor} = 100). Then multiply ${p.part} × ${factor}.`;
+          const enH = `Ask “How many ${p.whole}s fit into 100?” (${p.whole} × ${factor} = 100). Then multiply ${p.part} × ${factor}.`;
+          const esH = `Pregunta “¿Cuántos ${p.whole} caben en 100?” (${p.whole} × ${factor} = 100). Luego multiplica ${p.part} × ${factor}.`;
+          fb.textContent = `💡 Hint: ${state.showEs ? `${enH} (${esH})` : enH}`;
         });
         if (isDone) {
           appendNext(fb, 2, T2_PROBLEMS.length, () => {
             currentT2 = T2_PROBLEMS[state.idx2];
             renderT2Problem();
-          }, p.id.startsWith('rand') ? newRandomT2 : undefined);
+          }, isRand ? newRandomT2 : undefined);
         }
         [fInp, nInp, pInp].forEach((inp) => {
           inp.addEventListener('keydown', (e) => {
@@ -2177,7 +2498,8 @@
           oneBlockQty: 5,
           oneBlockPct: 25,
           finalPct: 75,
-          hint: '100% split into 4 equal blocks is 100% ÷ 4 = 25% per block. Then 3 blocks × 25% = 75%.'
+          hint: '100% split into 4 equal blocks is 100% ÷ 4 = 25% per block. Then 3 blocks × 25% = 75%.',
+          hintEs: '100% dividido en 4 bloques iguales es 100% ÷ 4 = 25% por bloque. Luego 3 bloques × 25% = 75%.'
         },
         {
           id: 't3_2',
@@ -2192,7 +2514,8 @@
           oneBlockQty: 8,
           oneBlockPct: 20,
           finalPct: 60,
-          hint: '100% ÷ 5 blocks = 20% for each block of 8 seats. Three blocks is 3 × 20% = 60%.'
+          hint: '100% ÷ 5 blocks = 20% for each block of 8 seats. Three blocks is 3 × 20% = 60%.',
+          hintEs: '100% ÷ 5 bloques = 20% por cada bloque de 8 asientos. Tres bloques es 3 × 20% = 60%.'
         },
         {
           id: 't3_3',
@@ -2207,7 +2530,8 @@
           oneBlockQty: 5,
           oneBlockPct: 10,
           finalPct: 70,
-          hint: 'Each block is 1/10 of the bar, so 1 block (5 jumps) = 10%. Seven blocks is 7 × 10% = 70%.'
+          hint: 'Each block is 1/10 of the bar, so 1 block (5 jumps) = 10%. Seven blocks is 7 × 10% = 70%.',
+          hintEs: 'Cada bloque es 1/10 de la barra, así que 1 bloque (5 saltos) = 10%. Siete bloques es 7 × 10% = 70%.'
         },
         {
           id: 't3_4',
@@ -2222,7 +2546,8 @@
           midWhole: 4,
           multBy: 25,
           finalPct: 75,
-          hint: 'Step 1 (Divide by 3): 9 ÷ 3 = 3. Step 2 (Multiply by 25): 3 × 25 = 75, so 75 out of 100 = 75%.'
+          hint: 'Step 1 (Divide by 3): 9 ÷ 3 = 3. Step 2 (Multiply by 25): 3 × 25 = 75, so 75 out of 100 = 75%.',
+          hintEs: 'Paso 1 (Divide entre 3): 9 ÷ 3 = 3. Paso 2 (Multiplica por 25): 3 × 25 = 75, así que 75 de 100 = 75%.'
         },
         {
           id: 't3_5',
@@ -2237,7 +2562,8 @@
           midWhole: 4,
           multBy: 25,
           finalPct: 75,
-          hint: 'Step 1: 12 ÷ 4 = 3 (giving 3/4). Step 2: 3 × 25 = 75 (giving 75/100 = 75%).'
+          hint: 'Step 1: 12 ÷ 4 = 3 (giving 3/4). Step 2: 3 × 25 = 75 (giving 75/100 = 75%).',
+          hintEs: 'Paso 1: 12 ÷ 4 = 3 (dando 3/4). Paso 2: 3 × 25 = 75 (dando 75/100 = 75%).'
         },
         {
           id: 't3_6',
@@ -2252,7 +2578,8 @@
           midWhole: 10,
           multBy: 10,
           finalPct: 60,
-          hint: 'Step 1: 36 ÷ 6 = 6 (so 6 out of 10). Step 2: 6 × 10 = 60 (so 60 out of 100 = 60%).'
+          hint: 'Step 1: 36 ÷ 6 = 6 (so 6 out of 10). Step 2: 6 × 10 = 60 (so 60 out of 100 = 60%).',
+          hintEs: 'Paso 1: 36 ÷ 6 = 6 (6 de 10). Paso 2: 6 × 10 = 60 (60 de 100 = 60%).'
         },
         {
           id: 't3_7',
@@ -2267,7 +2594,8 @@
           midWhole: 10,
           multBy: 10,
           finalPct: 80,
-          hint: 'Step 1: 32 ÷ 4 = 8 (so 8 out of 10). Step 2: 8 × 10 = 80 (so 80 out of 100 = 80%).'
+          hint: 'Step 1: 32 ÷ 4 = 8 (so 8 out of 10). Step 2: 8 × 10 = 80 (so 80 out of 100 = 80%).',
+          hintEs: 'Paso 1: 32 ÷ 4 = 8 (8 de 10). Paso 2: 8 × 10 = 80 (80 de 100 = 80%).'
         },
         {
           id: 't3_8',
@@ -2275,16 +2603,22 @@
           title: 'Problem 8 of 8 · Multi-Row Ratio Table: Camp Sign-Ups (Whole = 25)',
           stem: 'Out of 25 campers, 14 chose Canoeing, 7 chose Archery, and 4 chose Crafts. Since 25 × 4 = 100, multiply each activity count by 4 to find its percent!',
           stemEs: 'De 25 campistas, 14 eligieron Canotaje, 7 Tiro con arco y 4 Manualidades. Como 25 × 4 = 100, multiplica cada grupo por 4.',
-          hint: 'Multiply each number in the “Out of 25” column by 4: 14 × 4 = 56%, 7 × 4 = 28%, and 4 × 4 = 16%.'
+          hint: 'Multiply each number in the “Out of 25” column by 4: 14 × 4 = 56%, 7 × 4 = 28%, and 4 × 4 = 16%.',
+          hintEs: 'Multiplica cada número en la columna “De 25” por 4: 14 × 4 = 56%, 7 × 4 = 28% y 4 × 4 = 16%.'
         }
       ];
 
-      function renderT3Problem() {
-        const p = T3_PROBLEMS[state.idx3];
-        const isDone = !!state.solved3[p.id];
+      let currentT3 = T3_PROBLEMS[0];
 
-        renderDots('t3-dots', T3_PROBLEMS, state.idx3, state.solved3, (ni) => {
+      function renderT3Problem() {
+        const p = currentT3;
+        const isDone = !!state.solved3[p.id];
+        const isRand = p.id.startsWith('rand');
+        const hintTxt = state.showEs && p.hintEs ? `${p.hint} (${p.hintEs})` : p.hint;
+
+        renderDots('t3-dots', T3_PROBLEMS, isRand ? -1 : state.idx3, state.solved3, (ni) => {
           state.idx3 = ni;
+          currentT3 = T3_PROBLEMS[ni];
           renderT3Problem();
         });
 
@@ -2318,14 +2652,14 @@
           stage.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
               <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal);">${p.title}</span>
-              <button type="button" class="speak-btn" data-speak="${p.stem}">🔊 Read</button>
+              <button type="button" class="speak-btn" data-speak="${p.stem}" data-speak-es="${p.stemEs}">🔊 Read</button>
             </div>
             <p style="font-size: 1.12rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${p.stem}</p>
             <p class="es-text">${p.stemEs}</p>
 
             <!-- Crystal-Clear Segmented Percent Bar -->
             <div class="scaling-visual-card" style="padding: 18px;">
-              <svg viewBox="0 0 620 124" style="width: 100%; max-width: 680px; height: auto; display: block; margin: 0 auto; background: #FFFFFF; border-radius: 8px; border: 1px solid var(--border);" role="img" aria-label="Segmented percent bar">
+              <svg viewBox="0 0 620 124" width="620" height="124" style="background:white; width: 100%; max-width: 680px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" role="img" aria-label="Segmented percent bar">
                 <text x="40" y="26" font-size="12.5" font-weight="800" fill="#17324D">Shaded: ${p.shadedBlocks} blocks = ${p.part}</text>
                 <text x="580" y="26" text-anchor="end" font-size="12.5" font-weight="800" fill="#17324D">Whole (${p.blocks} blocks) = ${p.whole}</text>
                 <text x="40" y="106" text-anchor="middle" font-size="12" font-weight="700" fill="#0F766E">0%</text>
@@ -2341,7 +2675,7 @@
                 </div>
                 <div class="step-box-Equation">
                   <span>100% ÷ ${p.blocks} =</span>
-                  <input type="text" id="t3-bar-one" class="num-input ${isDone ? 'ok' : ''}" style="width: 82px;" inputmode="numeric" value="${isDone ? p.oneBlockPct : ''}" placeholder="?">
+                  <input type="text" id="t3-bar-one" class="num-input ${isDone ? 'ok' : ''}" style="width: 82px;" inputmode="numeric" value="${isDone ? p.oneBlockPct : ''}" aria-label="Percent for 1 block" placeholder="?">
                   <span>%</span>
                 </div>
               </div>
@@ -2353,15 +2687,16 @@
                 </div>
                 <div class="step-box-Equation">
                   <span>${p.shadedBlocks} × <strong id="t3-live-step1-val">${isDone ? p.oneBlockPct + '%' : '(Step 1)'}</strong> =</span>
-                  <input type="text" id="t3-bar-final" class="num-input ${isDone ? 'ok' : ''}" style="width: 82px;" inputmode="numeric" value="${isDone ? p.finalPct : ''}" placeholder="?">
+                  <input type="text" id="t3-bar-final" class="num-input ${isDone ? 'ok' : ''}" style="width: 82px;" inputmode="numeric" value="${isDone ? p.finalPct : ''}" aria-label="Final percent" placeholder="?">
                   <span>%</span>
                 </div>
               </div>
             </div>
 
-            <div style="display: flex; gap: 10px; margin-top: 18px;">
+            <div style="display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap;">
               <button type="button" class="btn btn-primary" id="t3-check-btn">Check Bar Steps</button>
               <button type="button" class="btn" id="t3-hint-btn">💡 Hint</button>
+              ${isRand ? `<button type="button" class="btn btn-sm" id="t3-back-seq-btn">← Back to Problem #${state.idx3 + 1}</button>` : ''}
             </div>
             <div id="t3-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">
               ${isDone ? `✓ Awesome! Each block is ${p.oneBlockPct}%, so ${p.shadedBlocks} blocks (${p.part} out of ${p.whole}) is ${p.finalPct}%.` : ''}
@@ -2396,6 +2731,7 @@
               markSolved(state.solved3, p.id);
               updateProgressHeader();
               renderT3Problem();
+              announce(`Correct! ${p.part} out of ${p.whole} is ${p.finalPct} percent.`);
             } else {
               const empty = !inpOne.value.trim() && !inpFin.value.trim();
               const n = empty ? 0 : bumpMiss(p.id);
@@ -2417,7 +2753,15 @@
           document.getElementById('t3-check-btn').addEventListener('click', checkBar);
           document.getElementById('t3-hint-btn').addEventListener('click', () => {
             fb.className = 'feedback-box show warn';
-            fb.textContent = `💡 Hint: ${p.hint}`;
+            fb.textContent = `💡 Hint: ${hintTxt}`;
+          });
+          [inpOne, inpFin].forEach((inp) => {
+            inp.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter' && !e.isComposing) {
+                e.preventDefault();
+                checkBar();
+              }
+            });
           });
         } else if (p.kind === 'bridge') {
           const barW = 520;
@@ -2435,19 +2779,19 @@
           stage.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
               <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal);">${p.title}</span>
-              <button type="button" class="speak-btn" data-speak="${p.stem}">🔊 Read</button>
+              <button type="button" class="speak-btn" data-speak="${p.stem}" data-speak-es="${p.stemEs}">🔊 Read</button>
             </div>
             <p style="font-size: 1.12rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${p.stem}</p>
             <p class="es-text">${p.stemEs}</p>
 
             <!-- Companion Percent Bar showing how dividing by ${p.divBy} creates ${p.midWhole} equal blocks -->
             <div class="scaling-visual-card" style="padding: 14px 18px; margin-bottom: 14px;">
-              <svg viewBox="0 0 600 88" style="width: 100%; max-width: 640px; height: auto; display: block; margin: 0 auto; background: #FFFFFF; border-radius: 8px; border: 1px solid var(--border);" role="img" aria-label="Simplified block bar">
-                <text x="40" y="20" font-size="12" font-weight="800" fill="#17324D">Grouped by ${p.divBy}s: ${p.part} is ${isDone ? p.midPart : '?'} blocks out of ${p.midWhole} blocks</text>
+              <svg viewBox="0 0 600 88" width="600" height="88" style="background:white; width: 100%; max-width: 640px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" role="img" aria-label="Simplified block bar">
+                <text id="t3-br-svg-mid" x="40" y="20" font-size="12" font-weight="800" fill="#17324D">Grouped by ${p.divBy}s: ${p.part} is ${isDone ? p.midPart : '?'} blocks out of ${p.midWhole} blocks</text>
                 <text x="560" y="20" text-anchor="end" font-size="12" font-weight="800" fill="#0F766E">Whole = ${p.whole} (${p.midWhole} blocks of ${p.divBy}) = 100%</text>
                 ${bridgeRects}
                 <text x="40" y="78" font-size="11.5" font-weight="700" fill="#0F766E">0%</text>
-                <text x="${40 + p.midPart * bw}" y="78" text-anchor="middle" font-size="12" font-weight="800" fill="#D97706">${isDone ? p.finalPct + '%' : '?%'}</text>
+                <text id="t3-br-svg-pct" x="${40 + p.midPart * bw}" y="78" text-anchor="middle" font-size="12" font-weight="800" fill="#D97706">${isDone ? p.finalPct + '%' : '?%'}</text>
                 <text x="560" y="78" text-anchor="end" font-size="11.5" font-weight="700" fill="#17324D">100%</text>
               </svg>
             </div>
@@ -2494,9 +2838,10 @@
               </div>
             </div>
 
-            <div style="display: flex; gap: 10px; margin-top: 18px;">
+            <div style="display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap;">
               <button type="button" class="btn btn-primary" id="t3-check-btn">Check Bridge Table</button>
               <button type="button" class="btn" id="t3-hint-btn">💡 Hint</button>
+              ${isRand ? `<button type="button" class="btn btn-sm" id="t3-back-seq-btn">← Back to Problem #${state.idx3 + 1}</button>` : ''}
             </div>
             <div id="t3-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">
               ${isDone ? `✓ Bridge Table Complete! ${p.part}/${p.whole} simplifies to ${p.midPart}/${p.midWhole}, which scales (×${p.multBy}) to ${p.finalPct}/100 = ${p.finalPct}%.` : ''}
@@ -2507,6 +2852,22 @@
           const inpFin = document.getElementById('t3-br-fin');
           const inpPct = document.getElementById('t3-br-pct');
           const fb = document.getElementById('t3-fb');
+
+          inpMid.addEventListener('input', () => {
+            const v = inpMid.value.trim() || '?';
+            const el = document.getElementById('t3-br-svg-mid');
+            if (el) el.textContent = `Grouped by ${p.divBy}s: ${p.part} is ${v} blocks out of ${p.midWhole} blocks`;
+          });
+          inpFin.addEventListener('input', () => {
+            const v = inpFin.value.replace(/%/g, '').trim();
+            const el = document.getElementById('t3-br-svg-pct');
+            if (el && !inpPct.value.trim()) el.textContent = v ? `${v}%` : '?%';
+          });
+          inpPct.addEventListener('input', () => {
+            const v = inpPct.value.replace(/%/g, '').trim();
+            const el = document.getElementById('t3-br-svg-pct');
+            if (el) el.textContent = v ? `${v}%` : '?%';
+          });
 
           function checkBridge() {
             const okM = parseNum(inpMid.value) === p.midPart;
@@ -2523,6 +2884,7 @@
               markSolved(state.solved3, p.id);
               updateProgressHeader();
               renderT3Problem();
+              announce(`Correct! ${p.part} out of ${p.whole} simplifies to ${p.midPart} out of ${p.midWhole}, which is ${p.finalPct} percent.`);
             } else {
               const empty = !inpMid.value.trim() && !inpFin.value.trim() && !inpPct.value.trim();
               const n = empty ? 0 : bumpMiss(p.id);
@@ -2546,13 +2908,21 @@
           document.getElementById('t3-check-btn').addEventListener('click', checkBridge);
           document.getElementById('t3-hint-btn').addEventListener('click', () => {
             fb.className = 'feedback-box show warn';
-            fb.textContent = `💡 Hint: ${p.hint}`;
+            fb.textContent = `💡 Hint: ${hintTxt}`;
+          });
+          [inpMid, inpFin, inpPct].forEach((inp) => {
+            inp.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter' && !e.isComposing) {
+                e.preventDefault();
+                checkBridge();
+              }
+            });
           });
         } else if (p.kind === 'campTable') {
           stage.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
               <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal);">${p.title}</span>
-              <button type="button" class="speak-btn" data-speak="${p.stem}">🔊 Read</button>
+              <button type="button" class="speak-btn" data-speak="${p.stem}" data-speak-es="${p.stemEs}">🔊 Read</button>
             </div>
             <p style="font-size: 1.12rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${p.stem}</p>
             <p class="es-text">${p.stemEs}</p>
@@ -2604,7 +2974,7 @@
           `;
 
           const fb = document.getElementById('t3-fb');
-          document.getElementById('t3-check-btn').addEventListener('click', () => {
+          function checkCamp() {
             const camp = [['t3-camp-1', 56], ['t3-camp-2a', 28], ['t3-camp-2b', 28], ['t3-camp-3a', 16], ['t3-camp-3b', 16]];
             let allOk = true;
             let anyTyped = false;
@@ -2621,6 +2991,7 @@
               markSolved(state.solved3, p.id);
               updateProgressHeader();
               renderT3Problem();
+              announce('Correct! Camp Ratio Table complete.');
             } else {
               const n = anyTyped ? bumpMiss(p.id) : 0;
               fb.className = 'feedback-box show err';
@@ -2628,23 +2999,100 @@
               else if (n < 2) fb.textContent = 'Multiply each camper count by 4. Fix the red boxes and try again.';
               else fb.textContent = 'Canoeing: 14 × 4 = 56. Archery: 7 × 4 = 28. Crafts: 4 × 4 = 16.';
             }
-          });
+          }
+
+          document.getElementById('t3-check-btn').addEventListener('click', checkCamp);
           document.getElementById('t3-hint-btn').addEventListener('click', () => {
             fb.className = 'feedback-box show warn';
-            fb.textContent = `💡 Hint: ${p.hint}`;
+            fb.textContent = `💡 Hint: ${hintTxt}`;
+          });
+          stage.querySelectorAll('input').forEach((inp) => {
+            inp.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter' && !e.isComposing) {
+                e.preventDefault();
+                checkCamp();
+              }
+            });
           });
         }
-        if (isDone) appendNext(document.getElementById('t3-fb'), 3, T3_PROBLEMS.length, renderT3Problem);
+
+        const backBtn3 = document.getElementById('t3-back-seq-btn');
+        if (backBtn3) {
+          backBtn3.addEventListener('click', () => {
+            currentT3 = T3_PROBLEMS[state.idx3];
+            renderT3Problem();
+          });
+        }
+
+        if (isDone) {
+          appendNext(document.getElementById('t3-fb'), 3, T3_PROBLEMS.length, () => {
+            currentT3 = T3_PROBLEMS[state.idx3];
+            renderT3Problem();
+          }, isRand ? newRandomT3 : undefined);
+        }
+      }
+
+      function newRandomT3() {
+        const useBridge = Math.random() < 0.55;
+        if (useBridge) {
+          const bridgePool = [
+            { part: 6, whole: 8, divBy: 2, midPart: 3, midWhole: 4, multBy: 25, finalPct: 75 },
+            { part: 3, whole: 12, divBy: 3, midPart: 1, midWhole: 4, multBy: 25, finalPct: 25 },
+            { part: 12, whole: 15, divBy: 3, midPart: 4, midWhole: 5, multBy: 20, finalPct: 80 },
+            { part: 9, whole: 15, divBy: 3, midPart: 3, midWhole: 5, multBy: 20, finalPct: 60 },
+            { part: 14, whole: 35, divBy: 7, midPart: 2, midWhole: 5, multBy: 20, finalPct: 40 },
+            { part: 18, whole: 30, divBy: 3, midPart: 6, midWhole: 10, multBy: 10, finalPct: 60 },
+            { part: 21, whole: 30, divBy: 3, midPart: 7, midWhole: 10, multBy: 10, finalPct: 70 },
+            { part: 24, whole: 32, divBy: 8, midPart: 3, midWhole: 4, multBy: 25, finalPct: 75 },
+            { part: 15, whole: 24, divBy: 3, midPart: 5, midWhole: 8, multBy: 12.5, finalPct: 62.5 }
+          ].filter(x => Number.isInteger(x.multBy));
+          const pick = bridgePool[Math.floor(Math.random() * bridgePool.length)];
+          currentT3 = {
+            id: 'rand_t3_' + Date.now(),
+            kind: 'bridge',
+            title: `Random Bridge Table (${pick.part} out of ${pick.whole})`,
+            stem: `Simplify ${pick.part} out of ${pick.whole} by dividing both numbers by ${pick.divBy} (to get out of ${pick.midWhole}), then multiply by ${pick.multBy} to reach 100!`,
+            stemEs: `Simplifica ${pick.part} de ${pick.whole} dividiendo entre ${pick.divBy} (sobre ${pick.midWhole}) y luego multiplica por ${pick.multBy} para llegar a 100.`,
+            ...pick,
+            hint: `Step 1: ${pick.part} ÷ ${pick.divBy} = ${pick.midPart}. Step 2: ${pick.midPart} × ${pick.multBy} = ${pick.finalPct}%.`,
+            hintEs: `Paso 1: ${pick.part} ÷ ${pick.divBy} = ${pick.midPart}. Paso 2: ${pick.midPart} × ${pick.multBy} = ${pick.finalPct}%.`
+          };
+        } else {
+          const barPool = [
+            { whole: 28, part: 21, blocks: 4, shadedBlocks: 3, oneBlockQty: 7, oneBlockPct: 25, finalPct: 75 },
+            { whole: 36, part: 9, blocks: 4, shadedBlocks: 1, oneBlockQty: 9, oneBlockPct: 25, finalPct: 25 },
+            { whole: 30, part: 12, blocks: 5, shadedBlocks: 2, oneBlockQty: 6, oneBlockPct: 20, finalPct: 40 },
+            { whole: 45, part: 36, blocks: 5, shadedBlocks: 4, oneBlockQty: 9, oneBlockPct: 20, finalPct: 80 },
+            { whole: 60, part: 18, blocks: 10, shadedBlocks: 3, oneBlockQty: 6, oneBlockPct: 10, finalPct: 30 },
+            { whole: 80, part: 72, blocks: 10, shadedBlocks: 9, oneBlockQty: 8, oneBlockPct: 10, finalPct: 90 }
+          ];
+          const pick = barPool[Math.floor(Math.random() * barPool.length)];
+          currentT3 = {
+            id: 'rand_t3_' + Date.now(),
+            kind: 'bar',
+            title: `Random Percent Bar (${pick.part} out of ${pick.whole} · ${pick.blocks} Blocks)`,
+            stem: `A whole of ${pick.whole} is split into ${pick.blocks} equal blocks of ${pick.oneBlockQty}. ${pick.part} (${pick.shadedBlocks} blocks) is shaded. Find the percent for 1 block, then for ${pick.shadedBlocks} blocks!`,
+            stemEs: `Un entero de ${pick.whole} se divide en ${pick.blocks} bloques iguales de ${pick.oneBlockQty}. ${pick.part} (${pick.shadedBlocks} bloques) está sombreado. Halla el porcentaje de 1 bloque y luego de ${pick.shadedBlocks} bloques.`,
+            ...pick,
+            hint: `100% ÷ ${pick.blocks} blocks = ${pick.oneBlockPct}% per block. Then ${pick.shadedBlocks} × ${pick.oneBlockPct}% = ${pick.finalPct}%.`,
+            hintEs: `100% ÷ ${pick.blocks} bloques = ${pick.oneBlockPct}% por bloque. Luego ${pick.shadedBlocks} × ${pick.oneBlockPct}% = ${pick.finalPct}%.`
+          };
+        }
+        renderT3Problem();
       }
 
       document.getElementById('t3-prev-btn').addEventListener('click', () => {
         state.idx3 = (state.idx3 - 1 + T3_PROBLEMS.length) % T3_PROBLEMS.length;
+        currentT3 = T3_PROBLEMS[state.idx3];
         renderT3Problem();
       });
       document.getElementById('t3-next-btn').addEventListener('click', () => {
         state.idx3 = (state.idx3 + 1) % T3_PROBLEMS.length;
+        currentT3 = T3_PROBLEMS[state.idx3];
         renderT3Problem();
       });
+      const t3RandBtn = document.getElementById('t3-random-btn');
+      if (t3RandBtn) t3RandBtn.addEventListener('click', newRandomT3);
 
       /* ----------------------------------------------------------------------
          TAB 4: WORD PROBLEMS & ERROR DETECTIVE (8 PROBLEMS — ONE AT A TIME)
@@ -2659,8 +3107,26 @@
           stemEs: 'En un mercado, 11 de cada 20 compradores usaron un cupón y el resto no. ¿Qué porcentaje NO usó un cupón?',
           ans: '45',
           unit: '%',
+          visualSvg: `
+            <svg viewBox="0 0 580 76" width="580" height="76" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid #CBD5E1; border-radius:8px;" role="img" aria-label="Bar model showing 11 shoppers used a coupon and 9 shoppers did not out of 20 total shoppers">
+              <text x="20" y="18" font-size="11.5" font-weight="800" fill="#17324D">Whole = 20 Shoppers (100%)</text>
+              <rect x="20" y="25" width="297" height="28" fill="#1FA6A2" stroke="#17324D" stroke-width="1.5"/>
+              <text x="168" y="43" text-anchor="middle" font-size="11.5" font-weight="800" fill="#0F2337">Used Coupon: 11 / 20</text>
+              <rect x="317" y="25" width="243" height="28" fill="#FEF3C7" stroke="#17324D" stroke-width="1.5"/>
+              <text x="438" y="43" text-anchor="middle" font-size="11.5" font-weight="800" fill="#92400E">Did NOT Use: 9 / 20 = ?%</text>
+              <text x="20" y="68" font-size="10.5" font-weight="700" fill="#0F766E">0%</text>
+              <text x="560" y="68" text-anchor="end" font-size="10.5" font-weight="700" fill="#17324D">100% (×5 to scale 20 → 100)</text>
+            </svg>
+          `,
+          traps: {
+            55: '55% is the percent who USED a coupon (11/20). The question asks what percent did NOT use a coupon!',
+            9: '9 out of 20 shoppers did not use a coupon, but 9 is out of 20—scale 9/20 so the whole is 100!'
+          },
+          firstNudge: 'First find how many shoppers out of 20 did NOT use a coupon (20 − 11), then scale that ratio to a denominator of 100.',
           hint: '11 out of 20 used a coupon (11 × 5 = 55%), so 9 out of 20 did not. Subtract 100% − 55% (or multiply 9 × 5).',
-          explain: '✓ Correct! 11/20 = 55% used a coupon, so 100% − 55% = 45% (9 out of 20) did NOT use a coupon.'
+          hintEs: '11 de 20 usaron cupón (55%), así que 9 de 20 no. Resta 100% − 55% (o multiplica 9 × 5).',
+          explain: '✓ Correct! 11/20 = 55% used a coupon, so 100% − 55% = 45% (9 out of 20) did NOT use a coupon.',
+          explainEs: '✓ ¡Correcto! 11/20 = 55% usaron un cupón, así que 100% − 55% = 45% (9 de 20) NO usaron un cupón.'
         },
         {
           id: 't4_2',
@@ -2671,8 +3137,29 @@
           stemEs: 'De 50 estudiantes, 16 eligieron un hámster, 24 un pez y el resto una tortuga. ¿Qué porcentaje eligió la tortuga?',
           ans: '20',
           unit: '%',
+          visualSvg: `
+            <svg viewBox="0 0 580 76" width="580" height="76" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid #CBD5E1; border-radius:8px;" role="img" aria-label="Bar model of 50 students: 16 hamster, 24 fish, and the rest turtle">
+              <text x="20" y="18" font-size="11.5" font-weight="800" fill="#17324D">Whole = 50 Students (Scale ×2 to make 100%)</text>
+              <rect x="20" y="25" width="173" height="28" fill="#E2E8F0" stroke="#17324D" stroke-width="1.5"/>
+              <text x="106" y="43" text-anchor="middle" font-size="11" font-weight="800" fill="#17324D">🐹 Hamster: 16</text>
+              <rect x="193" y="25" width="259" height="28" fill="#CCFBF1" stroke="#17324D" stroke-width="1.5"/>
+              <text x="322" y="43" text-anchor="middle" font-size="11" font-weight="800" fill="#0F766E">🐟 Fish: 24</text>
+              <rect x="452" y="25" width="108" height="28" fill="#FEF3C7" stroke="#17324D" stroke-width="1.5"/>
+              <text x="506" y="43" text-anchor="middle" font-size="11" font-weight="800" fill="#92400E">🐢 Turtle: ?</text>
+              <text x="20" y="68" font-size="10.5" font-weight="700" fill="#4A607A">16 + 24 + ? = 50 students total</text>
+              <text x="560" y="68" text-anchor="end" font-size="10.5" font-weight="700" fill="#0F766E">100%</text>
+            </svg>
+          `,
+          traps: {
+            10: '10 students voted for a turtle, but that is 10 out of 50 students. Scale 10/50 to a denominator of 100!',
+            40: '40 is the number of students who voted for hamster or fish (16 + 24). Find the remaining students who chose turtle, then scale to 100!',
+            80: '80% voted for hamster or fish. Subtract from 100% to find the turtle percent!'
+          },
+          firstNudge: 'Start by subtracting 50 − 16 − 24 to find how many students chose a turtle, then scale that number out of 50 up to 100.',
           hint: 'First find how many students chose a turtle: 50 − 16 − 24 = 10 students. Then scale 10 out of 50 to 100 by multiplying by 2.',
-          explain: '✓ Correct! 50 − 16 − 24 = 10 turtle votes, and 10 out of 50 scales by ×2 to 20 out of 100 = 20%.'
+          hintEs: 'Primero halla cuántos eligieron tortuga: 50 − 16 − 24 = 10 estudiantes. Luego escala 10 de 50 a 100 multiplicando por 2.',
+          explain: '✓ Correct! 50 − 16 − 24 = 10 turtle votes, and 10 out of 50 scales by ×2 to 20 out of 100 = 20%.',
+          explainEs: '✓ ¡Correcto! 50 − 16 − 24 = 10 votos por la tortuga, y 10 de 50 escala (×2) a 20 de 100 = 20%.'
         },
         {
           id: 't4_3',
@@ -2683,8 +3170,26 @@
           stemEs: 'Un club de robótica tenía una meta de $500 (100%) y recaudó $750. ¿Qué porcentaje de su meta lograron?',
           ans: '150',
           unit: '%',
+          visualSvg: `
+            <svg viewBox="0 0 580 82" width="580" height="82" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid #CBD5E1; border-radius:8px;" role="img" aria-label="Comparison bar showing 500 dollar goal is 100 percent and 750 dollars raised is 500 plus 250">
+              <text x="20" y="18" font-size="11" font-weight="800" fill="#17324D">Goal ($500 = 100%) vs. Collected ($750 = ?%)</text>
+              <rect x="20" y="24" width="320" height="22" fill="#1FA6A2" stroke="#17324D" stroke-width="1.5"/>
+              <text x="180" y="39" text-anchor="middle" font-size="11" font-weight="800" fill="#0F2337">$500 Goal = 100%</text>
+              <rect x="20" y="50" width="320" height="22" fill="#1FA6A2" stroke="#17324D" stroke-width="1.5"/>
+              <text x="180" y="65" text-anchor="middle" font-size="11" font-weight="800" fill="#0F2337">$500 (100%)</text>
+              <rect x="340" y="50" width="160" height="22" fill="#FDE68A" stroke="#17324D" stroke-width="1.5"/>
+              <text x="420" y="65" text-anchor="middle" font-size="11" font-weight="800" fill="#92400E">+ $250 (+?%)</text>
+            </svg>
+          `,
+          traps: {
+            50: '50% is the extra $250 they raised above the goal. Include the full $500 goal (100%) + the extra 50%!',
+            250: '$250 is the extra dollar amount above $500. Scale the ratio 750/500 so the denominator is 100!'
+          },
+          firstNudge: 'Since $750 is more than the $500 goal, the percent is greater than 100%. Scale the ratio 750 out of 500 so the whole is 100.',
           hint: 'Write the ratio 750/500 and divide both terms by 5 so the denominator is 100.',
-          explain: '✓ Correct! 750/500 ÷ 5/5 = 150/100 = 150% (1.5 times their goal).'
+          hintEs: 'Escribe la razón 750/500 y divide ambos números entre 5 para que el denominador sea 100.',
+          explain: '✓ Correct! 750/500 ÷ 5/5 = 150/100 = 150% (1.5 times their goal).',
+          explainEs: '✓ ¡Correcto! 750/500 ÷ 5/5 = 150/100 = 150% (1.5 veces su meta).'
         },
         {
           id: 't4_4',
@@ -2695,8 +3200,29 @@
           stemEs: 'Kira encestó 36 de 60 tiros libres y Dev encestó 32 de 40. ¿Por cuántos puntos porcentuales fue mayor el porcentaje de Dev?',
           ans: '20',
           unit: 'percentage points',
+          visualSvg: `
+            <svg viewBox="0 0 580 82" width="580" height="82" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid #CBD5E1; border-radius:8px;" role="img" aria-label="Comparison bars for Kira 36 out of 60 and Dev 32 out of 40">
+              <text x="20" y="18" font-size="11" font-weight="800" fill="#17324D">Scale both ratios to 100% to compare fairly:</text>
+              <text x="20" y="39" font-size="11" font-weight="800" fill="#17324D">Kira (36/60):</text>
+              <rect x="105" y="25" width="270" height="20" fill="#1FA6A2" stroke="#17324D" stroke-width="1.5"/>
+              <rect x="375" y="25" width="180" height="20" fill="#F1F5F9" stroke="#17324D" stroke-width="1.5"/>
+              <text x="240" y="39" text-anchor="middle" font-size="10.5" font-weight="800" fill="#0F2337">36 ÷ 6 = 6 out of 10 = ?%</text>
+              <text x="20" y="65" font-size="11" font-weight="800" fill="#17324D">Dev (32/40):</text>
+              <rect x="105" y="51" width="360" height="20" fill="#F59E0B" stroke="#17324D" stroke-width="1.5"/>
+              <rect x="465" y="51" width="90" height="20" fill="#F1F5F9" stroke="#17324D" stroke-width="1.5"/>
+              <text x="285" y="65" text-anchor="middle" font-size="10.5" font-weight="800" fill="#0F2337">32 ÷ 4 = 8 out of 10 = ?%</text>
+            </svg>
+          `,
+          traps: {
+            60: '60% is Kira’s rate. Now find Dev’s rate (32/40) and subtract to find how many percentage points higher Dev’s rate is!',
+            80: '80% is Dev’s rate. Now subtract Kira’s rate (36/60 = 60%) from 80%!',
+            4: 'You cannot subtract 36 − 32 directly because their wholes (60 and 40) are different. Find each player’s percent first!'
+          },
+          firstNudge: 'Find each player’s percent out of 100 first (Kira: 36/60, Dev: 32/40), then subtract their percents.',
           hint: 'Find each player’s percent first (Kira: 36/60 = 6/10 = 60%; Dev: 32/40 = 8/10 = 80%), then subtract.',
-          explain: '✓ Correct! Dev made 80% (32/40) and Kira made 60% (36/60), so Dev’s rate was 80% − 60% = 20 percentage points higher.'
+          hintEs: 'Halla el porcentaje de cada jugador primero (Kira: 36/60 = 60%; Dev: 32/40 = 80%) y luego resta.',
+          explain: '✓ Correct! Dev made 80% (32/40) and Kira made 60% (36/60), so Dev’s rate was 80% − 60% = 20 percentage points higher.',
+          explainEs: '✓ ¡Correcto! Dev encestó 80% (32/40) y Kira 60% (36/60), así que Dev estuvo 80% − 60% = 20 puntos porcentuales más alto.'
         },
         {
           id: 't4_5',
@@ -2707,8 +3233,24 @@
           stemEs: 'Trey dice que 12 de 25 es 12%. Escala 12 de 25 a un denominador de 100 para hallar el porcentaje verdadero:',
           ans: '48',
           unit: '%',
+          visualSvg: `
+            <svg viewBox="0 0 580 74" width="580" height="74" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid #CBD5E1; border-radius:8px;" role="img" aria-label="Scaling diagram showing 12 out of 25 multiplied by 4 to reach 100">
+              <text x="20" y="20" font-size="11.5" font-weight="800" fill="#B91C1C">✗ Trey’s Trap: 12 / 25 ≠ 12 / 100</text>
+              <text x="300" y="20" font-size="11.5" font-weight="800" fill="#0F766E">✓ Fix: Multiply both part &amp; whole by 4 (25 × 4 = 100)</text>
+              <rect x="20" y="28" width="259" height="26" fill="#1FA6A2" stroke="#17324D" stroke-width="1.5"/>
+              <rect x="279" y="28" width="281" height="26" fill="#F1F5F9" stroke="#17324D" stroke-width="1.5"/>
+              <text x="150" y="45" text-anchor="middle" font-size="11.5" font-weight="800" fill="#0F2337">12 × 4 = ? out of 100</text>
+            </svg>
+          `,
+          traps: {
+            12: '12 is out of 25! Multiply 12 by the same factor that turns 25 into 100.',
+            87: 'Remember: scale by multiplying (×4), not by adding 75!'
+          },
+          firstNudge: 'Ask: what do you multiply 25 by to get 100? Multiply 12 by that same factor.',
           hint: 'Since 25 × 4 = 100, multiply the numerator 12 by 4 as well.',
-          explain: '✓ Case Solved! 12/25 × 4/4 = 48/100 = 48%, not 12%.'
+          hintEs: 'Como 25 × 4 = 100, multiplica el numerador 12 también por 4.',
+          explain: '✓ Case Solved! 12/25 × 4/4 = 48/100 = 48%, not 12%.',
+          explainEs: '✓ ¡Caso resuelto! 12/25 × 4/4 = 48/100 = 48%, no 12%.'
         },
         {
           id: 't4_6',
@@ -2719,8 +3261,24 @@
           stemEs: 'Sam sumó 90 arriba y abajo en 4/10 y obtuvo 94%. Multiplica para hallar el porcentaje verdadero de 4 de 10:',
           ans: '40',
           unit: '%',
+          visualSvg: `
+            <svg viewBox="0 0 580 74" width="580" height="74" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid #CBD5E1; border-radius:8px;" role="img" aria-label="10-block bar showing 4 out of 10 blocks shaded">
+              <text x="20" y="20" font-size="11.5" font-weight="800" fill="#B91C1C">✗ Sam Added +90 (Wrong!)</text>
+              <text x="280" y="20" font-size="11.5" font-weight="800" fill="#0F766E">✓ Equivalent Ratios Scale by Multiplication: 10 × 10 = 100</text>
+              <rect x="20" y="28" width="216" height="26" fill="#1FA6A2" stroke="#17324D" stroke-width="1.5"/>
+              <rect x="236" y="28" width="324" height="26" fill="#F1F5F9" stroke="#17324D" stroke-width="1.5"/>
+              <text x="128" y="45" text-anchor="middle" font-size="11.5" font-weight="800" fill="#0F2337">4 out of 10 (×10 = ?%)</text>
+            </svg>
+          `,
+          traps: {
+            94: '94% is Sam’s addition mistake (4 + 90). Multiply 4 by 10 instead of adding 90!',
+            4: '4 is out of 10. Multiply 4 × 10 to find how many out of 100!'
+          },
+          firstNudge: 'Since 10 × 10 = 100, multiply the part (4) by 10 as well.',
           hint: 'Multiply both terms of 4/10 by 10 so the denominator becomes 100.',
-          explain: '✓ Case Solved! Equivalent ratios scale by multiplication: 4/10 × 10/10 = 40/100 = 40%.'
+          hintEs: 'Multiplica ambos términos de 4/10 por 10 para que el denominador sea 100.',
+          explain: '✓ Case Solved! Equivalent ratios scale by multiplication: 4/10 × 10/10 = 40/100 = 40%.',
+          explainEs: '✓ ¡Caso resuelto! Las razones equivalentes se escalan multiplicando: 4/10 × 10/10 = 40/100 = 40%.'
         },
         {
           id: 't4_7',
@@ -2731,8 +3289,23 @@
           stemEs: 'En una cuadrícula de 100, 35 cuadrados están sombreados. ¿Qué porcentaje NO está sombreado?',
           ans: '65',
           unit: '%',
+          visualSvg: `
+            <svg viewBox="0 0 580 74" width="580" height="74" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid #CBD5E1; border-radius:8px;" role="img" aria-label="Bar showing 35 shaded squares and 65 unshaded squares out of 100">
+              <text x="20" y="19" font-size="11.5" font-weight="800" fill="#17324D">Whole Grid = 100 Squares (100%)</text>
+              <rect x="20" y="26" width="189" height="28" fill="#1FA6A2" stroke="#17324D" stroke-width="1.5"/>
+              <text x="114" y="44" text-anchor="middle" font-size="11.5" font-weight="800" fill="#0F2337">Shaded: 35%</text>
+              <rect x="209" y="26" width="351" height="28" fill="#FEF3C7" stroke="#17324D" stroke-width="1.5"/>
+              <text x="384" y="44" text-anchor="middle" font-size="11.5" font-weight="800" fill="#92400E">NOT Shaded: 100 − 35 = ?%</text>
+            </svg>
+          `,
+          traps: {
+            35: '35% is the SHADED part. Subtract 35 from 100 to find the part that is NOT shaded!'
+          },
+          firstNudge: 'The shaded part and the unshaded part add up to 100 squares (100%).',
           hint: 'Subtract the 35 shaded squares from the 100 total squares.',
-          explain: '✓ Case Solved! 35% is the shaded part; 100% − 35% = 65% is NOT shaded.'
+          hintEs: 'Resta los 35 cuadrados sombreados de los 100 cuadrados totales.',
+          explain: '✓ Case Solved! 35% is the shaded part; 100% − 35% = 65% is NOT shaded.',
+          explainEs: '✓ ¡Caso resuelto! 35% es la parte sombreada; 100% − 35% = 65% NO está sombreado.'
         },
         {
           id: 't4_8',
@@ -2743,14 +3316,35 @@
           stemEs: 'Un gatito gris pesa 8 oz (100%) y su hermano 14 oz. Escribe 14 de 8 como porcentaje:',
           ans: '175',
           unit: '%',
+          visualSvg: `
+            <svg viewBox="0 0 580 82" width="580" height="82" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid #CBD5E1; border-radius:8px;" role="img" aria-label="Block comparison showing 8 ounces is 4 blocks of 2 ounces (100 percent) and 14 ounces is 7 blocks of 2 ounces">
+              <text x="20" y="18" font-size="11" font-weight="800" fill="#17324D">Each block = 2 oz = 25% of the gray kitten:</text>
+              <text x="20" y="38" font-size="11" font-weight="800" fill="#0F766E">Gray (8 oz):</text>
+              <rect x="110" y="24" width="240" height="20" fill="#1FA6A2" stroke="#17324D" stroke-width="1.5"/>
+              <text x="230" y="38" text-anchor="middle" font-size="10.5" font-weight="800" fill="#0F2337">4 blocks of 2 oz = 100%</text>
+              <text x="20" y="64" font-size="11" font-weight="800" fill="#B45309">Brother (14 oz):</text>
+              <rect x="110" y="50" width="240" height="20" fill="#1FA6A2" stroke="#17324D" stroke-width="1.5"/>
+              <rect x="350" y="50" width="180" height="20" fill="#FDE68A" stroke="#17324D" stroke-width="1.5"/>
+              <text x="320" y="64" text-anchor="middle" font-size="10.5" font-weight="800" fill="#0F2337">7 blocks of 2 oz = 7 × 25% = ?%</text>
+            </svg>
+          `,
+          traps: {
+            75: '75% is the extra 6 ounces (3 blocks of 25%) above 8 ounces. Add the full 100% (8 oz) + 75% (6 oz)!',
+            106: 'Remember to scale by dividing and multiplying (14/8 = 7/4 = 175/100), not by adding 92!'
+          },
+          firstNudge: 'Use a Bridge Ratio: divide both 14 and 8 by 2 to get fourths (7/4), then multiply by 25 to reach a denominator of 100.',
           hint: 'Simplify 14/8 by dividing both terms by 2 to get 7/4, then multiply both terms by 25 to get a denominator of 100.',
-          explain: '✓ Case Solved! 14/8 simplifies to 7/4, and 7/4 × 25/25 = 175/100 = 175%.'
+          hintEs: 'Simplifica 14/8 dividiendo ambos entre 2 para obtener 7/4, y luego multiplica por 25 para llegar a un denominador de 100.',
+          explain: '✓ Case Solved! 14/8 simplifies to 7/4, and 7/4 × 25/25 = 175/100 = 175%.',
+          explainEs: '✓ ¡Caso resuelto! 14/8 se simplifica a 7/4, y 7/4 × 25/25 = 175/100 = 175%.'
         }
       ];
 
       function renderT4Problem() {
         const p = T4_PROBLEMS[state.idx4];
         const isDone = !!state.solved4[p.id];
+        const explainTxt = state.showEs && p.explainEs ? `${p.explain} (${p.explainEs})` : p.explain;
+        const hintTxt = state.showEs && p.hintEs ? `${p.hint} (${p.hintEs})` : p.hint;
 
         renderDots('t4-dots', T4_PROBLEMS, state.idx4, state.solved4, (ni) => {
           state.idx4 = ni;
@@ -2761,14 +3355,16 @@
         stage.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
             <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--amber);">${p.badge}</span>
-            <button type="button" class="speak-btn" data-speak="${p.story} ${p.question}">🔊 Read</button>
+            <button type="button" class="speak-btn" data-speak="${p.story} ${p.question}" data-speak-es="${p.stemEs}">🔊 Read</button>
           </div>
           <h3 style="font-family: var(--font-display); font-size: 1.35rem; color: var(--navy); margin: 0 0 12px 0;">${p.title}</h3>
 
-          <div style="background: var(--surface-soft); border-left: 5px solid var(--navy); padding: 16px 18px; border-radius: 8px; font-size: 1.04rem; margin-bottom: 16px;">
+          <div style="background: var(--surface-soft); border-left: 5px solid var(--navy); padding: 16px 18px; border-radius: 8px; font-size: 1.04rem; margin-bottom: 14px;">
             ${p.story}
             <p class="es-text">${p.stemEs}</p>
           </div>
+
+          ${p.visualSvg || ''}
 
           <p style="font-weight: 700; font-size: 1.05rem; color: var(--navy); margin-bottom: 12px;">${p.question}</p>
 
@@ -2780,8 +3376,29 @@
             <button type="button" class="btn" id="t4-hint-btn">💡 Hint</button>
           </div>
 
+          <details class="scratchpad-details">
+            <summary>🧮 Open Ratio &amp; Percent Scratchpad (Optional Workspace)</summary>
+            <div class="scratchpad-grid">
+              <div class="scratchpad-cell">
+                <label for="t4-sc-part">Start Part</label>
+                <input type="text" id="t4-sc-part" class="num-input" style="width:74px; min-height:36px; font-size:0.95rem;" inputmode="decimal" placeholder="part" data-nsr-ignore="true">
+              </div>
+              <div style="font-weight:800; color:var(--slate);">out of</div>
+              <div class="scratchpad-cell">
+                <label for="t4-sc-whole">Start Whole</label>
+                <input type="text" id="t4-sc-whole" class="num-input" style="width:74px; min-height:36px; font-size:0.95rem;" inputmode="decimal" placeholder="whole" data-nsr-ignore="true">
+              </div>
+              <div style="font-weight:800; color:var(--teal);">→</div>
+              <div class="scratchpad-cell">
+                <label for="t4-sc-p100">Part per 100</label>
+                <input type="text" id="t4-sc-p100" class="num-input" style="width:82px; min-height:36px; font-size:0.95rem;" inputmode="decimal" placeholder="? / 100" data-nsr-ignore="true">
+              </div>
+              <div id="t4-sc-auto" style="font-size:0.86rem; font-weight:700; color:var(--teal); min-width:120px;">Type part &amp; whole to test!</div>
+            </div>
+          </details>
+
           <div id="t4-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">
-            ${isDone ? p.explain : ''}
+            ${isDone ? explainTxt : ''}
           </div>
         `;
 
@@ -2789,29 +3406,68 @@
         const fb = document.getElementById('t4-fb');
         if (isDone) appendNext(fb, 4, T4_PROBLEMS.length, renderT4Problem);
 
+        // Wire optional Scratchpad helper
+        const scPart = document.getElementById('t4-sc-part');
+        const scWhole = document.getElementById('t4-sc-whole');
+        const scP100 = document.getElementById('t4-sc-p100');
+        const scAuto = document.getElementById('t4-sc-auto');
+        function updateScratchpad() {
+          const pv = parseNum(scPart.value);
+          const wv = parseNum(scWhole.value);
+          if (!Number.isNaN(pv) && !Number.isNaN(wv) && wv > 0) {
+            const factor = 100 / wv;
+            const factorStr = Number.isInteger(factor) ? `× ${factor}` : `× ${(factor).toFixed(2)}`;
+            scAuto.textContent = `Scale factor to 100: ${factorStr}`;
+          } else {
+            scAuto.textContent = 'Type part & whole to test!';
+          }
+        }
+        if (scPart && scWhole) {
+          scPart.addEventListener('input', updateScratchpad);
+          scWhole.addEventListener('input', updateScratchpad);
+          if (scP100) {
+            scP100.addEventListener('input', () => {
+              const v = parseNum(scP100.value);
+              if (!Number.isNaN(v)) scAuto.textContent = `${v} / 100 = ${v}%`;
+            });
+          }
+        }
+
         function checkT4() {
           if (!inp.value.trim()) {
             fb.className = 'feedback-box show warn';
             fb.textContent = 'Type your answer in the box, then press Check Answer.';
             return;
           }
-          const ok = parseNum(inp.value) === Number(p.ans);
+          const numVal = parseNum(inp.value);
+          const ok = numVal === Number(p.ans);
           inp.classList.toggle('ok', ok);
           inp.classList.toggle('err', !ok);
-          fb.className = `feedback-box show ${ok ? 'ok' : 'err'}`;
-          fb.textContent = ok ? p.explain : `Not quite yet. Hint: ${p.hint}`;
           if (ok) {
+            fb.className = 'feedback-box show ok';
+            fb.textContent = explainTxt;
             markSolved(state.solved4, p.id);
             updateProgressHeader();
             renderDots('t4-dots', T4_PROBLEMS, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4Problem(); });
             appendNext(fb, 4, T4_PROBLEMS.length, renderT4Problem);
+            announce(`Correct! ${p.ans} ${p.unit}.`);
+          } else {
+            const n = bumpMiss(p.id);
+            fb.className = 'feedback-box show err';
+            if (p.traps && p.traps[numVal]) {
+              fb.textContent = p.traps[numVal];
+            } else if (n < 2 && p.firstNudge) {
+              fb.textContent = `Not quite yet. ${p.firstNudge}`;
+            } else {
+              fb.textContent = `Not quite yet. Hint: ${hintTxt}`;
+            }
           }
         }
 
         document.getElementById('t4-check-btn').addEventListener('click', checkT4);
         document.getElementById('t4-hint-btn').addEventListener('click', () => {
           fb.className = 'feedback-box show warn';
-          fb.textContent = `💡 Hint: ${p.hint}`;
+          fb.textContent = `💡 Hint: ${hintTxt}`;
         });
         inp.addEventListener('keydown', (e) => {
           if (e.key === 'Enter' && !e.isComposing) {
@@ -2840,12 +3496,19 @@
           stem: 'What does the word percent mean?',
           stemEs: '¿Qué significa la palabra porcentaje?',
           choices: ['Per ten', 'Per thousand', 'Per hundred', 'Per part'],
+          choicesEs: ['Por diez', 'Por mil', 'Por ciento (de cada 100)', 'Por parte'],
           correct: 2,
           feedback: [
             'Per ten describes tenths, not percent.',
             'Per thousand is ten times too large.',
             '✓ Correct! Percent means “per hundred” (out of 100).',
             'A percent specifically compares a number to 100.'
+          ],
+          feedbackEs: [
+            'Por diez describe décimas, no porcentaje.',
+            'Por mil es diez veces demasiado grande.',
+            '✓ ¡Correcto! Porcentaje significa “por ciento” (de cada 100).',
+            'Un porcentaje compara específicamente un número con 100.'
           ]
         },
         {
@@ -2860,6 +3523,12 @@
             '10 is the whole, not the percent.',
             'Multiply both terms by 10 instead of adding 3 + 10.',
             '✓ Correct! 3/10 × 10/10 = 30/100 = 30%.'
+          ],
+          feedbackEs: [
+            '3% significa 3 de 100. ¡Multiplica ambos términos de 3/10 por 10!',
+            '10 es el entero, no el porcentaje.',
+            'Multiplica ambos términos por 10 en lugar de sumar 3 + 10.',
+            '✓ ¡Correcto! 3/10 × 10/10 = 30/100 = 30%.'
           ]
         },
         {
@@ -2874,6 +3543,12 @@
             '35% is the unshaded part. The question asks for the shaded percent.',
             '✓ Correct! 65 shaded squares out of 100 is 65%.',
             '100% is the entire grid.'
+          ],
+          feedbackEs: [
+            '6.5% serían 6 cuadrados y medio.',
+            '35% es la parte no sombreada. La pregunta pide el porcentaje sombreado.',
+            '✓ ¡Correcto! 65 cuadrados sombreados de 100 es 65%.',
+            '100% es toda la cuadrícula.'
           ]
         },
         {
@@ -2888,6 +3563,12 @@
             '80% is less than one whole (100%).',
             '100% is exactly one whole.',
             '✓ Correct! Any percent greater than 100% (such as 120%) is more than one whole.'
+          ],
+          feedbackEs: [
+            '0.8% es menos de 1 cuadrado de 100.',
+            '80% es menos de un entero (100%).',
+            '100% es exactamente un entero.',
+            '✓ ¡Correcto! Cualquier porcentaje mayor que 100% (como 120%) es más de un entero.'
           ]
         },
         {
@@ -2902,6 +3583,12 @@
             'Check place value: 1.5 × 100% = 150%, not 15%.',
             '50% is half of the weight; 1.5 times is 100% + 50%.',
             '✓ Correct! 1.5 wholes × 100% = 150%.'
+          ],
+          feedbackEs: [
+            'Como 1 entero = 100%, multiplica 1.5 × 100%.',
+            'Revisa el valor posicional: 1.5 × 100% = 150%, no 15%.',
+            '50% es la mitad del peso; 1.5 veces es 100% + 50%.',
+            '✓ ¡Correcto! 1.5 enteros × 100% = 150%.'
           ]
         },
         {
@@ -2916,6 +3603,12 @@
             '25 is the original denominator, not the percent.',
             '✓ Correct! 9/25 × 4/4 = 36/100 = 36%.',
             '84 comes from adding 75 instead of multiplying by 4.'
+          ],
+          feedbackEs: [
+            '9 es de 25, no de 100. ¡Multiplica ambos términos por 4!',
+            '25 es el denominador original, no el porcentaje.',
+            '✓ ¡Correcto! 9/25 × 4/4 = 36/100 = 36%.',
+            '84 viene de sumar 75 en lugar de multiplicar por 4.'
           ]
         },
         {
@@ -2930,6 +3623,12 @@
             '50 is the original whole.',
             '✓ Correct! 33/50 × 2/2 = 66/100 = 66%.',
             'Multiply by 2 instead of adding 33 + 50.'
+          ],
+          feedbackEs: [
+            'Escala 33/50 para que el denominador sea 100 multiplicando por 2.',
+            '50 es el entero original.',
+            '✓ ¡Correcto! 33/50 × 2/2 = 66/100 = 66%.',
+            'Multiplica por 2 en lugar de sumar 33 + 50.'
           ]
         },
         {
@@ -2944,6 +3643,12 @@
             '12 is the total number of challenges.',
             '✓ Correct! 9/12 simplifies (÷3) to 3/4, and 3/4 × 25/25 = 75/100 = 75%.',
             '90% would be 9 out of 10, not 9 out of 12.'
+          ],
+          feedbackEs: [
+            '9 es de 12, no de 100.',
+            '12 es el número total de retos.',
+            '✓ ¡Correcto! 9/12 se simplifica (÷3) a 3/4, y 3/4 × 25/25 = 75/100 = 75%.',
+            '90% sería 9 de 10, no 9 de 12.'
           ]
         },
         {
@@ -2958,6 +3663,12 @@
             '✓ Correct! 100% − 55% = 45% (or 9/20 × 5/5 = 45/100 = 45%).',
             '55% is the percent who USED a coupon.',
             'Subtract 55% from 100%, not 11 from 100.'
+          ],
+          feedbackEs: [
+            '9 de 20 no usaron cupón, lo cual escala (×5) a 45%, no 9%.',
+            '✓ ¡Correcto! 100% − 55% = 45% (o 9/20 × 5/5 = 45/100 = 45%).',
+            '55% es el porcentaje que SÍ usó un cupón.',
+            'Resta 55% de 100%, no 11 de 100.'
           ]
         },
         {
@@ -2971,12 +3682,24 @@
             'Dividing both terms of 750/500 by 5 gives 150/100 = 150%, or 1.5 times the $500 whole.',
             'Adding 750 + 500 gives 1,250%.'
           ],
+          choicesEs: [
+            'Restar $500 de $750 da $250.',
+            'Como $500 es la mitad de $1,000, el porcentaje es 50%.',
+            'Dividir ambos términos de 750/500 entre 5 da 150/100 = 150%, o 1.5 veces el entero de $500.',
+            'Sumar 750 + 500 da 1,250%.'
+          ],
           correct: 2,
           feedback: [
             'Subtracting finds the extra dollars, not the ratio per 100.',
             'The whole goal is $500, and $750 is more than the whole.',
             '✓ Correct! 750/500 scales down (÷5) to 150/100 = 150%.',
             'Percents compare the part to the whole by scaling, not adding.'
+          ],
+          feedbackEs: [
+            'Restar halla los dólares extra, no la razón por 100.',
+            'La meta entera es $500, y $750 es más que el entero.',
+            '✓ ¡Correcto! 750/500 se reduce (÷5) a 150/100 = 150%.',
+            'Los porcentajes comparan la parte con el entero escalando, no sumando.'
           ]
         }
       ];
@@ -3043,21 +3766,25 @@
           if (chosen === i) {
             cls = (i === q.correct) ? 'correct' : 'wrong';
           }
+          const esChoice = q.choicesEs && q.choicesEs[i] ? `<span class="es-text" style="display:block; margin-top:2px; font-size:0.86rem;">${q.choicesEs[i]}</span>` : '';
           return `
             <button type="button" class="choice-btn ${cls}" data-q-choice="${i}">
               <span class="choice-letter">${letters[i]}</span>
-              <span>${c}</span>
+              <span>${c}${esChoice}</span>
             </button>
           `;
         }).join('');
 
         const hasChoice = chosen !== undefined;
         const isOk = chosen === q.correct;
+        const fbMsg = hasChoice
+          ? (state.showEs && q.feedbackEs && q.feedbackEs[chosen] ? `${q.feedback[chosen]} (${q.feedbackEs[chosen]})` : q.feedback[chosen])
+          : '';
 
         stage.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
             <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal);">Question ${state.idx5 + 1} of 10 · ${q.skill}</span>
-            <button type="button" class="speak-btn" data-speak="${q.stem}">🔊 Read</button>
+            <button type="button" class="speak-btn" data-speak="${q.stem}" data-speak-es="${q.stemEs}">🔊 Read</button>
           </div>
           <p style="font-size: 1.15rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${q.stem}</p>
           <p class="es-text">${q.stemEs}</p>
@@ -3065,7 +3792,7 @@
           <div class="choice-list">${choicesHtml}</div>
 
           <div id="t5-fb" class="feedback-box ${hasChoice ? 'show ' + (isOk ? 'ok' : 'err') : ''}" role="status">
-            ${hasChoice ? q.feedback[chosen] : ''}
+            ${fbMsg}
           </div>
         `;
 
@@ -3097,6 +3824,40 @@
       document.getElementById('t5-reset-btn').addEventListener('click', resetQuiz);
 
       /* ----------------------------------------------------------------------
+         MULTI-DAY SAVE / RESUME INTEGRATION (NeftSaveResume)
+         ---------------------------------------------------------------------- */
+      function applyRestoredState(custom) {
+        if (!custom || typeof custom !== 'object') return;
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(custom));
+          loadState();
+          [['idx1', T1_TASKS], ['idx2', T2_PROBLEMS], ['idx3', T3_PROBLEMS], ['idx4', T4_PROBLEMS], ['idx5', QUIZ_QUESTIONS]].forEach(([k, arr]) => {
+            if (state[k] >= arr.length) state[k] = 0;
+          });
+          currentT2 = T2_PROBLEMS[state.idx2];
+          currentT3 = T3_PROBLEMS[state.idx3];
+          document.body.classList.toggle('show-es', state.showEs);
+          esBtn.setAttribute('aria-pressed', String(state.showEs));
+          selectTab(state.activeTab, false);
+          renderT1Task();
+          renderT2Problem();
+          renderT3Problem();
+          renderT4Problem();
+          renderT5Question();
+          updateProgressHeader();
+        } catch (e) {}
+      }
+
+      function wireSaveResumeEngine(attempt = 0) {
+        if (window.NeftSaveResume && typeof window.NeftSaveResume.registerStateProvider === 'function') {
+          window.NeftSaveResume.registerStateProvider(() => getCleanStateSnapshot());
+          window.NeftSaveResume.registerStateRestorer((custom) => applyRestoredState(custom));
+        } else if (attempt < 20) {
+          setTimeout(() => wireSaveResumeEngine(attempt + 1), 150);
+        }
+      }
+
+      /* ----------------------------------------------------------------------
          BOOT
          ---------------------------------------------------------------------- */
       loadState();
@@ -3117,6 +3878,7 @@
         if (state[k] >= arr.length) state[k] = 0;
       });
       currentT2 = T2_PROBLEMS[state.idx2];
+      currentT3 = T3_PROBLEMS[state.idx3];
       QUIZ_QUESTIONS.forEach((q) => {
         if (state.solved5[q.id] && !(q.id in state.quizFirst)) state.quizFirst[q.id] = true;
       });
@@ -3133,6 +3895,7 @@
       renderT4Problem();
       renderT5Question();
       updateProgressHeader();
+      wireSaveResumeEngine();
     })();
   </script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
