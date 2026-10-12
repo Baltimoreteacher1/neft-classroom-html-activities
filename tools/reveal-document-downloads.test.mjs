@@ -16,6 +16,19 @@ const resources = bulk.units.flatMap((unit) => [
   ...unit.lessons.flatMap((lesson) => lesson.resources),
 ]);
 const staticDom = new JSDOM(readFileSync(join(root, "curriculum/units/index.html"), "utf8"));
+// Indexed once: the loop below visits every document, and scanning the whole page
+// and the whole inventory per document made this the second-slowest test.
+const linksByHref = new Map();
+for (const a of staticDom.window.document.querySelectorAll("a[data-reveal-document]")) {
+  const href = a.getAttribute("href");
+  if (!linksByHref.has(href)) linksByHref.set(href, []);
+  linksByHref.get(href).push(a);
+}
+const resourcesByUrl = new Map();
+for (const resource of resources) {
+  if (!resourcesByUrl.has(resource.url)) resourcesByUrl.set(resource.url, []);
+  resourcesByUrl.get(resource.url).push(resource);
+}
 assert.equal(manifest.sourceFileCount, 1739);
 assert.equal(manifest.documents.length, 1739);
 assert.equal(
@@ -37,9 +50,7 @@ for (const doc of manifest.documents) {
   assert.equal(bytes.length, doc.bytes, doc.url);
   assert.equal(createHash("sha256").update(bytes).digest("hex"), doc.sha256, doc.url);
   assert.equal(isTeacherSurface(doc.url), doc.teacherOnly, doc.url);
-  const links = [...staticDom.window.document.querySelectorAll("a[data-reveal-document]")].filter(
-    (a) => a.getAttribute("href") === doc.url,
-  );
+  const links = linksByHref.get(doc.url) ?? [];
   assert.ok(links.length, `discoverable original: ${doc.url}`);
   for (const link of links) {
     assert.equal(link.getAttribute("download"), doc.filename);
@@ -58,7 +69,7 @@ for (const doc of manifest.documents) {
           .startsWith(`${doc.targetLesson} `),
       );
   }
-  const entries = resources.filter((resource) => resource.url === doc.url);
+  const entries = resourcesByUrl.get(doc.url) ?? [];
   assert.ok(entries.length, `bulk download inventory: ${doc.url}`);
   for (const entry of entries) {
     assert.equal(entry.type, "reveal-document");
