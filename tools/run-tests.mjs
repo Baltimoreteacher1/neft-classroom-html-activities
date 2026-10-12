@@ -19,7 +19,7 @@
 
 import { execFile } from "node:child_process";
 import { readdirSync, statSync } from "node:fs";
-import { availableParallelism } from "node:os";
+import { availableParallelism, setPriority } from "node:os";
 import { join, relative } from "node:path";
 import { SKIP_EXIT } from "./lib/skip-exit.mjs";
 
@@ -79,6 +79,10 @@ if (tests.length === 0) {
   console.error("No test scripts found — the discovery walk is broken, not the suite empty.");
   process.exit(1);
 }
+
+try {
+  setPriority(0, 10); // below interactive work; test workers inherit it
+} catch {}
 
 const JOBS = Math.max(1, Number(process.env.TEST_JOBS) || Math.min(8, availableParallelism() - 1));
 

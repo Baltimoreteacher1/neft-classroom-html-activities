@@ -39,7 +39,7 @@ def main() -> None:
     files = changed_files()
     needs = []
 
-    if files and not re.search(r"\b(Verified|Verification Results|codex-verify\.sh|npm run validate|npm run build|lint|typecheck|test)\b", last):
+    if files and not re.search(r"\b(Verified|Verification Results|codex-verify\.sh|qa:fast|qa:loop|npm run validate|npm run build|lint|typecheck|test)\b", last):
         needs.append("files appear changed but no verification command is reported")
     if any(re.search(r"\.(html|css|js|mjs)$", f) and not f.startswith(".codex/") for f in files) and not re.search(r"\b(accessibility|student-facing|UI)\b", last, re.I):
         needs.append("student-facing code changes need an accessibility/content note")

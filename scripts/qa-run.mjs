@@ -33,8 +33,15 @@
  * ========================================================================== */
 
 import { execFile, execFileSync } from "node:child_process";
-import { appendFileSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { cpus, tmpdir } from "node:os";
+import {
+  appendFileSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
+import { cpus, setPriority, tmpdir } from "node:os";
 import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { SKIP_EXIT } from "../tools/lib/skip-exit.mjs";
@@ -100,7 +107,6 @@ const GATE = [
   "validate:homework",
   "validate:practice",
   "validate:lesson-boot",
-  "validate:learning-labs-browser",
   "audit",
   "audit:curriculum",
   "audit:homework",
@@ -120,9 +126,22 @@ const GATE = [
  * declared. Cost: the build's 15s stays on the critical path. Benefit: the
  * remaining 46 checks then collapse from ~75s of queueing to one ~21s wave.
  *
- * In --changed mode `build` is not in the set at all, and dependencies on
- * checks outside the set are dropped — the inner loop reads source directly. */
+ * In --changed mode `build` is only added when a check in NEEDS_DIST is
+ * selected (and either --push is set or dist/index.html is missing). */
 const needsOf = (c) => (c === "build" ? [] : ["build"]);
+
+/* Checks that serve or inspect `dist/` directly. When `--changed` runs with
+ * `--push` (or in a worktree without `dist/index.html`) and any of these is in
+ * the selected set, `build` is prepended automatically. */
+const NEEDS_DIST = new Set([
+  "validate:hub",
+  "validate:notebook",
+  "validate:notebook-render",
+  "validate:flow-walk",
+  "validate:visibility",
+  "validate:lesson-boot",
+  "smoke:injection",
+]);
 
 /* Never run more than one of these at a time. `validate:lesson-boot` binds a
  * fixed port; `smoke:injection` launches a second Chromium, and two browser
@@ -140,6 +159,7 @@ const needsOf = (c) => (c === "build" ? [] : ["build"]);
  * own against the same dist/. A third Chromium was the difference. */
 const EXCLUSIVE = new Set([
   "validate:project-studio-browser",
+  "validate:fluency-workshops-browser",
   "validate:lesson-boot",
   "validate:learning-labs-browser",
   "smoke:injection",
@@ -439,7 +459,7 @@ const COVERAGE = [
   // the deploy graph maps artifacts, mirrors and hook commands to real files;
   // editing any of those three is how the map starts lying
   [/^tools\/graph\//, ["validate:graph"]],
-  [/^\.claude\/(settings\.json|hooks\/)/, ["validate:graph"]],
+  [/^(\.claude\/(settings\.json|hooks\/)|\.codex\/)/, ["validate:graph"]],
   [
     /^lessons\//,
     ["validate:static", "validate:save-resume", "validate:lesson-boot", "audit:links"],
@@ -451,6 +471,20 @@ const COVERAGE = [
   [/^curriculum\/teach-the-machine\//, ["validate:teach-machine"]],
   [/^curriculum\/family-connections\//, ["validate:family-broadcast"]],
   [/^curriculum\/about\//, ["validate:about", "audit:links"]],
+  // Project Studio (8 unit studios x 3 phases in Chromium) — scoped to its own
+  // surface so unrelated deploys do not pay ~90s for it. Must precede the
+  // generic /^curriculum\/projects\// rule below.
+  [
+    /^(curriculum\/projects\/studio\/|tools\/verify-project-studio-browser\.mjs$)/,
+    [
+      "validate:project-studio-browser",
+      "validate:projects-publication",
+      "validate:projects-award",
+      "validate:solve-along",
+      "validate:projects-check",
+      "validate:injection",
+    ],
+  ],
   [
     /^curriculum\/projects\//,
     [
@@ -480,6 +514,35 @@ const COVERAGE = [
     /^shared\/projects\//,
     ["validate:projects-check", "validate:projects-award", "validate:preunit-project"],
   ],
+  // Fluency workshops & Fluency Lab — the 24-workshop Chromium sweep (~46s)
+  // runs when workshop pages or their generator/verifier change; Fluency Lab
+  // edits run the fast structural/contract validator.
+  [
+    /^(curriculum\/fluency\/|tools\/fluency-guide\/)/,
+    [
+      "validate:fluency",
+      "validate:fluency-workshops-browser",
+      "validate:static",
+      "audit:links",
+      "test",
+    ],
+  ],
+  [
+    /^(math\/fluency-lab\/|tools\/(validate-fluency-lab|package-fluency-desktop)\.mjs$)/,
+    ["validate:fluency", "validate:static", "test"],
+  ],
+  // Learning Labs (77 labs in Chromium, ~35s) — runs when learning lab pages,
+  // data, generator, or verifier change. Must precede /^curriculum\// and /^data\//.
+  [
+    /^(curriculum\/learning-labs\/|data\/learning-labs\.json$|tools\/(learning-labs\/|generate-learning-labs\.mjs$|learning-labs\.test\.mjs$|verify-learning-labs-browser\.mjs$))/,
+    [
+      "validate:learning-labs",
+      "validate:learning-labs-browser",
+      "validate:static",
+      "audit:links",
+      "test",
+    ],
+  ],
   [
     /^curriculum\/index\.html$/,
     [
@@ -495,6 +558,44 @@ const COVERAGE = [
     /^curriculum\//,
     ["validate:hub", "validate:runtime", "validate:static", "audit:links", "audit:curriculum"],
   ],
+  // Families hub, bilingual weekly homework pages, and guided notes
+  [
+    /^(families\/|assets\/homework\/|scripts\/(homework-guided-notes|generate-homework|generate-homework-html|generate-family-pages|generate-family-week-notes|verify-family-pages|validate-homework-guided-notes|audit-homework-alignment)\.mjs$|tools\/(validate-family-exit-ticket|validate-family-games)\.mjs$)/,
+    [
+      "verify:families",
+      "validate:homework",
+      "audit:homework",
+      "validate:family-exit-ticket",
+      "validate:family-games",
+      "validate:static",
+      "audit:links",
+      "test",
+    ],
+  ],
+  // Readiness & ESOL Reveal Math study guides
+  [
+    /^(scripts\/readiness\/|scripts\/generate-readiness-(html|docx)\.mjs$|esol\/reveal-math-guides\/|tools\/validate-lesson-labels\.mjs$)/,
+    ["validate:lesson-labels", "validate:static", "audit:links", "test"],
+  ],
+  // Curriculum hub shared styles and scripts
+  [
+    /^assets\/(curriculum-[^/]+\.(js|css)|pacing-[^/]+\.css)$/,
+    [
+      "validate:hub",
+      "validate:curriculum-top1",
+      "validate:teacher-workflow",
+      "validate:guided-path",
+      "validate:curriculum-product",
+      "validate:static",
+      "validate:css-integrity",
+      "test",
+    ],
+  ],
+  // Standalone student & teacher surfaces not matched by a narrower rule above
+  [
+    /^(math|games|activities|webquests|hyperdocs|mstar-practice|teacher-tools|esol|wida-access)\//,
+    ["validate:static", "validate:save-resume", "validate:game-rules", "audit:links", "test"],
+  ],
   [/^\.github\/workflows\//, ["validate:workflow-yaml", "test"]],
   [/^data\/ccss-standards\.json$/, ["validate:ccss", "validate:scope"]],
   [/^data\/routes\.json$/, ["test", "validate:static", "audit:links"]],
@@ -502,6 +603,11 @@ const COVERAGE = [
   [/^tools\/inject-/, ["validate:injection", "validate:supports"]],
   [/^(tools|scripts)\/lib\/small-group/, ["validate:small-groups", "eval:small-groups"]],
   [/^functions\//, ["test", "validate:data-contracts"]],
+  // Unit tests, Playwright specs, and QA runner / hook plumbing
+  [
+    /^(tools\/[^/]+\.test\.mjs$|tests\/[^/]+\.spec\.ts$|scripts\/(qa-run\.mjs|lib\/(qa-lock|run-group)\.mjs|codex\/codex-verify\.sh)$|tools\/(run-tests|validate-js-syntax)\.mjs$|\.githooks\/)/,
+    ["test", "validate:gate-coverage", "validate:js-syntax"],
+  ],
   [/^docs\/|\.md$/, []],
 ];
 
@@ -518,10 +624,12 @@ const LIST_ONLY = flag("--list");
 /* --commit (passed by .githooks/pre-commit): when --changed escalates to the
  * full set, leave out the EXCLUSIVE browser checks. They are the serial
  * critical path (~4 of the gate's ~5 min) and 75% of the last 200 commits on
- * main escalated, so every commit was paying for them. Nothing is dropped from
- * a deploy: pre-push runs the plain full gate, browsers included. Scoped runs
- * that name a browser check (e.g. the flow-walk rule) still run it. */
+ * main escalated, so every commit was paying for them.
+ * --push (passed by .githooks/pre-push): diffs against origin/main...HEAD as
+ * well as the working tree, keeps browser checks when scoped or escalated, and
+ * automatically prepends `build` only when a check in NEEDS_DIST is selected. */
 const COMMIT_MODE = flag("--commit");
+const PUSH_MODE = flag("--push");
 /* How many EXCLUSIVE browser checks may run at once (each still runs with no
  * non-exclusive check beside it). The lane was fully serial (1) and is the
  * longest stretch of a gate. Measured 2026-10-09, six browser checks, 8 rounds
@@ -531,7 +639,17 @@ const COMMIT_MODE = flag("--commit");
  * alone do not do that. QA_EXCLUSIVE_JOBS=1 restores the serial lane. */
 const EXCLUSIVE_JOBS = Math.max(1, Number(process.env.QA_EXCLUSIVE_JOBS) || 2);
 const ONLY = optVal("--only");
-const JOBS = Number(optVal("--jobs")) || Math.max(2, Math.min(8, cpus().length - 1));
+/** Runs with at least this many checks take the machine-wide gate lock even without a browser check. */
+const WIDE_RUN_CHECKS = Number(process.env.QA_WIDE_RUN_CHECKS) || 8;
+/* Run the whole gate (and every check it spawns, which inherits this) below
+ * interactive work, so a gate never starves Claude Code hooks or the terminal. */
+try {
+  setPriority(0, 10);
+} catch {}
+const JOBS =
+  Number(optVal("--jobs")) ||
+  Number(process.env.QA_JOBS) ||
+  Math.max(2, Math.min(8, cpus().length - 1));
 
 /** Expand `npm run a && npm run b` chains into their members, recursively.
  *  Only pure chains expand; anything with a bare command stays atomic so we
@@ -574,13 +692,15 @@ function changedPaths() {
       .split(",")
       .map((s) => s.trim())
       .filter(Boolean);
-  const merged = `${run(["diff", "--name-only", "HEAD"])}\n${run(["ls-files", "--others", "--exclude-standard"])}`;
+  const worktree = `${run(["diff", "--name-only", "HEAD"])}\n${run(["ls-files", "--others", "--exclude-standard"])}`;
+  const branchDiff =
+    PUSH_MODE || !worktree.trim() ? run(["diff", "--name-only", "origin/main...HEAD"]) : "";
   return [
     ...new Set(
-      merged
+      `${worktree}\n${branchDiff}`
         .split("\n")
         .map((s) => s.trim())
-        .filter(Boolean),
+        .filter((s) => Boolean(s) && !/^(\.qa-logs|output)\//.test(s)),
     ),
   ];
 }
@@ -627,6 +747,7 @@ export {
   classifyResult,
   expand,
   GATE,
+  NEEDS_DIST,
   needsOf,
   resolveSet,
   scopeFor,
@@ -646,7 +767,17 @@ async function main() {
     const scoped = scopeFor(paths);
     if (scoped) {
       checks = resolveSet(scoped);
+      if (
+        (PUSH_MODE || !existsSync(join(ROOT, "dist", "index.html"))) &&
+        checks.some((c) => NEEDS_DIST.has(c)) &&
+        !checks.includes("build")
+      ) {
+        checks.unshift("build");
+      }
       label = `change-scoped (${paths.length} changed file(s))`;
+    } else if (PUSH_MODE && paths.length === 0) {
+      checks = resolveSet(UNIVERSAL);
+      label = "change-scoped (0 changed files vs origin/main)";
     } else {
       checks = resolveSet(GATE);
       label =
@@ -711,7 +842,9 @@ async function main() {
    * average to 30-60 and doubled everyone's wall time (see scripts/lib/qa-lock.mjs).
    * Only runs that include a browser check queue — scoped runs of plain
    * validators stay instant — and the wait is bounded and loud. Released on exit. */
-  if (checks.some((c) => EXCLUSIVE.has(c))) {
+  // A wide run of plain validators (7 workers, ~100 processes) overloads the Mac
+  // just as a browser lane does, so it queues too; only small scoped runs stay instant.
+  if (checks.some((c) => EXCLUSIVE.has(c)) || checks.length >= WIDE_RUN_CHECKS) {
     await acquireGateLock({ label: `${basename(ROOT)} · ${label}`, log: console.log });
   }
 

@@ -31,7 +31,7 @@ def main() -> None:
     ]
     message = (
         f"Repo context: {stack}. Key hubs: {', '.join(activity_hubs) or 'not detected'}. "
-        "Use scripts/codex/codex-preflight.sh and scripts/codex/codex-verify.sh. "
+        "Use npm run qa:fast (or scripts/codex/codex-verify.sh, which wraps qa:fast) for fast change-scoped verification; pre-push also runs qa:fast -- --push (or QA_FULL=1 npm run qa:loop for the full sweep). "
         "Must follow AGENTS.md: preserve routes, no deploy without explicit request, no dependency installs without approval, "
         "no secrets, protect student privacy, and apply accessibility/WIDA/TWR quality standards. "
         f"Git status: {run(['git', 'status', '--short', '--branch'])}."

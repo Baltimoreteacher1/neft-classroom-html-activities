@@ -115,6 +115,29 @@ check(
   scopeFor([".github/workflows/predeploy-verify.yml"])?.includes("test"),
   "a workflow edit must run test so a missing npm run X is caught by ci-scripts-exist",
 );
+check(
+  scopeFor(["curriculum/projects/studio/unit-1/index.html"])?.includes(
+    "validate:project-studio-browser",
+  ),
+  "a Project Studio edit must pull in validate:project-studio-browser",
+);
+check(
+  scopeFor(["curriculum/fluency/unit-1-workshop.html"])?.includes(
+    "validate:fluency-workshops-browser",
+  ),
+  "a Fluency Workshop edit must pull in validate:fluency-workshops-browser",
+);
+check(
+  scopeFor(["curriculum/learning-labs/lab-1-1/index.html"])?.includes(
+    "validate:learning-labs-browser",
+  ),
+  "a Learning Lab edit must pull in validate:learning-labs-browser",
+);
+check(
+  scopeFor(["families/unit-1-week-1.html"])?.includes("verify:families") &&
+    scopeFor(["families/unit-1-week-1.html"])?.includes("validate:homework"),
+  "a families/homework edit must pull in verify:families and validate:homework",
+);
 
 /* --- 6. Every check named in the coverage table must actually exist --------- */
 for (const [re, checks] of COVERAGE) {

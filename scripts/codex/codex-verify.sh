@@ -145,14 +145,19 @@ print(f"Checked {len(html_files)} HTML file(s); local links/assets and core repo
 PY
 }
 
-if command -v python3 >/dev/null 2>&1; then
-  run_step "static local link and repo structure checks" static_repo_check
+if [[ "${1:-}" == "--full" || "${QA_FULL:-0}" == "1" ]]; then
+  run_npm_script_if_present qa:loop
+elif node -e "const p=require('./package.json'); process.exit(p.scripts && p.scripts['qa:fast'] ? 0 : 1)" 2>/dev/null; then
+  run_npm_script_if_present qa:fast
 else
-  echo "SKIP: static checks require python3"
+  if command -v python3 >/dev/null 2>&1; then
+    run_step "static local link and repo structure checks" static_repo_check
+  else
+    echo "SKIP: static checks require python3"
+  fi
+  run_npm_script_if_present validate
+  run_npm_script_if_present build
 fi
-
-run_npm_script_if_present validate
-run_npm_script_if_present build
 
 echo
 if [[ "$failures" -eq 0 ]]; then

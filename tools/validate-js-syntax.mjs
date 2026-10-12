@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { execFile } from "node:child_process";
+import { execFileSync } from "node:child_process";
 /**
  * validate-js-syntax — parse every shipped .js/.mjs file and every inline
  * <script> block in every .html page, and fail on any SyntaxError.
@@ -17,14 +17,28 @@ import { execFile } from "node:child_process";
  * enough to sit inside `npm run validate` on every push.
  */
 import fs from "node:fs";
-import { availableParallelism } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
 import { assertNonEmpty } from "./lib/non-empty.mjs";
 import { assertSweptEnough } from "./lib/sweep-guard.mjs";
 
-const HERE = path.dirname(fileURLToPath(import.meta.url));
+const SELF = fileURLToPath(import.meta.url);
+if (typeof vm.SourceTextModule !== "function") {
+  let code = 0;
+  try {
+    execFileSync(
+      process.execPath,
+      ["--experimental-vm-modules", "--no-warnings", SELF, ...process.argv.slice(2)],
+      { stdio: "inherit" },
+    );
+  } catch (e) {
+    code = typeof e.status === "number" ? e.status : 1;
+  }
+  process.exit(code);
+}
+
+const HERE = path.dirname(SELF);
 const ROOT = path.join(HERE, "..");
 
 // dist/ is build output (checked at source), node_modules is vendor code.
@@ -60,52 +74,29 @@ function walk(dir, out = []) {
 
 const isEsm = (src) => /^\s*(?:import|export)\s/m.test(src);
 
-/** Parse classic script `src` in-process; null when fine, else a short message. */
-function scriptError(src) {
+/** Parse classic script or ES module `src` in-process; null when fine, else a short message. */
+function parseError(src, { esm }) {
   try {
-    new vm.Script(src);
+    if (esm) {
+      new vm.SourceTextModule(src);
+    } else {
+      new vm.Script(src);
+    }
     return null;
   } catch (e) {
-    return String(e.message).slice(0, 120);
+    return String(e.message || "parse error")
+      .split("\n")[0]
+      .trim()
+      .slice(0, 120);
   }
 }
 
-/** Parse ESM `src`; resolves null when fine, else a short message.
- * vm can't parse ESM without an experimental flag, so this shells out to
- * `node --check`, which understands .mjs. Those spawns are the cost of this
- * gate (~1,000 of them), so they run in a pool — see checkAll(). Each call
- * gets its own temp name: a shared path races on write/unlink and reports
- * bogus "Cannot find module" errors against an unrelated file. */
-let tmpSeq = 0;
-function moduleError(src) {
-  const tmp = path.join(ROOT, `.js-syntax-check.${process.pid}.${tmpSeq++}.mjs`);
-  fs.writeFileSync(tmp, src);
-  return new Promise((resolve) => {
-    execFile(process.execPath, ["--check", tmp], (err, _stdout, stderr) => {
-      try {
-        fs.unlinkSync(tmp);
-      } catch {}
-      if (!err) return resolve(null);
-      const out = String(stderr || err.message || "");
-      const line = out.split("\n").find((l) => /Error/.test(l));
-      resolve((line || "parse error").trim().slice(0, 120));
-    });
+/** Check every item in-process; failures come back in item order. */
+function checkAll(items) {
+  return items.flatMap((item) => {
+    const err = parseError(item.src, { esm: item.esm });
+    return err ? [`${item.label}: ${err}`] : [];
   });
-}
-
-/** Check every item; failures come back in item order. */
-async function checkAll(items, jobs) {
-  const errors = new Array(items.length).fill(null);
-  let next = 0;
-  const worker = async () => {
-    while (next < items.length) {
-      const i = next++;
-      const { src, esm } = items[i];
-      errors[i] = esm ? await moduleError(src) : scriptError(src);
-    }
-  };
-  await Promise.all(Array.from({ length: Math.min(jobs, items.length) }, worker));
-  return items.flatMap((item, i) => (errors[i] ? [`${item.label}: ${errors[i]}`] : []));
 }
 
 const files = walk(ROOT);
@@ -161,7 +152,7 @@ for (const abs of files) {
   }
 }
 
-const failures = await checkAll(items, Math.max(1, availableParallelism() - 1));
+const failures = checkAll(items);
 
 console.log(
   `JS syntax validation — ${jsCount} script file(s), ${inlineCount} inline block(s) across ${htmlCount} page(s)`,

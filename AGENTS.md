@@ -28,21 +28,28 @@ Preserve existing student-facing routes. This repo is live-classroom oriented: c
 - Install dependencies only when explicitly approved: `npm install`
 - Dev server: `npm run dev`
 - Preview build: `npm run preview`
-- Validate static/curriculum checks: `npm run validate`
+- Change-scoped fast QA (preferred inner-loop & pre-push check): `npm run qa:fast`
+- Full parallel QA sweep (all 120+ checks): `npm run qa:loop`
+- Lint & format check (Biome): `npm run check`
+- Typecheck ratchet: `npm run typecheck`
+- Unit test suite: `npm run test`
 - Build: `npm run build`
 - Codex preflight: `scripts/codex/codex-preflight.sh`
-- Codex verification: `scripts/codex/codex-verify.sh`
+- Codex verification (delegates to `npm run qa:fast`, or `qa:loop` with `--full`): `scripts/codex/codex-verify.sh`
 
 ## Build, Test, Lint, Typecheck, Deploy
 
 - Package manager: npm with `package-lock.json` when present.
+- Fast change-scoped gate: `npm run qa:fast` (`node scripts/qa-run.mjs --changed`) — runs only the validators and browser suites covering files changed in the working tree or `origin/main...HEAD` (default-deny: unmapped paths escalate to the full gate).
+- Full validation command: `npm run qa:loop` (parallel) or `npm run validate` (serial chain; avoid running the whole serial chain during iteration when `npm run qa:fast` or a targeted `npm run validate:<surface>` suffices).
+- Domain-specific browser suites (`validate:project-studio-browser`, `validate:fluency-workshops-browser`, `validate:learning-labs-browser`) are change-scoped in `scripts/qa-run.mjs` `COVERAGE` so unrelated deploys do not pay ~170s for them.
 - Build command: `npm run build`
-- Validation command: `npm run validate`
 - Static validation: `npm run validate:static`
 - Reveal Math validation: `npm run validate:reveal-math`
 - Deploy command: `ALLOW_DEPLOY=1 npm run ship -- <sha> [sha...]` — cherry-picks the
   named commits onto a clean detached worktree at `origin/main`, fixes private author
-  emails (GH007), pushes to `main` (pre-push QA loop gates it), then polls the public
+  emails (GH007), pushes to `main` (`.githooks/pre-push` runs `npm run qa:fast -- --push`
+  by default, or `QA_FULL=1 npm run qa:loop` when forced), then polls the public
   build stamp until production actually serves the new commit.
 - `npm run ship:verify` (read-only) polls the live build stamp; `ALLOW_DEPLOY=1 npm run
   ship:rebuild` pushes an empty commit to unfreeze a stuck Cloudflare Pages build.
@@ -53,7 +60,6 @@ Preserve existing student-facing routes. This repo is live-classroom oriented: c
 - Never push the working branch or working tree state to `main` directly — the repo
   auto-commits during sessions; `main` is assembled only by cherry-picking reviewed SHAs
   (which `npm run ship` automates). Full runbook: `docs/deploy.md`.
-- No top-level lint/typecheck/test scripts are currently defined; do not invent them.
 
 ## Default Workflow
 
@@ -62,7 +68,7 @@ Preserve existing student-facing routes. This repo is live-classroom oriented: c
 3. Identify whether the change belongs to standalone HTML, the Vite build, engine components, generated lesson assets, Cloudflare Functions, or Apps Script tools.
 4. Make the smallest complete change in the primary codepath.
 5. Avoid changing generated outputs unless the task is about generated artifacts or the repo's existing workflow requires it.
-6. Run the narrowest relevant verification first, then `scripts/codex/codex-verify.sh` when feasible.
+6. Run the narrowest relevant verification first, then `npm run qa:fast` (or `scripts/codex/codex-verify.sh`). Do not manually run `npm run qa:loop` right before `npm run ship`, as `pre-push` runs the gate automatically during `ship`.
 7. Review changed files before final response.
 
 ## Definition Of Done
@@ -120,9 +126,9 @@ Preserve existing student-facing routes. This repo is live-classroom oriented: c
 
 ## QA Expectations
 
-- Run `npm run validate` after changes that affect routes, activities, curriculum data, shared assets, or build behavior.
-- Run `npm run build` before deployment-related handoff or when Vite/build behavior changes.
-- Run `scripts/codex/codex-verify.sh` after Codex-system edits and most repo-wide changes.
+- Run `npm run qa:fast` (or `scripts/codex/codex-verify.sh`) after changes to verify all affected validators in parallel.
+- Run `npm run build` when Vite/build behavior or `dist/`-dependent surfaces change.
+- Reserve `npm run qa:loop` (or `QA_FULL=1 git push`) for when a full 120+ check sweep is explicitly needed.
 - Verify no broken local links/assets, placeholder text in newly touched student pages, hidden answer keys, fake save/export features, or console-breaking scripts.
 - For Apps Script, verify valid platform APIs and provide run/setup instructions; do not create triggers or deploy scripts without approval.
 
