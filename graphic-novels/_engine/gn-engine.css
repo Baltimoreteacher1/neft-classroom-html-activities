@@ -1237,6 +1237,720 @@ body[data-tier="0"] .choice {
   border-bottom: 2px solid var(--line);
 }
 
+/* ===========================================================================
+   PUBLISHER-GRADE UPGRADES: Cast Dossiers, SVG Stage Figures, Comic SFX,
+   Storyboard Strip, Mission Stamps, and Built-In Interactive Math Labs
+   =========================================================================== */
+
+/* ---- Cast Dossier Grid on Cover ---- */
+.cast-dossier-section {
+  max-width: 920px;
+  margin: 18px auto 12px;
+  text-align: left;
+}
+.cast-dossier-heading {
+  text-align: center;
+  font-size: 0.82rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+.cast-dossier-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px;
+}
+.cast-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  border: 3px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-shadow: var(--sh-sm);
+  position: relative;
+  transition: transform 0.15s ease;
+}
+.cast-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--line);
+}
+.cast-card-av {
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  border: 3px solid var(--line);
+  flex: 0 0 64px;
+  overflow: hidden;
+  background: var(--spk, var(--accent));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cast-card-av svg,
+.cast-card-av img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+.cast-card-info {
+  flex: 1;
+  min-width: 0;
+}
+.cast-card-role {
+  display: inline-block;
+  font-size: 0.66rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 2px solid var(--line);
+  background: var(--gold);
+  color: var(--ink);
+  margin-bottom: 3px;
+}
+.cast-card-role.you {
+  background: var(--accent);
+  color: #fff;
+}
+.cast-card-name {
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--ink);
+  line-height: 1.15;
+}
+.cast-card-trait {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 700;
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+/* ---- SVG Avatar & Stage Portrait Figure ---- */
+.bubble .who .av svg,
+.cast-chip .av svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.speaker-stage {
+  position: absolute;
+  bottom: 0;
+  z-index: 2;
+  width: min(175px, 34%);
+  height: min(195px, 76%);
+  pointer-events: none;
+  filter: drop-shadow(4px 4px 0 rgba(15, 23, 42, 0.85));
+  animation: figrise 0.3s ease;
+}
+.speaker-stage.left {
+  left: 8px;
+}
+.speaker-stage.right {
+  right: 8px;
+}
+.speaker-stage svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ---- Comic SFX Action Burst ---- */
+.comic-sfx {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  z-index: 4;
+  background: var(--gold);
+  color: var(--ink);
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-weight: 900;
+  font-size: 0.92rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transform: rotate(-4deg);
+  box-shadow: 4px 4px 0 var(--line);
+  cursor: pointer;
+  user-select: none;
+  animation: sfxpop 0.35s cubic-bezier(0.18, 1.4, 0.4, 1);
+}
+.comic-sfx.left {
+  right: auto;
+  left: 14px;
+  transform: rotate(4deg);
+}
+.comic-sfx.misc-sfx {
+  background: #fef08a;
+  color: var(--red);
+}
+@keyframes sfxpop {
+  0% {
+    transform: scale(0.4) rotate(-12deg);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) rotate(-4deg);
+    opacity: 1;
+  }
+}
+
+/* ---- Interactive Storyboard Strip ---- */
+.storyboard-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: #fff;
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--sh-sm);
+}
+.sb-beats {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.sb-chip {
+  min-height: 38px;
+  padding: 5px 10px;
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  background: #f8fafc;
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font);
+}
+.sb-chip.active {
+  background: var(--gold);
+  color: var(--ink);
+  box-shadow: 2px 2px 0 var(--line);
+}
+.sb-chip.misc {
+  border-color: var(--red);
+}
+.sb-inspect-btn {
+  min-height: 38px;
+  padding: 5px 11px;
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  background: #eff6ff;
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 900;
+  cursor: pointer;
+  font-family: var(--font);
+}
+.sb-inspect-btn:hover {
+  background: var(--gold);
+}
+
+/* ---- Interactive Math Lab Widget (.gn-math-lab) ---- */
+.gn-math-lab {
+  margin: 12px 0 14px;
+  background: #ffffff;
+  border: 3px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: var(--sh-sm);
+}
+.gn-lab-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 2px dashed rgba(15, 23, 42, 0.15);
+}
+.gn-lab-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 9px;
+  border-radius: 6px;
+  border: 2px solid var(--line);
+}
+.gn-lab-sub {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--muted);
+}
+.gn-lab-stage {
+  background: #f8fafc;
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  text-align: center;
+  overflow-x: auto;
+}
+.gn-lab-stage svg {
+  width: 100%;
+  max-width: 460px;
+  height: auto;
+  margin: 0 auto;
+  display: block;
+}
+.gn-lab-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+.gn-lab-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: var(--ink);
+  flex: 1 1 180px;
+}
+.gn-lab-ctrl input[type="range"] {
+  flex: 1;
+  min-width: 90px;
+  height: 28px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.gn-lab-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.gn-lab-btn {
+  min-height: 40px;
+  min-width: 44px;
+  padding: 6px 10px;
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 900;
+  font-size: 0.82rem;
+  cursor: pointer;
+  font-family: var(--font);
+  box-shadow: 2px 2px 0 var(--line);
+}
+.gn-lab-btn:hover,
+.gn-lab-btn.active {
+  background: var(--gold);
+  color: var(--ink);
+}
+.gn-lab-readout {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: #eff6ff;
+  border: 2px solid var(--line);
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.gn-lab-readout code {
+  font-family: "Courier New", monospace;
+  font-weight: 900;
+  color: var(--blue);
+  background: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+}
+.gn-lab-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+/* ---- Topbar XP Rank & SFX Toggle ---- */
+.gn-xp-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fef08a;
+  color: var(--ink);
+  border: 3px solid var(--line);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  font-weight: 900;
+  box-shadow: var(--sh-sm);
+  white-space: nowrap;
+}
+.gn-sfx-toggle {
+  min-height: 44px;
+  border: 3px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  border-radius: 6px;
+  box-shadow: var(--sh-sm);
+  font-weight: 900;
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 0 10px;
+  font-family: var(--font);
+}
+.gn-sfx-toggle[aria-pressed="true"] {
+  background: var(--gold);
+}
+
+/* ---- Panel Math X-Ray / Blueprint Lens Overlay ---- */
+.xray-btn {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 5;
+  min-height: 40px;
+  background: rgba(15, 23, 42, 0.9);
+  color: #38bdf8;
+  border: 2.5px solid #38bdf8;
+  border-radius: 8px;
+  padding: 5px 11px;
+  font-weight: 900;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #0f172a;
+  font-family: var(--font);
+}
+.xray-btn:hover,
+.xray-btn[aria-pressed="true"] {
+  background: #38bdf8;
+  color: #0f172a;
+}
+.panel-xray-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: rgba(11, 25, 44, 0.88);
+  backdrop-filter: blur(2px);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  color: #e0f2fe;
+}
+.panel-xray-layer.open {
+  display: flex;
+  animation: fade 0.25s ease;
+}
+.panel-xray-layer svg {
+  width: 100%;
+  max-width: 560px;
+  max-height: 74%;
+  height: auto;
+  border: 2px solid #38bdf8;
+  border-radius: 8px;
+}
+.xray-caption {
+  margin-top: 8px;
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: #bae6fd;
+  text-align: center;
+  max-width: 600px;
+}
+
+/* ---- Unfolding Multi-Panel Comic Strip Ribbon ---- */
+.comic-strip-ribbon {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+.strip-cell {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #fff;
+  border: 2.5px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 9px;
+  box-shadow: 2px 2px 0 var(--line);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font);
+  transition: transform 0.12s ease;
+}
+.strip-cell:hover {
+  transform: translateY(-2px);
+}
+.strip-cell.current {
+  background: #fffbeb;
+  border-color: var(--accent);
+  box-shadow: 3px 3px 0 var(--accent);
+}
+.strip-cell.misc-cell {
+  border-color: var(--red);
+  background: #fef2f2;
+}
+.strip-av {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  border: 2px solid var(--line);
+  flex: 0 0 34px;
+  overflow: hidden;
+  background: #f8fafc;
+}
+.strip-av svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.strip-txt {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.75rem;
+  line-height: 1.25;
+  color: var(--ink);
+  font-weight: 700;
+}
+.strip-txt b {
+  display: block;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+
+/* ---- "HOLD IT!" Misconception Trap Buster Bar ---- */
+.trap-buster-bar {
+  margin-top: 10px;
+  background: #fef2f2;
+  border: 3px solid var(--red);
+  border-radius: 8px;
+  padding: 10px 12px;
+  box-shadow: var(--sh-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.trap-buster-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.trap-badge {
+  background: var(--red);
+  color: #fff;
+  font-weight: 900;
+  font-size: 0.74rem;
+  padding: 3px 9px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.trap-reveal-btn {
+  min-height: 40px;
+  background: var(--gold);
+  color: var(--ink);
+  border: 2.5px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-weight: 900;
+  font-size: 0.82rem;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--line);
+  font-family: var(--font);
+}
+.trap-card-body {
+  display: none;
+  background: #fff;
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  padding: 9px 11px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.trap-card-body.open {
+  display: block;
+}
+
+/* ---- Hero Strategy Roleplay Picker & Specialist Coach Reply ---- */
+.hero-move-bar {
+  margin: 0 0 12px;
+  background: #f8fafc;
+  border: 2.5px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 11px;
+}
+.hero-move-title {
+  font-size: 0.74rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.hero-move-btns {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.hero-move-btn {
+  min-height: 38px;
+  background: #fff;
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: var(--font);
+  box-shadow: 2px 2px 0 var(--line);
+}
+.hero-move-btn.active,
+.hero-move-btn:hover {
+  background: var(--gold);
+}
+.hero-move-reply {
+  display: none;
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: #ecfdf5;
+  border: 2px solid var(--green);
+  border-radius: 6px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #064e3b;
+}
+.hero-move-reply.open {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hero-move-reply .mini-av {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: 2px solid var(--line);
+  flex: 0 0 36px;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* ---- Interactive Margin Sketchpad & Math Stamp Canvas ---- */
+.gn-sketch-wrap {
+  margin: 0 0 12px;
+  background: #fffdf8;
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  display: none;
+}
+.gn-sketch-wrap.show {
+  display: block;
+}
+.gn-sketch-toolbar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.gn-sketch-canvas {
+  width: 100%;
+  height: 150px;
+  background: #ffffff;
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  touch-action: none;
+  cursor: crosshair;
+  display: block;
+}
+.swatch-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2.5px solid var(--line);
+  cursor: pointer;
+}
+.swatch-btn.active {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ---- Collectible Character Trading Cards on Complete Screen ---- */
+.trading-deck {
+  max-width: 820px;
+  margin: 20px auto;
+  text-align: left;
+}
+.trading-deck h3 {
+  text-align: center;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  font-size: 1.05rem;
+}
+.trading-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+.trading-card {
+  background: linear-gradient(135deg, #fffbeb 0%, #ffffff 55%, #eff6ff 100%);
+  border: 3px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: var(--sh);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+}
+.trading-card-av {
+  width: 76px;
+  height: 76px;
+  border-radius: 12px;
+  border: 3px solid var(--line);
+  overflow: hidden;
+  background: #fff;
+}
+.trading-card-av svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 @media print {
   .topbar,
   .tabs,

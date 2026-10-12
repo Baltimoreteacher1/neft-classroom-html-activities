@@ -15,9 +15,10 @@
  * Re-run after adding/removing novels:  node tools/build-graphic-novel-teacher-launcher.mjs
  * ========================================================================== */
 
-import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { mkdirSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { basename, dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import { writeGenerated } from "../scripts/lib/preserve-injected.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const NOVELS_DIR = join(ROOT, "graphic-novels");
@@ -190,7 +191,7 @@ ${sections}
 `;
 
 mkdirSync(OUT_DIR, { recursive: true });
-writeFileSync(OUT_FILE, page);
+writeGenerated(OUT_FILE, page);
 console.log(
   `Wrote ${relative(ROOT, OUT_FILE)} — ${entries.length} novels across ${units.size} unit group(s).`,
 );

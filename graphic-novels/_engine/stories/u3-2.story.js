@@ -1,792 +1,985 @@
-/* STORY · Unit 3 · Graphic Novel #2 (Enrichment) · Global Travel Planner
-   Comic-engine port. Full novel — Act 1 (Paris Ratios), Act 2 (Tokyo Tables),
-   Final (Master Gateway), Glossary, Expedition Complete + Master-Rank challenge.
-   Enrichment tier: harder numbers, optional "Globetrotter Challenge" bonus rounds
-   (non-gating, still scored), English-only (source has no Spanish), 10-term codex.
-   All math/answers/distractors/glossary carried verbatim from
-   graphic-novels/unit3/graphic-novel-2.html (6.AT.3a). Protagonist = The Traveler
-   (you, "Maya"); companion = COMPASS, a travel drone that compares raw totals
-   instead of the ratio/rate. */
+/* Upgraded Publisher-Grade Graphic Novel Story · u3-2.story.js */
 window.GN_STORY = {
-  meta: {
-    unit: 3,
-    version: 2,
-    level: "Enrichment",
-    title: "Global Travel Planner",
-    standard: "6.AT.3a",
-    readingStandard: "RL.6.1",
-    assessment: "Graphic Novel U3 #2: Global Travel Planner",
-    artBase: "../_art/unit3/",
-    home: "../index.html",
+  "meta": {
+    "unit": 3,
+    "version": 2,
+    "level": "Enrichment",
+    "title": "Global Travel Planner",
+    "standard": "6.AT.3a",
+    "readingStandard": "RL.6.1",
+    "assessment": "Graphic Novel U3 #2: Global Travel Planner",
+    "artBase": "../_art/unit3/",
+    "home": "../index.html"
   },
-
-  cast: {
-    traveler: {
-      name: "Maya",
-      role: "protagonist",
-      color: "#ff8a3d",
-      tagIcon: "🧭",
-      avatar: null,
-      blurb: "You",
+  "cast": {
+    "traveler": {
+      "name": "Desmond Osei",
+      "role": "protagonist",
+      "color": "#0f766e",
+      "tagIcon": "🌍",
+      "blurb": "World-Tour Logistics Planner · Multi-Leg Rate Strategist",
+      "portrait": {
+        "skin": "#8d522c",
+        "hair": "#0f172a",
+        "hairStyle": 0,
+        "gear": "goggles"
+      }
     },
-    compass: {
-      name: "COMPASS",
-      role: "companion",
-      color: "#3da5ff",
-      tagIcon: "🛸",
-      avatar: null,
-      blurb: "Travel drone · grabs the bigger total, not the unit rate",
+    "compass": {
+      "name": "VECTOR-X",
+      "role": "companion",
+      "color": "#0284c7",
+      "tagIcon": "🤖",
+      "blurb": "Supersonic route AI · flips miles-per-hour vs hours-per-mile",
+      "portrait": {
+        "bot": true,
+        "accent": "#0284c7"
+      }
     },
-    log: { name: "Expedition AI", role: "narrator", color: "#3da5ff" },
+    "log": {
+      "name": "Dr. Astrid Lindqvist",
+      "role": "specialist",
+      "color": "#b45309",
+      "tagIcon": "🗺️",
+      "blurb": "Chief Cartographer · Proportional Reasoning Lead",
+      "portrait": {
+        "skin": "#f6d2b8",
+        "hair": "#b45309",
+        "hairStyle": 2,
+        "glasses": true
+      }
+    }
   },
-
-  cover: {
-    art: "cover.png",
-    alt: "Maya, a young travel planner, stands on a giant glowing globe holding a travel map with airplane trails arcing between landmarks",
-    blurbEn:
-      "Maya has won a contest: plan one perfect <b>around-the-world</b> expedition. But every destination is sealed behind a ratio cipher. Reason with <b>ratios</b>, <b>unit rates</b>, and <b>ratio tables</b> &mdash; and graph them &mdash; to chart the route and unlock the world. COMPASS will help… but it keeps grabbing the bigger total instead of the rate. Each act also hides an optional <b>⭐ Globetrotter Challenge</b> for extra glory.",
-    blurbEs: "",
-    startLabel: "Begin the Expedition ✈️",
+  "cover": {
+    "art": "cover.png",
+    "alt": "Maya, a young travel planner, stands on a giant glowing globe holding a travel map with airplane trails arcing between landmarks",
+    "blurbEn": "Desmond has won a contest: plan one perfect <b>around-the-world</b> expedition. But every destination is sealed behind a ratio cipher. Reason with <b>ratios</b>, <b>unit rates</b>, and <b>ratio tables</b> &mdash; and graph them &mdash; to chart the route and unlock the world. VECTOR-X will help… but it keeps grabbing the bigger total instead of the rate. Each act also hides an optional <b>⭐ Globetrotter Challenge</b> for extra glory.",
+    "blurbEs": "",
+    "startLabel": "Begin the Expedition ✈️"
   },
-
-  acts: [
-    /* ============================ ACT 1 ============================ */
+  "acts": [
     {
-      id: "act1",
-      tab: "Act 1: Paris Ratios",
-      kicker: "Act 1 · Understand Ratios",
-      title: "Paris: Reason with Ratios",
-      advanceLabel: "Fly to Tokyo ✈️",
-      steps: [
+      "id": "act1",
+      "tab": "Act 1: Paris Ratios",
+      "kicker": "Act 1 · Understand Ratios",
+      "title": "Paris: Reason with Ratios",
+      "advanceLabel": "Fly to Tokyo ✈️",
+      "steps": [
         {
-          type: "beats",
-          art: "ratios-compare.png",
-          alt: "Maya stands before the Eiffel Tower holding passports with a glowing ratio comparison floating beside her",
-          lastLabel: "Decode ▶",
-          beats: [
+          "type": "beats",
+          "art": "ratios-compare.png",
+          "alt": "Maya stands before the Eiffel Tower holding passports with a glowing ratio comparison floating beside her",
+          "lastLabel": "Decode ▶",
+          "beats": [
             {
-              who: "log",
-              caption: true,
-              en: "Maya, you have arrived in Paris. The first cipher demands an equivalent ratio &mdash; same comparison, leaner form.",
+              "who": "log",
+              "caption": true,
+              "en": "Desmond, you have arrived in Paris. The first cipher demands an equivalent ratio &mdash; same comparison, leaner form."
             },
             {
-              who: "traveler",
-              en: "The manifest reads 4 crew for every 6 travelers — both even, so they share a common factor. Equivalent ratios scale together. I'll divide both parts by their common factor and prove it's the same comparison.",
-              vocab: [
+              "who": "traveler",
+              "en": "The manifest reads 4 crew for every 6 travelers — both even, so they share a common factor. Equivalent ratios scale together. I'll divide both parts by their common factor and prove it's the same comparison.",
+              "vocab": [
                 {
-                  term: "equivalent ratio",
-                  en: "Ratios that name the same comparison; multiply or divide both terms by the same nonzero number. 4:6 = 2:3 = 12:18.",
-                },
-              ],
+                  "term": "equivalent ratio",
+                  "en": "Ratios that name the same comparison; multiply or divide both terms by the same nonzero number. 4:6 = 2:3 = 12:18."
+                }
+              ]
             },
             {
-              who: "compass",
-              misconception: true,
-              en: "4 crew and 6 travelers — bigger numbers feel safer, so I'll scale UP to 4 : 12. The travelers doubled!",
-            },
-          ],
+              "who": "compass",
+              "misconception": true,
+              "en": "4 crew and 6 travelers — bigger numbers feel safer, so I'll scale UP to 4 : 12. The travelers doubled!"
+            }
+          ]
         },
         {
-          type: "challenge",
-          id: "1a",
-          ask: {
-            who: "log",
-            en: "The expedition manifest lists <b>4 crew for every 6 travelers</b>. Which ratio is <b>equivalent</b> (the same comparison written a different way)?",
+          "type": "challenge",
+          "id": "1a",
+          "ask": {
+            "who": "log",
+            "en": "The expedition manifest lists <b>4 crew for every 6 travelers</b>. Which ratio is <b>equivalent</b> (the same comparison written a different way)?"
           },
-          choices: [
+          "choices": [
             {
-              en: "6 : 9",
-              tree: "(that is 2:3 of travelers:?, wrong order)",
-              correct: false,
+              "en": "6 : 9",
+              "tree": "(that is 2:3 of travelers:?, wrong order)",
+              "correct": false,
+              "why": {
+                "en": "❌ That changes the comparison. Divide BOTH 4 and 6 by their common factor 2 → 2:3. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
             },
             {
-              en: "2 : 3",
-              tree: "(divide both 4 and 6 by 2)",
-              correct: true,
+              "en": "2 : 3",
+              "tree": "(divide both 4 and 6 by 2)",
+              "correct": true
             },
             {
-              en: "4 : 12",
-              tree: "(only the travelers doubled)",
-              correct: false,
-            },
+              "en": "4 : 12",
+              "tree": "(only the travelers doubled)",
+              "correct": false,
+              "why": {
+                "en": "❌ That changes the comparison. Divide BOTH 4 and 6 by their common factor 2 → 2:3. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
+            }
           ],
-          goodEn:
-            "✅ Correct. 4:6 divides by 2 to give 2:3 &mdash; the same comparison. Cipher one cracked.",
-          badEn:
-            "❌ That changes the comparison. Divide BOTH 4 and 6 by their common factor 2 → 2:3.",
-          solveBeat: {
-            who: "traveler",
-            en: "Cipher cracked. Now I need a unit rate to compare offers fairly &mdash; everything per single unit.",
+          "goodEn": "✅ Correct. 4:6 divides by 2 to give 2:3 &mdash; the same comparison. Cipher one cracked.",
+          "badEn": "❌ That changes the comparison. Divide BOTH 4 and 6 by their common factor 2 → 2:3.",
+          "solveBeat": {
+            "who": "traveler",
+            "en": "Cipher cracked. Now I need a unit rate to compare offers fairly &mdash; everything per single unit."
           },
+          "help": {
+            "conceptual": {
+              "en": "❌ That changes the comparison. Divide BOTH 4 and 6 by their common factor 2 → 2:3.",
+              "es": "Haz una pausa y verifica qué cantidad es el total o la base."
+            },
+            "procedural": {
+              "en": "Step 1: Model the numbers in the Interactive Math Lab. Step 2: Check the readout equation.",
+              "es": "Paso 1: Modela los números en el laboratorio interactivo."
+            },
+            "example": {
+              "en": "Try sliding the Interactive Math Lab controls to a simpler benchmark number first, observe the pattern, and then set it to the mission numbers!",
+              "es": "Prueba deslizar los controles del laboratorio a un número de referencia más simple primero."
+            }
+          }
         },
         {
-          type: "comprehension",
-          id: "c1",
-          skill: "vocab_in_context",
-          standard: "RI.6.4",
-          dok: 3,
-          interaction: "mc",
-          passageRef: "act1.1a",
-          ask: {
-            who: "log",
-            en: "When two ratios are called <b>equivalent</b>, as in 4:6 and 2:3, the word <b>equivalent</b> most nearly means they —",
+          "type": "comprehension",
+          "id": "c1",
+          "skill": "vocab_in_context",
+          "standard": "RI.6.4",
+          "dok": 3,
+          "interaction": "mc",
+          "passageRef": "act1.1a",
+          "ask": {
+            "who": "log",
+            "en": "When two ratios are called <b>equivalent</b>, as in 4:6 and 2:3, the word <b>equivalent</b> most nearly means they —"
           },
-          choices: [
+          "choices": [
             {
-              en: "name the same comparison, just written with different numbers.",
-              correct: true,
+              "en": "name the same comparison, just written with different numbers.",
+              "correct": true
             },
             {
-              en: "add up to the same total when their parts are combined.",
-              correct: false,
+              "en": "add up to the same total when their parts are combined.",
+              "correct": false,
+              "why": {
+                "en": "❌ In this context, <i>equivalent</i> means the same comparison written differently (4:6 = 2:3), not the same sum or the biggest numbers. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
             },
             {
-              en: "always use the largest possible whole numbers.",
-              correct: false,
-            },
+              "en": "always use the largest possible whole numbers.",
+              "correct": false,
+              "why": {
+                "en": "❌ In this context, <i>equivalent</i> means the same comparison written differently (4:6 = 2:3), not the same sum or the biggest numbers. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
+            }
           ],
-          goodEn:
-            "✅ Precisely. <i>Equivalent</i> ratios express the identical comparison; you reach one from the other by multiplying or dividing both terms by the same number.",
-          badEn:
-            "❌ In this context, <i>equivalent</i> means the same comparison written differently (4:6 = 2:3), not the same sum or the biggest numbers.",
+          "goodEn": "✅ Precisely. <i>Equivalent</i> ratios express the identical comparison; you reach one from the other by multiplying or dividing both terms by the same number.",
+          "badEn": "❌ In this context, <i>equivalent</i> means the same comparison written differently (4:6 = 2:3), not the same sum or the biggest numbers."
         },
         {
-          type: "beats",
-          art: "ratios-compare.png",
-          alt: "Maya studies a glowing shuttle gauge showing kilometers and liters of fuel in Paris",
-          lastLabel: "Find the rate ▶",
-          beats: [
+          "type": "beats",
+          "art": "ratios-compare.png",
+          "alt": "Maya studies a glowing shuttle gauge showing kilometers and liters of fuel in Paris",
+          "lastLabel": "Find the rate ▶",
+          "beats": [
             {
-              who: "compass",
-              misconception: true,
-              en: "18 km and 3 liters? I'll just take the difference: 18 − 3 = 15 km per liter!",
-              vocab: [
+              "who": "compass",
+              "misconception": true,
+              "en": "18 km and 3 liters? I'll just take the difference: 18 − 3 = 15 km per liter!",
+              "vocab": [
                 {
-                  term: "unit rate",
-                  en: "A rate per single unit of the second quantity, e.g. 80 km per 1 hour from 240 km in 3 hours.",
-                },
-              ],
-            },
-          ],
+                  "term": "unit rate",
+                  "en": "A rate per single unit of the second quantity, e.g. 80 km per 1 hour from 240 km in 3 hours."
+                }
+              ]
+            }
+          ]
         },
         {
-          type: "challenge",
-          id: "1b",
-          ask: {
-            who: "traveler",
-            en: "The shuttle covers <b>18 km using 3 liters</b> of fuel. To compare offers, Maya needs the <b>unit rate</b>: kilometers per <b>1 liter</b>. What is it?",
+          "type": "challenge",
+          "id": "1b",
+          "ask": {
+            "who": "traveler",
+            "en": "The shuttle covers <b>18 km using 3 liters</b> of fuel. To compare offers, Desmond needs the <b>unit rate</b>: kilometers per <b>1 liter</b>. What is it?"
           },
-          choices: [
+          "choices": [
             {
-              en: "3 km per liter",
-              tree: "(that divides the wrong way)",
-              correct: false,
+              "en": "3 km per liter",
+              "tree": "(that divides the wrong way)",
+              "correct": false,
+              "why": {
+                "en": "❌ A unit rate is per ONE liter: divide km by liters, 18 ÷ 3 = 6. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
             },
             {
-              en: "6 km per liter",
-              tree: "(18 ÷ 3 = 6)",
-              correct: true,
+              "en": "6 km per liter",
+              "tree": "(18 ÷ 3 = 6)",
+              "correct": true
             },
             {
-              en: "15 km per liter",
-              tree: "(that is 18 − 3)",
-              correct: false,
-            },
+              "en": "15 km per liter",
+              "tree": "(that is 18 − 3)",
+              "correct": false,
+              "why": {
+                "en": "❌ A unit rate is per ONE liter: divide km by liters, 18 ÷ 3 = 6. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
+            }
           ],
-          goodEn: "✅ Unit rate = 18 ÷ 3 = 6 km per liter. PARIS UNLOCKED!",
-          badEn:
-            "❌ A unit rate is per ONE liter: divide km by liters, 18 ÷ 3 = 6.",
-          solveArt: "unlock.png",
-          solveAlt: "A glowing gateway opens to reveal pyramids as Maya cheers",
-          solveBeat: {
-            who: "traveler",
-            en: "Paris is open and the route to the pyramids is lit. But the cache outside the Louvre tempts me first…",
+          "goodEn": "✅ Unit rate = 18 ÷ 3 = 6 km per liter. PARIS UNLOCKED!",
+          "badEn": "❌ A unit rate is per ONE liter: divide km by liters, 18 ÷ 3 = 6.",
+          "solveArt": "unlock.png",
+          "solveAlt": "A glowing gateway opens to reveal pyramids as Maya cheers",
+          "solveBeat": {
+            "who": "traveler",
+            "en": "Paris is open and the route to the pyramids is lit. But the cache outside the Louvre tempts me first…"
           },
+          "help": {
+            "conceptual": {
+              "en": "❌ A unit rate is per ONE liter: divide km by liters, 18 ÷ 3 = 6.",
+              "es": "Haz una pausa y verifica qué cantidad es el total o la base."
+            },
+            "procedural": {
+              "en": "Step 1: Model the numbers in the Interactive Math Lab. Step 2: Check the readout equation.",
+              "es": "Paso 1: Modela los números en el laboratorio interactivo."
+            },
+            "example": {
+              "en": "Try sliding the Interactive Math Lab controls to a simpler benchmark number first, observe the pattern, and then set it to the mission numbers!",
+              "es": "Prueba deslizar los controles del laboratorio a un número de referencia más simple primero."
+            }
+          }
         },
         {
-          type: "comprehension",
-          id: "c2",
-          skill: "cite_evidence",
-          standard: "RL.6.1",
-          dok: 3,
-          interaction: "evidence",
-          passageRef: "act1.beat3",
-          ask: {
-            who: "log",
-            en: "Claim: <b>COMPASS confuses a difference with a rate.</b> Tap the line that <b>best proves</b> this claim.",
+          "type": "comprehension",
+          "id": "c2",
+          "skill": "cite_evidence",
+          "standard": "RL.6.1",
+          "dok": 3,
+          "interaction": "evidence",
+          "passageRef": "act1.beat3",
+          "ask": {
+            "who": "log",
+            "en": "Claim: <b>VECTOR-X confuses a difference with a rate.</b> Tap the line that <b>best proves</b> this claim."
           },
-          choices: [
+          "choices": [
             {
-              en: "“18 km and 3 liters? I'll just take the difference: 18 − 3 = 15 km per liter!”",
-              correct: true,
+              "en": "“18 km and 3 liters? I'll just take the difference: 18 − 3 = 15 km per liter!”",
+              "correct": true
             },
             {
-              en: "“To compare offers, Maya needs the unit rate: kilometers per 1 liter.”",
-              correct: false,
+              "en": "“To compare offers, Desmond needs the unit rate: kilometers per 1 liter.”",
+              "correct": false,
+              "why": {
+                "en": "❌ That line states the correct goal or just reacts. Find the line where VECTOR-X subtracts and calls the result a rate. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
             },
             {
-              en: "“Paris is open and the route to the pyramids is lit.”",
-              correct: false,
-            },
+              "en": "“Paris is open and the route to the pyramids is lit.”",
+              "correct": false,
+              "why": {
+                "en": "❌ That line states the correct goal or just reacts. Find the line where VECTOR-X subtracts and calls the result a rate. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
+            }
           ],
-          goodEn:
-            "✅ Strong evidence — COMPASS subtracts (18 − 3) and mislabels it a per-liter rate, exactly the confusion the claim names.",
-          badEn:
-            "❌ That line states the correct goal or just reacts. Find the line where COMPASS subtracts and calls the result a rate.",
+          "goodEn": "✅ Strong evidence — VECTOR-X subtracts (18 − 3) and mislabels it a per-liter rate, exactly the confusion the claim names.",
+          "badEn": "❌ That line states the correct goal or just reacts. Find the line where VECTOR-X subtracts and calls the result a rate."
         },
         {
-          type: "comprehension",
-          id: "c3",
-          skill: "key_details",
-          standard: "RI.6.1",
-          dok: 2,
-          interaction: "mc",
-          passageRef: "act1.1b",
-          ask: {
-            who: "log",
-            en: "According to the shuttle reading, exactly how far does the shuttle travel and how much fuel does it use?",
+          "type": "comprehension",
+          "id": "c3",
+          "skill": "key_details",
+          "standard": "RI.6.1",
+          "dok": 2,
+          "interaction": "mc",
+          "passageRef": "act1.1b",
+          "ask": {
+            "who": "log",
+            "en": "According to the shuttle reading, exactly how far does the shuttle travel and how much fuel does it use?"
           },
-          choices: [
+          "choices": [
             {
-              en: "18 km on 3 liters of fuel.",
-              correct: true,
+              "en": "18 km on 3 liters of fuel.",
+              "correct": true
             },
             {
-              en: "3 km on 18 liters of fuel.",
-              correct: false,
+              "en": "3 km on 18 liters of fuel.",
+              "correct": false,
+              "why": {
+                "en": "❌ Reread the gauge: 18 km on 3 liters. (6 km per liter is the rate you compute from those two amounts.) Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
             },
             {
-              en: "6 km on 6 liters of fuel.",
-              correct: false,
-            },
+              "en": "6 km on 6 liters of fuel.",
+              "correct": false,
+              "why": {
+                "en": "❌ Reread the gauge: 18 km on 3 liters. (6 km per liter is the rate you compute from those two amounts.) Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
+            }
           ],
-          goodEn:
-            "✅ Exactly — the shuttle covers 18 km using 3 liters, which is why the unit rate is 18 ÷ 3 = 6 km per liter.",
-          badEn:
-            "❌ Reread the gauge: 18 km on 3 liters. (6 km per liter is the rate you compute from those two amounts.)",
+          "goodEn": "✅ Exactly — the shuttle covers 18 km using 3 liters, which is why the unit rate is 18 ÷ 3 = 6 km per liter.",
+          "badEn": "❌ Reread the gauge: 18 km on 3 liters. (6 km per liter is the rate you compute from those two amounts.)"
         },
         {
-          type: "challenge",
-          id: "B1",
-          optional: true,
-          bonusTag: "⭐ Globetrotter Challenge",
-          ask: {
-            who: "log",
-            en: "Optional: two taxis are bidding for your fare. App A: <b>$24 for 8 km</b>. App B: <b>$15 for 5 km</b>. Using unit rates (price per km), which is the better deal &mdash; or are they the same? Skip it any time and still fly on.",
+          "type": "challenge",
+          "id": "B1",
+          "optional": true,
+          "bonusTag": "⭐ Globetrotter Challenge",
+          "ask": {
+            "who": "log",
+            "en": "Optional: two taxis are bidding for your fare. App A: <b>$24 for 8 km</b>. App B: <b>$15 for 5 km</b>. Using unit rates (price per km), which is the better deal &mdash; or are they the same? Skip it any time and still fly on."
           },
-          choices: [
+          "choices": [
             {
-              en: "App A is cheaper",
-              tree: "($24÷8 = $3/km vs $15÷5 = $3/km)",
-              correct: false,
+              "en": "App A is cheaper",
+              "tree": "($24÷8 = $3/km vs $15÷5 = $3/km)",
+              "correct": false,
+              "why": {
+                "en": "❌ Compute each price per km: $24÷8 and $15÷5. Compare those unit rates. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
             },
             {
-              en: "They cost the same",
-              tree: "both are $3 per km",
-              correct: true,
+              "en": "They cost the same",
+              "tree": "both are $3 per km",
+              "correct": true
             },
             {
-              en: "App B is cheaper",
-              tree: "(check both unit rates again)",
-              correct: false,
-            },
+              "en": "App B is cheaper",
+              "tree": "(check both unit rates again)",
+              "correct": false,
+              "why": {
+                "en": "❌ Compute each price per km: $24÷8 and $15÷5. Compare those unit rates. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
+            }
           ],
-          goodEn:
-            "⭐ Sharp. App A = $24÷8 = $3/km, App B = $15÷5 = $3/km &mdash; identical. Bonus earned!",
-          badEn:
-            "❌ Compute each price per km: $24÷8 and $15÷5. Compare those unit rates.",
-          solveBeat: {
-            who: "traveler",
-            en: "Both fares are equal — picked the closer one. On to Tokyo.",
+          "goodEn": "⭐ Sharp. App A = $24÷8 = $3/km, App B = $15÷5 = $3/km &mdash; identical. Bonus earned!",
+          "badEn": "❌ Compute each price per km: $24÷8 and $15÷5. Compare those unit rates.",
+          "solveBeat": {
+            "who": "traveler",
+            "en": "Both fares are equal — picked the closer one. On to Tokyo."
           },
-        },
-      ],
+          "help": {
+            "conceptual": {
+              "en": "❌ Compute each price per km: $24÷8 and $15÷5. Compare those unit rates.",
+              "es": "Haz una pausa y verifica qué cantidad es el total o la base."
+            },
+            "procedural": {
+              "en": "Step 1: Model the numbers in the Interactive Math Lab. Step 2: Check the readout equation.",
+              "es": "Paso 1: Modela los números en el laboratorio interactivo."
+            },
+            "example": {
+              "en": "Try sliding the Interactive Math Lab controls to a simpler benchmark number first, observe the pattern, and then set it to the mission numbers!",
+              "es": "Prueba deslizar los controles del laboratorio a un número de referencia más simple primero."
+            }
+          }
+        }
+      ]
     },
-
-    /* ============================ ACT 2 ============================ */
     {
-      id: "act2",
-      tab: "Act 2: Tokyo Tables",
-      kicker: "Act 2 · Ratio Tables & Graphs",
-      title: "Tokyo: Tables & the Graph",
-      advanceLabel: "Fly to Egypt ✈️",
-      steps: [
+      "id": "act2",
+      "tab": "Act 2: Tokyo Tables",
+      "kicker": "Act 2 · Ratio Tables & Graphs",
+      "title": "Tokyo: Tables & the Graph",
+      "advanceLabel": "Fly to Egypt ✈️",
+      "steps": [
         {
-          type: "beats",
-          art: "ratio-table.png",
-          alt: "Maya draws a glowing ratio table and a rising line graph in the air on a Tokyo street",
-          lastLabel: "Scale the table ▶",
-          beats: [
+          "type": "beats",
+          "art": "ratio-table.png",
+          "alt": "Maya draws a glowing ratio table and a rising line graph in the air on a Tokyo street",
+          "lastLabel": "Scale the table ▶",
+          "beats": [
             {
-              who: "log",
-              caption: true,
-              en: "Tokyo, online. Tickets require a ratio table scaled to your exact itinerary &mdash; and then a graph to prove it.",
+              "who": "log",
+              "caption": true,
+              "en": "Tokyo, online. Tickets require a ratio table scaled to your exact itinerary &mdash; and then a graph to prove it."
             },
             {
-              who: "traveler",
-              en: "The bullet train's log shows 240 km in 3 hours at a steady speed. Find the unit rate, scale the table by it, then plot the pairs. Constant ratio means a straight line through the origin.",
-              vocab: [
+              "who": "traveler",
+              "en": "The bullet train's log shows 240 km in 3 hours at a steady speed. Find the unit rate, scale the table by it, then plot the pairs. Constant ratio means a straight line through the origin.",
+              "vocab": [
                 {
-                  term: "ratio table",
-                  en: "A table of equivalent ratios; scale rows by multiplying both quantities by the same factor.",
-                },
-              ],
+                  "term": "ratio table",
+                  "en": "A table of equivalent ratios; scale rows by multiplying both quantities by the same factor."
+                }
+              ]
             },
             {
-              who: "compass",
-              misconception: true,
-              en: "400 km was the last total, and 7 is two more hours — so I'll just add 140 to get 540 km!",
-            },
-          ],
+              "who": "compass",
+              "misconception": true,
+              "en": "400 km was the last total, and 7 is two more hours — so I'll just add 140 to get 540 km!"
+            }
+          ]
         },
         {
-          type: "challenge",
-          id: "2a",
-          ask: {
-            who: "traveler",
-            en: "The bullet train logs <b>240 km in 3 hours</b> at a steady speed. Complete the ratio table for <b>7 hours</b>. <br><br>Hours: 1, 3, 5, 7 → Km: 80, 240, 400, ?",
+          "type": "challenge",
+          "id": "2a",
+          "ask": {
+            "who": "traveler",
+            "en": "The bullet train logs <b>240 km in 3 hours</b> at a steady speed. Complete the ratio table for <b>7 hours</b>. <br><br>Hours: 1, 3, 5, 7 → Km: 80, 240, 400, ?"
           },
-          choices: [
+          "choices": [
             {
-              en: "540 km",
-              tree: "(added 140, not the unit rate)",
-              correct: false,
+              "en": "540 km",
+              "tree": "(added 140, not the unit rate)",
+              "correct": false,
+              "why": {
+                "en": "❌ Find the unit rate first: 240÷3 = 80 km/hr, then multiply by 7. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
             },
             {
-              en: "560 km",
-              tree: "(unit rate 240÷3 = 80, so 7×80)",
-              correct: true,
+              "en": "560 km",
+              "tree": "(unit rate 240÷3 = 80, so 7×80)",
+              "correct": true
             },
             {
-              en: "480 km",
-              tree: "(that is 6 hours)",
-              correct: false,
-            },
+              "en": "480 km",
+              "tree": "(that is 6 hours)",
+              "correct": false,
+              "why": {
+                "en": "❌ Find the unit rate first: 240÷3 = 80 km/hr, then multiply by 7. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
+            }
           ],
-          goodEn:
-            "✅ Unit rate = 240÷3 = 80 km/hr, so 7×80 = 560 km. Table scaled.",
-          badEn:
-            "❌ Find the unit rate first: 240÷3 = 80 km/hr, then multiply by 7.",
-          solveBeat: {
-            who: "traveler",
-            en: "Table scaled. Now I confirm a point lands exactly on that line. If the ratio holds, the graph won't lie.",
+          "goodEn": "✅ Unit rate = 240÷3 = 80 km/hr, so 7×80 = 560 km. Table scaled.",
+          "badEn": "❌ Find the unit rate first: 240÷3 = 80 km/hr, then multiply by 7.",
+          "solveBeat": {
+            "who": "traveler",
+            "en": "Table scaled. Now I confirm a point lands exactly on that line. If the ratio holds, the graph won't lie."
           },
+          "help": {
+            "conceptual": {
+              "en": "❌ Find the unit rate first: 240÷3 = 80 km/hr, then multiply by 7.",
+              "es": "Haz una pausa y verifica qué cantidad es el total o la base."
+            },
+            "procedural": {
+              "en": "Step 1: Model the numbers in the Interactive Math Lab. Step 2: Check the readout equation.",
+              "es": "Paso 1: Modela los números en el laboratorio interactivo."
+            },
+            "example": {
+              "en": "Try sliding the Interactive Math Lab controls to a simpler benchmark number first, observe the pattern, and then set it to the mission numbers!",
+              "es": "Prueba deslizar los controles del laboratorio a un número de referencia más simple primero."
+            }
+          }
         },
         {
-          type: "beats",
-          art: "ratio-table.png",
-          alt: "Maya plots glowing ordered pairs on a rising line through the origin over Tokyo",
-          lastLabel: "Plot the point ▶",
-          beats: [
+          "type": "beats",
+          "art": "ratio-table.png",
+          "alt": "Maya plots glowing ordered pairs on a rising line through the origin over Tokyo",
+          "lastLabel": "Plot the point ▶",
+          "beats": [
             {
-              who: "compass",
-              misconception: true,
-              en: "Any point with bigger numbers must be on the line, right? (4, 360) looks high enough to me!",
-              vocab: [
+              "who": "compass",
+              "misconception": true,
+              "en": "Any point with bigger numbers must be on the line, right? (4, 360) looks high enough to me!",
+              "vocab": [
                 {
-                  term: "graph of a ratio table",
-                  en: "Plotting the (x, y) pairs yields collinear points on a straight line through the origin (0, 0).",
-                },
-              ],
-            },
-          ],
+                  "term": "graph of a ratio table",
+                  "en": "Plotting the (x, y) pairs yields collinear points on a straight line through the origin (0, 0)."
+                }
+              ]
+            }
+          ]
         },
         {
-          type: "challenge",
-          id: "2b",
-          ask: {
-            who: "traveler",
-            en: "Maya graphs the table, plotting (hours, km). Because the ratio is constant, the points form a straight line through the origin. Which ordered pair is <b>on that line</b>?",
+          "type": "challenge",
+          "id": "2b",
+          "ask": {
+            "who": "traveler",
+            "en": "Desmond graphs the table, plotting (hours, km). Because the ratio is constant, the points form a straight line through the origin. Which ordered pair is <b>on that line</b>?"
           },
-          choices: [
+          "choices": [
             {
-              en: "(4, 360)",
-              tree: "(4×80 = 320, not 360)",
-              correct: false,
+              "en": "(4, 360)",
+              "tree": "(4×80 = 320, not 360)",
+              "correct": false,
+              "why": {
+                "en": "❌ A point is on the line only if km = 80×hours. Test each pair against that. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
             },
             {
-              en: "(6, 480)",
-              tree: "(6×80 = 480 — on the line)",
-              correct: true,
+              "en": "(6, 480)",
+              "tree": "(6×80 = 480 — on the line)",
+              "correct": true
             },
             {
-              en: "(2, 80)",
-              tree: "(2×80 = 160, not 80)",
-              correct: false,
-            },
+              "en": "(2, 80)",
+              "tree": "(2×80 = 160, not 80)",
+              "correct": false,
+              "why": {
+                "en": "❌ A point is on the line only if km = 80×hours. Test each pair against that. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
+            }
           ],
-          goodEn:
-            "✅ (6, 480) works: 6×80 = 480, so it lands on the line through the origin. TOKYO UNLOCKED!",
-          badEn:
-            "❌ A point is on the line only if km = 80×hours. Test each pair against that.",
-          solveBeat: {
-            who: "traveler",
-            en: "The graph confirms it. There's an optional exchange counter nearby before I fly on…",
+          "goodEn": "✅ (6, 480) works: 6×80 = 480, so it lands on the line through the origin. TOKYO UNLOCKED!",
+          "badEn": "❌ A point is on the line only if km = 80×hours. Test each pair against that.",
+          "solveBeat": {
+            "who": "traveler",
+            "en": "The graph confirms it. There's an optional exchange counter nearby before I fly on…"
           },
+          "help": {
+            "conceptual": {
+              "en": "❌ A point is on the line only if km = 80×hours. Test each pair against that.",
+              "es": "Haz una pausa y verifica qué cantidad es el total o la base."
+            },
+            "procedural": {
+              "en": "Step 1: Model the numbers in the Interactive Math Lab. Step 2: Check the readout equation.",
+              "es": "Paso 1: Modela los números en el laboratorio interactivo."
+            },
+            "example": {
+              "en": "Try sliding the Interactive Math Lab controls to a simpler benchmark number first, observe the pattern, and then set it to the mission numbers!",
+              "es": "Prueba deslizar los controles del laboratorio a un número de referencia más simple primero."
+            }
+          }
         },
         {
-          type: "comprehension",
-          id: "c4",
-          skill: "main_idea",
-          standard: "RI.6.2",
-          dok: 3,
-          interaction: "mc",
-          passageRef: "act2",
-          ask: {
-            who: "log",
-            en: "Which statement best captures the <b>central idea</b> of the Tokyo chapter?",
+          "type": "comprehension",
+          "id": "c4",
+          "skill": "main_idea",
+          "standard": "RI.6.2",
+          "dok": 3,
+          "interaction": "mc",
+          "passageRef": "act2",
+          "ask": {
+            "who": "log",
+            "en": "Which statement best captures the <b>central idea</b> of the Tokyo chapter?"
           },
-          choices: [
+          "choices": [
             {
-              en: "A constant ratio lets Maya scale a table by the unit rate and predict points that all fall on one straight line through the origin.",
-              correct: true,
+              "en": "A constant ratio lets Desmond scale a table by the unit rate and predict points that all fall on one straight line through the origin.",
+              "correct": true
             },
             {
-              en: "Bullet trains in Tokyo are faster than trains in any other city.",
-              correct: false,
+              "en": "Bullet trains in Tokyo are faster than trains in any other city.",
+              "correct": false,
+              "why": {
+                "en": "❌ That's a minor or invented detail. The central idea is that a constant unit rate scales the table and produces a straight line through the origin. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
             },
             {
-              en: "The biggest numbers on a graph are always the ones that land on the line.",
-              correct: false,
-            },
+              "en": "The biggest numbers on a graph are always the ones that land on the line.",
+              "correct": false,
+              "why": {
+                "en": "❌ That's a minor or invented detail. The central idea is that a constant unit rate scales the table and produces a straight line through the origin. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
+            }
           ],
-          goodEn:
-            "✅ That's the heart of it — the steady unit rate (80 km/hr) drives both the scaled table and the straight-line graph through the origin.",
-          badEn:
-            "❌ That's a minor or invented detail. The central idea is that a constant unit rate scales the table and produces a straight line through the origin.",
+          "goodEn": "✅ That's the heart of it — the steady unit rate (80 km/hr) drives both the scaled table and the straight-line graph through the origin.",
+          "badEn": "❌ That's a minor or invented detail. The central idea is that a constant unit rate scales the table and produces a straight line through the origin."
         },
         {
-          type: "comprehension",
-          id: "c5",
-          skill: "sequence",
-          standard: "RI.6.3",
-          dok: 2,
-          interaction: "sequence",
-          passageRef: "act2",
-          ask: {
-            who: "log",
-            en: "Order the steps Maya followed to chart the Tokyo train on a graph.",
+          "type": "comprehension",
+          "id": "c5",
+          "skill": "sequence",
+          "standard": "RI.6.3",
+          "dok": 2,
+          "interaction": "sequence",
+          "passageRef": "act2",
+          "ask": {
+            "who": "log",
+            "en": "Order the steps Desmond followed to chart the Tokyo train on a graph."
           },
-          items: [
+          "items": [
             {
-              en: "Find the unit rate: 240 km ÷ 3 hours = 80 km per hour.",
-              order: 1,
+              "en": "Find the unit rate: 240 km ÷ 3 hours = 80 km per hour.",
+              "order": 1
             },
             {
-              en: "Scale the ratio table by 80 to fill in distances like 560 km at 7 hours.",
-              order: 2,
+              "en": "Scale the ratio table by 80 to fill in distances like 560 km at 7 hours.",
+              "order": 2
             },
             {
-              en: "Plot the (hours, km) pairs and confirm they line up through the origin.",
-              order: 3,
-            },
+              "en": "Plot the (hours, km) pairs and confirm they line up through the origin.",
+              "order": 3
+            }
           ],
-          goodEn:
-            "✅ Rate first, then scale the table, then plot — each step depends on the constant unit rate.",
-          badEn:
-            "❌ Not quite. Maya must find the unit rate first, then scale the table, and only then plot the points on the line.",
+          "goodEn": "✅ Rate first, then scale the table, then plot — each step depends on the constant unit rate.",
+          "badEn": "❌ Not quite. Desmond must find the unit rate first, then scale the table, and only then plot the points on the line."
         },
         {
-          type: "challenge",
-          id: "B2",
-          optional: true,
-          bonusTag: "⭐ Globetrotter Challenge",
-          ask: {
-            who: "log",
-            en: "Optional exchange puzzle: at the counter, <b>5 euros = 6 dollars</b>. Maya wants to convert <b>30 dollars</b> back into euros using a ratio table. How many euros? Skip it any time. <br><br>Euros: 5, 10, ? → Dollars: 6, 12, 30",
+          "type": "challenge",
+          "id": "B2",
+          "optional": true,
+          "bonusTag": "⭐ Globetrotter Challenge",
+          "ask": {
+            "who": "log",
+            "en": "Optional exchange puzzle: at the counter, <b>5 euros = 6 dollars</b>. Desmond wants to convert <b>30 dollars</b> back into euros using a ratio table. How many euros? Skip it any time. <br><br>Euros: 5, 10, ? → Dollars: 6, 12, 30"
           },
-          choices: [
+          "choices": [
             {
-              en: "36 euros",
-              tree: "(scaled the dollars, not the euros)",
-              correct: false,
+              "en": "36 euros",
+              "tree": "(scaled the dollars, not the euros)",
+              "correct": false,
+              "why": {
+                "en": "❌ Scale by matching dollars: 30÷6 = 5, then 5×5 euros = 25 euros. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
             },
             {
-              en: "25 euros",
-              tree: "(30÷6 = 5, so 5×5 = 25)",
-              correct: true,
+              "en": "25 euros",
+              "tree": "(30÷6 = 5, so 5×5 = 25)",
+              "correct": true
             },
             {
-              en: "29 euros",
-              tree: "(that is 30 − 1)",
-              correct: false,
-            },
+              "en": "29 euros",
+              "tree": "(that is 30 − 1)",
+              "correct": false,
+              "why": {
+                "en": "❌ Scale by matching dollars: 30÷6 = 5, then 5×5 euros = 25 euros. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
+            }
           ],
-          goodEn:
-            "⭐ 30 dollars ÷ 6 = 5 groups, and 5 euros × 5 = 25 euros. Bonus earned!",
-          badEn:
-            "❌ Scale by matching dollars: 30÷6 = 5, then 5×5 euros = 25 euros.",
-          solveBeat: {
-            who: "traveler",
-            en: "Exchanged and pocketed. The Master Gateway is the last stop.",
+          "goodEn": "⭐ 30 dollars ÷ 6 = 5 groups, and 5 euros × 5 = 25 euros. Bonus earned!",
+          "badEn": "❌ Scale by matching dollars: 30÷6 = 5, then 5×5 euros = 25 euros.",
+          "solveBeat": {
+            "who": "traveler",
+            "en": "Exchanged and pocketed. The Master Gateway is the last stop."
           },
-        },
-      ],
+          "help": {
+            "conceptual": {
+              "en": "❌ Scale by matching dollars: 30÷6 = 5, then 5×5 euros = 25 euros.",
+              "es": "Haz una pausa y verifica qué cantidad es el total o la base."
+            },
+            "procedural": {
+              "en": "Step 1: Model the numbers in the Interactive Math Lab. Step 2: Check the readout equation.",
+              "es": "Paso 1: Modela los números en el laboratorio interactivo."
+            },
+            "example": {
+              "en": "Try sliding the Interactive Math Lab controls to a simpler benchmark number first, observe the pattern, and then set it to the mission numbers!",
+              "es": "Prueba deslizar los controles del laboratorio a un número de referencia más simple primero."
+            }
+          }
+        }
+      ]
     },
-
-    /* ============================ FINAL ============================ */
     {
-      id: "final",
-      tab: "Final Trip",
-      kicker: "Final Trip · Combined",
-      title: "The Master Gateway",
-      advanceLabel: "Complete the Expedition 🎉",
-      steps: [
+      "id": "final",
+      "tab": "Final Trip",
+      "kicker": "Final Trip · Combined",
+      "title": "The Master Gateway",
+      "advanceLabel": "Complete the Expedition 🎉",
+      "steps": [
         {
-          type: "beats",
-          art: "final-challenge.png",
-          alt: "Maya stands before a huge glowing globe gateway with ratio tables and route lines orbiting her",
-          lastLabel: "Enter the cipher ▶",
-          beats: [
+          "type": "beats",
+          "art": "final-challenge.png",
+          "alt": "Maya stands before a huge glowing globe gateway with ratio tables and route lines orbiting her",
+          "lastLabel": "Enter the cipher ▶",
+          "beats": [
             {
-              who: "log",
-              caption: true,
-              en: "The Master Gateway ahead fuses ratios, unit rates, tables, and graphs into one cipher. No partial credit.",
+              "who": "log",
+              "caption": true,
+              "en": "The Master Gateway ahead fuses ratios, unit rates, tables, and graphs into one cipher. No partial credit."
             },
             {
-              who: "traveler",
-              en: "Every skill, one line, zero errors. Compute the rate, scale the leg, verify the point. Entering the cipher now.",
+              "who": "traveler",
+              "en": "Every skill, one line, zero errors. Compute the rate, scale the leg, verify the point. Entering the cipher now."
             },
             {
-              who: "log",
-              caption: true,
-              en: "Warning: the Master Gateway grants a single attempt. One miscomputed rate or stray point and the route home is sealed for good.",
+              "who": "log",
+              "caption": true,
+              "en": "Warning: the Master Gateway grants a single attempt. One miscomputed rate or stray point and the route home is sealed for good."
             },
             {
-              who: "compass",
-              misconception: true,
-              en: "9 liters every 2 hours? I'll ignore the 2 and just call it 9 L per hour — so 8 hours needs 72 L!",
-            },
-          ],
+              "who": "compass",
+              "misconception": true,
+              "en": "9 liters every 2 hours? I'll ignore the 2 and just call it 9 L per hour — so 8 hours needs 72 L!"
+            }
+          ]
         },
         {
-          type: "challenge",
-          id: "F",
-          ask: {
-            who: "traveler",
-            en: "The final gateway fuses every skill. A flight burns <b>9 liters every 2 hours</b> (a steady rate). What is the unit rate, how much fuel does an 8-hour leg need, and which point lies on the graph? Pick the single line where all three are correct.",
+          "type": "challenge",
+          "id": "F",
+          "ask": {
+            "who": "traveler",
+            "en": "The final gateway fuses every skill. A flight burns <b>9 liters every 2 hours</b> (a steady rate). What is the unit rate, how much fuel does an 8-hour leg need, and which point lies on the graph? Pick the single line where all three are correct."
           },
-          choices: [
+          "choices": [
             {
-              en: "4.5 L/hr; 8 hours needs 32 L; (6, 27) is on the line",
-              tree: "(8×4.5 = 36, not 32)",
-              correct: false,
+              "en": "4.5 L/hr; 8 hours needs 32 L; (6, 27) is on the line",
+              "tree": "(8×4.5 = 36, not 32)",
+              "correct": false,
+              "why": {
+                "en": "❌ One value is off. The rate is 9 L per 2 hrs = 4.5 L/hr; recheck the 8-hour fuel and the point. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
             },
             {
-              en: "4.5 L/hr; 8 hours needs 36 L; (6, 27) is on the line",
-              tree: "(9÷2 = 4.5; 8×4.5 = 36; 6×4.5 = 27)",
-              correct: true,
+              "en": "4.5 L/hr; 8 hours needs 36 L; (6, 27) is on the line",
+              "tree": "(9÷2 = 4.5; 8×4.5 = 36; 6×4.5 = 27)",
+              "correct": true
             },
             {
-              en: "9 L/hr; 8 hours needs 72 L; (6, 54) is on the line",
-              tree: "(used 9 per hour instead of per 2 hours)",
-              correct: false,
-            },
+              "en": "9 L/hr; 8 hours needs 72 L; (6, 54) is on the line",
+              "tree": "(used 9 per hour instead of per 2 hours)",
+              "correct": false,
+              "why": {
+                "en": "❌ One value is off. The rate is 9 L per 2 hrs = 4.5 L/hr; recheck the 8-hour fuel and the point. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
+            }
           ],
-          goodEn:
-            "✅ Unit rate 9÷2 = 4.5 L/hr; 8×4.5 = 36 L; 6×4.5 = 27 so (6, 27) is on the line. Cipher verified!",
-          badEn:
-            "❌ One value is off. The rate is 9 L per 2 hrs = 4.5 L/hr; recheck the 8-hour fuel and the point.",
-          solveBeat: {
-            who: "traveler",
-            en: "Master cipher verified! One optional layover puzzle remains before the expedition is logged.",
+          "goodEn": "✅ Unit rate 9÷2 = 4.5 L/hr; 8×4.5 = 36 L; 6×4.5 = 27 so (6, 27) is on the line. Cipher verified!",
+          "badEn": "❌ One value is off. The rate is 9 L per 2 hrs = 4.5 L/hr; recheck the 8-hour fuel and the point.",
+          "solveBeat": {
+            "who": "traveler",
+            "en": "Master cipher verified! One optional layover puzzle remains before the expedition is logged."
           },
+          "help": {
+            "conceptual": {
+              "en": "❌ One value is off. The rate is 9 L per 2 hrs = 4.5 L/hr; recheck the 8-hour fuel and the point.",
+              "es": "Haz una pausa y verifica qué cantidad es el total o la base."
+            },
+            "procedural": {
+              "en": "Step 1: Model the numbers in the Interactive Math Lab. Step 2: Check the readout equation.",
+              "es": "Paso 1: Modela los números en el laboratorio interactivo."
+            },
+            "example": {
+              "en": "Try sliding the Interactive Math Lab controls to a simpler benchmark number first, observe the pattern, and then set it to the mission numbers!",
+              "es": "Prueba deslizar los controles del laboratorio a un número de referencia más simple primero."
+            }
+          }
         },
         {
-          type: "comprehension",
-          id: "c6",
-          skill: "inference",
-          standard: "RL.6.1",
-          dok: 3,
-          interaction: "mc",
-          passageRef: "final.beats",
-          ask: {
-            who: "log",
-            en: "COMPASS reads “9 liters every 2 hours” and announces 9 L per hour. What does this error <b>reveal</b> about how COMPASS reasons?",
+          "type": "comprehension",
+          "id": "c6",
+          "skill": "inference",
+          "standard": "RL.6.1",
+          "dok": 3,
+          "interaction": "mc",
+          "passageRef": "final.beats",
+          "ask": {
+            "who": "log",
+            "en": "VECTOR-X reads “9 liters every 2 hours” and announces 9 L per hour. What does this error <b>reveal</b> about how VECTOR-X reasons?"
           },
-          choices: [
+          "choices": [
             {
-              en: "It ignores the second quantity and treats a two-hour rate as if it were already per one hour, skipping the division.",
-              correct: true,
+              "en": "It ignores the second quantity and treats a two-hour rate as if it were already per one hour, skipping the division.",
+              "correct": true
             },
             {
-              en: "It deliberately sabotages the cipher so Maya cannot finish.",
-              correct: false,
+              "en": "It deliberately sabotages the cipher so Desmond cannot finish.",
+              "correct": false,
+              "why": {
+                "en": "❌ The text shows no malice or total failure. VECTOR-X's pattern is skipping the division by the second quantity to find a true unit rate. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
             },
             {
-              en: "It cannot read any of the numbers on the gauge.",
-              correct: false,
-            },
+              "en": "It cannot read any of the numbers on the gauge.",
+              "correct": false,
+              "why": {
+                "en": "❌ The text shows no malice or total failure. VECTOR-X's pattern is skipping the division by the second quantity to find a true unit rate. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
+            }
           ],
-          goodEn:
-            "✅ Sharp inference — COMPASS drops the “per 2 hours” and never divides by 2, so its rate is double the true 4.5 L/hr.",
-          badEn:
-            "❌ The text shows no malice or total failure. COMPASS's pattern is skipping the division by the second quantity to find a true unit rate.",
+          "goodEn": "✅ Sharp inference — VECTOR-X drops the “per 2 hours” and never divides by 2, so its rate is double the true 4.5 L/hr.",
+          "badEn": "❌ The text shows no malice or total failure. VECTOR-X's pattern is skipping the division by the second quantity to find a true unit rate."
         },
         {
-          type: "comprehension",
-          id: "c7",
-          skill: "prediction",
-          standard: "RL.6.3",
-          dok: 3,
-          interaction: "mc",
-          passageRef: "final.F",
-          ask: {
-            who: "log",
-            en: "Given that the Master Gateway allows only one attempt, what should Maya do <b>next</b> before transmitting any combined cipher?",
+          "type": "comprehension",
+          "id": "c7",
+          "skill": "prediction",
+          "standard": "RL.6.3",
+          "dok": 3,
+          "interaction": "mc",
+          "passageRef": "final.F",
+          "ask": {
+            "who": "log",
+            "en": "Given that the Master Gateway allows only one attempt, what should Desmond do <b>next</b> before transmitting any combined cipher?"
           },
-          choices: [
+          "choices": [
             {
-              en: "Recompute the unit rate, then re-check the scaled fuel and the graphed point so the one-shot code is exactly right.",
-              correct: true,
+              "en": "Recompute the unit rate, then re-check the scaled fuel and the graphed point so the one-shot code is exactly right.",
+              "correct": true
             },
             {
-              en: "Trust COMPASS's 9 L/hr answer to save time on the single attempt.",
-              correct: false,
+              "en": "Trust VECTOR-X's 9 L/hr answer to save time on the single attempt.",
+              "correct": false,
+              "why": {
+                "en": "❌ With a single attempt and no partial credit, Desmond must double-check the rate, the fuel, and the graphed point first. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
             },
             {
-              en: "Send only the unit rate and leave out the table and the graph point.",
-              correct: false,
-            },
+              "en": "Send only the unit rate and leave out the table and the graph point.",
+              "correct": false,
+              "why": {
+                "en": "❌ With a single attempt and no partial credit, Desmond must double-check the rate, the fuel, and the graphed point first. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
+            }
           ],
-          goodEn:
-            "✅ Wise prediction — with one attempt, Maya must verify the rate, the scaled value, and the point before sending the cipher.",
-          badEn:
-            "❌ With a single attempt and no partial credit, Maya must double-check the rate, the fuel, and the graphed point first.",
+          "goodEn": "✅ Wise prediction — with one attempt, Desmond must verify the rate, the scaled value, and the point before sending the cipher.",
+          "badEn": "❌ With a single attempt and no partial credit, Desmond must double-check the rate, the fuel, and the graphed point first."
         },
         {
-          type: "challenge",
-          id: "BF",
-          optional: true,
-          bonusTag: "⭐ Globetrotter Final Challenge",
-          ask: {
-            who: "log",
-            en: "Optional: two routes home. Route X: <b>1500 km in 3 hours</b>. Route Y: <b>2400 km in 4 hours</b>. Using unit rates (km per hour), which route is faster, and by how much per hour? Skip it any time; your trip is already complete.",
+          "type": "challenge",
+          "id": "BF",
+          "optional": true,
+          "bonusTag": "⭐ Globetrotter Final Challenge",
+          "ask": {
+            "who": "log",
+            "en": "Optional: two routes home. Route X: <b>1500 km in 3 hours</b>. Route Y: <b>2400 km in 4 hours</b>. Using unit rates (km per hour), which route is faster, and by how much per hour? Skip it any time; your trip is already complete."
           },
-          choices: [
+          "choices": [
             {
-              en: "Route Y is faster by 100 km/hr",
-              tree: "(500 km/hr vs 600 km/hr)",
-              correct: true,
+              "en": "Route Y is faster by 100 km/hr",
+              "tree": "(500 km/hr vs 600 km/hr)",
+              "correct": true
             },
             {
-              en: "Route X is faster by 100 km/hr",
-              tree: "(compare 1500÷3 and 2400÷4 again)",
-              correct: false,
+              "en": "Route X is faster by 100 km/hr",
+              "tree": "(compare 1500÷3 and 2400÷4 again)",
+              "correct": false,
+              "why": {
+                "en": "❌ Compare the unit rates: 1500÷3 vs 2400÷4. The larger km/hr is faster. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
             },
             {
-              en: "They are the same speed",
-              tree: "(the unit rates differ)",
-              correct: false,
-            },
+              "en": "They are the same speed",
+              "tree": "(the unit rates differ)",
+              "correct": false,
+              "why": {
+                "en": "❌ Compare the unit rates: 1500÷3 vs 2400÷4. The larger km/hr is faster. Use the Interactive Math Lab on the left to test the quantities before choosing your reply.",
+                "es": "Usa el laboratorio interactivo de matemáticas a la izquierda para comprobar las cantidades."
+              }
+            }
           ],
-          goodEn:
-            "⭐ Route X = 1500÷3 = 500 km/hr, Route Y = 2400÷4 = 600 km/hr. Y is faster by 100 km/hr. Bonus earned!",
-          badEn:
-            "❌ Compare the unit rates: 1500÷3 vs 2400÷4. The larger km/hr is faster.",
-          solveBeat: {
-            who: "traveler",
-            en: "Fastest route chosen. The expedition is complete!",
+          "goodEn": "⭐ Route X = 1500÷3 = 500 km/hr, Route Y = 2400÷4 = 600 km/hr. Y is faster by 100 km/hr. Bonus earned!",
+          "badEn": "❌ Compare the unit rates: 1500÷3 vs 2400÷4. The larger km/hr is faster.",
+          "solveBeat": {
+            "who": "traveler",
+            "en": "Fastest route chosen. The expedition is complete!"
           },
-        },
-      ],
-    },
+          "help": {
+            "conceptual": {
+              "en": "❌ Compare the unit rates: 1500÷3 vs 2400÷4. The larger km/hr is faster.",
+              "es": "Haz una pausa y verifica qué cantidad es el total o la base."
+            },
+            "procedural": {
+              "en": "Step 1: Model the numbers in the Interactive Math Lab. Step 2: Check the readout equation.",
+              "es": "Paso 1: Modela los números en el laboratorio interactivo."
+            },
+            "example": {
+              "en": "Try sliding the Interactive Math Lab controls to a simpler benchmark number first, observe the pattern, and then set it to the mission numbers!",
+              "es": "Prueba deslizar los controles del laboratorio a un número de referencia más simple primero."
+            }
+          }
+        }
+      ]
+    }
   ],
-
-  glossary: [
+  "glossary": [
     {
-      ico: "⚖️",
-      en: "Ratio",
-      es: "",
-      def: "A multiplicative comparison of two quantities, written a : b, a to b, or a/b. Order matters.",
+      "ico": "⚖️",
+      "en": "Ratio",
+      "es": "",
+      "def": "A multiplicative comparison of two quantities, written a : b, a to b, or a/b. Order matters."
     },
     {
-      ico: "🧪",
-      en: "Equivalent ratios",
-      es: "",
-      def: "Ratios that name the same comparison; multiply or divide both terms by the same nonzero number. 4:6 = 2:3 = 12:18.",
+      "ico": "🧪",
+      "en": "Equivalent ratios",
+      "es": "",
+      "def": "Ratios that name the same comparison; multiply or divide both terms by the same nonzero number. 4:6 = 2:3 = 12:18."
     },
     {
-      ico: "⚡",
-      en: "Unit rate",
-      es: "",
-      def: "A rate per single unit of the second quantity, e.g. 80 km per 1 hour from 240 km in 3 hours.",
+      "ico": "⚡",
+      "en": "Unit rate",
+      "es": "",
+      "def": "A rate per single unit of the second quantity, e.g. 80 km per 1 hour from 240 km in 3 hours."
     },
     {
-      ico: "📊",
-      en: "Ratio table",
-      es: "",
-      def: "A table of equivalent ratios; scale rows by multiplying both quantities by the same factor.",
+      "ico": "📊",
+      "en": "Ratio table",
+      "es": "",
+      "def": "A table of equivalent ratios; scale rows by multiplying both quantities by the same factor."
     },
     {
-      ico: "📈",
-      en: "Graph of a ratio table",
-      es: "",
-      def: "Plotting the (x, y) pairs yields collinear points on a straight line through the origin (0, 0).",
+      "ico": "📈",
+      "en": "Graph of a ratio table",
+      "es": "",
+      "def": "Plotting the (x, y) pairs yields collinear points on a straight line through the origin (0, 0)."
     },
     {
-      ico: "💰",
-      en: "Quantity",
-      es: "",
-      def: "A measurable amount being compared, such as kilometers, liters, dollars, or travelers.",
+      "ico": "💰",
+      "en": "Quantity",
+      "es": "",
+      "def": "A measurable amount being compared, such as kilometers, liters, dollars, or travelers."
     },
     {
-      ico: "💲",
-      en: "Currency exchange rate",
-      es: "",
-      def: "A fixed ratio between two currencies, e.g. 5 euros = 6 dollars, used to convert amounts proportionally.",
+      "ico": "💲",
+      "en": "Currency exchange rate",
+      "es": "",
+      "def": "A fixed ratio between two currencies, e.g. 5 euros = 6 dollars, used to convert amounts proportionally."
     },
     {
-      ico: "📐",
-      en: "Constant of proportionality",
-      es: "",
-      def: "The fixed multiplier between paired quantities; it equals the unit rate (the y-value when x = 1).",
+      "ico": "📐",
+      "en": "Constant of proportionality",
+      "es": "",
+      "def": "The fixed multiplier between paired quantities; it equals the unit rate (the y-value when x = 1)."
     },
     {
-      ico: "🌐",
-      en: "Proportional relationship",
-      es: "",
-      def: "Two quantities vary so their ratio stays constant; its graph is a line through the origin.",
+      "ico": "🌐",
+      "en": "Proportional relationship",
+      "es": "",
+      "def": "Two quantities vary so their ratio stays constant; its graph is a line through the origin."
     },
     {
-      ico: "📏",
-      en: "Origin",
-      es: "",
-      def: "The point (0, 0) on a coordinate grid; graphs of proportional ratios always pass through it.",
-    },
+      "ico": "📏",
+      "en": "Origin",
+      "es": "",
+      "def": "The point (0, 0) on a coordinate grid; graphs of proportional ratios always pass through it."
+    }
   ],
-
-  complete: {
-    art: "celebrate.png",
-    alt: "Maya celebrates with arms wide, surrounded by world landmarks, fireworks, and a passport full of stamps",
-    badge: "🎉✈️⭐",
-    titleEn: "Expedition Complete!",
-    en: "Every gateway is open and the route around the world is charted. You reasoned with <b>equivalent ratios</b> and <b>unit rates</b>, scaled <b>ratio tables</b>, and read <b>graphs</b> of constant ratios to conquer currency, distance, and fuel. The world is yours, Maya.",
-    es: "",
-    master: {
-      headingEn: "Prove your rank to certify your Master Certificate!",
-      promptEn:
-        "Calculate constant speed: A jet travels <strong>180 miles in 6 minutes</strong>. Maintaining this constant rate, how many miles will it travel in <strong>10 minutes</strong>?",
-      promptEs: "",
-      choices: [
+  "complete": {
+    "art": "celebrate.png",
+    "alt": "Maya celebrates with arms wide, surrounded by world landmarks, fireworks, and a passport full of stamps",
+    "badge": "🎉✈️⭐",
+    "titleEn": "Expedition Complete!",
+    "en": "Every gateway is open and the route around the world is charted. You reasoned with <b>equivalent ratios</b> and <b>unit rates</b>, scaled <b>ratio tables</b>, and read <b>graphs</b> of constant ratios to conquer currency, distance, and fuel. The world is yours, Desmond.",
+    "es": "",
+    "master": {
+      "headingEn": "Prove your rank to certify your Master Certificate!",
+      "promptEn": "Calculate constant speed: A jet travels <strong>180 miles in 6 minutes</strong>. Maintaining this constant rate, how many miles will it travel in <strong>10 minutes</strong>?",
+      "promptEs": "",
+      "choices": [
         {
-          en: "A) 240 miles &nbsp;(added instead of scaling unit rate)",
-          correct: false,
+          "en": "A) 240 miles &nbsp;(added instead of scaling unit rate)",
+          "correct": false
         },
         {
-          en: "B) 300 miles &nbsp;(unit rate 30 miles/min; 30 × 10 = 300) &nbsp;✅",
-          correct: true,
+          "en": "B) 300 miles &nbsp;(unit rate 30 miles/min; 30 × 10 = 300) &nbsp;✅",
+          "correct": true
         },
         {
-          en: "C) 360 miles &nbsp;(incorrect rate multiplier)",
-          correct: false,
-        },
+          "en": "C) 360 miles &nbsp;(incorrect rate multiplier)",
+          "correct": false
+        }
       ],
-      goodEn:
-        "🏆 <b>Master Rank Certified!</b> Perfect work! You have fully mastered this unit. 🌟",
-      badEn:
-        "❌ That is incorrect. Review your calculations and try another option!",
-      certifyTitle: "🏆 Master Certified: Mission Complete!",
-    },
-  },
+      "goodEn": "🏆 <b>Master Rank Certified!</b> Perfect work! You have fully mastered this unit. 🌟",
+      "badEn": "❌ That is incorrect. Review your calculations and try another option!",
+      "certifyTitle": "🏆 Master Certified: Mission Complete!"
+    }
+  }
 };

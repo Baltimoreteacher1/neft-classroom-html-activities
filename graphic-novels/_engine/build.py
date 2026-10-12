@@ -87,6 +87,14 @@ TRACKER = """
   })();
   </script>
   <script src="/assets/nt-page-enhance.js" defer></script>
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  
+  <!-- mwb-injected:end -->
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+  <script src="/assets/formula-popup.js" defer></script>
 """
 
 
@@ -112,7 +120,12 @@ def main():
 
     import html as _html
 
-    title = (re.search(r'title:\s*"([^"]+)"', story) or [None, "Graphic Novel"])[1]
+    meta_m = re.search(r'meta:\s*\{[^}]*?title:\s*"([^"]+)"', story, re.S)
+    title = (
+        meta_m.group(1)
+        if meta_m
+        else (re.search(r'title:\s*"([^"]+)"', story) or [None, "Graphic Novel"])[1]
+    )
     title = _html.unescape(re.sub(r"<[^>]+>", "", title))
     ver = (re.search(r"version:\s*(\d+)", story) or [None, "1"])[1]
     banner = ""
@@ -132,7 +145,13 @@ def main():
     <style>
 {css}
     </style>
-  </head>
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+</head>
   <body>
 {banner}
     <script>

@@ -519,7 +519,7 @@
         <span class="label">Grade 6 Graphic Novel</span>
         <h1>Prism City: The Surface Area Signal</h1>
         <p class="subtitle">
-          A storm is moving toward Prism City. Kira, Theo, Nova, and Engineer Sol must cover every face of the city signal before the first lightning strike. Their only map is a net, and every square unit matters.
+          A storm is moving toward Prism City. Astrid, Bastian, Zoya, and Engineer Solange must cover every face of the city signal before the first lightning strike. Their only map is a net, and every square unit matters.
         </p>
         <div class="cover-actions">
           <button class="btn" type="button" data-jump="reader">Start Reading</button>
@@ -542,11 +542,54 @@
       </div>
     </section>
 
+    <section id="interactive-prism-net-lab" aria-label="Interactive 3D Prism & Surface Area Net Explorer" style="margin:20px 0;padding:18px;border:3px solid #121826;border-radius:12px;background:#fffdf8;box-shadow:5px 5px 0 #121826">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+        <span style="background:#1d4ed8;color:#fff;font-weight:900;font-size:0.78rem;padding:4px 10px;border:2px solid #121826;border-radius:6px;text-transform:uppercase">🧊 Interactive Math Lab · Prism City 6-Face Net Unfolder</span>
+        <span style="font-size:0.85rem;font-weight:700;color:#475569">Slide Length (l), Width (w), and Height (h) to inspect all 3 pairs of matching faces</span>
+      </div>
+      <svg id="prism-net-svg" viewBox="0 0 460 140" style="width:100%;max-width:520px;display:block;margin:0 auto 12px;background:white;border:2px solid #121826;border-radius:8px"></svg>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;font-weight:800;font-size:0.85rem">
+        <label>Length (l): <input type="range" min="2" max="12" value="6" data-pdim="l" style="width:100%"> <span data-pval="l">6</span> m</label>
+        <label>Width (w): <input type="range" min="2" max="10" value="4" data-pdim="w" style="width:100%"> <span data-pval="w">4</span> m</label>
+        <label>Height (h): <input type="range" min="2" max="10" value="5" data-pdim="h" style="width:100%"> <span data-pval="h">5</span> m</label>
+      </div>
+      <div id="prism-net-readout" style="margin-top:10px;padding:8px 12px;background:#eff6ff;border:2px solid #121826;border-radius:6px;font-weight:800;font-size:0.9rem"></div>
+      <script>
+      (function(){
+        var dim = { l: 6, w: 4, h: 5 };
+        function draw(){
+          var svg = document.getElementById("prism-net-svg");
+          if(!svg) return;
+          var lw = dim.l * dim.w, lh = dim.l * dim.h, wh = dim.w * dim.h;
+          var sa = 2*(lw + lh + wh);
+          svg.innerHTML =
+            "<rect x=\"155\" y=\"8\" width=\"74\" height=\"32\" fill=\"#fde68a\" stroke=\"#121826\" stroke-width=\"2.5\"/><text x=\"192\" y=\"28\" font-size=\"11\" font-weight=\"900\" text-anchor=\"middle\">Top " + lw + "</text>" +
+            "<rect x=\"95\" y=\"40\" width=\"60\" height=\"52\" fill=\"#bae6fd\" stroke=\"#121826\" stroke-width=\"2.5\"/><text x=\"125\" y=\"70\" font-size=\"11\" font-weight=\"900\" text-anchor=\"middle\">Left " + wh + "</text>" +
+            "<rect x=\"155\" y=\"40\" width=\"74\" height=\"52\" fill=\"#38bdf8\" stroke=\"#121826\" stroke-width=\"2.5\"/><text x=\"192\" y=\"70\" font-size=\"11\" font-weight=\"900\" text-anchor=\"middle\">Front " + lh + "</text>" +
+            "<rect x=\"229\" y=\"40\" width=\"60\" height=\"52\" fill=\"#bae6fd\" stroke=\"#121826\" stroke-width=\"2.5\"/><text x=\"259\" y=\"70\" font-size=\"11\" font-weight=\"900\" text-anchor=\"middle\">Right " + wh + "</text>" +
+            "<rect x=\"289\" y=\"40\" width=\"74\" height=\"52\" fill=\"#38bdf8\" stroke=\"#121826\" stroke-width=\"2.5\"/><text x=\"326\" y=\"70\" font-size=\"11\" font-weight=\"900\" text-anchor=\"middle\">Back " + lh + "</text>" +
+            "<rect x=\"155\" y=\"92\" width=\"74\" height=\"32\" fill=\"#fde68a\" stroke=\"#121826\" stroke-width=\"2.5\"/><text x=\"192\" y=\"112\" font-size=\"11\" font-weight=\"900\" text-anchor=\"middle\">Base " + lw + "</text>";
+          document.getElementById("prism-net-readout").innerHTML =
+            "Surface Area = 2(" + lw + ") + 2(" + lh + ") + 2(" + wh + ") = <b>" + sa + " sq meters</b> &middot; Volume = <b>" + (dim.l*dim.w*dim.h) + " cubic meters</b>";
+        }
+        document.querySelectorAll("[data-pdim]").forEach(function(inp){
+          inp.addEventListener("input", function(e){
+            var k = e.target.getAttribute("data-pdim");
+            dim[k] = +e.target.value;
+            document.querySelector("[data-pval=\""+k+"\"]").textContent = dim[k];
+            draw();
+          });
+        });
+        draw();
+      })();
+      </script>
+    </section>
+
     <section class="cast" aria-label="Characters">
-      <div class="cast-card"><strong>Kira</strong><span>Builder. Spots the faces that need panels.</span></div>
-      <div class="cast-card"><strong>Theo</strong><span>Map reader. Turns boxes into nets.</span></div>
-      <div class="cast-card"><strong>Nova</strong><span>Artist. Labels every <span class="vocab-word" data-vocab="rectangle" style="border-bottom:2px dotted #0284C7; color:#0284C7; font-weight:800; cursor:pointer;" onclick="openVocabModal('rectangle')">rectangle</span> clearly.</span></div>
-      <div class="cast-card"><strong>Engineer Sol</strong><span>Signal keeper. Checks the final plan.</span></div>
+      <div class="cast-card"><strong>Astrid</strong><span>Builder. Spots the faces that need panels.</span></div>
+      <div class="cast-card"><strong>Bastian</strong><span>Map reader. Turns boxes into nets.</span></div>
+      <div class="cast-card"><strong>Zoya</strong><span>Artist. Labels every <span class="vocab-word" data-vocab="rectangle" style="border-bottom:2px dotted #0284C7; color:#0284C7; font-weight:800; cursor:pointer;" onclick="openVocabModal('rectangle')">rectangle</span> clearly.</span></div>
+      <div class="cast-card"><strong>Engineer Solange</strong><span>Signal keeper. Checks the final plan.</span></div>
     </section>
 
     <section id="reader" class="reader" aria-label="Graphic novel reader">
@@ -562,15 +605,15 @@
           <section class="panel wide">
             <div class="scene sky"><div class="ground-line"></div><div class="signal"></div></div>
             <div class="caption">At 3:15, the city signal flickered. The storm glass turned red.</div>
-            <div class="bubble">Engineer Sol: The signal needs a protective cover on every outside face.</div>
-            <div class="bubble right">Kira: Every face? Front, back, sides, top, and bottom?</div>
+            <div class="bubble">Engineer Solange: The signal needs a protective cover on every outside face.</div>
+            <div class="bubble right">Astrid: Every face? Front, back, sides, top, and bottom?</div>
             <div class="fx">FLASH</div>
           </section>
           <section class="panel">
             <div class="scene sky"><div class="ground-line"></div><div class="crate"></div></div>
             <div class="caption">A supply crate rolled into the plaza.</div>
-            <div class="bubble">Theo: The cover panels are packed in a rectangular prism.</div>
-            <div class="bubble right">Nova: Then our first clue is the size of the box: 6 by 4 by 3.</div>
+            <div class="bubble">Bastian: The cover panels are packed in a rectangular prism.</div>
+            <div class="bubble right">Zoya: Then our first clue is the size of the box: 6 by 4 by 3.</div>
           </section>
           <section class="panel">
             <div class="scene lab"><div class="table"></div></div>
@@ -586,14 +629,14 @@
         <div class="panels">
           <section class="panel wide">
             <div class="scene lab"><div class="table"></div><div class="net"><div class="n1">6 x 4</div><div class="n2">6 x 4</div><div class="n3">6 x 3</div><div class="n4">4 x 3</div><div class="n5">4 x 3</div><div class="n6">6 x 3</div></div></div>
-            <div class="caption">Theo unfolded the prism into a flat net.</div>
-            <div class="bubble">Theo: A <button class="info-button" type="button" data-info-title="Rectangular Prism" data-info-body="A rectangular prism is a box-shaped 3D figure. Every face is a rectangle.">rectangular prism</button> has 6 <button class="info-button" type="button" data-info-title="Faces" data-info-body="A face is one flat outside side of a 3D figure. A rectangular prism has 6 faces.">faces</button>, but they come in 3 matching pairs.</div>
-            <div class="bubble right">Nova: I see two 6 by 4 faces, two 6 by 3 faces, and two 4 by 3 faces.</div>
+            <div class="caption">Bastian unfolded the prism into a flat net.</div>
+            <div class="bubble">Bastian: A <button class="info-button" type="button" data-info-title="Rectangular Prism" data-info-body="A rectangular prism is a box-shaped 3D figure. Every face is a rectangle.">rectangular prism</button> has 6 <button class="info-button" type="button" data-info-title="Faces" data-info-body="A face is one flat outside side of a 3D figure. A rectangular prism has 6 faces.">faces</button>, but they come in 3 matching pairs.</div>
+            <div class="bubble right">Zoya: I see two 6 by 4 faces, two 6 by 3 faces, and two 4 by 3 faces.</div>
           </section>
           <section class="panel">
             <div class="scene lab"></div>
-            <div class="caption">Kira tapped the matching rectangles.</div>
-            <div class="bubble">Kira: Opposite faces match. We can find one area, then double it.</div>
+            <div class="caption">Astrid tapped the matching rectangles.</div>
+            <div class="bubble">Astrid: Opposite faces match. We can find one area, then double it.</div>
             <div class="math-card"><button class="info-button math" type="button" data-info-title="Face Pairs" data-info-body="area">Face pairs</button>: top/bottom, front/back, left/right.</div>
           </section>
           <section class="panel">
@@ -615,8 +658,8 @@
           <section class="panel">
             <div class="scene factory"><div class="crate"></div></div>
             <div class="caption">The top panel was marked 6 by 4.</div>
-            <div class="bubble">Nova: Area of a rectangle is length times width.</div>
-            <div class="bubble right">Kira: So one 6 by 4 face is 24 square units.</div>
+            <div class="bubble">Zoya: Area of a rectangle is length times width.</div>
+            <div class="bubble right">Astrid: So one 6 by 4 face is 24 square units.</div>
           </section>
           <section class="panel">
             <div class="scene factory"></div>
@@ -629,7 +672,7 @@
               </table>
             </div>
             <div class="caption">Two matching faces meant two panels of the same size.</div>
-            <div class="bubble">Theo: Double the area because the opposite face matches.</div>
+            <div class="bubble">Bastian: Double the area because the opposite face matches.</div>
           </section>
           <section class="panel wide">
             <div class="scene lab"></div>
@@ -658,9 +701,9 @@
                 <tr><td>Total</td><td>108</td></tr>
               </table>
             </div>
-            <div class="caption">Engineer Sol checked each pair before the panels left the shop.</div>
-            <div class="bubble">Engineer Sol: The short way is SA = 2lw + 2lh + 2wh.</div>
-            <div class="bubble right">Theo: But the formula only works if we know what each letter means.</div>
+            <div class="caption">Engineer Solange checked each pair before the panels left the shop.</div>
+            <div class="bubble">Engineer Solange: The short way is SA = 2lw + 2lh + 2wh.</div>
+            <div class="bubble right">Bastian: But the formula only works if we know what each letter means.</div>
           </section>
           <section class="panel">
             <div class="scene factory"></div>
@@ -687,8 +730,8 @@
           <section class="panel">
             <div class="scene night"><div class="ground-line"></div><div class="crate" style="background:#67e8f9;"></div></div>
             <div class="caption">A second crate arrived during the storm.</div>
-            <div class="bubble">Kira: This one is 8 by 5 by 2. If we rush, we might miss a face.</div>
-            <div class="bubble right">Nova: Pair it first. Then add.</div>
+            <div class="bubble">Astrid: This one is 8 by 5 by 2. If we rush, we might miss a face.</div>
+            <div class="bubble right">Zoya: Pair it first. Then add.</div>
           </section>
           <section class="panel">
             <div class="scene night"></div>
@@ -702,7 +745,7 @@
               </table>
             </div>
             <div class="caption">The ledger filled with clean evidence.</div>
-            <div class="bubble">Theo: The labels saved us from mixing up perimeter and area.</div>
+            <div class="bubble">Bastian: The labels saved us from mixing up perimeter and area.</div>
           </section>
           <section class="panel wide">
             <div class="scene night"></div>
@@ -719,8 +762,8 @@
           <section class="panel wide">
             <div class="scene sky"><div class="ground-line"></div><div class="signal"></div></div>
             <div class="caption">The final panels snapped into place as the storm split around Prism City.</div>
-            <div class="bubble">Engineer Sol: The signal is covered. Your surface area plan saved the system.</div>
-            <div class="bubble right">Kira: We did not just use a formula. We proved where every number came from.</div>
+            <div class="bubble">Engineer Solange: The signal is covered. Your surface area plan saved the system.</div>
+            <div class="bubble right">Astrid: We did not just use a formula. We proved where every number came from.</div>
           </section>
           <section class="panel">
             <div class="scene lab"></div>

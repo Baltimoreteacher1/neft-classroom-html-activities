@@ -610,10 +610,10 @@
         <h1 id="comic-title">Data Detectives: The Histogram Case</h1>
         <p class="dek">When the Spring 5K committee argues over finish times, four student detectives turn a messy list into a histogram that tells the real story.</p>
         <div class="cast" aria-label="Cast">
-          <div class="cast-card"><strong>Maya</strong> Lead detective. Spots patterns before anyone else.</div>
-          <div class="cast-card"><strong>Jalen</strong> Route captain. Needs evidence for race-day decisions.</div>
-          <div class="cast-card"><strong>Noor</strong> Visual artist. Turns data into clear displays.</div>
-          <div class="cast-card"><strong>Coach Rivera</strong> Client. Has a clipboard full of clues.</div>
+          <div class="cast-card"><strong>Carmen</strong> Lead detective. Spots patterns before anyone else.</div>
+          <div class="cast-card"><strong>Dante</strong> Route captain. Needs evidence for race-day decisions.</div>
+          <div class="cast-card"><strong>Yuki</strong> Visual artist. Turns data into clear displays.</div>
+          <div class="cast-card"><strong>Coach Morales</strong> Client. Has a clipboard full of clues.</div>
         </div>
         <a class="control" href="#reader">Open the Case</a>
       </div>
@@ -628,6 +628,54 @@
           <span style="height:34px"></span>
         </div>
       </div>
+    </section>
+
+    <section id="interactive-hist-lab" aria-label="Interactive Histogram Bin Explorer" style="margin:20px 0;padding:18px;border:3px solid #121826;border-radius:12px;background:#fffdf8;box-shadow:5px 5px 0 #121826">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+        <span style="background:#b42318;color:#fff;font-weight:900;font-size:0.78rem;padding:4px 10px;border:2px solid #121826;border-radius:6px;text-transform:uppercase">📊 Interactive Math Lab · Live 5K Histogram Builder</span>
+        <span style="font-size:0.85rem;font-weight:700;color:#475569">Adjust bin frequencies or toggle interval width to test the distribution</span>
+      </div>
+      <svg id="hist-lab-svg" viewBox="0 0 460 150" style="width:100%;max-width:520px;display:block;margin:0 auto 12px;background:white;border:2px solid #121826;border-radius:8px"></svg>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;font-weight:800;font-size:0.85rem">
+        <label>20–24 min: <input type="range" min="0" max="10" value="3" data-hbin="0" style="width:100%"> <span data-hval="0">3</span> runners</label>
+        <label>25–29 min: <input type="range" min="0" max="10" value="7" data-hbin="1" style="width:100%"> <span data-hval="1">7</span> runners</label>
+        <label>30–34 min: <input type="range" min="0" max="10" value="6" data-hbin="2" style="width:100%"> <span data-hval="2">6</span> runners</label>
+        <label>35–39 min: <input type="range" min="0" max="10" value="4" data-hbin="3" style="width:100%"> <span data-hval="3">4</span> runners</label>
+      </div>
+      <div id="hist-lab-readout" style="margin-top:10px;padding:8px 12px;background:#eff6ff;border:2px solid #121826;border-radius:6px;font-weight:800;font-size:0.9rem"></div>
+      <script>
+      (function(){
+        var bins = [3, 7, 6, 4];
+        var labels = ["20-24", "25-29", "30-34", "35-39"];
+        var cols = ["#38bdf8", "#f2b705", "#34d399", "#fb7185"];
+        function draw(){
+          var svg = document.getElementById("hist-lab-svg");
+          if(!svg) return;
+          var tot = bins.reduce(function(a,b){return a+b;},0);
+          var peakIdx = bins.indexOf(Math.max.apply(null, bins));
+          var bars = "<line x1=\"45\" y1=\"122\" x2=\"420\" y2=\"122\" stroke=\"#121826\" stroke-width=\"3\"/><line x1=\"45\" y1=\"16\" x2=\"45\" y2=\"122\" stroke=\"#121826\" stroke-width=\"3\"/>";
+          for(var i=0;i<4;i++){
+            var bh = bins[i]*10;
+            var x = 55 + i*82;
+            var y = 122 - bh;
+            bars += "<rect x=\""+x+"\" y=\""+y+"\" width=\"82\" height=\""+bh+"\" fill=\""+cols[i]+"\" stroke=\"#121826\" stroke-width=\"2.5\"/>";
+            bars += "<text x=\""+(x+41)+"\" y=\""+Math.max(14, y-5)+"\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"900\" fill=\"#121826\">"+bins[i]+"</text>";
+            bars += "<text x=\""+(x+41)+"\" y=\"140\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"800\" fill=\"#121826\">"+labels[i]+" min</text>";
+          }
+          svg.innerHTML = bars;
+          document.getElementById("hist-lab-readout").innerHTML = "Total 5K Runners: <b>" + tot + "</b> &middot; Peak Interval: <b>" + labels[peakIdx] + " min (" + bins[peakIdx] + " runners)</b> &middot; Notice: Touching bars show continuous time intervals!";
+        }
+        document.querySelectorAll("[data-hbin]").forEach(function(inp){
+          inp.addEventListener("input", function(e){
+            var idx = +e.target.getAttribute("data-hbin");
+            bins[idx] = +e.target.value;
+            document.querySelector("[data-hval=\""+idx+"\"]").textContent = bins[idx];
+            draw();
+          });
+        });
+        draw();
+      })();
+      </script>
     </section>
 
     <section id="reader" class="reader-nav" aria-label="Comic reader controls">
@@ -654,8 +702,8 @@
         <span class="caption">Chapter 1: The Call at Mile Zero</span>
         <span class="sfx">RING!</span>
         <div class="scene-floor"></div>
-        <div class="bubble"><small>Coach Rivera</small>The race is in two days. I have finish times, but every committee member is telling a different story.</div>
-        <div class="bubble"><small>Maya</small>A single fastest time is not enough. We need the <button class="info-button math" type="button" data-info-title="Shape of Data" data-info-body="The shape tells whether most values are low, high, in the middle, or spread out. A histogram lets you see the whole group at once.">shape</button> of the whole group.</div>
+        <div class="bubble"><small>Coach Morales</small>The race is in two days. I have finish times, but every committee member is telling a different story.</div>
+        <div class="bubble"><small>Carmen</small>A single fastest time is not enough. We need the <button class="info-button math" type="button" data-info-title="Shape of Data" data-info-body="The shape tells whether most values are low, high, in the middle, or spread out. A histogram lets you see the whole group at once.">shape</button> of the whole group.</div>
         <div class="character maya"></div>
         <div class="character jalen"></div>
         <div class="character noor"></div>
@@ -665,7 +713,7 @@
         <div class="data-strip" aria-label="5K finish times in minutes">
           <span>22</span><span>25</span><span>27</span><span>31</span><span>33</span><span>34</span><span>35</span><span>37</span><span>38</span><span>41</span><span>42</span><span>43</span><span>45</span><span>47</span><span>52</span><span>56</span><span>61</span>
         </div>
-        <div class="bubble"><small>Noor</small>They look like random numbers until we group them.</div>
+        <div class="bubble"><small>Yuki</small>They look like random numbers until we group them.</div>
       </section>
       <section class="panel">
         <span class="caption">Detective Move</span>
@@ -681,7 +729,7 @@
     <article class="comic-page" data-page="1" aria-label="Chapter 2">
       <section class="panel wide">
         <span class="caption">Chapter 2: Operation Group the Data</span>
-        <div class="bubble"><small>Jalen</small>The water crew needs time windows, not a huge list. Let's use <button class="info-button math" type="button" data-info-title="Intervals" data-info-body="Intervals are equal number ranges, like 0-4 or 5-9. They organize many data values into groups.">intervals</button>.</div>
+        <div class="bubble"><small>Dante</small>The water crew needs time windows, not a huge list. Let's use <button class="info-button math" type="button" data-info-title="Intervals" data-info-body="Intervals are equal number ranges, like 0-4 or 5-9. They organize many data values into groups.">intervals</button>.</div>
         <div class="clue-card">Intervals chosen: 20-29, 30-39, 40-49, 50-59, 60-69 minutes.</div>
       </section>
       <section class="panel">
@@ -720,11 +768,11 @@
           <span class="label" style="left:69%">50-59</span>
           <span class="label" style="left:88%">60-69</span>
         </div>
-        <div class="bubble"><small>Noor</small>The <button class="info-button math" type="button" data-info-title="Touching Bars" data-info-body="Histogram bars touch because the number intervals connect with no category gaps between them.">bars touch</button> because the intervals are connected number ranges.</div>
+        <div class="bubble"><small>Yuki</small>The <button class="info-button math" type="button" data-info-title="Touching Bars" data-info-body="Histogram bars touch because the number intervals connect with no category gaps between them.">bars touch</button> because the intervals are connected number ranges.</div>
       </section>
       <section class="panel">
         <span class="caption">Why Not a Bar Graph?</span>
-        <div class="bubble"><small>Maya</small>A bar graph compares categories. A histogram shows how numbers fall across intervals.</div>
+        <div class="bubble"><small>Carmen</small>A bar graph compares categories. A histogram shows how numbers fall across intervals.</div>
       </section>
       <section class="panel">
         <span class="caption">Evidence Line</span>
@@ -738,7 +786,7 @@
     <article class="comic-page" data-page="3" aria-label="Chapter 4">
       <section class="panel wide">
         <span class="caption">Chapter 4: The Shape of the Crowd</span>
-        <div class="bubble"><small>Jalen</small>Most runners are not finishing at 22 minutes. The biggest cluster is later.</div>
+        <div class="bubble"><small>Dante</small>Most runners are not finishing at 22 minutes. The biggest cluster is later.</div>
         <div class="math-note">Shape clue: The data peak is at 30-39 minutes, then the bars decrease toward longer times.</div>
       </section>
       <section class="panel">
@@ -751,14 +799,14 @@
       </section>
       <section class="panel">
         <span class="caption">What About Outliers?</span>
-        <div class="bubble"><small>Maya</small>The 61-minute time matters, but it should not trick us into planning the whole race around one runner.</div>
+        <div class="bubble"><small>Carmen</small>The 61-minute time matters, but it should not trick us into planning the whole race around one runner.</div>
       </section>
     </article>
 
     <article class="comic-page" data-page="4" aria-label="Chapter 5">
       <section class="panel wide">
         <span class="caption">Chapter 5: The Greenhouse Case</span>
-        <div class="bubble"><small>Coach Rivera</small>New case: The garden club measured plant heights. Which interval has the most plants?</div>
+        <div class="bubble"><small>Coach Morales</small>New case: The garden club measured plant heights. Which interval has the most plants?</div>
         <div class="data-strip" aria-label="Plant height frequencies">
           <span>4-6: 2</span><span>7-9: 5</span><span>10-12: 8</span><span>13-15: 4</span><span>16-18: 1</span>
         </div>
@@ -773,15 +821,15 @@
         </div>
       </section>
       <section class="panel">
-        <span class="caption">Noor's Rule</span>
-        <div class="bubble"><small>Noor</small>If your <button class="info-button math" type="button" data-info-title="Equal Intervals" data-info-body="Equal intervals use the same width each time, such as 0-4, 5-9, and 10-14. That keeps the histogram fair and readable.">intervals</button> are equal and your <button class="info-button math" type="button" data-info-title="Touching Bars" data-info-body="Touching bars signal that the data is numerical and grouped into connected ranges.">bars touch</button>, the reader can scan the distribution fast.</div>
+        <span class="caption">Yuki's Rule</span>
+        <div class="bubble"><small>Yuki</small>If your <button class="info-button math" type="button" data-info-title="Equal Intervals" data-info-body="Equal intervals use the same width each time, such as 0-4, 5-9, and 10-14. That keeps the histogram fair and readable.">intervals</button> are equal and your <button class="info-button math" type="button" data-info-title="Touching Bars" data-info-body="Touching bars signal that the data is numerical and grouped into connected ranges.">bars touch</button>, the reader can scan the distribution fast.</div>
       </section>
     </article>
 
     <article class="comic-page" data-page="5" aria-label="Chapter 6">
       <section class="panel wide">
         <span class="caption">Chapter 6: Case Closed</span>
-        <div class="bubble"><small>Maya</small>Our claim needs data, not vibes.</div>
+        <div class="bubble"><small>Carmen</small>Our claim needs data, not vibes.</div>
         <div class="math-note">Claim: Most 5K runners finish between 30 and 49 minutes. Evidence: Those two intervals contain 11 of the 17 runners.</div>
       </section>
       <section class="panel">
@@ -793,7 +841,7 @@
       </section>
       <section class="panel">
         <span class="caption">Detective Badge</span>
-        <div class="bubble"><small>Jalen</small>You did more than draw bars. You used a histogram to make a decision.</div>
+        <div class="bubble"><small>Dante</small>You did more than draw bars. You used a histogram to make a decision.</div>
         <button class="control" type="button" id="print-page">Print or Save</button>
       </section>
     </article>
