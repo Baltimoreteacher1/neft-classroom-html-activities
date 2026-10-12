@@ -284,6 +284,41 @@
         g.fillRect(0, 20, 10, 20);
       },
     ],
+    nitroPad: [
+      32,
+      40,
+      (g) => {
+        g.fillStyle(0x00ff88, 0.4);
+        g.fillRoundedRect(0, 0, 32, 40, 4);
+        g.fillStyle(0x00ffaa);
+        g.fillTriangle(16, 4, 28, 20, 20, 20);
+        g.fillRect(12, 20, 8, 16);
+        g.fillStyle(0xffffff);
+        g.fillTriangle(16, 9, 24, 20, 18, 20);
+      },
+    ],
+    mysteryOrb: [
+      26,
+      26,
+      (g) => {
+        g.fillStyle(0xa855f7, 0.35);
+        g.fillCircle(13, 13, 13);
+        g.fillStyle(0xc084fc);
+        g.fillCircle(13, 13, 9);
+        g.fillStyle(0xffffff);
+        g.fillCircle(10, 10, 3);
+      },
+    ],
+    gateBeam: [
+      70,
+      12,
+      (g) => {
+        g.fillStyle(0x00e5ff, 0.6);
+        g.fillRoundedRect(0, 0, 70, 12, 3);
+        g.fillStyle(0xffffff);
+        g.fillRect(6, 4, 58, 4);
+      },
+    ],
   };
   function buildTextures(scene) {
     const g = scene.make.graphics({ add: false });

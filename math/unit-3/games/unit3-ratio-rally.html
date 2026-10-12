@@ -1033,14 +1033,21 @@
         this.cameras.main.fadeIn(400);
       };
 
-      // ── GAME SCENE (calm, turn-based) ──
-      // The car only moves when a checkpoint question is solved. No steering,
-      // no obstacles, no countdown, no speed — unlimited think time. A wrong
-      // try removes that choice and earns coaching: try 1 → why it is wrong +
-      // a Tier 1 method hint; try 2 → a Tier 2 concrete step; try 3 → the
-      // worked answer, then the student taps it to drive on (no-fail).
+      // ── GAME SCENE (Interactive Rally Driving + In-Lane Ratio Gates) ──
+      // Real arcade racing gameplay: steer between 4 lanes, collect coins,
+      // hit nitro boost pads, dodge cones, and overtake rivals!
+      // At checkpoints, the ratio problem appears on the overhead billboard
+      // and students steer into the matching lane gate (or press 1-4 / tap)
+      // to blast through with super nitro!
       const TRIP_LEN = 10;
-      const POINTS = [100, 60, 30, 10]; // by number of wrong tries first
+      const POINTS = [100, 60, 30, 10]; // by number of wrong tries
+      const LANE_CENTERS = [
+        ROAD_LEFT + LANE_W * 0.5, // 287.5
+        ROAD_LEFT + LANE_W * 1.5, // 362.5
+        ROAD_LEFT + LANE_W * 2.5, // 437.5
+        ROAD_LEFT + LANE_W * 3.5, // 512.5
+      ];
+
       function GameScene() {
         Phaser.Scene.call(this, "Game");
       }
@@ -1059,31 +1066,48 @@
         this.score = 0;
         this.combo = 0;
         this.maxCombo = 0;
-        this.totalCorrect = 0; // first-try, unaided
-        this.totalWrong = 0; // wrong tries (all)
-        this.helped = 0; // questions solved after coaching
+        this.totalCorrect = 0;
+        this.totalWrong = 0;
+        this.helped = 0;
         this.skillMiss = {};
         this.skillSeen = {};
         this.totalCheckpoints = this.questions.length;
         this.checkpointsHit = 0;
-        this.paused = true; // a question is always on screen between drives
         this.raceFinished = false;
         this.tries = 0;
         this.locked = false;
+
+        // Rally Driving Physics & State
+        this.currentLane = 1; // 0, 1, 2, 3
+        this.baseSpeed = 290;
+        this.speed = 290;
+        this.nitro = false;
+        this.nitroTimer = 0;
+        this.sectorDistance = 0;
+        this.targetSectorDist = 1500; // ~5-6s of thrilling driving between checkpoints
+        this.state = "drive"; // "drive", "approach", "cleared"
+        this.paused = false; // Driving starts immediately!
+        this.itemSpawnTimer = 0.5;
+
+        this.roadItems = [];
+        this.skidMarks = [];
         this.answerBtns = [];
+        this.gateElems = [];
+        this.panelElems = [];
+
         this.envColors =
           this.difficulty === "easy"
             ? { grass: 0xd4a050, road: 0x666655 }
             : this.difficulty === "medium"
               ? { grass: 0x334455, road: 0x555555 }
               : { grass: 0x1a0a33, road: 0x333344 };
+
         this.questionStartTime = 0;
         this.race = RRPro.createRace(this.difficulty, this.questions.length);
         this.coins = 0;
         this.needBounce = false;
         this.bounceRun = 0;
         this.recovered = false;
-        this.nitro = false;
         this.toastQ = [];
         this.toastBusy = false;
       };
@@ -1104,27 +1128,34 @@
         this.buildParallaxBackground();
         this.buildRoadPerspective();
 
-        // Road
+        // Asphalt Road
         this.add.rectangle(W / 2, H / 2, ROAD_W + 20, H, 0x888888);
         this.add.rectangle(W / 2, H / 2, ROAD_W, H, this.envColors.road);
+
+        // Lane Divider Dashes (3 dividers for 4 lanes)
         this.laneLines = [];
-        for (let y = -40; y < H + 40; y += 60) {
-          this.laneLines.push(this.add.rectangle(W / 2, y, 4, 25, 0xffff00, 0.7));
+        for (let l = 1; l <= 3; l++) {
+          const lx = ROAD_LEFT + l * LANE_W;
+          for (let y = -40; y < H + 40; y += 50) {
+            this.laneLines.push(this.add.rectangle(lx, y, 3, 22, 0xffff00, 0.65));
+          }
         }
-        // Rumble strips along both road edges scroll with the drive.
+
+        // Rumble strips along both road edges scroll with the drive
         this.rumble = [-1, 1].map((side) =>
           this.add
             .tileSprite(W / 2 + side * (ROAD_W / 2 + 15), H / 2, 10, H, "rumble")
-            .setAlpha(0.8),
+            .setAlpha(0.85),
         );
-        // Biome scenery: cacti and rocks, city lights and towers, crystals and asteroids.
+
+        // Biome Scenery Props (rocks, cacti, city towers, crystals, asteroids)
         this.scenery = [];
         const props = RRPro.sceneryFor(this.difficulty);
-        for (let i = 0; i < 16; i++) {
+        for (let i = 0; i < 18; i++) {
           const side = i % 2 === 0 ? -1 : 1;
           const t = this.add
             .image(
-              W / 2 + side * (ROAD_W / 2 + randInt(40, 160)),
+              W / 2 + side * (ROAD_W / 2 + randInt(35, 150)),
               randInt(-50, H + 50),
               props[i % props.length],
             )
@@ -1132,44 +1163,58 @@
             .setAlpha(0.9);
           this.scenery.push(t);
         }
-        // Rival racers: placed by their lead over the player, off screen when far away.
-        this.rivalCars = ["car_rival1", "car_rival2"].map((key, i) =>
-          this.add
-            .image(ROAD_LEFT + LANE_W * (i ? 3.5 : 0.5), -80, key)
-            .setScale(1.2)
-            .setDepth(2),
-        );
 
-        // Player car (parked until a checkpoint is solved)
+        // Rivals on the road: Red Comet and Orange Flash
+        this.rivals = [
+          {
+            key: "car_rival1",
+            sprite: this.add.image(LANE_CENTERS[0], -120, "car_rival1").setScale(1.2).setDepth(3),
+            lane: 0,
+            y: -120,
+            speedRel: -50,
+            passed: false,
+          },
+          {
+            key: "car_rival2",
+            sprite: this.add.image(LANE_CENTERS[3], -260, "car_rival2").setScale(1.2).setDepth(3),
+            lane: 3,
+            y: -260,
+            speedRel: -70,
+            passed: false,
+          },
+        ];
+
+        // Player car, shadow, flames & turbo speedlines
+        const startX = LANE_CENTERS[this.currentLane];
         this.carShadow = this.add
-          .image(W / 2, H - 98, "carShadow")
-          .setDepth(2)
+          .image(startX, H - 98, "carShadow")
+          .setDepth(4)
           .setAlpha(0.55);
         this.player = this.add
-          .image(W / 2, H - 120, RRPro.carKey())
+          .image(startX, H - 120, RRPro.carKey())
           .setScale(1.3)
-          .setDepth(3);
+          .setDepth(5);
         this.flames = [-7, 7].map((dx) =>
           this.add
-            .image(W / 2 + dx, H - 84, "flame")
-            .setDepth(2)
+            .image(startX + dx, H - 84, "flame")
+            .setDepth(4)
             .setAlpha(0)
             .setScale(0.8),
         );
         this.speedLines = this.add
           .particles(0, 0, "speedline", {
-            x: { min: ROAD_LEFT - 120, max: ROAD_LEFT + ROAD_W + 120 },
+            x: { min: ROAD_LEFT - 80, max: ROAD_LEFT + ROAD_W + 80 },
             y: -40,
-            speedY: { min: 900, max: 1400 },
-            lifespan: 600,
-            frequency: 25,
+            speedY: { min: 950, max: 1500 },
+            lifespan: 550,
+            frequency: 20,
             emitting: false,
           })
           .setDepth(6);
 
-        // HUD: trip map (one flag per checkpoint) + score
+        // Top HUD Bar: Score, Coins, Streak, Checkpoint Map, Rivals
         this.add
-          .rectangle(W / 2, 0, W, 64, 0x000000, 0.75)
+          .rectangle(W / 2, 0, W, 64, 0x000000, 0.8)
           .setOrigin(0.5, 0)
           .setDepth(20);
         this.scoreText = this.add
@@ -1179,6 +1224,7 @@
           .text(W - 16, 34, "", { fontSize: "15px", color: "#ffffff", fontStyle: "bold" })
           .setOrigin(1, 0)
           .setDepth(21);
+
         this.flags = [];
         const x0 = 150,
           x1 = W - 150;
@@ -1197,6 +1243,7 @@
           .setScale(0.45)
           .setAngle(90)
           .setDepth(23);
+
         this.coinText = this.add
           .text(140, 34, "0", { fontSize: "18px", color: "#ffd23d", fontStyle: "bold" })
           .setDepth(21);
@@ -1206,352 +1253,591 @@
           .setOrigin(0.5, 0)
           .setDepth(21);
 
+        // Confetti Emitter
         this.confettiEmitter = this.add
           .particles(0, 0, "confetti", {
-            speed: { min: 80, max: 220 },
-            scale: { start: 1.2, end: 0 },
-            lifespan: 800,
+            speed: { min: 90, max: 240 },
+            scale: { start: 1.3, end: 0 },
+            lifespan: 850,
             emitting: false,
-            quantity: this.reducedMotion ? 0 : 18,
+            quantity: this.reducedMotion ? 0 : 20,
             tint: [0xff4488, 0x44ff88, 0x4488ff, 0xffdd00, 0xff8800],
             angle: { min: 0, max: 360 },
-            gravityY: 200,
+            gravityY: 180,
           })
           .setDepth(30);
 
-        // Keyboard: 1-4 / A-D pick a choice. Bound once per scene.
-        const keyPick = (i) => {
-          const b = this.answerBtns[i];
-          if (b && b.rect && b.rect.input && b.rect.input.enabled) b.rect.emit("pointerdown");
+        // On-screen touch steering controls for tablet/Chromebook
+        const mkTouchBtn = (x, label, dir) => {
+          const bg = this.add
+            .rectangle(x, H - 75, 52, 52, 0x00ccff, 0.28)
+            .setStrokeStyle(2, 0x00ccff, 0.7)
+            .setInteractive({ useHandCursor: true })
+            .setDepth(15);
+          const icon = this.add
+            .text(x, H - 75, label, { fontSize: "24px", color: "#ffffff", fontStyle: "bold" })
+            .setOrigin(0.5)
+            .setDepth(16);
+          bg.on("pointerdown", () => {
+            bg.setFillStyle(0x00ccff, 0.6);
+            this.shiftLane(dir);
+          });
+          bg.on("pointerup", () => bg.setFillStyle(0x00ccff, 0.28));
+          bg.on("pointerout", () => bg.setFillStyle(0x00ccff, 0.28));
+          return { bg, icon };
         };
+        this.btnSteerLeft = mkTouchBtn(ROAD_LEFT - 40, "◀", -1);
+        this.btnSteerRight = mkTouchBtn(ROAD_LEFT + ROAD_W + 40, "▶", 1);
+
+        // Steer Instructions hint
+        this.steerHint = this.add
+          .text(W / 2, H - 24, "STEER: ◀ / ▶ ARROWS, A / D, OR TAP LANES", {
+            fontSize: "12px",
+            color: "#88ccaa",
+            fontStyle: "bold",
+            letterSpacing: 2,
+          })
+          .setOrigin(0.5)
+          .setDepth(15);
+
+        // Keyboard bindings
+        this.input.keyboard.on("keydown-LEFT", () => this.shiftLane(-1));
+        this.input.keyboard.on("keydown-RIGHT", () => this.shiftLane(1));
+        this.input.keyboard.on("keydown-A", () => this.shiftLane(-1));
+        this.input.keyboard.on("keydown-D", () => this.shiftLane(1));
+        this.input.keyboard.on("keydown-UP", () => this.revBoost());
+        this.input.keyboard.on("keydown-W", () => this.revBoost());
+
+        // Keys 1-4 and A-D select lane directly or checkpoint gate
         ["ONE", "TWO", "THREE", "FOUR"].forEach((k, i) =>
-          this.input.keyboard.on("keydown-" + k, () => keyPick(i)),
+          this.input.keyboard.on("keydown-" + k, () => this.selectLaneOrChoice(i)),
         );
-        ["A", "B", "C", "D"].forEach((k, i) =>
-          this.input.keyboard.on("keydown-" + k, () => keyPick(i)),
-        );
+
+        // Pointer click on canvas steers car to tapped lane
+        this.input.on("pointerdown", (pointer) => {
+          if (pointer.y > 64 && pointer.y < H - 40) {
+            if (pointer.x >= ROAD_LEFT && pointer.x <= ROAD_LEFT + ROAD_W) {
+              const laneIdx = Math.floor((pointer.x - ROAD_LEFT) / LANE_W);
+              this.setLane(Phaser.Math.Clamp(laneIdx, 0, 3));
+            } else if (pointer.x < ROAD_LEFT) {
+              this.shiftLane(-1);
+            } else if (pointer.x > ROAD_LEFT + ROAD_W) {
+              this.shiftLane(1);
+            }
+          }
+        });
 
         this.updateHUD();
         this.cameras.main.fadeIn(300);
-        this.showCheckpointQuestion();
+
+        // LAUNCH GAMING PART IMMEDIATELY!
+        this.startRallySector();
       };
 
-      // ── Decorative parallax layers (static under reduced motion) ──
-      GameScene.prototype.buildParallaxBackground = function () {
-        this.parallaxLayers = [];
-        const horizonColor =
-          this.difficulty === "easy"
-            ? 0xe8b878
-            : this.difficulty === "medium"
-              ? 0x4a5a72
-              : 0x2a1a55;
-        this.add.rectangle(W / 2, 70, W, 140, horizonColor, 0.35).setDepth(0);
-        const farTint =
-          this.difficulty === "hard"
-            ? [0xffffff, 0xaaccff, 0xffeeaa]
-            : this.difficulty === "medium"
-              ? [0xffdd88, 0xfff0c0, 0xcce0ff]
-              : [0xfff4d8, 0xffe0a0];
-        const farDots = [];
-        for (let i = 0; i < 28; i++) {
-          farDots.push(
-            this.add
-              .image(randInt(0, W), randInt(0, 150), "farDot")
-              .setTint(farTint[i % farTint.length])
-              .setScale(randInt(5, 11) / 10)
-              .setAlpha(randInt(35, 80) / 100)
-              .setDepth(0),
-          );
+      // ── Steering & Lane Control ──
+      GameScene.prototype.shiftLane = function (dir) {
+        if (this.locked) return;
+        const next = Phaser.Math.Clamp(this.currentLane + dir, 0, 3);
+        if (next !== this.currentLane) {
+          this.setLane(next);
         }
-        this.parallaxLayers.push({ items: farDots, factor: 0.12, wrap: 150 });
-        const midItems = [];
-        const midColor =
-          this.difficulty === "easy"
-            ? 0xb07840
-            : this.difficulty === "medium"
-              ? 0x2c3850
-              : 0x1a0e3a;
-        for (let i = 0; i < 9; i++) {
-          const isCity = this.difficulty === "medium";
-          const bw = isCity ? randInt(40, 70) : randInt(90, 150);
-          const bh = isCity ? randInt(60, 150) : randInt(50, 100);
-          midItems.push(
-            this.add
-              .rectangle(i * (W / 8) + randInt(-20, 20), 150 - bh / 2, bw, bh, midColor, 0.5)
-              .setDepth(0),
-          );
+      };
+
+      GameScene.prototype.setLane = function (laneIdx) {
+        if (this.locked || laneIdx < 0 || laneIdx > 3) return;
+        const dir = laneIdx > this.currentLane ? 1 : -1;
+        this.currentLane = laneIdx;
+        const targetX = LANE_CENTERS[laneIdx];
+        this.spawnSkid(this.player.x);
+        SFX.tap();
+
+        this.tweens.add({
+          targets: [this.player, this.carShadow],
+          x: targetX,
+          duration: 130,
+          ease: "Cubic.easeOut",
+        });
+        this.tweens.add({
+          targets: this.player,
+          angle: dir * 8,
+          duration: 65,
+          yoyo: true,
+          ease: "Sine.easeInOut",
+        });
+
+        // Update flame positions
+        this.flames[0].x = targetX - 7;
+        this.flames[1].x = targetX + 7;
+
+        // If at checkpoint, steering into a lane also triggers choice selection!
+        if (this.state === "approach" || this.state === "checkpoint") {
+          this.pickChoice(laneIdx);
         }
-        this.parallaxLayers.push({ items: midItems, factor: 0.28, wrap: W });
       };
 
-      GameScene.prototype.buildRoadPerspective = function () {
-        const g = this.add.graphics().setDepth(1);
-        const hx = W / 2,
-          hy = 90;
-        [0, 1, 2, 3, 4].forEach((k) => {
-          const x = ROAD_LEFT + LANE_W * k;
-          g.lineStyle(2, 0xffffff, 0.08);
-          g.lineBetween(x, H, hx + (x - hx) * 0.18, hy);
-        });
-        g.fillStyle(0xffffff, 0.05);
-        g.fillTriangle(ROAD_LEFT, H, ROAD_LEFT + ROAD_W, H, hx, hy);
+      GameScene.prototype.selectLaneOrChoice = function (i) {
+        this.setLane(i);
       };
 
-      GameScene.prototype.updateHUD = function () {
-        this.scoreText.setText(`Score: ${this.score}`);
-        const n = Math.min(this.currentQ + 1, this.totalCheckpoints);
-        const snap = this.race.snapshot();
-        this.progressLabel.setText(
-          this.raceFinished
-            ? `Finished ${RRPro.ordinal(snap.position)}!`
-            : `${RRPro.ordinal(snap.position)} place · Checkpoint ${n} of ${this.totalCheckpoints}`,
-        );
-        const tier = RRPro.tierFor(this.combo);
-        this.streakLabel
-          .setText(
-            tier ? `${tier.name} x${tier.mult}` : this.combo >= 2 ? `Streak x${this.combo}` : "",
-          )
-          .setColor(tier ? tier.color : "#ffdd00");
-        this.coinText.setText(String(this.coins));
-        this.flags.forEach((f, i) => {
-          f.setFillStyle(
-            i < this.checkpointsHit ? 0x22cc66 : i === this.currentQ ? 0xffaa00 : 0x445566,
-          );
-        });
-        const x0 = 150,
-          x1 = W - 150;
-        const pos = Math.min(this.checkpointsHit, this.totalCheckpoints - 1);
-        const along = (progress) => x0 + (x1 - x0) * Math.min(1, progress / this.totalCheckpoints);
-        this.mapCar.x = along(snap.player);
-        this.rivalDots.forEach((dot, i) => (dot.x = along(snap.rivals[i])));
-        this.placeRivals(snap, !this.reducedMotion && this.driving);
-      };
-
-      // Rivals sit on the road by their lead over the player (110 px per checkpoint).
-      GameScene.prototype.placeRivals = function (snap, animate) {
-        this.rivalCars.forEach((car, i) => {
-          const y = Phaser.Math.Clamp(H - 120 - (snap.rivals[i] - snap.player) * 110, -90, H + 90);
-          if (animate)
-            this.tweens.add({ targets: car, y, duration: this.driveMs, ease: "Sine.easeInOut" });
-          else car.y = y;
+      GameScene.prototype.spawnSkid = function (x) {
+        if (this.reducedMotion) return;
+        if (this.skidMarks.length > 16) return;
+        [-8, 8].forEach((off) => {
+          const mark = this.add
+            .image(x + off, this.player.y + 14, "skid")
+            .setDepth(2)
+            .setAlpha(0.6);
+          this.skidMarks.push(mark);
+          this.tweens.add({
+            targets: mark,
+            alpha: 0,
+            duration: 650,
+            onComplete: () => {
+              const idx = this.skidMarks.indexOf(mark);
+              if (idx >= 0) this.skidMarks.splice(idx, 1);
+              mark.destroy();
+            },
+          });
         });
       };
 
-      // Drive one segment of road. Pure reward animation AFTER a solved
-      // checkpoint; nothing to steer or dodge.
-      GameScene.prototype.driveSegment = function (done) {
-        const nitro = this.nitro;
-        this.driveMs = nitro ? 1500 : 1100;
-        this.driving = true;
-        const finish = () => {
-          this.driving = false;
-          done();
-        };
-        if (this.reducedMotion) {
-          this.updateHUD();
-          this.time.delayedCall(250, finish);
-          return;
+      GameScene.prototype.revBoost = function () {
+        if (this.state === "drive" && !this.nitro) {
+          SFX.engine();
+          this.activateNitro(1.5);
         }
-        const dist = { v: 0 };
-        let last = 0;
-        SFX.engine();
-        if (nitro) {
-          SFX.nitro();
-          RRPro.shake(this, 700, 0.003);
+      };
+
+      GameScene.prototype.activateNitro = function (durationSec = 2.5) {
+        this.nitro = true;
+        this.nitroTimer = durationSec;
+        this.flames.forEach((f) => (f.alpha = 1));
+        if (!this.reducedMotion) {
           this.speedLines.start();
           this.flames.forEach((f) =>
             this.tweens.add({
               targets: f,
-              alpha: 1,
-              scaleY: { from: 0.8, to: 1.3 },
-              duration: 90,
+              scaleY: { from: 0.8, to: 1.4 },
+              duration: 80,
               yoyo: true,
-              repeat: 7,
+              repeat: -1,
             }),
           );
+        }
+      };
+
+      // ── Main Update Loop ──
+      GameScene.prototype.update = function (time, delta) {
+        if (this.raceFinished) return;
+        const dt = Math.min(delta / 1000, 0.1);
+
+        // Update nitro decay
+        if (this.nitroTimer > 0) {
+          this.nitroTimer -= dt;
+          if (this.nitroTimer <= 0) {
+            this.nitro = false;
+            this.speedLines.stop();
+            this.flames.forEach((f) => (f.alpha = 0));
+          }
+        }
+        const currentSpeed = this.nitro ? this.baseSpeed * 1.6 : this.baseSpeed;
+
+        if (this.state === "drive") {
+          this.paused = false;
+          const dist = currentSpeed * dt;
+          this.sectorDistance += dist;
+          this.scrollRoad(dist);
+          this.updateRoadItems(dist, dt);
+          this.updateRivals(dist, dt);
+
+          // Once sector driving distance is reached, approach the ratio checkpoint!
+          if (this.sectorDistance >= this.targetSectorDist) {
+            this.approachCheckpoint();
+          }
+        } else if (this.state === "approach") {
+          // Slow down smoothly to gate approach speed (unlimited think time)
+          const dist = this.baseSpeed * 0.4 * dt;
+          this.scrollRoad(dist);
+          this.updateGateApproach(dist);
+        } else if (this.state === "cleared") {
+          // Super turbo blast through gate!
+          const dist = this.baseSpeed * 1.9 * dt;
+          this.scrollRoad(dist);
+          this.updateGateCleared(dist);
+        }
+      };
+
+      GameScene.prototype.scrollRoad = function (dist) {
+        this.rumble.forEach((r) => (r.tilePositionY -= dist));
+        this.laneLines.forEach((l) => {
+          l.y += dist;
+          if (l.y > H + 40) l.y -= H + 80;
+        });
+        this.scenery.forEach((sc) => {
+          sc.y += dist * 0.72;
+          if (sc.y > H + 60) sc.y -= H + 120;
+        });
+        if (this.parallaxLayers && !this.reducedMotion) {
+          this.parallaxLayers.forEach((layer) =>
+            layer.items.forEach((it) => {
+              it.y += dist * layer.factor * 0.25;
+              if (it.y > layer.wrap + 20) it.y = -20;
+            }),
+          );
+        }
+      };
+
+      // ── Road Items & Collectibles (Coins, Boost Pads, Cones) ──
+      GameScene.prototype.updateRoadItems = function (dist, dt) {
+        this.itemSpawnTimer -= dt;
+        if (this.itemSpawnTimer <= 0) {
+          this.itemSpawnTimer = randInt(8, 14) / 10; // Spawns every ~0.8-1.4s
+          this.spawnRoadItem();
+        }
+
+        // Move items & check collisions
+        for (let i = this.roadItems.length - 1; i >= 0; i--) {
+          const item = this.roadItems[i];
+          item.y += dist;
+          item.sprite.y = item.y;
+
+          // Check pickup overlap with player car
+          if (
+            Math.abs(item.x - this.player.x) < 32 &&
+            item.y > this.player.y - 35 &&
+            item.y < this.player.y + 35
+          ) {
+            this.collectRoadItem(item, i);
+            continue;
+          }
+
+          // Off screen cleanup
+          if (item.y > H + 60) {
+            item.sprite.destroy();
+            this.roadItems.splice(i, 1);
+          }
+        }
+      };
+
+      GameScene.prototype.spawnRoadItem = function () {
+        if (this.state !== "drive" || this.sectorDistance > this.targetSectorDist - 200) return;
+        const lane = randInt(0, 3);
+        const x = LANE_CENTERS[lane];
+        const rnd = Math.random();
+
+        let type = "coin";
+        let key = "coin";
+        if (rnd < 0.6) {
+          type = "coin";
+          key = "coin";
+        } else if (rnd < 0.8) {
+          type = "nitro";
+          key = "nitroPad";
+        } else {
+          type = "cone";
+          key = "cone";
+        }
+
+        const sprite = this.add.image(x, -40, key).setScale(1.1).setDepth(3);
+        if (type === "coin") {
           this.tweens.add({
-            targets: this.cameras.main,
-            zoom: 1.05,
-            duration: 500,
+            targets: sprite,
+            scaleX: 0.8,
+            duration: 350,
             yoyo: true,
-            hold: 400,
+            repeat: -1,
           });
         }
-        // The checkpoint gate sweeps over the car as you drive through it.
-        const gate = this.add
-          .container(W / 2, -40, [
-            this.add.rectangle(0, 0, ROAD_W + 50, 22, 0xff8800),
-            this.add
-              .text(0, 0, `CHECKPOINT ${this.checkpointsHit}`, {
-                fontSize: "14px",
-                fontStyle: "bold",
-                color: "#ffffff",
-              })
-              .setOrigin(0.5),
-            this.add.rectangle(-(ROAD_W / 2 + 25), 40, 8, 80, 0xffffff),
-            this.add.rectangle(ROAD_W / 2 + 25, 40, 8, 80, 0xffffff),
-          ])
-          .setDepth(5);
-        this.tweens.add({
-          targets: gate,
-          y: H + 100,
-          duration: this.driveMs,
-          ease: "Sine.easeIn",
-          onComplete: () => gate.destroy(),
+        this.roadItems.push({ type, sprite, x, y: -40, lane });
+      };
+
+      GameScene.prototype.collectRoadItem = function (item, index) {
+        this.roadItems.splice(index, 1);
+        if (item.type === "coin") {
+          SFX.coin();
+          this.coins++;
+          this.score += 10;
+          this.coinText.setText(String(this.coins));
+          this.scoreText.setText(`Score: ${this.score}`);
+          RRPro.popup(this, item.x, item.y - 15, "+10", "#ffd23d", 18);
+          item.sprite.destroy();
+        } else if (item.type === "nitro") {
+          SFX.boost();
+          this.activateNitro(2.5);
+          this.score += 25;
+          this.scoreText.setText(`Score: ${this.score}`);
+          RRPro.popup(this, item.x, item.y - 20, "TURBO!", "#00ff88", 20);
+          item.sprite.destroy();
+        } else if (item.type === "cone") {
+          SFX.crash();
+          RRPro.shake(this, 120, 0.003);
+          this.tweens.add({
+            targets: item.sprite,
+            x: item.x + randInt(-80, 80),
+            y: item.y - 60,
+            angle: 360,
+            alpha: 0,
+            duration: 400,
+            onComplete: () => item.sprite.destroy(),
+          });
+          // Gentle speed dip without unfair failure
+          this.baseSpeed = Math.max(200, this.baseSpeed - 50);
+          this.time.delayedCall(1200, () => (this.baseSpeed = 290));
+        }
+      };
+
+      // ── Rivals on the Track ──
+      GameScene.prototype.updateRivals = function (dist, dt) {
+        this.rivals.forEach((r) => {
+          r.y += dist + r.speedRel * dt;
+          r.sprite.y = r.y;
+          r.sprite.x = LANE_CENTERS[r.lane];
+
+          // Overtaking check
+          if (r.y > this.player.y && !r.passed && r.y < this.player.y + 60) {
+            r.passed = true;
+            SFX.tap();
+            SFX.crowd(1);
+            RRPro.popup(this, r.sprite.x, r.y - 25, "OVERTAKE!", "#ffdd00", 18);
+          }
+
+          // Loop rival around to drive ahead again
+          if (r.y > H + 120) {
+            r.y = randInt(-350, -180);
+            r.lane = randInt(0, 3);
+            r.passed = false;
+          }
         });
+      };
+
+      // ── Start Drive Sector (Interactive Racing Phase) ──
+      GameScene.prototype.startRallySector = function () {
+        this.clearCheckpointUI();
+        this.state = "drive";
+        this.paused = false;
+        this.sectorDistance = 0;
+        this.targetSectorDist = 1450;
+        this.itemSpawnTimer = 0.5;
+        this.locked = false;
+
+        SFX.engine();
+        const sectorNum = this.currentQ + 1;
+        RRPro.flair(
+          this,
+          sectorNum === 1 ? "START RALLY!" : `SECTOR ${sectorNum} GO!`,
+          "#00ffcc",
+        );
         this.updateHUD();
-        this.tweens.add({
-          targets: dist,
-          v: nitro ? 700 : 420,
-          duration: this.driveMs,
-          ease: "Sine.easeInOut",
-          onUpdate: () => {
-            const d = dist.v - last;
-            last = dist.v;
-            this.rumble.forEach((r) => (r.tilePositionY -= d));
-            this.laneLines.forEach((l) => {
-              l.y += d;
-              if (l.y > H + 40) l.y -= H + 80;
-            });
-            this.scenery.forEach((sc) => {
-              sc.y += d * 0.7;
-              if (sc.y > H + 60) sc.y -= H + 120;
-            });
-            this.parallaxLayers.forEach((layer) =>
-              layer.items.forEach((it) => {
-                it.y += d * layer.factor * 0.3;
-                if (it.y > layer.wrap + 20) it.y = -20;
-              }),
-            );
-          },
-          onComplete: () => {
-            this.speedLines.stop();
-            this.flames.forEach((f) => f.setAlpha(0));
-            finish();
-          },
-        });
       };
 
-      GameScene.prototype.clearPanel = function () {
-        (this.panelElems || []).forEach((e) => e && e.destroy && e.destroy());
-        this.panelElems = [];
-      };
-
-      GameScene.prototype.say = function (text) {
-        const rrSr = document.getElementById("rr-sr");
-        if (rrSr) rrSr.textContent = text;
-      };
-
-      GameScene.prototype.showCheckpointQuestion = function () {
+      // ── Checkpoint Gate Approach & Ratio Problem ──
+      GameScene.prototype.approachCheckpoint = function () {
+        if (this.state !== "drive") return;
         const q = this.questions[this.currentQ];
         if (!q) return this.finishTrip();
-        this.clearPanel();
-        this.paused = true;
+
+        this.state = "approach";
+        this.paused = true; // Enables flagship-studio.js DOM mirroring
         this.tries = 0;
         this.questionStartTime = Date.now();
         this.skillSeen[q.type] = true;
-        // Mirror into the live region (screen readers + shared hint ladder).
+
+        // Clear road collectibles so the gate is wide and clear
+        this.roadItems.forEach((it) => it.sprite.destroy());
+        this.roadItems = [];
+
+        SFX.checkpoint();
         this.say(
           `Checkpoint question ${this.currentQ + 1} of ${this.totalCheckpoints}: ${q.prompt}`,
         );
 
-        const E = this.panelElems;
-        const cy = 300;
-        E.push(
-          this.add
-            .rectangle(W / 2, cy, 640, 400, 0x0d1b33, 0.94)
-            .setStrokeStyle(3, 0x00ccff)
-            .setDepth(16),
-        );
-        E.push(
-          this.add
-            .text(
-              W / 2,
-              cy - 172,
-              `CHECKPOINT ${this.currentQ + 1} OF ${this.totalCheckpoints}  ·  ${SKILLS[q.type]}`,
-              {
-                fontSize: "16px",
-                color: "#7fe0ff",
-                fontStyle: "bold",
-              },
-            )
-            .setOrigin(0.5)
-            .setDepth(17),
-        );
-        E.push(
-          this.add
-            .text(W / 2, cy - 112, q.prompt, {
-              fontSize: "24px",
-              color: "#ffffff",
-              fontStyle: "bold",
-              wordWrap: { width: 580 },
-              align: "center",
-            })
-            .setOrigin(0.5)
-            .setDepth(17),
-        );
-        E.push(
-          this.add
-            .text(W / 2, cy - 58, "Take your time. Solve it to drive to the next checkpoint.", {
-              fontSize: "15px",
-              color: "#a8e6c8",
-            })
-            .setOrigin(0.5)
-            .setDepth(17),
-        );
+        this.buildCheckpointGate(q);
+      };
 
+      GameScene.prototype.buildCheckpointGate = function (q) {
+        this.clearCheckpointUI();
+        const E = this.gateElems;
+
+        // 1. Overhead Question Billboard across the top
+        const billBg = this.add
+          .rectangle(W / 2, 116, 680, 96, 0x09192f, 0.95)
+          .setStrokeStyle(3, 0x00ccff)
+          .setDepth(16);
+        const billSkill = this.add
+          .text(
+            W / 2,
+            80,
+            `CHECKPOINT ${this.currentQ + 1} OF ${this.totalCheckpoints}  ·  ${SKILLS[q.type]}`,
+            {
+              fontSize: "14px",
+              color: "#7fe0ff",
+              fontStyle: "bold",
+              letterSpacing: 1,
+            },
+          )
+          .setOrigin(0.5)
+          .setDepth(17);
+        const billPrompt = this.add
+          .text(W / 2, 116, q.prompt, {
+            fontSize: "19px",
+            color: "#ffffff",
+            fontStyle: "bold",
+            wordWrap: { width: 640 },
+            align: "center",
+          })
+          .setOrigin(0.5)
+          .setDepth(17);
+        const billSub = this.add
+          .text(W / 2, 150, "STEER INTO THE MATCHING LANE GATE OR TAP 1-4!", {
+            fontSize: "13px",
+            color: "#00ffcc",
+            fontStyle: "bold",
+          })
+          .setOrigin(0.5)
+          .setDepth(17);
+        E.push(billBg, billSkill, billPrompt, billSub);
+
+        // 2. Overhead Checkpoint Arch spanning the entire road
+        const archY = 250;
+        const archBeam = this.add
+          .rectangle(W / 2, archY, ROAD_W + 36, 16, 0xff8800)
+          .setDepth(10);
+        const archLabel = this.add
+          .text(W / 2, archY, `CHECKPOINT ${this.currentQ + 1}`, {
+            fontSize: "12px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5)
+          .setDepth(11);
+        E.push(archBeam, archLabel);
+
+        // 3. Four Lane Gates (one for each lane/choice)
         this.answerBtns = [];
         q.choices.forEach((c, i) => {
-          const x = W / 2 - 225 + i * 150;
-          const y = cy + 6;
-          // 105×55 is the size the shared mission panel looks for to mirror
-          // these choices as real DOM buttons — keep it.
+          const laneX = LANE_CENTERS[i];
+
+          // Glowing lane threshold barrier on the asphalt
+          const beam = this.add.image(laneX, archY + 34, "gateBeam").setDepth(9);
+
+          // Lane gate sign box
+          const gateBox = this.add
+            .rectangle(laneX, archY + 32, 68, 54, 0x162c46, 0.95)
+            .setStrokeStyle(2, 0x38bdf8)
+            .setDepth(11);
+
+          const gateKey = this.add
+            .text(laneX, archY + 14, `LANE ${i + 1}`, {
+              fontSize: "10px",
+              color: "#93c5fd",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(12);
+
+          const gateVal = this.add
+            .text(laneX, archY + 36, c, {
+              fontSize: "16px",
+              color: "#ffffff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(12);
+
+          // 105×55 interactive touch/click area for native button mirroring & easy tap
+          const btnX = W / 2 - 225 + i * 150;
+          const btnY = 360;
           const rect = this.add
-            .rectangle(x, y, 105, 55, 0x224466)
-            .setStrokeStyle(2, 0x6fa8dc)
+            .rectangle(btnX, btnY, 105, 55, 0x1c3558, 0.95)
+            .setStrokeStyle(2, 0x38bdf8)
             .setInteractive({ useHandCursor: true })
             .setDepth(17);
-          const key = this.add
-            .text(x - 46, y - 24, String(i + 1), { fontSize: "13px", color: "#9fc3e6" })
-            .setDepth(18);
-          const val = this.add
-            .text(x, y + 2, c, { fontSize: "21px", color: "#fff", fontStyle: "bold" })
+          const valText = this.add
+            .text(btnX, btnY, `${i + 1}. ${c}`, {
+              fontSize: "16px",
+              color: "#ffffff",
+              fontStyle: "bold",
+            })
             .setOrigin(0.5)
             .setDepth(18);
-          E.push(rect, key, val);
-          const entry = { rect, val, eliminated: false };
+
+          E.push(beam, gateBox, gateKey, gateVal, rect, valText);
+
+          const entry = {
+            rect,
+            valText,
+            gateBox,
+            gateVal,
+            beam,
+            eliminated: false,
+            laneIdx: i,
+          };
           this.answerBtns.push(entry);
+
           rect.on("pointerover", () => {
-            if (!entry.eliminated) rect.setFillStyle(0x336688);
+            if (!entry.eliminated) {
+              rect.setFillStyle(0x2563eb);
+              gateBox.setFillStyle(0x2563eb);
+            }
           });
           rect.on("pointerout", () => {
-            if (!entry.eliminated) rect.setFillStyle(0x224466);
+            if (!entry.eliminated) {
+              rect.setFillStyle(0x1c3558);
+              gateBox.setFillStyle(0x162c46);
+            }
           });
-          rect.on("pointerdown", () => this.pickChoice(i));
+          rect.on("pointerdown", () => {
+            this.setLane(i);
+            this.pickChoice(i);
+          });
         });
 
+        // Feedback / Math Coach Strip
         this.fbText = this.add
-          .text(W / 2, cy + 64, "", {
-            fontSize: "17px",
+          .text(W / 2, 412, "", {
+            fontSize: "16px",
             color: "#ffd27a",
             fontStyle: "bold",
-            wordWrap: { width: 590 },
+            wordWrap: { width: 620 },
             align: "center",
           })
           .setOrigin(0.5, 0)
-          .setDepth(17);
+          .setDepth(18);
         E.push(this.fbText);
+
         this.updateHUD();
       };
 
+      GameScene.prototype.updateGateApproach = function (dist) {
+        // Gates cruise in smoothly into view
+      };
+
+      GameScene.prototype.updateGateCleared = function (dist) {
+        // Cleared gates zoom off bottom during turbo boost
+        this.gateElems.forEach((e) => {
+          if (e && e.y != null) e.y += dist * 0.8;
+        });
+      };
+
+      GameScene.prototype.clearCheckpointUI = function () {
+        (this.gateElems || []).forEach((e) => e && e.destroy && e.destroy());
+        this.gateElems = [];
+        this.answerBtns = [];
+      };
+
+      // ── Checkpoint Gate Solution Evaluation ──
       GameScene.prototype.pickChoice = function (i) {
         const q = this.questions[this.currentQ];
         const entry = this.answerBtns[i];
         if (!q || !entry || entry.eliminated || this.locked) return;
+
         const c = q.choices[i];
         const isCorrect = c === q.answer;
+
         if (isCorrect) {
           this.locked = true;
+          this.state = "cleared";
+
           if (this.tries === 0) {
             this.totalCorrect++;
             this.combo++;
@@ -1562,6 +1848,7 @@
             this.needBounce = true;
             this.bounceRun = 0;
           }
+
           const pts = RRPro.points(
             POINTS[Math.min(this.tries, POINTS.length - 1)],
             this.tries,
@@ -1571,6 +1858,7 @@
           const tier = RRPro.tierFor(this.combo);
           this.nitro = this.tries === 0 && !!tier;
           const gained = RRPro.coinsFor(this.tries, this.nitro);
+
           RRPro.popup(this, entry.rect.x, entry.rect.y - 40, `+${pts}`, "#7dffb0", 26);
           RRPro.coinFly(
             this,
@@ -1584,68 +1872,82 @@
             },
           );
           if (this.reducedMotion) this.coins += gained;
+
           if (tier && this.tries === 0 && this.combo === tier.min) {
             RRPro.flair(this, `${tier.name}! x${tier.mult} points`, tier.color);
             SFX.badge();
           }
-          if (this.totalCorrect === 1 && this.tries === 0)
-            RRPro.toast(this, "First try!", "Solved without a hint. Keep it going.");
-          if (this.combo === 5 && this.tries === 0)
-            RRPro.toast(this, "Five Alive", "5 first tries in a row.", 0xff8a4a);
-          this.checkpointsHit++;
-          SFX.correct();
+
+          // Green gate celebration!
           entry.rect.setFillStyle(0x1f9d55);
-          this.answerBtns.forEach((b) => b.rect.disableInteractive());
+          entry.gateBox.setFillStyle(0x1f9d55);
+          entry.beam.setTint(0x00ff88);
+          this.confettiEmitter.emitParticleAt(entry.rect.x, entry.rect.y);
+
+          SFX.correct();
+          SFX.nitro();
+          this.activateNitro(3.0);
+
           const msg =
             (this.tries === 0 ? `Correct! +${pts}. ` : `You got it! +${pts}. `) + q.explain;
-          this.fbText.setColor("#7dffb0").setText(msg);
+          if (this.fbText) this.fbText.setColor("#7dffb0").setText(msg);
+
           document.dispatchEvent(
             new CustomEvent("flagship:answer", { detail: { correct: true, message: msg } }),
           );
           this.say(msg);
-          this.confettiEmitter.emitParticleAt(entry.rect.x, entry.rect.y);
+
           if (this.combo === 3) SFX.streak3();
           else if (this.combo === 5) SFX.streak5();
+
+          this.race.advance(this.tries, this.nitro);
           this.updateHUD();
-          // Let the explanation be read, then drive one road segment.
-          this.time.delayedCall(1600, () => {
-            this.clearPanel();
-            SFX.checkpoint();
-            this.race.advance(this.tries, this.nitro);
-            this.driveSegment(() => {
-              this.locked = false;
-              this.currentQ++;
-              if (this.currentQ >= this.questions.length) this.finishTrip();
-              else this.showCheckpointQuestion();
-            });
+
+          // Super turbo blast through gate!
+          this.time.delayedCall(1500, () => {
+            this.checkpointsHit++;
+            this.currentQ++;
+            this.updateHUD();
+            if (this.currentQ >= this.questions.length) {
+              this.finishTrip();
+            } else {
+              this.startRallySector();
+            }
           });
           return;
         }
-        // Wrong try: eliminate the choice and coach. No penalty but fewer points.
+
+        // Wrong try: elastic barrier bounce, eliminate gate, provide Socratic coaching
         this.tries++;
         if (this.tries === 1) this.missed.push(JSON.parse(JSON.stringify(q)));
         this.totalWrong++;
         this.combo = 0;
         this.skillMiss[q.type] = (this.skillMiss[q.type] || 0) + 1;
+
         entry.eliminated = true;
         entry.rect.setFillStyle(0x5a2330).disableInteractive();
-        this.nitro = false;
-        if (!this.reducedMotion)
-          this.tweens.add({
-            targets: [entry.rect, entry.val],
-            x: "+=6",
-            duration: 50,
-            yoyo: true,
-            repeat: 3,
-          });
-        entry.val.setAlpha(0.45);
+        entry.gateBox.setFillStyle(0x5a2330);
+        entry.beam.setTint(0xff4444);
+        entry.valText.setAlpha(0.4);
+        entry.gateVal.setAlpha(0.4);
+
         SFX.wrong();
+        // Gentle car bounce back in lane
+        this.tweens.add({
+          targets: [this.player, this.carShadow],
+          y: "+=22",
+          duration: 90,
+          yoyo: true,
+          ease: "Sine.easeInOut",
+        });
+
         const why = q.wrong[c] || "Not quite.";
         let msg;
         if (this.tries === 1) msg = `${why}  Hint: ${q.hint1}`;
         else if (this.tries === 2) msg = `${why}  Step: ${q.hint2}`;
-        else msg = `${why}  Step: ${q.hint2} Missed questions can be replayed from the results screen.`;
-        this.fbText.setColor("#ffd27a").setText(msg);
+        else msg = `${why}  Step: ${q.hint2} Try another lane gate!`;
+
+        if (this.fbText) this.fbText.setColor("#ffd27a").setText(msg);
         document.dispatchEvent(
           new CustomEvent("flagship:answer", { detail: { correct: false, message: msg } }),
         );
@@ -1653,13 +1955,15 @@
         this.updateHUD();
       };
 
+      // ── Trip Finish ──
       GameScene.prototype.finishTrip = function () {
         if (this.raceFinished) return;
         this.raceFinished = true;
         this.paused = false;
-        this.clearPanel();
+        this.clearCheckpointUI();
         this.updateHUD();
         SFX.win();
+
         this.time.delayedCall(this.reducedMotion ? 200 : 900, () => {
           this.scene.start("Results", {
             score: this.score,

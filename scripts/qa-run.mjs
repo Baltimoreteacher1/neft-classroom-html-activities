@@ -326,6 +326,11 @@ const COVERAGE = [
     /^(scripts\/(generate-download-manifest\.mjs|lib\/download-taxonomy\.mjs)|data\/curriculum-download-manifest\.json|assets\/(curriculum-download\.(js|css)|lib\/zip-store\.js)|tools\/(validate-download-manifest|download-manifest\.test)\.mjs)$/,
     ["test", "validate:downloads", "validate:js-syntax", "validate:scorm"],
   ],
+  // Student games, arcade cabinets & game progression
+  [
+    /^(math\/games\/.*|math\/unit-\d+\/games\/.*|math\/statistics\/games\/.*|tools\/validate-game-rules\.mjs)$/,
+    ["test", "validate:game-rules", "validate:js-syntax", "check"],
+  ],
   // Unit identity metadata is keyed by the CURRENT unit number; an edit here or
   // to the units page must re-run the identity + placement pins.
   [
