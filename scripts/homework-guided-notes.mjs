@@ -1664,47 +1664,76 @@ function conceptVisual(config) {
     return {
       svg: `<div class="family-specific-model">${conceptFrame({
         label:
-          "Understand Percent: scaling ratio 4 out of 10 to 40 out of 100 and showing 40 shaded squares on a hundredths grid",
+          "Understand Percent: scaling ratio 4 out of 10 to 40 out of 100, 100-square grid, and tape diagram percent bar showing 3 of 4 parts as 75%",
         tone: "teal",
-        height: 458,
+        height: 592,
         title: "Understand Percent / ¿Qué es un porcentaje?",
         body: `
         <!-- Scaling Ratio Card -->
-        ${conceptCard(34, 68, 276, 222)}
-        <rect x="52" y="82" width="168" height="24" rx="6" fill="#0f766e"/>
-        <text x="136" y="99" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">SCALE RATIO TO 100</text>
-        <text x="172" y="126" text-anchor="middle" font-size="15" font-weight="700" fill="#12355b">4 out of 10 students</text>
-        <g transform="translate(102, 138)">
+        ${conceptCard(34, 68, 276, 206)}
+        <rect x="52" y="80" width="168" height="24" rx="6" fill="#0f766e"/>
+        <text x="136" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">SCALE RATIO TO 100</text>
+        <text x="172" y="122" text-anchor="middle" font-size="15" font-weight="700" fill="#12355b">4 out of 10 students</text>
+        <g transform="translate(102, 130)">
           <text x="70" y="20" text-anchor="middle" font-size="16" font-weight="800" fill="#0f766e">4 × 10</text>
           <line x1="20" y1="28" x2="120" y2="28" stroke="#0f766e" stroke-width="2.5"/>
           <text x="70" y="48" text-anchor="middle" font-size="16" font-weight="800" fill="#0f766e">10 × 10</text>
         </g>
-        <text x="172" y="214" text-anchor="middle" font-size="20" font-weight="800" fill="#12355b">= 40 / 100</text>
-        <rect x="72" y="232" width="200" height="38" rx="8" fill="#0f766e"/>
-        <text x="172" y="257" text-anchor="middle" font-size="18" font-weight="800" fill="#ffffff">= 40% (per hundred)</text>
+        <text x="172" y="202" text-anchor="middle" font-size="20" font-weight="800" fill="#12355b">= 40 / 100</text>
+        <rect x="72" y="220" width="200" height="38" rx="8" fill="#0f766e"/>
+        <text x="172" y="245" text-anchor="middle" font-size="18" font-weight="800" fill="#ffffff">= 40% (per hundred)</text>
 
         <!-- 100-Square Grid Card -->
-        ${conceptCard(330, 68, 276, 222)}
-        <rect x="348" y="82" width="160" height="24" rx="6" fill="#0f766e"/>
-        <text x="428" y="99" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">100-SQUARE GRID</text>
+        ${conceptCard(330, 68, 276, 206)}
+        <rect x="348" y="80" width="160" height="24" rx="6" fill="#0f766e"/>
+        <text x="428" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">100-SQUARE GRID</text>
         <g>${gridSquares}</g>
-        <text x="468" y="228" text-anchor="middle" font-size="13" font-weight="800" fill="#0f766e">40 shaded squares = 40%</text>
-        <text x="468" y="248" text-anchor="middle" font-size="12" font-weight="700" fill="#64748b">60 unshaded squares = 60%</text>
-        <text x="468" y="268" text-anchor="middle" font-size="12" font-weight="700" fill="#12355b">Total: 100 squares = 100%</text>
+        <text x="468" y="220" text-anchor="middle" font-size="13" font-weight="800" fill="#0f766e">40 shaded squares = 40%</text>
+        <text x="468" y="238" text-anchor="middle" font-size="12" font-weight="700" fill="#64748b">60 unshaded squares = 60%</text>
+        <text x="468" y="256" text-anchor="middle" font-size="12" font-weight="700" fill="#12355b">Total: 100 squares = 100%</text>
+
+        <!-- Percent Bar (Tape Diagram) Card -->
+        ${conceptCard(34, 286, 572, 142)}
+        <rect x="52" y="298" width="220" height="24" rx="6" fill="#0f766e"/>
+        <text x="162" y="315" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">PERCENT BAR (TAPE DIAGRAM)</text>
+        <text x="288" y="315" font-size="12" font-weight="700" fill="#12355b">4 equal parts: each is 25% (100% ÷ 4 = 25%)</text>
+        <g transform="translate(52, 332)">
+          <rect x="0" y="0" width="134" height="36" rx="2" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
+          <text x="67" y="23" text-anchor="middle" font-family="Outfit, sans-serif" font-size="13" font-weight="800" fill="#ffffff">25%</text>
+          <rect x="134" y="0" width="134" height="36" rx="2" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
+          <text x="201" y="23" text-anchor="middle" font-family="Outfit, sans-serif" font-size="13" font-weight="800" fill="#ffffff">25%</text>
+          <rect x="268" y="0" width="134" height="36" rx="2" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
+          <text x="335" y="23" text-anchor="middle" font-family="Outfit, sans-serif" font-size="13" font-weight="800" fill="#ffffff">25%</text>
+          <rect x="402" y="0" width="134" height="36" rx="2" fill="#f8fafc" stroke="#12355b" stroke-width="2"/>
+          <text x="469" y="23" text-anchor="middle" font-family="Outfit, sans-serif" font-size="13" font-weight="800" fill="#64748b">25%</text>
+          <rect x="0" y="0" width="536" height="36" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
+          <line x1="0" y1="36" x2="0" y2="44" stroke="#12355b" stroke-width="2"/>
+          <text x="0" y="58" text-anchor="middle" font-size="11.5" font-weight="800" fill="#12355b">0%</text>
+          <line x1="134" y1="36" x2="134" y2="42" stroke="#0f766e" stroke-width="1.5"/>
+          <text x="134" y="55" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">25%</text>
+          <line x1="268" y1="36" x2="268" y2="42" stroke="#0f766e" stroke-width="1.5"/>
+          <text x="268" y="55" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">50%</text>
+          <line x1="402" y1="36" x2="402" y2="46" stroke="#0f766e" stroke-width="2.5"/>
+          <rect x="382" y="44" width="40" height="18" rx="4" fill="#0f766e"/>
+          <text x="402" y="57" text-anchor="middle" font-size="11" font-weight="900" fill="#ffffff">75%</text>
+          <line x1="536" y1="36" x2="536" y2="44" stroke="#12355b" stroke-width="2"/>
+          <text x="536" y="58" text-anchor="middle" font-size="11.5" font-weight="800" fill="#12355b">100%</text>
+          <text x="201" y="80" text-anchor="middle" font-size="12" font-weight="800" fill="#0f766e">3 shaded parts = 3 × 25% = 75% of the whole</text>
+          <text x="469" y="80" text-anchor="middle" font-size="11" font-weight="700" fill="#64748b">1 unshaded = 25%</text>
+        </g>
 
         <!-- Key Rule Callout -->
-        <rect x="34" y="304" width="572" height="136" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
-        <text x="54" y="328" font-size="15" font-weight="800" fill="#0f766e">✔ KEY PERCENT RULE:</text>
-        <text x="54" y="351" font-size="14" font-weight="700" fill="#12355b">Percent literally means "per hundred". Scale any ratio until</text>
-        <text x="54" y="369" font-size="14" font-weight="700" fill="#12355b">the bottom number is 100.</text>
-        <text x="54" y="391" font-size="14" font-weight="700" fill="#12355b">100% stands for 1 whole. Percents can also exceed 100%:</text>
-        <text x="54" y="409" font-size="14" font-weight="700" fill="#12355b">150% = 1.5 wholes.</text>
-        <text x="54" y="430" font-size="13" font-weight="700" fill="#0f766e">Equivalent ratio: 4/10 = 40/100 = 40%</text>`,
+        <rect x="34" y="440" width="572" height="136" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
+        <text x="54" y="464" font-size="15" font-weight="800" fill="#0f766e">✔ KEY PERCENT RULE:</text>
+        <text x="54" y="487" font-size="14" font-weight="700" fill="#12355b">Percent literally means "per hundred". Scale any ratio until the bottom number is 100.</text>
+        <text x="54" y="507" font-size="14" font-weight="700" fill="#12355b">Use a 100-square grid, scaling factors, or a percent bar to model parts of a whole.</text>
+        <text x="54" y="527" font-size="14" font-weight="700" fill="#12355b">100% stands for 1 whole. Percents can also exceed 100% (e.g. 150% = 1.5 wholes).</text>
+        <text x="54" y="548" font-size="13" font-weight="700" fill="#0f766e">Equivalent models: 4/10 = 40/100 = 40%  ·  3/4 on a percent bar = 75/100 = 75%</text>`,
       })}</div>`,
       capEn:
-        "Percent means per hundred. Multiply both parts of a ratio so the second number is 100.",
+        "Percent means per hundred. Use a 100-square grid, ratio scaling, or a percent bar to represent parts of 100%.",
       capEs:
-        "Porcentaje significa por cada cien. Multipliquen ambas partes de la razón para que el segundo número sea 100.",
+        "Porcentaje significa por cada cien. Usen una cuadrícula de 100, razones o una barra de porcentaje para representar partes de 100%.",
     };
   }
 
@@ -8700,6 +8729,10 @@ export function renderProblemHintButton(_problem, _visual = "", coach = {}) {
             <div class="coach-step-help" hidden>
               <p class="lang-en">${esc(step.en)}</p>
               <p class="lang-es" lang="es">${esc(step.es)}</p>${
+                index === 2 && coach.visualSvg
+                  ? `\n              <div class="coach-step-visual" style="margin:10px 0;">${coach.visualSvg}</div>`
+                  : ""
+              }${
                 index === 2
                   ? `
               <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button>`

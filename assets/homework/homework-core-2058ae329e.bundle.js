@@ -4906,6 +4906,10 @@ function checkProblem(idx, options) {
         expDiv.className = "visual-explanation-card explanation-box";
         if (isProblemCorrect) {
           let html = '<div class="exp-header"><span>✅ ' + pickLangText("Solved! How to understand it", "¡Resuelto! Por qué funciona") + '</span></div>';
+          const keyVisual = section.querySelector(".hw-answer-key-visual");
+          if (keyVisual) {
+            html += '<div class="exp-visual" style="margin:10px 0;">' + keyVisual.innerHTML + '</div>';
+          }
           if (explanation) {
             html += '<div class="exp-why"><strong>💡 ' + pickLangText("Key Step:", "Paso clave:") + '</strong> ' + explanation + '</div>';
           }
@@ -4964,6 +4968,10 @@ function checkProblem(idx, options) {
           } else {
             // Tier 3: Full Step-by-Step Walkthrough
             let html = '<div class="exp-header"><span>🔍 ' + pickLangText("Hint 3 of 3 — Step-by-Step Walkthrough", "Pista 3 de 3 — Repaso visual paso a paso") + '</span></div>';
+            const keyVisual = section.querySelector(".hw-answer-key-visual");
+            if (keyVisual) {
+              html += '<div class="exp-visual" style="margin:10px 0;">' + keyVisual.innerHTML + '</div>';
+            }
             if (selectedFeedback) {
               html += '<div class="exp-trap"><strong>⚠️ ' + pickLangText("Trap to avoid:", "Trampa a evitar:") + '</strong> ' + selectedFeedback + '</div>';
             }

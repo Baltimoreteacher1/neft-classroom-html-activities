@@ -2216,6 +2216,18 @@ export const ACTIVITIES = [
     unit: 4,
   },
   {
+    path: "/math/unit-4/4-2-practice-studio-challenging/",
+    title: "Relate Fractions, Decimals, & Percents · Version 2: Challenging (Grade 6)",
+    category: "Activity",
+    unit: 4,
+  },
+  {
+    path: "/math/unit-4/4-2-practice-studio/",
+    title: "Relate Fractions, Decimals, & Percents · Interactive Practice Studio (Grade 6)",
+    category: "Activity",
+    unit: 4,
+  },
+  {
     path: "/math/unit-4/4-2-relate-fractions-decimals-percents/",
     title: "Lesson 4-2: Relate Fractions, Decimals, and Percentages",
     category: "Activity",
@@ -2228,8 +2240,44 @@ export const ACTIVITIES = [
     unit: 4,
   },
   {
+    path: "/math/unit-4/4-3-practice-studio-challenging/",
+    title: "Estimate Percent of a Number · Version 2: Challenging (Grade 6)",
+    category: "Activity",
+    unit: 4,
+  },
+  {
+    path: "/math/unit-4/4-3-practice-studio/",
+    title: "Estimate Percent of a Number · Interactive Practice Studio (Grade 6)",
+    category: "Activity",
+    unit: 4,
+  },
+  {
     path: "/math/unit-4/4-4-find-compare-percentages/",
     title: "Lesson 4-4: Find and Compare with Percentages",
+    category: "Activity",
+    unit: 4,
+  },
+  {
+    path: "/math/unit-4/4-4-practice-studio-challenging/",
+    title: "Find and Compare with Percentages · Version 2: Challenging (Grade 6)",
+    category: "Activity",
+    unit: 4,
+  },
+  {
+    path: "/math/unit-4/4-4-practice-studio/",
+    title: "Find and Compare with Percentages · Practice Studio (Grade 6)",
+    category: "Activity",
+    unit: 4,
+  },
+  {
+    path: "/math/unit-4/4-5-practice-studio-challenging/",
+    title: "Determine the Whole Given Part & Percent · Version 2: Challenging (Grade 6)",
+    category: "Activity",
+    unit: 4,
+  },
+  {
+    path: "/math/unit-4/4-5-practice-studio/",
+    title: "Determine the Whole Given Part & Percent · Practice Studio (Grade 6)",
     category: "Activity",
     unit: 4,
   },

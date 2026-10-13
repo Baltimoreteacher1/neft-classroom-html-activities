@@ -1,0 +1,1355 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Determine the Whole Given Part &amp; Percent · Practice Studio (Grade 6)</title>
+  <meta name="description" content="Clean, interactive Grade 6 math practice determining the whole given a part and percent using unit-rate bridge (1%), visual tape diagrams, and Whole = Part ÷ Percent.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2317324D'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia,serif' font-weight='bold' font-size='26' fill='%231FA6A2'%3EW%3C/text%3E%3C/svg%3E">
+  <style>
+    /* ==========================================================================
+       STANDARD DESIGN SYSTEM (GRADE 6 · REVEAL MATH UNIT 4 · LESSON 4-5)
+       ========================================================================== */
+    :root {
+      --bg-paper: #F7F4EC;
+      --bg-well: #EFECE3;
+      --surface: #FFFFFF;
+      --surface-soft: #FAF8F3;
+      --surface-teal: #F0FAF9;
+
+      --navy: #17324D;
+      --navy-dark: #0F2337;
+      --navy-tint: #E8F0F7;
+      --navy-line: #C4D5E5;
+
+      --teal: #0F766E;
+      --teal-bright: #1FA6A2;
+      --teal-tint: #E3F6F5;
+      --teal-line: #94DFDC;
+
+      --amber: #B45309;
+      --amber-bright: #D97706;
+      --amber-tint: #FEF3C7;
+      --amber-line: #FCD34D;
+
+      --green: #047857;
+      --green-tint: #ECFDF5;
+      --green-line: #A7F3D0;
+
+      --red: #B91C1C;
+      --red-tint: #FEF2F2;
+      --red-line: #FECACA;
+
+      --ink: #1E293B;
+      --ink-muted: #475569;
+      --ink-light: #64748B;
+
+      --border: #D8D3C6;
+      --border-strong: #B8B1A0;
+
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-display: Georgia, 'Iowan Old Style', serif;
+      --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-pill: 999px;
+
+      --shadow-card: 0 2px 8px rgba(23, 50, 77, 0.06), 0 1px 2px rgba(23, 50, 77, 0.04);
+      --shadow-pop: 0 10px 24px rgba(23, 50, 77, 0.12);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { font-size: 16px; }
+    body {
+      margin: 0; background-color: var(--bg-paper); color: var(--ink);
+      font-family: var(--font-sans); line-height: 1.55; min-height: 100vh;
+      display: flex; flex-direction: column; font-variant-numeric: tabular-nums;
+    }
+
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+    }
+    :focus-visible { outline: 3px solid var(--teal-bright); outline-offset: 2px; }
+
+    .es-text { display: none; color: var(--teal); font-style: italic; font-size: 0.94rem; margin-top: 4px; }
+    body.show-es .es-text { display: block; }
+
+    .app-header {
+      background: var(--navy); color: #FFFFFF; padding: 12px 24px;
+      border-bottom: 3px solid var(--teal-bright);
+    }
+    .header-wrap {
+      max-width: 1080px; margin: 0 auto; display: flex; flex-wrap: wrap;
+      align-items: center; justify-content: space-between; gap: 14px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon {
+      width: 40px; height: 40px; border-radius: 10px; background: var(--teal-bright);
+      color: var(--navy-dark); font-family: var(--font-display); font-size: 1.4rem;
+      font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .brand-title { margin: 0; font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; }
+    .brand-sub { font-size: 0.8rem; color: #CBD5E1; margin-top: 1px; }
+
+    .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .score-pill {
+      background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: var(--radius-pill); padding: 5px 14px; font-size: 0.86rem; font-weight: 700;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .top-btn {
+      background: rgba(255, 255, 255, 0.14); color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: var(--radius-sm); padding: 6px 12px; font-size: 0.84rem; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+    }
+    .top-btn:hover { background: rgba(255, 255, 255, 0.24); }
+    .top-btn[aria-pressed="true"] { background: var(--teal-bright); color: var(--navy-dark); border-color: #FFFFFF; font-weight: 700; }
+
+    .tab-bar {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 80; box-shadow: 0 2px 4px rgba(23, 50, 77, 0.04);
+    }
+    .tab-list {
+      max-width: 1080px; margin: 0 auto; padding: 0 16px; display: grid;
+      grid-template-columns: repeat(5, 1fr); gap: 4px;
+    }
+    .tab-btn {
+      appearance: none; background: transparent; border: none; border-bottom: 4px solid transparent;
+      padding: 12px 10px 10px; cursor: pointer; font-family: inherit; display: flex;
+      align-items: center; gap: 9px; color: var(--ink-muted); text-align: left;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .tab-btn:hover { background: var(--surface-soft); color: var(--navy); }
+    .tab-btn[aria-selected="true"] {
+      color: var(--navy); border-bottom-color: var(--teal);
+      background: var(--surface-teal); font-weight: 700;
+    }
+    .tab-badge {
+      width: 26px; height: 26px; border-radius: 50%; background: var(--bg-well);
+      color: var(--navy); font-size: 0.82rem; font-weight: 800; display: inline-flex;
+      align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .tab-btn[aria-selected="true"] .tab-badge { background: var(--teal); color: #FFFFFF; }
+    .tab-btn.tab-complete .tab-badge { background: var(--green); color: #FFFFFF; }
+    .tab-text { display: flex; flex-direction: column; min-width: 0; }
+    .tab-name { font-size: 0.9rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tab-desc { font-size: 0.74rem; color: var(--ink-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .main-container { max-width: 1080px; width: 100%; margin: 0 auto; padding: 24px 20px 48px; flex: 1; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .topic-strip {
+      background: var(--surface); border: 1px solid var(--border); border-left: 6px solid var(--teal);
+      border-radius: var(--radius-md); padding: 16px 20px; margin-bottom: 20px; display: flex;
+      flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;
+      box-shadow: var(--shadow-card);
+    }
+    .topic-strip h2 { margin: 0 0 4px 0; font-family: var(--font-display); font-size: 1.35rem; color: var(--navy); }
+    .topic-strip p { margin: 0; font-size: 0.96rem; color: var(--ink-muted); }
+
+    .key-rule-pill {
+      background: var(--surface-teal); border: 1px solid var(--teal-line); color: var(--navy);
+      padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: 600;
+    }
+
+    .stepper-bar {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
+      padding: 12px 16px; margin-bottom: 18px; display: flex; flex-wrap: wrap; align-items: center;
+      justify-content: space-between; gap: 12px; box-shadow: var(--shadow-card);
+    }
+    .dots-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+    .step-dot {
+      min-width: 34px; height: 34px; padding: 0 8px; border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border-strong); background: var(--surface-soft); color: var(--navy);
+      font-weight: 700; font-size: 0.86rem; cursor: pointer; display: inline-flex; align-items: center;
+      justify-content: center; font-family: inherit; transition: all 0.15s ease;
+    }
+    .step-dot:hover { border-color: var(--navy); background: #FFFFFF; }
+    .step-dot.active { background: var(--teal); color: #FFFFFF; border-color: var(--teal); }
+    .step-dot.solved { background: var(--green-tint); border-color: var(--green); color: var(--green); }
+    .step-dot.solved.active { background: var(--green); color: #FFFFFF; }
+
+    .stage-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 24px; box-shadow: var(--shadow-card);
+    }
+    .two-col-stage { display: grid; grid-template-columns: 380px 1fr; gap: 24px; align-items: start; }
+
+    .btn {
+      appearance: none; border: 1.5px solid var(--border-strong); background: var(--surface);
+      color: var(--navy); font-family: inherit; font-size: 0.94rem; font-weight: 700; padding: 10px 16px;
+      border-radius: var(--radius-sm); cursor: pointer; display: inline-flex; align-items: center;
+      justify-content: center; gap: 6px; transition: all 0.15s ease;
+    }
+    .btn:hover { background: var(--surface-soft); border-color: var(--navy); }
+    .btn-primary { background: var(--navy); color: #FFFFFF; border-color: var(--navy); }
+    .btn-primary:hover { background: var(--navy-dark); border-color: var(--navy-dark); }
+    .btn-teal { background: var(--teal); color: #FFFFFF; border-color: var(--teal); }
+    .btn-teal:hover { background: var(--teal-bright); border-color: var(--teal-bright); }
+    .btn-sm { padding: 6px 12px; font-size: 0.84rem; }
+
+    .speak-btn {
+      background: var(--surface-soft); border: 1px solid var(--border); color: var(--navy);
+      border-radius: var(--radius-sm); padding: 4px 8px; font-size: 0.8rem; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 4px; font-family: inherit;
+    }
+    .speak-btn:hover { background: var(--navy-tint); }
+
+    .num-input {
+      font-family: var(--font-mono); font-size: 1.25rem; font-weight: 700; text-align: center;
+      padding: 8px 12px; border: 2px solid var(--border-strong); border-radius: var(--radius-sm);
+      background: #FFFFFF; color: var(--navy); transition: all 0.15s ease;
+    }
+    .num-input:focus { border-color: var(--navy); outline: none; box-shadow: 0 0 0 3px rgba(23, 50, 77, 0.15); }
+    .num-input.ok { border-color: var(--green); background: var(--green-tint); color: var(--green); }
+    .num-input.err { border-color: var(--red); background: var(--red-tint); color: var(--red); }
+
+    .feedback-box { margin-top: 16px; padding: 12px 16px; border-radius: var(--radius-sm); font-size: 0.95rem; font-weight: 600; display: none; }
+    .feedback-box.show { display: block; }
+    .feedback-box.ok { background: var(--green-tint); border: 1.5px solid var(--green-line); color: #065F46; }
+    .feedback-box.warn { background: var(--amber-tint); border: 1.5px solid var(--amber-line); color: #92400E; }
+    .feedback-box.err { background: var(--red-tint); border: 1.5px solid var(--red-line); color: #991B1B; }
+
+    .choice-stack { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
+    .choice-btn {
+      appearance: none; background: var(--surface-soft); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); padding: 12px 16px; text-align: left; font-family: inherit;
+      font-size: 1rem; color: var(--ink); cursor: pointer; display: flex; align-items: center;
+      gap: 12px; transition: all 0.15s ease;
+    }
+    .choice-btn:hover { background: var(--navy-tint); border-color: var(--navy); }
+    .choice-btn.correct { background: var(--green-tint); border-color: var(--green); color: var(--green); font-weight: 700; }
+    .choice-btn.wrong { background: var(--red-tint); border-color: var(--red); color: var(--red); }
+
+    .diagram-well {
+      background: var(--surface-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md);
+      padding: 16px; text-align: center; margin-bottom: 16px;
+    }
+
+    .app-footer {
+      background: var(--navy); color: #FFFFFF; padding: 16px 24px; font-size: 0.84rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.15); margin-top: auto;
+    }
+    .footer-wrap { max-width: 1080px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; }
+
+    @media (max-width: 840px) {
+      .two-col-stage { grid-template-columns: 1fr; }
+      .tab-list { grid-template-columns: repeat(5, 1fr); padding: 0 8px; }
+      .tab-btn { padding: 8px 4px; flex-direction: column; align-items: center; text-align: center; gap: 4px; }
+      .tab-desc { display: none; }
+      .tab-name { font-size: 0.75rem; }
+    }
+  </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-wrap">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">W</div>
+        <div>
+          <h1 class="brand-title">Determine the Whole Given Part &amp; Percent</h1>
+          <div class="brand-sub">Grade 6 Math · Unit 4 Interactive Practice Studio (6.AT.4) · Lesson 4-5</div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="score-pill" aria-live="polite">
+          <span>&#11088; Progress: <span id="header-progress-count">0 / 42</span></span>
+        </div>
+        <button type="button" class="top-btn" id="toggle-es-btn" aria-pressed="false">&#127760; Espa&ntilde;ol</button>
+        <button type="button" class="top-btn" id="print-btn">&#128424; Print</button>
+        <button type="button" class="top-btn" id="reset-all-btn" title="Clear saved progress and start fresh">&#8634; Reset</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tab-bar" aria-label="Practice sections">
+    <div class="tab-list" role="tablist">
+      <button type="button" class="tab-btn" role="tab" id="tab-1" aria-selected="true" aria-controls="panel-1" tabindex="0" data-tab="1">
+        <span class="tab-badge" id="badge-1">1</span>
+        <span class="tab-text">
+          <span class="tab-name">1% Unit Rate Bridge</span>
+          <span class="tab-desc">Divide &rarr; &times;100 (8)</span>
+        </span>
+      </button>
+
+      <button type="button" class="tab-btn" role="tab" id="tab-2" aria-selected="false" aria-controls="panel-2" tabindex="-1" data-tab="2">
+        <span class="tab-badge" id="badge-2">2</span>
+        <span class="tab-text">
+          <span class="tab-name">Visual Tape Chunks</span>
+          <span class="tab-desc">Scale to 100% (8)</span>
+        </span>
+      </button>
+
+      <button type="button" class="tab-btn" role="tab" id="tab-3" aria-selected="false" aria-controls="panel-3" tabindex="-1" data-tab="3">
+        <span class="tab-badge" id="badge-3">3</span>
+        <span class="tab-text">
+          <span class="tab-name">Division Equation</span>
+          <span class="tab-desc">Whole = Part &divide; % (8)</span>
+        </span>
+      </button>
+
+      <button type="button" class="tab-btn" role="tab" id="tab-4" aria-selected="false" aria-controls="panel-4" tabindex="-1" data-tab="4">
+        <span class="tab-badge" id="badge-4">4</span>
+        <span class="tab-text">
+          <span class="tab-name">Snacks &amp; Word Stories</span>
+          <span class="tab-desc">Reveal Problems (8)</span>
+        </span>
+      </button>
+
+      <button type="button" class="tab-btn" role="tab" id="tab-5" aria-selected="false" aria-controls="panel-5" tabindex="-1" data-tab="5">
+        <span class="tab-badge" id="badge-5">5</span>
+        <span class="tab-text">
+          <span class="tab-name">Practice Arena</span>
+          <span class="tab-desc">10 Check Items</span>
+        </span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="main-container">
+    <!-- PANEL 1: 1% Unit Rate Bridge -->
+    <section id="panel-1" class="tab-panel active" role="tabpanel" aria-labelledby="tab-1">
+      <div class="topic-strip">
+        <div>
+          <h2>Tab 1: The 1% Unit-Rate Bridge Method</h2>
+          <p>If you know what part corresponds to a percentage, divide to find 1%, then multiply by 100 to find 100% (the whole).</p>
+          <div class="es-text">Divide la parte entre el porcentaje para encontrar el 1%, luego multiplica por 100 para hallar el 100% (el total).</div>
+        </div>
+        <div class="key-rule-pill">&#127753; Part &divide; Percent = 1% &nbsp;&rarr;&nbsp; 1% &times; 100 = Whole</div>
+      </div>
+
+      <div class="stepper-bar">
+        <div class="dots-row" id="t1-dots"></div>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn btn-sm" id="t1-prev-btn">&larr; Previous</button>
+          <button type="button" class="btn btn-sm" id="t1-next-btn">Next &rarr;</button>
+        </div>
+      </div>
+
+      <div class="stage-card" id="t1-stage-card"></div>
+    </section>
+
+    <!-- PANEL 2: Visual Tape Chunks -->
+    <section id="panel-2" class="tab-panel" role="tabpanel" aria-labelledby="tab-2">
+      <div class="topic-strip">
+        <div>
+          <h2>Tab 2: Visual Tape Diagrams (Chunking to 100%)</h2>
+          <p>If 25% is known, scale 4 equal chunks to reach 100%. If 20% is known, scale 5 chunks.</p>
+          <div class="es-text">Si conoces el 25%, multiplica por 4 para llegar al 100%. Si conoces el 20%, multiplica por 5.</div>
+        </div>
+        <div class="key-rule-pill">&#128207; 25% is 1/4 of Whole &rarr; Whole = 4 &times; Part</div>
+      </div>
+
+      <div class="stepper-bar">
+        <div class="dots-row" id="t2-dots"></div>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn btn-sm" id="t2-prev-btn">&larr; Previous</button>
+          <button type="button" class="btn btn-sm" id="t2-next-btn">Next &rarr;</button>
+        </div>
+      </div>
+
+      <div class="stage-card" id="t2-stage-card"></div>
+    </section>
+
+    <!-- PANEL 3: Division Equation -->
+    <section id="panel-3" class="tab-panel" role="tabpanel" aria-labelledby="tab-3">
+      <div class="topic-strip">
+        <div>
+          <h2>Tab 3: The Division Equation (Whole = Part &divide; Percent)</h2>
+          <p>Rearrange Part = Percent &times; Whole into <strong>Whole = Part &divide; Percent (as decimal)</strong>.</p>
+          <div class="es-text">Usa la ecuaci&oacute;n inversa: Total = Parte &divide; Porcentaje (en decimal).</div>
+        </div>
+        <div class="key-rule-pill">&#128221; Whole = Part &divide; Decimal (e.g. 24 &divide; 0.40 = 60)</div>
+      </div>
+
+      <div class="stepper-bar">
+        <div class="dots-row" id="t3-dots"></div>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn btn-sm" id="t3-prev-btn">&larr; Previous</button>
+          <button type="button" class="btn btn-sm" id="t3-next-btn">Next &rarr;</button>
+        </div>
+      </div>
+
+      <div class="stage-card" id="t3-stage-card"></div>
+    </section>
+
+    <!-- PANEL 4: Snacks & Real-World Stories -->
+    <section id="panel-4" class="tab-panel" role="tabpanel" aria-labelledby="tab-4">
+      <div class="topic-strip">
+        <div>
+          <h2>Tab 4: Cafeteria Snacks &amp; Word Stories (Reveal Math)</h2>
+          <p>Work backward from partial survey data: 45% fruit, 30% cheese sticks, 25% veggie sticks.</p>
+          <div class="es-text">Trabaja hacia atrás a partir de datos de encuestas: 45% fruta, 30% queso, 25% vegetales.</div>
+        </div>
+        <div class="key-rule-pill">&#129367; 90 students = 30% of Total &rarr; Total = 300 students</div>
+      </div>
+
+      <div class="stepper-bar">
+        <div class="dots-row" id="t4-dots"></div>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn btn-sm" id="t4-prev-btn">&larr; Previous</button>
+          <button type="button" class="btn btn-sm" id="t4-next-btn">Next &rarr;</button>
+        </div>
+      </div>
+
+      <div class="stage-card" id="t4-stage-card"></div>
+    </section>
+
+    <!-- PANEL 5: Practice Arena -->
+    <section id="panel-5" class="tab-panel" role="tabpanel" aria-labelledby="tab-5">
+      <div class="topic-strip">
+        <div>
+          <h2>Tab 5: Practice Arena (10 Mastery Questions)</h2>
+          <p>Demonstrate your mastery finding the whole using all three strategies.</p>
+          <div class="es-text">Demuestra tu dominio encontrando el total con las tres estrategias.</div>
+        </div>
+        <div class="key-rule-pill">&#127942; Master Determining the Whole</div>
+      </div>
+
+      <div class="stepper-bar">
+        <div class="dots-row" id="t5-dots"></div>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn btn-sm" id="t5-prev-btn">&larr; Prev</button>
+          <button type="button" class="btn btn-sm" id="t5-next-btn">Next &rarr;</button>
+          <button type="button" class="btn btn-sm" id="t5-reset-btn">Reset Quiz</button>
+        </div>
+      </div>
+
+      <div class="stage-card" id="t5-stage-card"></div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-wrap">
+      <div>Grade 6 Reveal Math &middot; Unit 4 Percents &middot; <strong>Lesson 4-5 Practice Studio</strong></div>
+      <div>Aligned to standard <strong>6.AT.4</strong> &middot; Determine the Whole Given Part &amp; Percent</div>
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      'use strict';
+
+      const STORAGE_KEY = 'neft_u4_45_studio_v1';
+      let state = {
+        activeTab: 1,
+        idx1: 0,
+        idx2: 0,
+        idx3: 0,
+        idx4: 0,
+        idx5: 0,
+        solved1: {},
+        solved2: {},
+        solved3: {},
+        solved4: {},
+        solved5: {},
+        quizChoice: {},
+        showEs: false
+      };
+
+      function loadState() {
+        try {
+          const s = localStorage.getItem(STORAGE_KEY);
+          if (s) state = Object.assign(state, JSON.parse(s));
+        } catch(e) {}
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch(e) {}
+      }
+
+      function playSound(type) {
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.connect(g);
+          g.connect(ctx.destination);
+          if (type === 'correct') {
+            osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+            osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.08);
+            osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.16);
+            g.gain.setValueAtTime(0.2, ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+            osc.start(); osc.stop(ctx.currentTime + 0.3);
+          } else {
+            osc.frequency.setValueAtTime(220, ctx.currentTime);
+            osc.frequency.setValueAtTime(180, ctx.currentTime + 0.1);
+            g.gain.setValueAtTime(0.2, ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+            osc.start(); osc.stop(ctx.currentTime + 0.25);
+          }
+        } catch(e) {}
+      }
+
+      function speak(text) {
+        if (!('speechSynthesis' in window)) return;
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = 0.95;
+        window.speechSynthesis.speak(u);
+      }
+
+      function updateProgressHeader() {
+        const totalSolved = Object.keys(state.solved1).length +
+                            Object.keys(state.solved2).length +
+                            Object.keys(state.solved3).length +
+                            Object.keys(state.solved4).length +
+                            Object.keys(state.solved5).length;
+        const totalPossible = 8 + 8 + 8 + 8 + 10;
+        document.getElementById('header-progress-count').textContent = `${totalSolved} / ${totalPossible}`;
+
+        if (Object.keys(state.solved1).length === 8) document.getElementById('tab-1').classList.add('tab-complete');
+        if (Object.keys(state.solved2).length === 8) document.getElementById('tab-2').classList.add('tab-complete');
+        if (Object.keys(state.solved3).length === 8) document.getElementById('tab-3').classList.add('tab-complete');
+        if (Object.keys(state.solved4).length === 8) document.getElementById('tab-4').classList.add('tab-complete');
+        if (Object.keys(state.solved5).length === 10) document.getElementById('tab-5').classList.add('tab-complete');
+      }
+
+      function selectTab(tabNum) {
+        state.activeTab = tabNum;
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+          const isAct = Number(btn.dataset.tab) === tabNum;
+          btn.setAttribute('aria-selected', isAct ? 'true' : 'false');
+          btn.tabIndex = isAct ? 0 : -1;
+        });
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        const activePanel = document.getElementById(`panel-${tabNum}`);
+        if (activePanel) activePanel.classList.add('active');
+        saveState();
+      }
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => selectTab(Number(btn.dataset.tab)));
+      });
+
+      document.getElementById('toggle-es-btn').addEventListener('click', () => {
+        state.showEs = !state.showEs;
+        document.getElementById('toggle-es-btn').setAttribute('aria-pressed', state.showEs ? 'true' : 'false');
+        document.body.classList.toggle('show-es', state.showEs);
+        saveState();
+      });
+
+      document.getElementById('print-btn').addEventListener('click', () => window.print());
+
+      document.getElementById('reset-all-btn').addEventListener('click', () => {
+        if (!window.confirm('Reset all progress in this practice studio?')) return;
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      });
+
+      function renderDots(containerId, list, activeIdx, solvedMap, onSelect) {
+        const c = document.getElementById(containerId);
+        c.innerHTML = list.map((item, i) => {
+          const isAct = i === activeIdx;
+          const isSolved = !!solvedMap[item.id];
+          return `<button type="button" class="step-dot ${isAct ? 'active' : ''} ${isSolved ? 'solved' : ''}" data-step="${i}">${i + 1}</button>`;
+        }).join('');
+        c.querySelectorAll('.step-dot').forEach(btn => {
+          btn.addEventListener('click', () => onSelect(Number(btn.dataset.step)));
+        });
+      }
+
+      function appendNext(fbEl, tabNum, listLen, nextFn) {
+        let b = fbEl.querySelector('.next-step-btn');
+        if (!b) {
+          b = document.createElement('button');
+          b.className = 'btn btn-sm btn-teal next-step-btn';
+          b.style.marginTop = '10px';
+          b.textContent = 'Next Question →';
+          fbEl.appendChild(b);
+        }
+        b.onclick = () => {
+          state[`idx${tabNum}`] = (state[`idx${tabNum}`] + 1) % listLen;
+          nextFn();
+        };
+      }
+
+      // =========================================================================
+      // TAB 1: 1% UNIT RATE BRIDGE
+      // =========================================================================
+      const T1_BRIDGES = [
+        {
+          id: 't1_1',
+          part: 15,
+          percent: 30,
+          onePercent: 0.5,
+          whole: 50,
+          prompt: '15 is 30% of what number?',
+          promptEs: '¿15 es el 30% de qué número?',
+          explain: '1% = 15 ÷ 30 = 0.5. 100% = 0.5 × 100 = 50.'
+        },
+        {
+          id: 't1_2',
+          part: 12,
+          percent: 40,
+          onePercent: 0.3,
+          whole: 30,
+          prompt: '12 is 40% of what number?',
+          promptEs: '¿12 es el 40% de qué número?',
+          explain: '1% = 12 ÷ 40 = 0.3. 100% = 0.3 × 100 = 30.'
+        },
+        {
+          id: 't1_3',
+          part: 36,
+          percent: 60,
+          onePercent: 0.6,
+          whole: 60,
+          prompt: '36 is 60% of what number?',
+          promptEs: '¿36 es el 60% de qué número?',
+          explain: '1% = 36 ÷ 60 = 0.6. 100% = 0.6 × 100 = 60.'
+        },
+        {
+          id: 't1_4',
+          part: 14,
+          percent: 20,
+          onePercent: 0.7,
+          whole: 70,
+          prompt: '14 is 20% of what number?',
+          promptEs: '¿14 es el 20% de qué número?',
+          explain: '1% = 14 ÷ 20 = 0.7. 100% = 0.7 × 100 = 70.'
+        },
+        {
+          id: 't1_5',
+          part: 27,
+          percent: 90,
+          onePercent: 0.3,
+          whole: 30,
+          prompt: '27 is 90% of what number?',
+          promptEs: '¿27 es el 90% de qué número?',
+          explain: '1% = 27 ÷ 90 = 0.3. 100% = 0.3 × 100 = 30.'
+        },
+        {
+          id: 't1_6',
+          part: 35,
+          percent: 70,
+          onePercent: 0.5,
+          whole: 50,
+          prompt: '35 is 70% of what number?',
+          promptEs: '¿35 es el 70% de qué número?',
+          explain: '1% = 35 ÷ 70 = 0.5. 100% = 0.5 × 100 = 50.'
+        },
+        {
+          id: 't1_7',
+          part: 48,
+          percent: 80,
+          onePercent: 0.6,
+          whole: 60,
+          prompt: '48 is 80% of what number?',
+          promptEs: '¿48 es el 80% de qué número?',
+          explain: '1% = 48 ÷ 80 = 0.6. 100% = 0.6 × 100 = 60.'
+        },
+        {
+          id: 't1_8',
+          part: 21,
+          percent: 15,
+          onePercent: 1.4,
+          whole: 140,
+          prompt: '21 is 15% of what number?',
+          promptEs: '¿21 es el 15% de qué número?',
+          explain: '1% = 21 ÷ 15 = 1.4. 100% = 1.4 × 100 = 140.'
+        }
+      ];
+
+      function renderT1() {
+        const b = T1_BRIDGES[state.idx1];
+        const isSolved = !!state.solved1[b.id];
+
+        renderDots('t1-dots', T1_BRIDGES, state.idx1, state.solved1, (ni) => {
+          state.idx1 = ni; renderT1();
+        });
+
+        const stage = document.getElementById('t1-stage-card');
+        stage.innerHTML = `
+          <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+            <span style="font-size:0.84rem; font-weight:800; color:var(--teal); text-transform:uppercase;">Bridge Problem ${state.idx1 + 1} of ${T1_BRIDGES.length}</span>
+            <button type="button" class="speak-btn" id="t1-speak">🔊 Read Question</button>
+          </div>
+
+          <div style="background:var(--navy); color:#FFFFFF; border-radius:var(--radius-md); padding:18px 24px; margin-bottom:20px;">
+            <div style="font-size:0.82rem; text-transform:uppercase; color:#CBD5E1; font-weight:700;">Problem</div>
+            <div style="font-size:1.5rem; font-family:var(--font-display); font-weight:700;">${b.prompt}</div>
+            <div class="es-text" style="color:#A7F3D0; font-size:1rem; margin-top:4px;">${b.promptEs}</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">
+            <div style="background:var(--surface-soft); border:1.5px solid var(--border); border-radius:var(--radius-md); padding:16px;">
+              <label style="display:block; font-weight:700; color:var(--navy); margin-bottom:6px;">Step 1: Find 1% (${b.part} &divide; ${b.percent}):</label>
+              <input type="number" step="any" id="t1-one-in" class="num-input" style="width:100%;" placeholder="1% value" value="${isSolved ? b.onePercent : ''}" ${isSolved ? 'disabled' : ''}>
+            </div>
+            <div style="background:var(--surface-soft); border:1.5px solid var(--border); border-radius:var(--radius-md); padding:16px;">
+              <label style="display:block; font-weight:700; color:var(--navy); margin-bottom:6px;">Step 2: Multiply by 100 for 100% (The Whole):</label>
+              <input type="number" step="any" id="t1-whole-in" class="num-input" style="width:100%;" placeholder="The Whole" value="${isSolved ? b.whole : ''}" ${isSolved ? 'disabled' : ''}>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-primary" id="t1-check-btn" ${isSolved ? 'disabled' : ''}>Check Bridge</button>
+
+          <div id="t1-fb" class="feedback-box ${isSolved ? 'show ok' : ''}">
+            ${isSolved ? `✓ Solved! ${b.explain}` : ''}
+          </div>
+        `;
+
+        stage.querySelector('#t1-speak').onclick = () => speak(state.showEs ? b.promptEs : b.prompt);
+
+        if (isSolved) appendNext(document.getElementById('t1-fb'), 1, T1_BRIDGES.length, renderT1);
+
+        stage.querySelector('#t1-check-btn').onclick = () => {
+          const one = parseFloat(stage.querySelector('#t1-one-in').value);
+          const wh = parseFloat(stage.querySelector('#t1-whole-in').value);
+          const fb = document.getElementById('t1-fb');
+
+          if (Math.abs(one - b.onePercent) < 0.01 && Math.abs(wh - b.whole) < 0.1) {
+            playSound('correct');
+            state.solved1[b.id] = true;
+            fb.className = 'feedback-box show ok';
+            fb.innerHTML = `✓ Excellent bridge thinking! ${b.explain}`;
+            renderDots('t1-dots', T1_BRIDGES, state.idx1, state.solved1, (ni) => { state.idx1 = ni; renderT1(); });
+            updateProgressHeader();
+            appendNext(fb, 1, T1_BRIDGES.length, renderT1);
+          } else {
+            playSound('wrong');
+            fb.className = 'feedback-box show warn';
+            fb.textContent = `Divide ${b.part} by ${b.percent} to get 1%. Then multiply that result by 100.`;
+          }
+          saveState();
+        };
+      }
+
+      document.getElementById('t1-prev-btn').onclick = () => {
+        state.idx1 = (state.idx1 - 1 + T1_BRIDGES.length) % T1_BRIDGES.length; renderT1();
+      };
+      document.getElementById('t1-next-btn').onclick = () => {
+        state.idx1 = (state.idx1 + 1) % T1_BRIDGES.length; renderT1();
+      };
+
+      // =========================================================================
+      // TAB 2: VISUAL TAPE CHUNKS
+      // =========================================================================
+      const T2_CHUNKS = [
+        {
+          id: 't2_1',
+          percent: 25,
+          chunks: 4,
+          chunkVal: 18,
+          whole: 72,
+          prompt: '25% of a number is 18. Find the whole.',
+          explain: 'Since 25% is 1/4 of the tape, 4 chunks of 18 give 4 × 18 = 72.'
+        },
+        {
+          id: 't2_2',
+          percent: 20,
+          chunks: 5,
+          chunkVal: 14,
+          whole: 70,
+          prompt: '20% of a number is 14. Find the whole.',
+          explain: '20% is 1/5 of the tape. 5 chunks of 14 give 5 × 14 = 70.'
+        },
+        {
+          id: 't2_3',
+          percent: 50,
+          chunks: 2,
+          chunkVal: 46,
+          whole: 92,
+          prompt: '50% of a number is 46. Find the whole.',
+          explain: '50% is half of the tape. 2 chunks of 46 give 2 × 46 = 92.'
+        },
+        {
+          id: 't2_4',
+          percent: 10,
+          chunks: 10,
+          chunkVal: 8,
+          whole: 80,
+          prompt: '10% of a number is 8. Find the whole.',
+          explain: '10% is 1/10 of the tape. 10 chunks of 8 give 10 × 8 = 80.'
+        },
+        {
+          id: 't2_5',
+          percent: 25,
+          chunks: 4,
+          chunkVal: 35,
+          whole: 140,
+          prompt: '25% of a number is 35. Find the whole.',
+          explain: '4 chunks of 35 give 4 × 35 = 140.'
+        },
+        {
+          id: 't2_6',
+          percent: 20,
+          chunks: 5,
+          chunkVal: 22,
+          whole: 110,
+          prompt: '20% of a number is 22. Find the whole.',
+          explain: '5 chunks of 22 give 5 × 22 = 110.'
+        },
+        {
+          id: 't2_7',
+          percent: 50,
+          chunks: 2,
+          chunkVal: 65,
+          whole: 130,
+          prompt: '50% of a number is 65. Find the whole.',
+          explain: '2 chunks of 65 give 2 × 65 = 130.'
+        },
+        {
+          id: 't2_8',
+          percent: 10,
+          chunks: 10,
+          chunkVal: 16,
+          whole: 160,
+          prompt: '10% of a number is 16. Find the whole.',
+          explain: '10 chunks of 16 give 10 × 16 = 160.'
+        }
+      ];
+
+      function renderTapeChunksSvg(c) {
+        const w = 340, h = 90;
+        const blockW = (w - 20) / c.chunks;
+        let rects = '';
+        for (let i = 0; i < c.chunks; i++) {
+          const isFirst = i === 0;
+          rects += `<rect x="${10 + i * blockW}" y="25" width="${blockW}" height="32" fill="${isFirst ? '#1FA6A2' : '#FFFFFF'}" stroke="#17324D" stroke-width="2"/>`;
+          rects += `<text x="${10 + i * blockW + blockW/2}" y="45" font-size="11" font-weight="700" fill="${isFirst ? '#FFFFFF' : '#17324D'}" text-anchor="middle">${c.chunkVal}</text>`;
+        }
+        return `
+          <svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}">
+            <text x="10" y="16" font-size="11" font-weight="700" fill="#0F766E">1 chunk (${c.percent}%) = ${c.chunkVal}</text>
+            <text x="${w - 10}" y="16" font-size="11" font-weight="700" fill="#17324D" text-anchor="end">100% = ${c.chunks} chunks</text>
+            ${rects}
+            <text x="${w / 2}" y="76" font-size="12" font-weight="800" fill="#17324D" text-anchor="middle">${c.chunks} × ${c.chunkVal} = ${c.whole}</text>
+          </svg>
+        `;
+      }
+
+      function renderT2() {
+        const c = T2_CHUNKS[state.idx2];
+        const isSolved = !!state.solved2[c.id];
+
+        renderDots('t2-dots', T2_CHUNKS, state.idx2, state.solved2, (ni) => {
+          state.idx2 = ni; renderT2();
+        });
+
+        const stage = document.getElementById('t2-stage-card');
+        stage.innerHTML = `
+          <div class="two-col-stage">
+            <div>
+              <div class="diagram-well">${renderTapeChunksSvg(c)}</div>
+              <div style="background:var(--surface-teal); border:1px solid var(--teal-line); padding:10px 14px; border-radius:var(--radius-sm); font-size:0.88rem; color:var(--navy);">
+                <strong>Chunk Ratio:</strong> 100% &divide; ${c.percent}% = ${c.chunks} equal chunks.
+              </div>
+            </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                <span style="font-size:0.84rem; font-weight:800; color:var(--teal); text-transform:uppercase;">Tape Model ${state.idx2 + 1} of ${T2_CHUNKS.length}</span>
+                <button type="button" class="speak-btn" id="t2-speak">🔊 Read</button>
+              </div>
+              <h3 style="font-size:1.25rem; font-family:var(--font-display); color:var(--navy); margin:0 0 14px 0;">${c.prompt}</h3>
+
+              <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                <label for="t2-in" style="font-weight:700; color:var(--navy);">The Whole Number =</label>
+                <input type="number" id="t2-in" class="num-input" style="width:130px;" placeholder="?" value="${isSolved ? c.whole : ''}" ${isSolved ? 'disabled' : ''}>
+                <button type="button" class="btn btn-primary" id="t2-check-btn" ${isSolved ? 'disabled' : ''}>Check Answer</button>
+              </div>
+
+              <div id="t2-fb" class="feedback-box ${isSolved ? 'show ok' : ''}">
+                ${isSolved ? `✓ Correct! ${c.explain}` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+
+        stage.querySelector('#t2-speak').onclick = () => speak(c.prompt);
+
+        if (isSolved) appendNext(document.getElementById('t2-fb'), 2, T2_CHUNKS.length, renderT2);
+
+        stage.querySelector('#t2-check-btn').onclick = () => {
+          const val = parseFloat(stage.querySelector('#t2-in').value);
+          const fb = document.getElementById('t2-fb');
+          if (isNaN(val)) return;
+
+          if (val === c.whole) {
+            playSound('correct');
+            state.solved2[c.id] = true;
+            fb.className = 'feedback-box show ok';
+            fb.innerHTML = `✓ Great job! ${c.explain}`;
+            stage.querySelector('#t2-in').classList.add('ok');
+            renderDots('t2-dots', T2_CHUNKS, state.idx2, state.solved2, (ni) => { state.idx2 = ni; renderT2(); });
+            updateProgressHeader();
+            appendNext(fb, 2, T2_CHUNKS.length, renderT2);
+          } else {
+            playSound('wrong');
+            fb.className = 'feedback-box show warn';
+            fb.textContent = `Multiply ${c.chunkVal} by ${c.chunks} equal chunks to get the 100% whole.`;
+            stage.querySelector('#t2-in').classList.add('err');
+            setTimeout(() => stage.querySelector('#t2-in').classList.remove('err'), 800);
+          }
+          saveState();
+        };
+      }
+
+      document.getElementById('t2-prev-btn').onclick = () => {
+        state.idx2 = (state.idx2 - 1 + T2_CHUNKS.length) % T2_CHUNKS.length; renderT2();
+      };
+      document.getElementById('t2-next-btn').onclick = () => {
+        state.idx2 = (state.idx2 + 1) % T2_CHUNKS.length; renderT2();
+      };
+
+      // =========================================================================
+      // TAB 3: DIVISION EQUATION
+      // =========================================================================
+      const T3_EQUATIONS = [
+        {
+          id: 't3_1',
+          part: 24,
+          percent: 40,
+          decimal: 0.40,
+          whole: 60,
+          explain: 'Whole = 24 ÷ 0.40 = 60.'
+        },
+        {
+          id: 't3_2',
+          part: 18,
+          percent: 75,
+          decimal: 0.75,
+          whole: 24,
+          explain: 'Whole = 18 ÷ 0.75 = 24.'
+        },
+        {
+          id: 't3_3',
+          part: 45,
+          percent: 30,
+          decimal: 0.30,
+          whole: 150,
+          explain: 'Whole = 45 ÷ 0.30 = 150.'
+        },
+        {
+          id: 't3_4',
+          part: 35,
+          percent: 70,
+          decimal: 0.70,
+          whole: 50,
+          explain: 'Whole = 35 ÷ 0.70 = 50.'
+        },
+        {
+          id: 't3_5',
+          part: 8,
+          percent: 16,
+          decimal: 0.16,
+          whole: 50,
+          explain: 'Whole = 8 ÷ 0.16 = 50.'
+        },
+        {
+          id: 't3_6',
+          part: 63,
+          percent: 90,
+          decimal: 0.90,
+          whole: 70,
+          explain: 'Whole = 63 ÷ 0.90 = 70.'
+        },
+        {
+          id: 't3_7',
+          part: 52,
+          percent: 65,
+          decimal: 0.65,
+          whole: 80,
+          explain: 'Whole = 52 ÷ 0.65 = 80.'
+        },
+        {
+          id: 't3_8',
+          part: 27,
+          percent: 45,
+          decimal: 0.45,
+          whole: 60,
+          explain: 'Whole = 27 ÷ 0.45 = 60.'
+        }
+      ];
+
+      function renderT3() {
+        const eq = T3_EQUATIONS[state.idx3];
+        const isSolved = !!state.solved3[eq.id];
+
+        renderDots('t3-dots', T3_EQUATIONS, state.idx3, state.solved3, (ni) => {
+          state.idx3 = ni; renderT3();
+        });
+
+        const stage = document.getElementById('t3-stage-card');
+        stage.innerHTML = `
+          <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+            <span style="font-size:0.84rem; font-weight:800; color:var(--teal); text-transform:uppercase;">Equation ${state.idx3 + 1} of ${T3_EQUATIONS.length}</span>
+            <button type="button" class="speak-btn" id="t3-speak">🔊 Read Formula</button>
+          </div>
+
+          <div style="background:var(--navy); color:#FFFFFF; border-radius:var(--radius-md); padding:18px 24px; margin-bottom:20px;">
+            <div style="font-size:0.82rem; text-transform:uppercase; color:#CBD5E1; font-weight:700;">Problem</div>
+            <div style="font-size:1.5rem; font-family:var(--font-display); font-weight:700;">${eq.part} is ${eq.percent}% of what whole?</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">
+            <div style="background:var(--surface-soft); border:1.5px solid var(--border); border-radius:var(--radius-md); padding:16px;">
+              <label style="display:block; font-weight:700; color:var(--navy); margin-bottom:6px;">Step 1: Write ${eq.percent}% as a decimal divisor:</label>
+              <input type="number" step="any" id="t3-dec-in" class="num-input" style="width:100%;" placeholder="e.g. 0.40" value="${isSolved ? eq.decimal : ''}" ${isSolved ? 'disabled' : ''}>
+            </div>
+            <div style="background:var(--surface-soft); border:1.5px solid var(--border); border-radius:var(--radius-md); padding:16px;">
+              <label style="display:block; font-weight:700; color:var(--navy); margin-bottom:6px;">Step 2: Divide ${eq.part} &divide; decimal:</label>
+              <input type="number" step="any" id="t3-ans-in" class="num-input" style="width:100%;" placeholder="The Whole" value="${isSolved ? eq.whole : ''}" ${isSolved ? 'disabled' : ''}>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-primary" id="t3-check-btn" ${isSolved ? 'disabled' : ''}>Check Equation</button>
+
+          <div id="t3-fb" class="feedback-box ${isSolved ? 'show ok' : ''}">
+            ${isSolved ? `✓ Solved! ${eq.explain}` : ''}
+          </div>
+        `;
+
+        stage.querySelector('#t3-speak').onclick = () => speak(`${eq.part} is ${eq.percent} percent of what number? Divide ${eq.part} by the decimal form of ${eq.percent} percent.`);
+
+        if (isSolved) appendNext(document.getElementById('t3-fb'), 3, T3_EQUATIONS.length, renderT3);
+
+        stage.querySelector('#t3-check-btn').onclick = () => {
+          const dec = parseFloat(stage.querySelector('#t3-dec-in').value);
+          const ans = parseFloat(stage.querySelector('#t3-ans-in').value);
+          const fb = document.getElementById('t3-fb');
+
+          if (Math.abs(dec - eq.decimal) < 0.001 && Math.abs(ans - eq.whole) < 0.1) {
+            playSound('correct');
+            state.solved3[eq.id] = true;
+            fb.className = 'feedback-box show ok';
+            fb.innerHTML = `✓ Exact! ${eq.explain}`;
+            renderDots('t3-dots', T3_EQUATIONS, state.idx3, state.solved3, (ni) => { state.idx3 = ni; renderT3(); });
+            updateProgressHeader();
+            appendNext(fb, 3, T3_EQUATIONS.length, renderT3);
+          } else {
+            playSound('wrong');
+            fb.className = 'feedback-box show warn';
+            fb.textContent = `Convert ${eq.percent}% to decimal (${eq.decimal}) then calculate ${eq.part} ÷ ${eq.decimal}.`;
+          }
+          saveState();
+        };
+      }
+
+      document.getElementById('t3-prev-btn').onclick = () => {
+        state.idx3 = (state.idx3 - 1 + T3_EQUATIONS.length) % T3_EQUATIONS.length; renderT3();
+      };
+      document.getElementById('t3-next-btn').onclick = () => {
+        state.idx3 = (state.idx3 + 1) % T3_EQUATIONS.length; renderT3();
+      };
+
+      // =========================================================================
+      // TAB 4: CAFETERIA SNACKS & REAL-WORLD STORIES
+      // =========================================================================
+      const T4_STORIES = [
+        {
+          id: 't4_1',
+          title: 'Reveal Notice & Wonder: Cheese Sticks',
+          prompt: 'In a cafeteria survey, 30% of middle school students chose cheese sticks. If 90 students chose cheese sticks, how many students voted in all?',
+          promptEs: 'El 30% de los estudiantes eligió palitos de queso. Si fueron 90 estudiantes, ¿cuántos votaron en total?',
+          ans: 300,
+          explain: '90 ÷ 0.30 = 300 total students.'
+        },
+        {
+          id: 't4_2',
+          title: 'Reveal Cafeteria: Fruit Snack',
+          prompt: '45% of students chose fresh fruit. If 135 students chose fruit, how many total students took the survey?',
+          promptEs: 'El 45% eligió fruta (135 estudiantes). ¿Cuántos estudiantes fueron en total?',
+          ans: 300,
+          explain: '135 ÷ 0.45 = 300 total students.'
+        },
+        {
+          id: 't4_3',
+          title: 'Reveal Cafeteria: Veggie Sticks',
+          prompt: '25% of students chose veggie sticks. If 75 students chose veggie sticks, what was the total student count?',
+          promptEs: 'El 25% eligió palitos de verdura (75 estudiantes). ¿Cuál fue el total de estudiantes?',
+          ans: 300,
+          explain: '75 ÷ 0.25 = 300 total students (or 75 × 4 = 300).'
+        },
+        {
+          id: 't4_4',
+          title: 'Math Test Problems Solved',
+          prompt: 'Leo completed 16 math problems, which was 80% of the entire test. How many total questions were on the test?',
+          promptEs: 'Leo resolvió 16 problemas, que era el 80% del examen. ¿Cuántas preguntas tenía el examen?',
+          ans: 20,
+          explain: '16 ÷ 0.80 = 20 total questions.'
+        },
+        {
+          id: 't4_5',
+          title: 'Shoe Sale Savings',
+          prompt: 'You saved $15 on a jacket using a 25% off coupon. What was the original full price of the jacket?',
+          promptEs: 'Ahorraste $15 con un cupón del 25%. ¿Cuál era el precio original de la chaqueta?',
+          ans: 60,
+          explain: '$15 is 25% (1/4) of the price. 4 × $15 = $60 (or 15 ÷ 0.25 = 60).'
+        },
+        {
+          id: 't4_6',
+          title: 'Basketball Team Free Throws',
+          prompt: 'The basketball team made 42 free throws, which represented 70% of their attempts. How many free throws did they attempt?',
+          promptEs: 'El equipo encestó 42 tiros libres (70% de sus intentos). ¿Cuántos tiros intentaron?',
+          ans: 60,
+          explain: '42 ÷ 0.70 = 60 attempts.'
+        },
+        {
+          id: 't4_7',
+          title: 'Book Chapters Read',
+          prompt: 'Maya read 36 pages, which is 15% of the novel. How many pages are in the entire novel?',
+          promptEs: 'Maya leyó 36 páginas (15% de la novela). ¿Cuántas páginas tiene la novela completa?',
+          ans: 240,
+          explain: '36 ÷ 0.15 = 240 pages.'
+        },
+        {
+          id: 't4_8',
+          title: 'Concert Hall Ticket Sales',
+          prompt: '540 tickets have been sold so far, filling 90% of the auditorium seats. What is the total seating capacity?',
+          promptEs: 'Se han vendido 540 boletos (90% de los asientos). ¿Cuál es la capacidad total?',
+          ans: 600,
+          explain: '540 ÷ 0.90 = 600 seats.'
+        }
+      ];
+
+      function renderT4() {
+        const s = T4_STORIES[state.idx4];
+        const isSolved = !!state.solved4[s.id];
+
+        renderDots('t4-dots', T4_STORIES, state.idx4, state.solved4, (ni) => {
+          state.idx4 = ni; renderT4();
+        });
+
+        const stage = document.getElementById('t4-stage-card');
+        stage.innerHTML = `
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <span style="font-size:0.84rem; font-weight:800; color:var(--teal); text-transform:uppercase;">Context Story ${state.idx4 + 1} of ${T4_STORIES.length} · ${s.title}</span>
+            <button type="button" class="speak-btn" id="t4-speak">🔊 Read</button>
+          </div>
+          <p style="font-size:1.15rem; font-weight:700; color:var(--navy); margin:0 0 6px 0;">${s.prompt}</p>
+          <div class="es-text">${s.promptEs}</div>
+
+          <div style="display:flex; align-items:center; gap:12px; margin-top:18px; flex-wrap:wrap;">
+            <label for="t4-in" style="font-weight:700; color:var(--navy);">The Total Whole =</label>
+            <input type="number" step="any" id="t4-in" class="num-input" style="width:130px;" placeholder="?" value="${isSolved ? s.ans : ''}" ${isSolved ? 'disabled' : ''}>
+            <button type="button" class="btn btn-primary" id="t4-check-btn" ${isSolved ? 'disabled' : ''}>Check Whole</button>
+          </div>
+
+          <div id="t4-fb" class="feedback-box ${isSolved ? 'show ok' : ''}">
+            ${isSolved ? `✓ Correct! ${s.explain}` : ''}
+          </div>
+        `;
+
+        stage.querySelector('#t4-speak').onclick = () => speak(state.showEs ? s.promptEs : s.prompt);
+
+        if (isSolved) appendNext(document.getElementById('t4-fb'), 4, T4_STORIES.length, renderT4);
+
+        stage.querySelector('#t4-check-btn').onclick = () => {
+          const val = parseFloat(stage.querySelector('#t4-in').value);
+          const fb = document.getElementById('t4-fb');
+          if (isNaN(val)) return;
+
+          if (val === s.ans) {
+            playSound('correct');
+            state.solved4[s.id] = true;
+            fb.className = 'feedback-box show ok';
+            fb.innerHTML = `✓ Great job! ${s.explain}`;
+            stage.querySelector('#t4-in').classList.add('ok');
+            renderDots('t4-dots', T4_STORIES, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4(); });
+            updateProgressHeader();
+            appendNext(fb, 4, T4_STORIES.length, renderT4);
+          } else {
+            playSound('wrong');
+            fb.className = 'feedback-box show warn';
+            fb.textContent = `Divide the given part by its decimal percent to determine the total whole.`;
+            stage.querySelector('#t4-in').classList.add('err');
+            setTimeout(() => stage.querySelector('#t4-in').classList.remove('err'), 800);
+          }
+          saveState();
+        };
+      }
+
+      document.getElementById('t4-prev-btn').onclick = () => {
+        state.idx4 = (state.idx4 - 1 + T4_STORIES.length) % T4_STORIES.length; renderT4();
+      };
+      document.getElementById('t4-next-btn').onclick = () => {
+        state.idx4 = (state.idx4 + 1) % T4_STORIES.length; renderT4();
+      };
+
+      // =========================================================================
+      // TAB 5: PRACTICE ARENA
+      // =========================================================================
+      const T5_QUESTIONS = [
+        {
+          id: 't5_1',
+          q: '12 is 25% of what number?',
+          choices: ['3', '24', '48', '60'],
+          correct: 2,
+          explain: '12 ÷ 0.25 = 48 (or 4 × 12 = 48).'
+        },
+        {
+          id: 't5_2',
+          q: '30 is 50% of what number?',
+          choices: ['15', '60', '90', '150'],
+          correct: 1,
+          explain: '30 ÷ 0.50 = 60.'
+        },
+        {
+          id: 't5_3',
+          q: 'Which equation correctly solves: "18 is 40% of what whole w"?',
+          choices: ['w = 18 × 0.40', 'w = 18 ÷ 0.40', 'w = 0.40 ÷ 18', 'w = 18 + 40'],
+          correct: 1,
+          explain: 'Whole = Part ÷ Percent: w = 18 ÷ 0.40.'
+        },
+        {
+          id: 't5_4',
+          q: '45 is 90% of what number?',
+          choices: ['40.5', '50', '55', '90'],
+          correct: 1,
+          explain: '45 ÷ 0.90 = 50.'
+        },
+        {
+          id: 't5_5',
+          q: '7 is 10% of what number?',
+          choices: ['0.7', '70', '700', '17'],
+          correct: 1,
+          explain: '7 × 10 = 70.'
+        },
+        {
+          id: 't5_6',
+          q: 'In a school cafeteria, 60 students chose pizza, which was 20% of all students. How many students voted?',
+          choices: ['120', '200', '300', '400'],
+          correct: 2,
+          explain: '60 ÷ 0.20 = 300 students.'
+        },
+        {
+          id: 't5_7',
+          q: '21 is 75% of what number?',
+          choices: ['14', '28', '35', '42'],
+          correct: 1,
+          explain: '21 ÷ 0.75 = 28.'
+        },
+        {
+          id: 't5_8',
+          q: 'If 1% of a number is 3.5, what is the whole 100%?',
+          choices: ['35', '350', '3,500', '0.35'],
+          correct: 1,
+          explain: '3.5 × 100 = 350.'
+        },
+        {
+          id: 't5_9',
+          q: 'A phone battery has 1 bar left out of 5 (20%), representing 3 hours remaining. What is the full battery capacity in hours?',
+          choices: ['12 hours', '15 hours', '18 hours', '20 hours'],
+          correct: 1,
+          explain: '3 ÷ 0.20 = 15 hours.'
+        },
+        {
+          id: 't5_10',
+          q: '16 is 32% of what number?',
+          choices: ['32', '40', '50', '64'],
+          correct: 2,
+          explain: '16 ÷ 0.32 = 50.'
+        }
+      ];
+
+      function renderT5() {
+        const q = T5_QUESTIONS[state.idx5];
+        const isSolved = !!state.solved5[q.id];
+        const chosen = state.quizChoice[q.id];
+
+        renderDots('t5-dots', T5_QUESTIONS, state.idx5, state.solved5, (ni) => {
+          state.idx5 = ni; renderT5();
+        });
+
+        const stage = document.getElementById('t5-stage-card');
+        stage.innerHTML = `
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <span style="font-size:0.84rem; font-weight:800; color:var(--teal); text-transform:uppercase;">Arena Question ${state.idx5 + 1} of 10</span>
+            <button type="button" class="speak-btn" data-speak="${q.q}">🔊 Read</button>
+          </div>
+          <p style="font-size:1.15rem; font-weight:700; color:var(--navy); margin:0 0 6px 0;">${q.q}</p>
+
+          <div class="choice-stack">
+            ${q.choices.map((c, i) => {
+              let cls = '';
+              if (isSolved) {
+                if (i === q.correct) cls = 'correct';
+                else if (i === chosen) cls = 'wrong';
+              }
+              return `
+                <button type="button" class="choice-btn ${cls}" data-t5-mc="${i}">
+                  <span style="font-weight:700; width:24px;">${['A','B','C','D'][i]}.</span>
+                  <span>${c}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+
+          <div id="t5-fb" class="feedback-box ${isSolved ? 'show ok' : ''}">
+            ${isSolved ? `✓ Correct! ${q.explain}` : ''}
+          </div>
+        `;
+
+        stage.querySelector('[data-speak]').onclick = () => speak(q.q);
+
+        if (isSolved) appendNext(document.getElementById('t5-fb'), 5, T5_QUESTIONS.length, renderT5);
+
+        stage.querySelectorAll('[data-t5-mc]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (state.solved5[q.id]) return;
+            const idx = Number(btn.dataset.t5Mc);
+            state.quizChoice[q.id] = idx;
+            const fb = document.getElementById('t5-fb');
+
+            if (idx === q.correct) {
+              playSound('correct');
+              btn.classList.add('correct');
+              fb.className = 'feedback-box show ok';
+              fb.innerHTML = `✓ Correct! ${q.explain}`;
+              state.solved5[q.id] = true;
+              renderDots('t5-dots', T5_QUESTIONS, state.idx5, state.solved5, (ni) => { state.idx5 = ni; renderT5(); });
+              updateProgressHeader();
+              appendNext(fb, 5, T5_QUESTIONS.length, renderT5);
+            } else {
+              playSound('wrong');
+              btn.classList.add('wrong');
+              fb.className = 'feedback-box show err';
+              fb.textContent = 'Remember: to find the whole, divide the part by the percent decimal.';
+            }
+            saveState();
+          });
+        });
+      }
+
+      document.getElementById('t5-prev-btn').onclick = () => {
+        state.idx5 = (state.idx5 - 1 + T5_QUESTIONS.length) % T5_QUESTIONS.length; renderT5();
+      };
+      document.getElementById('t5-next-btn').onclick = () => {
+        state.idx5 = (state.idx5 + 1) % T5_QUESTIONS.length; renderT5();
+      };
+      document.getElementById('t5-reset-btn').onclick = () => {
+        if (!window.confirm('Reset arena questions?')) return;
+        state.solved5 = {}; state.quizChoice = {}; state.idx5 = 0;
+        renderT5(); updateProgressHeader(); saveState();
+      };
+
+      loadState();
+      renderT1();
+      renderT2();
+      renderT3();
+      renderT4();
+      renderT5();
+      selectTab(state.activeTab || 1);
+      updateProgressHeader();
+      if (state.showEs) document.body.classList.add('show-es');
+
+    })();
+  </script>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>

@@ -1,0 +1,2469 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Relate Fractions, Decimals, &amp; Percents · Interactive Practice Studio (Grade 6)</title>
+  <meta name="description" content="Clean, student-friendly Grade 6 interactive practice converting flexibly between fractions, decimals, and percents with visual models, equivalence tables, and real-world problems.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2317324D'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia,serif' font-weight='bold' font-size='28' fill='%23F7F4EC'%3E%C2%BD%3C/text%3E%3C/svg%3E">
+  <style>
+    /* ==========================================================================
+       CLEAN STUDENT-FRIENDLY DESIGN SYSTEM (GRADE 6 · REVEAL MATH UNIT 4 · LESSON 4-2)
+       Palette: Navy #17324D · Teal #0F766E / #1FA6A2 · Warm Paper #F7F4EC
+       ========================================================================== */
+    :root {
+      --bg-paper: #F7F4EC;
+      --bg-well: #EFECE3;
+      --surface: #FFFFFF;
+      --surface-soft: #FAF8F3;
+      --surface-teal: #F0FAF9;
+
+      --navy: #17324D;
+      --navy-dark: #0F2337;
+      --navy-tint: #E8F0F7;
+      --navy-line: #C4D5E5;
+
+      --teal: #0F766E;
+      --teal-bright: #1FA6A2;
+      --teal-tint: #E3F6F5;
+      --teal-line: #94DFDC;
+
+      --amber: #B45309;
+      --amber-bright: #D97706;
+      --amber-tint: #FEF3C7;
+      --amber-line: #FCD34D;
+
+      --green: #047857;
+      --green-tint: #ECFDF5;
+      --green-line: #A7F3D0;
+
+      --red: #B91C1C;
+      --red-tint: #FEF2F2;
+      --red-line: #FECACA;
+
+      --ink: #1E293B;
+      --ink-muted: #475569;
+      --ink-light: #64748B;
+
+      --border: #D8D3C6;
+      --border-strong: #B8B1A0;
+
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-display: Georgia, 'Iowan Old Style', serif;
+      --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-pill: 999px;
+
+      --shadow-card: 0 2px 8px rgba(23, 50, 77, 0.06), 0 1px 2px rgba(23, 50, 77, 0.04);
+      --shadow-pop: 0 10px 24px rgba(23, 50, 77, 0.12);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--bg-paper);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      line-height: 1.55;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--amber-bright);
+      outline-offset: 2px;
+    }
+
+    /* Spanish Support Toggle */
+    .es-text {
+      display: none;
+      color: var(--teal);
+      font-style: italic;
+      font-size: 0.94rem;
+      margin-top: 4px;
+    }
+    body.show-es .es-text {
+      display: block;
+    }
+
+    /* ==========================================================================
+       HEADER & NAVIGATION
+       ========================================================================== */
+    .app-header {
+      background: var(--navy);
+      color: #FFFFFF;
+      padding: 12px 24px;
+      border-bottom: 3px solid var(--teal-bright);
+    }
+
+    .header-wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--teal-bright);
+      color: var(--navy-dark);
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .brand-sub {
+      font-size: 0.8rem;
+      color: #CBD5E1;
+      margin-top: 1px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .score-pill {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: var(--radius-pill);
+      padding: 5px 14px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .top-btn {
+      background: rgba(255, 255, 255, 0.14);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .top-btn:hover {
+      background: rgba(255, 255, 255, 0.24);
+    }
+    .top-btn[aria-pressed="true"] {
+      background: var(--teal-bright);
+      color: var(--navy-dark);
+      border-color: #FFFFFF;
+      font-weight: 700;
+    }
+
+    /* 5-Tab Bar */
+    .tab-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 80;
+      box-shadow: 0 2px 4px rgba(23, 50, 77, 0.04);
+    }
+
+    .tab-list {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 16px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+    }
+
+    .tab-btn {
+      appearance: none;
+      background: transparent;
+      border: none;
+      border-bottom: 4px solid transparent;
+      padding: 12px 10px 10px;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--ink-muted);
+      text-align: left;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .tab-btn:hover {
+      background: var(--surface-soft);
+      color: var(--navy);
+    }
+    .tab-btn[aria-selected="true"] {
+      color: var(--navy);
+      border-bottom-color: var(--teal);
+      background: var(--surface-teal);
+      font-weight: 700;
+    }
+
+    .tab-badge {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--bg-well);
+      color: var(--navy);
+      font-size: 0.82rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .tab-btn[aria-selected="true"] .tab-badge {
+      background: var(--navy);
+      color: #FFFFFF;
+    }
+    .tab-btn.tab-complete .tab-badge {
+      background: var(--green);
+      color: #FFFFFF;
+    }
+
+    .tab-text {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .tab-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tab-desc {
+      font-size: 0.74rem;
+      color: var(--ink-light);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Main Container */
+    .main-container {
+      max-width: 1080px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px 20px 48px;
+      flex: 1;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* Topic Intro Strip */
+    .topic-strip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 6px solid var(--navy);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .topic-strip h2 {
+      margin: 0 0 4px 0;
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      color: var(--navy);
+    }
+
+    .topic-strip p {
+      margin: 0;
+      font-size: 0.96rem;
+      color: var(--ink-muted);
+    }
+
+    .key-rule-pill {
+      background: var(--surface-teal);
+      border: 1px solid var(--teal-line);
+      color: var(--navy);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    /* Stepper */
+    .stepper-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      margin-bottom: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .dots-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .step-dot {
+      min-width: 34px;
+      height: 34px;
+      padding: 0 8px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border-strong);
+      background: var(--surface-soft);
+      color: var(--navy);
+      font-weight: 700;
+      font-size: 0.86rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+    .step-dot:hover {
+      border-color: var(--navy);
+      background: #FFFFFF;
+    }
+    .step-dot.active {
+      background: var(--navy);
+      color: #FFFFFF;
+      border-color: var(--navy);
+    }
+    .step-dot.solved {
+      background: var(--green-tint);
+      border-color: var(--green);
+      color: var(--green);
+    }
+    .step-dot.solved.active {
+      background: var(--green);
+      color: #FFFFFF;
+    }
+
+    .stage-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .two-col-stage {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    /* Buttons */
+    .btn {
+      appearance: none;
+      border: 1.5px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--navy);
+      font-family: inherit;
+      font-size: 0.94rem;
+      font-weight: 700;
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .btn:hover {
+      background: var(--surface-soft);
+      border-color: var(--navy);
+    }
+    .btn-primary {
+      background: var(--navy);
+      color: #FFFFFF;
+      border-color: var(--navy);
+    }
+    .btn-primary:hover {
+      background: var(--navy-dark);
+      border-color: var(--navy-dark);
+    }
+    .btn-teal {
+      background: var(--teal);
+      color: #FFFFFF;
+      border-color: var(--teal);
+    }
+    .btn-teal:hover {
+      background: var(--teal-bright);
+      border-color: var(--teal-bright);
+    }
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.84rem;
+    }
+
+    .speak-btn {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      color: var(--navy);
+      border-radius: var(--radius-sm);
+      padding: 4px 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: inherit;
+    }
+    .speak-btn:hover {
+      background: var(--navy-tint);
+    }
+
+    /* Inputs & Feedback */
+    .num-input {
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-align: center;
+      padding: 8px 12px;
+      border: 2px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      background: #FFFFFF;
+      color: var(--navy);
+      transition: all 0.15s ease;
+    }
+    .num-input:focus {
+      border-color: var(--navy);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(23, 50, 77, 0.15);
+    }
+    .num-input.ok {
+      border-color: var(--green);
+      background: var(--green-tint);
+      color: var(--green);
+    }
+    .num-input.err {
+      border-color: var(--red);
+      background: var(--red-tint);
+      color: var(--red);
+    }
+
+    .feedback-box {
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: none;
+    }
+    .feedback-box.show {
+      display: block;
+    }
+    .feedback-box.ok {
+      background: var(--green-tint);
+      border: 1.5px solid var(--green-line);
+      color: #065F46;
+    }
+    .feedback-box.warn {
+      background: var(--amber-tint);
+      border: 1.5px solid var(--amber-line);
+      color: #92400E;
+    }
+    .feedback-box.err {
+      background: var(--red-tint);
+      border: 1.5px solid var(--red-line);
+      color: #991B1B;
+    }
+
+    /* Choice list */
+    .choice-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .choice-btn {
+      appearance: none;
+      background: var(--surface-soft);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      text-align: left;
+      font-family: inherit;
+      font-size: 1rem;
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.15s ease;
+    }
+    .choice-btn:hover {
+      background: var(--navy-tint);
+      border-color: var(--navy);
+    }
+    .choice-btn.correct {
+      background: var(--green-tint);
+      border-color: var(--green);
+      color: var(--green);
+      font-weight: 700;
+    }
+    .choice-btn.wrong {
+      background: var(--red-tint);
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    /* Trio Display */
+    .trio-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin: 20px 0;
+      padding: 18px;
+      background: var(--surface-soft);
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--border);
+    }
+
+    .trio-pill {
+      background: #FFFFFF;
+      border: 2px solid var(--navy);
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+      text-align: center;
+      min-width: 120px;
+      box-shadow: var(--shadow-card);
+    }
+    .trio-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-light);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .trio-val {
+      font-family: var(--font-mono);
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--navy);
+    }
+
+    .trio-arrow {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--teal);
+    }
+
+    /* Guided Steps Grid */
+    .guided-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin: 18px 0;
+    }
+    .step-box {
+      background: var(--surface);
+      border: 1.5px solid var(--navy-line);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .step-box.step-2 { border-color: var(--teal-line); }
+    .step-box.step-3 { border-color: var(--amber-line); }
+    .step-box-label {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--navy);
+    }
+    .step-box-desc {
+      font-size: 0.88rem;
+      color: var(--ink-muted);
+      margin: 4px 0 0 0;
+    }
+    .step-box-eq {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.15rem;
+    }
+
+    /* Print Summary & Banner */
+    .complete-banner {
+      background: var(--green);
+      color: #FFFFFF;
+      padding: 16px 20px;
+      border-radius: var(--radius-md);
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-align: center;
+      box-shadow: var(--shadow-card);
+    }
+
+    .app-footer {
+      background: var(--navy);
+      color: #FFFFFF;
+      padding: 16px 24px;
+      font-size: 0.84rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      margin-top: auto;
+    }
+    .footer-wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .v2-badge {
+      display: inline-block;
+      background: #D97706;
+      color: #FFFFFF;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-left: 8px;
+      vertical-align: middle;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    @media (max-width: 840px) {
+      .two-col-stage {
+        grid-template-columns: 1fr;
+      }
+      .tab-list {
+        grid-template-columns: repeat(5, 1fr);
+        padding: 0 8px;
+      }
+      .tab-btn {
+        padding: 8px 4px;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 4px;
+      }
+      .tab-desc {
+        display: none;
+      }
+      .tab-name {
+        font-size: 0.75rem;
+      }
+    }
+
+    @media print {
+      .app-header, .tab-bar, .stepper-bar, .app-footer, .top-btn, .btn, .speak-btn {
+        display: none !important;
+      }
+      body {
+        background: #FFFFFF;
+      }
+      .main-container {
+        padding: 0;
+      }
+      .tab-panel {
+        display: block !important;
+        margin-bottom: 20px;
+        break-inside: avoid;
+      }
+    }
+  </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+
+  <!-- TOP HEADER -->
+  <header class="app-header">
+    <div class="header-wrap">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">&#189;</div>
+        <div>
+          <h1 class="brand-title">Relate Fractions, Decimals, &amp; Percents</h1>
+          <div class="brand-sub">Grade 6 Math · Unit 4 Interactive Practice Studio (6.RP.A.3.C · 6.AT.4) · Lesson 4-2</div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="score-pill" aria-live="polite">
+          <span>⭐ Progress: <span id="header-progress-count">0 / 46</span></span>
+        </div>
+        <button type="button" class="top-btn" id="toggle-es-btn" aria-pressed="false">🌐 Español</button>
+        <button type="button" class="top-btn" id="print-btn">🖨️ Print</button>
+        <button type="button" class="top-btn" id="reset-all-btn" title="Clear saved progress and start fresh">↺ Reset</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 5-TAB NAVIGATION -->
+  <nav class="tab-bar" aria-label="Practice sections">
+    <div class="tab-list" role="tablist">
+      <button type="button" class="tab-btn" role="tab" id="tab-1" aria-selected="true" aria-controls="panel-1" tabindex="0" data-tab="1">
+        <span class="tab-badge" id="badge-1">1</span>
+        <span class="tab-text">
+          <span class="tab-name">The Three Forms</span>
+          <span class="tab-desc">Visual Equivalence (8)</span>
+        </span>
+      </button>
+
+      <button type="button" class="tab-btn" role="tab" id="tab-2" aria-selected="false" aria-controls="panel-2" tabindex="-1" data-tab="2">
+        <span class="tab-badge" id="badge-2">2</span>
+        <span class="tab-text">
+          <span class="tab-name">Convert to Percent</span>
+          <span class="tab-desc">Scale &amp; Divide (12)</span>
+        </span>
+      </button>
+
+      <button type="button" class="tab-btn" role="tab" id="tab-3" aria-selected="false" aria-controls="panel-3" tabindex="-1" data-tab="3">
+        <span class="tab-badge" id="badge-3">3</span>
+        <span class="tab-text">
+          <span class="tab-name">Equivalence Trios</span>
+          <span class="tab-desc">Fractions &amp; Decimals (8)</span>
+        </span>
+      </button>
+
+      <button type="button" class="tab-btn" role="tab" id="tab-4" aria-selected="false" aria-controls="panel-4" tabindex="-1" data-tab="4">
+        <span class="tab-badge" id="badge-4">4</span>
+        <span class="tab-text">
+          <span class="tab-name">Word Problems</span>
+          <span class="tab-desc">Apply &amp; Fix Errors (8)</span>
+        </span>
+      </button>
+
+      <button type="button" class="tab-btn" role="tab" id="tab-5" aria-selected="false" aria-controls="panel-5" tabindex="-1" data-tab="5">
+        <span class="tab-badge" id="badge-5">5</span>
+        <span class="tab-text">
+          <span class="tab-name">Mastery Check</span>
+          <span class="tab-desc">10-Question Quiz</span>
+        </span>
+      </button>
+    </div>
+  </nav>
+
+  <div id="sr-live" class="sr-only" aria-live="polite"></div>
+
+  <!-- MAIN WORKSPACE -->
+  <main class="main-container">
+
+    <section id="print-summary-sheet" class="print-only" aria-label="Printable student progress summary" style="border: 2px solid var(--navy); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; background: #FFFFFF;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--border); padding-bottom: 10px; margin-bottom: 12px; gap: 16px; flex-wrap: wrap;">
+        <div>
+          <h2 style="margin: 0; font-family: var(--font-display); font-size: 1.35rem; color: var(--navy);">Relate Fractions, Decimals, &amp; Percents · Practice Summary</h2>
+          <div style="font-size: 0.85rem; color: var(--ink-muted);">Grade 6 Math · Unit 4 Interactive Practice Studio (Standards 6.RP.A.3.C · 6.AT.4) · Lesson 4-2</div>
+        </div>
+        <div style="font-size: 0.88rem; color: var(--navy); text-align: right;">
+          <div><strong>Student:</strong> <span id="print-student-name">________________________</span></div>
+          <div><strong>Total Completed:</strong> <span id="print-total-score">0 / 46 (0%)</span></div>
+        </div>
+      </div>
+      <div id="print-section-breakdown" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; font-size: 0.84rem; text-align: center;"></div>
+    </section>
+
+    <div id="complete-banner" class="complete-banner" role="status" hidden>
+      🎉 All five sections are complete! Print this page or show your teacher what you finished.
+    </div>
+
+    <!-- TAB 1: THE THREE FORMS (INTERACTIVE MODEL) -->
+    <section id="panel-1" class="tab-panel active" role="tabpanel" aria-labelledby="tab-1">
+      <div class="topic-strip">
+        <div>
+          <h2>1. Three Forms of One Value</h2>
+          <p>Fractions, decimals, and percents are different ways to express the exact same part of a whole.</p>
+          <p class="es-text">Las fracciones, decimales y porcentajes son tres formas de expresar exactamente la misma parte de un entero.</p>
+        </div>
+        <div class="key-rule-pill">
+          💡 <strong>Benchmark Trio:</strong> &nbsp;&frac34; = 0.75 = 75% &nbsp;·&nbsp; &frac12; = 0.50 = 50% &nbsp;·&nbsp; &frac14; = 0.25 = 25%
+        </div>
+      </div>
+
+      <div class="two-col-stage">
+        <!-- Interactive Trio Model -->
+        <div class="stage-card" style="padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <strong style="color: var(--navy); font-size: 0.96rem;">Interactive Equivalence Meter</strong>
+            <span style="font-size: 0.82rem; color: var(--teal); font-weight: 700;">Drag Slider or Pick Fraction</span>
+          </div>
+
+          <svg id="t1-model-svg" viewBox="0 0 320 220" width="320" height="220" style="background:white; border: 1.5px solid var(--border); border-radius: 8px; width: 100%; height: auto;" role="img" aria-label="Visual Fraction Decimal Percent meter">
+            <!-- Background Bars -->
+            <rect x="20" y="30" width="280" height="24" fill="#F1F5F9" stroke="#CBD5E1" rx="4"/>
+            <rect id="t1-bar-fill" x="20" y="30" width="140" height="24" fill="#1FA6A2" rx="4"/>
+            <text x="20" y="22" font-size="11" font-weight="700" fill="#17324D">Fraction Bar (Whole = 1)</text>
+            <text id="t1-bar-txt" x="160" y="46" font-size="12" font-weight="800" fill="#FFFFFF" text-anchor="middle">50%</text>
+
+            <!-- 10-Tenths Ticks -->
+            <line x1="20" y1="58" x2="300" y2="58" stroke="#17324D" stroke-width="1.5"/>
+            <line x1="20" y1="54" x2="20" y2="62" stroke="#17324D" stroke-width="1.5"/>
+            <line x1="90" y1="54" x2="90" y2="62" stroke="#17324D" stroke-width="1.5"/>
+            <line x1="160" y1="54" x2="160" y2="62" stroke="#17324D" stroke-width="1.5"/>
+            <line x1="230" y1="54" x2="230" y2="62" stroke="#17324D" stroke-width="1.5"/>
+            <line x1="300" y1="54" x2="300" y2="62" stroke="#17324D" stroke-width="1.5"/>
+
+            <text x="20" y="74" font-size="10" font-weight="700" fill="#475569">0</text>
+            <text x="90" y="74" font-size="10" font-weight="700" fill="#475569">0.25</text>
+            <text x="160" y="74" font-size="10" font-weight="700" fill="#475569">0.50</text>
+            <text x="230" y="74" font-size="10" font-weight="700" fill="#475569">0.75</text>
+            <text x="300" y="74" font-size="10" font-weight="700" fill="#475569" text-anchor="end">1.00</text>
+
+            <!-- 100-Grid Mini -->
+            <g transform="translate(110, 95)">
+              <rect x="0" y="0" width="100" height="100" fill="#FFFFFF" stroke="#17324D" stroke-width="2"/>
+              <g id="t1-mini-grid"></g>
+            </g>
+            <text x="160" y="210" font-size="11" font-weight="700" fill="#17324D" text-anchor="middle">100-Grid Equivalent</text>
+          </svg>
+
+          <div style="width: 100%;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.86rem; font-weight: 700; color: var(--navy); margin-bottom: 4px;">
+              <label for="t1-slider">Value Slider:</label>
+              <span id="t1-slider-label">50% = 0.50 = 1/2</span>
+            </div>
+            <input type="range" id="t1-slider" data-nsr-ignore="true" min="0" max="100" value="50" style="width: 100%; accent-color: var(--teal); cursor: pointer;">
+          </div>
+
+          <div class="grid-summary-strip" style="width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+            <div class="summary-tile">
+              <span>Fraction</span>
+              <strong id="t1-stat-frac" style="color: var(--navy);">1/2</strong>
+            </div>
+            <div class="summary-tile">
+              <span>Decimal</span>
+              <strong id="t1-stat-dec" style="color: var(--teal);">0.50</strong>
+            </div>
+            <div class="summary-tile">
+              <span>Percent</span>
+              <strong id="t1-stat-pct" style="color: var(--amber);">50%</strong>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; width: 100%;">
+            <button type="button" class="btn btn-sm" data-set-val="10">1/10 (10%)</button>
+            <button type="button" class="btn btn-sm" data-set-val="20">1/5 (20%)</button>
+            <button type="button" class="btn btn-sm" data-set-val="25">1/4 (25%)</button>
+            <button type="button" class="btn btn-sm" data-set-val="50">1/2 (50%)</button>
+            <button type="button" class="btn btn-sm" data-set-val="75">3/4 (75%)</button>
+            <button type="button" class="btn btn-sm" data-set-val="80">4/5 (80%)</button>
+            <button type="button" class="btn btn-sm" data-set-val="100">1 (100%)</button>
+          </div>
+        </div>
+
+        <!-- Right: Stepped Tasks (8) -->
+        <div>
+          <div class="stepper-bar">
+            <div class="dots-row" id="t1-dots" role="group" aria-label="Tab 1 problem selector"></div>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="btn btn-sm" id="t1-prev-btn">← Back</button>
+              <button type="button" class="btn btn-sm" id="t1-next-btn">Next →</button>
+            </div>
+          </div>
+
+          <div class="stage-card" id="t1-task-card"></div>
+
+          <details style="margin-top: 14px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 12px 16px;">
+            <summary style="font-weight: 800; color: var(--navy); cursor: pointer; font-size: 0.95rem;">📘 Reference: Common Benchmarks &amp; Conversion Rules (Click to expand)</summary>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 12px; font-size: 0.88rem; color: var(--ink-soft);">
+              <div style="background: var(--surface-soft); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
+                <strong style="color: var(--navy); display: block;">Fraction to Percent</strong>
+                Scale denominator to 100 or divide numerator by denominator: <strong>&frac35; &times; 20/20 = 60/100 = 60%</strong>.
+              </div>
+              <div style="background: var(--surface-soft); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
+                <strong style="color: var(--navy); display: block;">Decimal to Percent</strong>
+                Multiply by 100 (shift decimal point 2 places right): <strong>0.38 &rarr; 38%</strong>. <strong>0.07 &rarr; 7%</strong>.
+              </div>
+              <div style="background: var(--surface-soft); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
+                <strong style="color: var(--navy); display: block;">Percent to Fraction</strong>
+                Put over 100 and simplify: <strong>45% = 45/100 = 9/20</strong>.
+              </div>
+              <div style="background: var(--surface-soft); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
+                <strong style="color: var(--navy); display: block;">Decimal to Fraction</strong>
+                Read the place value: <strong>0.6 = 6/10 = 3/5</strong>. <strong>0.08 = 8/100 = 2/25</strong>.
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: CONVERT TO PERCENT (12 PROBLEMS + RANDOMIZER) -->
+    <section id="panel-2" class="tab-panel" role="tabpanel" aria-labelledby="tab-2">
+      <div class="topic-strip">
+        <div>
+          <h2>2. Convert Any Fraction to a Decimal and Percent</h2>
+          <p>Find the scale factor to reach 100, or divide the numerator by the denominator.</p>
+          <p class="es-text">Encuentra el factor de escala para llegar a 100 o divide el numerador entre el denominador.</p>
+        </div>
+        <div>
+          <button type="button" class="btn btn-teal btn-sm" id="t2-random-btn">🎲 New Random Problem</button>
+        </div>
+      </div>
+
+      <div class="stepper-bar">
+        <div class="dots-row" id="t2-dots" role="group" aria-label="Tab 2 problem selector"></div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-sm" id="t2-prev-btn">← Back</button>
+          <button type="button" class="btn btn-sm" id="t2-next-btn">Next →</button>
+        </div>
+      </div>
+
+      <div class="stage-card" id="t2-stage-card"></div>
+    </section>
+
+    <!-- TAB 3: EQUIVALENCE TRIOS (8 PROBLEMS + RANDOMIZER) -->
+    <section id="panel-3" class="tab-panel" role="tabpanel" aria-labelledby="tab-3">
+      <div class="topic-strip">
+        <div>
+          <h2>3. Complete the Equivalence Trio</h2>
+          <p>Given any one representation (fraction, decimal, or percent), determine the missing two forms.</p>
+          <p class="es-text">Dada una representación (fracción, decimal o porcentaje), completa las dos formas faltantes.</p>
+        </div>
+        <div>
+          <button type="button" class="btn btn-teal btn-sm" id="t3-random-btn">🎲 New Random Trio</button>
+        </div>
+      </div>
+
+      <div class="stepper-bar">
+        <div class="dots-row" id="t3-dots" role="group" aria-label="Tab 3 problem selector"></div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-sm" id="t3-prev-btn">← Back</button>
+          <button type="button" class="btn btn-sm" id="t3-next-btn">Next →</button>
+        </div>
+      </div>
+
+      <div class="stage-card" id="t3-stage-card"></div>
+    </section>
+
+    <!-- TAB 4: REAL-WORLD & ERROR DETECTIVE (8 PROBLEMS) -->
+    <section id="panel-4" class="tab-panel" role="tabpanel" aria-labelledby="tab-4">
+      <div class="topic-strip">
+        <div>
+          <h2>4. Real-World Applications &amp; Error Detective</h2>
+          <p>Solve multi-form comparison stories from the Reveal Math textbook and diagnose subtle student mistakes.</p>
+          <p class="es-text">Resuelve problemas del libro Reveal Math y analiza errores comunes en las conversiones.</p>
+        </div>
+        <div class="key-rule-pill">
+          🔍 <strong>Strategy Tip:</strong> To compare different forms, convert all values to <strong>decimals</strong> or <strong>percents</strong> first!
+        </div>
+      </div>
+
+      <div class="stepper-bar">
+        <div class="dots-row" id="t4-dots" role="group" aria-label="Tab 4 problem selector"></div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-sm" id="t4-prev-btn">← Back</button>
+          <button type="button" class="btn btn-sm" id="t4-next-btn">Next →</button>
+        </div>
+      </div>
+
+      <div class="stage-card" id="t4-stage-card"></div>
+    </section>
+
+    <!-- TAB 5: MASTERY CHECK (10 QUESTIONS) -->
+    <section id="panel-5" class="tab-panel" role="tabpanel" aria-labelledby="tab-5">
+      <div class="topic-strip">
+        <div>
+          <h2>5. Fractions, Decimals, &amp; Percents Mastery Check</h2>
+          <p>Answer all 10 questions to prove mastery across conversions, benchmarks, and ordering.</p>
+          <p class="es-text">Responde las 10 preguntas para demostrar dominio de las conversiones y comparaciones.</p>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <span class="key-rule-pill" id="t5-score-pill">Score: 0 / 10</span>
+          <button type="button" class="btn btn-sm" id="t5-reset-btn">Reset Quiz</button>
+        </div>
+      </div>
+
+      <div class="stepper-bar">
+        <div class="dots-row" id="t5-dots" role="group" aria-label="Quiz question selector"></div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-sm" id="t5-prev-btn">← Back</button>
+          <button type="button" class="btn btn-sm" id="t5-next-btn">Next →</button>
+        </div>
+      </div>
+
+      <div class="stage-card" id="t5-stage-card"></div>
+      <div id="t5-results" class="results-card" role="region" aria-label="Mastery check results" hidden></div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-wrap">
+      <span><strong>Grade 6 Mathematics · Unit 4: Relate Fractions, Decimals, &amp; Percents</strong> (Standards 6.RP.A.3.C · 6.AT.4)</span>
+      <span>100% Offline Interactive Practice Studio · Progress Auto-Saved in Browser</span>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const STORAGE_KEY = 'neft_u4_42_studio_v1';
+
+      const state = {
+        activeTab: 1,
+        showEs: false,
+        sliderVal: 50,
+        idx1: 0,
+        idx2: 0,
+        idx3: 0,
+        idx4: 0,
+        idx5: 0,
+        solved1: {},
+        solved2: {},
+        solved3: {},
+        solved4: {},
+        solved5: {},
+        quizChoice: {},
+        quizFirst: {}
+      };
+
+      const SOLVED_KEYS = ['solved1', 'solved2', 'solved3', 'solved4', 'solved5'];
+      const IDX_KEYS = ['idx1', 'idx2', 'idx3', 'idx4', 'idx5'];
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return;
+          const d = JSON.parse(raw);
+          if (d && typeof d === 'object') {
+            state.showEs = !!d.showEs;
+            SOLVED_KEYS.forEach(k => { state[k] = (d[k] && typeof d[k] === 'object') ? { ...d[k] } : {}; });
+            state.quizChoice = (d.quizChoice && typeof d.quizChoice === 'object') ? { ...d.quizChoice } : {};
+            state.quizFirst = (d.quizFirst && typeof d.quizFirst === 'object') ? { ...d.quizFirst } : {};
+            IDX_KEYS.forEach(k => {
+              if (Number.isInteger(d[k]) && d[k] >= 0) state[k] = d[k];
+            });
+            if (Number.isInteger(d.activeTab) && d.activeTab >= 1 && d.activeTab <= 5) state.activeTab = d.activeTab;
+            if (Number.isInteger(d.sliderVal)) state.sliderVal = d.sliderVal;
+          }
+        } catch (e) {}
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {}
+      }
+
+      function announce(msg) {
+        const el = document.getElementById('sr-live');
+        if (el) {
+          el.textContent = '';
+          setTimeout(() => { el.textContent = msg; }, 25);
+        }
+      }
+
+      function parseNum(raw) {
+        const t = String(raw).replace(/[%$,\s]/g, '');
+        return /^(\d+\.?\d*|\.\d+)$/.test(t) ? Number(t) : NaN;
+      }
+
+      const misses = {};
+      function bumpMiss(id) {
+        misses[id] = (misses[id] || 0) + 1;
+        return misses[id];
+      }
+
+      let justSolved = false;
+      function markSolved(map, id) {
+        map[id] = true;
+        justSolved = true;
+      }
+
+      function appendNext(fb, tab, len, render, onNext) {
+        if (!fb) return;
+        fb.querySelectorAll('.next-btn').forEach(x => x.remove());
+        const idxKey = `idx${tab}`;
+        const last = !onNext && state[idxKey] === len - 1;
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'btn btn-teal btn-sm next-btn';
+        if (!last) b.textContent = tab === 5 ? 'Next question →' : 'Next problem →';
+        else b.textContent = tab < 5 ? `Continue to Section ${tab + 1} →` : 'See my results →';
+        b.addEventListener('click', () => {
+          if (onNext) onNext();
+          else if (!last) { state[idxKey] += 1; render(); }
+          else if (tab < 5) selectTab(tab + 1, false);
+          else renderResults(true);
+        });
+        fb.appendChild(b);
+        if (justSolved) {
+          b.focus();
+          justSolved = false;
+        }
+      }
+
+      function speak(text, textEs) {
+        if (!('speechSynthesis' in window)) return;
+        window.speechSynthesis.cancel();
+        const useEs = state.showEs && textEs;
+        const u = new SpeechSynthesisUtterance(useEs ? textEs : text);
+        u.lang = useEs ? 'es-ES' : 'en-US';
+        u.rate = 0.96;
+        window.speechSynthesis.speak(u);
+      }
+
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-speak]');
+        if (btn) speak(btn.getAttribute('data-speak'), btn.getAttribute('data-speak-es'));
+      });
+
+      // Header controls
+      const esBtn = document.getElementById('toggle-es-btn');
+      esBtn.addEventListener('click', () => {
+        state.showEs = !state.showEs;
+        document.body.classList.toggle('show-es', state.showEs);
+        esBtn.setAttribute('aria-pressed', String(state.showEs));
+        saveState();
+      });
+
+      document.getElementById('print-btn').addEventListener('click', () => window.print());
+
+      const resetAllBtn = document.getElementById('reset-all-btn');
+      if (resetAllBtn) {
+        resetAllBtn.addEventListener('click', () => {
+          if (!window.confirm('Reset all 46 practice problems and quiz scores to start fresh?')) return;
+          SOLVED_KEYS.forEach(k => { state[k] = {}; });
+          state.quizChoice = {};
+          state.quizFirst = {};
+          IDX_KEYS.forEach(k => { state[k] = 0; });
+          Object.keys(misses).forEach(k => delete misses[k]);
+          try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+          renderT1Task();
+          renderT2Problem();
+          renderT3Problem();
+          renderT4Problem();
+          renderT5Question();
+          updateProgressHeader();
+          announce('All practice progress has been reset.');
+        });
+      }
+
+      const tabBtns = Array.from(document.querySelectorAll('.tab-btn'));
+      const tabPanels = Array.from(document.querySelectorAll('.tab-panel'));
+
+      function selectTab(num, focusBtn = false) {
+        state.activeTab = Number(num);
+        tabBtns.forEach(b => {
+          const active = Number(b.dataset.tab) === state.activeTab;
+          b.setAttribute('aria-selected', String(active));
+          b.setAttribute('tabindex', active ? '0' : '-1');
+          if (active && focusBtn) b.focus();
+        });
+        tabPanels.forEach((p, i) => {
+          p.classList.toggle('active', i + 1 === state.activeTab);
+        });
+        saveState();
+      }
+
+      tabBtns.forEach((b, idx) => {
+        b.addEventListener('click', () => selectTab(b.dataset.tab, false));
+        b.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            selectTab(tabBtns[(idx + 1) % tabBtns.length].dataset.tab, true);
+          } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            selectTab(tabBtns[(idx - 1 + tabBtns.length) % tabBtns.length].dataset.tab, true);
+          }
+        });
+      });
+
+      function updatePrintSummary(c1, c2, c3, c4, c5, total) {
+        const sheet = document.getElementById('print-summary-sheet');
+        if (!sheet) return;
+        const firstTry = Object.keys(state.quizFirst).filter(k => state.quizFirst[k]).length;
+        const dateStr = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+        sheet.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #17324D; padding-bottom:8px; margin-bottom:10px;">
+            <div>
+              <strong style="font-size:1.1rem; color:#17324D;">Relate Fractions, Decimals, &amp; Percents — Progress Summary</strong>
+              <div style="font-size:0.82rem; color:#4A607A;">Grade 6 Math · Unit 4, Lesson 4-2 (Standards 6.RP.A.3.C · 6.AT.4) · Printed ${dateStr}</div>
+            </div>
+            <div style="font-size:1.1rem; font-weight:800; color:#0F766E;">Total: ${total} / 46 (${Math.round((total / 46) * 100)}%)</div>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:8px; font-size:0.82rem;">
+            <div style="border:1px solid #CBD5E1; border-radius:6px; padding:6px 8px;"><strong>1. Three Forms</strong><div>${c1} / 8 tasks</div></div>
+            <div style="border:1px solid #CBD5E1; border-radius:6px; padding:6px 8px;"><strong>2. Convert to %</strong><div>${c2} / 12 problems</div></div>
+            <div style="border:1px solid #CBD5E1; border-radius:6px; padding:6px 8px;"><strong>3. Equivalence Trios</strong><div>${c3} / 8 trios</div></div>
+            <div style="border:1px solid #CBD5E1; border-radius:6px; padding:6px 8px;"><strong>4. Word Problems</strong><div>${c4} / 8 solved</div></div>
+            <div style="border:1px solid #CBD5E1; border-radius:6px; padding:6px 8px;"><strong>5. Mastery Quiz</strong><div>${c5} / 10 (${firstTry}/10 1st try)</div></div>
+          </div>
+        `;
+      }
+
+      function updateProgressHeader() {
+        const c1 = Object.keys(state.solved1).length; // 8
+        const c2 = Object.keys(state.solved2).filter(k => !k.startsWith('rand')).length; // 12
+        const c3 = Object.keys(state.solved3).filter(k => !k.startsWith('rand')).length; // 8
+        const c4 = Object.keys(state.solved4).length; // 8
+        const c5 = Object.keys(state.solved5).filter(k => state.solved5[k]).length; // 10
+
+        const total = c1 + c2 + c3 + c4 + c5;
+        document.getElementById('header-progress-count').textContent = `${total} / 46`;
+        document.getElementById('t5-score-pill').textContent = `Score: ${c5} / 10`;
+
+        const checks = [c1 === 8, c2 >= 12, c3 === 8, c4 === 8, c5 >= 8];
+        checks.forEach((done, i) => {
+          const btn = document.getElementById(`tab-${i + 1}`);
+          const badge = document.getElementById(`badge-${i + 1}`);
+          if (btn) btn.classList.toggle('tab-complete', done);
+          if (badge) badge.textContent = done ? '✓' : String(i + 1);
+        });
+
+        const banner = document.getElementById('complete-banner');
+        if (banner) banner.hidden = !checks.every(Boolean);
+
+        updatePrintSummary(c1, c2, c3, c4, c5, total);
+        saveState();
+      }
+
+      function renderDots(containerId, items, activeIdx, solvedMap, onSelect) {
+        const wrap = document.getElementById(containerId);
+        if (!wrap) return;
+        wrap.innerHTML = '';
+        items.forEach((item, idx) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          const isSolved = !!solvedMap[item.id];
+          btn.className = `step-dot ${idx === activeIdx ? 'active' : ''} ${isSolved ? 'solved' : ''}`;
+          btn.textContent = isSolved ? `${idx + 1} ✓` : String(idx + 1);
+          btn.setAttribute('aria-label', `Problem ${idx + 1}${isSolved ? ' completed' : ''}`);
+          if (idx === activeIdx) btn.setAttribute('aria-current', 'step');
+          btn.addEventListener('click', () => onSelect(idx));
+          wrap.appendChild(btn);
+        });
+      }
+
+      /* ----------------------------------------------------------------------
+         TAB 1: THE THREE FORMS VISUALIZER & 8 GUIDED TASKS
+         ---------------------------------------------------------------------- */
+      const t1Slider = document.getElementById('t1-slider');
+      const t1MiniGrid = document.getElementById('t1-mini-grid');
+
+      function initMiniGrid() {
+        if (!t1MiniGrid) return;
+        t1MiniGrid.innerHTML = '';
+        for (let r = 0; r < 10; r++) {
+          for (let c = 0; c < 10; c++) {
+            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            rect.setAttribute('x', String(c * 10));
+            rect.setAttribute('y', String(r * 10));
+            rect.setAttribute('width', '10');
+            rect.setAttribute('height', '10');
+            rect.setAttribute('fill', '#FFFFFF');
+            rect.setAttribute('stroke', '#E2E8F0');
+            rect.setAttribute('stroke-width', '0.5');
+            rect.dataset.gridIndex = String(r * 10 + c + 1);
+            t1MiniGrid.appendChild(rect);
+          }
+        }
+      }
+
+      function simplifyFrac(n, d) {
+        const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+        const g = gcd(n, d);
+        return `${n / g}/${d / g}`;
+      }
+
+      function setT1Value(pct) {
+        state.sliderVal = Math.max(0, Math.min(100, pct));
+        if (t1Slider) t1Slider.value = String(state.sliderVal);
+        const p = state.sliderVal;
+        const dec = (p / 100).toFixed(2);
+        const frac = p === 0 ? '0' : (p === 100 ? '1' : simplifyFrac(p, 100));
+
+        const barFill = document.getElementById('t1-bar-fill');
+        const barTxt = document.getElementById('t1-bar-txt');
+        if (barFill) barFill.setAttribute('width', String((p / 100) * 280));
+        if (barTxt) {
+          barTxt.textContent = `${p}%`;
+          barTxt.setAttribute('x', String(20 + Math.max(25, (p / 100) * 280 - 15)));
+        }
+
+        const lbl = document.getElementById('t1-slider-label');
+        if (lbl) lbl.textContent = `${p}% = ${dec} = ${frac}`;
+        const sFrac = document.getElementById('t1-stat-frac');
+        const sDec = document.getElementById('t1-stat-dec');
+        const sPct = document.getElementById('t1-stat-pct');
+        if (sFrac) sFrac.textContent = frac;
+        if (sDec) sDec.textContent = dec;
+        if (sPct) sPct.textContent = `${p}%`;
+
+        if (t1MiniGrid) {
+          t1MiniGrid.querySelectorAll('rect').forEach((r) => {
+            const idx = Number(r.dataset.gridIndex);
+            r.setAttribute('fill', idx <= p ? '#1FA6A2' : '#FFFFFF');
+          });
+        }
+      }
+
+      if (t1Slider) {
+        t1Slider.addEventListener('input', () => setT1Value(Number(t1Slider.value)));
+      }
+      document.querySelectorAll('[data-set-val]').forEach(btn => {
+        btn.addEventListener('click', () => setT1Value(Number(btn.dataset.setVal)));
+      });
+
+      const T1_TASKS = [
+        {
+          id: 't1_1',
+          val: 50,
+          title: 'Task 1 of 8 · One Half Equivalence',
+          stem: 'What decimal and percent represent exactly one half (&frac12;)?',
+          stemEs: '¿Qué decimal y porcentaje representan exactamente un medio (&frac12;)?',
+          type: 'mc',
+          choices: [
+            '0.2 = 20%',
+            '0.5 = 50%',
+            '0.05 = 5%',
+            '0.50 = 5%'
+          ],
+          choicesEs: [
+            '0.2 = 20%',
+            '0.5 = 50%',
+            '0.05 = 5%',
+            '0.50 = 5%'
+          ],
+          correct: 1,
+          hint: 'Divide 1 by 2 or scale &frac12; to a denominator of 100 (50/100).',
+          hintEs: 'Divide 1 entre 2 o escala &frac12; a denominador 100 (50/100).',
+          explain: '✓ Correct! &frac12; = 50/100 = 0.50 = 50%.',
+          explainEs: '✓ ¡Correcto! &frac12; = 50/100 = 0.50 = 50%.'
+        },
+        {
+          id: 't1_2',
+          val: 25,
+          title: 'Task 2 of 8 · One Fourth (One Quarter)',
+          stem: 'Write &frac14; as a decimal and as a percent.',
+          stemEs: 'Escribe &frac14; como decimal y como porcentaje.',
+          type: 'dual',
+          labelA: 'Decimal',
+          labelB: 'Percent (%)',
+          ansA: '0.25',
+          ansB: '25',
+          hint: 'Think of 1 quarter of a dollar: 25 cents out of 100.',
+          hintEs: 'Piensa en 25 centavos de un dólar: 25 de 100.',
+          explain: '✓ Perfect! &frac14; = 25/100 = 0.25 = 25%.',
+          explainEs: '✓ ¡Perfecto! &frac14; = 25/100 = 0.25 = 25%.'
+        },
+        {
+          id: 't1_3',
+          val: 75,
+          title: 'Task 3 of 8 · Three Fourths (Three Quarters)',
+          stem: 'In the food drive, students met &frac34; of their weekly goal. What percent of the goal is that?',
+          stemEs: 'En la colecta, los estudiantes lograron &frac34; de su meta. ¿Qué porcentaje es?',
+          type: 'single',
+          ans: '75',
+          suffix: '%',
+          hint: '&frac14; is 25%, so 3 &times; 25% = ?',
+          hintEs: '&frac14; es 25%, así que 3 &times; 25% = ?',
+          explain: '✓ Correct! &frac34; = 75/100 = 0.75 = 75%.',
+          explainEs: '✓ ¡Correcto! &frac34; = 75/100 = 0.75 = 75%.'
+        },
+        {
+          id: 't1_4',
+          val: 20,
+          title: 'Task 4 of 8 · One Fifth Benchmark',
+          stem: 'What is &frac15; written as a decimal and a percent?',
+          stemEs: '¿Cuánto es &frac15; escrito como decimal y porcentaje?',
+          type: 'mc',
+          choices: [
+            '0.15 and 15%',
+            '0.20 and 20%',
+            '0.02 and 2%',
+            '0.5 and 50%'
+          ],
+          choicesEs: [
+            '0.15 y 15%',
+            '0.20 y 20%',
+            '0.02 y 2%',
+            '0.5 y 50%'
+          ],
+          correct: 1,
+          hint: 'Scale &frac15; by multiplying top and bottom by 20: 1 &times; 20 / 5 &times; 20 = 20/100.',
+          hintEs: 'Multiplica numerador y denominador por 20: 20/100 = 0.20 = 20%.',
+          explain: '✓ Great! &frac15; = 20/100 = 0.20 = 20%.',
+          explainEs: '✓ ¡Bien hecho! &frac15; = 20/100 = 0.20 = 20%.'
+        },
+        {
+          id: 't1_5',
+          val: 60,
+          title: 'Task 5 of 8 · Multiples of One Fifth',
+          stem: 'Write &frac35; as a decimal.',
+          stemEs: 'Escribe &frac35; como decimal.',
+          type: 'single',
+          ans: '0.6',
+          hint: '&frac35; = 3 &times; 0.20 = 0.60 (or 0.6).',
+          hintEs: '&frac35; = 3 &times; 0.20 = 0.60 (o 0.6).',
+          explain: '✓ Exactly! &frac35; = 60/100 = 0.60 = 0.6.',
+          explainEs: '✓ ¡Exacto! &frac35; = 60/100 = 0.60 = 0.6.'
+        },
+        {
+          id: 't1_6',
+          val: 10,
+          title: 'Task 6 of 8 · One Tenth Benchmark',
+          stem: 'Write 1/10 as a decimal and as a percent.',
+          stemEs: 'Escribe 1/10 como decimal y como porcentaje.',
+          type: 'dual',
+          labelA: 'Decimal',
+          labelB: 'Percent (%)',
+          ansA: '0.1',
+          ansB: '10',
+          hint: '1 tenth = 0.1 = 10 hundredths = 10%.',
+          hintEs: '1 décimo = 0.1 = 10 centésimos = 10%.',
+          explain: '✓ Correct! 1/10 = 0.1 = 10%.',
+          explainEs: '✓ ¡Correcto! 1/10 = 0.1 = 10%.'
+        },
+        {
+          id: 't1_7',
+          val: 70,
+          title: 'Task 7 of 8 · Seven Tenths',
+          stem: 'A survey shows 7 out of 10 students walk or bike. What percent is that?',
+          stemEs: '7 de cada 10 estudiantes caminan o van en bici. ¿Qué porcentaje es?',
+          type: 'single',
+          ans: '70',
+          suffix: '%',
+          hint: '7/10 &times; 10/10 = 70/100.',
+          hintEs: '7/10 &times; 10/10 = 70/100.',
+          explain: '✓ Great job! 7/10 = 70/100 = 70%.',
+          explainEs: '✓ ¡Buen trabajo! 7/10 = 70/100 = 70%.'
+        },
+        {
+          id: 't1_8',
+          val: 100,
+          title: 'Task 8 of 8 · One Whole',
+          stem: 'What percent represents the entire whole (1.0)?',
+          stemEs: '¿Qué porcentaje representa el entero completo (1.0)?',
+          type: 'single',
+          ans: '100',
+          suffix: '%',
+          hint: '1 whole = 100 hundredths out of 100.',
+          hintEs: '1 entero = 100 centésimos de 100.',
+          explain: '✓ Complete! 1 whole = 100/100 = 1.00 = 100%.',
+          explainEs: '✓ ¡Completado! 1 entero = 100/100 = 1.00 = 100%.'
+        }
+      ];
+
+      function renderT1Task() {
+        const task = T1_TASKS[state.idx1];
+        setT1Value(task.val);
+        renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (ni) => {
+          state.idx1 = ni;
+          renderT1Task();
+        });
+
+        const card = document.getElementById('t1-task-card');
+        const isDone = !!state.solved1[task.id];
+        let bodyHtml = '';
+
+        if (task.type === 'mc') {
+          bodyHtml = `
+            <div class="choice-stack">
+              ${task.choices.map((c, i) => `
+                <button type="button" class="choice-btn ${isDone && i === task.correct ? 'correct' : ''}" data-t1-mc="${i}">
+                  <span style="font-weight: 700; width: 24px;">${['A', 'B', 'C', 'D'][i]}.</span>
+                  <span>${c}</span>
+                </button>
+              `).join('')}
+            </div>
+          `;
+        } else if (task.type === 'single') {
+          bodyHtml = `
+            <div style="display: flex; align-items: center; gap: 10px; margin: 18px 0;">
+              <input type="text" id="t1-inp-single" class="num-input ${isDone ? 'ok' : ''}" style="width: 100px;" value="${isDone ? task.ans : ''}" placeholder="?">
+              <strong style="color: var(--navy); font-size: 1.1rem;">${task.suffix || ''}</strong>
+              <button type="button" class="btn btn-primary" id="t1-check-btn">Check Answer</button>
+              <button type="button" class="btn" id="t1-hint-btn">💡 Hint</button>
+            </div>
+          `;
+        } else if (task.type === 'dual') {
+          bodyHtml = `
+            <div style="display: flex; gap: 16px; margin: 18px 0; flex-wrap: wrap;">
+              <div>
+                <label for="t1-inp-a" style="display: block; font-weight: 700; color: var(--navy); font-size: 0.85rem; margin-bottom: 4px;">${task.labelA}</label>
+                <input type="text" id="t1-inp-a" class="num-input ${isDone ? 'ok' : ''}" style="width: 100px;" value="${isDone ? task.ansA : ''}" placeholder="?">
+              </div>
+              <div>
+                <label for="t1-inp-b" style="display: block; font-weight: 700; color: var(--navy); font-size: 0.85rem; margin-bottom: 4px;">${task.labelB}</label>
+                <input type="text" id="t1-inp-b" class="num-input ${isDone ? 'ok' : ''}" style="width: 100px;" value="${isDone ? task.ansB : ''}" placeholder="?">
+              </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button type="button" class="btn btn-primary" id="t1-check-btn">Check Both Forms</button>
+              <button type="button" class="btn" id="t1-hint-btn">💡 Hint</button>
+            </div>
+          `;
+        }
+
+        const doneMsg = state.showEs && task.explainEs ? `${task.explain} (${task.explainEs})` : task.explain;
+
+        card.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
+            <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal); letter-spacing: 0.04em;">${task.title}</span>
+            <button type="button" class="speak-btn" data-speak="${task.stem}" data-speak-es="${task.stemEs}">🔊 Read</button>
+          </div>
+          <p style="font-size: 1.15rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${task.stem}</p>
+          <p class="es-text">${task.stemEs}</p>
+          ${bodyHtml}
+          <div id="t1-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">${isDone ? doneMsg : ''}</div>
+        `;
+
+        if (isDone) appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
+
+        if (task.type === 'mc') {
+          card.querySelectorAll('[data-t1-mc]').forEach(btn => {
+            btn.addEventListener('click', () => {
+              if (state.solved1[task.id]) return;
+              const idx = Number(btn.dataset.t1Mc);
+              const fb = document.getElementById('t1-fb');
+              card.querySelectorAll('[data-t1-mc]').forEach(b => b.classList.remove('correct', 'wrong'));
+              if (idx === task.correct) {
+                btn.classList.add('correct');
+                fb.className = 'feedback-box show ok';
+                fb.textContent = state.showEs && task.explainEs ? `${task.explain} (${task.explainEs})` : task.explain;
+                markSolved(state.solved1, task.id);
+                renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (ni) => { state.idx1 = ni; renderT1Task(); });
+                updateProgressHeader();
+                appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
+              } else {
+                btn.classList.add('wrong');
+                fb.className = 'feedback-box show err';
+                const hintTxt = state.showEs && task.hintEs ? `${task.hint} (${task.hintEs})` : task.hint;
+                fb.textContent = `Not quite. Hint: ${hintTxt}`;
+              }
+            });
+          });
+        } else {
+          const checkBtn = document.getElementById('t1-check-btn');
+          const hintBtn = document.getElementById('t1-hint-btn');
+          const fb = document.getElementById('t1-fb');
+
+          function verify() {
+            const hintTxt = state.showEs && task.hintEs ? `${task.hint} (${task.hintEs})` : task.hint;
+            const explainTxt = state.showEs && task.explainEs ? `${task.explain} (${task.explainEs})` : task.explain;
+
+            if (task.type === 'single') {
+              const inp = document.getElementById('t1-inp-single');
+              const val = inp.value.replace(/[%\s]/g, '').trim();
+              const ok = parseNum(val) === Number(task.ans);
+              inp.classList.toggle('ok', ok);
+              inp.classList.toggle('err', !ok);
+              if (ok) {
+                fb.className = 'feedback-box show ok';
+                fb.textContent = explainTxt;
+                markSolved(state.solved1, task.id);
+                renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (ni) => { state.idx1 = ni; renderT1Task(); });
+                updateProgressHeader();
+                appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
+              } else {
+                fb.className = 'feedback-box show err';
+                fb.textContent = `Check your number. Hint: ${hintTxt}`;
+              }
+            } else if (task.type === 'dual') {
+              const inpA = document.getElementById('t1-inp-a');
+              const inpB = document.getElementById('t1-inp-b');
+              const okA = parseNum(inpA.value) === Number(task.ansA);
+              const okB = parseNum(inpB.value) === Number(task.ansB);
+              inpA.classList.toggle('ok', okA);
+              inpA.classList.toggle('err', !okA);
+              inpB.classList.toggle('ok', okB);
+              inpB.classList.toggle('err', !okB);
+              if (okA && okB) {
+                fb.className = 'feedback-box show ok';
+                fb.textContent = explainTxt;
+                markSolved(state.solved1, task.id);
+                renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (ni) => { state.idx1 = ni; renderT1Task(); });
+                updateProgressHeader();
+                appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
+              } else {
+                fb.className = 'feedback-box show err';
+                fb.textContent = `Check both values. Hint: ${hintTxt}`;
+              }
+            }
+          }
+
+          if (checkBtn) checkBtn.addEventListener('click', verify);
+          if (hintBtn) hintBtn.addEventListener('click', () => {
+            fb.className = 'feedback-box show warn';
+            const hintTxt = state.showEs && task.hintEs ? `${task.hint} (${task.hintEs})` : task.hint;
+            fb.textContent = `💡 Hint: ${hintTxt}`;
+          });
+        }
+      }
+
+      document.getElementById('t1-prev-btn').addEventListener('click', () => {
+        state.idx1 = (state.idx1 - 1 + T1_TASKS.length) % T1_TASKS.length;
+        renderT1Task();
+      });
+      document.getElementById('t1-next-btn').addEventListener('click', () => {
+        state.idx1 = (state.idx1 + 1) % T1_TASKS.length;
+        renderT1Task();
+      });
+
+      /* ----------------------------------------------------------------------
+         TAB 2: CONVERT TO PERCENT (12 PROBLEMS + STEPPING + RANDOMIZER)
+         ---------------------------------------------------------------------- */
+      const T2_PROBLEMS = [
+        { id: 't2_1', title: '1. Denominator of 2', num: 1, den: 2, stem: 'Convert 1/2 to a fraction out of 100, then write the decimal and percent.', stemEs: 'Convierte 1/2 a fracción sobre 100, luego escribe el decimal y porcentaje.' },
+        { id: 't2_2', title: '2. Denominator of 4', num: 3, den: 4, stem: 'Convert 3/4 to a fraction out of 100, then write the decimal and percent.', stemEs: 'Convierte 3/4 a fracción sobre 100, luego escribe el decimal y porcentaje.' },
+        { id: 't2_3', title: '3. Denominator of 5', num: 2, den: 5, stem: 'Convert 2/5 to a fraction out of 100, then write the decimal and percent.', stemEs: 'Convierte 2/5 a fracción sobre 100, luego escribe el decimal y porcentaje.' },
+        { id: 't2_4', title: '4. Denominator of 5', num: 4, den: 5, stem: 'Convert 4/5 to a fraction out of 100, then write the decimal and percent.', stemEs: 'Convierte 4/5 a fracción sobre 100, luego escribe el decimal y porcentaje.' },
+        { id: 't2_5', title: '5. Denominator of 10', num: 7, den: 10, stem: 'Convert 7/10 to a fraction out of 100, then write the decimal and percent.', stemEs: 'Convierte 7/10 a fracción sobre 100, luego escribe el decimal y porcentaje.' },
+        { id: 't2_6', title: '6. Denominator of 10', num: 9, den: 10, stem: 'Convert 9/10 to a fraction out of 100, then write the decimal and percent.', stemEs: 'Convierte 9/10 a fracción sobre 100, luego escribe el decimal y porcentaje.' },
+        { id: 't2_7', title: '7. Denominator of 20', num: 7, den: 20, stem: 'Convert 7/20 to a fraction out of 100, then write the decimal and percent.', stemEs: 'Convierte 7/20 a fracción sobre 100, luego escribe el decimal y porcentaje.' },
+        { id: 't2_8', title: '8. Denominator of 20', num: 13, den: 20, stem: 'Convert 13/20 to a fraction out of 100, then write the decimal and percent.', stemEs: 'Convierte 13/20 a fracción sobre 100, luego escribe el decimal y porcentaje.' },
+        { id: 't2_9', title: '9. Denominator of 25', num: 6, den: 25, stem: 'Convert 6/25 to a fraction out of 100, then write the decimal and percent.', stemEs: 'Convierte 6/25 a fracción sobre 100, luego escribe el decimal y porcentaje.' },
+        { id: 't2_10', title: '10. Denominator of 25', num: 19, den: 25, stem: 'Convert 19/25 to a fraction out of 100, then write the decimal and percent.', stemEs: 'Convierte 19/25 a fracción sobre 100, luego escribe el decimal y porcentaje.' },
+        { id: 't2_11', title: '11. Denominator of 50', num: 17, den: 50, stem: 'Convert 17/50 to a fraction out of 100, then write the decimal and percent.', stemEs: 'Convierte 17/50 a fracción sobre 100, luego escribe el decimal y porcentaje.' },
+        { id: 't2_12', title: '12. Denominator of 50', num: 39, den: 50, stem: 'Convert 39/50 to a fraction out of 100, then write the decimal and percent.', stemEs: 'Convierte 39/50 a fracción sobre 100, luego escribe el decimal y porcentaje.' }
+      ];
+
+      let currentT2 = T2_PROBLEMS[0];
+
+      function renderT2Problem() {
+        const p = currentT2;
+        const factor = 100 / p.den;
+        const targetPct = p.num * factor;
+        const decVal = (targetPct / 100).toFixed(2);
+        const isDone = !!state.solved2[p.id];
+
+        renderDots('t2-dots', T2_PROBLEMS, p.id.startsWith('rand') ? -1 : state.idx2, state.solved2, (ni) => {
+          state.idx2 = ni;
+          currentT2 = T2_PROBLEMS[ni];
+          renderT2Problem();
+        });
+
+        const stage = document.getElementById('t2-stage-card');
+        stage.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
+            <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal); letter-spacing: 0.04em;">${p.title}</span>
+            <button type="button" class="speak-btn" data-speak="${p.stem}" data-speak-es="${p.stemEs}">🔊 Read</button>
+          </div>
+          <p style="font-size: 1.15rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${p.stem}</p>
+          <p class="es-text">${p.stemEs}</p>
+
+          <div class="trio-container">
+            <div class="trio-pill">
+              <span class="trio-label">Given Fraction</span>
+              <span class="trio-val">${p.num}/${p.den}</span>
+            </div>
+            <span class="trio-arrow">&rarr;</span>
+            <div class="trio-pill" style="border-color: var(--teal);">
+              <span class="trio-label">Fraction out of 100</span>
+              <span class="trio-val" id="t2-live-f100" style="color: var(--teal);">${isDone ? targetPct + '/100' : '?/100'}</span>
+            </div>
+            <span class="trio-arrow">&rarr;</span>
+            <div class="trio-pill" style="border-color: var(--amber);">
+              <span class="trio-label">Decimal</span>
+              <span class="trio-val" id="t2-live-dec" style="color: var(--amber);">${isDone ? decVal : '0.__'}</span>
+            </div>
+            <span class="trio-arrow">&rarr;</span>
+            <div class="trio-pill" style="background: var(--navy); border-color: var(--navy);">
+              <span class="trio-label" style="color: #CBD5E1;">Percent</span>
+              <span class="trio-val" id="t2-live-pct" style="color: #FFFFFF;">${isDone ? targetPct + '%' : '?%'}</span>
+            </div>
+          </div>
+
+          <div class="guided-steps-grid">
+            <div class="step-box">
+              <div>
+                <div class="step-box-label">Step 1 · Scale Factor to 100</div>
+                <p class="step-box-desc">What number multiplies <strong>${p.den}</strong> to make <strong>100</strong>?</p>
+              </div>
+              <div class="step-box-eq">
+                <span>${p.den} &times;</span>
+                <input type="text" id="t2-inp-factor" class="num-input ${isDone ? 'ok' : ''}" style="width: 78px;" value="${isDone ? factor : ''}" placeholder="?">
+                <span>= 100</span>
+              </div>
+            </div>
+
+            <div class="step-box step-2">
+              <div>
+                <div class="step-box-label" style="color: var(--teal);">Step 2 · Scale the Numerator</div>
+                <p class="step-box-desc">Multiply numerator <strong>${p.num}</strong> by that scale factor:</p>
+              </div>
+              <div class="step-box-eq">
+                <span>${p.num} &times; factor =</span>
+                <input type="text" id="t2-inp-num" class="num-input ${isDone ? 'ok' : ''}" style="width: 78px;" value="${isDone ? targetPct : ''}" placeholder="?">
+              </div>
+            </div>
+
+            <div class="step-box step-3">
+              <div>
+                <div class="step-box-label" style="color: var(--amber);">Step 3 · Write Decimal &amp; Percent</div>
+                <p class="step-box-desc">Write the decimal and the percent:</p>
+              </div>
+              <div class="step-box-eq" style="flex-direction: column; align-items: flex-start; gap: 6px;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span style="font-size: 0.85rem;">Dec:</span>
+                  <input type="text" id="t2-inp-dec" class="num-input ${isDone ? 'ok' : ''}" style="width: 86px;" value="${isDone ? decVal : ''}" placeholder="0.__">
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span style="font-size: 0.85rem;">Pct:</span>
+                  <input type="text" id="t2-inp-pct" class="num-input ${isDone ? 'ok' : ''}" style="width: 86px;" value="${isDone ? targetPct : ''}" placeholder="?">
+                  <span>%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 18px; align-items: center; flex-wrap: wrap;">
+            <button type="button" class="btn btn-primary" id="t2-check-btn">Check All Steps</button>
+            <button type="button" class="btn" id="t2-hint-btn">💡 Hint</button>
+          </div>
+
+          <div id="t2-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">
+            ${isDone ? `✓ Great work! ${p.num}/${p.den} &times; ${factor}/${factor} = ${targetPct}/100 = ${decVal} = ${targetPct}%.` : ''}
+          </div>
+        `;
+
+        const fInp = document.getElementById('t2-inp-factor');
+        const nInp = document.getElementById('t2-inp-num');
+        const dInp = document.getElementById('t2-inp-dec');
+        const pInp = document.getElementById('t2-inp-pct');
+        const fb = document.getElementById('t2-fb');
+
+        function checkT2() {
+          const fVal = parseNum(fInp.value);
+          const nVal = parseNum(nInp.value);
+          const dVal = parseNum(dInp.value);
+          const pVal = parseNum(pInp.value);
+
+          const okF = fVal === factor;
+          const okN = nVal === targetPct;
+          const okD = Math.abs(dVal - Number(decVal)) < 0.001;
+          const okP = pVal === targetPct;
+
+          fInp.classList.toggle('ok', okF);
+          fInp.classList.toggle('err', !okF);
+          nInp.classList.toggle('ok', okN);
+          nInp.classList.toggle('err', !okN);
+          dInp.classList.toggle('ok', okD);
+          dInp.classList.toggle('err', !okD);
+          pInp.classList.toggle('ok', okP);
+          pInp.classList.toggle('err', !okP);
+
+          if (okF && okN && okD && okP) {
+            fb.className = 'feedback-box show ok';
+            fb.textContent = `✓ Correct! ${p.num}/${p.den} scaled by ${factor} is ${targetPct}/100 = ${decVal} = ${targetPct}%.`;
+            markSolved(state.solved2, p.id);
+            renderDots('t2-dots', T2_PROBLEMS, state.idx2, state.solved2, (ni) => { state.idx2 = ni; currentT2 = T2_PROBLEMS[ni]; renderT2Problem(); });
+            updateProgressHeader();
+            appendNext(document.getElementById('t2-fb'), 2, T2_PROBLEMS.length, renderT2Problem);
+          } else {
+            const m = bumpMiss(p.id);
+            fb.className = 'feedback-box show err';
+            fb.textContent = m < 2 ? 'One or more boxes are incorrect. Re-check your scale factor and multiplication.' : `Hint: 100 &divide; ${p.den} = ${factor}. Multiply ${p.num} &times; ${factor} = ${targetPct}.`;
+          }
+        }
+
+        document.getElementById('t2-check-btn').addEventListener('click', checkT2);
+        document.getElementById('t2-hint-btn').addEventListener('click', () => {
+          fb.className = 'feedback-box show warn';
+          fb.textContent = `💡 Hint: 100 &divide; ${p.den} = ${factor}. Multiply ${p.num} &times; ${factor} = ${targetPct}.`;
+        });
+      }
+
+      document.getElementById('t2-prev-btn').addEventListener('click', () => {
+        state.idx2 = (state.idx2 - 1 + T2_PROBLEMS.length) % T2_PROBLEMS.length;
+        currentT2 = T2_PROBLEMS[state.idx2];
+        renderT2Problem();
+      });
+      document.getElementById('t2-next-btn').addEventListener('click', () => {
+        state.idx2 = (state.idx2 + 1) % T2_PROBLEMS.length;
+        currentT2 = T2_PROBLEMS[state.idx2];
+        renderT2Problem();
+      });
+      document.getElementById('t2-random-btn').addEventListener('click', () => {
+        const dens = [2, 4, 5, 10, 20, 25, 50];
+        const den = dens[Math.floor(Math.random() * dens.length)];
+        const num = Math.floor(Math.random() * (den - 1)) + 1;
+        currentT2 = {
+          id: `rand_${Date.now()}`,
+          title: `Practice: ${num}/${den}`,
+          num,
+          den,
+          stem: `Convert ${num}/${den} to a fraction out of 100, then write its decimal and percent.`,
+          stemEs: `Convierte ${num}/${den} a fracción sobre 100, decimal y porcentaje.`
+        };
+        renderT2Problem();
+      });
+
+      /* ----------------------------------------------------------------------
+         TAB 3: EQUIVALENCE TRIOS (8 PROBLEMS + RANDOMIZER)
+         ---------------------------------------------------------------------- */
+      const T3_PROBLEMS = [
+        { id: 't3_1', givenType: 'dec', givenVal: '0.35', num: 7, den: 20, pct: 35, stem: 'Given decimal 0.35, write it as a fraction in simplest form and as a percent.', stemEs: 'Dado el decimal 0.35, escríbelo como fracción simplificada y como porcentaje.' },
+        { id: 't3_2', givenType: 'pct', givenVal: '65%', num: 13, den: 20, dec: '0.65', stem: 'Given 65%, write it as a fraction in simplest form and as a decimal.', stemEs: 'Dado 65%, escríbelo como fracción simplificada y como decimal.' },
+        { id: 't3_3', givenType: 'frac', givenVal: '3/8', dec: '0.375', pct: 37.5, stem: 'Given fraction 3/8, divide 3 &divide; 8 to find the decimal, then write the percent.', stemEs: 'Dada la fracción 3/8, divide 3 &divide; 8 para hallar el decimal y el porcentaje.' },
+        { id: 't3_4', givenType: 'dec', givenVal: '0.08', num: 2, den: 25, pct: 8, stem: 'In Reveal Lesson 4-2, a giraffe sleeps 0.08 of the day. Write 0.08 as a simplified fraction and as a percent.', stemEs: 'En la lección 4-2, una jirafa duerme 0.08 del día. Escribe 0.08 como fracción simplificada y porcentaje.' },
+        { id: 't3_5', givenType: 'pct', givenVal: '44%', num: 11, den: 25, dec: '0.44', stem: 'Given 44%, write it as a simplified fraction and as a decimal.', stemEs: 'Dado 44%, escríbelo como fracción simplificada y decimal.' },
+        { id: 't3_6', givenType: 'dec', givenVal: '0.125', num: 1, den: 8, pct: 12.5, stem: 'Given decimal 0.125 (125 thousandths), write it as a simplified fraction and as a percent.', stemEs: 'Dado 0.125, escríbelo como fracción simplificada y porcentaje.' },
+        { id: 't3_7', givenType: 'pct', givenVal: '85%', num: 17, den: 20, dec: '0.85', stem: 'Given 85%, write it as a fraction in simplest form and as a decimal.', stemEs: 'Dado 85%, escríbelo como fracción simplificada y decimal.' },
+        { id: 't3_8', givenType: 'frac', givenVal: '18/25', dec: '0.72', pct: 72, stem: 'Given fraction 18/25, write it as a decimal and as a percent.', stemEs: 'Dada la fracción 18/25, escríbela como decimal y porcentaje.' }
+      ];
+
+      let currentT3 = T3_PROBLEMS[0];
+
+      function renderT3Problem() {
+        const p = currentT3;
+        const isDone = !!state.solved3[p.id];
+
+        renderDots('t3-dots', T3_PROBLEMS, p.id.startsWith('rand') ? -1 : state.idx3, state.solved3, (ni) => {
+          state.idx3 = ni;
+          currentT3 = T3_PROBLEMS[ni];
+          renderT3Problem();
+        });
+
+        const stage = document.getElementById('t3-stage-card');
+        stage.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
+            <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal); letter-spacing: 0.04em;">Trio Problem #${p.id.replace('t3_', '')}</span>
+            <button type="button" class="speak-btn" data-speak="${p.stem}" data-speak-es="${p.stemEs}">🔊 Read</button>
+          </div>
+          <p style="font-size: 1.15rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${p.stem}</p>
+          <p class="es-text">${p.stemEs}</p>
+
+          <div class="trio-container">
+            <div class="trio-pill">
+              <span class="trio-label">Given Value</span>
+              <span class="trio-val" style="color: var(--teal);">${p.givenVal}</span>
+            </div>
+            <span class="trio-arrow">&harr;</span>
+            <div class="trio-pill">
+              <span class="trio-label">Simplified Fraction</span>
+              <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <input type="text" id="t3-inp-num" class="num-input ${isDone ? 'ok' : ''}" style="width: 50px; font-size: 1.2rem; padding: 4px;" value="${isDone ? (p.num || '3') : ''}" placeholder="num">
+                <span>/</span>
+                <input type="text" id="t3-inp-den" class="num-input ${isDone ? 'ok' : ''}" style="width: 50px; font-size: 1.2rem; padding: 4px;" value="${isDone ? (p.den || '8') : ''}" placeholder="den">
+              </div>
+            </div>
+            <span class="trio-arrow">&harr;</span>
+            <div class="trio-pill">
+              <span class="trio-label">Decimal</span>
+              <input type="text" id="t3-inp-dec" class="num-input ${isDone ? 'ok' : ''}" style="width: 80px; font-size: 1.2rem; padding: 4px;" value="${isDone ? (p.dec || (p.pct/100).toFixed(2)) : ''}" placeholder="0.__">
+            </div>
+            <span class="trio-arrow">&harr;</span>
+            <div class="trio-pill">
+              <span class="trio-label">Percent</span>
+              <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <input type="text" id="t3-inp-pct" class="num-input ${isDone ? 'ok' : ''}" style="width: 70px; font-size: 1.2rem; padding: 4px;" value="${isDone ? (p.pct || '37.5') : ''}" placeholder="?">
+                <span style="font-weight: 800;">%</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 18px; align-items: center; flex-wrap: wrap;">
+            <button type="button" class="btn btn-primary" id="t3-check-btn">Check Trio</button>
+            <button type="button" class="btn" id="t3-hint-btn">💡 Hint</button>
+          </div>
+
+          <div id="t3-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">
+            ${isDone ? '✓ All three forms are equivalent!' : ''}
+          </div>
+        `;
+
+        function checkT3() {
+          const num = parseNum(document.getElementById('t3-inp-num').value);
+          const den = parseNum(document.getElementById('t3-inp-den').value);
+          const dec = parseNum(document.getElementById('t3-inp-dec').value);
+          const pct = parseNum(document.getElementById('t3-inp-pct').value);
+
+          const targetNum = p.num || 3;
+          const targetDen = p.den || 8;
+          const targetDec = p.dec ? Number(p.dec) : (p.pct / 100);
+          const targetPct = p.pct ? Number(p.pct) : (p.num / p.den * 100);
+
+          const okF = num === targetNum && den === targetDen;
+          const okD = Math.abs(dec - targetDec) < 0.001;
+          const okP = Math.abs(pct - targetPct) < 0.01;
+
+          document.getElementById('t3-inp-num').classList.toggle('ok', okF);
+          document.getElementById('t3-inp-num').classList.toggle('err', !okF);
+          document.getElementById('t3-inp-den').classList.toggle('ok', okF);
+          document.getElementById('t3-inp-den').classList.toggle('err', !okF);
+          document.getElementById('t3-inp-dec').classList.toggle('ok', okD);
+          document.getElementById('t3-inp-dec').classList.toggle('err', !okD);
+          document.getElementById('t3-inp-pct').classList.toggle('ok', okP);
+          document.getElementById('t3-inp-pct').classList.toggle('err', !okP);
+
+          const fb = document.getElementById('t3-fb');
+          if (okF && okD && okP) {
+            fb.className = 'feedback-box show ok';
+            fb.textContent = `✓ Perfect! Simplified fraction is ${targetNum}/${targetDen}, decimal is ${targetDec}, and percent is ${targetPct}%.`;
+            markSolved(state.solved3, p.id);
+            renderDots('t3-dots', T3_PROBLEMS, state.idx3, state.solved3, (ni) => { state.idx3 = ni; currentT3 = T3_PROBLEMS[ni]; renderT3Problem(); });
+            updateProgressHeader();
+            appendNext(document.getElementById('t3-fb'), 3, T3_PROBLEMS.length, renderT3Problem);
+          } else {
+            fb.className = 'feedback-box show err';
+            fb.textContent = 'Check the red boxes. Make sure your fraction is simplified to lowest terms.';
+          }
+        }
+
+        document.getElementById('t3-check-btn').addEventListener('click', checkT3);
+        document.getElementById('t3-hint-btn').addEventListener('click', () => {
+          const fb = document.getElementById('t3-fb');
+          fb.className = 'feedback-box show warn';
+          fb.textContent = '💡 Hint: To find the decimal from a fraction, divide numerator &divide; denominator. To find percent, multiply decimal &times; 100.';
+        });
+      }
+
+      document.getElementById('t3-prev-btn').addEventListener('click', () => {
+        state.idx3 = (state.idx3 - 1 + T3_PROBLEMS.length) % T3_PROBLEMS.length;
+        currentT3 = T3_PROBLEMS[state.idx3];
+        renderT3Problem();
+      });
+      document.getElementById('t3-next-btn').addEventListener('click', () => {
+        state.idx3 = (state.idx3 + 1) % T3_PROBLEMS.length;
+        currentT3 = T3_PROBLEMS[state.idx3];
+        renderT3Problem();
+      });
+      document.getElementById('t3-random-btn').addEventListener('click', () => {
+        const pool = [
+          { num: 1, den: 4, pct: 25 },
+          { num: 3, den: 5, pct: 60 },
+          { num: 9, den: 20, pct: 45 },
+          { num: 7, den: 25, pct: 28 },
+          { num: 11, den: 50, pct: 22 }
+        ];
+        const pick = pool[Math.floor(Math.random() * pool.length)];
+        currentT3 = {
+          id: `rand_${Date.now()}`,
+          givenType: 'pct',
+          givenVal: `${pick.pct}%`,
+          num: pick.num,
+          den: pick.den,
+          pct: pick.pct,
+          dec: (pick.pct / 100).toFixed(2),
+          stem: `Convert ${pick.pct}% into a simplified fraction and a decimal.`,
+          stemEs: `Convierte ${pick.pct}% a fracción simplificada y decimal.`
+        };
+        renderT3Problem();
+      });
+
+      /* ----------------------------------------------------------------------
+         TAB 4: WORD PROBLEMS & ERROR DETECTIVE (8 PROBLEMS)
+         ---------------------------------------------------------------------- */
+      const T4_PROBLEMS = [
+        {
+          id: 't4_1',
+          title: 'Problem 1 · Canned Food Drive Goal',
+          stem: 'A class set a goal of 100 cans. They collected 75 cans. What fraction (in simplest form), decimal, and percent of their goal did they collect?',
+          stemEs: 'Recolectaron 75 de 100 latas. ¿Qué fracción simplificada, decimal y porcentaje representa?',
+          type: 'mc',
+          choices: [
+            '75/100, 7.5, 75%',
+            '3/4, 0.75, 75%',
+            '3/5, 0.60, 60%',
+            '1/2, 0.50, 50%'
+          ],
+          choicesEs: [
+            '75/100, 7.5, 75%',
+            '3/4, 0.75, 75%',
+            '3/5, 0.60, 60%',
+            '1/2, 0.50, 50%'
+          ],
+          correct: 1,
+          hint: '75/100 simplifies by dividing top and bottom by 25: 75 &divide; 25 = 3, 100 &divide; 25 = 4.',
+          explain: '✓ Correct! 75 out of 100 is 3/4 = 0.75 = 75%.'
+        },
+        {
+          id: 't4_2',
+          title: 'Problem 2 · Sleepy Animals (Reveal Math 4-2 Apply)',
+          stem: 'A tiger sleeps 0.65 of a 24-hour day, while a chimpanzee sleeps 2/5 of the day. Which animal sleeps a GREATER percent of the day?',
+          stemEs: 'Un tigre duerme 0.65 del día y un chimpancé 2/5. ¿Cuál duerme un mayor porcentaje?',
+          type: 'mc',
+          choices: [
+            'Tiger (0.65 = 65% vs Chimpanzee 2/5 = 40%)',
+            'Chimpanzee (2/5 = 50% vs Tiger 65%)',
+            'They sleep the exact same percent of the day',
+            'Cannot be compared because one is a decimal and one is a fraction'
+          ],
+          choicesEs: [
+            'Tigre (0.65 = 65% vs Chimpancé 2/5 = 40%)',
+            'Chimpancé (2/5 = 50% vs Tigre 65%)',
+            'Duermen exactamente el mismo porcentaje',
+            'No se pueden comparar'
+          ],
+          correct: 0,
+          hint: 'Convert 2/5 to a decimal: 2 &divide; 5 = 0.40 = 40%. Compare 0.65 (65%) to 0.40 (40%).',
+          explain: '✓ Correct! Tiger sleeps 65% of the day, which is greater than Chimpanzee at 40%.'
+        },
+        {
+          id: 't4_3',
+          title: 'Problem 3 · Giraffe Sleep Calculation',
+          stem: 'A giraffe sleeps only 8/100 of a day. Write this amount as a percent and as a decimal.',
+          stemEs: 'Una jirafa duerme solo 8/100 del día. Escribe esto como porcentaje y decimal.',
+          type: 'mc',
+          choices: [
+            '80% and 0.8',
+            '8% and 0.08',
+            '0.8% and 0.008',
+            '8% and 0.8'
+          ],
+          choicesEs: [
+            '80% y 0.8',
+            '8% y 0.08',
+            '0.8% y 0.008',
+            '8% y 0.8'
+          ],
+          correct: 1,
+          hint: '8 hundredths is 0.08, not 0.8. 0.8 would be 8 tenths (80%).',
+          explain: '✓ Correct! 8/100 is 8% = 0.08.'
+        },
+        {
+          id: 't4_4',
+          title: 'Problem 4 · Error Detective: Decimal Shift',
+          stem: 'Maya was asked to convert 0.06 to a percent. She wrote 60%. What mistake did Maya make?',
+          stemEs: 'Maya convirtió 0.06 a porcentaje y escribió 60%. ¿Qué error cometió?',
+          type: 'mc',
+          choices: [
+            'She multiplied by 10 instead of dividing by 10',
+            'She shifted the decimal point 3 places right instead of 2',
+            'She confused 6 hundredths (6%) with 6 tenths (60%)',
+            'She should have written 0.6%'
+          ],
+          choicesEs: [
+            'Multiplicó por 10 en vez de dividir por 10',
+            'Movió el punto decimal 3 lugares',
+            'Confundió 6 centésimos (6%) con 6 décimos (60%)',
+            'Debió escribir 0.6%'
+          ],
+          correct: 2,
+          hint: '0.06 has a 6 in the hundredths place. 6 hundredths is 6%, whereas 0.60 is 60%.',
+          explain: '✓ Spot on! 0.06 &times; 100 = 6%. 60% would be 0.60.'
+        },
+        {
+          id: 't4_5',
+          title: 'Problem 5 · Error Detective: Denominator Scaling',
+          stem: 'Liam wanted to turn 9/20 into a percent. He wrote 9%. Explain his mistake.',
+          stemEs: 'Liam convirtió 9/20 a porcentaje y escribió 9%. Explica su error.',
+          type: 'mc',
+          choices: [
+            'He forgot that percent means out of 100, not out of 20; he needed to multiply 9 by 5 to get 45%',
+            'He divided 9 by 20 incorrectly',
+            'He should have multiplied 9 by 20 to get 180%',
+            '9/20 is already out of 100 so 9% is correct'
+          ],
+          choicesEs: [
+            'Olvidó que porcentaje es sobre 100; debió multiplicar 9 por 5 para obtener 45%',
+            'Dividió 9 entre 20 incorrectamente',
+            'Debió multiplicar 9 por 20',
+            '9/20 ya está sobre 100'
+          ],
+          correct: 0,
+          hint: 'A fraction is only directly the percent when the denominator is 100. 20 &times; 5 = 100, so 9 &times; 5 = 45%.',
+          explain: '✓ Exactly! 9/20 = (9 &times; 5)/(20 &times; 5) = 45/100 = 45%.'
+        },
+        {
+          id: 't4_6',
+          title: 'Problem 6 · Free Throw Comparison',
+          stem: 'Player A made 7 out of 10 free throws (7/10). Player B made 17 out of 25 free throws (17/25). Who had the higher shooting percentage?',
+          stemEs: 'Jugador A encestó 7 de 10. Jugador B encestó 17 de 25. ¿Quién tuvo mayor porcentaje?',
+          type: 'mc',
+          choices: [
+            'Player A (70% vs Player B 68%)',
+            'Player B (68% vs Player A 7%)',
+            'Player B because 17 is greater than 7',
+            'Both players tied at 70%'
+          ],
+          choicesEs: [
+            'Jugador A (70% vs Jugador B 68%)',
+            'Jugador B (68% vs Jugador A 7%)',
+            'Jugador B porque 17 es mayor que 7',
+            'Empataron en 70%'
+          ],
+          correct: 0,
+          hint: 'Player A: 7/10 = 70/100 = 70%. Player B: 17/25 &times; 4/4 = 68/100 = 68%. 70% > 68%.',
+          explain: '✓ Excellent! 7/10 = 70% and 17/25 = 68%, so Player A was higher.'
+        },
+        {
+          id: 't4_7',
+          title: 'Problem 7 · Ordering Mixed Forms',
+          stem: 'Order these numbers from least to greatest: 0.4, 35%, 1/2.',
+          stemEs: 'Ordena de menor a mayor: 0.4, 35%, 1/2.',
+          type: 'mc',
+          choices: [
+            '1/2, 0.4, 35%',
+            '35%, 0.4, 1/2',
+            '0.4, 35%, 1/2',
+            '35%, 1/2, 0.4'
+          ],
+          choicesEs: [
+            '1/2, 0.4, 35%',
+            '35%, 0.4, 1/2',
+            '0.4, 35%, 1/2',
+            '35%, 1/2, 0.4'
+          ],
+          correct: 1,
+          hint: 'Convert all to percents: 0.4 = 40%, 35% = 35%, 1/2 = 50%. 35% < 40% < 50%.',
+          explain: '✓ Correct! 35% (0.35) < 0.4 (40%) < 1/2 (50%).'
+        },
+        {
+          id: 't4_8',
+          title: 'Problem 8 · Sale Discount Fraction',
+          stem: 'A store advertises 30% off all shoes. What fraction of the original price do you save in simplest form?',
+          stemEs: 'Una tienda ofrece 30% de descuento. ¿Qué fracción del precio original ahorras?',
+          type: 'mc',
+          choices: [
+            '3/10',
+            '30/10',
+            '1/3',
+            '3/100'
+          ],
+          choicesEs: [
+            '3/10',
+            '30/10',
+            '1/3',
+            '3/100'
+          ],
+          correct: 0,
+          hint: '30% = 30/100. Divide top and bottom by 10 to simplify: 30 &divide; 10 = 3, 100 &divide; 10 = 10.',
+          explain: '✓ Correct! 30% = 30/100 = 3/10.'
+        }
+      ];
+
+      function renderT4Problem() {
+        const p = T4_PROBLEMS[state.idx4];
+        const isDone = !!state.solved4[p.id];
+
+        renderDots('t4-dots', T4_PROBLEMS, state.idx4, state.solved4, (ni) => {
+          state.idx4 = ni;
+          renderT4Problem();
+        });
+
+        const stage = document.getElementById('t4-stage-card');
+        stage.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
+            <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal); letter-spacing: 0.04em;">${p.title}</span>
+            <button type="button" class="speak-btn" data-speak="${p.stem}" data-speak-es="${p.stemEs}">🔊 Read</button>
+          </div>
+          <p style="font-size: 1.15rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${p.stem}</p>
+          <p class="es-text">${p.stemEs}</p>
+
+          <div class="choice-stack">
+            ${p.choices.map((c, i) => `
+              <button type="button" class="choice-btn ${isDone && i === p.correct ? 'correct' : ''}" data-t4-mc="${i}">
+                <span style="font-weight: 700; width: 24px;">${['A', 'B', 'C', 'D'][i]}.</span>
+                <span>${c}</span>
+              </button>
+            `).join('')}
+          </div>
+
+          <div id="t4-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">
+            ${isDone ? p.explain : ''}
+          </div>
+        `;
+
+        if (isDone) appendNext(document.getElementById('t4-fb'), 4, T4_PROBLEMS.length, renderT4Problem);
+
+        stage.querySelectorAll('[data-t4-mc]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (state.solved4[p.id]) return;
+            const idx = Number(btn.dataset.t4Mc);
+            const fb = document.getElementById('t4-fb');
+            stage.querySelectorAll('[data-t4-mc]').forEach(b => b.classList.remove('correct', 'wrong'));
+            if (idx === p.correct) {
+              btn.classList.add('correct');
+              fb.className = 'feedback-box show ok';
+              fb.textContent = p.explain;
+              markSolved(state.solved4, p.id);
+              renderDots('t4-dots', T4_PROBLEMS, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4Problem(); });
+              updateProgressHeader();
+              appendNext(document.getElementById('t4-fb'), 4, T4_PROBLEMS.length, renderT4Problem);
+            } else {
+              btn.classList.add('wrong');
+              fb.className = 'feedback-box show err';
+              fb.textContent = `Not quite. Hint: ${p.hint}`;
+            }
+          });
+        });
+      }
+
+      document.getElementById('t4-prev-btn').addEventListener('click', () => {
+        state.idx4 = (state.idx4 - 1 + T4_PROBLEMS.length) % T4_PROBLEMS.length;
+        renderT4Problem();
+      });
+      document.getElementById('t4-next-btn').addEventListener('click', () => {
+        state.idx4 = (state.idx4 + 1) % T4_PROBLEMS.length;
+        renderT4Problem();
+      });
+
+      /* ----------------------------------------------------------------------
+         TAB 5: MASTERY QUIZ (10 QUESTIONS)
+         ---------------------------------------------------------------------- */
+      const T5_QUESTIONS = [
+        {
+          id: 't5_1',
+          q: 'Which value is equivalent to 3/5?',
+          qEs: '¿Qué valor es equivalente a 3/5?',
+          choices: ['0.35', '0.60', '35%', '0.06'],
+          correct: 1,
+          explain: '3/5 &times; 20/20 = 60/100 = 0.60 = 60%.'
+        },
+        {
+          id: 't5_2',
+          q: 'What is 0.04 written as a percent?',
+          qEs: '¿Cuánto es 0.04 escrito como porcentaje?',
+          choices: ['0.4%', '4%', '40%', '400%'],
+          correct: 1,
+          explain: '0.04 &times; 100 = 4% (4 hundredths).'
+        },
+        {
+          id: 't5_3',
+          q: 'What is 85% written as a fraction in simplest form?',
+          qEs: '¿Cuánto es 85% escrito como fracción simplificada?',
+          choices: ['85/100', '17/20', '8/5', '17/25'],
+          correct: 1,
+          explain: '85/100 divided by 5/5 = 17/20.'
+        },
+        {
+          id: 't5_4',
+          q: 'Which comparison statement is TRUE?',
+          qEs: '¿Qué afirmación de comparación es VERDADERA?',
+          choices: ['0.45 < 40%', '3/4 = 0.75', '1/5 > 25%', '0.08 = 80%'],
+          correct: 1,
+          explain: '3/4 = 75/100 = 0.75.'
+        },
+        {
+          id: 't5_5',
+          q: 'Convert 7/25 to a percent.',
+          qEs: 'Convierte 7/25 a porcentaje.',
+          choices: ['7%', '14%', '28%', '35%'],
+          correct: 2,
+          explain: '7/25 &times; 4/4 = 28/100 = 28%.'
+        },
+        {
+          id: 't5_6',
+          q: 'Which list is ordered from LEAST to GREATEST?',
+          qEs: '¿Qué lista está ordenada de MENOR a MAYOR?',
+          choices: [
+            '0.2, 1/4, 30%',
+            '30%, 1/4, 0.2',
+            '1/4, 0.2, 30%',
+            '0.2, 30%, 1/4'
+          ],
+          correct: 0,
+          explain: '0.2 = 20%, 1/4 = 25%, 30% = 30%. 20% < 25% < 30%.'
+        },
+        {
+          id: 't5_7',
+          q: 'A battery is at 1/5 power. What percent power remains?',
+          qEs: 'Una batería está a 1/5 de carga. ¿Qué porcentaje queda?',
+          choices: ['5%', '15%', '20%', '50%'],
+          correct: 2,
+          explain: '1/5 = 20/100 = 20%.'
+        },
+        {
+          id: 't5_8',
+          q: 'Write 0.9 as a percent.',
+          qEs: 'Escribe 0.9 como porcentaje.',
+          choices: ['9%', '90%', '0.9%', '900%'],
+          correct: 1,
+          explain: '0.9 = 0.90 = 90 hundredths = 90%.'
+        },
+        {
+          id: 't5_9',
+          q: 'What is 12% written as a simplified fraction?',
+          qEs: '¿Cuánto es 12% escrito como fracción simplificada?',
+          choices: ['12/100', '6/50', '3/25', '1/8'],
+          correct: 2,
+          explain: '12/100 &divide; 4/4 = 3/25.'
+        },
+        {
+          id: 't5_10',
+          q: 'If 18 out of 50 students walk to school, what decimal represents this fraction?',
+          qEs: 'Si 18 de 50 caminan a la escuela, ¿qué decimal representa esta fracción?',
+          choices: ['0.18', '0.36', '0.50', '0.72'],
+          correct: 1,
+          explain: '18/50 &times; 2/2 = 36/100 = 0.36.'
+        }
+      ];
+
+      function renderT5Question() {
+        const q = T5_QUESTIONS[state.idx5];
+        const isSolved = !!state.solved5[q.id];
+        const chosen = state.quizChoice[q.id];
+
+        renderDots('t5-dots', T5_QUESTIONS, state.idx5, state.solved5, (ni) => {
+          state.idx5 = ni;
+          renderT5Question();
+        });
+
+        const stage = document.getElementById('t5-stage-card');
+        stage.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
+            <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal); letter-spacing: 0.04em;">Question ${state.idx5 + 1} of 10</span>
+            <button type="button" class="speak-btn" data-speak="${q.q}" data-speak-es="${q.qEs}">🔊 Read</button>
+          </div>
+          <p style="font-size: 1.15rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${q.q}</p>
+          <p class="es-text">${q.qEs}</p>
+
+          <div class="choice-stack">
+            ${q.choices.map((c, i) => {
+              let cls = '';
+              if (isSolved) {
+                if (i === q.correct) cls = 'correct';
+                else if (i === chosen) cls = 'wrong';
+              }
+              return `
+                <button type="button" class="choice-btn ${cls}" data-t5-mc="${i}">
+                  <span style="font-weight: 700; width: 24px;">${['A', 'B', 'C', 'D'][i]}.</span>
+                  <span>${c}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+
+          <div id="t5-fb" class="feedback-box ${isSolved ? 'show ok' : ''}" role="status">
+            ${isSolved ? `✓ ${q.explain}` : ''}
+          </div>
+        `;
+
+        if (isSolved) appendNext(document.getElementById('t5-fb'), 5, T5_QUESTIONS.length, renderT5Question);
+
+        stage.querySelectorAll('[data-t5-mc]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (state.solved5[q.id]) return;
+            const idx = Number(btn.dataset.t5Mc);
+            state.quizChoice[q.id] = idx;
+            const isFirst = state.quizFirst[q.id] === undefined;
+            if (isFirst) state.quizFirst[q.id] = idx === q.correct;
+
+            const fb = document.getElementById('t5-fb');
+            stage.querySelectorAll('[data-t5-mc]').forEach(b => b.classList.remove('correct', 'wrong'));
+
+            if (idx === q.correct) {
+              btn.classList.add('correct');
+              fb.className = 'feedback-box show ok';
+              fb.textContent = `✓ Correct! ${q.explain}`;
+              state.solved5[q.id] = true;
+              renderDots('t5-dots', T5_QUESTIONS, state.idx5, state.solved5, (ni) => { state.idx5 = ni; renderT5Question(); });
+              updateProgressHeader();
+              appendNext(document.getElementById('t5-fb'), 5, T5_QUESTIONS.length, renderT5Question);
+            } else {
+              btn.classList.add('wrong');
+              fb.className = 'feedback-box show err';
+              fb.textContent = `Not quite. Hint: Review how to scale to a denominator of 100 or convert to decimal.`;
+            }
+            saveState();
+          });
+        });
+      }
+
+      document.getElementById('t5-prev-btn').addEventListener('click', () => {
+        state.idx5 = (state.idx5 - 1 + T5_QUESTIONS.length) % T5_QUESTIONS.length;
+        renderT5Question();
+      });
+      document.getElementById('t5-next-btn').addEventListener('click', () => {
+        state.idx5 = (state.idx5 + 1) % T5_QUESTIONS.length;
+        renderT5Question();
+      });
+      document.getElementById('t5-reset-btn').addEventListener('click', () => {
+        if (!window.confirm('Reset quiz answers?')) return;
+        state.solved5 = {};
+        state.quizChoice = {};
+        state.quizFirst = {};
+        state.idx5 = 0;
+        renderT5Question();
+        updateProgressHeader();
+      });
+
+      // Initialization
+      loadState();
+      initMiniGrid();
+      setT1Value(state.sliderVal || 50);
+      renderT1Task();
+      renderT2Problem();
+      renderT3Problem();
+      renderT4Problem();
+      renderT5Question();
+      selectTab(state.activeTab || 1);
+      updateProgressHeader();
+      if (state.showEs) document.body.classList.add('show-es');
+
+    })();
+  </script>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>

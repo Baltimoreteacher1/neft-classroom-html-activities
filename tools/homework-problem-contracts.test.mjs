@@ -5,6 +5,8 @@ import {
   matchingPairs,
   normalizeDragSort,
   questionGuide,
+  renderPercentBarSvg,
+  renderProblemVisualModel,
   spanishChoiceFeedback,
   tableModel,
 } from "../scripts/lib/homework-problems.mjs";
@@ -135,4 +137,35 @@ test("answer key: open response prefers modelAnswer and always leaves a note", (
   const bare = answerKeyLines({ type: "open-response", prompt: "Explain." });
   assert.deepEqual(bare.lines, []);
   assert.match(bare.note.en, /Answers will vary/);
+});
+
+test("percent bar visual models render question, solved, and workspace SVG states", () => {
+  const item = {
+    type: "multiple-choice",
+    stem: "A percent bar is split into 4 equal parts and 3 of the parts are shaded.",
+    visualModel: { kind: "percent-bar", parts: 4, shaded: 3, whole: 100 },
+  };
+
+  const questionSvg = renderProblemVisualModel(item, "question");
+  assert.ok(questionSvg.includes("hw-percent-bar-svg"), "must have hw-percent-bar-svg class");
+  assert.ok(
+    questionSvg.includes("? %"),
+    "question SVG must show ? % badge without revealing answer",
+  );
+  assert.ok(questionSvg.includes("3 shaded parts"), "question SVG must label shaded parts");
+  assert.ok(questionSvg.includes('style="background:white'), "must have background:white");
+
+  const solvedSvg = renderProblemVisualModel(item, "solved");
+  assert.ok(solvedSvg.includes("3 shaded parts = 75%"), "solved SVG must show 75%");
+  assert.ok(solvedSvg.includes("1 part = 25%"), "solved SVG must show unit part value 25%");
+
+  const workspaceSvg = renderProblemVisualModel(item, "workspace");
+  assert.ok(workspaceSvg.includes("Percent Bar Workspace"), "workspace must have workspace title");
+
+  const guide = questionGuide(item);
+  assert.match(
+    guide.draw,
+    /Model the percent bar/,
+    "percent bar item guide provides drawing prompt",
+  );
 });

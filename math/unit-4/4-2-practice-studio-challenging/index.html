@@ -1,0 +1,1548 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Relate Fractions, Decimals, &amp; Percents · Version 2: Challenging (Grade 6)</title>
+  <meta name="description" content="Challenging Grade 6 interactive practice converting between fractions, decimals, and percents: eighths, sixteenths, repeating decimals, percents over 100%, and under 1%.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2317324D'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia,serif' font-weight='bold' font-size='28' fill='%23F7F4EC'%3E%C2%BE%3C/text%3E%3C/svg%3E">
+  <style>
+    /* ==========================================================================
+       CHALLENGE DESIGN SYSTEM (GRADE 6 · REVEAL MATH UNIT 4 · LESSON 4-2 CHALLENGING)
+       ========================================================================== */
+    :root {
+      --bg-paper: #F7F4EC;
+      --bg-well: #EFECE3;
+      --surface: #FFFFFF;
+      --surface-soft: #FAF8F3;
+      --surface-teal: #F0FAF9;
+
+      --navy: #17324D;
+      --navy-dark: #0F2337;
+      --navy-tint: #E8F0F7;
+      --navy-line: #C4D5E5;
+
+      --teal: #0F766E;
+      --teal-bright: #1FA6A2;
+      --teal-tint: #E3F6F5;
+      --teal-line: #94DFDC;
+
+      --amber: #B45309;
+      --amber-bright: #D97706;
+      --amber-tint: #FEF3C7;
+      --amber-line: #FCD34D;
+
+      --green: #047857;
+      --green-tint: #ECFDF5;
+      --green-line: #A7F3D0;
+
+      --red: #B91C1C;
+      --red-tint: #FEF2F2;
+      --red-line: #FECACA;
+
+      --ink: #1E293B;
+      --ink-muted: #475569;
+      --ink-light: #64748B;
+
+      --border: #D8D3C6;
+      --border-strong: #B8B1A0;
+
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-display: Georgia, 'Iowan Old Style', serif;
+      --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-pill: 999px;
+
+      --shadow-card: 0 2px 8px rgba(23, 50, 77, 0.06), 0 1px 2px rgba(23, 50, 77, 0.04);
+      --shadow-pop: 0 10px 24px rgba(23, 50, 77, 0.12);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { font-size: 16px; }
+    body {
+      margin: 0;
+      background-color: var(--bg-paper);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      line-height: 1.55;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+    }
+    :focus-visible { outline: 3px solid var(--amber-bright); outline-offset: 2px; }
+
+    .es-text { display: none; color: var(--teal); font-style: italic; font-size: 0.94rem; margin-top: 4px; }
+    body.show-es .es-text { display: block; }
+
+    .app-header {
+      background: var(--navy);
+      color: #FFFFFF;
+      padding: 12px 24px;
+      border-bottom: 3px solid var(--amber-bright);
+    }
+    .header-wrap {
+      max-width: 1080px; margin: 0 auto; display: flex; flex-wrap: wrap;
+      align-items: center; justify-content: space-between; gap: 14px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon {
+      width: 40px; height: 40px; border-radius: 10px; background: var(--amber-bright);
+      color: #FFFFFF; font-family: var(--font-display); font-size: 1.4rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .brand-title { margin: 0; font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; }
+    .brand-sub { font-size: 0.8rem; color: #CBD5E1; margin-top: 1px; }
+
+    .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .score-pill {
+      background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: var(--radius-pill); padding: 5px 14px; font-size: 0.86rem; font-weight: 700;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .top-btn {
+      background: rgba(255, 255, 255, 0.14); color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: var(--radius-sm); padding: 6px 12px; font-size: 0.84rem; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+    }
+    .top-btn:hover { background: rgba(255, 255, 255, 0.24); }
+    .top-btn[aria-pressed="true"] { background: var(--amber-bright); color: #FFFFFF; border-color: #FFFFFF; font-weight: 700; }
+
+    .v2-badge {
+      display: inline-block; background: #D97706; color: #FFFFFF; font-size: 0.72rem;
+      font-weight: 800; padding: 2px 8px; border-radius: 4px; margin-left: 8px;
+      vertical-align: middle; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+
+    .tab-bar {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 80; box-shadow: 0 2px 4px rgba(23, 50, 77, 0.04);
+    }
+    .tab-list {
+      max-width: 1080px; margin: 0 auto; padding: 0 16px; display: grid;
+      grid-template-columns: repeat(5, 1fr); gap: 4px;
+    }
+    .tab-btn {
+      appearance: none; background: transparent; border: none; border-bottom: 4px solid transparent;
+      padding: 12px 10px 10px; cursor: pointer; font-family: inherit; display: flex;
+      align-items: center; gap: 9px; color: var(--ink-muted); text-align: left;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .tab-btn:hover { background: var(--surface-soft); color: var(--navy); }
+    .tab-btn[aria-selected="true"] {
+      color: var(--navy); border-bottom-color: var(--amber-bright);
+      background: var(--amber-tint); font-weight: 700;
+    }
+    .tab-badge {
+      width: 26px; height: 26px; border-radius: 50%; background: var(--bg-well);
+      color: var(--navy); font-size: 0.82rem; font-weight: 800; display: inline-flex;
+      align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .tab-btn[aria-selected="true"] .tab-badge { background: var(--amber-bright); color: #FFFFFF; }
+    .tab-btn.tab-complete .tab-badge { background: var(--green); color: #FFFFFF; }
+    .tab-text { display: flex; flex-direction: column; min-width: 0; }
+    .tab-name { font-size: 0.9rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tab-desc { font-size: 0.74rem; color: var(--ink-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .main-container { max-width: 1080px; width: 100%; margin: 0 auto; padding: 24px 20px 48px; flex: 1; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .topic-strip {
+      background: var(--surface); border: 1px solid var(--border); border-left: 6px solid var(--amber-bright);
+      border-radius: var(--radius-md); padding: 16px 20px; margin-bottom: 20px; display: flex;
+      flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;
+      box-shadow: var(--shadow-card);
+    }
+    .topic-strip h2 { margin: 0 0 4px 0; font-family: var(--font-display); font-size: 1.35rem; color: var(--navy); }
+    .topic-strip p { margin: 0; font-size: 0.96rem; color: var(--ink-muted); }
+
+    .key-rule-pill {
+      background: var(--amber-tint); border: 1px solid var(--amber-line); color: var(--amber);
+      padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: 600;
+    }
+
+    .stepper-bar {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
+      padding: 12px 16px; margin-bottom: 18px; display: flex; flex-wrap: wrap; align-items: center;
+      justify-content: space-between; gap: 12px; box-shadow: var(--shadow-card);
+    }
+    .dots-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+    .step-dot {
+      min-width: 34px; height: 34px; padding: 0 8px; border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border-strong); background: var(--surface-soft); color: var(--navy);
+      font-weight: 700; font-size: 0.86rem; cursor: pointer; display: inline-flex; align-items: center;
+      justify-content: center; font-family: inherit; transition: all 0.15s ease;
+    }
+    .step-dot:hover { border-color: var(--navy); background: #FFFFFF; }
+    .step-dot.active { background: var(--amber-bright); color: #FFFFFF; border-color: var(--amber-bright); }
+    .step-dot.solved { background: var(--green-tint); border-color: var(--green); color: var(--green); }
+    .step-dot.solved.active { background: var(--green); color: #FFFFFF; }
+
+    .stage-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 24px; box-shadow: var(--shadow-card);
+    }
+    .two-col-stage { display: grid; grid-template-columns: 380px 1fr; gap: 24px; align-items: start; }
+
+    .btn {
+      appearance: none; border: 1.5px solid var(--border-strong); background: var(--surface);
+      color: var(--navy); font-family: inherit; font-size: 0.94rem; font-weight: 700; padding: 10px 16px;
+      border-radius: var(--radius-sm); cursor: pointer; display: inline-flex; align-items: center;
+      justify-content: center; gap: 6px; transition: all 0.15s ease;
+    }
+    .btn:hover { background: var(--surface-soft); border-color: var(--navy); }
+    .btn-primary { background: var(--navy); color: #FFFFFF; border-color: var(--navy); }
+    .btn-primary:hover { background: var(--navy-dark); border-color: var(--navy-dark); }
+    .btn-amber { background: var(--amber-bright); color: #FFFFFF; border-color: var(--amber-bright); }
+    .btn-amber:hover { background: var(--amber); border-color: var(--amber); }
+    .btn-teal { background: var(--teal); color: #FFFFFF; border-color: var(--teal); }
+    .btn-teal:hover { background: var(--teal-bright); border-color: var(--teal-bright); }
+    .btn-sm { padding: 6px 12px; font-size: 0.84rem; }
+
+    .speak-btn {
+      background: var(--surface-soft); border: 1px solid var(--border); color: var(--navy);
+      border-radius: var(--radius-sm); padding: 4px 8px; font-size: 0.8rem; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 4px; font-family: inherit;
+    }
+    .speak-btn:hover { background: var(--navy-tint); }
+
+    .num-input {
+      font-family: var(--font-mono); font-size: 1.25rem; font-weight: 700; text-align: center;
+      padding: 8px 12px; border: 2px solid var(--border-strong); border-radius: var(--radius-sm);
+      background: #FFFFFF; color: var(--navy); transition: all 0.15s ease;
+    }
+    .num-input:focus { border-color: var(--navy); outline: none; box-shadow: 0 0 0 3px rgba(23, 50, 77, 0.15); }
+    .num-input.ok { border-color: var(--green); background: var(--green-tint); color: var(--green); }
+    .num-input.err { border-color: var(--red); background: var(--red-tint); color: var(--red); }
+
+    .feedback-box { margin-top: 16px; padding: 12px 16px; border-radius: var(--radius-sm); font-size: 0.95rem; font-weight: 600; display: none; }
+    .feedback-box.show { display: block; }
+    .feedback-box.ok { background: var(--green-tint); border: 1.5px solid var(--green-line); color: #065F46; }
+    .feedback-box.warn { background: var(--amber-tint); border: 1.5px solid var(--amber-line); color: #92400E; }
+    .feedback-box.err { background: var(--red-tint); border: 1.5px solid var(--red-line); color: #991B1B; }
+
+    .choice-stack { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
+    .choice-btn {
+      appearance: none; background: var(--surface-soft); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); padding: 12px 16px; text-align: left; font-family: inherit;
+      font-size: 1rem; color: var(--ink); cursor: pointer; display: flex; align-items: center;
+      gap: 12px; transition: all 0.15s ease;
+    }
+    .choice-btn:hover { background: var(--navy-tint); border-color: var(--navy); }
+    .choice-btn.correct { background: var(--green-tint); border-color: var(--green); color: var(--green); font-weight: 700; }
+    .choice-btn.wrong { background: var(--red-tint); border-color: var(--red); color: var(--red); }
+
+    .trio-container {
+      display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap;
+      margin: 20px 0; padding: 18px; background: var(--surface-soft); border-radius: var(--radius-md);
+      border: 1.5px solid var(--border);
+    }
+    .trio-pill {
+      background: #FFFFFF; border: 2px solid var(--navy); border-radius: var(--radius-md);
+      padding: 12px 20px; text-align: center; min-width: 120px; box-shadow: var(--shadow-card);
+    }
+    .trio-label { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-light); display: block; margin-bottom: 4px; }
+    .trio-val { font-family: var(--font-mono); font-size: 1.6rem; font-weight: 800; color: var(--navy); }
+    .trio-arrow { font-size: 1.5rem; font-weight: 800; color: var(--amber-bright); }
+
+    .complete-banner {
+      background: var(--green); color: #FFFFFF; padding: 16px 20px; border-radius: var(--radius-md);
+      font-size: 1.05rem; font-weight: 700; margin-bottom: 20px; text-align: center; box-shadow: var(--shadow-card);
+    }
+    .app-footer {
+      background: var(--navy); color: #FFFFFF; padding: 16px 24px; font-size: 0.84rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.15); margin-top: auto;
+    }
+    .footer-wrap { max-width: 1080px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; }
+
+    @media (max-width: 840px) {
+      .two-col-stage { grid-template-columns: 1fr; }
+      .tab-list { grid-template-columns: repeat(5, 1fr); padding: 0 8px; }
+      .tab-btn { padding: 8px 4px; flex-direction: column; align-items: center; text-align: center; gap: 4px; }
+      .tab-desc { display: none; }
+      .tab-name { font-size: 0.75rem; }
+    }
+  </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-wrap">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">&#190;</div>
+        <div>
+          <h1 class="brand-title">Relate Fractions, Decimals, &amp; Percents <span class="v2-badge">Version 2: Challenging</span></h1>
+          <div class="brand-sub">Grade 6 Math · Unit 4 Interactive Practice Studio (6.RP.A.3.C · 6.AT.4) · Lesson 4-2</div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="score-pill" aria-live="polite">
+          <span>⭐ Progress: <span id="header-progress-count">0 / 46</span></span>
+        </div>
+        <button type="button" class="top-btn" id="toggle-es-btn" aria-pressed="false">🌐 Español</button>
+        <button type="button" class="top-btn" id="print-btn">🖨️ Print</button>
+        <button type="button" class="top-btn" id="reset-all-btn" title="Clear saved progress and start fresh">↺ Reset</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tab-bar" aria-label="Practice sections">
+    <div class="tab-list" role="tablist">
+      <button type="button" class="tab-btn" role="tab" id="tab-1" aria-selected="true" aria-controls="panel-1" tabindex="0" data-tab="1">
+        <span class="tab-badge" id="badge-1">1</span>
+        <span class="tab-text">
+          <span class="tab-name">Beyond 100% &amp; &lt;1%</span>
+          <span class="tab-desc">Advanced Ranges (8)</span>
+        </span>
+      </button>
+
+      <button type="button" class="tab-btn" role="tab" id="tab-2" aria-selected="false" aria-controls="panel-2" tabindex="-1" data-tab="2">
+        <span class="tab-badge" id="badge-2">2</span>
+        <span class="tab-text">
+          <span class="tab-name">Eighths &amp; Sixteenths</span>
+          <span class="tab-desc">Long Division (12)</span>
+        </span>
+      </button>
+
+      <button type="button" class="tab-btn" role="tab" id="tab-3" aria-selected="false" aria-controls="panel-3" tabindex="-1" data-tab="3">
+        <span class="tab-badge" id="badge-3">3</span>
+        <span class="tab-text">
+          <span class="tab-name">Challenge Trios</span>
+          <span class="tab-desc">Repeating &amp; Mixed (8)</span>
+        </span>
+      </button>
+
+      <button type="button" class="tab-btn" role="tab" id="tab-4" aria-selected="false" aria-controls="panel-4" tabindex="-1" data-tab="4">
+        <span class="tab-badge" id="badge-4">4</span>
+        <span class="tab-text">
+          <span class="tab-name">Complex Stories</span>
+          <span class="tab-desc">Sleepy Animals &amp; More (8)</span>
+        </span>
+      </button>
+
+      <button type="button" class="tab-btn" role="tab" id="tab-5" aria-selected="false" aria-controls="panel-5" tabindex="-1" data-tab="5">
+        <span class="tab-badge" id="badge-5">5</span>
+        <span class="tab-text">
+          <span class="tab-name">Mastery Challenge</span>
+          <span class="tab-desc">10 Hard Questions</span>
+        </span>
+      </button>
+    </div>
+  </nav>
+
+  <div id="sr-live" class="sr-only" aria-live="polite"></div>
+
+  <main class="main-container">
+
+    <section id="print-summary-sheet" class="print-only" aria-label="Printable student progress summary" style="border: 2px solid var(--navy); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; background: #FFFFFF;"></section>
+
+    <div id="complete-banner" class="complete-banner" role="status" hidden>
+      🏆 Incredible! You conquered all 5 sections of Version 2: Challenging!
+    </div>
+
+    <!-- TAB 1: BEYOND 100% AND UNDER 1% -->
+    <section id="panel-1" class="tab-panel active" role="tabpanel" aria-labelledby="tab-1">
+      <div class="topic-strip">
+        <div>
+          <h2>1. Values Beyond 100% and Less Than 1%</h2>
+          <p>Percents greater than 100% represent more than one whole. Percents less than 1% represent tiny fractions of a single hundredth.</p>
+          <p class="es-text">Porcentajes mayores que 100% representan más de un entero. Porcentajes menores que 1% son fracciones diminutas de un centésimo.</p>
+        </div>
+        <div class="key-rule-pill">
+          ⚡ <strong>Key Insight:</strong> 150% = 1.5 = 1 &frac12; &nbsp;|&nbsp; 0.5% = 0.005 = 1/200 &nbsp;|&nbsp; 225% = 2.25 = 2 &frac14;
+        </div>
+      </div>
+
+      <div class="stepper-bar">
+        <div class="dots-row" id="t1-dots" role="group" aria-label="Tab 1 selector"></div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-sm" id="t1-prev-btn">← Back</button>
+          <button type="button" class="btn btn-sm" id="t1-next-btn">Next →</button>
+        </div>
+      </div>
+
+      <div class="stage-card" id="t1-task-card"></div>
+    </section>
+
+    <!-- TAB 2: EIGHTHS, SIXTEENTHS & NON-FRIENDLY DENOMINATORS -->
+    <section id="panel-2" class="tab-panel" role="tabpanel" aria-labelledby="tab-2">
+      <div class="topic-strip">
+        <div>
+          <h2>2. Eighths, Sixteenths, and Tough Denominators</h2>
+          <p>When the denominator does not scale directly to 100 with whole numbers, use long division (numerator &divide; denominator) to find the decimal and percent.</p>
+          <p class="es-text">Cuando el denominador no escala limpiamente a 100, divide numerador entre denominador.</p>
+        </div>
+        <div>
+          <button type="button" class="btn btn-amber btn-sm" id="t2-random-btn">🎲 New Random Challenge</button>
+        </div>
+      </div>
+
+      <div class="stepper-bar">
+        <div class="dots-row" id="t2-dots" role="group" aria-label="Tab 2 selector"></div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-sm" id="t2-prev-btn">← Back</button>
+          <button type="button" class="btn btn-sm" id="t2-next-btn">Next →</button>
+        </div>
+      </div>
+
+      <div class="stage-card" id="t2-stage-card"></div>
+    </section>
+
+    <!-- TAB 3: CHALLENGE TRIOS -->
+    <section id="panel-3" class="tab-panel" role="tabpanel" aria-labelledby="tab-3">
+      <div class="topic-strip">
+        <div>
+          <h2>3. Advanced Equivalence Trios</h2>
+          <p>Convert repeating decimals, mixed numbers, and tiny percentages between fraction, decimal, and percent.</p>
+          <p class="es-text">Convierte decimales periódicos, números mixtos y porcentajes decimales entre sus tres formas.</p>
+        </div>
+      </div>
+
+      <div class="stepper-bar">
+        <div class="dots-row" id="t3-dots" role="group" aria-label="Tab 3 selector"></div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-sm" id="t3-prev-btn">← Back</button>
+          <button type="button" class="btn btn-sm" id="t3-next-btn">Next →</button>
+        </div>
+      </div>
+
+      <div class="stage-card" id="t3-stage-card"></div>
+    </section>
+
+    <!-- TAB 4: COMPLEX STORIES & REVEAL MATH SLEEPY ANIMALS -->
+    <section id="panel-4" class="tab-panel" role="tabpanel" aria-labelledby="tab-4">
+      <div class="topic-strip">
+        <div>
+          <h2>4. Complex Stories &amp; Deep Error Analysis</h2>
+          <p>Solve authentic Grade 6 multi-step comparison challenges, including the complete 8-animal sleep dataset from Reveal Math 4-2.</p>
+          <p class="es-text">Resuelve desafíos de comparación y analiza errores conceptuales avanzados.</p>
+        </div>
+      </div>
+
+      <div class="stepper-bar">
+        <div class="dots-row" id="t4-dots" role="group" aria-label="Tab 4 selector"></div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-sm" id="t4-prev-btn">← Back</button>
+          <button type="button" class="btn btn-sm" id="t4-next-btn">Next →</button>
+        </div>
+      </div>
+
+      <div class="stage-card" id="t4-stage-card"></div>
+    </section>
+
+    <!-- TAB 5: MASTERY CHALLENGE -->
+    <section id="panel-5" class="tab-panel" role="tabpanel" aria-labelledby="tab-5">
+      <div class="topic-strip">
+        <div>
+          <h2>5. Level 2 Mastery Challenge</h2>
+          <p>Test your deepest understanding with 10 challenging multi-step percent problems.</p>
+          <p class="es-text">10 preguntas difíciles de dominio para completar la versión desafiante.</p>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <span class="key-rule-pill" id="t5-score-pill">Score: 0 / 10</span>
+          <button type="button" class="btn btn-sm" id="t5-reset-btn">Reset Quiz</button>
+        </div>
+      </div>
+
+      <div class="stepper-bar">
+        <div class="dots-row" id="t5-dots" role="group" aria-label="Quiz selector"></div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-sm" id="t5-prev-btn">← Back</button>
+          <button type="button" class="btn btn-sm" id="t5-next-btn">Next →</button>
+        </div>
+      </div>
+
+      <div class="stage-card" id="t5-stage-card"></div>
+      <div id="t5-results" class="results-card" role="region" aria-label="Results" hidden></div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-wrap">
+      <span><strong>Grade 6 Mathematics · Unit 4: Relate Fractions, Decimals, &amp; Percents (Version 2)</strong></span>
+      <span>100% Offline Interactive Practice Studio · Progress Auto-Saved in Browser</span>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const STORAGE_KEY = 'neft_u4_42_challenge_v1';
+
+      const state = {
+        activeTab: 1,
+        showEs: false,
+        idx1: 0, idx2: 0, idx3: 0, idx4: 0, idx5: 0,
+        solved1: {}, solved2: {}, solved3: {}, solved4: {}, solved5: {},
+        quizChoice: {}, quizFirst: {}
+      };
+
+      const SOLVED_KEYS = ['solved1', 'solved2', 'solved3', 'solved4', 'solved5'];
+      const IDX_KEYS = ['idx1', 'idx2', 'idx3', 'idx4', 'idx5'];
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return;
+          const d = JSON.parse(raw);
+          if (d && typeof d === 'object') {
+            state.showEs = !!d.showEs;
+            SOLVED_KEYS.forEach(k => { state[k] = (d[k] && typeof d[k] === 'object') ? { ...d[k] } : {}; });
+            state.quizChoice = (d.quizChoice && typeof d.quizChoice === 'object') ? { ...d.quizChoice } : {};
+            state.quizFirst = (d.quizFirst && typeof d.quizFirst === 'object') ? { ...d.quizFirst } : {};
+            IDX_KEYS.forEach(k => { if (Number.isInteger(d[k]) && d[k] >= 0) state[k] = d[k]; });
+            if (Number.isInteger(d.activeTab) && d.activeTab >= 1 && d.activeTab <= 5) state.activeTab = d.activeTab;
+          }
+        } catch (e) {}
+      }
+
+      function saveState() {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+      }
+
+      function parseNum(raw) {
+        const t = String(raw).replace(/[%$,\s]/g, '');
+        return /^(\d+\.?\d*|\.\d+)$/.test(t) ? Number(t) : NaN;
+      }
+
+      const misses = {};
+      function bumpMiss(id) {
+        misses[id] = (misses[id] || 0) + 1;
+        return misses[id];
+      }
+
+      let justSolved = false;
+      function markSolved(map, id) {
+        map[id] = true;
+        justSolved = true;
+      }
+
+      function appendNext(fb, tab, len, render, onNext) {
+        if (!fb) return;
+        fb.querySelectorAll('.next-btn').forEach(x => x.remove());
+        const idxKey = `idx${tab}`;
+        const last = !onNext && state[idxKey] === len - 1;
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'btn btn-amber btn-sm next-btn';
+        if (!last) b.textContent = tab === 5 ? 'Next question →' : 'Next problem →';
+        else b.textContent = tab < 5 ? `Continue to Section ${tab + 1} →` : 'See my results →';
+        b.addEventListener('click', () => {
+          if (onNext) onNext();
+          else if (!last) { state[idxKey] += 1; render(); }
+          else if (tab < 5) selectTab(tab + 1, false);
+          else renderResults(true);
+        });
+        fb.appendChild(b);
+        if (justSolved) { b.focus(); justSolved = false; }
+      }
+
+      function speak(text, textEs) {
+        if (!('speechSynthesis' in window)) return;
+        window.speechSynthesis.cancel();
+        const useEs = state.showEs && textEs;
+        const u = new SpeechSynthesisUtterance(useEs ? textEs : text);
+        u.lang = useEs ? 'es-ES' : 'en-US';
+        u.rate = 0.96;
+        window.speechSynthesis.speak(u);
+      }
+
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-speak]');
+        if (btn) speak(btn.getAttribute('data-speak'), btn.getAttribute('data-speak-es'));
+      });
+
+      const esBtn = document.getElementById('toggle-es-btn');
+      esBtn.addEventListener('click', () => {
+        state.showEs = !state.showEs;
+        document.body.classList.toggle('show-es', state.showEs);
+        esBtn.setAttribute('aria-pressed', String(state.showEs));
+        saveState();
+      });
+
+      document.getElementById('print-btn').addEventListener('click', () => window.print());
+
+      const resetAllBtn = document.getElementById('reset-all-btn');
+      if (resetAllBtn) {
+        resetAllBtn.addEventListener('click', () => {
+          if (!window.confirm('Reset all challenge progress to start fresh?')) return;
+          SOLVED_KEYS.forEach(k => { state[k] = {}; });
+          state.quizChoice = {};
+          state.quizFirst = {};
+          IDX_KEYS.forEach(k => { state[k] = 0; });
+          Object.keys(misses).forEach(k => delete misses[k]);
+          try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+          renderT1Task();
+          renderT2Problem();
+          renderT3Problem();
+          renderT4Problem();
+          renderT5Question();
+          updateProgressHeader();
+        });
+      }
+
+      const tabBtns = Array.from(document.querySelectorAll('.tab-btn'));
+      const tabPanels = Array.from(document.querySelectorAll('.tab-panel'));
+
+      function selectTab(num, focusBtn = false) {
+        state.activeTab = Number(num);
+        tabBtns.forEach(b => {
+          const active = Number(b.dataset.tab) === state.activeTab;
+          b.setAttribute('aria-selected', String(active));
+          b.setAttribute('tabindex', active ? '0' : '-1');
+          if (active && focusBtn) b.focus();
+        });
+        tabPanels.forEach((p, i) => {
+          p.classList.toggle('active', i + 1 === state.activeTab);
+        });
+        saveState();
+      }
+
+      tabBtns.forEach((b, idx) => {
+        b.addEventListener('click', () => selectTab(b.dataset.tab, false));
+      });
+
+      function updateProgressHeader() {
+        const c1 = Object.keys(state.solved1).length;
+        const c2 = Object.keys(state.solved2).filter(k => !k.startsWith('rand')).length;
+        const c3 = Object.keys(state.solved3).filter(k => !k.startsWith('rand')).length;
+        const c4 = Object.keys(state.solved4).length;
+        const c5 = Object.keys(state.solved5).filter(k => state.solved5[k]).length;
+
+        const total = c1 + c2 + c3 + c4 + c5;
+        document.getElementById('header-progress-count').textContent = `${total} / 46`;
+        document.getElementById('t5-score-pill').textContent = `Score: ${c5} / 10`;
+
+        const checks = [c1 === 8, c2 >= 12, c3 === 8, c4 === 8, c5 >= 8];
+        checks.forEach((done, i) => {
+          const btn = document.getElementById(`tab-${i + 1}`);
+          const badge = document.getElementById(`badge-${i + 1}`);
+          if (btn) btn.classList.toggle('tab-complete', done);
+          if (badge) badge.textContent = done ? '✓' : String(i + 1);
+        });
+
+        const banner = document.getElementById('complete-banner');
+        if (banner) banner.hidden = !checks.every(Boolean);
+        saveState();
+      }
+
+      function renderDots(containerId, items, activeIdx, solvedMap, onSelect) {
+        const wrap = document.getElementById(containerId);
+        if (!wrap) return;
+        wrap.innerHTML = '';
+        items.forEach((item, idx) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          const isSolved = !!solvedMap[item.id];
+          btn.className = `step-dot ${idx === activeIdx ? 'active' : ''} ${isSolved ? 'solved' : ''}`;
+          btn.textContent = isSolved ? `${idx + 1} ✓` : String(idx + 1);
+          btn.setAttribute('aria-label', `Problem ${idx + 1}${isSolved ? ' completed' : ''}`);
+          if (idx === activeIdx) btn.setAttribute('aria-current', 'step');
+          btn.addEventListener('click', () => onSelect(idx));
+          wrap.appendChild(btn);
+        });
+      }
+
+      /* ----------------------------------------------------------------------
+         TAB 1: BEYOND 100% AND LESS THAN 1% (8 CHALLENGES)
+         ---------------------------------------------------------------------- */
+      const T1_TASKS = [
+        {
+          id: 't1_1',
+          title: 'Challenge 1 · Percent Greater Than 100%',
+          stem: 'A runner finished 175% of her training target. Write 175% as a decimal and as a simplified mixed number.',
+          stemEs: 'Una corredora completó el 175% de su meta. Escribe 175% como decimal y número mixto simplificado.',
+          type: 'mc',
+          choices: [
+            '1.75 and 1 &frac34;',
+            '17.5 and 1 7/5',
+            '0.175 and 7/40',
+            '1.75 and 1 7/10'
+          ],
+          choicesEs: [
+            '1.75 y 1 &frac34;',
+            '17.5 y 1 7/5',
+            '0.175 y 7/40',
+            '1.75 y 1 7/10'
+          ],
+          correct: 0,
+          hint: 'Divide by 100: 175 &divide; 100 = 1.75. 75/100 = 3/4, so 1 &frac34;.',
+          explain: '✓ Correct! 175% = 1.75 = 1 75/100 = 1 &frac34;.'
+        },
+        {
+          id: 't1_2',
+          title: 'Challenge 2 · Convert 250%',
+          stem: 'Write 250% as a decimal and as an improper fraction in simplest form.',
+          stemEs: 'Escribe 250% como decimal y fracción impropia simplificada.',
+          type: 'dual',
+          labelA: 'Decimal',
+          labelB: 'Improper Fraction (e.g. 5/2)',
+          ansA: '2.5',
+          ansB: '5/2',
+          hint: '250 &divide; 100 = 2.5. 250/100 = 25/10 = 5/2.',
+          explain: '✓ Exactly! 250% = 2.5 = 5/2 (or 2 &frac12;).'
+        },
+        {
+          id: 't1_3',
+          title: 'Challenge 3 · Percent Less Than 1%',
+          stem: 'A rare chemical makes up 0.4% of a compound. What is 0.4% written as a decimal?',
+          stemEs: 'Un químico representa el 0.4% de un compuesto. ¿Cuánto es 0.4% como decimal?',
+          type: 'mc',
+          choices: [
+            '0.04',
+            '0.004',
+            '0.40',
+            '0.0004'
+          ],
+          choicesEs: [
+            '0.04',
+            '0.004',
+            '0.40',
+            '0.0004'
+          ],
+          correct: 1,
+          hint: 'Divide 0.4 by 100: move the decimal point two places left: 0.4 &rarr; 0.04 &rarr; 0.004.',
+          explain: '✓ Correct! 0.4% = 0.4 &divide; 100 = 0.004 (4 thousandths).'
+        },
+        {
+          id: 't1_4',
+          title: 'Challenge 4 · Convert 0.25% to a Fraction',
+          stem: 'Write 0.25% as a fraction in simplest form.',
+          stemEs: 'Escribe 0.25% como fracción en su mínima expresión.',
+          type: 'single',
+          ans: '1/400',
+          hint: '0.25% = (1/4)% = (1/4)/100 = 1/(4 &times; 100) = 1/400.',
+          explain: '✓ Brilliant! 0.25% = 0.25/100 = 25/10000 = 1/400.'
+        },
+        {
+          id: 't1_5',
+          title: 'Challenge 5 · Convert 3.25 to a Percent',
+          stem: 'An investment grew to 3.25 times its original value. What percent is that?',
+          stemEs: 'Una inversión creció a 3.25 veces su valor original. ¿Qué porcentaje es?',
+          type: 'single',
+          ans: '325',
+          suffix: '%',
+          hint: 'Multiply by 100: 3.25 &times; 100 = 325%.',
+          explain: '✓ Correct! 3.25 = 325%.'
+        },
+        {
+          id: 't1_6',
+          title: 'Challenge 6 · Decimal 0.008 to Percent',
+          stem: 'Write the decimal 0.008 as a percent.',
+          stemEs: 'Escribe el decimal 0.008 como porcentaje.',
+          type: 'single',
+          ans: '0.8',
+          suffix: '%',
+          hint: 'Multiply 0.008 by 100: move decimal 2 places right &rarr; 0.8%.',
+          explain: '✓ Correct! 0.008 &times; 100 = 0.8% (eight tenths of one percent).'
+        },
+        {
+          id: 't1_7',
+          title: 'Challenge 7 · Mixed Number 2 1/5 to Percent',
+          stem: 'Convert 2 1/5 to a percent.',
+          stemEs: 'Convierte 2 1/5 a porcentaje.',
+          type: 'single',
+          ans: '220',
+          suffix: '%',
+          hint: '2 wholes = 200%. 1/5 = 20%. 200% + 20% = ?',
+          explain: '✓ Exactly! 2 1/5 = 2.20 = 220%.'
+        },
+        {
+          id: 't1_8',
+          title: 'Challenge 8 · Comparing Values Near 1%',
+          stem: 'Which value is the LARGEST?',
+          stemEs: '¿Qué valor es el MAYOR?',
+          type: 'mc',
+          choices: [
+            '1/100',
+            '0.015',
+            '0.9%',
+            '1/80'
+          ],
+          choicesEs: [
+            '1/100',
+            '0.015',
+            '0.9%',
+            '1/80'
+          ],
+          correct: 1,
+          hint: 'Convert all to decimals: 1/100 = 0.01; 0.015 = 0.015; 0.9% = 0.009; 1/80 = 0.0125. 0.015 is largest.',
+          explain: '✓ Spot on! 0.015 = 1.5%, which is larger than 1% (0.01), 1.25% (1/80), and 0.9% (0.009).'
+        }
+      ];
+
+      function renderT1Task() {
+        const t = T1_TASKS[state.idx1];
+        const isDone = !!state.solved1[t.id];
+
+        renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (ni) => {
+          state.idx1 = ni; renderT1Task();
+        });
+
+        const card = document.getElementById('t1-task-card');
+        let body = '';
+
+        if (t.type === 'mc') {
+          body = `
+            <div class="choice-stack">
+              ${t.choices.map((c, i) => `
+                <button type="button" class="choice-btn ${isDone && i === t.correct ? 'correct' : ''}" data-t1-mc="${i}">
+                  <span style="font-weight:700; width:24px;">${['A','B','C','D'][i]}.</span>
+                  <span>${c}</span>
+                </button>
+              `).join('')}
+            </div>
+          `;
+        } else if (t.type === 'single') {
+          body = `
+            <div style="display:flex; align-items:center; gap:10px; margin:18px 0;">
+              <input type="text" id="t1-inp-single" class="num-input ${isDone ? 'ok' : ''}" style="width:120px;" value="${isDone ? t.ans : ''}" placeholder="?">
+              <strong style="color:var(--navy); font-size:1.1rem;">${t.suffix || ''}</strong>
+              <button type="button" class="btn btn-primary" id="t1-check-btn">Check Answer</button>
+              <button type="button" class="btn" id="t1-hint-btn">💡 Hint</button>
+            </div>
+          `;
+        } else if (t.type === 'dual') {
+          body = `
+            <div style="display:flex; gap:16px; margin:18px 0; flex-wrap:wrap;">
+              <div>
+                <label for="t1-inp-a" style="display:block; font-weight:700; font-size:0.85rem; margin-bottom:4px;">${t.labelA}</label>
+                <input type="text" id="t1-inp-a" class="num-input ${isDone ? 'ok' : ''}" style="width:110px;" value="${isDone ? t.ansA : ''}">
+              </div>
+              <div>
+                <label for="t1-inp-b" style="display:block; font-weight:700; font-size:0.85rem; margin-bottom:4px;">${t.labelB}</label>
+                <input type="text" id="t1-inp-b" class="num-input ${isDone ? 'ok' : ''}" style="width:110px;" value="${isDone ? t.ansB : ''}">
+              </div>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <button type="button" class="btn btn-primary" id="t1-check-btn">Check Both</button>
+              <button type="button" class="btn" id="t1-hint-btn">💡 Hint</button>
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <span style="font-size:0.84rem; font-weight:800; color:var(--amber-bright); text-transform:uppercase;">${t.title}</span>
+            <button type="button" class="speak-btn" data-speak="${t.stem}" data-speak-es="${t.stemEs}">🔊 Read</button>
+          </div>
+          <p style="font-size:1.15rem; font-weight:700; color:var(--navy); margin:0 0 6px 0;">${t.stem}</p>
+          <p class="es-text">${t.stemEs}</p>
+          ${body}
+          <div id="t1-fb" class="feedback-box ${isDone ? 'show ok' : ''}">${isDone ? t.explain : ''}</div>
+        `;
+
+        if (isDone) appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
+
+        if (t.type === 'mc') {
+          card.querySelectorAll('[data-t1-mc]').forEach(btn => {
+            btn.addEventListener('click', () => {
+              if (state.solved1[t.id]) return;
+              const idx = Number(btn.dataset.t1Mc);
+              const fb = document.getElementById('t1-fb');
+              card.querySelectorAll('[data-t1-mc]').forEach(b => b.classList.remove('correct', 'wrong'));
+              if (idx === t.correct) {
+                btn.classList.add('correct');
+                fb.className = 'feedback-box show ok';
+                fb.textContent = t.explain;
+                markSolved(state.solved1, t.id);
+                renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (ni) => { state.idx1 = ni; renderT1Task(); });
+                updateProgressHeader();
+                appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
+              } else {
+                btn.classList.add('wrong');
+                fb.className = 'feedback-box show err';
+                fb.textContent = `Not quite. Hint: ${t.hint}`;
+              }
+            });
+          });
+        } else {
+          const checkBtn = document.getElementById('t1-check-btn');
+          const hintBtn = document.getElementById('t1-hint-btn');
+          const fb = document.getElementById('t1-fb');
+
+          if (checkBtn) {
+            checkBtn.addEventListener('click', () => {
+              if (t.type === 'single') {
+                const inp = document.getElementById('t1-inp-single');
+                const val = inp.value.replace(/[%\s]/g, '').trim();
+                const ok = t.ans.includes('/') ? val === t.ans : parseNum(val) === Number(t.ans);
+                inp.classList.toggle('ok', ok); inp.classList.toggle('err', !ok);
+                if (ok) {
+                  fb.className = 'feedback-box show ok'; fb.textContent = t.explain;
+                  markSolved(state.solved1, t.id);
+                  renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (ni) => { state.idx1 = ni; renderT1Task(); });
+                  updateProgressHeader();
+                  appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
+                } else {
+                  fb.className = 'feedback-box show err'; fb.textContent = `Hint: ${t.hint}`;
+                }
+              } else if (t.type === 'dual') {
+                const inpA = document.getElementById('t1-inp-a');
+                const inpB = document.getElementById('t1-inp-b');
+                const valA = inpA.value.trim();
+                const valB = inpB.value.trim();
+                const okA = parseNum(valA) === Number(t.ansA);
+                const okB = valB === t.ansB;
+                inpA.classList.toggle('ok', okA); inpA.classList.toggle('err', !okA);
+                inpB.classList.toggle('ok', okB); inpB.classList.toggle('err', !okB);
+                if (okA && okB) {
+                  fb.className = 'feedback-box show ok'; fb.textContent = t.explain;
+                  markSolved(state.solved1, t.id);
+                  renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (ni) => { state.idx1 = ni; renderT1Task(); });
+                  updateProgressHeader();
+                  appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
+                } else {
+                  fb.className = 'feedback-box show err'; fb.textContent = `Hint: ${t.hint}`;
+                }
+              }
+            });
+          }
+          if (hintBtn) {
+            hintBtn.addEventListener('click', () => {
+              fb.className = 'feedback-box show warn'; fb.textContent = `💡 Hint: ${t.hint}`;
+            });
+          }
+        }
+      }
+
+      document.getElementById('t1-prev-btn').addEventListener('click', () => {
+        state.idx1 = (state.idx1 - 1 + T1_TASKS.length) % T1_TASKS.length;
+        renderT1Task();
+      });
+      document.getElementById('t1-next-btn').addEventListener('click', () => {
+        state.idx1 = (state.idx1 + 1) % T1_TASKS.length;
+        renderT1Task();
+      });
+
+      /* ----------------------------------------------------------------------
+         TAB 2: EIGHTHS, SIXTEENTHS & TOUGH DENOMINATORS (12 PROBLEMS)
+         ---------------------------------------------------------------------- */
+      const T2_PROBLEMS = [
+        { id: 't2_1', title: '1. One Eighth', num: 1, den: 8, dec: '0.125', pct: '12.5', stem: 'Convert 1/8 to a decimal and a percent by dividing 1 ÷ 8.' },
+        { id: 't2_2', title: '2. Three Eighths', num: 3, den: 8, dec: '0.375', pct: '37.5', stem: 'Convert 3/8 to a decimal and a percent by dividing 3 ÷ 8.' },
+        { id: 't2_3', title: '3. Five Eighths', num: 5, den: 8, dec: '0.625', pct: '62.5', stem: 'Convert 5/8 to a decimal and a percent by dividing 5 ÷ 8.' },
+        { id: 't2_4', title: '4. Seven Eighths', num: 7, den: 8, dec: '0.875', pct: '87.5', stem: 'Convert 7/8 to a decimal and a percent by dividing 7 ÷ 8.' },
+        { id: 't2_5', title: '5. One Sixteenth', num: 1, den: 16, dec: '0.0625', pct: '6.25', stem: 'Convert 1/16 to a decimal and a percent.' },
+        { id: 't2_6', title: '6. Three Sixteenths', num: 3, den: 16, dec: '0.1875', pct: '18.75', stem: 'Convert 3/16 to a decimal and a percent.' },
+        { id: 't2_7', title: '7. Denominator of 40', num: 7, den: 40, dec: '0.175', pct: '17.5', stem: 'Convert 7/40 to a decimal and a percent.' },
+        { id: 't2_8', title: '8. Denominator of 40', num: 21, den: 40, dec: '0.525', pct: '52.5', stem: 'Convert 21/40 to a decimal and a percent.' },
+        { id: 't2_9', title: '9. Denominator of 80', num: 12, den: 80, dec: '0.15', pct: '15', stem: 'Simplify 12/80 first (to 3/20), then convert to a decimal and percent.' },
+        { id: 't2_10', title: '10. Denominator of 300', num: 45, den: 300, dec: '0.15', pct: '15', stem: 'Simplify 45/300 by dividing top and bottom by 3 to reach a denominator of 100.' },
+        { id: 't2_11', title: '11. One Third (Repeating)', num: 1, den: 3, dec: '0.333', pct: '33.3', stem: 'Divide 1 ÷ 3 to 3 decimal places (round to nearest tenth of a percent).' },
+        { id: 't2_12', title: '12. Two Thirds (Repeating)', num: 2, den: 3, dec: '0.667', pct: '66.7', stem: 'Divide 2 ÷ 3 to 3 decimal places (round to nearest tenth of a percent).' }
+      ];
+
+      let currentT2 = T2_PROBLEMS[0];
+
+      function renderT2Problem() {
+        const p = currentT2;
+        const isDone = !!state.solved2[p.id];
+
+        renderDots('t2-dots', T2_PROBLEMS, p.id.startsWith('rand') ? -1 : state.idx2, state.solved2, (ni) => {
+          state.idx2 = ni; currentT2 = T2_PROBLEMS[ni]; renderT2Problem();
+        });
+
+        const stage = document.getElementById('t2-stage-card');
+        stage.innerHTML = `
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <span style="font-size:0.84rem; font-weight:800; color:var(--amber-bright); text-transform:uppercase;">${p.title}</span>
+            <button type="button" class="speak-btn" data-speak="${p.stem}">🔊 Read</button>
+          </div>
+          <p style="font-size:1.15rem; font-weight:700; color:var(--navy); margin:0 0 6px 0;">${p.stem}</p>
+
+          <div class="trio-container">
+            <div class="trio-pill">
+              <span class="trio-label">Given Fraction</span>
+              <span class="trio-val">${p.num}/${p.den}</span>
+            </div>
+            <span class="trio-arrow">&rarr;</span>
+            <div class="trio-pill" style="border-color:var(--teal);">
+              <span class="trio-label">Decimal</span>
+              <input type="text" id="t2-inp-dec" class="num-input ${isDone ? 'ok' : ''}" style="width:100px; padding:4px;" value="${isDone ? p.dec : ''}" placeholder="0.___">
+            </div>
+            <span class="trio-arrow">&rarr;</span>
+            <div class="trio-pill" style="background:var(--navy); border-color:var(--navy);">
+              <span class="trio-label" style="color:#CBD5E1;">Percent</span>
+              <div style="display:flex; align-items:center; justify-content:center; gap:4px;">
+                <input type="text" id="t2-inp-pct" class="num-input ${isDone ? 'ok' : ''}" style="width:90px; padding:4px;" value="${isDone ? p.pct : ''}" placeholder="?">
+                <span style="color:#FFF; font-weight:800;">%</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; margin-top:18px;">
+            <button type="button" class="btn btn-primary" id="t2-check-btn">Check Conversion</button>
+            <button type="button" class="btn" id="t2-hint-btn">💡 Hint</button>
+          </div>
+
+          <div id="t2-fb" class="feedback-box ${isDone ? 'show ok' : ''}">
+            ${isDone ? `✓ Correct! ${p.num}/${p.den} = ${p.dec} = ${p.pct}%.` : ''}
+          </div>
+        `;
+
+        const dInp = document.getElementById('t2-inp-dec');
+        const pInp = document.getElementById('t2-inp-pct');
+        const fb = document.getElementById('t2-fb');
+
+        document.getElementById('t2-check-btn').addEventListener('click', () => {
+          const dVal = parseNum(dInp.value);
+          const pVal = parseNum(pInp.value);
+          const okD = Math.abs(dVal - Number(p.dec)) < 0.005;
+          const okP = Math.abs(pVal - Number(p.pct)) < 0.1;
+
+          dInp.classList.toggle('ok', okD); dInp.classList.toggle('err', !okD);
+          pInp.classList.toggle('ok', okP); pInp.classList.toggle('err', !okP);
+
+          if (okD && okP) {
+            fb.className = 'feedback-box show ok';
+            fb.textContent = `✓ Outstanding! ${p.num}/${p.den} = ${p.dec} = ${p.pct}%.`;
+            markSolved(state.solved2, p.id);
+            renderDots('t2-dots', T2_PROBLEMS, state.idx2, state.solved2, (ni) => { state.idx2 = ni; currentT2 = T2_PROBLEMS[ni]; renderT2Problem(); });
+            updateProgressHeader();
+            appendNext(document.getElementById('t2-fb'), 2, T2_PROBLEMS.length, renderT2Problem);
+          } else {
+            fb.className = 'feedback-box show err';
+            fb.textContent = `Divide ${p.num} ÷ ${p.den}. Make sure to carry division to enough decimal places.`;
+          }
+        });
+
+        document.getElementById('t2-hint-btn').addEventListener('click', () => {
+          fb.className = 'feedback-box show warn';
+          fb.textContent = `💡 Hint: ${p.num} &divide; ${p.den} = ${p.dec}. To get percent, multiply by 100: ${p.pct}%.`;
+        });
+      }
+
+      document.getElementById('t2-prev-btn').addEventListener('click', () => {
+        state.idx2 = (state.idx2 - 1 + T2_PROBLEMS.length) % T2_PROBLEMS.length;
+        currentT2 = T2_PROBLEMS[state.idx2]; renderT2Problem();
+      });
+      document.getElementById('t2-next-btn').addEventListener('click', () => {
+        state.idx2 = (state.idx2 + 1) % T2_PROBLEMS.length;
+        currentT2 = T2_PROBLEMS[state.idx2]; renderT2Problem();
+      });
+      document.getElementById('t2-random-btn').addEventListener('click', () => {
+        const pool = [
+          { num: 3, den: 8, dec: '0.375', pct: '37.5' },
+          { num: 5, den: 8, dec: '0.625', pct: '62.5' },
+          { num: 7, den: 16, dec: '0.4375', pct: '43.75' },
+          { num: 9, den: 40, dec: '0.225', pct: '22.5' }
+        ];
+        const pick = pool[Math.floor(Math.random() * pool.length)];
+        currentT2 = { id: `rand_${Date.now()}`, title: `Practice: ${pick.num}/${pick.den}`, ...pick, stem: `Convert ${pick.num}/${pick.den} to a decimal and percent.` };
+        renderT2Problem();
+      });
+
+      /* ----------------------------------------------------------------------
+         TAB 3: ADVANCED EQUIVALENCE TRIOS (8 CHALLENGES)
+         ---------------------------------------------------------------------- */
+      const T3_PROBLEMS = [
+        { id: 't3_1', given: '175%', ansDec: '1.75', ansFrac: '7/4', stem: 'Convert 175% to a decimal and an improper fraction in simplest form.' },
+        { id: 't3_2', given: '0.005', ansPct: '0.5', ansFrac: '1/200', stem: 'Convert 0.005 to a percent and a simplified fraction.' },
+        { id: 't3_3', given: '2 3/4', ansDec: '2.75', ansPct: '275', stem: 'Convert mixed number 2 3/4 to a decimal and a percent.' },
+        { id: 't3_4', given: '0.0625', ansPct: '6.25', ansFrac: '1/16', stem: 'Convert decimal 0.0625 to a percent and a simplified fraction.' },
+        { id: 't3_5', given: '350%', ansDec: '3.5', ansFrac: '7/2', stem: 'Convert 350% to a decimal and a simplified fraction.' },
+        { id: 't3_6', given: '0.0025', ansPct: '0.25', ansFrac: '1/400', stem: 'Convert decimal 0.0025 to a percent and a simplified fraction.' },
+        { id: 't3_7', given: '5/8', ansDec: '0.625', ansPct: '62.5', stem: 'Convert 5/8 to a decimal and a percent.' },
+        { id: 't3_8', given: '1 2/5', ansDec: '1.4', ansPct: '140', stem: 'Convert mixed number 1 2/5 to a decimal and a percent.' }
+      ];
+
+      let currentT3 = T3_PROBLEMS[0];
+
+      function renderT3Problem() {
+        const p = currentT3;
+        const isDone = !!state.solved3[p.id];
+
+        renderDots('t3-dots', T3_PROBLEMS, state.idx3, state.solved3, (ni) => {
+          state.idx3 = ni; currentT3 = T3_PROBLEMS[ni]; renderT3Problem();
+        });
+
+        const stage = document.getElementById('t3-stage-card');
+        stage.innerHTML = `
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <span style="font-size:0.84rem; font-weight:800; color:var(--amber-bright); text-transform:uppercase;">Challenge Trio #${state.idx3 + 1}</span>
+            <button type="button" class="speak-btn" data-speak="${p.stem}">🔊 Read</button>
+          </div>
+          <p style="font-size:1.15rem; font-weight:700; color:var(--navy); margin:0 0 6px 0;">${p.stem}</p>
+
+          <div class="trio-container">
+            <div class="trio-pill">
+              <span class="trio-label">Given</span>
+              <span class="trio-val" style="color:var(--teal);">${p.given}</span>
+            </div>
+            <span class="trio-arrow">&harr;</span>
+            <div class="trio-pill">
+              <span class="trio-label">Box A</span>
+              <input type="text" id="t3-inp-a" class="num-input ${isDone ? 'ok' : ''}" style="width:110px; padding:4px;" value="${isDone ? (p.ansDec || p.ansPct) : ''}" placeholder="Answer A">
+            </div>
+            <span class="trio-arrow">&harr;</span>
+            <div class="trio-pill">
+              <span class="trio-label">Box B (Fraction)</span>
+              <input type="text" id="t3-inp-b" class="num-input ${isDone ? 'ok' : ''}" style="width:110px; padding:4px;" value="${isDone ? (p.ansFrac || p.ansPct) : ''}" placeholder="Answer B">
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; margin-top:18px;">
+            <button type="button" class="btn btn-primary" id="t3-check-btn">Verify Forms</button>
+            <button type="button" class="btn" id="t3-hint-btn">💡 Hint</button>
+          </div>
+
+          <div id="t3-fb" class="feedback-box ${isDone ? 'show ok' : ''}">
+            ${isDone ? '✓ Correct equivalence!' : ''}
+          </div>
+        `;
+
+        document.getElementById('t3-check-btn').addEventListener('click', () => {
+          const vA = document.getElementById('t3-inp-a').value.replace(/[%\s]/g, '').trim();
+          const vB = document.getElementById('t3-inp-b').value.replace(/[%\s]/g, '').trim();
+          const targetA = p.ansDec || p.ansPct;
+          const targetB = p.ansFrac || p.ansPct;
+
+          const okA = targetA.includes('/') ? vA === targetA : Math.abs(parseNum(vA) - Number(targetA)) < 0.001;
+          const okB = targetB.includes('/') ? vB === targetB : Math.abs(parseNum(vB) - Number(targetB)) < 0.001;
+
+          document.getElementById('t3-inp-a').classList.toggle('ok', okA);
+          document.getElementById('t3-inp-a').classList.toggle('err', !okA);
+          document.getElementById('t3-inp-b').classList.toggle('ok', okB);
+          document.getElementById('t3-inp-b').classList.toggle('err', !okB);
+
+          const fb = document.getElementById('t3-fb');
+          if (okA && okB) {
+            fb.className = 'feedback-box show ok';
+            fb.textContent = `✓ Perfect! ${p.given} = ${targetA} = ${targetB}.`;
+            markSolved(state.solved3, p.id);
+            renderDots('t3-dots', T3_PROBLEMS, state.idx3, state.solved3, (ni) => { state.idx3 = ni; currentT3 = T3_PROBLEMS[ni]; renderT3Problem(); });
+            updateProgressHeader();
+            appendNext(document.getElementById('t3-fb'), 3, T3_PROBLEMS.length, renderT3Problem);
+          } else {
+            fb.className = 'feedback-box show err';
+            fb.textContent = 'Check your values. If writing a fraction, make sure it is in lowest terms (e.g. 7/4 or 1/200).';
+          }
+        });
+
+        document.getElementById('t3-hint-btn').addEventListener('click', () => {
+          const fb = document.getElementById('t3-fb');
+          fb.className = 'feedback-box show warn';
+          fb.textContent = `💡 Hint: Expected answers are ${p.ansDec || p.ansPct} and ${p.ansFrac || p.ansPct}.`;
+        });
+      }
+
+      document.getElementById('t3-prev-btn').addEventListener('click', () => {
+        state.idx3 = (state.idx3 - 1 + T3_PROBLEMS.length) % T3_PROBLEMS.length;
+        currentT3 = T3_PROBLEMS[state.idx3]; renderT3Problem();
+      });
+      document.getElementById('t3-next-btn').addEventListener('click', () => {
+        state.idx3 = (state.idx3 + 1) % T3_PROBLEMS.length;
+        currentT3 = T3_PROBLEMS[state.idx3]; renderT3Problem();
+      });
+
+      /* ----------------------------------------------------------------------
+         TAB 4: COMPLEX STORIES & SLEEPY ANIMALS (8 PROBLEMS)
+         ---------------------------------------------------------------------- */
+      const T4_PROBLEMS = [
+        {
+          id: 't4_1',
+          title: 'Problem 1 · Sleepy Animals Complete Order (Reveal Math 4-2)',
+          stem: 'The Reveal Math Lesson 4-2 table gives sleep times as part of a 24-hr day: Python (3/4), Tiger (0.65), Chimpanzee (2/5), Giraffe (8/100). Order these 4 animals from MOST sleep to LEAST sleep.',
+          type: 'mc',
+          choices: [
+            'Python (75%), Tiger (65%), Chimpanzee (40%), Giraffe (8%)',
+            'Giraffe (8%), Chimpanzee (40%), Tiger (65%), Python (75%)',
+            'Tiger (65%), Python (34%), Chimpanzee (25%), Giraffe (8%)',
+            'Python (75%), Chimpanzee (50%), Tiger (65%), Giraffe (8%)'
+          ],
+          correct: 0,
+          hint: 'Python 3/4 = 75%, Tiger 0.65 = 65%, Chimpanzee 2/5 = 40%, Giraffe 8/100 = 8%.',
+          explain: '✓ Correct! Converting to percents: Python (75%) > Tiger (65%) > Chimpanzee (40%) > Giraffe (8%).'
+        },
+        {
+          id: 't4_2',
+          title: 'Problem 2 · Python Daily Sleep Hours',
+          stem: 'If a python sleeps 3/4 of a 24-hour day, exactly how many hours does it sleep each day?',
+          type: 'single',
+          ans: '18',
+          suffix: 'hours',
+          hint: '3/4 of 24 = (24 &divide; 4) &times; 3 = 6 &times; 3 = 18 hours.',
+          explain: '✓ Correct! 0.75 &times; 24 = 18 hours of sleep per day!'
+        },
+        {
+          id: 't4_3',
+          title: 'Problem 3 · Cow Sleep Time Conversion',
+          stem: 'A cow sleeps 16.5% of the day. Write 16.5% as a decimal and as a fraction in simplest form.',
+          type: 'mc',
+          choices: [
+            '0.165 and 33/200',
+            '1.65 and 165/1000',
+            '0.165 and 16/100',
+            '0.0165 and 33/2000'
+          ],
+          correct: 0,
+          hint: '16.5% = 16.5/100 = 165/1000. Divide by 5/5 = 33/200. Decimal is 0.165.',
+          explain: '✓ Spot on! 16.5% = 0.165 = 165/1000 = 33/200.'
+        },
+        {
+          id: 't4_4',
+          title: 'Problem 4 · Error Detective: Consecutive Discounts',
+          stem: 'A sign says: "Take 25% off original price, then an extra 20% off at the register!" Jordan says this equals a 45% discount. Is Jordan correct?',
+          type: 'mc',
+          choices: [
+            'Yes, because 25% + 20% = 45%',
+            'No, because the 20% applies to the ALREADY discounted price, not the original price (actual discount is 40%)',
+            'No, the total discount is 50%',
+            'Yes, discounts always add directly together'
+          ],
+          correct: 1,
+          hint: 'On a $100 item: 25% off leaves $75. 20% of $75 is $15 off, leaving $60. $100 to $60 is a 40% discount, NOT 45%!',
+          explain: '✓ Excellent reasoning! Sequential percentages do NOT add up because the base changes.'
+        },
+        {
+          id: 't4_5',
+          title: 'Problem 5 · Marathon Energy Boost',
+          stem: 'A sports drink has 0.75% electrolyte solution. How many grams of electrolytes are in 200 grams of the drink?',
+          type: 'single',
+          ans: '1.5',
+          suffix: 'grams',
+          hint: '0.75% = 0.0075. Multiply 0.0075 &times; 200 = 1.5 grams.',
+          explain: '✓ Correct! 0.75% of 200 = 0.0075 &times; 200 = 1.5 grams.'
+        },
+        {
+          id: 't4_6',
+          title: 'Problem 6 · Precision Science Measure',
+          stem: 'In a lab experiment, liquid was measured at 5/16 of a liter. What is this volume as a percent of a liter?',
+          type: 'single',
+          ans: '31.25',
+          suffix: '%',
+          hint: '5 &divide; 16 = 0.3125. 0.3125 &times; 100 = 31.25%.',
+          explain: '✓ Exactly! 5/16 = 0.3125 = 31.25%.'
+        },
+        {
+          id: 't4_7',
+          title: 'Problem 7 · Error Detective: Percent to Fraction',
+          stem: 'Kendra converts 0.5% to a fraction and writes 1/2. Explain her misconception.',
+          type: 'mc',
+          choices: [
+            'She forgot that 1/2 is 50%, whereas 0.5% is 1/2 of 1%, which equals 1/200',
+            'She should have written 5/10',
+            '0.5% cannot be written as a fraction',
+            'She divided by 10 instead of 100'
+          ],
+          correct: 0,
+          hint: '0.5 = 1/2, but 0.5% = 0.5/100 = 1/200.',
+          explain: '✓ Correct! 0.5% means 0.5 out of 100 = 1/200. 1/2 is 50%.'
+        },
+        {
+          id: 't4_8',
+          title: 'Problem 8 · Factory Output Growth',
+          stem: 'A solar plant produced 225% of its rated target power. If its target power was 80 megawatts, how many megawatts did it actually produce?',
+          type: 'single',
+          ans: '180',
+          suffix: 'MW',
+          hint: '225% = 2.25. Multiply 2.25 &times; 80 = 180 MW.',
+          explain: '✓ Correct! 2.25 &times; 80 = 180 MW.'
+        }
+      ];
+
+      function renderT4Problem() {
+        const p = T4_PROBLEMS[state.idx4];
+        const isDone = !!state.solved4[p.id];
+
+        renderDots('t4-dots', T4_PROBLEMS, state.idx4, state.solved4, (ni) => {
+          state.idx4 = ni; renderT4Problem();
+        });
+
+        const stage = document.getElementById('t4-stage-card');
+        let body = '';
+
+        if (p.type === 'mc') {
+          body = `
+            <div class="choice-stack">
+              ${p.choices.map((c, i) => `
+                <button type="button" class="choice-btn ${isDone && i === p.correct ? 'correct' : ''}" data-t4-mc="${i}">
+                  <span style="font-weight:700; width:24px;">${['A','B','C','D'][i]}.</span>
+                  <span>${c}</span>
+                </button>
+              `).join('')}
+            </div>
+          `;
+        } else if (p.type === 'single') {
+          body = `
+            <div style="display:flex; align-items:center; gap:10px; margin:18px 0;">
+              <input type="text" id="t4-inp-single" class="num-input ${isDone ? 'ok' : ''}" style="width:120px;" value="${isDone ? p.ans : ''}" placeholder="?">
+              <strong style="color:var(--navy); font-size:1.1rem;">${p.suffix || ''}</strong>
+              <button type="button" class="btn btn-primary" id="t4-check-btn">Check Answer</button>
+              <button type="button" class="btn" id="t4-hint-btn">💡 Hint</button>
+            </div>
+          `;
+        }
+
+        stage.innerHTML = `
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <span style="font-size:0.84rem; font-weight:800; color:var(--amber-bright); text-transform:uppercase;">${p.title}</span>
+            <button type="button" class="speak-btn" data-speak="${p.stem}">🔊 Read</button>
+          </div>
+          <p style="font-size:1.15rem; font-weight:700; color:var(--navy); margin:0 0 6px 0;">${p.stem}</p>
+          ${body}
+          <div id="t4-fb" class="feedback-box ${isDone ? 'show ok' : ''}">${isDone ? p.explain : ''}</div>
+        `;
+
+        if (isDone) appendNext(document.getElementById('t4-fb'), 4, T4_PROBLEMS.length, renderT4Problem);
+
+        if (p.type === 'mc') {
+          stage.querySelectorAll('[data-t4-mc]').forEach(btn => {
+            btn.addEventListener('click', () => {
+              if (state.solved4[p.id]) return;
+              const idx = Number(btn.dataset.t4Mc);
+              const fb = document.getElementById('t4-fb');
+              stage.querySelectorAll('[data-t4-mc]').forEach(b => b.classList.remove('correct', 'wrong'));
+              if (idx === p.correct) {
+                btn.classList.add('correct');
+                fb.className = 'feedback-box show ok'; fb.textContent = p.explain;
+                markSolved(state.solved4, p.id);
+                renderDots('t4-dots', T4_PROBLEMS, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4Problem(); });
+                updateProgressHeader();
+                appendNext(document.getElementById('t4-fb'), 4, T4_PROBLEMS.length, renderT4Problem);
+              } else {
+                btn.classList.add('wrong');
+                fb.className = 'feedback-box show err'; fb.textContent = `Hint: ${p.hint}`;
+              }
+            });
+          });
+        } else {
+          const checkBtn = document.getElementById('t4-check-btn');
+          const hintBtn = document.getElementById('t4-hint-btn');
+          const fb = document.getElementById('t4-fb');
+          if (checkBtn) {
+            checkBtn.addEventListener('click', () => {
+              const inp = document.getElementById('t4-inp-single');
+              const val = inp.value.replace(/[%\s]/g, '').trim();
+              const ok = parseNum(val) === Number(p.ans);
+              inp.classList.toggle('ok', ok); inp.classList.toggle('err', !ok);
+              if (ok) {
+                fb.className = 'feedback-box show ok'; fb.textContent = p.explain;
+                markSolved(state.solved4, p.id);
+                renderDots('t4-dots', T4_PROBLEMS, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4Problem(); });
+                updateProgressHeader();
+                appendNext(document.getElementById('t4-fb'), 4, T4_PROBLEMS.length, renderT4Problem);
+              } else {
+                fb.className = 'feedback-box show err'; fb.textContent = `Hint: ${p.hint}`;
+              }
+            });
+          }
+          if (hintBtn) {
+            hintBtn.addEventListener('click', () => {
+              fb.className = 'feedback-box show warn'; fb.textContent = `💡 Hint: ${p.hint}`;
+            });
+          }
+        }
+      }
+
+      document.getElementById('t4-prev-btn').addEventListener('click', () => {
+        state.idx4 = (state.idx4 - 1 + T4_PROBLEMS.length) % T4_PROBLEMS.length;
+        renderT4Problem();
+      });
+      document.getElementById('t4-next-btn').addEventListener('click', () => {
+        state.idx4 = (state.idx4 + 1) % T4_PROBLEMS.length;
+        renderT4Problem();
+      });
+
+      /* ----------------------------------------------------------------------
+         TAB 5: MASTERY CHALLENGE (10 TOUGH QUESTIONS)
+         ---------------------------------------------------------------------- */
+      const T5_QUESTIONS = [
+        {
+          id: 't5_1',
+          q: 'Which fraction is equivalent to 62.5%?',
+          choices: ['5/8', '6/8', '5/16', '7/8'],
+          correct: 0,
+          explain: '62.5% = 625/1000 = 5/8.'
+        },
+        {
+          id: 't5_2',
+          q: 'What is 0.0075 written as a percent?',
+          choices: ['75%', '7.5%', '0.75%', '0.075%'],
+          correct: 2,
+          explain: '0.0075 &times; 100 = 0.75%.'
+        },
+        {
+          id: 't5_3',
+          q: 'Convert 2 3/8 to a percent.',
+          choices: ['237.5%', '23.8%', '238%', '203.75%'],
+          correct: 0,
+          explain: '2 3/8 = 2 + 0.375 = 2.375 = 237.5%.'
+        },
+        {
+          id: 't5_4',
+          q: 'Which value is strictly BETWEEN 0.08 and 1/10?',
+          choices: ['7%', '0.09', '12%', '0.075'],
+          correct: 1,
+          explain: '0.08 is 8% and 1/10 is 0.10 (10%). 0.09 (9%) is strictly between them.'
+        },
+        {
+          id: 't5_5',
+          q: 'What is 1/40 written as a decimal and percent?',
+          choices: ['0.025 and 2.5%', '0.25 and 25%', '0.04 and 4%', '0.0025 and 0.25%'],
+          correct: 0,
+          explain: '1 &divide; 40 = 0.025 = 2.5%.'
+        },
+        {
+          id: 't5_6',
+          q: 'Order from least to greatest: 1/8, 0.12, 12.8%.',
+          choices: [
+            '0.12, 1/8, 12.8%',
+            '1/8, 0.12, 12.8%',
+            '12.8%, 1/8, 0.12',
+            '0.12, 12.8%, 1/8'
+          ],
+          correct: 0,
+          explain: '0.12 = 12%, 1/8 = 12.5%, 12.8% = 12.8%. 12% < 12.5% < 12.8%.'
+        },
+        {
+          id: 't5_7',
+          q: 'Write 425% as a simplified mixed number.',
+          choices: ['4 1/4', '4 1/25', '42 1/2', '4 2/5'],
+          correct: 0,
+          explain: '425% = 4.25 = 4 25/100 = 4 1/4.'
+        },
+        {
+          id: 't5_8',
+          q: 'What is 0.1% written as a fraction in simplest form?',
+          choices: ['1/10', '1/100', '1/1000', '1/10000'],
+          correct: 2,
+          explain: '0.1% = 0.1/100 = 1/1000.'
+        },
+        {
+          id: 't5_9',
+          q: 'A scientist records 7/16 liter of water. What is this percentage of one liter?',
+          choices: ['43.75%', '43.5%', '71.6%', '45.75%'],
+          correct: 0,
+          explain: '7 &divide; 16 = 0.4375 = 43.75%.'
+        },
+        {
+          id: 't5_10',
+          q: 'Which representation of 5/6 is accurate?',
+          choices: [
+            '0.83 (exact) = 83%',
+            '0.833... (repeating 3) ≈ 83.3%',
+            '0.56 = 56%',
+            '0.85 = 85%'
+          ],
+          correct: 1,
+          explain: '5 &divide; 6 = 0.8333... &approx; 83.3%.'
+        }
+      ];
+
+      function renderT5Question() {
+        const q = T5_QUESTIONS[state.idx5];
+        const isSolved = !!state.solved5[q.id];
+        const chosen = state.quizChoice[q.id];
+
+        renderDots('t5-dots', T5_QUESTIONS, state.idx5, state.solved5, (ni) => {
+          state.idx5 = ni; renderT5Question();
+        });
+
+        const stage = document.getElementById('t5-stage-card');
+        stage.innerHTML = `
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <span style="font-size:0.84rem; font-weight:800; color:var(--amber-bright); text-transform:uppercase;">Challenge Question ${state.idx5 + 1} of 10</span>
+            <button type="button" class="speak-btn" data-speak="${q.q}">🔊 Read</button>
+          </div>
+          <p style="font-size:1.15rem; font-weight:700; color:var(--navy); margin:0 0 6px 0;">${q.q}</p>
+
+          <div class="choice-stack">
+            ${q.choices.map((c, i) => {
+              let cls = '';
+              if (isSolved) {
+                if (i === q.correct) cls = 'correct';
+                else if (i === chosen) cls = 'wrong';
+              }
+              return `
+                <button type="button" class="choice-btn ${cls}" data-t5-mc="${i}">
+                  <span style="font-weight:700; width:24px;">${['A','B','C','D'][i]}.</span>
+                  <span>${c}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+
+          <div id="t5-fb" class="feedback-box ${isSolved ? 'show ok' : ''}">
+            ${isSolved ? `✓ ${q.explain}` : ''}
+          </div>
+        `;
+
+        if (isSolved) appendNext(document.getElementById('t5-fb'), 5, T5_QUESTIONS.length, renderT5Question);
+
+        stage.querySelectorAll('[data-t5-mc]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (state.solved5[q.id]) return;
+            const idx = Number(btn.dataset.t5Mc);
+            state.quizChoice[q.id] = idx;
+            const isFirst = state.quizFirst[q.id] === undefined;
+            if (isFirst) state.quizFirst[q.id] = idx === q.correct;
+
+            const fb = document.getElementById('t5-fb');
+            stage.querySelectorAll('[data-t5-mc]').forEach(b => b.classList.remove('correct', 'wrong'));
+
+            if (idx === q.correct) {
+              btn.classList.add('correct');
+              fb.className = 'feedback-box show ok';
+              fb.textContent = `✓ Correct! ${q.explain}`;
+              state.solved5[q.id] = true;
+              renderDots('t5-dots', T5_QUESTIONS, state.idx5, state.solved5, (ni) => { state.idx5 = ni; renderT5Question(); });
+              updateProgressHeader();
+              appendNext(document.getElementById('t5-fb'), 5, T5_QUESTIONS.length, renderT5Question);
+            } else {
+              btn.classList.add('wrong');
+              fb.className = 'feedback-box show err';
+              fb.textContent = `Not quite. Think carefully about the decimal point and place value.`;
+            }
+            saveState();
+          });
+        });
+      }
+
+      document.getElementById('t5-prev-btn').addEventListener('click', () => {
+        state.idx5 = (state.idx5 - 1 + T5_QUESTIONS.length) % T5_QUESTIONS.length;
+        renderT5Question();
+      });
+      document.getElementById('t5-next-btn').addEventListener('click', () => {
+        state.idx5 = (state.idx5 + 1) % T5_QUESTIONS.length;
+        renderT5Question();
+      });
+      document.getElementById('t5-reset-btn').addEventListener('click', () => {
+        if (!window.confirm('Reset challenge quiz answers?')) return;
+        state.solved5 = {}; state.quizChoice = {}; state.quizFirst = {}; state.idx5 = 0;
+        renderT5Question(); updateProgressHeader();
+      });
+
+      loadState();
+      renderT1Task();
+      renderT2Problem();
+      renderT3Problem();
+      renderT4Problem();
+      renderT5Question();
+      selectTab(state.activeTab || 1);
+      updateProgressHeader();
+      if (state.showEs) document.body.classList.add('show-es');
+
+    })();
+  </script>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>

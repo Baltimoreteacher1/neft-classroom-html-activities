@@ -349,6 +349,14 @@ window.LESSON_PROJECTS = {
       "href": "/math/unit-4/projects/"
     },
     {
+      "text": "🧮 HTML practice",
+      "href": "/math/unit-4/4-2-practice-studio/index.html"
+    },
+    {
+      "text": "🔥 HTML practice (Challenge)",
+      "href": "/math/unit-4/4-2-practice-studio-challenging/index.html"
+    },
+    {
       "text": "🎯 Percent Shadow-Caster",
       "href": "/math/unit-4/percent-shadow-caster/index.html"
     },
@@ -357,11 +365,32 @@ window.LESSON_PROJECTS = {
       "href": "/math/unit-4/6-rp-a-2-interactive-study-guide/index.html"
     }
   ],
-  "4-3": [],
+  "4-3": [
+    {
+      "text": "🏆 Project — Rates & Percents in Action",
+      "href": "/math/unit-4/projects/"
+    },
+    {
+      "text": "🧮 HTML practice",
+      "href": "/math/unit-4/4-3-practice-studio/index.html"
+    },
+    {
+      "text": "🔥 HTML practice (Challenge)",
+      "href": "/math/unit-4/4-3-practice-studio-challenging/index.html"
+    }
+  ],
   "4-4": [
     {
       "text": "🏆 Project — Rates & Percents in Action",
       "href": "/math/unit-4/projects/"
+    },
+    {
+      "text": "🧮 HTML practice",
+      "href": "/math/unit-4/4-4-practice-studio/index.html"
+    },
+    {
+      "text": "🔥 HTML practice (Challenge)",
+      "href": "/math/unit-4/4-4-practice-studio-challenging/index.html"
     },
     {
       "text": "🎯 Percent Shadow-Caster",
@@ -376,6 +405,14 @@ window.LESSON_PROJECTS = {
     {
       "text": "🏆 Project — Rates & Percents in Action",
       "href": "/math/unit-4/projects/"
+    },
+    {
+      "text": "🧮 HTML practice",
+      "href": "/math/unit-4/4-5-practice-studio/index.html"
+    },
+    {
+      "text": "🔥 HTML practice (Challenge)",
+      "href": "/math/unit-4/4-5-practice-studio-challenging/index.html"
     },
     {
       "text": "🏷️ Discount Dash",

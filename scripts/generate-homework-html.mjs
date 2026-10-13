@@ -53,6 +53,8 @@ import {
   matchingPairs,
   normalizeDragSort,
   questionGuide,
+  renderPercentBarSvg,
+  renderProblemVisualModel,
   spanishChoiceFeedback,
   tableModel,
 } from "./lib/homework-problems.mjs";
@@ -546,8 +548,8 @@ function lessonConfigs() {
 const SVG_GRID = `<svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/>${Array.from({ length: 14 }, (_, i) => `<line x1="${10 + (i + 1) * 20}" y1="10" x2="${10 + (i + 1) * 20}" y2="150" stroke="#d6e2ee" stroke-width="1"/>`).join("")}${Array.from({ length: 6 }, (_, i) => `<line x1="10" y1="${10 + (i + 1) * 20}" x2="310" y2="${10 + (i + 1) * 20}" stroke="#d6e2ee" stroke-width="1"/>`).join("")}</svg>`;
 
 // Visual model + "show your work" space. Persists (saveState) and prints with lines.
-function renderWorkspace(pIdx, g, topic) {
-  const visual = SVG_GRID;
+function renderWorkspace(pIdx, g, topic, customVisual = null) {
+  const visual = customVisual || SVG_GRID;
   // Restore the graphing surfaces while keeping the corrected question-specific
   // coaching. Do not use number lines for fraction division or statistics.
   const itype =
@@ -650,7 +652,7 @@ function renderAnswerSheet(items, title) {
 </section>`;
 }
 
-function renderAnswerKey(it, pIdx) {
+function renderAnswerKey(it, pIdx, solvedVisualSvg = "") {
   const { lines, note } = answerKeyLines(it, { translate: tableEs });
   if (!lines.length && !note) return "";
   const lineHtml = lines.map((line) => `<li>${bi(line.en, line.es)}</li>`).join("");
@@ -662,6 +664,9 @@ function renderAnswerKey(it, pIdx) {
   const noteHtml = note
     ? `<p class="hw-answer-key-note"><strong>${noteLabel}</strong> ${bi(note.en, note.es)}</p>`
     : "";
+  const visualHtml = solvedVisualSvg
+    ? `<div class="hw-answer-key-visual" style="margin:12px 0; text-align:center;">${solvedVisualSvg}</div>`
+    : "";
   return `
       <details class="hw-answer-key" id="answer_key_${pIdx}">
         <summary>
@@ -672,6 +677,7 @@ function renderAnswerKey(it, pIdx) {
           <p class="hw-answer-key-label">${bi("Answer key for families — compare, then talk about why.", "Clave de respuestas para la familia — comparen y hablen del porqué.")}</p>
           <p class="hw-answer-key-try">${bi("Not tried yet? Close this and give it one try first. A wrong first try still helps.", "¿Todavía no lo intentaron? Ciérrenla y hagan un intento primero. Un primer intento equivocado también ayuda.")}</p>
           ${lineHtml ? `<ul class="hw-answer-key-lines">${lineHtml}</ul>` : ""}
+          ${visualHtml}
           ${noteHtml}
         </div>
       </details>`;
@@ -680,6 +686,15 @@ function renderAnswerKey(it, pIdx) {
 function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
   const type = it.type;
   let problemSubtype = "";
+
+  const visualSvg = renderProblemVisualModel(it, "question");
+  const solvedVisualSvg = renderProblemVisualModel(it, "solved");
+  const workspaceSvg = renderProblemVisualModel(it, "workspace");
+  const visualWrap = visualSvg
+    ? `<div class="problem-visual-wrap">${visualSvg}</div>`
+    : it.image
+      ? `<div class="problem-visual-wrap"><img src="${esc(it.image)}" alt="${esc(it.imageAlt || it.stem || "Problem visual")}" class="problem-visual-img" /></div>`
+      : "";
 
   let content = "";
 
@@ -701,6 +716,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     content = `
       <div class="problem-body">
         <p class="problem-stem"${esMissing(stem, stemEs) ? ' data-es-missing="stem"' : ""}>${bi(stem, stemEs)}</p>
+        ${visualWrap}
         ${renderFamilyTip("multiple-choice")}
         <div class="mc-options" data-correct="${correctIdx}" data-explanation="${esc(explanation)}"${explanationEs ? ` data-explanation-es="${esc(explanationEs)}"` : ""} data-choice-feedback='${esc(JSON.stringify(it.choiceFeedback || []))}' data-choice-feedback-es='${esc(JSON.stringify(spanishChoiceFeedback(it)))}' data-topic="${esc(topic)}">
           ${shuffleSteps(
@@ -1038,12 +1054,13 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     "open-response",
   ].includes(type);
   const guide = questionGuide(it, topic);
-  const scaffold = computational ? renderWorkspace(pIdx, guide, topic) : "";
+  const scaffold = computational ? renderWorkspace(pIdx, guide, topic, workspaceSvg) : "";
   const coachLadder = {
     strategyEn: guide.coach,
     strategyEs: guide.coachEs,
     startEn: guide.draw ? `Start here: ${guide.draw}` : "",
     startEs: guide.drawEs ? `Empieza aquí: ${guide.drawEs}` : "",
+    visualSvg,
   };
   return `
     <section class="problem-section card" id="problem_${pIdx}" data-problem-type="${type}"${problemSubtype ? ` data-problem-subtype="${problemSubtype}"` : ""}>
@@ -1061,7 +1078,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
         </button>
         <div class="problem-check-result" id="problem_result_${pIdx}" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
-      ${renderAnswerKey(it, pIdx)}
+      ${renderAnswerKey(it, pIdx, solvedVisualSvg)}
     </section>
   `;
 }
@@ -2380,6 +2397,11 @@ body.lang-mode-es .vocab-card:not(:has(.vocab-def-es)) .vocab-def {
   text-align: center;
 }
 .hw-visual-svg { width: 100%; height: auto; max-height: 180px; }
+.problem-visual-wrap { margin: 12px 0 16px; text-align: center; }
+.problem-visual-img { max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #cbd5e1; display: block; margin: 0 auto; background: white; }
+.hw-percent-bar-svg { width: 100%; height: auto; max-width: 540px; display: block; margin: 0 auto; }
+.hw-answer-key-visual { margin: 12px 0; text-align: center; }
+.coach-step-visual { margin: 10px 0; text-align: center; }
 /* Drawable model area: students draw directly on the grid (mouse/touch/stylus). */
 .hw-visual-frame.hw-drawable { position: relative; }
 .hw-draw-canvas {
@@ -5645,6 +5667,10 @@ function checkProblem(idx, options) {
         expDiv.className = "visual-explanation-card explanation-box";
         if (isProblemCorrect) {
           let html = '<div class="exp-header"><span>✅ ' + pickLangText("Solved! How to understand it", "¡Resuelto! Por qué funciona") + '</span></div>';
+          const keyVisual = section.querySelector(".hw-answer-key-visual");
+          if (keyVisual) {
+            html += '<div class="exp-visual" style="margin:10px 0;">' + keyVisual.innerHTML + '</div>';
+          }
           if (explanation) {
             html += '<div class="exp-why"><strong>💡 ' + pickLangText("Key Step:", "Paso clave:") + '</strong> ' + explanation + '</div>';
           }
@@ -5703,6 +5729,10 @@ function checkProblem(idx, options) {
           } else {
             // Tier 3: Full Step-by-Step Walkthrough
             let html = '<div class="exp-header"><span>🔍 ' + pickLangText("Hint 3 of 3 — Step-by-Step Walkthrough", "Pista 3 de 3 — Repaso visual paso a paso") + '</span></div>';
+            const keyVisual = section.querySelector(".hw-answer-key-visual");
+            if (keyVisual) {
+              html += '<div class="exp-visual" style="margin:10px 0;">' + keyVisual.innerHTML + '</div>';
+            }
             if (selectedFeedback) {
               html += '<div class="exp-trap"><strong>⚠️ ' + pickLangText("Trap to avoid:", "Trampa a evitar:") + '</strong> ' + selectedFeedback + '</div>';
             }

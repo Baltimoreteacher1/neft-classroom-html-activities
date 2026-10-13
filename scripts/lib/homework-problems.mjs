@@ -160,17 +160,22 @@ const TOPIC_NUDGES = {
 export function questionGuide(item, topic = "") {
   const hints = item.hints || (item.hint ? [item.hint] : []);
   const hintsEs = item.hintsEs || (item.hintEs ? [item.hintEs] : []);
+  const isPercentBar = item.visualModel?.kind === "percent-bar";
+  const defaultDraw = isPercentBar
+    ? `Model the percent bar: divide the whole into ${item.visualModel.parts || 4} equal parts, shade ${item.visualModel.shaded || 3} parts, and find each part's percent.`
+    : hints[0] ||
+      TOPIC_NUDGES[topic]?.[0] ||
+      "Use this space for a sketch, labels, or calculations that explain your answer.";
+  const defaultDrawEs = isPercentBar
+    ? `Modela la barra de porcentaje: divide el total en ${item.visualModel.parts || 4} partes iguales, sombrea ${item.visualModel.shaded || 3} partes y halla el porcentaje de cada parte.`
+    : hintsEs[0] ||
+      TOPIC_NUDGES[topic]?.[1] ||
+      "Usa este espacio para un dibujo, etiquetas o cálculos que expliquen tu respuesta.";
   return {
     en: hints[0] || TOPIC_NUDGES[topic]?.[0] || "Name what is given and what you need to find.",
     es: hintsEs[0] || TOPIC_NUDGES[topic]?.[1] || "Nombra los datos y lo que necesitas encontrar.",
-    draw:
-      hints[0] ||
-      TOPIC_NUDGES[topic]?.[0] ||
-      "Use this space for a sketch, labels, or calculations that explain your answer.",
-    drawEs:
-      hintsEs[0] ||
-      TOPIC_NUDGES[topic]?.[1] ||
-      "Usa este espacio para un dibujo, etiquetas o cálculos que expliquen tu respuesta.",
+    draw: item.drawPrompt || defaultDraw,
+    drawEs: item.drawPromptEs || defaultDrawEs,
     coach: hints[1] || "What makes your answer reasonable? Use the question to check it.",
     coachEs: hintsEs[1] || "¿Por qué es razonable tu respuesta? Usa la pregunta para comprobarla.",
   };
@@ -420,4 +425,131 @@ export function answerKeyLines(item, { translate } = {}) {
       break;
   }
   return { lines, note };
+}
+
+export function renderPercentBarSvg({
+  parts = 4,
+  shaded = 3,
+  whole = 100,
+  mode = "question",
+} = {}) {
+  const W = 540;
+  const H = 130;
+  const startX = 50;
+  const barY = 34;
+  const barH = 46;
+  const totalBarW = 440;
+  const partW = totalBarW / parts;
+  const shadedW = partW * shaded;
+  const unitPct = whole / parts;
+  const targetPct = Math.round((shaded / parts) * whole);
+
+  if (mode === "solved") {
+    const blocks = Array.from({ length: parts }, (_, i) => {
+      const x = startX + i * partW;
+      const isShaded = i < shaded;
+      const fill = isShaded ? "#1fa6a2" : "#f8fafc";
+      const textColor = isShaded ? "#ffffff" : "#64748b";
+      return `<rect x="${x}" y="${barY}" width="${partW}" height="${barH}" rx="2" fill="${fill}" stroke="#12355b" stroke-width="2"/>
+  <text x="${x + partW / 2}" y="${barY + 28}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="${textColor}">${unitPct}%</text>`;
+    }).join("\n  ");
+
+    return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="auto" class="hw-percent-bar-svg" style="background:white; max-width:${W}px; display:block; margin:0 auto; border-radius:8px; border:1px solid #0f766e;" role="img" aria-label="Solved percent bar: ${parts} equal parts of ${unitPct} percent each, ${shaded} parts shaded equals ${targetPct} percent" xmlns="http://www.w3.org/2000/svg">
+  <title>Solved Percent Bar: ${shaded} of ${parts} parts = ${targetPct}%</title>
+  <path d="M ${startX} 28 L ${startX} 18 L ${startX + shadedW / 2} 18 L ${startX + shadedW / 2} 12 L ${startX + shadedW / 2} 18 L ${startX + shadedW} 18 L ${startX + shadedW} 28" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
+  <rect x="${startX + shadedW / 2 - 95}" y="4" width="190" height="20" rx="5" fill="#0f766e"/>
+  <text x="${startX + shadedW / 2}" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="11.5" font-weight="800" fill="#ffffff">
+    <tspan class="lang-en">${shaded} shaded parts = ${targetPct}%</tspan><tspan class="lang-es" lang="es">${shaded} partes sombreadas = ${targetPct}%</tspan>
+  </text>
+  <text x="${startX + shadedW + (totalBarW - shadedW) / 2}" y="22" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="11" font-weight="700" fill="#64748b">
+    <tspan class="lang-en">1 part = ${unitPct}%</tspan><tspan class="lang-es" lang="es">1 parte = ${unitPct}%</tspan>
+  </text>
+  ${blocks}
+  <rect x="${startX}" y="${barY}" width="${totalBarW}" height="${barH}" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
+  <line x1="${startX}" y1="80" x2="${startX}" y2="92" stroke="#12355b" stroke-width="2"/>
+  <text x="${startX}" y="108" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#12355b">0%</text>
+  <line x1="${startX + partW}" y1="80" x2="${startX + partW}" y2="88" stroke="#0f766e" stroke-width="1.5"/>
+  <text x="${startX + partW}" y="104" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="11.5" font-weight="700" fill="#0f766e">${unitPct}%</text>
+  <line x1="${startX + 2 * partW}" y1="80" x2="${startX + 2 * partW}" y2="88" stroke="#0f766e" stroke-width="1.5"/>
+  <text x="${startX + 2 * partW}" y="104" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="11.5" font-weight="700" fill="#0f766e">${unitPct * 2}%</text>
+  <line x1="${startX + shadedW}" y1="80" x2="${startX + shadedW}" y2="95" stroke="#0f766e" stroke-width="3"/>
+  <circle cx="${startX + shadedW}" cy="80" r="3.5" fill="#0f766e"/>
+  <rect x="${startX + shadedW - 25}" y="96" width="50" height="22" rx="5" fill="#0f766e"/>
+  <text x="${startX + shadedW}" y="112" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="900" fill="#ffffff">${targetPct}%</text>
+  <line x1="${startX + totalBarW}" y1="80" x2="${startX + totalBarW}" y2="92" stroke="#12355b" stroke-width="2"/>
+  <text x="${startX + totalBarW}" y="108" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#12355b">100%</text>
+</svg>`;
+  }
+
+  if (mode === "workspace") {
+    const blocks = Array.from({ length: parts }, (_, i) => {
+      const x = startX + i * partW;
+      return `<rect x="${x}" y="${barY}" width="${partW}" height="${barH}" rx="2" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <text x="${x + partW / 2}" y="${barY + 28}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="700" fill="#cbd5e1">Part ${i + 1}</text>`;
+    }).join("\n  ");
+
+    return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="auto" class="hw-percent-bar-svg" style="background:white; max-width:${W}px; display:block; margin:0 auto; border-radius:8px; border:1px dashed #94a3b8;" role="img" aria-label="Percent bar drawing template: ${parts} equal parts to shade and label" xmlns="http://www.w3.org/2000/svg">
+  <title>Percent Bar Workspace</title>
+  <text x="${startX + totalBarW / 2}" y="20" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="11.5" font-weight="800" fill="#0f766e">
+    <tspan class="lang-en">Draw or shade 3 of the 4 equal parts below</tspan><tspan class="lang-es" lang="es">Dibuja o sombrea 3 de las 4 partes iguales abajo</tspan>
+  </text>
+  ${blocks}
+  <rect x="${startX}" y="${barY}" width="${totalBarW}" height="${barH}" rx="4" fill="none" stroke="#12355b" stroke-width="2"/>
+  <line x1="${startX}" y1="80" x2="${startX}" y2="92" stroke="#12355b" stroke-width="2"/>
+  <text x="${startX}" y="108" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#12355b">0%</text>
+  <line x1="${startX + partW}" y1="80" x2="${startX + partW}" y2="88" stroke="#cbd5e1" stroke-width="1.5"/>
+  <line x1="${startX + 2 * partW}" y1="80" x2="${startX + 2 * partW}" y2="88" stroke="#cbd5e1" stroke-width="1.5"/>
+  <line x1="${startX + 3 * partW}" y1="80" x2="${startX + 3 * partW}" y2="88" stroke="#cbd5e1" stroke-width="1.5"/>
+  <line x1="${startX + totalBarW}" y1="80" x2="${startX + totalBarW}" y2="92" stroke="#12355b" stroke-width="2"/>
+  <text x="${startX + totalBarW}" y="108" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#12355b">100%</text>
+</svg>`;
+  }
+
+  // Default: mode === "question"
+  const blocks = Array.from({ length: parts }, (_, i) => {
+    const x = startX + i * partW;
+    const isShaded = i < shaded;
+    const fill = isShaded ? "#1fa6a2" : "#f8fafc";
+    const textColor = isShaded ? "#ffffff" : "#64748b";
+    return `<rect x="${x}" y="${barY}" width="${partW}" height="${barH}" rx="2" fill="${fill}" stroke="#12355b" stroke-width="2"/>
+  <text x="${x + partW / 2}" y="${barY + 28}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="${textColor}">${i + 1}</text>`;
+  }).join("\n  ");
+
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="auto" class="hw-percent-bar-svg" style="background:white; max-width:${W}px; display:block; margin:0 auto; border-radius:8px; border:1px solid #cbd5e1;" role="img" aria-label="Percent bar with ${parts} equal parts and ${shaded} parts shaded" xmlns="http://www.w3.org/2000/svg">
+  <title>Percent Bar: ${parts} equal parts, ${shaded} shaded</title>
+  <path d="M ${startX} 28 L ${startX} 18 L ${startX + shadedW / 2} 18 L ${startX + shadedW / 2} 12 L ${startX + shadedW / 2} 18 L ${startX + shadedW} 18 L ${startX + shadedW} 28" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
+  <rect x="${startX + shadedW / 2 - 70}" y="4" width="140" height="20" rx="5" fill="#0f766e"/>
+  <text x="${startX + shadedW / 2}" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="11.5" font-weight="800" fill="#ffffff">
+    <tspan class="lang-en">${shaded} shaded parts</tspan><tspan class="lang-es" lang="es">${shaded} partes sombreadas</tspan>
+  </text>
+  <text x="${startX + shadedW + (totalBarW - shadedW) / 2}" y="22" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="11" font-weight="700" fill="#64748b">
+    <tspan class="lang-en">${parts - shaded} unshaded</tspan><tspan class="lang-es" lang="es">${parts - shaded} sin sombrear</tspan>
+  </text>
+  ${blocks}
+  <rect x="${startX}" y="${barY}" width="${totalBarW}" height="${barH}" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
+  <line x1="${startX}" y1="80" x2="${startX}" y2="92" stroke="#12355b" stroke-width="2"/>
+  <text x="${startX}" y="108" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#12355b">0%</text>
+  <line x1="${startX + partW}" y1="80" x2="${startX + partW}" y2="88" stroke="#cbd5e1" stroke-width="1.5"/>
+  <line x1="${startX + 2 * partW}" y1="80" x2="${startX + 2 * partW}" y2="88" stroke="#cbd5e1" stroke-width="1.5"/>
+  <line x1="${startX + shadedW}" y1="80" x2="${startX + shadedW}" y2="95" stroke="#d97706" stroke-width="3"/>
+  <circle cx="${startX + shadedW}" cy="80" r="3.5" fill="#d97706"/>
+  <rect x="${startX + shadedW - 25}" y="96" width="50" height="22" rx="5" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+  <text x="${startX + shadedW}" y="112" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="900" fill="#b45309">? %</text>
+  <line x1="${startX + totalBarW}" y1="80" x2="${startX + totalBarW}" y2="92" stroke="#12355b" stroke-width="2"/>
+  <text x="${startX + totalBarW}" y="108" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#12355b">100%</text>
+</svg>`;
+}
+
+export function renderProblemVisualModel(item, mode = "question") {
+  const model = item?.visualModel;
+  if (!model) return "";
+  if (model.kind === "percent-bar") {
+    return renderPercentBarSvg({
+      parts: model.parts ?? 4,
+      shaded: model.shaded ?? 3,
+      whole: model.whole ?? 100,
+      mode,
+    });
+  }
+  return "";
 }
