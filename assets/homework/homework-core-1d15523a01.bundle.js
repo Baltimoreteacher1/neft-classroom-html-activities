@@ -2482,7 +2482,29 @@ function initStudioStepper() {
     show(0);
   });
 }
-document.addEventListener('DOMContentLoaded', initStudioStepper);
+/* A vocabulary term is a <button>, an atomic inline box, so the browser may
+   break the line between it and the punctuation after it ("per hundred" then
+   "; scale the..." starting the next line). Keep the first punctuation
+   character with its term. */
+function glueTermPunctuation() {
+  document.querySelectorAll('.obj-term').forEach(function (btn) {
+    var next = btn.nextSibling;
+    if (!next || next.nodeType !== 3 || !/^[;:,.!?)]/.test(next.nodeValue)) return;
+    if (btn.parentNode.classList && btn.parentNode.classList.contains('obj-term-glue')) return;
+    var tail = next.splitText(1);
+    var glue = document.createElement('span');
+    glue.className = 'obj-term-glue';
+    glue.style.whiteSpace = 'nowrap';
+    btn.parentNode.insertBefore(glue, btn);
+    glue.appendChild(btn);
+    glue.appendChild(next);
+    void tail;
+  });
+}
+document.addEventListener('DOMContentLoaded', function () {
+  initStudioStepper();
+  glueTermPunctuation();
+});
 
 
 let hwGameRound = 0;

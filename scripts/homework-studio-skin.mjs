@@ -65,6 +65,9 @@ body { background: var(--st-paper) !important; color: var(--st-ink); }
 .hw-hero-kicker { color: #fcd34d !important; }
 
 @media (min-width: 900px) {
+  /* Title block left, language picker right on the same two rows; everything
+     below (lesson line, notes, lead, route chooser) spans the full width so no
+     hairline or paragraph stops short and leaves an empty right edge. */
   .hw-hero-body {
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) auto;
@@ -72,32 +75,44 @@ body { background: var(--st-paper) !important; color: var(--st-ink); }
     align-items: start;
   }
   .hw-hero-body > * { grid-column: 1 / -1; }
-  .hw-hero-body > .hw-hero-kicker,
-  .hw-hero-body > .hw-hero-head,
-  .hw-hero-body > .hw-hero-lesson { grid-column: 1; }
-  .hw-hero-body > .hw-hero-controls { grid-column: 2; grid-row: 1 / span 3; align-self: center; }
+  .hw-hero-body > .hw-hero-kicker { grid-column: 1; grid-row: 1; }
+  .hw-hero-body > .hw-hero-head { grid-column: 1; grid-row: 2; border-bottom: 0 !important; }
+  .hw-hero-body > .hw-hero-controls { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
   .hw-hero-controls .lang-selector-title { display: none; }
+  .hw-hero-lead { max-width: none !important; }
 }
 
 /* ---- Tab 1 = the concept: model on the left, plain steps on the right ---- */
 @media (min-width: 1000px) {
+  /* Two columns. The model card spans every row the concept column uses (up to
+     12), so it can never grow past the column and cover what follows; row gaps
+     come from the right-hand blocks' own bottom margin, so unused rows add no
+     height. The "need more help" row and Continue sit below both columns. */
   #hw_panel_learn {
     display: grid;
     grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
-    gap: 18px 24px;
+    column-gap: 24px;
+    row-gap: 0;
     align-items: start;
   }
   #hw_panel_learn > .learn-big-idea-block,
   #hw_panel_learn .big-idea { display: contents; }
   #hw_panel_learn > .learn-jump-row { display: none; }
   #hw_panel_learn > * { grid-column: 2; min-width: 0; }
+  #hw_panel_learn > .learn-summary-block,
+  #hw_panel_learn .learn-big-idea-block > *,
+  #hw_panel_learn .big-idea > *,
+  #hw_panel_learn > .learn-extended-block { margin: 0 0 18px !important; }
   #hw_panel_learn > #hw_learn_try {
     grid-column: 1;
-    grid-row: 1 / span 6;
-    position: sticky;
-    top: 12px;
+    grid-row: 1 / span 12;
+    position: static;
+    margin-bottom: 18px !important;
   }
-  /* Right column: every block spans the full column and spacing comes from the grid gap. */
+  #hw_panel_learn .concept-visual-wrap { order: 8; }
+  #hw_panel_learn > .tab-help-row,
+  #hw_panel_learn > .tab-flow-nav { grid-column: 1 / -1; grid-row: 13; }
+  #hw_panel_learn > .tab-flow-nav { grid-row: 14; }
   #hw_panel_learn > .learn-summary-block > div:first-child {
     flex-wrap: nowrap !important;
     margin-bottom: 12px !important;
@@ -112,15 +127,8 @@ body { background: var(--st-paper) !important; color: var(--st-ink); }
     flex: 1 1 auto; border: 0; box-shadow: none; background: transparent;
   }
   #hw_panel_learn .section-title { width: 100%; box-sizing: border-box; }
-  #hw_panel_learn .key-idea-banner { position: relative; }
-  #hw_panel_learn .key-idea-banner .btn-read-aloud { position: absolute; top: 12px; right: 12px; }
-  #hw_panel_learn > .learn-big-idea-block > *,
-  #hw_panel_learn .big-idea > *,
-  #hw_panel_learn > .learn-extended-block { margin-top: 0 !important; margin-bottom: 0 !important; }
-  #hw_panel_learn .key-idea-banner { padding-right: 84px; }
-  #hw_panel_learn .concept-visual-wrap { grid-column: 1 / -1; order: 9; }
-  #hw_panel_learn > .tab-help-row { grid-column: 1 / -1; order: 10; }
-  #hw_panel_learn > .tab-flow-nav { grid-column: 1 / -1; order: 11; }
+  /* The heading above the banner already has a Listen button that reads the same sentence. */
+  #hw_panel_learn .key-idea-banner .btn-read-aloud { display: none !important; }
 }
 
 .hw-hero .hw-hero-titles h1,
@@ -189,6 +197,9 @@ body { background: var(--st-paper) !important; color: var(--st-ink); }
   color: var(--st-navy) !important;
   box-shadow: var(--st-shadow);
 }
+
+/* The amber dot the old section titles carried. */
+.section-title::before { display: none !important; }
 
 /* ---- Cards -------------------------------------------------- */
 .card, .problem-section.card, .guided-section.card {
@@ -360,5 +371,27 @@ function initStudioStepper() {
     show(0);
   });
 }
-document.addEventListener('DOMContentLoaded', initStudioStepper);
+/* A vocabulary term is a <button>, an atomic inline box, so the browser may
+   break the line between it and the punctuation after it ("per hundred" then
+   "; scale the..." starting the next line). Keep the first punctuation
+   character with its term. */
+function glueTermPunctuation() {
+  document.querySelectorAll('.obj-term').forEach(function (btn) {
+    var next = btn.nextSibling;
+    if (!next || next.nodeType !== 3 || !/^[;:,.!?)]/.test(next.nodeValue)) return;
+    if (btn.parentNode.classList && btn.parentNode.classList.contains('obj-term-glue')) return;
+    var tail = next.splitText(1);
+    var glue = document.createElement('span');
+    glue.className = 'obj-term-glue';
+    glue.style.whiteSpace = 'nowrap';
+    btn.parentNode.insertBefore(glue, btn);
+    glue.appendChild(btn);
+    glue.appendChild(next);
+    void tail;
+  });
+}
+document.addEventListener('DOMContentLoaded', function () {
+  initStudioStepper();
+  glueTermPunctuation();
+});
 `;
