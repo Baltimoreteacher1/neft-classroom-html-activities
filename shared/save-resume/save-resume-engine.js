@@ -1564,20 +1564,30 @@
       else openPanel(self);
     });
 
-    // Floating Math Workbench button — skipped when the lesson-aware
-    // launcher (/assets/math-workbench-launcher.js, #mwb-launcher) is on the
-    // page: that FAB deep-links into the current lesson, so this plain chip
-    // would be a duplicate entry point stacked on top of it.
-    var workbench = document.getElementById("mwb-launcher")
-      ? null
-      : el("a", {
-          id: "nsr-workbench",
-          href: "/curriculum/math-workbench/",
-          target: "_blank",
-          rel: "noopener",
-          title: "Math Workbench",
-          html: '<span class="nsr-workbench-ico" aria-hidden="true">🧮</span><span class="nsr-workbench-label">Math Workbench</span>',
-        });
+    // Floating Math Workbench button — skipped on student arcade/game routes
+    // and when the lesson-aware launcher (#mwb-launcher) is on the page.
+    var isGameRoute =
+      location.pathname.indexOf("/math/games/") === 0 ||
+      location.pathname.indexOf("/math/review-arcade") === 0 ||
+      location.pathname.indexOf("/curriculum/arcade") === 0 ||
+      location.pathname.indexOf("/curriculum/review-expeditions") === 0 ||
+      /^\/curriculum\/unit-\d+-(adventure|test)-review/.test(location.pathname) ||
+      /^\/math\/unit-\d+\/(games\/|6-|game-|ratio-quest|percent-hero|coordinate-commander|decimal-defenders|algebra-architect)/.test(
+        location.pathname,
+      ) ||
+      location.pathname.indexOf("/math/statistics/games/") === 0 ||
+      location.pathname.indexOf("/games/") === 0;
+    var workbench =
+      isGameRoute || document.getElementById("mwb-launcher")
+        ? null
+        : el("a", {
+            id: "nsr-workbench",
+            href: "/curriculum/math-workbench/",
+            target: "_blank",
+            rel: "noopener",
+            title: "Math Workbench",
+            html: '<span class="nsr-workbench-ico" aria-hidden="true">🧮</span><span class="nsr-workbench-label">Math Workbench</span>',
+          });
 
     // Panel.
     var panel = el("div", {

@@ -151,7 +151,9 @@
     };
     window.addEventListener('keydown', event => {
       if (!event.target.closest || !(keyNames[event.key] || /^[1-4FWASDUC]$/i.test(event.key))) return;
-      if (event.target !== game.canvas || adventure?.open) event.stopPropagation();
+      const isBody = event.target === document.body || event.target === document.documentElement;
+      const allowBodyKey = isBody && (event.key === 'Enter' || event.key === ' ');
+      if ((!allowBodyKey && event.target !== game.canvas) || adventure?.open) event.stopPropagation();
     }, true);
     function ready() {
       const canvas = game.canvas;
@@ -170,12 +172,21 @@
         }
       }});
       window.__cabinetAdventure = adventure;
-      canvas.addEventListener('pointerdown', () => canvas.focus({preventScroll:true}));
+      const syncBounds = () => {
+        try { game.scale?.updateBounds?.(); } catch (_) {}
+      };
+      canvas.addEventListener('pointerdown', () => {
+        syncBounds();
+        canvas.focus({preventScroll:true});
+      }, true);
+      canvas.addEventListener('pointermove', syncBounds, {passive: true, capture: true});
+      window.addEventListener('scroll', syncBounds, {passive: true});
       game.scale.parent = host;
       game.scale.parentIsWindow = false;
       function resize() {
         host.style.height = Math.round(host.clientWidth * game.config.height / game.config.width) + 'px';
         game.scale.refresh();
+        syncBounds();
       }
       new ResizeObserver(resize).observe(host); resize();
       canvas.setAttribute('tabindex', '0'); canvas.setAttribute('aria-label', document.title + '. Use arrow keys and Enter, or the control buttons below.');
@@ -191,11 +202,21 @@
       header.innerHTML = '<span>Changing level starts a new run.</span><button type="button" data-level="1">Support</button><button type="button" data-level="2">Challenge</button>';
       root.append(header);
       header.querySelectorAll('button').forEach(button => button.addEventListener('click', () => { window.ewlSetLevel(Number(button.dataset.level)); update(); }));
-      window.GameStudio && window.GameStudio.register({title: document.title.split('—')[0].trim(), instructions: options.instructions, setMuted: muted,
-        pause() { pausedScenes = game.scene.getScenes(true).map(s => s.sys.settings.key); pausedScenes.forEach(key => game.scene.pause(key)); },
-        resume() { pausedScenes.forEach(key => game.scene.resume(key)); pausedScenes = []; },
-        setMotion(value) { game.scene.getScenes(false).forEach(s => { s.reduceMotion = value; }); }
-      });
+      function registerStudio() {
+        if (!window.GameStudio) return false;
+        window.GameStudio.register({title: document.title.split('—')[0].trim(), instructions: options.instructions, setMuted: muted,
+          pause() { pausedScenes = game.scene.getScenes(true).map(s => s.sys.settings.key); pausedScenes.forEach(key => game.scene.pause(key)); },
+          resume() { pausedScenes.forEach(key => game.scene.resume(key)); pausedScenes = []; },
+          setMotion(value) { game.scene.getScenes(false).forEach(s => { s.reduceMotion = value; }); }
+        });
+        resize();
+        return true;
+      }
+      if (!registerStudio()) {
+        window.addEventListener('DOMContentLoaded', () => { registerStudio(); canvas.focus({preventScroll: true}); }, {once: true});
+      }
+      window.addEventListener('load', () => { resize(); syncBounds(); }, {once: true});
+      requestAnimationFrame(() => { resize(); syncBounds(); canvas.focus({preventScroll: true}); });
       game.events.on('step', () => { if (game.loop.frame % 20 === 0) update(); });
       update();
     }

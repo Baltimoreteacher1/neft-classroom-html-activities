@@ -770,8 +770,24 @@
   .ra-topic-launch:hover{transform:translateY(-1px)}
   .q-meta-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
   .q-standard-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:rgba(56,189,248,0.16);border:1px solid rgba(56,189,248,0.4);color:#bae6fd;font-size:0.78rem;font-weight:700}
-  .explanation.hint-mode{border-color:#f59e0b;background:rgba(245,158,11,0.12)}
-  .result-label.hint{color:#fcd34d;font-weight:800}
+  .explanation.hint-mode{border-color:#f59e0b !important;background:rgba(245,158,11,0.14) !important;color:#fef3c7 !important}
+  .result-label.hint{color:#fcd34d !important;font-weight:800}
+  /* Protect dark arcade palette from lesson-publisher-polish.css white .q-card overrides */
+  body{background:#0d1b2a !important;color:#e8f0fe !important}
+  #screen-play .q-card,.q-card{background:linear-gradient(145deg,#132840,#0d1f33) !important;border:1.5px solid rgba(0,255,231,0.35) !important;border-radius:16px !important;padding:24px 24px 20px !important;margin-bottom:18px !important;color:#f8fafc !important;box-shadow:0 12px 32px rgba(0,0,0,0.45) !important}
+  #screen-play .q-unit-label,.q-unit-label{color:#00ffe7 !important;font-size:12px !important;font-weight:800 !important;letter-spacing:0.12em !important;text-transform:uppercase !important}
+  #screen-play .q-text,.q-text{color:#ffffff !important;font-size:clamp(19px,2.5vw,24px) !important;font-weight:700 !important;line-height:1.5 !important;margin:6px 0 0 !important}
+  #screen-play .tool-btn,.tool-btn{background:#17324d !important;border:1.5px solid rgba(0,255,231,0.42) !important;color:#f0f9ff !important;font-weight:700 !important}
+  #screen-play .tool-btn:hover,.tool-btn:hover{background:#1f4366 !important;border-color:#00ffe7 !important;color:#ffffff !important}
+  #screen-play .choice-btn,.choice-btn{background:rgba(19,40,64,0.94) !important;color:#f8fafc !important;border:2px solid rgba(148,163,184,0.32) !important}
+  #screen-play .choice-btn:hover:not(:disabled){background:rgba(0,255,231,0.14) !important;border-color:#00ffe7 !important;color:#ffffff !important}
+  #screen-play .choice-btn.correct{background:rgba(34,197,94,0.24) !important;border-color:#22c55e !important;color:#dcfce7 !important}
+  #screen-play .choice-btn.wrong{background:rgba(248,113,113,0.22) !important;border-color:#f87171 !important;color:#fee2e2 !important}
+  #screen-play .explanation,.explanation{background:rgba(15,29,48,0.96) !important;color:#e8f0fe !important}
+  .ra-play-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 14px;margin-bottom:14px;border-radius:14px;background:rgba(15,23,42,0.88);border:1px solid rgba(56,189,248,0.35)}
+  .ra-play-bar select{flex:1 1 180px;min-height:42px;padding:6px 10px;border-radius:9px;border:1px solid #475569;background:#0f172a;color:#f8fafc;font:600 0.88rem system-ui,sans-serif}
+  .ra-play-bar button{min-height:42px;padding:6px 12px;border-radius:9px;border:1px solid rgba(56,189,248,0.45);background:#17324d;color:#f0f9ff;font:700 0.85rem system-ui,sans-serif;cursor:pointer}
+  .ra-play-bar button:hover{background:#1f4366;border-color:#00ffe7}
 </style>
 </head>
   <body>
@@ -906,6 +922,26 @@
      SCREEN B: PLAY
 ══════════════════════════════════════ -->
     <section id="screen-play" class="screen hidden" role="main" aria-live="polite">
+      <div class="ra-play-bar" aria-label="Curriculum unit and topic switcher">
+        <select id="ra-play-unit" aria-label="Curriculum Unit" onchange="onPlayUnitChange()">
+          <option value="all">🔥 Boss Battle · All 10 Units Mixed</option>
+          <option value="1">Unit 1 · Math Is Discovery</option>
+          <option value="2">Unit 2 · Statistics &amp; Data</option>
+          <option value="3">Unit 3 · Ratios &amp; Rates</option>
+          <option value="4">Unit 4 · Percents</option>
+          <option value="5">Unit 5 · Area, Surface Area &amp; Volume</option>
+          <option value="6">Unit 6 · Expressions, Factors &amp; Fractions</option>
+          <option value="7">Unit 7 · Integers &amp; Coordinate Plane</option>
+          <option value="8">Unit 8 · Equations &amp; Inequalities</option>
+          <option value="9">Unit 9 · Two-Variable Relationships</option>
+          <option value="10">Unit 10 · Math Is Synthesis</option>
+        </select>
+        <select id="ra-play-lesson" aria-label="Lesson or Topic Focus" onchange="onPlayLessonChange()">
+          <option value="">All Topics in Selected Unit</option>
+        </select>
+        <button type="button" id="ra-mode-toggle" onclick="togglePlayChallengeMode()">🎯 Mode: Practice</button>
+        <button type="button" onclick="goHome()">🏠 All Units</button>
+      </div>
       <!-- HUD -->
       <div class="hud" role="status" aria-label="Game status">
         <div class="hud-hearts" id="hud-hearts" aria-label="Lives remaining">❤️❤️❤️</div>
@@ -2294,8 +2330,8 @@
       /* ════════════════════════════════════════════════════════════════
    CURRICULUM TOPIC & LESSON CONNECTOR
 ════════════════════════════════════════════════════════════════ */
-      function populateLessonSelect(unitVal) {
-        const sel = document.getElementById("ra-filter-lesson");
+      function populateLessonSelect(unitVal, targetSelectId = "ra-filter-lesson") {
+        const sel = document.getElementById(targetSelectId);
         if (!sel) return;
         sel.innerHTML = "";
         const defaultOpt = document.createElement("option");
@@ -2338,7 +2374,61 @@
       function onUnitFilterChange() {
         const unitSel = document.getElementById("ra-filter-unit");
         if (!unitSel) return;
-        populateLessonSelect(unitSel.value);
+        populateLessonSelect(unitSel.value, "ra-filter-lesson");
+      }
+
+      function syncPlayBar(unit, opts = {}) {
+        const playUnit = document.getElementById("ra-play-unit");
+        const playLesson = document.getElementById("ra-play-lesson");
+        const modeBtn = document.getElementById("ra-mode-toggle");
+        const unitVal = unit === "boss" ? "all" : String(unit);
+        if (playUnit) playUnit.value = unitVal;
+        populateLessonSelect(unitVal, "ra-play-lesson");
+        if (playLesson) {
+          if (opts.lessonId) playLesson.value = "lesson:" + opts.lessonId;
+          else if (opts.topic) playLesson.value = "topic:" + opts.topic;
+          else playLesson.value = "";
+        }
+        if (modeBtn) {
+          modeBtn.textContent = state.challenge ? "⚔️ Mode: 3-Life Challenge" : "🎯 Mode: Practice";
+        }
+      }
+
+      function onPlayUnitChange() {
+        const playUnit = document.getElementById("ra-play-unit");
+        if (!playUnit) return;
+        const unitVal = playUnit.value;
+        populateLessonSelect(unitVal, "ra-play-lesson");
+        startGame(unitVal === "all" ? "boss" : Number(unitVal));
+      }
+
+      async function onPlayLessonChange() {
+        const playUnit = document.getElementById("ra-play-unit");
+        const playLesson = document.getElementById("ra-play-lesson");
+        const unitVal = playUnit ? playUnit.value : "all";
+        const filterVal = playLesson ? playLesson.value : "";
+        if (filterVal.startsWith("lesson:")) {
+          const lessonId = filterVal.slice(7);
+          const inferredUnit = Number(lessonId.split("-")[0]) || (unitVal !== "all" ? Number(unitVal) : 3);
+          const extra = await fetchLessonQuestions(lessonId, inferredUnit);
+          startGame(inferredUnit, { lessonId, extraQuestions: extra });
+          return;
+        }
+        if (filterVal.startsWith("topic:")) {
+          const topic = filterVal.slice(6);
+          startGame(unitVal === "all" ? "boss" : Number(unitVal), { topic });
+          return;
+        }
+        startGame(unitVal === "all" ? "boss" : Number(unitVal));
+      }
+
+      function togglePlayChallengeMode() {
+        const chk = document.getElementById("review-challenge");
+        if (chk) chk.checked = !chk.checked;
+        state.challenge = chk ? chk.checked : !state.challenge;
+        state.lives = 3;
+        syncPlayBar(state.unitMode, {});
+        renderQuestion();
       }
 
       async function fetchLessonQuestions(lessonId, unitNum) {
@@ -2479,6 +2569,7 @@
         state.answered = false;
         state.triesOnCurrent = 0;
 
+        syncPlayBar(unit, opts);
         showScreen("screen-play");
         renderQuestion();
       }

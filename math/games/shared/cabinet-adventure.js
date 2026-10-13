@@ -282,7 +282,7 @@
       if(!scene.textures.exists(textureKey)){const art=document.createElement('canvas');window.CabinetWorlds.paint(art,artId,0,false);scene.textures.addCanvas(textureKey,art);}
       const w=Number(scene.game.config.width),h=Number(scene.game.config.height);
       const backdrop=scene.children.list.find(o=>o.type==='Rectangle'&&o.width===w&&o.height===h&&o.alpha===1);
-      if(backdrop)backdrop.setAlpha(0);
+      if(backdrop)backdrop.setAlpha(0.76);
       scene.add.image(w/2,h/2,textureKey).setDisplaySize(w,h).setDepth(-100);
     }};
   }

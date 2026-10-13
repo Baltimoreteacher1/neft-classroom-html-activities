@@ -37,11 +37,20 @@
     coachText.setAttribute('data-en', config.coach);
   }
   let stage=null;
+  function syncBounds(){
+    try{game?.scale?.updateBounds?.();}catch(_){}
+  }
   function mountStage(){
     if(!game?.canvas || stage)return;
     stage=document.createElement('div');stage.className='flagship-stage';stage.style.aspectRatio=game.config.width+'/'+game.config.height;
+    stage.style.setProperty('--native-ratio', String(game.config.width / game.config.height));
     panel.after(stage);stage.append(game.canvas);
-    game.scale.parent=stage;game.scale.parentIsWindow=false;game.scale.refresh();
+    game.scale.parent=stage;game.scale.parentIsWindow=false;game.scale.refresh();syncBounds();
+    game.canvas.addEventListener('pointerdown',syncBounds,true);
+    game.canvas.addEventListener('pointermove',syncBounds,{passive:true,capture:true});
+    window.addEventListener('scroll',syncBounds,{passive:true});
+    window.addEventListener('resize',()=>{game.scale.refresh();syncBounds();},{passive:true});
+    new ResizeObserver(()=>{game.scale.refresh();syncBounds();}).observe(stage);
   }
   mountStage();
   const level = panel.querySelector('select');

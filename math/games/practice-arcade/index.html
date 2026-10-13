@@ -1359,11 +1359,15 @@
               // native phone launch screen reveals the game container.
               window.paGame.scale.getParentBounds();
               window.paGame.scale.refresh();
+              try { window.paGame.scale.updateBounds?.(); } catch (_) {}
             }
           }
           window.paFitStage = fitStage;
           fitStage();
           window.addEventListener("resize", fitStage);
+          window.addEventListener("scroll", () => {
+            try { window.paGame?.scale?.updateBounds?.(); } catch (_) {}
+          }, { passive: true });
           const layoutObserver = new ResizeObserver(fitStage);
           layoutObserver.observe(document.querySelector(".ewl-arcade-header-bar"));
           const toolsObserver = new MutationObserver(() => {
@@ -1388,6 +1392,13 @@
             scene: [TitleScene, PlayScene, ResultScene],
           });
           window.paGame.events.once("ready", () => {
+            const cv = window.paGame.canvas;
+            if (cv) {
+              const sync = () => { try { window.paGame?.scale?.updateBounds?.(); } catch (_) {} };
+              cv.addEventListener("pointerdown", sync, true);
+              cv.addEventListener("pointermove", sync, { passive: true, capture: true });
+            }
+            requestAnimationFrame(fitStage);
             try {
               const cv = window.paGame.canvas;
               cv.setAttribute("role", "application");
@@ -2708,7 +2719,7 @@
           }
 
           startRound() {
-            if (this.idx > 0 || tier === "l1") {
+            if (this.idx > 0 || tier === "l1" || window.innerWidth > 640) {
               this.voyage.entered = this.idx;
             }
             if (

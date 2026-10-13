@@ -341,6 +341,16 @@
         for (const s of game?.scene.getScenes(false) || []) s.reduceMotion = value;
       },
     });
+    if (game) {
+      const syncBounds = () => {
+        try { game.scale?.updateBounds?.(); } catch (_) {}
+      };
+      window.dispatchEvent(new Event("resize"));
+      syncBounds();
+      game.canvas?.addEventListener("pointerdown", syncBounds, true);
+      game.canvas?.addEventListener("pointermove", syncBounds, { passive: true, capture: true });
+      window.addEventListener("scroll", syncBounds, { passive: true });
+    }
   }
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", () => requestAnimationFrame(mount), {

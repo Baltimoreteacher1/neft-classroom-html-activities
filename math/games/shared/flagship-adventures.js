@@ -53,7 +53,15 @@
   const status = el('p', 'adventure-status'); status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
   destination.append(missionTitle, briefing, routes, progress, enter, status);
   section.append(banner, map, destination);
-  panel.before(section);
+  const stageOrApp = document.querySelector('.flagship-stage') || document.getElementById('app') || document.querySelector('main') || panel;
+  stageOrApp.after(section);
+  const stageEl = document.querySelector('.flagship-stage');
+  if (stageEl && window.__flagshipGame) {
+    stageEl.style.setProperty('--native-ratio', String(window.__flagshipGame.config.width / window.__flagshipGame.config.height));
+    requestAnimationFrame(() => {
+      try { window.__flagshipGame.scale.refresh(); window.__flagshipGame.scale.updateBounds?.(); } catch (_) {}
+    });
+  }
   const eb = panel.querySelector('.fm-eyebrow');
   if (eb) eb.textContent = 'FIELDWORK • ' + (eb.textContent || 'BUILD YOUR SKILLS');
   const details = el('details', 'adventure-fieldwork');
@@ -67,7 +75,7 @@
     document.body.classList.add('adventure-playing');
     const stage = document.querySelector('.flagship-stage');
     if (stage && window.__flagshipGame) stage.style.setProperty('--native-ratio', String(window.__flagshipGame.config.width / window.__flagshipGame.config.height));
-    requestAnimationFrame(() => { window.__flagshipGame?.scale.refresh(); panel.scrollIntoView({ block: 'start', behavior: 'instant' }); });
+    requestAnimationFrame(() => { window.__flagshipGame?.scale.refresh(); window.__flagshipGame?.scale.updateBounds?.(); panel.scrollIntoView({ block: 'start', behavior: 'instant' }); });
   }); 
 
   const dialog = el('dialog', 'adventure-dialog');
