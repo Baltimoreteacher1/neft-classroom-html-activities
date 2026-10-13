@@ -58,8 +58,8 @@ const fractionOfWhole = (a, b, w) => [`The bottom ${b} says to split ${w} into $
 const SQUARES = Array.from({ length: 21 }, (_, i) => i * i);
 const signWord = (value) => (value < 0 ? "negative" : "positive");
 
-// [pattern, builder(...captures)] — first match wins. Entries 0, 1 and 4 only replace a generator's own
-// steps when those are missing or use the wrong (decimal) wording.
+// [pattern, builder(...captures)] — first match wins. Add/subtract keep clear authored
+// place-value steps; multiplication uses the number-specific tens/partial-product explanation below.
 const DETAIL = [
   [/^(\d[\d,]*) \+ (\d[\d,]*) = \?$/, (a, b) => wholeAdd(n(a), n(b))],
   [/^(\d[\d,]*) − (\d[\d,]*) = \?$/, (a, b) => wholeSub(n(a), n(b))],
@@ -68,7 +68,8 @@ const DETAIL = [
   [/^(\d[\d,]*) × (\d[\d,]*) = \?$/, (a, b) => {
     const [x, y] = [n(a), n(b)];
     const tens = Math.floor(y / 10) * 10;
-    if (!tens || y % 10 === 0) return [`${fmt(y)} is ${fmt(y / 10)} tens, so multiply by ${fmt(y / 10)} first and then by 10.`, `Work out ${fmt(x)} × ${fmt(y / 10)}.`, `Multiply that by 10 by shifting every digit one place left, because each ten is worth 10 ones.`];
+    if (y < 10) return null;
+    if (y % 10 === 0) return [`${fmt(y)} is ${fmt(y / 10)} tens, so multiply by ${fmt(y / 10)} first and then by 10.`, `Work out ${fmt(x)} × ${fmt(y / 10)} = ${fmt(x * (y / 10))}.`, `Multiply that by 10 by shifting every digit one place left, because each ten is worth 10 ones.`];
     return [`Break ${fmt(y)} into ${fmt(tens)} and ${y % 10}. Multiplying by smaller pieces is easier, and the pieces add back to ${fmt(y)}.`, `Multiply ${fmt(x)} × ${fmt(tens)}, then ${fmt(x)} × ${y % 10}. These are the two partial products.`, `Add the partial products, because together they make ${fmt(x)} groups of ${fmt(y)}.`];
   }],
   [/^(\d+)\/(\d+) ([+−]) (\d+)\/(\d+) = \?$/, (a, b, op, c, d) => fractionAddSub(n(a), n(b), op, n(c), n(d))],
@@ -125,7 +126,7 @@ export function detailSteps(item) {
   for (const [index, [pattern, build]] of DETAIL.entries()) {
     const match = item.question.match(pattern);
     if (!match) continue;
-    if ((index < 2 || index === 4) && authoredFine) return null;
+    if (index < 2 && authoredFine) return null;
     const steps = build(...match.slice(1));
     return steps ? (steps.final ? [...steps] : [...steps, item.explanation]) : null;
   }

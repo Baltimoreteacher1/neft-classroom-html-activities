@@ -24,6 +24,15 @@ const { STICKERS, cleanRewards, dailyGame, noteToday, streakOf, summarize } = aw
   "../math/fluency-lab/rewards.js"
 );
 
+// 0. Tens multiplication walks from the basic fact through place value to the full product.
+const tensSkill = ALL_SKILLS.find((skill) => skill.id === "mul-10-12");
+const tensExample = generateProblem(tensSkill, seededRandom(1));
+assert.equal(tensExample.question, "7 × 10 = ?");
+assert.match(tensExample.steps.join(" "), /7 × 1/);
+assert.match(tensExample.steps.join(" "), /tens/);
+assert.match(tensExample.steps.join(" "), /place left/);
+assert.ok(tensExample.steps.length >= 3, "The explanation continues through the place-value step");
+
 // 1. Fraction answers: mixed numbers read as mixed numbers, never fused into one numerator.
 const frac = (answer, typed) => validateAnswer(typed, { kind: "fraction", answers: [answer] });
 assert.equal(frac("17/12", "1 5/12"), true);
