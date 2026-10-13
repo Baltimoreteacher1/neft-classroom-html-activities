@@ -2394,6 +2394,67 @@ document.addEventListener('visibilitychange', function() {
 });
 
 
+/* Studio stepper: show ONE problem at a time per .problems-container, with
+   numbered dots and Back/Next. Purely a view over the existing problem
+   sections — answering, checking and saving are handled by the page as before. */
+function initStudioStepper() {
+  var containers = document.querySelectorAll('.problems-container');
+  containers.forEach(function (box) {
+    if (box.dataset.stepped) return;
+    var items = Array.prototype.slice.call(box.querySelectorAll(':scope > .problem-section'));
+    if (items.length < 2) return;
+    box.dataset.stepped = '1';
+    box.classList.add('hw-stepped');
+    var idx = 0;
+    var bar = document.createElement('div');
+    bar.className = 'hw-stepper-bar';
+    var dots = document.createElement('div');
+    dots.className = 'hw-stepper-dots';
+    dots.setAttribute('role', 'group');
+    var nav = document.createElement('div');
+    nav.className = 'hw-stepper-nav';
+    var back = document.createElement('button');
+    back.type = 'button';
+    back.innerHTML = '← <span class="lang-en">Back</span><span class="lang-es" lang="es">Atrás</span>';
+    var next = document.createElement('button');
+    next.type = 'button';
+    next.innerHTML = '<span class="lang-en">Next</span><span class="lang-es" lang="es">Siguiente</span> →';
+    nav.appendChild(back);
+    nav.appendChild(next);
+    var dotEls = items.map(function (_, i) {
+      var d = document.createElement('button');
+      d.type = 'button';
+      d.className = 'hw-stepper-dot';
+      d.textContent = String(i + 1);
+      d.addEventListener('click', function () { show(i); });
+      dots.appendChild(d);
+      return d;
+    });
+    bar.appendChild(dots);
+    bar.appendChild(nav);
+    box.parentNode.insertBefore(bar, box);
+    function paint() {
+      items.forEach(function (it, i) {
+        it.classList.toggle('is-step-current', i === idx);
+        var done = it.classList.contains('correct') || it.classList.contains('reviewed');
+        dotEls[i].classList.toggle('is-done', done);
+        dotEls[i].classList.toggle('is-current', i === idx);
+        dotEls[i].setAttribute('aria-current', i === idx ? 'step' : 'false');
+      });
+      back.disabled = idx === 0;
+      next.disabled = idx === items.length - 1;
+    }
+    function show(i) { idx = Math.max(0, Math.min(items.length - 1, i)); paint(); }
+    back.addEventListener('click', function () { show(idx - 1); });
+    next.addEventListener('click', function () { show(idx + 1); });
+    var mo = new MutationObserver(paint);
+    items.forEach(function (it) { mo.observe(it, { attributes: true, attributeFilter: ['class'] }); });
+    show(0);
+  });
+}
+document.addEventListener('DOMContentLoaded', initStudioStepper);
+
+
 let hwGameRound = 0;
 let hwGameScore = 0;
 let hwGameRounds = [];

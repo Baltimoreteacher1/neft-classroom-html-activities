@@ -43,6 +43,7 @@ import {
   selectQuickCheckProblems,
 } from "./homework-guided-notes.mjs";
 import { MATH_INPUT_CSS, MATH_INPUT_JS, renderMathKeypad } from "./homework-math-input.mjs";
+import { STUDIO_SKIN_CSS, STUDIO_SKIN_JS } from "./homework-studio-skin.mjs";
 import { getUnitTheme, renderUnitThemeCss } from "./homework-themes.mjs";
 import { renderVisualMathLab, VISUAL_LABS_CSS, VISUAL_LABS_JS } from "./homework-visual-labs.mjs";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
@@ -3898,6 +3899,7 @@ body {
   font-size: 22px !important;
   line-height: 1.6 !important;
 }
+${STUDIO_SKIN_CSS}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -4024,6 +4026,7 @@ window.__HW_VOCAB__ = ${vocabGlossary ? jsonForScript(vocabGlossary.entries) : "
 window.__HW_VOCAB_MATCH__ = ${vocabGlossary ? jsonForScript(vocabGlossary.match) : "null"};
 /*hw-shared-js:begin*/
 ${HOMEWORK_TABS_JS}
+${STUDIO_SKIN_JS}
 ${HOMEWORK_GAME_JS}
 ${VISUAL_LABS_JS}
 ${MATH_INPUT_JS}
