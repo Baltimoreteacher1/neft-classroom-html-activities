@@ -15,7 +15,7 @@ function lastTabStorageKey() {
 /* ── Family Game Break (Together tab) ─────────────────────────────────────
    Two content-free game engines; the content ships as the JSON island
    window.__HW_FAMGAMES__ rendered by renderFamilyGameBreak(). No timers. */
-var famMem = { first: null, lock: false, matches: 0, flips: 0 };
+var famDom = { n: 0, next: 1, tries: 0 };
 var famTf = { idx: 0, score: 0, answered: 0 };
 
 function famGamesData() {
@@ -23,81 +23,111 @@ function famGamesData() {
   return d && Array.isArray(d.pairs) && Array.isArray(d.tf) ? d : null;
 }
 
-function resetMemoryGame() {
+/* Math Dominoes. The pair bank gives n twins {a, b}. Domino k reads
+   [ twin of the PREVIOUS problem | this problem ], so the chain closes into a
+   loop: each placed domino's right end is a problem, and the next domino must
+   carry that problem's twin on its left. Starting point rotates per game. */
+function resetDominoGame() {
   var data = famGamesData();
-  var grid = document.getElementById('fam_memory_grid');
-  if (!data || !grid) return;
-  famMem = { first: null, lock: false, matches: 0, flips: 0 };
-  var win = document.getElementById('fam_memory_win');
+  var chain = document.getElementById('fam_dom_chain');
+  var tray = document.getElementById('fam_dom_tray');
+  if (!data || !chain || !tray) return;
+  var n = data.pairs.length;
+  var start = Math.floor(Math.random() * n);
+  var tiles = [];
+  for (var k = 0; k < n; k++) {
+    var i = (start + k) % n;
+    var prev = (i + n - 1) % n;
+    tiles.push({ k: k, left: data.pairs[prev].b, right: data.pairs[i].a });
+  }
+  famDom = { n: n, next: 1, tries: 0, tiles: tiles };
+  var win = document.getElementById('fam_dom_win');
   if (win) win.hidden = true;
-  updateMemoryStatus();
-  var faces = [];
-  data.pairs.forEach(function (p, i) {
-    faces.push({ pair: i, text: p.a });
-    faces.push({ pair: i, text: p.b });
-  });
-  // Runtime shuffle on purpose — each rematch deals a fresh layout.
-  for (var i = faces.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var t = faces[i]; faces[i] = faces[j]; faces[j] = t;
+  var hint = document.getElementById('fam_dom_hint');
+  if (hint) hint.textContent = '';
+  chain.innerHTML = '';
+  chain.appendChild(dominoTileEl(tiles[0], false));
+  chain.appendChild(dominoSlotEl());
+  var rest = tiles.slice(1);
+  for (var m = rest.length - 1; m > 0; m--) {
+    var j = Math.floor(Math.random() * (m + 1));
+    var t = rest[m]; rest[m] = rest[j]; rest[j] = t;
   }
-  grid.innerHTML = '';
-  faces.forEach(function (f) {
-    var btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'fam-mem-card';
-    btn.dataset.pair = String(f.pair);
-    btn.setAttribute('aria-label', 'Face-down card');
-    var inner = document.createElement('span');
-    inner.className = 'fam-mem-face';
-    inner.textContent = f.text;
-    btn.appendChild(inner);
-    btn.addEventListener('click', function () { flipMemoryCard(btn); });
-    grid.appendChild(btn);
+  tray.innerHTML = '';
+  rest.forEach(function (tile) {
+    var btn = dominoTileEl(tile, true);
+    btn.addEventListener('click', function () { placeDomino(btn, tile); });
+    tray.appendChild(btn);
   });
+  updateDominoStatus();
 }
 
-function updateMemoryStatus() {
-  ['fam_mem_matches', 'fam_mem_matches_es'].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = String(famMem.matches);
-  });
-  ['fam_mem_flips', 'fam_mem_flips_es'].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = String(famMem.flips);
-  });
+function dominoTileEl(tile, isButton) {
+  var el = document.createElement(isButton ? 'button' : 'div');
+  if (isButton) el.type = 'button'; else el.setAttribute('role', 'listitem');
+  el.className = 'fam-dom-tile';
+  var l = document.createElement('span');
+  l.className = 'fam-dom-half fam-dom-left';
+  l.textContent = tile.left;
+  var r = document.createElement('span');
+  r.className = 'fam-dom-half fam-dom-right';
+  r.textContent = tile.right;
+  el.appendChild(l);
+  el.appendChild(r);
+  return el;
 }
 
-function flipMemoryCard(btn) {
-  if (famMem.lock || btn.classList.contains('is-up') || btn.classList.contains('is-matched')) return;
-  btn.classList.add('is-up');
-  btn.setAttribute('aria-label', btn.querySelector('.fam-mem-face').textContent);
-  famMem.flips++;
-  updateMemoryStatus();
-  if (!famMem.first) { famMem.first = btn; return; }
-  var a = famMem.first;
-  famMem.first = null;
-  if (a.dataset.pair === btn.dataset.pair) {
-    a.classList.add('is-matched');
-    btn.classList.add('is-matched');
-    famMem.matches++;
-    updateMemoryStatus();
-    if (typeof playCorrectSound === 'function') playCorrectSound();
-    if (famMem.matches >= 4) {
-      var win = document.getElementById('fam_memory_win');
-      if (win) win.hidden = false;
-      if (typeof triggerCelebration === 'function') triggerCelebration();
-    }
+function dominoSlotEl() {
+  var el = document.createElement('span');
+  el.className = 'fam-dom-slot';
+  el.setAttribute('aria-hidden', 'true');
+  el.textContent = '?';
+  return el;
+}
+
+function updateDominoStatus() {
+  var el = document.getElementById('fam_dom_status');
+  if (!el || !famDom.n) return;
+  var placed = famDom.next;
+  var n = famDom.n;
+  setBiText(el,
+    'Dominoes placed: ' + placed + ' / ' + n + ' · Wrong tries: ' + famDom.tries,
+    'Fichas colocadas: ' + placed + ' / ' + n + ' · Intentos fallidos: ' + famDom.tries);
+}
+
+function placeDomino(btn, tile) {
+  if (!famDom.n || btn.disabled) return;
+  var chain = document.getElementById('fam_dom_chain');
+  var hint = document.getElementById('fam_dom_hint');
+  if (tile.k !== famDom.next) {
+    famDom.tries++;
+    btn.classList.remove('is-wrong');
+    void btn.offsetWidth;
+    btn.classList.add('is-wrong');
+    if (hint) setBiText(hint,
+      'Not that one. Look at the problem on the end of the chain: which answer is its twin?',
+      'Esa no. Mira el problema al final de la cadena: ¿cuál es su pareja?');
+    updateDominoStatus();
+    return;
+  }
+  var slot = chain.querySelector('.fam-dom-slot');
+  if (slot) slot.remove();
+  btn.disabled = true;
+  var placed = dominoTileEl(tile, false);
+  placed.classList.add('is-new');
+  chain.appendChild(placed);
+  btn.remove();
+  famDom.next++;
+  if (hint) hint.textContent = '';
+  if (typeof playCorrectSound === 'function') playCorrectSound();
+  if (famDom.next >= famDom.n) {
+    var win = document.getElementById('fam_dom_win');
+    if (win) win.hidden = false;
+    if (typeof triggerCelebration === 'function') triggerCelebration();
   } else {
-    famMem.lock = true;
-    setTimeout(function () {
-      a.classList.remove('is-up');
-      btn.classList.remove('is-up');
-      a.setAttribute('aria-label', 'Face-down card');
-      btn.setAttribute('aria-label', 'Face-down card');
-      famMem.lock = false;
-    }, 950);
+    chain.appendChild(dominoSlotEl());
   }
+  updateDominoStatus();
 }
 
 /* The page has three language modes (bilingual default / en / es), carried by
@@ -374,7 +404,7 @@ function nextWyr() {
 
 function initFamilyGames() {
   if (!famGamesData() || !document.getElementById('fam_game_break')) return;
-  resetMemoryGame();
+  resetDominoGame();
   resetTfGame();
   resetSortGame();
   resetWyrGame();

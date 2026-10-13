@@ -77,7 +77,6 @@ body { background: var(--st-paper) !important; color: var(--st-ink); }
   .hw-hero-body > .hw-hero-lesson { grid-column: 1; }
   .hw-hero-body > .hw-hero-controls { grid-column: 2; grid-row: 1 / span 3; align-self: center; }
   .hw-hero-controls .lang-selector-title { display: none; }
-  .hw-hero-titles h1 { white-space: nowrap; }
 }
 
 /* ---- Tab 1 = the concept: model on the left, plain steps on the right ---- */
@@ -124,7 +123,9 @@ body { background: var(--st-paper) !important; color: var(--st-ink); }
   #hw_panel_learn > .tab-flow-nav { grid-column: 1 / -1; order: 11; }
 }
 
-.hw-hero h1 { font-size: clamp(1.7rem, 3vw, 2.3rem) !important; line-height: 1.15 !important; }
+.hw-hero .hw-hero-titles h1,
+.hw-hero .hw-hero-titles .welcome-title-en,
+.hw-hero .hw-hero-titles .welcome-title-es { font-size: clamp(1.5rem, 2.6vw, 2rem) !important; line-height: 1.15 !important; }
 
 /* ---- Interactive model card (studio "grid-card") --------------- */
 .family-visual-lab {

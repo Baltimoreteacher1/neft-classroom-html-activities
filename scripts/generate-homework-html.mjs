@@ -47,6 +47,7 @@ import { STUDIO_SKIN_CSS, STUDIO_SKIN_JS } from "./homework-studio-skin.mjs";
 import { getUnitTheme, renderUnitThemeCss } from "./homework-themes.mjs";
 import { renderVisualMathLab, VISUAL_LABS_CSS, VISUAL_LABS_JS } from "./homework-visual-labs.mjs";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
+import { applyPracticeReview, loadPracticeReview } from "./lib/homework-practice-review.mjs";
 import {
   answerKeyLines,
   matchingPairs,
@@ -103,6 +104,9 @@ const SESSION2_PRACTICE = (() => {
 })();
 
 import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
+
+/** Off-skill pool items to hide, and authored replacements — see lib/homework-practice-review.mjs. */
+const PRACTICE_REVIEW = loadPracticeReview(root);
 
 // Match core/flagship lessons like "3-2" or "3-2-flagship"
 // Folders this generator will consider at all. `generatesFamilyHomework` then
@@ -522,6 +526,7 @@ function lessonConfigs() {
           optional: [],
         };
       }
+      shaped.practice = applyPracticeReview(dir.name, shaped.practice, PRACTICE_REVIEW[dir.name]);
       out.push({ id: dir.name, config: shaped });
     } catch (err) {
       console.error(`Skipping ${dir.name}: ${err.message}`);

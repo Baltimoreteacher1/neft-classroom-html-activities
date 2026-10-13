@@ -91,7 +91,7 @@ const REQUIRED_MARKERS = [
     test: (h) =>
       h.includes('data-tab-panel="play"') &&
       (h.includes("hw-game") || h.includes("initHomeworkGame")) &&
-      ["memory", "tf", "sort", "wyr", "quiz", "full"].every((g) =>
+      ["domino", "tf", "sort", "wyr", "quiz", "full"].every((g) =>
         h.includes(`data-arcade-game="${g}"`),
       ),
   },

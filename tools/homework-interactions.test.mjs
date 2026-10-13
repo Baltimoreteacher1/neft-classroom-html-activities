@@ -330,7 +330,7 @@ test("photobooth initializes independently of drawing-grid setup", () => {
 });
 
 test("saved answers survive reload and a state save", async () => {
-  const { dom, w, d } = await homework("3-6", {
+  const { dom, w, d } = await homework("3-4", {
     inputs: {
       q_0: "0",
       table_1_1_1: "2000",
@@ -344,7 +344,7 @@ test("saved answers survive reload and a state save", async () => {
     assert.equal(w.activeCoreProblems().length, 6);
     w.saveState();
     assert.match(
-      JSON.parse(w.localStorage.getItem("hw_state_lesson_3-6")).inputs.open_response_3,
+      JSON.parse(w.localStorage.getItem("hw_state_lesson_3-4")).inputs.open_response_3,
       /same unit/,
     );
     assert.match(d.getElementById("open_response_3").value, /same unit/);

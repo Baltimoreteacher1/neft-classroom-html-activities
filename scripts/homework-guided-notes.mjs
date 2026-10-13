@@ -5094,7 +5094,7 @@ export function renderFamilyActivityCorner(topic) {
 /**
  * Family Game Break — two built-in interactive games on the Together tab,
  * distinct from the Words tab's term↔definition matcher:
- *   1. Memory Flip: concentration pairs of "math twins" (expression ↔ value).
+ *   1. Math Dominoes: a chain built from pairs of "math twins" (expression ↔ value).
  *   2. True or False? Family Face-Off: turn-taking statements whose false
  *      halves come from the topic's real misconceptions, each with a why.
  * Collaborative and NEVER timed (site rule). Content is authored per topic
@@ -5121,7 +5121,7 @@ const FAMILY_GAME_PAIRS = {
     { a: "1/2 as a percent", b: "50%" },
     { a: "0.25", b: "25%" },
     { a: "percent", b: "per 100" },
-    { a: "10% of 80", b: "8" },
+    { a: "30 out of 100", b: "30%" },
   ],
   // 6.AT.3* — equivalent ratios. This is the bank the whole strand used to
   // share, and it fits the middle of Unit 3 exactly.
@@ -7171,7 +7171,7 @@ export const FAMILY_GAME_BANKS = {
 };
 
 /**
- * The Family Game Break: Memory Flip (pairs) + True/False Face-Off, rendered on
+ * The Family Game Break: Math Dominoes (pairs) + True/False Face-Off, rendered on
  * the Together tab. Data ships as a JSON island (window.__HW_FAMGAMES__, `<`
  * escaped) so the game logic in HOMEWORK_TABS_JS stays free of content.
  */
@@ -7183,7 +7183,7 @@ export const FAMILY_GAME_BANKS = {
  * JSON island so the engines in HOMEWORK_TABS_JS stay free of mathematics.
  */
 const ARCADE_GAMES = [
-  { id: "memory", icon: "🃏", en: "Memory Flip", es: "Memoria" },
+  { id: "domino", icon: "🧩", en: "Math Dominoes", es: "Dominó matemático" },
   { id: "tf", icon: "🎯", en: "True or False?", es: "¿Verdadero o falso?" },
   { id: "sort", icon: "🗂️", en: "Sort It!", es: "¡A clasificar!" },
   { id: "wyr", icon: "🤔", en: "Would You Rather?", es: "¿Qué prefieres?" },
@@ -7228,21 +7228,20 @@ export function renderFamilyGameBreak(key, extras = {}, topic = key) {
         <div class="fam-arcade-picker" role="group" aria-label="Choose a game">${picker}</div>
       </div>
 
-      <div class="fam-game-card" id="fam_memory_game" data-arcade-panel="memory">
+      <div class="fam-game-card" id="fam_domino_game" data-arcade-panel="domino">
         <div class="fam-game-card-head">
-          <h3 class="fam-game-h3">🃏 <span class="lang-en">Memory Flip: Math Twins</span><span class="lang-es" lang="es">Memoria: Gemelos Matemáticos</span></h3>
-          <button type="button" class="btn btn-sm btn-secondary" onclick="resetMemoryGame()">🔄 <span class="lang-en">Shuffle &amp; Restart</span><span class="lang-es" lang="es">Mezclar y reiniciar</span></button>
+          <h3 class="fam-game-h3">🧩 <span class="lang-en">Math Dominoes: Build the Chain</span><span class="lang-es" lang="es">Dominó matemático: arma la cadena</span></h3>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="resetDominoGame()">🔄 <span class="lang-en">New Chain</span><span class="lang-es" lang="es">Nueva cadena</span></button>
         </div>
         <p class="fam-game-sub">
-          <span class="lang-en">Flip two cards to find each problem's twin answer. Fewer flips = sharper memory!</span>
-          <span class="lang-es" lang="es">Volteen dos tarjetas para encontrar la pareja de cada problema. ¡Menos vueltas = mejor memoria!</span>
+          <span class="lang-en">Build a chain. The left side of each domino is the match for the problem on the end of the chain. Tap the domino that fits next.</span>
+          <span class="lang-es" lang="es">Armen una cadena. El lado izquierdo de cada ficha es la pareja del problema al final de la cadena. Toquen la ficha que encaja.</span>
         </p>
-        <div class="fam-memory-grid" id="fam_memory_grid" role="group" aria-label="Memory matching game"></div>
-        <p class="fam-memory-status" id="fam_memory_status" aria-live="polite">
-          <span class="lang-en">Matches: <strong id="fam_mem_matches">0</strong> / 4 · Flips: <strong id="fam_mem_flips">0</strong></span>
-          <span class="lang-es" lang="es">Parejas: <strong id="fam_mem_matches_es">0</strong> / 4 · Vueltas: <strong id="fam_mem_flips_es">0</strong></span>
-        </p>
-        <p class="fam-memory-win" id="fam_memory_win" hidden>🎉 <span class="lang-en">All twins found! Can you beat your flip count on a rematch?</span><span class="lang-es" lang="es">¡Encontraron todas las parejas! ¿Pueden lograrlo con menos vueltas en la revancha?</span></p>
+        <div class="fam-dom-chain" id="fam_dom_chain" role="list" aria-label="Domino chain"></div>
+        <p class="fam-dom-hint" id="fam_dom_hint" aria-live="polite"></p>
+        <div class="fam-dom-tray" id="fam_dom_tray" role="group" aria-label="Dominoes to place"></div>
+        <p class="fam-dom-status" id="fam_dom_status" aria-live="polite"></p>
+        <p class="fam-dom-win" id="fam_dom_win" hidden>🎉 <span class="lang-en">Chain complete! The last problem links back to the first domino: a perfect loop.</span><span class="lang-es" lang="es">¡Cadena completa! El último problema conecta con la primera ficha: un círculo perfecto.</span></p>
       </div>
 
       <div class="fam-game-card" id="fam_tf_game" data-arcade-panel="tf" hidden>
@@ -9161,7 +9160,7 @@ function lastTabStorageKey() {
 /* ── Family Game Break (Together tab) ─────────────────────────────────────
    Two content-free game engines; the content ships as the JSON island
    window.__HW_FAMGAMES__ rendered by renderFamilyGameBreak(). No timers. */
-var famMem = { first: null, lock: false, matches: 0, flips: 0 };
+var famDom = { n: 0, next: 1, tries: 0 };
 var famTf = { idx: 0, score: 0, answered: 0 };
 
 function famGamesData() {
@@ -9169,81 +9168,111 @@ function famGamesData() {
   return d && Array.isArray(d.pairs) && Array.isArray(d.tf) ? d : null;
 }
 
-function resetMemoryGame() {
+/* Math Dominoes. The pair bank gives n twins {a, b}. Domino k reads
+   [ twin of the PREVIOUS problem | this problem ], so the chain closes into a
+   loop: each placed domino's right end is a problem, and the next domino must
+   carry that problem's twin on its left. Starting point rotates per game. */
+function resetDominoGame() {
   var data = famGamesData();
-  var grid = document.getElementById('fam_memory_grid');
-  if (!data || !grid) return;
-  famMem = { first: null, lock: false, matches: 0, flips: 0 };
-  var win = document.getElementById('fam_memory_win');
+  var chain = document.getElementById('fam_dom_chain');
+  var tray = document.getElementById('fam_dom_tray');
+  if (!data || !chain || !tray) return;
+  var n = data.pairs.length;
+  var start = Math.floor(Math.random() * n);
+  var tiles = [];
+  for (var k = 0; k < n; k++) {
+    var i = (start + k) % n;
+    var prev = (i + n - 1) % n;
+    tiles.push({ k: k, left: data.pairs[prev].b, right: data.pairs[i].a });
+  }
+  famDom = { n: n, next: 1, tries: 0, tiles: tiles };
+  var win = document.getElementById('fam_dom_win');
   if (win) win.hidden = true;
-  updateMemoryStatus();
-  var faces = [];
-  data.pairs.forEach(function (p, i) {
-    faces.push({ pair: i, text: p.a });
-    faces.push({ pair: i, text: p.b });
-  });
-  // Runtime shuffle on purpose — each rematch deals a fresh layout.
-  for (var i = faces.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var t = faces[i]; faces[i] = faces[j]; faces[j] = t;
+  var hint = document.getElementById('fam_dom_hint');
+  if (hint) hint.textContent = '';
+  chain.innerHTML = '';
+  chain.appendChild(dominoTileEl(tiles[0], false));
+  chain.appendChild(dominoSlotEl());
+  var rest = tiles.slice(1);
+  for (var m = rest.length - 1; m > 0; m--) {
+    var j = Math.floor(Math.random() * (m + 1));
+    var t = rest[m]; rest[m] = rest[j]; rest[j] = t;
   }
-  grid.innerHTML = '';
-  faces.forEach(function (f) {
-    var btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'fam-mem-card';
-    btn.dataset.pair = String(f.pair);
-    btn.setAttribute('aria-label', 'Face-down card');
-    var inner = document.createElement('span');
-    inner.className = 'fam-mem-face';
-    inner.textContent = f.text;
-    btn.appendChild(inner);
-    btn.addEventListener('click', function () { flipMemoryCard(btn); });
-    grid.appendChild(btn);
+  tray.innerHTML = '';
+  rest.forEach(function (tile) {
+    var btn = dominoTileEl(tile, true);
+    btn.addEventListener('click', function () { placeDomino(btn, tile); });
+    tray.appendChild(btn);
   });
+  updateDominoStatus();
 }
 
-function updateMemoryStatus() {
-  ['fam_mem_matches', 'fam_mem_matches_es'].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = String(famMem.matches);
-  });
-  ['fam_mem_flips', 'fam_mem_flips_es'].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = String(famMem.flips);
-  });
+function dominoTileEl(tile, isButton) {
+  var el = document.createElement(isButton ? 'button' : 'div');
+  if (isButton) el.type = 'button'; else el.setAttribute('role', 'listitem');
+  el.className = 'fam-dom-tile';
+  var l = document.createElement('span');
+  l.className = 'fam-dom-half fam-dom-left';
+  l.textContent = tile.left;
+  var r = document.createElement('span');
+  r.className = 'fam-dom-half fam-dom-right';
+  r.textContent = tile.right;
+  el.appendChild(l);
+  el.appendChild(r);
+  return el;
 }
 
-function flipMemoryCard(btn) {
-  if (famMem.lock || btn.classList.contains('is-up') || btn.classList.contains('is-matched')) return;
-  btn.classList.add('is-up');
-  btn.setAttribute('aria-label', btn.querySelector('.fam-mem-face').textContent);
-  famMem.flips++;
-  updateMemoryStatus();
-  if (!famMem.first) { famMem.first = btn; return; }
-  var a = famMem.first;
-  famMem.first = null;
-  if (a.dataset.pair === btn.dataset.pair) {
-    a.classList.add('is-matched');
-    btn.classList.add('is-matched');
-    famMem.matches++;
-    updateMemoryStatus();
-    if (typeof playCorrectSound === 'function') playCorrectSound();
-    if (famMem.matches >= 4) {
-      var win = document.getElementById('fam_memory_win');
-      if (win) win.hidden = false;
-      if (typeof triggerCelebration === 'function') triggerCelebration();
-    }
+function dominoSlotEl() {
+  var el = document.createElement('span');
+  el.className = 'fam-dom-slot';
+  el.setAttribute('aria-hidden', 'true');
+  el.textContent = '?';
+  return el;
+}
+
+function updateDominoStatus() {
+  var el = document.getElementById('fam_dom_status');
+  if (!el || !famDom.n) return;
+  var placed = famDom.next;
+  var n = famDom.n;
+  setBiText(el,
+    'Dominoes placed: ' + placed + ' / ' + n + ' · Wrong tries: ' + famDom.tries,
+    'Fichas colocadas: ' + placed + ' / ' + n + ' · Intentos fallidos: ' + famDom.tries);
+}
+
+function placeDomino(btn, tile) {
+  if (!famDom.n || btn.disabled) return;
+  var chain = document.getElementById('fam_dom_chain');
+  var hint = document.getElementById('fam_dom_hint');
+  if (tile.k !== famDom.next) {
+    famDom.tries++;
+    btn.classList.remove('is-wrong');
+    void btn.offsetWidth;
+    btn.classList.add('is-wrong');
+    if (hint) setBiText(hint,
+      'Not that one. Look at the problem on the end of the chain: which answer is its twin?',
+      'Esa no. Mira el problema al final de la cadena: ¿cuál es su pareja?');
+    updateDominoStatus();
+    return;
+  }
+  var slot = chain.querySelector('.fam-dom-slot');
+  if (slot) slot.remove();
+  btn.disabled = true;
+  var placed = dominoTileEl(tile, false);
+  placed.classList.add('is-new');
+  chain.appendChild(placed);
+  btn.remove();
+  famDom.next++;
+  if (hint) hint.textContent = '';
+  if (typeof playCorrectSound === 'function') playCorrectSound();
+  if (famDom.next >= famDom.n) {
+    var win = document.getElementById('fam_dom_win');
+    if (win) win.hidden = false;
+    if (typeof triggerCelebration === 'function') triggerCelebration();
   } else {
-    famMem.lock = true;
-    setTimeout(function () {
-      a.classList.remove('is-up');
-      btn.classList.remove('is-up');
-      a.setAttribute('aria-label', 'Face-down card');
-      btn.setAttribute('aria-label', 'Face-down card');
-      famMem.lock = false;
-    }, 950);
+    chain.appendChild(dominoSlotEl());
   }
+  updateDominoStatus();
 }
 
 /* The page has three language modes (bilingual default / en / es), carried by
@@ -9520,7 +9549,7 @@ function nextWyr() {
 
 function initFamilyGames() {
   if (!famGamesData() || !document.getElementById('fam_game_break')) return;
-  resetMemoryGame();
+  resetDominoGame();
   resetTfGame();
   resetSortGame();
   resetWyrGame();
@@ -12658,7 +12687,7 @@ body.lang-mode-es .bilingual-grid {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
   /* Printing un-hides every panel, but the games are screen-only: an embedded
-     arcade iframe, a memory grid, a live quiz. On paper they were blank or
+     arcade iframe, a domino chain, a live quiz. On paper they were blank or
      meaningless pages in the middle of the packet. The workbench is screen-only
      for the same reason and now lives inside Together, so it is hidden by its
      own class rather than by a panel id that no longer exists — "arcade" and
@@ -13591,7 +13620,7 @@ header.homework-header,
 /* The bottom bar belongs to the Check stop. Its comment already SAID "hidden on
    non-practice tabs" and nothing hid it: it sat on all six stops, reporting
    "Progress: 0 / 6" and offering "Check All" beside a vocabulary flashcard or a
-   memory game. body[data-active-tab] is stamped by switchHomeworkTab. */
+   domino game. body[data-active-tab] is stamped by switchHomeworkTab. */
 .bottom-status-bar {
   background: rgba(255, 255, 255, 0.94) !important;
   backdrop-filter: blur(16px) !important;
@@ -14462,7 +14491,7 @@ body.hw-drawer-open { overflow: hidden; }
 .fam-act-talk strong { display: block; margin-bottom: 4px; color: var(--teal-ink); }
 
 /* ============================================================
-   Family Game Break — Memory Flip + True/False Face-Off.
+   Family Game Break — Math Dominoes + True/False Face-Off.
    ============================================================ */
 .fam-game-break {
   margin-top: 22px;
@@ -14505,61 +14534,64 @@ body.hw-drawer-open { overflow: hidden; }
 .fam-game-card .lang-en + .lang-es { border-left: 0; padding-left: 0; }
 .fam-game-sub { margin: 8px 0 12px; font-size: 13.5px; color: var(--muted); }
 
-/* Memory Flip */
-.fam-memory-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+/* Math Dominoes */
+.fam-dom-chain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
   gap: 8px;
+  padding: 12px;
+  min-height: 84px;
+  background: var(--teal-light);
+  border: 2px dashed var(--teal);
+  border-radius: 14px;
 }
-.fam-mem-card {
-  position: relative;
-  min-height: 76px;
-  border: 2px solid var(--navy-light);
+.fam-dom-tray { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.fam-dom-tile {
+  display: inline-flex;
+  align-items: stretch;
+  padding: 0;
+  border: 2px solid var(--navy);
   border-radius: 12px;
-  background: linear-gradient(135deg, var(--navy), var(--navy-light));
-  cursor: pointer;
-  padding: 6px;
-  transition: transform .15s ease, background .2s ease, border-color .2s ease;
-}
-.fam-mem-card::before {
-  content: "?";
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  color: rgba(255,255,255,.85);
-  font-size: 26px;
-  font-weight: 800;
-  font-family: var(--font-display);
-}
-.fam-mem-card:hover { transform: translateY(-2px); }
-.fam-mem-card:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
-.fam-mem-face {
-  display: none;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--ink);
-  line-height: 1.25;
-  overflow-wrap: break-word;
-}
-.fam-mem-card.is-up, .fam-mem-card.is-matched {
   background: #fff;
-  border-color: var(--teal);
-}
-.fam-mem-card.is-up::before, .fam-mem-card.is-matched::before { content: none; }
-.fam-mem-card.is-up .fam-mem-face, .fam-mem-card.is-matched .fam-mem-face {
-  display: grid;
-  place-items: center;
-  height: 100%;
+  overflow: hidden;
+  font: inherit;
   text-align: center;
 }
-.fam-mem-card.is-matched {
-  background: var(--success-bg);
-  border-color: var(--success);
-  cursor: default;
+button.fam-dom-tile { cursor: pointer; transition: transform .15s ease, box-shadow .15s ease; }
+button.fam-dom-tile:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(18, 53, 91, .15); }
+button.fam-dom-tile:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.fam-dom-half {
+  display: grid;
+  place-items: center;
+  min-width: 84px;
+  max-width: 190px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--ink);
+  overflow-wrap: break-word;
 }
-.fam-memory-status { margin: 10px 0 0; font-size: 13.5px; color: var(--muted); }
-.fam-memory-win {
+.fam-dom-left { background: var(--amber-light); border-right: 2px solid var(--navy); }
+.fam-dom-right { background: #fff; }
+.fam-dom-tile.is-new { border-color: var(--success); animation: famDomDrop .35s ease-out; }
+.fam-dom-slot {
+  display: grid;
+  place-items: center;
+  min-width: 48px;
+  border: 2px dashed var(--navy-light);
+  border-radius: 12px;
+  color: var(--navy-light);
+  font: 800 22px var(--font-display);
+}
+.fam-dom-tile.is-wrong { animation: famDomShake .35s ease; border-color: var(--error); }
+@keyframes famDomDrop { from { transform: translateY(-10px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes famDomShake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+@media (prefers-reduced-motion: reduce) { .fam-dom-tile.is-new, .fam-dom-tile.is-wrong { animation: none; } }
+.fam-dom-hint { margin: 10px 0 0; min-height: 1.2em; font-size: 14px; font-weight: 700; color: var(--coral-ink); }
+.fam-dom-status { margin: 10px 0 0; font-size: 13.5px; color: var(--muted); }
+.fam-dom-win {
   margin: 10px 0 0;
   padding: 10px 12px;
   background: var(--success-bg);
@@ -14794,8 +14826,8 @@ body.hw-drawer-open { overflow: hidden; }
 .fam-wyr-progress { margin: 12px 0 0; font-size: 12.5px; font-weight: 700; color: var(--muted); }
 
 @media (max-width: 560px) {
-  .fam-memory-grid { grid-template-columns: repeat(2, 1fr); }
-  .fam-mem-card { min-height: 64px; }
+  .fam-dom-tray { flex-direction: column; }
+  .fam-dom-half { min-width: 0; flex: 1; max-width: none; }
   .fam-wyr-options { flex-direction: column; }
   .fam-wyr-or { align-self: flex-start; }
   .fam-sort-bins { flex-direction: column; }
