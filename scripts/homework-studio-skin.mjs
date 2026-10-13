@@ -98,6 +98,27 @@ body { background: var(--st-paper) !important; color: var(--st-ink); }
     position: sticky;
     top: 12px;
   }
+  /* Right column: every block spans the full column and spacing comes from the grid gap. */
+  #hw_panel_learn > .learn-summary-block > div:first-child {
+    flex-wrap: nowrap !important;
+    margin-bottom: 12px !important;
+    padding: 0 16px 0 0;
+    background: var(--st-surface);
+    border: 1px solid var(--st-border);
+    border-left: 5px solid var(--st-navy);
+    border-radius: 14px;
+    box-shadow: var(--st-shadow);
+  }
+  #hw_panel_learn > .learn-summary-block > div:first-child .section-title {
+    flex: 1 1 auto; border: 0; box-shadow: none; background: transparent;
+  }
+  #hw_panel_learn .section-title { width: 100%; box-sizing: border-box; }
+  #hw_panel_learn .key-idea-banner { position: relative; }
+  #hw_panel_learn .key-idea-banner .btn-read-aloud { position: absolute; top: 12px; right: 12px; }
+  #hw_panel_learn > .learn-big-idea-block > *,
+  #hw_panel_learn .big-idea > *,
+  #hw_panel_learn > .learn-extended-block { margin-top: 0 !important; margin-bottom: 0 !important; }
+  #hw_panel_learn .key-idea-banner { padding-right: 84px; }
   #hw_panel_learn .concept-visual-wrap { grid-column: 1 / -1; order: 9; }
   #hw_panel_learn > .tab-help-row { grid-column: 1 / -1; order: 10; }
   #hw_panel_learn > .tab-flow-nav { grid-column: 1 / -1; order: 11; }
