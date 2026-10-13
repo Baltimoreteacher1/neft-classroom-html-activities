@@ -1002,35 +1002,28 @@
                 .concat(pool.filter((r) => played.has(roundKey(r))));
           } catch (_) {}
           rounds = pool.slice(0, isReviewMode ? 12 : MAX_ROUNDS);
-          // Guarantee the interactive kinds (plot / multi-step chain) actually
-          // play, and place them AFTER a short warm-up round rather than always
-          // leading — spaced out so multiple don't clump. Tier filtering (l2 can
-          // restrict to challenge-only) or the MAX_ROUNDS slice could otherwise
-          // drop a lesson's authored arcadeExtras entirely. No-op for the vast
-          // majority of lessons (no interactive rounds).
-          const isInteractive = (r) => r.kind === "plot" || r.kind === "chain";
-          const interactive = allRounds.filter(isInteractive);
+          // Guarantee hands-on interactive mechanics (build, numline, match,
+          // sort, spot, balance, plot, chain) lead right from Round 1 and
+          // interleave across the run so students immediately manipulate math
+          // models instead of facing a wall of plain multiple-choice items.
+          const isInteractive = (r) => r && r.kind && r.kind !== "choose";
+          const interactive = pool.filter(isInteractive);
           if (interactive.length) {
             const cap = isReviewMode ? 12 : MAX_ROUNDS;
-            // Keep the non-interactive rounds as filler (leaving room for the
-            // interactive ones), then splice the interactive rounds in starting
-            // after the first warm-up round, two slots apart.
-            // At most half the run is interactive, spread evenly after a
-            // warm-up round (a unit with many plot items used to end in six
-            // plot rounds back to back).
             const pick = (isReviewMode ? shuffle(interactive) : interactive).slice(
               0,
-              Math.ceil(cap / 2),
+              Math.ceil((cap * 3) / 5),
             );
-            const filler = rounds
+            const filler = pool
               .filter((r) => !isInteractive(r))
               .slice(0, Math.max(1, cap - pick.length));
-            const merged = filler.slice();
-            const total = filler.length + pick.length;
-            pick.forEach((r, i) => {
-              const at = 1 + Math.floor(((i + 0.5) * (total - 1)) / pick.length);
-              merged.splice(Math.min(merged.length, at), 0, r);
-            });
+            const merged = [];
+            let pIdx = 0;
+            let fIdx = 0;
+            while (merged.length < cap && (pIdx < pick.length || fIdx < filler.length)) {
+              if (pIdx < pick.length) merged.push(pick[pIdx++]);
+              if (merged.length < cap && fIdx < filler.length) merged.push(filler[fIdx++]);
+            }
             rounds = merged.slice(0, cap);
           }
           if (!rounds.length) rounds = fallbackRounds();
@@ -1796,7 +1789,10 @@
           const correct = choices[round.correctIndex];
           if (correct == null) return round;
           const stem = String(round.prompt || "");
-          const computes = /\b(what is|how many|value of|equals?|find|equal to|=)\b/i.test(stem);
+          const computes =
+            /\b(what is|how many|how much|how far|how long|value of|equals?|find|equal to|solve|calculate|cost|rate|ratio|percent|area|volume|mean|median|range|=)\b/i.test(
+              stem,
+            );
           const carry = {
             prompt: stem,
             promptEs: round.promptEs || "",
@@ -1828,7 +1824,7 @@
             };
           }
           // (B) one plain number + computational stem → PLACE IT ON THE LINE.
-          if (!computes || salt % 3 !== 0) return round;
+          if (!computes || salt % 2 !== 0) return round;
           const parsed = choices.map(parseNumeric);
           if (parsed.some((p) => !p) || new Set(parsed.map((p) => p.unit)).size !== 1) return round;
           const target = parsed[round.correctIndex].value;

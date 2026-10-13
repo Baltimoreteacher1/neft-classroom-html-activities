@@ -63,6 +63,20 @@
         button.type = 'button'; button.textContent = label; button.setAttribute('aria-label', label + ' (' + key + ')');
         button.addEventListener('click', () => send(key)); controls.append(button);
       });
+      if (name === 'Title' || name === 'Vocab') {
+        const quickBtn = document.createElement('button');
+        quickBtn.type = 'button';
+        quickBtn.textContent = '⚡ Skip to Gameplay ▶';
+        quickBtn.setAttribute('aria-label', 'Skip intro and jump straight into gameplay');
+        quickBtn.addEventListener('click', () => {
+          if (window.GameStudio?.paused) window.GameStudio.resume();
+          if (adventure?.open) adventure.show(false);
+          game.scene.getScenes(true).forEach(s => game.scene.stop(s.sys.settings.key));
+          game.scene.start('Game', {level: 1});
+          update();
+        });
+        controls.append(quickBtn);
+      }
     }
     function update() {
       const current = scene();

@@ -193,11 +193,32 @@
     if(!scene && (isFactor||isVolume))text='Use the model below to build and check your answer. Choose any mission level above.';
     if(!scene&&!isFactor&&!isVolume)text='Choose your level and launch a mission. Controls are available here and in the game.';
     question.textContent=text;
+    let modelEl=panel.querySelector('.fm-live-model');
+    if(!modelEl){
+      modelEl=document.createElement('div');
+      modelEl.className='fm-live-model';
+      modelEl.style.cssText='margin:6px 0 8px;padding:8px 12px;border-radius:10px;background:rgba(56,189,248,0.12);border-left:3px solid #38bdf8;color:#e0f2fe;font-size:0.86rem;font-weight:700;';
+      question.after(modelEl);
+    }
+    if(scene?.round && Array.isArray(scene.counts)){
+      const rA=scene.round.a||1, rB=scene.round.b||1, [cA,cB]=scene.counts;
+      const eq=cA>0&&cB>0&&cA*rB===cB*rA;
+      modelEl.textContent=`⚖️ Live Ratio Lab: Target Ratio ${rA}:${rB}`+(scene.round.capacity?` (Total Capacity ${scene.round.capacity})`:'')+` · Your Mix: ${cA}:${cB} (${cA+cB} scoops) · ${eq?'🎯 Proportional Match!':'Scale both ingredients by the same multiplier'}`;
+    }else if(scene?.forge && q){
+      modelEl.textContent=`🍕 Live Fraction Foundry: ${sCutsInfo(scene,q)}`;
+    }else if(scene?.order){
+      modelEl.textContent=`🧪 Live Equivalent Fraction Jug: ${Math.round((scene.fill||0)*scene.order.jugDen)} / ${scene.order.jugDen} divisions filled (Target: ${scene.order.shownNum}/${scene.order.shownDen})`;
+    }else{
+      modelEl.textContent=`🔬 ${config.topic}: ${config.coach}`;
+    }
     const signature=JSON.stringify([scene?.scene.key,scene?.qIndex,scene?.currentQ,q?.prompt,q?.text,q?.dims,q?.phase,q?.total,scene?.cuts,scene?.sel,scene?.groups,scene?.counts,scene?.row?.scored,scene?.row?.wrong,typeof scene?.round === "number" ? scene.round : null,scene?.locked,scene?.answered,scene?.roundLocked,scene?.lockBusy,scene?.__studioLevelDone,scene?.answerBtns?.map(b=>b.eliminated),window.GameStudio?.paused]);
     if(signature!==lastSignature){const focusIndex=[...actions.children].indexOf(document.activeElement);lastSignature=signature;actions.replaceChildren();if(scene)nativeActions(scene,q);if(focusIndex>=0)actions.children[focusIndex]?.focus({preventScroll:true});}
     const completed=scene?.qIndex??scene?.shapesPlaced??scene?.served??window.__flagshipState?.completed??window.__flagshipState?.sealed??0;
     const total=scene?.totalQ??scene?.maxRounds??scene?.queue?.length??10;
     panel.querySelector('.fm-progress span').style.width=Math.min(100,completed/total*100)+'%';
+  }
+  function sCutsInfo(s,q){
+    return `Divisions per whole: ${s.cuts||1} · Selected ${q.mode==='partition'?'pieces':'groups'}: ${q.mode==='partition'?(s.sel||0):(s.groups||0)}`;
   }
   if(window.GameStudio)window.GameStudio.register({title:document.title,instructions:['Choose a mission level, then launch.','Use the readable mission controls or the game canvas. Keyboard and touch both work.','Check each model carefully. Mistakes give you another chance to learn.'],...(game?{pause,resume}:{}),setMuted,setMotion:reduced=>{window.__flagshipReduced=reduced;game?.scene.scenes.forEach(s=>{s.reduceMotion=reduced;s.reducedMotion=reduced;});}});
   document.addEventListener('keydown',e=>{if(e.key==='Escape' && !document.querySelector('dialog[open]')){e.preventDefault();e.stopImmediatePropagation();window.GameStudio?.[window.GameStudio.paused?'resume':'pause']();}},true);

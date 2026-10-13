@@ -784,10 +784,83 @@
   #screen-play .choice-btn.correct{background:rgba(34,197,94,0.24) !important;border-color:#22c55e !important;color:#dcfce7 !important}
   #screen-play .choice-btn.wrong{background:rgba(248,113,113,0.22) !important;border-color:#f87171 !important;color:#fee2e2 !important}
   #screen-play .explanation,.explanation{background:rgba(15,29,48,0.96) !important;color:#e8f0fe !important}
-  .ra-play-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 14px;margin-bottom:14px;border-radius:14px;background:rgba(15,23,42,0.88);border:1px solid rgba(56,189,248,0.35)}
+  .ra-play-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 14px;margin-bottom:12px;border-radius:14px;background:rgba(15,23,42,0.88);border:1px solid rgba(56,189,248,0.35)}
   .ra-play-bar select{flex:1 1 180px;min-height:42px;padding:6px 10px;border-radius:9px;border:1px solid #475569;background:#0f172a;color:#f8fafc;font:600 0.88rem system-ui,sans-serif}
   .ra-play-bar button{min-height:42px;padding:6px 12px;border-radius:9px;border:1px solid rgba(56,189,248,0.45);background:#17324d;color:#f0f9ff;font:700 0.85rem system-ui,sans-serif;cursor:pointer}
   .ra-play-bar button:hover{background:#1f4366;border-color:#00ffe7}
+
+  /* Boss Battle Arena & Power-Up Deck */
+  .ra-boss-arena{position:relative;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;padding:14px 18px;margin-bottom:14px;border-radius:16px;background:radial-gradient(circle at 18% 50%,rgba(0,255,231,0.16),rgba(15,23,42,0.95) 65%),linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%);border:1.5px solid rgba(0,255,231,0.4);box-shadow:0 10px 28px rgba(0,0,0,0.45);overflow:hidden;transition:transform 0.2s ease,border-color 0.25s ease}
+  .ra-boss-arena.boss-hit{animation:raBossHit 0.48s cubic-bezier(.36,.07,.19,.97);border-color:#fbbf24;box-shadow:0 0 28px rgba(251,191,36,0.55)}
+  .ra-boss-arena.overdrive{border-color:#f43f5e;box-shadow:0 0 26px rgba(244,63,94,0.45)}
+  @keyframes raBossHit{0%,100%{transform:translateX(0) scale(1)}20%{transform:translateX(-8px) scale(0.98)}40%{transform:translateX(8px) scale(1.02)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+  .ra-boss-avatar{width:68px;height:68px;border-radius:14px;background:rgba(15,23,42,0.85);border:1.5px solid rgba(56,189,248,0.45);display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 16px rgba(0,255,231,0.2);flex-shrink:0}
+  .ra-boss-avatar svg{width:56px;height:56px;overflow:visible}
+  .ra-boss-info{min-width:0}
+  .ra-boss-title-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:4px}
+  .ra-boss-name{font-size:1.02rem;font-weight:900;color:#fff;letter-spacing:0.02em}
+  .ra-boss-sub{font-size:0.76rem;font-weight:700;color:#7dd3fc;text-transform:uppercase;letter-spacing:0.08em}
+  .ra-boss-hp-wrap{position:relative;height:14px;border-radius:999px;background:rgba(15,23,42,0.9);border:1px solid rgba(248,113,113,0.45);overflow:hidden;margin-top:4px}
+  .ra-boss-hp-fill{height:100%;width:100%;background:linear-gradient(90deg,#ef4444,#f97316,#fbbf24);border-radius:999px;transition:width 0.45s cubic-bezier(.22,1,.36,1)}
+  .ra-boss-hp-text{display:flex;justify-content:space-between;font-size:0.75rem;font-weight:800;color:#fecaca;margin-top:3px}
+  .ra-combo-pill{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 12px;border-radius:12px;background:rgba(245,158,11,0.16);border:1.5px solid rgba(251,191,36,0.55);color:#fde68a;font-weight:900;font-size:0.82rem;text-align:center;min-width:88px}
+  .ra-combo-pill strong{font-size:1.1rem;color:#fbbf24}
+  .ra-dmg-pop{position:absolute;right:110px;top:10px;padding:4px 10px;border-radius:999px;background:#fbbf24;color:#0f172a;font-weight:900;font-size:0.82rem;pointer-events:none;opacity:0;transform:translateY(8px);transition:opacity 0.2s,transform 0.3s}
+  .ra-dmg-pop.show{opacity:1;transform:translateY(0)}
+
+  /* Arcade Power-Up Bar */
+  .ra-powerups{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;margin-bottom:14px;border-radius:12px;background:rgba(15,23,42,0.82);border:1px solid rgba(148,163,184,0.25)}
+  .ra-energy-badge{font-size:0.84rem;font-weight:800;color:#fde047;display:flex;align-items:center;gap:6px}
+  .ra-powerup-btns{display:flex;flex-wrap:wrap;gap:6px}
+  .ra-pwr-btn{min-height:36px;padding:5px 11px;border-radius:9px;border:1px solid rgba(56,189,248,0.45);background:linear-gradient(135deg,#17324d,#0f2338);color:#e0f2fe;font:700 0.79rem system-ui,sans-serif;cursor:pointer;transition:transform 0.12s,border-color 0.15s}
+  .ra-pwr-btn:hover:not(:disabled){border-color:#00ffe7;transform:translateY(-1px);color:#fff}
+  .ra-pwr-btn:disabled{opacity:0.45;cursor:not-allowed}
+
+  /* Interactive Topic Math Lab inside Question Card */
+  .ra-interactive-lab{margin:16px 0 14px;padding:16px 18px;border-radius:14px;background:linear-gradient(160deg,rgba(8,20,38,0.95),rgba(15,34,60,0.95));border:1.5px solid rgba(56,189,248,0.45);box-shadow:inset 0 0 24px rgba(0,255,231,0.06)}
+  .ra-lab-header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+  .ra-lab-title{font-size:0.84rem;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#38bdf8;display:flex;align-items:center;gap:6px}
+  .ra-lab-badge{padding:3px 9px;border-radius:999px;background:rgba(34,197,94,0.18);border:1px solid rgba(74,222,128,0.45);color:#bbf7d0;font-size:0.75rem;font-weight:800}
+  .ra-lab-controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:10px 0}
+  .ra-lab-slider-wrap{flex:1 1 200px;display:flex;align-items:center;gap:8px;font-size:0.85rem;font-weight:700;color:#e2e8f0}
+  .ra-lab-slider-wrap input[type="range"]{flex:1;accent-color:#00ffe7;cursor:pointer}
+  .ra-lab-step-btn{min-width:34px;min-height:34px;padding:4px 10px;border-radius:8px;border:1px solid rgba(0,255,231,0.45);background:#17324d;color:#fff;font-weight:800;font-size:0.84rem;cursor:pointer}
+  .ra-lab-step-btn:hover{background:#1f4366;border-color:#00ffe7}
+  .ra-lab-visual{margin-top:8px;padding:12px;border-radius:11px;background:rgba(9,17,32,0.85);border:1px solid rgba(148,163,184,0.2);color:#f8fafc;font-size:0.9rem}
+  .ra-tape-row{display:flex;align-items:center;gap:8px;margin:6px 0}
+  .ra-tape-label{width:88px;font-size:0.8rem;font-weight:800;color:#bae6fd;flex-shrink:0}
+  .ra-tape-blocks{display:flex;gap:3px;flex-wrap:wrap;flex:1}
+  .ra-tape-cell{min-width:26px;height:28px;padding:0 5px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:800;color:#081c24;transition:transform 0.15s}
+  .ra-tape-cell.match-glow{box-shadow:0 0 12px #fbbf24;border:1.5px solid #fff;transform:scale(1.05)}
+  .ra-lab-readout{margin-top:8px;padding:8px 12px;border-radius:9px;background:rgba(56,189,248,0.12);border-left:3px solid #00ffe7;font-size:0.86rem;font-weight:700;color:#e0f2fe;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+  .ra-lab-readout.target-hit{background:rgba(34,197,94,0.2);border-left-color:#4ade80;color:#dcfce7}
+  .ra-data-chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+  .ra-data-chip{padding:6px 11px;border-radius:8px;background:#1e293b;border:1.5px solid #475569;color:#f8fafc;font-weight:800;font-size:0.92rem;transition:all 0.2s}
+  .ra-data-chip.crossed{opacity:0.38;text-decoration:line-through;border-color:#64748b}
+  .ra-data-chip.median-highlight{background:rgba(251,191,36,0.25);border-color:#fbbf24;color:#fde68a;transform:scale(1.08)}
+  .ra-pct-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:2px;max-width:240px;margin:6px auto}
+  .ra-pct-cell{height:14px;border-radius:2px;background:rgba(255,255,255,0.1);transition:background 0.12s}
+  .ra-pct-cell.filled{background:#00ffe7;box-shadow:0 0 4px rgba(0,255,231,0.5)}
+  /* Award-Winning EdTech Innovation Deck: Solve-by-Model, Glitch-Bot Debugger, Proof Builder & Problem Creator */
+  .ra-lab-solve-btn{margin-top:10px;width:100%;min-height:42px;padding:9px 16px;border-radius:10px;border:1.5px solid #4ade80;background:linear-gradient(135deg,#059669,#10b981);color:#fff;font:800 0.92rem system-ui,sans-serif;cursor:pointer;box-shadow:0 0 18px rgba(16,185,129,0.45);transition:transform 0.14s,filter 0.14s}
+  .ra-lab-solve-btn:hover:not(:disabled){transform:translateY(-1px) scale(1.01);filter:brightness(1.1)}
+  .ra-lab-solve-btn:disabled{opacity:0.5;cursor:not-allowed;box-shadow:none}
+  .ra-award-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid rgba(56,189,248,0.22)}
+  .ra-award-tabs{display:flex;flex-wrap:wrap;gap:6px}
+  .ra-award-tab{min-height:34px;padding:5px 11px;border-radius:999px;border:1px solid rgba(192,132,252,0.5);background:rgba(59,7,100,0.45);color:#f3e8ff;font:700 0.78rem system-ui,sans-serif;cursor:pointer;transition:all 0.15s}
+  .ra-award-tab:hover,.ra-award-tab[aria-expanded="true"]{background:rgba(147,51,234,0.45);border-color:#e879f9;color:#fff}
+  .ra-badge-strip{display:flex;flex-wrap:wrap;gap:5px;font-size:0.74rem;font-weight:800}
+  .ra-ach-badge{padding:3px 8px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid rgba(148,163,184,0.28);color:#94a3b8;transition:all 0.2s}
+  .ra-ach-badge.earned{background:rgba(251,191,36,0.2);border-color:#fbbf24;color:#fef08a;box-shadow:0 0 10px rgba(251,191,36,0.3)}
+  .ra-drawer-panel{margin-top:10px;padding:12px 14px;border-radius:11px;background:rgba(15,23,42,0.92);border:1px solid rgba(232,121,249,0.4);color:#f8fafc;font-size:0.86rem}
+  .ra-glitch-opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .ra-glitch-btn{flex:1 1 200px;min-height:38px;padding:7px 12px;border-radius:9px;border:1px solid rgba(56,189,248,0.45);background:#17324d;color:#f0f9ff;font:700 0.82rem system-ui,sans-serif;cursor:pointer;text-align:left}
+  .ra-glitch-btn:hover:not(:disabled){border-color:#00ffe7;background:#1f4366}
+  .ra-glitch-btn.fixed{background:rgba(34,197,94,0.25);border-color:#4ade80;color:#dcfce7}
+  .ra-proof-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .ra-proof-chip{padding:6px 11px;border-radius:8px;border:1px solid rgba(56,189,248,0.45);background:#1e293b;color:#e0f2fe;font:700 0.8rem system-ui,sans-serif;cursor:pointer;transition:all 0.15s}
+  .ra-proof-chip.locked{background:rgba(34,197,94,0.24);border-color:#4ade80;color:#dcfce7}
+  @media (max-width:600px){.ra-boss-arena{grid-template-columns:auto 1fr}.ra-combo-pill{grid-column:1 / -1;flex-direction:row;gap:8px}}
 </style>
 </head>
   <body>
@@ -962,6 +1035,39 @@
         </div>
       </div>
 
+      <!-- Boss Battle Arena -->
+      <div class="ra-boss-arena" id="ra-boss-arena" aria-label="Unit Boss Battle Arena">
+        <div class="ra-boss-avatar" id="ra-boss-avatar" aria-hidden="true"></div>
+        <div class="ra-boss-info">
+          <div class="ra-boss-title-row">
+            <span class="ra-boss-name" id="ra-boss-name">The Proportion Kraken</span>
+            <span class="ra-boss-sub" id="ra-boss-sub">Guardian of Ratios &amp; Unit Rates</span>
+          </div>
+          <div class="ra-boss-hp-wrap" role="progressbar" aria-label="Boss health" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" id="ra-boss-hp-bar">
+            <div class="ra-boss-hp-fill" id="ra-boss-hp-fill"></div>
+          </div>
+          <div class="ra-boss-hp-text">
+            <span id="ra-boss-hp-label">BOSS SHIELD: 800 / 800 HP</span>
+            <span id="ra-boss-status">⚡ Solve with the Interactive Lab or Choices to Strike!</span>
+          </div>
+        </div>
+        <div class="ra-combo-pill" id="ra-combo-pill">
+          <span>COMBO</span>
+          <strong id="ra-combo-mult">1x</strong>
+        </div>
+        <div class="ra-dmg-pop" id="ra-dmg-pop">💥 -100 HP!</div>
+      </div>
+
+      <!-- Arcade Power-Ups -->
+      <div class="ra-powerups" aria-label="Arcade Power-Ups">
+        <div class="ra-energy-badge" id="ra-energy-badge">⚡ Energy Orbs: <span id="ra-energy-count">2</span></div>
+        <div class="ra-powerup-btns">
+          <button type="button" class="ra-pwr-btn" id="pwr-zap" onclick="usePowerUpZap()">⚡ 50/50 Laser Zap (1 Orb)</button>
+          <button type="button" class="ra-pwr-btn" id="pwr-lab" onclick="usePowerUpAutoSolveLab()">🔬 Lock Target in Math Lab (1 Orb)</button>
+          <button type="button" class="ra-pwr-btn" id="pwr-shield" onclick="usePowerUpShield()">🛡️ Streak Shield (1 Orb)</button>
+        </div>
+      </div>
+
       <!-- Question card -->
       <div class="q-card">
         <div class="q-meta-row">
@@ -969,6 +1075,10 @@
           <span class="q-standard-pill" id="q-standard-pill" hidden></span>
         </div>
         <p class="q-text" id="q-text"></p>
+
+        <!-- Interactive Topic-Based Math Manipulative Lab -->
+        <div class="ra-interactive-lab" id="ra-interactive-lab" role="region" aria-label="Interactive Topic Math Lab"></div>
+
         <div class="q-tools">
           <button type="button" class="tool-btn" id="hint-btn" onclick="showStrategyHint()">
             💡 Strategy Hint
@@ -2568,10 +2678,922 @@
         state.maxStreak = 0;
         state.answered = false;
         state.triesOnCurrent = 0;
+        state.energyOrbs = 2;
+        state.streakShield = false;
+        state.bossMaxHp = pool.length * 100;
+        state.bossHp = state.bossMaxHp;
 
         syncPlayBar(unit, opts);
         showScreen("screen-play");
         renderQuestion();
+      }
+
+      /* ════════════════════════════════════════════════════════════════
+   BOSS BATTLE ARENA + ARCADE POWER-UPS + INTERACTIVE TOPIC MATH LAB
+════════════════════════════════════════════════════════════════ */
+      const UNIT_BOSSES = {
+        1: {
+          name: "The Pattern Sphinx",
+          sub: "Guardian of Inductive Sequences & Visual Growth Rules",
+          svg: '<svg viewBox="0 0 64 64"><polygon points="32,6 58,54 6,54" fill="#1e1b4b" stroke="#38bdf8" stroke-width="3"/><polygon points="32,16 48,48 16,48" fill="#0ea5e9" opacity="0.35"/><circle cx="32" cy="36" r="8" fill="#fbbf24"/><circle cx="32" cy="36" r="3" fill="#0f172a"/></svg>',
+        },
+        2: {
+          name: "The Data Hydra",
+          sub: "Guardian of Dot Plots, Box Plots, Median & IQR",
+          svg: '<svg viewBox="0 0 64 64"><rect x="8" y="34" width="10" height="22" rx="3" fill="#38bdf8"/><rect x="22" y="18" width="10" height="38" rx="3" fill="#2dd4bf"/><rect x="36" y="26" width="10" height="30" rx="3" fill="#fbbf24"/><rect x="50" y="12" width="8" height="44" rx="3" fill="#f43f5e"/><circle cx="27" cy="12" r="4" fill="#fbbf24"/><circle cx="41" cy="18" r="4" fill="#38bdf8"/></svg>',
+        },
+        3: {
+          name: "The Proportion Kraken",
+          sub: "Guardian of Equivalent Ratios, Tape Diagrams & Unit Rates",
+          svg: '<svg viewBox="0 0 64 64"><circle cx="32" cy="26" r="16" fill="#0284c7" stroke="#00ffe7" stroke-width="2.5"/><circle cx="26" cy="24" r="3.5" fill="#fde047"/><circle cx="38" cy="24" r="3.5" fill="#fde047"/><path d="M16 40 C12 52, 22 56, 24 46 M26 42 C26 56, 38 56, 38 42 M40 46 C42 56, 52 52, 48 40" stroke="#00ffe7" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>',
+        },
+        4: {
+          name: "The Percent Phantom",
+          sub: "Guardian of 100-Grids, Benchmarks & Part-Whole Percents",
+          svg: '<svg viewBox="0 0 64 64"><rect x="10" y="10" width="44" height="44" rx="10" fill="#311042" stroke="#f472b6" stroke-width="2.5"/><line x1="20" y1="44" x2="44" y2="20" stroke="#00ffe7" stroke-width="4" stroke-linecap="round"/><circle cx="23" cy="23" r="5" fill="#fbbf24"/><circle cx="41" cy="41" r="5" fill="#fbbf24"/></svg>',
+        },
+        5: {
+          name: "The Polygon Colossus",
+          sub: "Guardian of Area Decomposition, Surface Nets & 3D Volume",
+          svg: '<svg viewBox="0 0 64 64"><polygon points="32,8 54,20 54,44 32,56 10,44 10,20" fill="#064e3b" stroke="#34d399" stroke-width="2.5"/><polyline points="10,20 32,32 54,20" fill="none" stroke="#6ee7b7" stroke-width="2"/><line x1="32" y1="32" x2="32" y2="56" stroke="#6ee7b7" stroke-width="2"/><circle cx="24" cy="22" r="3" fill="#fde047"/><circle cx="40" cy="22" r="3" fill="#fde047"/></svg>',
+        },
+        6: {
+          name: "The Prime Sentinel",
+          sub: "Guardian of Exponents, GCF/LCM & Fraction Division",
+          svg: '<svg viewBox="0 0 64 64"><polygon points="32,6 40,22 58,24 44,37 48,55 32,46 16,55 20,37 6,24 24,22" fill="#3b0764" stroke="#c084fc" stroke-width="2.5"/><circle cx="32" cy="32" r="9" fill="#fbbf24"/></svg>',
+        },
+        7: {
+          name: "The Zero-Point Leviathan",
+          sub: "Guardian of Opposites, Absolute Value & 4-Quadrant Plotting",
+          svg: '<svg viewBox="0 0 64 64"><line x1="8" y1="32" x2="56" y2="32" stroke="#38bdf8" stroke-width="2.5"/><line x1="32" y1="8" x2="32" y2="56" stroke="#38bdf8" stroke-width="2.5"/><circle cx="32" cy="32" r="18" fill="none" stroke="#00ffe7" stroke-width="2" stroke-dasharray="4 3"/><circle cx="44" cy="20" r="5" fill="#f43f5e"/><circle cx="20" cy="44" r="5" fill="#fbbf24"/></svg>',
+        },
+        8: {
+          name: "The Balance Titan",
+          sub: "Guardian of Hanger Scales, Inverse Operations & Inequalities",
+          svg: '<svg viewBox="0 0 64 64"><line x1="32" y1="12" x2="32" y2="48" stroke="#fbbf24" stroke-width="3"/><line x1="12" y1="24" x2="52" y2="24" stroke="#00ffe7" stroke-width="3.5"/><polygon points="24,54 40,54 32,44" fill="#fbbf24"/><circle cx="16" cy="36" r="7" fill="#38bdf8"/><rect x="41" y="29" width="14" height="14" rx="3" fill="#f43f5e"/></svg>',
+        },
+        9: {
+          name: "The Linear Mech",
+          sub: "Guardian of Independent/Dependent Variables & Rate Tables",
+          svg: '<svg viewBox="0 0 64 64"><rect x="10" y="10" width="44" height="44" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/><polyline points="14,48 26,38 38,28 50,16" fill="none" stroke="#00ffe7" stroke-width="3.5"/><circle cx="26" cy="38" r="4" fill="#fbbf24"/><circle cx="38" cy="28" r="4" fill="#fbbf24"/><circle cx="50" cy="16" r="4.5" fill="#f43f5e"/></svg>',
+        },
+        10: {
+          name: "The Grand Synthesis Core",
+          sub: "Final Guardian of Multi-Concept Grade 6 Modeling",
+          svg: '<svg viewBox="0 0 64 64"><polygon points="32,4 58,19 58,45 32,60 6,45 6,19" fill="#1e1b4b" stroke="#fbbf24" stroke-width="3"/><circle cx="32" cy="32" r="14" fill="#00ffe7" opacity="0.25"/><circle cx="32" cy="32" r="7" fill="#fbbf24"/></svg>',
+        },
+        boss: {
+          name: "The Omega Polyhedron",
+          sub: "Ultimate 10-Unit Championship Boss",
+          svg: '<svg viewBox="0 0 64 64"><polygon points="32,4 60,24 49,56 15,56 4,24" fill="#4c0519" stroke="#f43f5e" stroke-width="3"/><polygon points="32,12 50,26 43,48 21,48 14,26" fill="none" stroke="#fbbf24" stroke-width="2"/><circle cx="25" cy="28" r="3.5" fill="#00ffe7"/><circle cx="39" cy="28" r="3.5" fill="#00ffe7"/></svg>',
+        },
+      };
+
+      function updateBossArena(q, hitDamage = 0) {
+        const uKey = state.unitMode === "boss" ? "boss" : (q?.unit || state.unitMode || 3);
+        const boss = UNIT_BOSSES[uKey] || UNIT_BOSSES[3];
+        const avatarEl = document.getElementById("ra-boss-avatar");
+        const nameEl = document.getElementById("ra-boss-name");
+        const subEl = document.getElementById("ra-boss-sub");
+        const fillEl = document.getElementById("ra-boss-hp-fill");
+        const barEl = document.getElementById("ra-boss-hp-bar");
+        const hpLabel = document.getElementById("ra-boss-hp-label");
+        const statusEl = document.getElementById("ra-boss-status");
+        const comboEl = document.getElementById("ra-combo-mult");
+        const arenaEl = document.getElementById("ra-boss-arena");
+        const dmgPop = document.getElementById("ra-dmg-pop");
+        if (!arenaEl) return;
+
+        if (avatarEl) avatarEl.innerHTML = boss.svg;
+        if (nameEl) nameEl.textContent = boss.name;
+        if (subEl) subEl.textContent = boss.sub;
+
+        const maxHp = state.bossMaxHp || (state.queue.length || 8) * 100;
+        if (typeof state.bossHp !== "number") state.bossHp = maxHp;
+        const hpPct = Math.max(0, Math.min(100, Math.round((state.bossHp / maxHp) * 100)));
+        if (fillEl) fillEl.style.width = hpPct + "%";
+        if (barEl) barEl.setAttribute("aria-valuenow", String(hpPct));
+        if (hpLabel) hpLabel.textContent = "BOSS SHIELD: " + Math.max(0, state.bossHp) + " / " + maxHp + " HP";
+
+        const mult = Math.min(4, 1 + Math.floor((state.streak || 0) / 2));
+        if (comboEl) comboEl.textContent = mult + "x" + (state.streakShield ? " 🛡️" : "");
+        arenaEl.classList.toggle("overdrive", mult >= 3);
+
+        if (hitDamage > 0) {
+          arenaEl.classList.remove("boss-hit");
+          void arenaEl.offsetWidth;
+          arenaEl.classList.add("boss-hit");
+          if (dmgPop) {
+            dmgPop.textContent = "💥 -" + hitDamage + " HP!" + (mult > 1 ? " (" + mult + "x COMBO)" : "");
+            dmgPop.classList.add("show");
+            setTimeout(() => dmgPop.classList.remove("show"), 1100);
+          }
+          if (statusEl) {
+            statusEl.textContent =
+              state.bossHp <= 0
+                ? "🏆 BOSS SHIELD SHATTERED! Keep scoring bonus mastery!"
+                : "⚡ Direct hit! +1 Energy Orb earned!";
+          }
+        } else if (statusEl) {
+          statusEl.textContent = state.streakShield
+            ? "🛡️ Streak Shield active! Explore the Interactive Math Lab below."
+            : "🔬 Explore the Interactive Math Lab below to test the math before locking your answer!";
+        }
+
+        const orbCount = document.getElementById("ra-energy-count");
+        if (orbCount) orbCount.textContent = String(state.energyOrbs ?? 2);
+        const noOrbs = (state.energyOrbs ?? 2) <= 0 || state.answered;
+        const zapBtn = document.getElementById("pwr-zap");
+        const labBtn = document.getElementById("pwr-lab");
+        const shdBtn = document.getElementById("pwr-shield");
+        if (zapBtn) zapBtn.disabled = noOrbs;
+        if (labBtn) labBtn.disabled = noOrbs;
+        if (shdBtn) shdBtn.disabled = noOrbs || !!state.streakShield;
+      }
+
+      function usePowerUpZap() {
+        if (state.answered || (state.energyOrbs ?? 0) <= 0) return;
+        const q = state.queue[state.idx];
+        const btns = Array.from(document.querySelectorAll(".choice-btn"));
+        const wrongIndices = btns
+          .map((b, i) => ({ b, i }))
+          .filter((x) => x.i !== q.answer && !x.b.disabled);
+        if (!wrongIndices.length) return;
+        state.energyOrbs--;
+        shuffle(wrongIndices)
+          .slice(0, 2)
+          .forEach((x) => {
+            x.b.disabled = true;
+            x.b.style.opacity = "0.32";
+            x.b.style.textDecoration = "line-through";
+          });
+        srSay("50/50 Laser Zap eliminated two wrong choices!");
+        updateBossArena(q, 0);
+      }
+
+      function usePowerUpAutoSolveLab() {
+        if (state.answered || (state.energyOrbs ?? 0) <= 0) return;
+        const q = state.queue[state.idx];
+        state.energyOrbs--;
+        const lab = document.getElementById("ra-interactive-lab");
+        if (lab && typeof lab._snapToTarget === "function") {
+          lab._snapToTarget();
+        }
+        showStrategyHint();
+        updateBossArena(q, 0);
+      }
+
+      function usePowerUpShield() {
+        if (state.answered || (state.energyOrbs ?? 0) <= 0 || state.streakShield) return;
+        state.energyOrbs--;
+        state.streakShield = true;
+        srSay("Streak Shield activated! Your next miss will not break your streak or cost a life.");
+        updateBossArena(state.queue[state.idx], 0);
+      }
+
+      function gcdTwo(a, b) {
+        a = Math.abs(Math.round(a)) || 1;
+        b = Math.abs(Math.round(b)) || 1;
+        while (b) {
+          const t = b;
+          b = a % b;
+          a = t;
+        }
+        return a;
+      }
+
+      function renderInteractiveMathLab(q) {
+        const lab = document.getElementById("ra-interactive-lab");
+        if (!lab || !q) return;
+        lab._snapToTarget = null;
+        const uNum = Number(q.unit || state.unitMode) || 3;
+        const stem = String(q.q || "");
+        const nums = (stem.match(/-?\d+(?:\.\d+)?/g) || []).map(Number);
+
+        // ── UNIT 3: INTERACTIVE RATIO TAPE DIAGRAM & EQUIVALENT SCALER ──
+        if (uNum === 3) {
+          let rA = 5,
+            rB = 3,
+            targetVal = 24;
+          const colonMatch = stem.match(/(\d+)\s*:\s*(\d+)/) || stem.match(/(\d+)\s+to\s+(\d+)/i);
+          if (colonMatch) {
+            rA = Math.max(1, Math.min(12, Number(colonMatch[1])));
+            rB = Math.max(1, Math.min(12, Number(colonMatch[2])));
+            const g = gcdTwo(rA, rB);
+            if (rA > 8 || rB > 8) {
+              rA = Math.round(rA / g);
+              rB = Math.round(rB / g);
+            }
+          } else if (nums.length >= 2) {
+            const g = gcdTwo(nums[0], nums[1]);
+            rA = Math.max(1, Math.min(10, Math.round(Math.abs(nums[0]) / g) || 3));
+            rB = Math.max(1, Math.min(10, Math.round(Math.abs(nums[1]) / g) || 2));
+          }
+          const extraNums = nums.filter((n) => n > Math.max(rA, rB) && n <= 180);
+          if (extraNums.length) targetVal = extraNums[extraNums.length - 1];
+          else targetVal = rB * 4;
+
+          let targetScale = 4;
+          for (let k = 1; k <= 15; k++) {
+            if (rA * k === targetVal || rB * k === targetVal || (rA + rB) * k === targetVal) {
+              targetScale = k;
+              break;
+            }
+          }
+
+          lab.innerHTML = `
+            <div class="ra-lab-header">
+              <span class="ra-lab-title">⚖️ Interactive Ratio Tape &amp; Double Number Line Scaler</span>
+              <span class="ra-lab-badge" id="ra-u3-badge">Base Ratio ${rA} : ${rB}</span>
+            </div>
+            <div class="ra-lab-controls">
+              <button type="button" class="ra-lab-step-btn" id="ra-u3-dec" aria-label="Decrease scale factor">−1×</button>
+              <label class="ra-lab-slider-wrap">
+                <span>Scale Factor <strong id="ra-u3-k">×1</strong></span>
+                <input type="range" id="ra-u3-slider" min="1" max="15" value="1" />
+              </label>
+              <button type="button" class="ra-lab-step-btn" id="ra-u3-inc" aria-label="Increase scale factor">+1×</button>
+              <button type="button" class="ra-lab-step-btn" id="ra-u3-snap">🎯 Snap to Target</button>
+            </div>
+            <div class="ra-lab-visual">
+              <div class="ra-tape-row">
+                <span class="ra-tape-label">Part A (${rA}×k):</span>
+                <div class="ra-tape-blocks" id="ra-u3-tape-a"></div>
+              </div>
+              <div class="ra-tape-row">
+                <span class="ra-tape-label">Part B (${rB}×k):</span>
+                <div class="ra-tape-blocks" id="ra-u3-tape-b"></div>
+              </div>
+              <div class="ra-lab-readout" id="ra-u3-readout"></div>
+            </div>
+          `;
+
+          const slider = document.getElementById("ra-u3-slider");
+          const kLbl = document.getElementById("ra-u3-k");
+          const tapeA = document.getElementById("ra-u3-tape-a");
+          const tapeB = document.getElementById("ra-u3-tape-b");
+          const readout = document.getElementById("ra-u3-readout");
+          const badge = document.getElementById("ra-u3-badge");
+
+          const updateU3 = (k) => {
+            k = Math.max(1, Math.min(15, Number(k) || 1));
+            slider.value = String(k);
+            kLbl.textContent = "×" + k;
+            const sA = rA * k;
+            const sB = rB * k;
+            const tot = sA + sB;
+            const hit = sA === targetVal || sB === targetVal || tot === targetVal;
+            tapeA.innerHTML = Array.from({ length: rA })
+              .map(
+                () =>
+                  `<span class="ra-tape-cell ${hit ? "match-glow" : ""}" style="background:#38bdf8">${k}</span>`,
+              )
+              .join("") + `<strong style="margin-left:6px;color:#7dd3fc">= ${sA}</strong>`;
+            tapeB.innerHTML = Array.from({ length: rB })
+              .map(
+                () =>
+                  `<span class="ra-tape-cell ${hit ? "match-glow" : ""}" style="background:#fbbf24">${k}</span>`,
+              )
+              .join("") + `<strong style="margin-left:6px;color:#fde68a">= ${sB}</strong>`;
+            const unitRate = (rA / rB).toFixed(2).replace(/\.00$/, "");
+            readout.className = "ra-lab-readout" + (hit ? " target-hit" : "");
+            readout.innerHTML = `
+              <span>Scaled Ratio: <strong>${sA} : ${sB}</strong> · Total Parts: <strong>${tot}</strong> · Unit Rate (A÷B): <strong>${unitRate}</strong></span>
+              <span>${hit ? "🎯 TARGET MATCHED (×" + k + ")!" : "Slide to scale both parts equally"}</span>
+            `;
+            badge.textContent = hit ? `🎯 Locked ×${k}: ${sA}:${sB}` : `Base Ratio ${rA} : ${rB}`;
+          };
+
+          slider.addEventListener("input", () => { raSynth("tick"); updateU3(slider.value); });
+          document.getElementById("ra-u3-dec").onclick = () => { raSynth("tick"); updateU3(Number(slider.value) - 1); };
+          document.getElementById("ra-u3-inc").onclick = () => { raSynth("tick"); updateU3(Number(slider.value) + 1); };
+          document.getElementById("ra-u3-snap").onclick = () => { raSynth("lock"); updateU3(targetScale); };
+          lab._snapToTarget = () => updateU3(targetScale);
+          updateU3(1);
+          attachAwardInnovationDeck(lab, q, uNum);
+          return;
+        }
+
+        // ── UNIT 4: INTERACTIVE 10x10 PERCENT GRID & PART-WHOLE EXPLORER ──
+        if (uNum === 4) {
+          const pctMatch = stem.match(/(\d+(?:\.\d+)?)\s*%/);
+          const initPct = pctMatch ? Math.max(1, Math.min(100, Math.round(Number(pctMatch[1])))) : 25;
+          const otherNums = nums.filter((n) => n !== initPct && n > 0 && n <= 1000);
+          const initWhole = otherNums.length ? otherNums[otherNums.length - 1] : 80;
+
+          lab.innerHTML = `
+            <div class="ra-lab-header">
+              <span class="ra-lab-title">💯 Interactive 10×10 Percent Grid &amp; Part-Whole Calculator</span>
+              <span class="ra-lab-badge" id="ra-u4-badge">${initPct}% of ${initWhole}</span>
+            </div>
+            <div class="ra-lab-controls">
+              <label class="ra-lab-slider-wrap">
+                <span>Percent: <strong id="ra-u4-pct-lbl">50%</strong></span>
+                <input type="range" id="ra-u4-pct" min="0" max="100" value="50" />
+              </label>
+              <label class="ra-lab-slider-wrap">
+                <span>Whole: <strong id="ra-u4-whole-lbl">${initWhole}</strong></span>
+                <input type="range" id="ra-u4-whole" min="10" max="${Math.max(200, initWhole)}" step="5" value="${initWhole}" />
+              </label>
+              <button type="button" class="ra-lab-step-btn" id="ra-u4-snap">🎯 Match ${initPct}%</button>
+            </div>
+            <div class="ra-lab-visual">
+              <div class="ra-pct-grid" id="ra-u4-grid">
+                ${Array.from({ length: 100 })
+                  .map((_, i) => `<span class="ra-pct-cell" data-idx="${i}"></span>`)
+                  .join("")}
+              </div>
+              <div class="ra-lab-readout" id="ra-u4-readout"></div>
+            </div>
+          `;
+          const pctIn = document.getElementById("ra-u4-pct");
+          const wholeIn = document.getElementById("ra-u4-whole");
+          const cells = lab.querySelectorAll(".ra-pct-cell");
+          const readout = document.getElementById("ra-u4-readout");
+          const badge = document.getElementById("ra-u4-badge");
+
+          const updateU4 = (p, w) => {
+            p = Math.max(0, Math.min(100, Number(p) || 0));
+            w = Math.max(1, Number(w) || initWhole);
+            pctIn.value = String(p);
+            wholeIn.value = String(w);
+            document.getElementById("ra-u4-pct-lbl").textContent = p + "%";
+            document.getElementById("ra-u4-whole-lbl").textContent = String(w);
+            cells.forEach((c, idx) => c.classList.toggle("filled", idx < p));
+            const part = Number(((p / 100) * w).toFixed(2));
+            const g = gcdTwo(p, 100);
+            const hit = p === initPct;
+            readout.className = "ra-lab-readout" + (hit ? " target-hit" : "");
+            readout.innerHTML = `
+              <span><strong>${p}%</strong> = <strong>${p / g}/${100 / g}</strong> = <strong>${(p / 100).toFixed(2)}</strong></span>
+              <span>Part = ${p}% of ${w} = <strong>${part}</strong></span>
+            `;
+            badge.textContent = `${p}% of ${w} = ${part}`;
+          };
+          pctIn.addEventListener("input", () => { raSynth("tick"); updateU4(pctIn.value, wholeIn.value); });
+          wholeIn.addEventListener("input", () => { raSynth("tick"); updateU4(pctIn.value, wholeIn.value); });
+          document.getElementById("ra-u4-snap").onclick = () => { raSynth("lock"); updateU4(initPct, initWhole); };
+          lab._snapToTarget = () => updateU4(initPct, initWhole);
+          updateU4(50, initWhole);
+          attachAwardInnovationDeck(lab, q, uNum);
+          return;
+        }
+
+        // ── UNIT 2: INTERACTIVE DATA SORTER, MEDIAN CROSS-OFF & QUARTILE LAB ──
+        if (uNum === 2) {
+          const dataNums = nums.length >= 4 ? nums.slice(0, 11) : [11, 15, 12, 18, 14, 12, 20];
+          let currentArr = dataNums.slice();
+          let crossStep = 0;
+
+          lab.innerHTML = `
+            <div class="ra-lab-header">
+              <span class="ra-lab-title">📊 Interactive Data Sorter &amp; Median / IQR Finder</span>
+              <span class="ra-lab-badge" id="ra-u2-badge">${currentArr.length} Data Values</span>
+            </div>
+            <div class="ra-lab-controls">
+              <button type="button" class="ra-lab-step-btn" id="ra-u2-sort">🔀 Sort Least → Greatest</button>
+              <button type="button" class="ra-lab-step-btn" id="ra-u2-cross">✂️ Cross Off Outer Pair</button>
+              <button type="button" class="ra-lab-step-btn" id="ra-u2-reset">↺ Reset Tiles</button>
+            </div>
+            <div class="ra-lab-visual">
+              <div class="ra-data-chips" id="ra-u2-chips"></div>
+              <div class="ra-lab-readout" id="ra-u2-readout"></div>
+            </div>
+          `;
+
+          const chipsEl = document.getElementById("ra-u2-chips");
+          const readout = document.getElementById("ra-u2-readout");
+          let isSorted = false;
+
+          const renderU2 = () => {
+            const n = currentArr.length;
+            const maxPairs = Math.floor((n - 1) / 2);
+            chipsEl.innerHTML = currentArr
+              .map((v, i) => {
+                const crossed = isSorted && (i < crossStep || i >= n - crossStep);
+                const isMid = isSorted && crossStep === maxPairs && !crossed;
+                return `<span class="ra-data-chip ${crossed ? "crossed" : ""} ${isMid ? "median-highlight" : ""}">${v}</span>`;
+              })
+              .join("");
+            const sorted = currentArr.slice().sort((a, b) => a - b);
+            const sum = sorted.reduce((a, b) => a + b, 0);
+            const mean = Number((sum / n).toFixed(2));
+            const mid = Math.floor(n / 2);
+            const median = n % 2 === 1 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+            const range = sorted[n - 1] - sorted[0];
+            readout.className = "ra-lab-readout" + (isSorted ? " target-hit" : "");
+            readout.innerHTML = isSorted
+              ? `<span>Sum = <strong>${sum}</strong> · Mean = <strong>${mean}</strong> · Median = <strong>${median}</strong> · Range = <strong>${range}</strong></span><span>🎯 Sorted!</span>`
+              : `<span>Click <strong>🔀 Sort Least → Greatest</strong> to line up the dataset and find the Median &amp; Mean!</span>`;
+          };
+
+          document.getElementById("ra-u2-sort").onclick = () => {
+            raSynth("lock");
+            currentArr.sort((a, b) => a - b);
+            isSorted = true;
+            renderU2();
+          };
+          document.getElementById("ra-u2-cross").onclick = () => {
+            raSynth("tick");
+            if (!isSorted) {
+              currentArr.sort((a, b) => a - b);
+              isSorted = true;
+            }
+            const maxPairs = Math.floor((currentArr.length - 1) / 2);
+            crossStep = Math.min(maxPairs, crossStep + 1);
+            renderU2();
+          };
+          document.getElementById("ra-u2-reset").onclick = () => {
+            currentArr = dataNums.slice();
+            isSorted = false;
+            crossStep = 0;
+            renderU2();
+          };
+          lab._snapToTarget = () => {
+            currentArr.sort((a, b) => a - b);
+            isSorted = true;
+            crossStep = Math.floor((currentArr.length - 1) / 2);
+            renderU2();
+          };
+          renderU2();
+          attachAwardInnovationDeck(lab, q, uNum);
+          return;
+        }
+
+        // ── UNIT 5: INTERACTIVE GEOMETRY DECOMPOSER & 3D PRISM BUILDER ──
+        if (uNum === 5) {
+          const isTriangle = /triangle/i.test(stem);
+          const isVolume = /volume|prism|cube/i.test(stem);
+          const bInit = Math.max(2, Math.min(20, Math.round(nums[0] || 8)));
+          const hInit = Math.max(2, Math.min(20, Math.round(nums[1] || 6)));
+          const lInit = Math.max(2, Math.min(15, Math.round(nums[2] || 4)));
+
+          lab.innerHTML = `
+            <div class="ra-lab-header">
+              <span class="ra-lab-title">📐 Interactive Polygon Decomposer &amp; 3D Prism Lab</span>
+              <span class="ra-lab-badge" id="ra-u5-badge">${isVolume ? "3D Prism Volume" : isTriangle ? "Triangle (½·b·h)" : "Parallelogram (b·h)"}</span>
+            </div>
+            <div class="ra-lab-controls">
+              <label class="ra-lab-slider-wrap">
+                <span>Base b: <strong id="ra-u5-b-lbl">${bInit}</strong></span>
+                <input type="range" id="ra-u5-b" min="1" max="20" value="${bInit}" />
+              </label>
+              <label class="ra-lab-slider-wrap">
+                <span>Height h: <strong id="ra-u5-h-lbl">${hInit}</strong></span>
+                <input type="range" id="ra-u5-h" min="1" max="20" value="${hInit}" />
+              </label>
+              <label class="ra-lab-slider-wrap">
+                <span>Depth l: <strong id="ra-u5-l-lbl">${lInit}</strong></span>
+                <input type="range" id="ra-u5-l" min="1" max="15" value="${lInit}" />
+              </label>
+            </div>
+            <div class="ra-lab-visual">
+              <div class="ra-lab-readout target-hit" id="ra-u5-readout"></div>
+            </div>
+          `;
+          const bIn = document.getElementById("ra-u5-b");
+          const hIn = document.getElementById("ra-u5-h");
+          const lIn = document.getElementById("ra-u5-l");
+          const readout = document.getElementById("ra-u5-readout");
+          const updateU5 = () => {
+            const b = Number(bIn.value);
+            const h = Number(hIn.value);
+            const l = Number(lIn.value);
+            document.getElementById("ra-u5-b-lbl").textContent = String(b);
+            document.getElementById("ra-u5-h-lbl").textContent = String(h);
+            document.getElementById("ra-u5-l-lbl").textContent = String(l);
+            readout.innerHTML = `
+              <span>▱ Area (b×h) = <strong>${b * h}</strong> · △ Triangle (½bh) = <strong>${(b * h) / 2}</strong></span>
+              <span>📦 Prism Volume (b×h×l) = <strong>${b * h * l}</strong> · Surface Area = <strong>${2 * (b * h + b * l + h * l)}</strong></span>
+            `;
+          };
+          bIn.oninput = () => { raSynth("tick"); updateU5(); };
+          hIn.oninput = () => { raSynth("tick"); updateU5(); };
+          lIn.oninput = () => { raSynth("tick"); updateU5(); };
+          lab._snapToTarget = updateU5;
+          updateU5();
+          attachAwardInnovationDeck(lab, q, uNum);
+          return;
+        }
+
+        // ── UNIT 8: INTERACTIVE EQUATION HANGER BALANCE SCALE ──
+        if (uNum === 8) {
+          const targetX = nums.length >= 2 ? Math.max(1, Math.min(25, Math.round(Math.abs(nums[1] - nums[0]) || 6))) : 7;
+          const addend = nums[0] && nums[0] < 20 ? Math.abs(Math.round(nums[0])) : 5;
+          const rhs = targetX + addend;
+
+          lab.innerHTML = `
+            <div class="ra-lab-header">
+              <span class="ra-lab-title">⚖️ Interactive Equation Balance Hanger</span>
+              <span class="ra-lab-badge" id="ra-u8-badge">Test Values of x</span>
+            </div>
+            <div class="ra-lab-controls">
+              <label class="ra-lab-slider-wrap">
+                <span>Test Variable <strong>x = <span id="ra-u8-x-lbl">1</span></strong></span>
+                <input type="range" id="ra-u8-x" min="0" max="25" value="1" />
+              </label>
+              <button type="button" class="ra-lab-step-btn" id="ra-u8-snap">⚖️ Balance Scale</button>
+            </div>
+            <div class="ra-lab-visual">
+              <div class="ra-lab-readout" id="ra-u8-readout"></div>
+            </div>
+          `;
+          const xIn = document.getElementById("ra-u8-x");
+          const readout = document.getElementById("ra-u8-readout");
+          const updateU8 = (xVal) => {
+            xVal = Number(xVal) || 0;
+            xIn.value = String(xVal);
+            document.getElementById("ra-u8-x-lbl").textContent = String(xVal);
+            const lhs = xVal + addend;
+            const balanced = lhs === rhs;
+            readout.className = "ra-lab-readout" + (balanced ? " target-hit" : "");
+            readout.innerHTML = `
+              <span>Left Pan (x + ${addend}): <strong>${lhs}</strong> vs. Right Pan: <strong>${rhs}</strong> (Product ${addend}x = <strong>${addend * xVal}</strong>)</span>
+              <span>${balanced ? "⚖️ BALANCED! x = " + xVal : lhs < rhs ? "↙️ Left side is lighter" : "↘️ Left side is heavier"}</span>
+            `;
+          };
+          xIn.oninput = () => { raSynth("tick"); updateU8(xIn.value); };
+          document.getElementById("ra-u8-snap").onclick = () => { raSynth("lock"); updateU8(targetX); };
+          lab._snapToTarget = () => updateU8(targetX);
+          updateU8(1);
+          attachAwardInnovationDeck(lab, q, uNum);
+          return;
+        }
+
+        // ── UNITS 1, 6, 7, 9, 10: UNIVERSAL INTERACTIVE NUMBER LINE / FACTOR / COORDINATE EXPLORER ──
+        const nA = Math.round(nums[0] ?? 6);
+        const nB = Math.round(nums[1] ?? 4);
+        lab.innerHTML = `
+          <div class="ra-lab-header">
+            <span class="ra-lab-title">🔬 Interactive Grade 6 Math Model Explorer (Unit ${uNum})</span>
+            <span class="ra-lab-badge">${q.topic || "Hands-On Model"}</span>
+          </div>
+          <div class="ra-lab-controls">
+            <label class="ra-lab-slider-wrap">
+              <span>Input A (x): <strong id="ra-ug-a-lbl">${nA}</strong></span>
+              <input type="range" id="ra-ug-a" min="-15" max="25" value="${Math.max(-15, Math.min(25, nA))}" />
+            </label>
+            <label class="ra-lab-slider-wrap">
+              <span>Input B (y): <strong id="ra-ug-b-lbl">${nB}</strong></span>
+              <input type="range" id="ra-ug-b" min="-15" max="25" value="${Math.max(-15, Math.min(25, nB))}" />
+            </label>
+            <button type="button" class="ra-lab-step-btn" id="ra-ug-snap">🎯 Reset to Question Numbers</button>
+          </div>
+          <div class="ra-lab-visual">
+            <div class="ra-lab-readout target-hit" id="ra-ug-readout"></div>
+          </div>
+        `;
+        const aIn = document.getElementById("ra-ug-a");
+        const bIn = document.getElementById("ra-ug-b");
+        const readout = document.getElementById("ra-ug-readout");
+        const updateUG = () => {
+          const a = Number(aIn.value);
+          const b = Number(bIn.value);
+          document.getElementById("ra-ug-a-lbl").textContent = String(a);
+          document.getElementById("ra-ug-b-lbl").textContent = String(b);
+          const g = gcdTwo(a || 1, b || 1);
+          const lcm = Math.abs(a * b) ? Math.abs(a * b) / g : 0;
+          const quad =
+            a > 0 && b > 0 ? "Q I (+,+)" : a < 0 && b > 0 ? "Q II (-,+)" : a < 0 && b < 0 ? "Q III (-,-)" : a > 0 && b < 0 ? "Q IV (+,-)" : "On Axis";
+          readout.innerHTML = `
+            <span>|A| = <strong>${Math.abs(a)}</strong> · Opposite = <strong>${-a}</strong> · Point (A,B) = <strong>(${a}, ${b}) [${quad}]</strong></span>
+            <span>GCF(|A|,|B|) = <strong>${g}</strong> · LCM = <strong>${lcm}</strong> · A×B = <strong>${a * b}</strong></span>
+          `;
+        };
+        aIn.oninput = () => { raSynth("tick"); updateUG(); };
+        bIn.oninput = () => { raSynth("tick"); updateUG(); };
+        document.getElementById("ra-ug-snap").onclick = () => {
+          raSynth("lock");
+          aIn.value = String(Math.max(-15, Math.min(25, nA)));
+          bIn.value = String(Math.max(-15, Math.min(25, nB)));
+          updateUG();
+        };
+        lab._snapToTarget = document.getElementById("ra-ug-snap").onclick;
+        updateUG();
+        attachAwardInnovationDeck(lab, q, uNum);
+      }
+
+      /* ════════════════════════════════════════════════════════════════
+   AWARD-WINNING EDTECH INNOVATION DECK:
+   1. Procedural WebAudio Synthesizer (raSynth)
+   2. Direct "Solve by Building" Manipulative-to-Answer Bridge
+   3. "Debug Glitch-Bot's Bug" Misconception Detective Mode
+   4. "Build Your 3-Step Math Proof" Reasoning Chain (MP3)
+   5. "Remix & Create Your Own Problem" Student Authoring Studio
+════════════════════════════════════════════════════════════════ */
+      let raAudioCtx = null;
+      function raSynth(kind) {
+        if (window.NT_MUTED || (window.GameStudio && window.GameStudio.settings?.muted)) return;
+        try {
+          if (!raAudioCtx) {
+            const Ctx = window.AudioContext || window.webkitAudioContext;
+            if (!Ctx) return;
+            raAudioCtx = new Ctx();
+          }
+          if (raAudioCtx.state === "suspended") raAudioCtx.resume().catch(() => {});
+          const now = raAudioCtx.currentTime;
+          const notes =
+            kind === "tick"
+              ? [[520, 0.03, "sine", 0.04]]
+              : kind === "lock"
+                ? [
+                    [523.25, 0.08, "triangle", 0.08],
+                    [659.25, 0.09, "triangle", 0.08],
+                    [783.99, 0.14, "triangle", 0.09],
+                  ]
+                : kind === "win"
+                  ? [
+                      [523.25, 0.07, "triangle", 0.09],
+                      [659.25, 0.07, "triangle", 0.09],
+                      [783.99, 0.08, "triangle", 0.09],
+                      [1046.5, 0.18, "triangle", 0.1],
+                    ]
+                  : [[330, 0.08, "sine", 0.06]];
+          let offset = 0;
+          notes.forEach(([freq, dur, wave, gainVal]) => {
+            const osc = raAudioCtx.createOscillator();
+            const gain = raAudioCtx.createGain();
+            osc.type = wave;
+            osc.frequency.setValueAtTime(freq, now + offset);
+            gain.gain.setValueAtTime(gainVal, now + offset);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + offset + dur);
+            osc.connect(gain);
+            gain.connect(raAudioCtx.destination);
+            osc.start(now + offset);
+            osc.stop(now + offset + dur + 0.01);
+            offset += dur * 0.85;
+          });
+        } catch (_e) {}
+      }
+
+      const UNIT_GLITCHBOT_BUGS = {
+        1: {
+          bug: "Glitch-Bot added the first term to the step number instead of checking how much the pattern grows between consecutive terms!",
+          fix: "🔧 Find the constant rate of change between terms first",
+          wrong: "❌ Just double the last number every time",
+        },
+        2: {
+          bug: "Glitch-Bot picked the middle number right away WITHOUT sorting the data values from least to greatest first!",
+          fix: "🔧 Sort Least → Greatest before finding Median or Quartiles",
+          wrong: "❌ Pick whichever number appears in the middle of the unsorted list",
+        },
+        3: {
+          bug: "Glitch-Bot added the difference between the numbers (additive thinking) instead of multiplying both parts of the ratio by the same scale factor!",
+          fix: "🔧 Multiply or divide both parts of the ratio by the same scale factor k",
+          wrong: "❌ Add the same number to both parts of the ratio",
+        },
+        4: {
+          bug: "Glitch-Bot forgot that 'percent' means 'per 100' and multiplied by the whole number without dividing by 100!",
+          fix: "🔧 Convert the percent to a rate per 100 (p ÷ 100 × Whole)",
+          wrong: "❌ Add the percent number directly to the whole",
+        },
+        5: {
+          bug: "Glitch-Bot used the slanted side length instead of the perpendicular height (or forgot ½ for a triangle)!",
+          fix: "🔧 Always use perpendicular base × height (and ½·b·h for triangles)",
+          wrong: "❌ Multiply all outside edges together",
+        },
+        6: {
+          bug: "Glitch-Bot added left-to-right before evaluating exponents and multiplication, and forgot to multiply by the reciprocal when dividing fractions!",
+          fix: "🔧 Follow GEMDAS order and multiply by the divisor's reciprocal",
+          wrong: "❌ Divide numerators and add denominators",
+        },
+        7: {
+          bug: "Glitch-Bot thought −8 is greater than −3 and plotted (x, y) by moving up first instead of horizontally along the x-axis first!",
+          fix: "🔧 Move horizontally (x) first, then vertically (y); further right = greater",
+          wrong: "❌ Negative numbers with bigger digits are always greater",
+        },
+        8: {
+          bug: "Glitch-Bot added the number on the same side instead of using the INVERSE operation on both sides of the equation hanger!",
+          fix: "🔧 Apply the inverse operation equally to both sides to isolate x",
+          wrong: "❌ Add the constant to only the left side of the equation",
+        },
+        9: {
+          bug: "Glitch-Bot swapped the independent variable (x input) and dependent variable (y output) in the function rule!",
+          fix: "🔧 Substitute the input x into the rule to calculate the output y",
+          wrong: "❌ Add x and y together to find the slope",
+        },
+        10: {
+          bug: "Glitch-Bot stopped after step 1 of a multi-step synthesis problem without checking if the units and scale matched the question!",
+          fix: "🔧 Verify each step's units and test the result in the original context",
+          wrong: "❌ Pick the first intermediate number you calculate",
+        },
+      };
+
+      function attachAwardInnovationDeck(lab, q, uNum) {
+        if (!state.badges) {
+          state.badges = { model: false, bug: false, proof: false, creator: false };
+        }
+        const gData = UNIT_GLITCHBOT_BUGS[uNum] || UNIT_GLITCHBOT_BUGS[3];
+        const correctChoiceText = locChoices(q)[q.answer];
+
+        const deck = document.createElement("div");
+        deck.className = "ra-award-deck";
+        deck.innerHTML = `
+          <button type="button" class="ra-lab-solve-btn" id="ra-lab-solve-btn">
+            ⚡ Lock Model &amp; Strike Boss With Lab Solution (+15 Innovation XP!)
+          </button>
+          <div class="ra-award-bar">
+            <div class="ra-award-tabs" role="group" aria-label="Award-winning learning modes">
+              <button type="button" class="ra-award-tab" id="tab-glitchbot" aria-expanded="false">🤖 Debug Glitch-Bot (+1 ⚡)</button>
+              <button type="button" class="ra-award-tab" id="tab-proof" aria-expanded="false">🧠 Build 3-Step Proof (2x Boost)</button>
+              <button type="button" class="ra-award-tab" id="tab-creator" aria-expanded="false">🎨 Remix &amp; Create Problem</button>
+            </div>
+            <div class="ra-badge-strip" id="ra-badge-strip" aria-label="Earned innovation badges">
+              <span class="ra-ach-badge ${state.badges.model ? "earned" : ""}" id="bdg-model">🔬 Model Builder</span>
+              <span class="ra-ach-badge ${state.badges.bug ? "earned" : ""}" id="bdg-bug">🤖 Bug Hunter</span>
+              <span class="ra-ach-badge ${state.badges.proof ? "earned" : ""}" id="bdg-proof">🧠 Proof Architect</span>
+              <span class="ra-ach-badge ${state.badges.creator ? "earned" : ""}" id="bdg-creator">🎨 Problem Creator</span>
+            </div>
+          </div>
+          <div class="ra-drawer-panel" id="panel-glitchbot" hidden>
+            <strong>🤖 Glitch-Bot's Misconception Alert:</strong>
+            <p style="margin:5px 0 8px;color:#cbd5e1">${gData.bug}</p>
+            <div class="ra-glitch-opts">
+              <button type="button" class="ra-glitch-btn" id="btn-glitch-fix">${gData.fix}</button>
+              <button type="button" class="ra-glitch-btn" id="btn-glitch-wrong">${gData.wrong}</button>
+            </div>
+            <div id="glitch-feedback" style="margin-top:6px;font-weight:800;color:#4ade80"></div>
+          </div>
+          <div class="ra-drawer-panel" id="panel-proof" hidden>
+            <strong>🧠 Construct Your 3-Step Mathematical Proof (Tap in order 1 → 2 → 3):</strong>
+            <div class="ra-proof-chips">
+              <button type="button" class="ra-proof-chip" data-step="1">1️⃣ Identify Given Relationship (${q.topic || "Unit " + uNum})</button>
+              <button type="button" class="ra-proof-chip" data-step="2">2️⃣ Apply Scale / Inverse Strategy</button>
+              <button type="button" class="ra-proof-chip" data-step="3">3️⃣ Verify Target Result (${correctChoiceText})</button>
+            </div>
+            <div id="proof-feedback" style="margin-top:6px;font-weight:800;color:#fde047"></div>
+          </div>
+          <div class="ra-drawer-panel" id="panel-creator" hidden>
+            <strong>🎨 Student Challenge Remix Studio — Invent Your Own Boss Problem!</strong>
+            <div class="ra-lab-controls" style="margin-top:8px">
+              <label class="ra-lab-slider-wrap">
+                <span>Part A: <strong id="cr-a-lbl">4</strong></span>
+                <input type="range" id="cr-a" min="2" max="12" value="4" />
+              </label>
+              <label class="ra-lab-slider-wrap">
+                <span>Part B: <strong id="cr-b-lbl">7</strong></span>
+                <input type="range" id="cr-b" min="2" max="12" value="7" />
+              </label>
+              <label class="ra-lab-slider-wrap">
+                <span>Multiplier k: <strong id="cr-k-lbl">×5</strong></span>
+                <input type="range" id="cr-k" min="2" max="10" value="5" />
+              </label>
+            </div>
+            <p id="cr-preview" style="margin:6px 0;padding:8px 10px;border-radius:8px;background:rgba(56,189,248,0.14);color:#e0f2fe;font-weight:700"></p>
+            <button type="button" class="ra-lab-step-btn" id="btn-inject-custom" style="width:100%;margin-top:4px;background:linear-gradient(135deg,#ec4899,#8b5cf6);border:none">
+              🚀 Play My Custom-Created Boss Problem Now!
+            </button>
+          </div>
+        `;
+        lab.appendChild(deck);
+
+        const refreshBadges = () => {
+          ["model", "bug", "proof", "creator"].forEach((k) => {
+            const el = document.getElementById("bdg-" + k);
+            if (el) el.classList.toggle("earned", !!state.badges[k]);
+          });
+        };
+
+        // 1. Direct "Solve by Building" button
+        const solveBtn = document.getElementById("ra-lab-solve-btn");
+        if (solveBtn) {
+          solveBtn.onclick = () => {
+            if (state.answered) return;
+            if (typeof lab._snapToTarget === "function") lab._snapToTarget();
+            state.score += 15;
+            state.badges.model = true;
+            refreshBadges();
+            raSynth("win");
+            solveBtn.disabled = true;
+            solveBtn.textContent = "✅ Model Locked! +15 Innovation Bonus XP Awarded!";
+            handleAnswer(q.answer);
+          };
+        }
+
+        // Toggle drawers
+        const tabs = [
+          ["tab-glitchbot", "panel-glitchbot"],
+          ["tab-proof", "panel-proof"],
+          ["tab-creator", "panel-creator"],
+        ];
+        tabs.forEach(([tId, pId]) => {
+          const tBtn = document.getElementById(tId);
+          const pEl = document.getElementById(pId);
+          if (!tBtn || !pEl) return;
+          tBtn.onclick = () => {
+            const open = pEl.hidden;
+            tabs.forEach(([ot, op]) => {
+              const ob = document.getElementById(ot);
+              const oe = document.getElementById(op);
+              if (ob) ob.setAttribute("aria-expanded", "false");
+              if (oe) oe.hidden = true;
+            });
+            pEl.hidden = !open;
+            tBtn.setAttribute("aria-expanded", String(open));
+            raSynth("tick");
+          };
+        });
+
+        // 2. Glitch-Bot Misconception Debugger
+        const fixBtn = document.getElementById("btn-glitch-fix");
+        const wrgBtn = document.getElementById("btn-glitch-wrong");
+        const gFb = document.getElementById("glitch-feedback");
+        if (fixBtn && wrgBtn && gFb) {
+          fixBtn.onclick = () => {
+            if (fixBtn.disabled) return;
+            fixBtn.disabled = true;
+            wrgBtn.disabled = true;
+            fixBtn.classList.add("fixed");
+            state.energyOrbs = Math.min(5, (state.energyOrbs ?? 2) + 1);
+            state.score += 10;
+            state.badges.bug = true;
+            refreshBadges();
+            raSynth("lock");
+            gFb.textContent = "✅ Bug Squashed! You repaired Glitch-Bot's logic (+1 ⚡ Orb & +10 XP)!";
+            document.getElementById("hud-score").textContent = "Score: " + state.score;
+            updateBossArena(q, 0);
+          };
+          wrgBtn.onclick = () => {
+            gFb.style.color = "#fcd34d";
+            gFb.textContent = "💡 Careful — that's the exact trap Glitch-Bot fell into! Tap the other repair chip.";
+          };
+        }
+
+        // 3. 3-Step Math Proof Builder
+        let proofStep = 0;
+        const pChips = deck.querySelectorAll(".ra-proof-chip");
+        const pFb = document.getElementById("proof-feedback");
+        pChips.forEach((chip) => {
+          chip.onclick = () => {
+            const sNum = Number(chip.dataset.step);
+            if (sNum === proofStep + 1) {
+              proofStep = sNum;
+              chip.classList.add("locked");
+              raSynth("tick");
+              if (proofStep === 3) {
+                state.score += 10;
+                state.streak = Math.max(state.streak, 2);
+                state.badges.proof = true;
+                refreshBadges();
+                raSynth("win");
+                if (pFb) pFb.textContent = "🏅 3-Step Proof Complete! +10 XP & 2x Combo Boost Activated!";
+                document.getElementById("hud-score").textContent = "Score: " + state.score;
+                updateBossArena(q, 0);
+              } else if (pFb) {
+                pFb.textContent = `Step ${proofStep}/3 locked! Tap Step ${proofStep + 1} next.`;
+              }
+            } else if (sNum > proofStep + 1 && pFb) {
+              pFb.textContent = `Tap Step ${proofStep + 1} first to build your proof in logical order!`;
+            }
+          };
+        });
+
+        // 4. Student Challenge Remix & Problem Creator Studio
+        const crA = document.getElementById("cr-a");
+        const crB = document.getElementById("cr-b");
+        const crK = document.getElementById("cr-k");
+        const crPrev = document.getElementById("cr-preview");
+        const crBtn = document.getElementById("btn-inject-custom");
+        const updateCreatorPreview = () => {
+          if (!crA || !crB || !crK || !crPrev) return;
+          const a = Number(crA.value);
+          const b = Number(crB.value);
+          const k = Number(crK.value);
+          document.getElementById("cr-a-lbl").textContent = String(a);
+          document.getElementById("cr-b-lbl").textContent = String(b);
+          document.getElementById("cr-k-lbl").textContent = "×" + k;
+          crPrev.textContent = `Your Custom Challenge: "In a Grade 6 lab, the ratio of Blue to Gold energy crystals is ${a}:${b}. If there are ${b * k} Gold crystals, how many Blue crystals are there?" → Solution: ${a * k}`;
+        };
+        if (crA && crB && crK) {
+          crA.oninput = updateCreatorPreview;
+          crB.oninput = updateCreatorPreview;
+          crK.oninput = updateCreatorPreview;
+          updateCreatorPreview();
+        }
+        if (crBtn) {
+          crBtn.onclick = () => {
+            const a = Number(crA.value);
+            const b = Number(crB.value);
+            const k = Number(crK.value);
+            const ans = a * k;
+            const customChoices = [String(ans), String(b * k), String(a + b * k), String(Math.max(1, ans - a))];
+            const customQ = {
+              q: `[Student-Created Remix] The ratio of Blue to Gold crystals is ${a}:${b}. If there are ${b * k} Gold crystals, how many Blue crystals are needed to keep the exact same ratio?`,
+              choices: customChoices,
+              answer: 0,
+              hint: `Find the scale factor from ${b} to ${b * k} (multiply by ${k}), then multiply ${a} × ${k}.`,
+              why: `Because ${b} × ${k} = ${b * k}, multiply ${a} × ${k} = ${ans} Blue crystals!`,
+              unit: 3,
+              topic: "Student-Authored Ratio Remix",
+              standard: "6.AT.1 · Creative Modeling",
+            };
+            state.badges.creator = true;
+            state.score += 15;
+            state.queue.splice(state.idx, 0, customQ);
+            raSynth("win");
+            renderQuestion();
+          };
+        }
       }
 
       /* ════════════════════════════════════════════════════════════════
@@ -2615,6 +3637,10 @@
 
         // Question text (localized)
         document.getElementById("q-text").textContent = loc(q, "q");
+
+        // Render Boss Arena & Interactive Topic Math Lab
+        updateBossArena(q, 0);
+        renderInteractiveMathLab(q);
 
         // Choices
         const container = document.getElementById("choices");
@@ -2662,8 +3688,13 @@
         if (!correct && state.triesOnCurrent === 1 && !state.challenge) {
           btns[choiceIdx].disabled = true;
           btns[choiceIdx].classList.add("wrong");
-          state.streak = 0;
-          document.getElementById("hud-streak").textContent = "🔥 Streak: 0";
+          if (state.streakShield) {
+            state.streakShield = false;
+          } else {
+            state.streak = 0;
+          }
+          document.getElementById("hud-streak").textContent = "🔥 Streak: " + state.streak;
+          updateBossArena(q, 0);
           const expl = document.getElementById("explanation");
           const lbl = document.getElementById("result-label");
           const why = document.getElementById("why-text");
@@ -2689,6 +3720,8 @@
         btns.forEach((b) => {
           b.disabled = true;
         });
+        const labSolveBtn = document.getElementById("ra-lab-solve-btn");
+        if (labSolveBtn) labSolveBtn.disabled = true;
 
         // Mark chosen and correct
         btns[choiceIdx].classList.add(correct ? "correct" : "wrong");
@@ -2697,23 +3730,34 @@
         }
 
         // Update state
+        let hitDmg = 0;
         if (correct) {
+          raSynth("win");
           state.correct++;
           state.streak++;
           const basePts = state.triesOnCurrent === 1 ? 10 : 6;
           state.score += basePts + Math.min(state.streak - 1, 5) * 2;
           if (state.streak > state.maxStreak) state.maxStreak = state.streak;
+          const mult = Math.min(4, 1 + Math.floor((state.streak || 0) / 2));
+          hitDmg = (state.triesOnCurrent === 1 ? 100 : 75) * mult;
+          state.bossHp = Math.max(0, (state.bossHp ?? 800) - hitDmg);
+          state.energyOrbs = Math.min(5, (state.energyOrbs ?? 2) + 1);
         } else {
-          state.streak = 0;
-          if (state.challenge) state.lives--;
+          if (state.streakShield) {
+            state.streakShield = false;
+          } else {
+            state.streak = 0;
+            if (state.challenge) state.lives--;
+          }
           state.missed.push(q);
         }
 
-        // Update HUD hearts immediately
+        // Update HUD hearts & Boss Arena immediately
         document.getElementById("hud-hearts").textContent =
           state.challenge ? "❤️".repeat(Math.max(0, state.lives)) + "🖤".repeat(3 - Math.max(0, state.lives)) : "∞ Practice";
         document.getElementById("hud-score").textContent = "Score: " + state.score;
         document.getElementById("hud-streak").textContent = "🔥 Streak: " + state.streak;
+        updateBossArena(q, hitDmg);
 
         // Per-answer learning signal (device-local + /api/scores). Guarded.
         raSignal(q, correct);
