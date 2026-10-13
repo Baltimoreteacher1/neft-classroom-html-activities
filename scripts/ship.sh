@@ -44,7 +44,7 @@ EXPECTED_REPO="neft-classroom-html-activities"
 SMOKE_PORT=41847
 GENERATED_MANIFEST="data/curriculum-download-manifest.json"
 VERIFY_TIMEOUT_SECS=720
-VERIFY_INTERVAL_SECS=20
+VERIFY_INTERVAL_SECS=5
 
 MODE="ship" # ship | rebuild | verify
 DRY_RUN=0
