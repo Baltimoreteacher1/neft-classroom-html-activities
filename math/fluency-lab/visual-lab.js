@@ -133,6 +133,25 @@ export function mountVisualLesson(container, skill, { onComplete, onPractice, va
           <div class="conclusion-rule-box">
             <p class="transfer-copy">${esc(transferPrompt(skill))}</p>
           </div>
+          <section class="teach-back" aria-labelledby="teach-back-title">
+            <div>
+              <p class="section-label">Make the idea yours</p>
+              <h4 id="teach-back-title">Teach it back</h4>
+              <p>In your own words, explain the strategy. This is practice for your thinking, not a graded answer.</p>
+            </div>
+            <label class="teach-back-response" for="teach-back-response">My explanation
+              <span id="teach-back-starter">Sentence starter: I noticed ___. This strategy works because ___. I checked by ___.</span>
+              <textarea id="teach-back-response" aria-describedby="teach-back-starter" rows="3" placeholder="Write your explanation here"></textarea>
+            </label>
+            <fieldset class="teach-back-checks">
+              <legend>Before you finish, look for these three parts:</legend>
+              <label><input type="checkbox" value="model" /> I connected the picture or model to the numbers.</label>
+              <label><input type="checkbox" value="reason" /> I explained why each step fits the strategy.</label>
+              <label><input type="checkbox" value="check" /> I checked the result or described what would change.</label>
+            </fieldset>
+            <button type="button" class="outline-action" data-teach-back>Get a thinking nudge</button>
+            <p class="teach-back-feedback" role="status" aria-live="polite" hidden></p>
+          </section>
           <p class="lesson-evidence">Visual lesson completed${supported ? ' with a worked step' : ''}. Independent practice will check what you remember.</p>
           <div class="conclusion-actions">
             <button type="button" class="primary-action" data-visual-practice>Try adaptive practice</button>
@@ -203,6 +222,22 @@ export function mountVisualLesson(container, skill, { onComplete, onPractice, va
       currentVariant++; content = createLesson(skill, currentVariant); index = 0; solved = false; attempts = 0; partitions = 1; counters = content.model.filled; counterPositions = new Set(Array.from({ length: counters || 0 }, (_, i) => i)); supported = false; solvedSteps = []; currentStepAnswer = ""; render();
     }
     if (button.hasAttribute("data-visual-practice")) onPractice?.();
+    if (button.hasAttribute("data-teach-back")) {
+      const checks = [...container.querySelectorAll(".teach-back-checks input:checked")];
+      const feedbackNode = container.querySelector(".teach-back-feedback");
+      feedbackNode.hidden = false;
+      if (!checks.length) {
+        feedbackNode.textContent = "Choose one part you already included. Then add another part to make your explanation clearer.";
+        container.querySelector(".teach-back-checks input")?.focus();
+      } else {
+        const next = [...container.querySelectorAll(".teach-back-checks input:not(:checked)")][0];
+        const labels = { model: "connect one part of the model to its number", reason: "explain why each step fits the strategy", check: "show how you could check the result" };
+        feedbackNode.textContent = next
+          ? `You have a start. Next, ${labels[next.value]}. Try adding that idea to your explanation.`
+          : "You planned a complete explanation: model, reason, and check. Say it aloud or write it in your own words, then try a fresh problem to see if the idea transfers.";
+        if (next) next.focus();
+      }
+    }
     if (button.hasAttribute("data-partition")) { partitions = Number(button.dataset.partition); container.querySelector(".visual-model").innerHTML = renderModel(content.model, { partitions, counters, step: index }); container.querySelector(`[data-partition="${partitions}"]`)?.focus(); }
     if (button.hasAttribute("data-counter")) { const cell = Number(button.dataset.counter); if (cell < content.model.filled) return; if (counterPositions.has(cell)) counterPositions.delete(cell); else counterPositions.add(cell); counters = counterPositions.size; container.querySelector(".visual-model").innerHTML = renderModel(content.model, { partitions, counters, counterPositions, step: index }); container.querySelector(`[data-counter="${cell}"]`)?.focus(); }
   };

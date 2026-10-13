@@ -60,6 +60,28 @@ for (const answer of [60, 4, 64]) {
   click("[data-visual-next]");
 }
 assert.equal(savedTutor().records["4:division"].lessonCompleted, true);
+assert.ok($("[data-teach-back]"), "Visual lesson ends with a student explanation checkpoint");
+fill("#teach-back-response", "My private explanation stays on this device only.");
+click("[data-teach-back]");
+assert.match($(".teach-back-feedback").textContent, /Choose one part/);
+$(".teach-back-checks input[value='model']").checked = true;
+click("[data-teach-back]");
+assert.match($(".teach-back-feedback").textContent, /explain why each step fits the strategy/);
+for (const checkbox of win.document.querySelectorAll(".teach-back-checks input"))
+  checkbox.checked = true;
+click("[data-teach-back]");
+assert.match(
+  $(".teach-back-feedback").textContent,
+  /complete explanation: model, reason, and check/,
+);
+assert.ok(
+  !Array.from({ length: win.localStorage.length }, (_, i) =>
+    win.localStorage.getItem(win.localStorage.key(i)),
+  )
+    .join(" ")
+    .includes("My private explanation"),
+  "Teach-back writing is not saved",
+);
 click("[data-visual-practice]");
 assert.equal(savedSession().session.mode, "adaptive");
 const originalQuestion = $("#question").textContent;
