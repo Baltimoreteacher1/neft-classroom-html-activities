@@ -1062,6 +1062,21 @@
     .field-item label { display: block; font-weight: 700; color: var(--navy); font-size: 0.9rem; margin-bottom: 8px; }
     .field-row { display: flex; align-items: center; gap: 8px; }
     .field-row strong { color: var(--navy); }
+    .solve-guide { background: var(--surface-teal); border: 1px solid var(--teal-line); border-radius: var(--radius-md); padding: 16px 18px; margin: 16px 0; }
+    .solve-guide h3 { color: var(--navy); font-size: 1.05rem; margin: 0 0 8px; }
+    .solve-guide ol { margin: 0; padding-left: 1.5rem; }
+    .solve-guide li { padding: 3px 0; }
+    .solve-guide strong { color: var(--navy); }
+    .field-grid { grid-template-columns: 1fr; }
+    .field-item { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; background: var(--surface-soft); }
+    .field-item.step-ok { border-color: var(--green); background: var(--green-tint); }
+    .field-item label { font-size: 1rem; }
+    .field-row { flex-wrap: wrap; }
+    .step-check { margin-left: 8px; min-height: 48px; }
+    .step-status { min-height: 1.5em; margin: 8px 0 0; font-size: 0.92rem; font-weight: 700; color: var(--ink-muted); }
+    .step-status.ok { color: var(--green); }
+    .step-status.err { color: var(--red); }
+    @media (max-width: 560px) { .step-check { margin-left: 0; width: 100%; } }
     .level-pill { display: inline-block; margin-left: 6px; padding: 1px 9px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.03em; text-transform: none; vertical-align: middle; }
     .level-pill.lvl-Warm-Up { background: var(--teal-tint); color: var(--teal); }
     .level-pill.lvl-Core { background: var(--navy-tint); color: var(--navy); }
@@ -1524,6 +1539,8 @@ function scaleProblem(n, part, whole, title, stem, stemEs) {
         ];
   return {
     id: `s2_${n}`,
+    knownPart: part,
+    knownWhole: whole,
     title,
     stem,
     stemEs,
@@ -2927,6 +2944,35 @@ function showWorked(fb, p) {
   fb.textContent = `Worked solution: ${bi(p.explain.replace(/^✓\s*/, ""), p.explainEs && p.explainEs.replace(/^✓\s*/, ""))}`;
 }
 
+function guideFor(n, p) {
+  const read = p.type === "mc" && n === 1
+    ? "Notice the number forms and the order or claim the question asks you to check."
+    : p.type === "mc" && n === 4
+      ? "Find the person's claim. Identify the original whole and any new whole."
+    : n === 2 && Number.isFinite(p.knownWhole)
+    ? `The part is ${p.knownPart}; the whole (100%) is ${p.knownWhole}.`
+    : n === 3
+      ? "Find the number that represents 100%. Decide whether the missing number is the part, whole, or percent."
+      : n === 4
+        ? "Underline what the question asks. If the story changes the amount, check which amount is 100% at each step."
+        : "Identify one whole (100%). Check whether the amount is less than or greater than one whole.";
+  const plan = p.type === "mc" && n === 1
+    ? "Convert each value to a percent, then compare before you choose."
+    : p.type === "mc" && n === 4
+      ? "Rework the claim with equivalent ratios or the correct percent of each whole."
+      : [
+    "Use the grid, fraction, or decimal to make a percent out of 100.",
+    "Write part/whole. Simplify if helpful, then scale the whole to 100 using the same factor on both numbers.",
+    "Use a benchmark such as 10%, 5%, 1%, or 50% to build the amount you need.",
+    "Find each amount in story order. Label your units and check whether the whole changes.",
+  ][n - 1];
+  return `<div class="solve-guide" aria-label="Steps to solve"><h3>Follow these steps</h3><ol>
+    <li><strong>Read:</strong> ${esc(read)}</li>
+    <li><strong>Plan:</strong> ${esc(plan)}</li>
+    <li><strong>Try:</strong> ${p.type === "mc" ? "Work it out before choosing. Use the hint if you need a starting point." : "Start with Step 1 below. Check each step before moving on."}</li>
+  </ol></div>`;
+}
+
 function renderSection(n) {
   const k = n - 1;
   const list = SECTIONS[k];
@@ -2949,28 +2995,30 @@ function renderSection(n) {
         <span class="choice-letter">${letters[i]}</span><span>${esc(c)}</span>
       </button>`,
       )
-      .join("")}</div>`;
+      .join("")}</div><button type="button" class="btn" id="s${n}-hint">💡 Show a hint</button>`;
   } else {
     body = `<div class="field-grid">${p.fields
       .map(
         (f, i) => `
-      <div class="field-item">
-        <label for="s${n}-f${i}">${esc(f.label)}</label>
+      <div class="field-item ${done ? "step-ok" : ""}" data-step="${i}">
+        <label for="s${n}-f${i}">Step ${i + 1}: ${esc(f.label)}</label>
         <div class="field-row">
           ${f.pre ? `<strong>${esc(f.pre)}</strong>` : ""}
-          <input type="text" id="s${n}-f${i}" class="num-input ${done ? "ok" : ""}" inputmode="${f.kind === "text" || f.kind === "frac" ? "text" : "decimal"}" autocomplete="off" value="${done ? esc(Array.isArray(f.ans) ? f.ans[0].toUpperCase() : fmt(f.ans)) : ""}" placeholder="${esc(f.ph || "?")}"${done ? " readonly" : ""}>
+          <input type="text" id="s${n}-f${i}" class="num-input ${done ? "ok" : ""}" inputmode="${f.kind === "text" || f.kind === "frac" ? "text" : "decimal"}" autocomplete="off" aria-describedby="s${n}-step-status-${i}" value="${done ? esc(Array.isArray(f.ans) ? f.ans[0].toUpperCase() : f.kind === "frac" ? f.ans : fmt(f.ans)) : ""}" placeholder="${esc(f.ph || "?")}"${done ? " readonly" : ""}>
           ${f.suf ? `<strong>${esc(f.suf)}</strong>` : ""}
+          ${!done ? `<button type="button" class="btn btn-sm step-check" data-check-step="${i}">Check step ${i + 1}</button>` : ""}
         </div>
+        <p class="step-status ${done ? "ok" : ""}" id="s${n}-step-status-${i}" role="status">${done ? "✓ Correct" : ""}</p>
       </div>`,
       )
       .join("")}</div>
       <div class="btn-row">
-        <button type="button" class="btn btn-primary" id="s${n}-check">Check Answer</button>
+        <button type="button" class="btn btn-primary" id="s${n}-check">Check all steps</button>
         <button type="button" class="btn" id="s${n}-hint">💡 Hint</button>
       </div>`;
   }
 
-  stage.innerHTML = `${head(p, state.idx[k] + 1, list.length)}${body}<div id="s${n}-fb" class="feedback-box ${done ? "show ok" : ""}" role="status">${done ? esc(bi(p.explain, p.explainEs)) : ""}</div>`;
+  stage.innerHTML = `${head(p, state.idx[k] + 1, list.length)}${guideFor(n, p)}${body}<div id="s${n}-fb" class="feedback-box ${done ? "show ok" : ""}" role="status">${done ? esc(bi(p.explain, p.explainEs)) : ""}</div>`;
   const fb = $(`s${n}-fb`);
   if (done) appendNext(fb, n, rerender);
 
@@ -2981,6 +3029,10 @@ function renderSection(n) {
     announce("Correct!");
   };
   const hintText = () => bi(p.hint, p.hintEs);
+  $(`s${n}-hint`).addEventListener("click", () => {
+    fb.className = "feedback-box show warn";
+    fb.textContent = `💡 Hint: ${hintText()}`;
+  });
 
   if (p.type === "mc") {
     stage.querySelectorAll("[data-mc]").forEach((btn) => {
@@ -3004,6 +3056,40 @@ function renderSection(n) {
   }
 
   const inputs = Array.from(stage.querySelectorAll("input.num-input"));
+  const showStepStatus = (i, ok) => {
+    const status = $(`s${n}-step-status-${i}`);
+    status.textContent = ok ? "✓ Correct. Move to the next step." : "Try this step again. Use the hint if you need help.";
+    status.className = `step-status ${ok ? "ok" : "err"}`;
+    inputs[i].classList.toggle("ok", ok);
+    inputs[i].classList.toggle("err", !ok);
+    inputs[i].setAttribute("aria-invalid", String(!ok));
+    inputs[i].closest(".field-item").classList.toggle("step-ok", ok);
+  };
+  stage.querySelectorAll("[data-check-step]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const i = Number(btn.dataset.checkStep);
+      const ok = fieldMatches(p.fields[i], inputs[i].value.trim());
+      showStepStatus(i, ok);
+      if (ok && inputs.every((input, j) => fieldMatches(p.fields[j], input.value.trim()))) {
+        solve();
+      } else if (ok && inputs[i + 1]) {
+        inputs[i + 1].focus();
+      } else if (!ok) {
+        const cnt = (misses[p.id] = (misses[p.id] || 0) + 1);
+        const trap = (p.traps || []).find((t) => t.i === i && fieldMatches({ kind: p.fields[i].kind, ans: t.v }, inputs[i].value.trim()));
+        fb.className = "feedback-box show warn";
+        fb.textContent = trap ? trap.msg : `Step ${i + 1} needs another try. ${cnt >= 2 ? `Hint: ${hintText()}` : i === 0 ? "Start with the Read and Plan steps above." : "Use your earlier correct steps."}`;
+        if (cnt >= 3) {
+          const worked = document.createElement("button");
+          worked.type = "button";
+          worked.className = "btn btn-sm";
+          worked.textContent = "Show worked solution";
+          worked.addEventListener("click", () => showWorked(fb, p));
+          fb.appendChild(worked);
+        }
+      }
+    });
+  });
   const check = () => {
     if (state.solved[k][p.id]) return;
     const vals = inputs.map((inp) => inp.value.trim());
@@ -3013,10 +3099,7 @@ function renderSection(n) {
       return;
     }
     const oks = p.fields.map((f, i) => fieldMatches(f, vals[i]));
-    inputs.forEach((inp, i) => {
-      inp.classList.toggle("ok", oks[i]);
-      inp.classList.toggle("err", !oks[i]);
-    });
+    inputs.forEach((inp, i) => showStepStatus(i, oks[i]));
     if (oks.every(Boolean)) {
       solve();
       return;
@@ -3043,10 +3126,12 @@ function renderSection(n) {
     }
   };
   $(`s${n}-check`).addEventListener("click", check);
-  $(`s${n}-hint`).addEventListener("click", () => {
-    fb.className = "feedback-box show warn";
-    fb.textContent = `💡 Hint: ${hintText()}`;
-  });
+  inputs.forEach((inp) =>
+    inp.addEventListener("input", () => {
+      inp.classList.remove("err");
+      inp.removeAttribute("aria-invalid");
+    }),
+  );
   inputs.forEach((inp) =>
     inp.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && !e.isComposing) {
