@@ -2946,6 +2946,57 @@ function showWorked(fb, p) {
   fb.textContent = `Worked solution: ${bi(p.explain.replace(/^✓\s*/, ""), p.explainEs && p.explainEs.replace(/^✓\s*/, ""))}`;
 }
 
+const CHALLENGE_GUIDES = {
+  s1_8: {
+    read: ["The percent sign means ‘out of 100.’ Keep 0.5% separate from the decimal 0.5.", "El signo de porcentaje significa ‘de cada 100’. No confundas 0.5% con el decimal 0.5."],
+    plan: ["Divide 0.5 by 100 to write the percent as a decimal. Then match that value to an equivalent fraction.", "Divide 0.5 entre 100 para escribir el porcentaje como decimal. Luego busca una fracción equivalente."],
+    solve: ["Move the decimal point two places left for the decimal form. For the fraction form, write 0.5/100 and simplify.", "Mueve el punto decimal dos lugares a la izquierda. Para la fracción, escribe 0.5/100 y simplifica."],
+    check: ["The decimal and fraction must name the same amount. Both should be much less than 1 whole.", "El decimal y la fracción deben representar la misma cantidad. Ambos deben ser mucho menores que 1 entero."],
+  },
+  s1_2: {
+    read: ["The full grid has 100 equal squares. The shaded piece is half of one square.", "La cuadrícula completa tiene 100 cuadrados iguales. La parte sombreada es la mitad de un cuadrado."],
+    plan: ["Use one square as 1/100 of the grid. Find half of that amount, then write it as a percent and a simplified fraction.", "Un cuadrado representa 1/100 de la cuadrícula. Halla la mitad, y exprésala como porcentaje y fracción simplificada."],
+    solve: ["Show the half-square as a part of the 100-square grid. For the fraction, remove the decimal from the numerator by making an equivalent fraction.", "Representa medio cuadrado como parte de la cuadrícula de 100. Para la fracción, convierte el numerador decimal en una fracción equivalente."],
+    check: ["The shaded amount is less than one full grid square, so its percent must be less than 1%.", "La parte sombreada es menor que un cuadrado completo, así que su porcentaje debe ser menor que 1%."],
+  },
+  s2_7: {
+    read: ["The bakery made 45 loaves toward a goal of 36. The goal is the 100% reference amount.", "La panadería hizo 45 panes para una meta de 36. La meta es la cantidad de referencia del 100%."],
+    plan: ["Write loaves made over the goal. Scale both numbers by the same factor until the goal is 100.", "Escribe los panes hechos sobre la meta. Multiplica ambos números por el mismo factor hasta que la meta sea 100."],
+    solve: ["First compare the two amounts: the loaves made exceed the goal. Your percent should therefore be greater than 100%.", "Compara las cantidades: los panes hechos superan la meta. Por eso, el porcentaje debe ser mayor que 100%."],
+    check: ["Check that the percent is based on the 36-loaf goal and that it is above 100%.", "Comprueba que el porcentaje se basa en la meta de 36 panes y que sea mayor que 100%."],
+  },
+  s2_8: {
+    read: ["There are 3 cracked phones among 200 tested. The 200 phones are the whole group.", "Hay 3 teléfonos rotos entre 200 revisados. Los 200 teléfonos son el grupo completo."],
+    plan: ["Write 3/200. To make the denominator 100, divide 200 by 2 and apply the same change to 3.", "Escribe 3/200. Para convertir el denominador en 100, divide 200 entre 2 y aplica el mismo cambio al 3."],
+    solve: ["Because the part is very small compared with 200, expect a percent far below 1%. Keep the units as phones while you scale.", "Como la parte es muy pequeña comparada con 200, espera un porcentaje mucho menor que 1%. Mantén ‘teléfonos’ como unidad al escalar."],
+    check: ["The percent should be far below 1%, since fewer than 1 in 100 phones is cracked.", "El porcentaje debe ser mucho menor que 1%, porque hay menos de 1 teléfono roto por cada 100."],
+  },
+  s3_10: {
+    read: ["The trip cost $2.40 for 6% of the total. So $2.40 is a part, not the 100% whole.", "El viaje costó $2.40 por el 6% del total. Entonces, $2.40 es una parte, no el entero del 100%."],
+    plan: ["Find the cost of 1% by dividing the $2.40 part into six equal percent blocks. Then scale that amount to 100%.", "Halla el costo del 1% dividiendo la parte de $2.40 en seis bloques iguales. Luego escala esa cantidad al 100%."],
+    solve: ["Use dollars in both steps: first dollars per 1%, then dollars for 100%.", "Usa dólares en ambos pasos: primero dólares por 1%, luego dólares por 100%."],
+    check: ["The total must be greater than $2.40 because $2.40 represents only 6% of it.", "El total debe ser mayor que $2.40 porque esa cantidad representa solo el 6%."],
+  },
+  s3_5: {
+    read: ["The given amount, 42, represents 150% of an unknown whole. The whole is 100%.", "La cantidad dada, 42, representa el 150% de un entero desconocido. El entero es el 100%."],
+    plan: ["Break 150% into equal 50% groups. Use the given 42 to find one group, then combine the groups that make 100%.", "Separa el 150% en grupos iguales de 50%. Usa 42 para hallar un grupo y luego combina los grupos que forman el 100%."],
+    solve: ["There are three 50% groups in 150%, but only two 50% groups in the whole.", "El 150% contiene tres grupos de 50%, pero el entero contiene solo dos."],
+    check: ["The unknown whole must be smaller than 42. Check that 150% of your whole returns 42.", "El entero desconocido debe ser menor que 42. Comprueba que el 150% de tu entero sea 42."],
+  },
+  s4_7: {
+    read: ["Ben starts with 12 out of 40. He changes the ratio by adding 60, then claims the new ratio is equivalent.", "Ben empieza con 12 de 40. Cambia la razón al sumar 60 y afirma que la nueva razón es equivalente."],
+    plan: ["Compare 12/40 with 72/100. Equivalent ratios scale both terms by the same multiplier; adding the same amount is a different operation.", "Compara 12/40 con 72/100. Las razones equivalentes multiplican ambos términos por el mismo factor; sumar la misma cantidad es otra operación."],
+    solve: ["Check what multiplier changes 40 to 100. Apply that same multiplier to 12 and compare the result with 72.", "Halla el factor que convierte 40 en 100. Aplica ese mismo factor a 12 y compara el resultado con 72."],
+    check: ["Simplify both ratios or convert both to a denominator of 100. Decide whether Ben preserved the original ratio.", "Simplifica ambas razones o conviértelas a denominador 100. Decide si Ben conservó la razón original."],
+  },
+  s4_8: {
+    read: ["The shirt starts at $50. The first 20% discount is based on $50; the second is based on the new, lower price.", "La camisa cuesta $50 al principio. El primer descuento del 20% se basa en $50; el segundo, en el nuevo precio más bajo."],
+    plan: ["Track the price in order: apply the first discount, then find 20% of that sale price. Do not apply both discounts to $50.", "Sigue el precio en orden: aplica el primer descuento y luego halla el 20% de ese precio. No apliques ambos descuentos a $50."],
+    solve: ["Record each price after a discount. Then compare the total dollars saved with 40% of the original $50.", "Anota el precio después de cada descuento. Luego compara el ahorro total con el 40% de los $50 originales."],
+    check: ["The second discount is smaller in dollars because it is taken from a lower price. Test whether the final savings equal 40% of $50.", "El segundo descuento es menor en dólares porque se aplica a un precio más bajo. Comprueba si el ahorro total equivale al 40% de $50."],
+  },
+};
+
 function guideFor(n, p) {
   const read = p.type === "mc" && n === 1
     ? "Notice the number forms and the order or claim the question asks you to check."
@@ -2989,6 +3040,15 @@ function guideFor(n, p) {
     </ol></div>`;
   }
   const challenge = level === "Challenge";
+  const specificGuide = challenge && CHALLENGE_GUIDES[p.id];
+  if (specificGuide) {
+    return `<div class="solve-guide" aria-label="Steps to solve"><h3>Break the challenge into steps</h3><ol>
+      <li><strong>Read:</strong> ${esc(bi(...specificGuide.read))}</li>
+      <li><strong>Plan:</strong> ${esc(bi(...specificGuide.plan))}</li>
+      <li><strong>Solve in parts:</strong> ${esc(bi(...specificGuide.solve))}</li>
+      <li><strong>Check:</strong> ${esc(bi(...specificGuide.check))}</li>
+    </ol></div>`;
+  }
   const solveText = p.type === "mc"
     ? "Test each choice against your work. Cross out any claim that changes a ratio incorrectly or uses the wrong whole."
     : challenge
