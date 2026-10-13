@@ -331,6 +331,10 @@ window.LESSON_PROJECTS = {
       "href": "/math/unit-4/percent-practice-studio/index.html"
     },
     {
+      "text": "🔥 Version 2: Challenging",
+      "href": "/math/unit-4/percent-practice-studio-challenging/index.html"
+    },
+    {
       "text": "🎯 Percent Shadow-Caster",
       "href": "/math/unit-4/percent-shadow-caster/index.html"
     },
