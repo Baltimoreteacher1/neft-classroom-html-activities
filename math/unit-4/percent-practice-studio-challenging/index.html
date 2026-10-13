@@ -1062,6 +1062,11 @@
     .field-item label { display: block; font-weight: 700; color: var(--navy); font-size: 0.9rem; margin-bottom: 8px; }
     .field-row { display: flex; align-items: center; gap: 8px; }
     .field-row strong { color: var(--navy); }
+    .level-pill { display: inline-block; margin-left: 6px; padding: 1px 9px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.03em; text-transform: none; vertical-align: middle; }
+    .level-pill.lvl-Warm-Up { background: var(--teal-tint); color: var(--teal); }
+    .level-pill.lvl-Core { background: var(--navy-tint); color: var(--navy); }
+    .level-pill.lvl-Stretch { background: #FEF3C7; color: #92400E; }
+    .level-pill.lvl-Challenge { background: #B45309; color: #fff; }
     .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
   </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -1088,7 +1093,7 @@
       <div class="header-actions">
         <div class="score-pill" aria-live="polite">
           <span
-            >⭐ Progress: <span id="header-progress-count">0 / 46</span></span
+            >⭐ Progress: <span id="header-progress-count">0 / 57</span></span
           >
         </div>
         <button
@@ -1127,7 +1132,7 @@
         <span class="tab-badge" id="badge-1">1</span>
         <span class="tab-text">
           <span class="tab-name">Percent Sense</span>
-          <span class="tab-desc">Beyond 100% &amp; Below 1% (8)</span>
+          <span class="tab-desc">Grids to Beyond 100% (11)</span>
         </span>
       </button>
       <button
@@ -1143,7 +1148,7 @@
         <span class="tab-badge" id="badge-2">2</span>
         <span class="tab-text">
           <span class="tab-name">Simplify &amp; Scale</span>
-          <span class="tab-desc">Tough Denominators (10)</span>
+          <span class="tab-desc">Friendly to Tough (13)</span>
         </span>
       </button>
       <button
@@ -1159,7 +1164,7 @@
         <span class="tab-badge" id="badge-3">3</span>
         <span class="tab-text">
           <span class="tab-name">Part · Whole · Percent</span>
-          <span class="tab-desc">Find Any Missing Piece (10)</span>
+          <span class="tab-desc">Any Missing Piece (13)</span>
         </span>
       </button>
       <button
@@ -1175,7 +1180,7 @@
         <span class="tab-badge" id="badge-4">4</span>
         <span class="tab-text">
           <span class="tab-name">Multi-Step Stories</span>
-          <span class="tab-desc">Compare &amp; Catch Errors (8)</span>
+          <span class="tab-desc">Stories &amp; Errors (10)</span>
         </span>
       </button>
       <button
@@ -1228,13 +1233,16 @@
         <div>
           <h2>1. Percent Sense: Beyond 100% and Below 1%</h2>
           <p>
-            Percents are not stuck between 0 and 100. Work with several wholes,
-            half squares, and fractions that do not land neatly on a friendly
-            number.
+            Start with the 100-grid, then stretch to percents that are not stuck
+            between 0 and 100: several wholes, half squares, and fractions that
+            do not land neatly on a friendly number. Problems climb from
+            Warm-Up to Core, Stretch, and Challenge.
           </p>
           <p class="es-text">
-            Los porcentajes no se quedan entre 0 y 100. Trabaja con varios
-            enteros, medios cuadrados y fracciones que no son fáciles.
+            Empieza con la cuadrícula de 100 y avanza a porcentajes que no se
+            quedan entre 0 y 100: varios enteros, medios cuadrados y fracciones
+            difíciles. Los problemas suben de Calentamiento a Núcleo, Reto y
+            Desafío.
           </p>
         </div>
         <div class="key-rule-pill">
@@ -1271,8 +1279,8 @@
         <div>
           <h2>2. Simplify First, Then Scale to 100</h2>
           <p>
-            These wholes do not jump to 100 in one easy step.
-            <strong>Divide</strong> both numbers by their greatest common
+            Start with wholes that scale to 100 in one step, then move to wholes
+            that need simplifying first. <strong>Divide</strong> both numbers by their greatest common
             factor, then <strong>multiply</strong> both by whatever makes the
             whole 100. Watch for decimals and for parts bigger than the whole.
           </p>
@@ -1315,7 +1323,8 @@
         <div>
           <h2>3. Find the Part, the Whole, or the Percent</h2>
           <p>
-            Any one of the three can be the mystery. Build from a benchmark
+            Any one of the three can be the mystery. Start with benchmark
+            percents, then build from a benchmark
             (10%, 5%, 1%, or 50%) on the double number line, then scale up or
             down.
           </p>
@@ -1534,12 +1543,12 @@ function scaleProblem(n, part, whole, title, stem, stemEs) {
   };
 }
 
-const SECTIONS = [
+const BASE_SECTIONS = [
   /* ---------------- 1. PERCENT SENSE ---------------- */
   [
     {
       id: "s1_1",
-      title: "Problem 1 of 8 · More Than One Whole",
+      title: "More Than One Whole",
       stem: "Each 100-grid is 100%. Two grids are completely shaded and a third grid has 35 squares shaded. What percent is shaded in all?",
       stemEs:
         "Cada cuadrícula de 100 es 100%. Dos cuadrículas están sombreadas por completo y una tercera tiene 35 cuadrados sombreados. ¿Qué porcentaje está sombreado en total?",
@@ -1562,7 +1571,7 @@ const SECTIONS = [
     },
     {
       id: "s1_2",
-      title: "Problem 2 of 8 · Less Than One Square",
+      title: "Less Than One Square",
       stem: "One small square of a 100-grid is split in half, and only one half is shaded. What percent of the whole grid is shaded? Then write that amount as a fraction out of 100, in lowest terms.",
       stemEs:
         "Un cuadrado de una cuadrícula de 100 se divide por la mitad y solo una mitad está sombreada. ¿Qué porcentaje de la cuadrícula está sombreado? Luego escribe esa cantidad como fracción de 100 en su mínima expresión.",
@@ -1586,7 +1595,7 @@ const SECTIONS = [
     },
     {
       id: "s1_3",
-      title: "Problem 3 of 8 · An Eighth Is Not Friendly",
+      title: "An Eighth Is Not Friendly",
       stem: "Write 3/8 as a decimal and as a percent. Tip: find 1/8 first.",
       stemEs:
         "Escribe 3/8 como decimal y como porcentaje. Pista: halla 1/8 primero.",
@@ -1609,7 +1618,7 @@ const SECTIONS = [
     },
     {
       id: "s1_4",
-      title: "Problem 4 of 8 · Decimal to Percent, Both Directions",
+      title: "Decimal to Percent, Both Directions",
       stem: "Write each decimal as a percent.",
       stemEs: "Escribe cada decimal como porcentaje.",
       fields: [
@@ -1631,7 +1640,7 @@ const SECTIONS = [
     },
     {
       id: "s1_5",
-      title: "Problem 5 of 8 · Put Them in Order",
+      title: "Put Them in Order",
       stem: "Which list is in order from LEAST to GREATEST?",
       stemEs: "¿Cuál lista está en orden de MENOR a MAYOR?",
       type: "mc",
@@ -1655,7 +1664,7 @@ const SECTIONS = [
     },
     {
       id: "s1_6",
-      title: "Problem 6 of 8 · Fractions With Odd Denominators",
+      title: "Fractions With Odd Denominators",
       stem: "Write each fraction as a percent by making the denominator 100.",
       stemEs:
         "Escribe cada fracción como porcentaje haciendo que el denominador sea 100.",
@@ -1671,7 +1680,7 @@ const SECTIONS = [
     },
     {
       id: "s1_7",
-      title: "Problem 7 of 8 · Bigger Than the Original",
+      title: "Bigger Than the Original",
       stem: "A plant grew until it was 1.8 times as tall as it was when planted. What percent of its original height is the plant now? How many percentage points is that above 100%?",
       stemEs:
         "Una planta creció hasta medir 1.8 veces su altura original. ¿Qué porcentaje de su altura original mide ahora? ¿Cuántos puntos porcentuales pasa de 100%?",
@@ -1689,7 +1698,7 @@ const SECTIONS = [
     },
     {
       id: "s1_8",
-      title: "Problem 8 of 8 · Which One Is True?",
+      title: "Which One Is True?",
       stem: "Which statement about 0.5% is true?",
       stemEs: "¿Cuál afirmación sobre 0.5% es verdadera?",
       type: "mc",
@@ -1719,7 +1728,7 @@ const SECTIONS = [
       1,
       18,
       24,
-      "Problem 1 of 10 · Quiz Score",
+      "Quiz Score",
       "Imani got 18 of 24 questions right. What percent is that?",
       "Imani acertó 18 de 24 preguntas. ¿Qué porcentaje es?",
     ),
@@ -1727,7 +1736,7 @@ const SECTIONS = [
       2,
       35,
       56,
-      "Problem 2 of 10 · Garden Plots",
+      "Garden Plots",
       "In a community garden, 35 of the 56 plots grow vegetables. What percent grow vegetables?",
       "En un huerto comunitario, 35 de las 56 parcelas cultivan verduras. ¿Qué porcentaje es?",
     ),
@@ -1735,7 +1744,7 @@ const SECTIONS = [
       3,
       42,
       70,
-      "Problem 3 of 10 · Bike Racks",
+      "Bike Racks",
       "At a school, 42 of the 70 bike rack spots are full. What percent are full?",
       "En una escuela, 42 de los 70 lugares del estacionamiento de bicicletas están ocupados. ¿Qué porcentaje está ocupado?",
     ),
@@ -1743,7 +1752,7 @@ const SECTIONS = [
       4,
       33,
       75,
-      "Problem 4 of 10 · Art Show",
+      "Art Show",
       "Of 75 art pieces in a show, 33 are paintings. What percent are paintings?",
       "De 75 obras en una exposición, 33 son pinturas. ¿Qué porcentaje son pinturas?",
     ),
@@ -1751,7 +1760,7 @@ const SECTIONS = [
       5,
       9,
       40,
-      "Problem 5 of 10 · No Common Factor",
+      "No Common Factor",
       "A team won 9 of its 40 games. What percent did it win? (9 and 40 share no factor, so scale directly.)",
       "Un equipo ganó 9 de sus 40 juegos. ¿Qué porcentaje ganó? (9 y 40 no comparten factor, así que escala directamente.)",
     ),
@@ -1759,7 +1768,7 @@ const SECTIONS = [
       6,
       84,
       200,
-      "Problem 6 of 10 · Scaling Down",
+      "Scaling Down",
       "A survey asked 200 people about their favorite snack, and 84 chose fruit. What percent chose fruit?",
       "Una encuesta preguntó a 200 personas por su merienda favorita y 84 eligieron fruta. ¿Qué porcentaje eligió fruta?",
     ),
@@ -1767,7 +1776,7 @@ const SECTIONS = [
       7,
       45,
       36,
-      "Problem 7 of 10 · Part Bigger Than Whole",
+      "Part Bigger Than Whole",
       "A bakery’s goal was 36 loaves. It baked 45 loaves. The baked loaves are what percent of the goal?",
       "La meta de una panadería era 36 panes. Horneó 45 panes. ¿Qué porcentaje de la meta representan?",
     ),
@@ -1775,7 +1784,7 @@ const SECTIONS = [
       8,
       3,
       200,
-      "Problem 8 of 10 · A Tiny Percent",
+      "A Tiny Percent",
       "Only 3 of 200 phones tested had a cracked screen. What percent had a cracked screen?",
       "Solo 3 de 200 teléfonos probados tenían la pantalla rota. ¿Qué porcentaje la tenía rota?",
     ),
@@ -1783,7 +1792,7 @@ const SECTIONS = [
       9,
       52,
       80,
-      "Problem 9 of 10 · Field Trip",
+      "Field Trip",
       "On a field trip, 52 of the 80 students chose the museum. What percent chose the museum?",
       "En una excursión, 52 de los 80 estudiantes eligieron el museo. ¿Qué porcentaje eligió el museo?",
     ),
@@ -1791,7 +1800,7 @@ const SECTIONS = [
       10,
       99,
       150,
-      "Problem 10 of 10 · Reading Log",
+      "Reading Log",
       "Zahra read 99 of the 150 pages in her book. What percent of the book has she read?",
       "Zahra leyó 99 de las 150 páginas de su libro. ¿Qué porcentaje del libro ha leído?",
     ),
@@ -1801,7 +1810,7 @@ const SECTIONS = [
   [
     {
       id: "s3_1",
-      title: "Problem 1 of 10 · Find the Part",
+      title: "Find the Part",
       stem: "Find 35% of 80. Build it from benchmarks: 10%, then 5%, then 35%.",
       stemEs:
         "Halla el 35% de 80. Constrúyelo con puntos de referencia: 10%, luego 5% y luego 35%.",
@@ -1823,7 +1832,7 @@ const SECTIONS = [
     },
     {
       id: "s3_2",
-      title: "Problem 2 of 10 · Over 100%",
+      title: "Over 100%",
       stem: "Last month a streamer had 45 subscribers. This month she has 120% of that many. How many subscribers does she have now?",
       stemEs:
         "El mes pasado una streamer tenía 45 suscriptores. Este mes tiene el 120% de esa cantidad. ¿Cuántos suscriptores tiene ahora?",
@@ -1845,7 +1854,7 @@ const SECTIONS = [
     },
     {
       id: "s3_3",
-      title: "Problem 3 of 10 · Find the Whole",
+      title: "Find the Whole",
       stem: "24 is 30% of a number. What is the number?",
       stemEs: "24 es el 30% de un número. ¿Cuál es el número?",
       visual: () =>
@@ -1875,7 +1884,7 @@ const SECTIONS = [
     },
     {
       id: "s3_4",
-      title: "Problem 4 of 10 · Download Progress",
+      title: "Download Progress",
       stem: "A game download is 65% complete, and 52 MB have downloaded so far. How big is the whole file?",
       stemEs:
         "La descarga de un juego va al 65% y se han descargado 52 MB. ¿Cuánto pesa el archivo completo?",
@@ -1897,7 +1906,7 @@ const SECTIONS = [
     },
     {
       id: "s3_5",
-      title: "Problem 5 of 10 · Whole From Over 100%",
+      title: "Whole From Over 100%",
       stem: "42 is 150% of a number. What is the number?",
       stemEs: "42 es el 150% de un número. ¿Cuál es el número?",
       visual: () =>
@@ -1927,7 +1936,7 @@ const SECTIONS = [
     },
     {
       id: "s3_6",
-      title: "Problem 6 of 10 · Find the Percent",
+      title: "Find the Percent",
       stem: "What percent of 250 is 40?",
       stemEs: "¿Qué porcentaje de 250 es 40?",
       visual: () =>
@@ -1953,7 +1962,7 @@ const SECTIONS = [
     },
     {
       id: "s3_7",
-      title: "Problem 7 of 10 · Percent Over 100%",
+      title: "Percent Over 100%",
       stem: "What percent of 20 is 35?",
       stemEs: "¿Qué porcentaje de 20 es 35?",
       visual: () =>
@@ -1983,7 +1992,7 @@ const SECTIONS = [
     },
     {
       id: "s3_8",
-      title: "Problem 8 of 10 · Sale Price",
+      title: "Sale Price",
       stem: "A jacket costs $64. It is on sale for 25% off. How many dollars is the discount, and what is the sale price?",
       stemEs:
         "Una chaqueta cuesta $64 y tiene un descuento del 25%. ¿Cuántos dólares es el descuento y cuál es el precio de oferta?",
@@ -2007,7 +2016,7 @@ const SECTIONS = [
     },
     {
       id: "s3_9",
-      title: "Problem 9 of 10 · Test Points",
+      title: "Test Points",
       stem: "Maya scored 85% on a test worth 40 points. How many points did she earn, and how many did she miss?",
       stemEs:
         "Maya obtuvo 85% en un examen de 40 puntos. ¿Cuántos puntos ganó y cuántos perdió?",
@@ -2032,7 +2041,7 @@ const SECTIONS = [
     },
     {
       id: "s3_10",
-      title: "Problem 10 of 10 · Whole From a Small Percent",
+      title: "Whole From a Small Percent",
       stem: "$2.40 is 6% of the total cost of a trip. What is the total cost?",
       stemEs:
         "$2.40 es el 6% del costo total de un viaje. ¿Cuál es el costo total?",
@@ -2058,7 +2067,7 @@ const SECTIONS = [
   [
     {
       id: "s4_1",
-      title: "Problem 1 of 8 · Fair Comparison",
+      title: "Fair Comparison",
       stem: "Team A made 18 of 24 free throws. Team B made 21 of 30 free throws. Find each team’s percent. Which team shot a higher percent? (Type A or B.)",
       stemEs:
         "El equipo A encestó 18 de 24 tiros libres. El equipo B encestó 21 de 30. Halla el porcentaje de cada equipo. ¿Cuál tuvo mayor porcentaje? (Escribe A o B.)",
@@ -2090,7 +2099,7 @@ const SECTIONS = [
     },
     {
       id: "s4_2",
-      title: "Problem 2 of 8 · How Students Get to School",
+      title: "How Students Get to School",
       stem: "In a class of 32 students, 25% walk, 37.5% bike, and the rest ride the bus. How many students walk? How many bike? How many ride the bus?",
       stemEs:
         "En una clase de 32 estudiantes, 25% camina, 37.5% va en bicicleta y el resto va en autobús. ¿Cuántos caminan? ¿Cuántos van en bicicleta? ¿Cuántos van en autobús?",
@@ -2109,7 +2118,7 @@ const SECTIONS = [
     },
     {
       id: "s4_3",
-      title: "Problem 3 of 8 · Discount, Then Coupon",
+      title: "Discount, Then Coupon",
       stem: "Sneakers cost $80. They are 30% off. Then you use a $5 coupon on the sale price. How much do you pay?",
       stemEs:
         "Unos tenis cuestan $80 y tienen 30% de descuento. Luego usas un cupón de $5 sobre el precio de oferta. ¿Cuánto pagas?",
@@ -2127,7 +2136,7 @@ const SECTIONS = [
     },
     {
       id: "s4_4",
-      title: "Problem 4 of 8 · Tax and Tip",
+      title: "Tax and Tip",
       stem: "A meal costs $45 before tax. Tax is 8% of $45, and the tip is 20% of $45. What is the tax, the tip, and the total bill?",
       stemEs:
         "Una comida cuesta $45 antes de impuestos. El impuesto es 8% de $45 y la propina es 20% de $45. ¿Cuánto es el impuesto, la propina y la cuenta total?",
@@ -2146,7 +2155,7 @@ const SECTIONS = [
     },
     {
       id: "s4_5",
-      title: "Problem 5 of 8 · Paint Mix",
+      title: "Paint Mix",
       stem: "A paint mix is 40% blue paint. A painter uses 6 liters of blue. How many liters of paint are in the whole mix, and how many liters are NOT blue?",
       stemEs:
         "Una mezcla de pintura es 40% pintura azul. Un pintor usa 6 litros de azul. ¿Cuántos litros tiene la mezcla completa y cuántos NO son azules?",
@@ -2171,7 +2180,7 @@ const SECTIONS = [
     },
     {
       id: "s4_6",
-      title: "Problem 6 of 8 · Which Group Is the Whole?",
+      title: "Which Group Is the Whole?",
       stem: "The chorus has 40 members. The band has 50 members. The band is what percent of the chorus size? The chorus is what percent of the band size?",
       stemEs:
         "El coro tiene 40 miembros. La banda tiene 50 miembros. ¿Qué porcentaje del tamaño del coro es la banda? ¿Qué porcentaje del tamaño de la banda es el coro?",
@@ -2189,7 +2198,7 @@ const SECTIONS = [
     },
     {
       id: "s4_7",
-      title: "Problem 7 of 8 · Error Detective",
+      title: "Error Detective",
       stem: "Ben wants 12 out of 40 as a percent. He adds 60 to both numbers: (12 + 60) / (40 + 60) = 72/100, so he says 72%. What is wrong with Ben’s method?",
       stemEs:
         "Ben quiere 12 de 40 como porcentaje. Suma 60 a ambos números: (12 + 60) / (40 + 60) = 72/100, y dice 72%. ¿Qué tiene de malo el método de Ben?",
@@ -2215,7 +2224,7 @@ const SECTIONS = [
     },
     {
       id: "s4_8",
-      title: "Problem 8 of 8 · Error Detective",
+      title: "Error Detective",
       stem: "A $50 shirt is marked 20% off. The store then takes another 20% off the new price. Dana says, “20% + 20% = 40%, so the shirt is 40% off.” Is she right?",
       stemEs:
         "Una camisa de $50 tiene 20% de descuento. Luego la tienda quita otro 20% al nuevo precio. Dana dice: “20% + 20% = 40%, entonces la camisa tiene 40% de descuento.” ¿Tiene razón?",
@@ -2405,14 +2414,170 @@ const QUIZ_QUESTIONS = [
   },
 ];
 
+
+/* ----------------------------------------------------------------------
+   DIFFICULTY RAMP: each section opens at Version 1 level (Warm-Up) and climbs
+   Core -> Stretch -> Challenge. RAMP_EASY holds the on-ramp problems;
+   RAMP_ORDER is the single source of truth for order and level.
+   ---------------------------------------------------------------------- */
+const RAMP_EASY = [
+  [
+    {
+      id: "s1_e1",
+      title: "Count the Shaded Squares",
+      stem: "40 out of the 100 squares on the grid are shaded. What percent of the grid is shaded?",
+      stemEs: "40 de los 100 cuadrados de la cuadrícula están sombreados. ¿Qué porcentaje de la cuadrícula está sombreado?",
+      visual: () => gridVisual(40),
+      fields: [{ label: "Percent shaded:", ans: 40, suf: "%" }],
+      hint: "Percent means out of 100. Each shaded square is 1%, so count the shaded squares.",
+      hintEs: "Porcentaje significa de cada 100. Cada cuadrado sombreado es 1%, así que cuenta los cuadrados sombreados.",
+      explain: "✓ 40 out of 100 squares is 40%.",
+      explainEs: "✓ 40 de 100 cuadrados es 40%.",
+    },
+    {
+      id: "s1_e2",
+      title: "Three Forms of One Amount",
+      stem: "53 out of 100 squares are shaded. Write 53 out of 100 as a fraction, a decimal, and a percent.",
+      stemEs: "53 de 100 cuadrados están sombreados. Escribe 53 de 100 como fracción, decimal y porcentaje.",
+      visual: () => gridVisual(53),
+      fields: [
+        { label: "Fraction:", ans: "53/100", kind: "frac", ph: "a/b" },
+        { label: "Decimal:", ans: 0.53, ph: "0.__" },
+        { label: "Percent:", ans: 53, suf: "%" },
+      ],
+      hint: "Put the shaded part over the whole grid: 53/100. Hundredths are written 0.53, and out of 100 is a percent.",
+      hintEs: "Pon la parte sombreada sobre la cuadrícula entera: 53/100. Las centésimas se escriben 0.53, y de cada 100 es un porcentaje.",
+      explain: "✓ 53 out of 100 = 53/100 = 0.53 = 53%.",
+      explainEs: "✓ 53 de 100 = 53/100 = 0.53 = 53%.",
+    },
+    {
+      id: "s1_e3",
+      title: "Shaded and Not Shaded",
+      stem: "Amaya shades 62 squares of a 100-square grid. What percent is shaded? What percent is NOT shaded?",
+      stemEs: "Amaya sombrea 62 cuadrados de una cuadrícula de 100. ¿Qué porcentaje está sombreado? ¿Qué porcentaje NO está sombreado?",
+      visual: () => gridVisual(62),
+      fields: [
+        { label: "Percent shaded:", ans: 62, suf: "%" },
+        { label: "Percent NOT shaded:", ans: 38, suf: "%" },
+      ],
+      hint: "Shaded plus not shaded makes the whole grid, 100%. So 100 − 62 is the unshaded part.",
+      hintEs: "Sombreado más no sombreado forma toda la cuadrícula, 100%. Entonces 100 − 62 es la parte sin sombrear.",
+      explain: "✓ 62% is shaded, and 100 − 62 = 38% is not shaded.",
+      explainEs: "✓ 62% está sombreado y 100 − 62 = 38% no está sombreado.",
+    },
+  ],
+  [
+    scaleProblem("e1", 3, 10, "Bonus Level", "3 out of every 10 arcade players reach the bonus level. What percent reach it?", "3 de cada 10 jugadores alcanzan el nivel de bonificación. ¿Qué porcentaje lo alcanza?"),
+    scaleProblem("e2", 21, 50, "Bus Riders", "In a survey of 50 commuters, 21 ride the bus. What percent ride the bus?", "En una encuesta de 50 pasajeros, 21 toman el autobús. ¿Qué porcentaje toma el autobús?"),
+    scaleProblem("e3", 11, 20, "Coupon Shoppers", "At a market, 11 out of every 20 shoppers used a coupon. What percent used a coupon?", "En un mercado, 11 de cada 20 compradores usaron un cupón. ¿Qué porcentaje usó un cupón?"),
+  ],
+  [
+    {
+      id: "s3_e1",
+      title: "Percent Bar With 4 Blocks",
+      stem: "A game has 20 points split into 4 equal blocks on a percent bar. You scored 15 points, which is 3 blocks. Find the percent for 1 block, then for 3 blocks.",
+      stemEs: "Un juego tiene 20 puntos divididos en 4 bloques iguales en una barra de porcentaje. Anotaste 15 puntos, que son 3 bloques. Halla el porcentaje de 1 bloque y luego de 3 bloques.",
+      visual: () => dnl([[0, "0", "0%"], [25, "5", "?"], [75, "15", "?"], [100, "20", "100%"]]),
+      fields: [
+        { label: "1 block is:", ans: 25, suf: "%" },
+        { label: "3 blocks are:", ans: 75, suf: "%" },
+      ],
+      hint: "4 equal blocks make 100%, so 1 block is 100% ÷ 4. Then multiply by 3.",
+      hintEs: "4 bloques iguales forman el 100%, así que 1 bloque es 100% ÷ 4. Luego multiplica por 3.",
+      explain: "✓ 100% ÷ 4 = 25% per block, so 3 blocks = 75%.",
+      explainEs: "✓ 100% ÷ 4 = 25% por bloque, así que 3 bloques = 75%.",
+    },
+    {
+      id: "s3_e2",
+      title: "Benchmark Percents",
+      stem: "What is 10% of 70? What is 30% of 70?",
+      stemEs: "¿Cuánto es el 10% de 70? ¿Cuánto es el 30% de 70?",
+      visual: () => dnl([[0, "0", "0%"], [10, "?", "10%"], [30, "?", "30%"], [100, "70", "100%"]]),
+      fields: [
+        { label: "10% of 70 =", ans: 7 },
+        { label: "30% of 70 =", ans: 21 },
+      ],
+      hint: "10% is one tenth: 70 ÷ 10. 30% is three of those tenths.",
+      hintEs: "10% es un décimo: 70 ÷ 10. 30% son tres de esos décimos.",
+      explain: "✓ 10% of 70 = 7, and 30% = 3 × 7 = 21.",
+      explainEs: "✓ 10% de 70 = 7 y 30% = 3 × 7 = 21.",
+    },
+    {
+      id: "s3_e3",
+      title: "Jump-Rope Goal",
+      stem: "Deshawn's goal was 50 jumps. He completed 35 jumps. Find 10% of 50, then find the percent of his goal he completed.",
+      stemEs: "La meta de Deshawn era 50 saltos. Completó 35 saltos. Halla el 10% de 50 y luego el porcentaje de su meta que completó.",
+      visual: () => dnl([[0, "0", "0%"], [70, "35", "?"], [100, "50", "100%"]]),
+      fields: [
+        { label: "10% of 50 =", ans: 5 },
+        { label: "Percent of goal completed:", ans: 70, suf: "%" },
+      ],
+      hint: "If 10% is 5 jumps, count how many 5s fit in 35.",
+      hintEs: "Si el 10% son 5 saltos, cuenta cuántos 5 caben en 35.",
+      explain: "✓ 10% = 5 jumps, and 35 = 7 × 5, so he completed 7 × 10% = 70%.",
+      explainEs: "✓ 10% = 5 saltos y 35 = 7 × 5, así que completó 7 × 10% = 70%.",
+    },
+  ],
+  [
+    {
+      id: "s4_e1",
+      title: "Reusable Bottles",
+      stem: "3 out of every 4 students brought a reusable water bottle. What percent of the students is that?",
+      stemEs: "3 de cada 4 estudiantes trajeron una botella reutilizable. ¿Qué porcentaje de los estudiantes es?",
+      fields: [{ label: "Percent:", ans: 75, suf: "%" }],
+      hint: "4 × 25 = 100, so multiply 3 by 25 as well.",
+      hintEs: "4 × 25 = 100, así que multiplica 3 por 25 también.",
+      explain: "✓ 3/4 = 75/100 = 75%.",
+      explainEs: "✓ 3/4 = 75/100 = 75%.",
+    },
+    {
+      id: "s4_e2",
+      title: "Ten Percent Off",
+      stem: "A shirt costs $40 and is 10% off. How many dollars is the discount, and what is the sale price?",
+      stemEs: "Una camisa cuesta $40 y tiene 10% de descuento. ¿Cuántos dólares es el descuento y cuál es el precio de oferta?",
+      visual: () => dnl([[0, "$0", "0%"], [10, "?", "10%"], [100, "$40", "100%"]]),
+      fields: [
+        { label: "Discount ($):", ans: 4, pre: "$" },
+        { label: "Sale price ($):", ans: 36, pre: "$" },
+      ],
+      hint: "10% is one tenth: $40 ÷ 10. Then subtract the discount from $40.",
+      hintEs: "10% es un décimo: $40 ÷ 10. Luego resta el descuento de $40.",
+      explain: "✓ 10% of $40 = $4 off, so the sale price is $40 − $4 = $36.",
+      explainEs: "✓ 10% de $40 = $4 de descuento, así que el precio de oferta es $40 − $4 = $36.",
+    },
+  ],
+];
+
+const W = "Warm-Up";
+const C = "Core";
+const S = "Stretch";
+const H = "Challenge";
+const RAMP_ORDER = [
+  [["s1_e1", W], ["s1_e2", W], ["s1_e3", W], ["s1_6", C], ["s1_1", C], ["s1_5", C], ["s1_3", S], ["s1_4", S], ["s1_7", S], ["s1_8", H], ["s1_2", H]],
+  [["s2_e1", W], ["s2_e2", W], ["s2_e3", W], ["s2_1", C], ["s2_3", C], ["s2_9", C], ["s2_4", C], ["s2_10", S], ["s2_6", S], ["s2_2", S], ["s2_5", S], ["s2_7", H], ["s2_8", H]],
+  [["s3_e1", W], ["s3_e2", W], ["s3_e3", W], ["s3_8", C], ["s3_9", C], ["s3_1", C], ["s3_6", C], ["s3_2", S], ["s3_3", S], ["s3_4", S], ["s3_7", S], ["s3_10", H], ["s3_5", H]],
+  [["s4_e1", W], ["s4_e2", W], ["s4_3", C], ["s4_1", C], ["s4_2", C], ["s4_5", S], ["s4_6", S], ["s4_4", S], ["s4_7", H], ["s4_8", H]],
+];
+const SECTIONS = RAMP_ORDER.map((order, i) => {
+  const pool = [...RAMP_EASY[i], ...BASE_SECTIONS[i]];
+  if (pool.length !== order.length) throw new Error(`ramp section ${i + 1}: ${pool.length} problems vs ${order.length} ordered`);
+  return order.map(([id, level]) => {
+    const found = pool.find((q) => q.id === id);
+    if (!found) throw new Error(`ramp: unknown problem ${id}`);
+    return { ...found, level };
+  });
+});
+const QUIZ_ORDER = ["q3", "q6", "q1", "q2", "q4", "q10", "q5", "q8", "q7", "q9"];
+QUIZ_QUESTIONS.sort((a, b) => QUIZ_ORDER.indexOf(a.id) - QUIZ_ORDER.indexOf(b.id));
+
 /* ----------------------------------------------------------------------
    ENGINE: state, save/resume, tabs, visuals, and the shared problem renderer.
    ---------------------------------------------------------------------- */
 const STORAGE_KEY = "neft_percent_challenging_v1";
-const TOTAL = 46;
 const SECTION_SIZES = SECTIONS.map((s) => s.length).concat([
   QUIZ_QUESTIONS.length,
 ]);
+const TOTAL = SECTION_SIZES.reduce((a, b) => a + b, 0);
 const NS = "http://www.w3.org/2000/svg";
 const $ = (id) => document.getElementById(id);
 const esc = (s) =>
@@ -2629,7 +2794,7 @@ function updateProgressHeader() {
   const total = c.reduce((a, b) => a + b, 0);
   $("header-progress-count").textContent = `${total} / ${TOTAL}`;
   $("s5-score-pill").textContent = `Score: ${c[4]} / 10`;
-  const checks = [c[0] === 8, c[1] === 10, c[2] === 10, c[3] === 8, c[4] >= 8];
+  const checks = [0, 1, 2, 3].map((i) => c[i] === SECTION_SIZES[i]).concat([c[4] >= 8]);
   checks.forEach((done, i) => {
     $(`tab-${i + 1}`).classList.toggle("tab-complete", done);
     $(`badge-${i + 1}`).textContent = done ? "✓" : String(i + 1);
@@ -2741,10 +2906,10 @@ function bi(en, es) {
   return state.showEs && es ? `${en} (${es})` : en;
 }
 
-function head(p) {
+function head(p, pos, len) {
   return `
     <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:8px;">
-      <span style="font-size:0.84rem; font-weight:800; text-transform:uppercase; color:var(--teal); letter-spacing:0.04em;">${esc(p.title)}</span>
+      <span style="font-size:0.84rem; font-weight:800; text-transform:uppercase; color:var(--teal); letter-spacing:0.04em;">Problem ${pos} of ${len} · ${esc(p.title)} <span class="level-pill lvl-${esc(p.level)}">${esc(p.level)}</span></span>
       <button type="button" class="speak-btn" data-speak="${esc(p.stem)}" data-speak-es="${esc(p.stemEs)}">🔊 Read</button>
     </div>
     <p style="font-size:1.12rem; font-weight:700; color:var(--navy); margin:0 0 6px 0;">${esc(p.stem)}</p>
@@ -2805,7 +2970,7 @@ function renderSection(n) {
       </div>`;
   }
 
-  stage.innerHTML = `${head(p)}${body}<div id="s${n}-fb" class="feedback-box ${done ? "show ok" : ""}" role="status">${done ? esc(bi(p.explain, p.explainEs)) : ""}</div>`;
+  stage.innerHTML = `${head(p, state.idx[k] + 1, list.length)}${body}<div id="s${n}-fb" class="feedback-box ${done ? "show ok" : ""}" role="status">${done ? esc(bi(p.explain, p.explainEs)) : ""}</div>`;
   const fb = $(`s${n}-fb`);
   if (done) appendNext(fb, n, rerender);
 
