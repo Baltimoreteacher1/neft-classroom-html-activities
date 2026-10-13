@@ -1067,6 +1067,8 @@
     .solve-guide ol { margin: 0; padding-left: 1.5rem; }
     .solve-guide li { padding: 3px 0; }
     .solve-guide strong { color: var(--navy); }
+    .solve-guide.brief { padding: 10px 14px; margin: 12px 0; }
+    .solve-guide.brief p { margin: 0; }
     .field-grid { grid-template-columns: 1fr; }
     .field-item { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; background: var(--surface-soft); }
     .field-item.step-ok { border-color: var(--green); background: var(--green-tint); }
@@ -2966,10 +2968,37 @@ function guideFor(n, p) {
     "Use a benchmark such as 10%, 5%, 1%, or 50% to build the amount you need.",
     "Find each amount in story order. Label your units and check whether the whole changes.",
   ][n - 1];
-  return `<div class="solve-guide" aria-label="Steps to solve"><h3>Follow these steps</h3><ol>
+  const level = p.level || "Core";
+  if (level === "Warm-Up") {
+    const cue = n === 1
+      ? "Use the 100-grid. One full grid is 100%."
+      : n === 2
+        ? "Name the part and the whole. The whole is 100%."
+        : n === 3
+          ? "Use the model or benchmark in the question. Work one answer at a time."
+          : "Solve one part at a time. Keep track of what the percent is based on.";
+    return `<div class="solve-guide brief" aria-label="Quick cue"><p><strong>Quick cue:</strong> ${esc(cue)}</p></div>`;
+  }
+  const tryText = p.type === "mc"
+    ? "Work it out before you choose. Use the hint if you get stuck."
+    : "Enter and check one answer step at a time.";
+  if (level === "Core") {
+    return `<div class="solve-guide" aria-label="Steps to solve"><h3>Two steps to get started</h3><ol>
+      <li><strong>Identify:</strong> ${esc(read)}</li>
+      <li><strong>Choose a plan:</strong> ${esc(plan)} ${esc(tryText)}</li>
+    </ol></div>`;
+  }
+  const challenge = level === "Challenge";
+  const solveText = p.type === "mc"
+    ? "Test each choice against your work. Cross out any claim that changes a ratio incorrectly or uses the wrong whole."
+    : challenge
+      ? "Use each answer box as one part of your plan. Check each part before using it in the next step."
+      : tryText;
+  return `<div class="solve-guide" aria-label="Steps to solve"><h3>${challenge ? "Break the challenge into steps" : "Follow these steps"}</h3><ol>
     <li><strong>Read:</strong> ${esc(read)}</li>
     <li><strong>Plan:</strong> ${esc(plan)}</li>
-    <li><strong>Try:</strong> ${p.type === "mc" ? "Work it out before choosing. Use the hint if you need a starting point." : "Start with Step 1 below. Check each step before moving on."}</li>
+    <li><strong>${challenge ? "Solve in parts" : "Try"}:</strong> ${esc(solveText)}</li>
+    ${challenge ? `<li><strong>Check:</strong> ${p.type === "mc" ? "Make sure the choice answers the question and matches the math." : "Substitute your answers into the story. Do the units and size make sense?"}</li>` : ""}
   </ol></div>`;
 }
 
