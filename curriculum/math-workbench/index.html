@@ -2886,6 +2886,9 @@
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
     <link rel="stylesheet" href="/curriculum/math-workbench/reasoning-studio.css" />
+    <link rel="stylesheet" href="/curriculum/math-workbench/wb-tools.css" />
+    <link rel="stylesheet" href="/curriculum/math-workbench/wb-shell.css" />
+    <link rel="stylesheet" href="/curriculum/math-workbench/wb-extras.css" />
   </head>
   <body data-draw="0">
     <div class="app">
@@ -3116,6 +3119,10 @@
                 <button class="starter" data-starter="grid">Coordinate grid</button>
                 <button class="starter" data-starter="fraction">Fraction frame</button>
               </div>
+              <div class="wbx-hint-links">
+                <button type="button" class="wbx-link" data-wbx-lesson>Start from a lesson</button>
+                <button type="button" class="wbx-link" data-wbx-tour>Take a 30-second tour</button>
+              </div>
             </div>
           </div>
         </div>
@@ -3336,11 +3343,29 @@
           </li>
         </ul>
         <div class="close-row">
+          <button class="tbtn" data-wbx-tour>Take the tour</button>
           <button class="tbtn solid" id="helpClose">Got it</button>
         </div>
       </div>
     </div>
 
+    <!-- Board extensions (registry, history, storage, tools). They only define
+         functions at load; index.html's script below hands them their context. -->
+    <script src="/curriculum/math-workbench/wb-core.js"></script>
+    <script src="/curriculum/math-workbench/wb-math.js"></script>
+    <script src="/curriculum/math-workbench/wb-history.js"></script>
+    <script src="/curriculum/math-workbench/wb-storage.js"></script>
+    <script src="/curriculum/math-workbench/wb-tools-grids.js"></script>
+    <script src="/curriculum/math-workbench/wb-tools-number.js"></script>
+    <script src="/curriculum/math-workbench/wb-tools-geo.js"></script>
+    <script src="/curriculum/math-workbench/wb-tools-linked.js"></script>
+    <script src="/curriculum/math-workbench/wb-stats.js"></script>
+    <script src="/curriculum/math-workbench/wb-explain.js"></script>
+    <script src="/curriculum/math-workbench/wb-edit.js"></script>
+    <script src="/curriculum/math-workbench/wb-draw.js"></script>
+    <script src="/curriculum/math-workbench/wb-mathtext.js"></script>
+    <script src="/curriculum/math-workbench/wb-export.js"></script>
+    <script src="/curriculum/math-workbench/wb-saves.js"></script>
     <script>
       "use strict";
       /* =====================================================================
@@ -3444,8 +3469,9 @@
       }
 
       /* ----------------------- Undo / redo history ----------------------- */
-      const history = [];
-      let hpos = -1;
+      // Undo/redo lives in wb-history.js: structural sharing instead of a full
+      // JSON copy of the page per step, capped by step count and by memory.
+      const HX = WBHist.create({ maxEntries: 60, maxBytes: 12 * 1024 * 1024 });
       function snapshot() {
         return JSON.stringify({
           strokes: state.strokes,
@@ -3455,12 +3481,7 @@
         });
       }
       function pushHistory() {
-        const snap = snapshot();
-        if (history[hpos] === snap) return;
-        history.splice(hpos + 1);
-        history.push(snap);
-        if (history.length > 60) history.shift();
-        hpos = history.length - 1;
+        if (!HX.push(state)) return;
         updateUndoButtons();
         persist();
       }
@@ -3503,29 +3524,54 @@
           updateEmpty();
         }
       }
+      // Put a restored history step (see WBHist.restore) on the live page.
+      function applyState(d) {
+        state.strokes = d.strokes;
+        state.objects = d.objects;
+        state.bg = d.bg;
+        state.pages = clampPages(d.pages);
+        seedUidFromObjects(state.objects);
+        renderAll();
+        applySheet();
+      }
       function undo() {
         flushPendingHistory();
-        if (hpos <= 0) return;
-        hpos--;
-        applySnap(history[hpos]);
+        const d = HX.undo();
+        if (!d) return;
+        applyState(d);
         updateUndoButtons();
         persist();
       }
       function redo() {
         flushPendingHistory();
-        if (hpos >= history.length - 1) return;
-        hpos++;
-        applySnap(history[hpos]);
+        const d = HX.redo();
+        if (!d) return;
+        applyState(d);
         updateUndoButtons();
         persist();
       }
       function updateUndoButtons() {
-        $("#undoBtn").disabled = hpos <= 0;
-        $("#redoBtn").disabled = hpos >= history.length - 1;
+        $("#undoBtn").disabled = !HX.canUndo();
+        $("#redoBtn").disabled = !HX.canRedo();
       }
 
       /* ----------------------- Persistence ----------------------- */
-      const LS_KEY = "neft.mathWorkbench.v1";
+      const LS_KEY = WBStore.LEGACY_KEY; // "neft.mathWorkbench.v1": kept as a safety copy + migration source
+      // Saved notebook: IndexedDB per-page records (wb-storage.js), with the
+      // legacy localStorage copy as fallback. Either backend may be blocked.
+      let wbLocal = null;
+      try {
+        wbLocal = window.localStorage;
+        wbLocal.getItem(LS_KEY);
+      } catch (e) {
+        wbLocal = null;
+      }
+      const store = WBStore.create({
+        backend: window.indexedDB ? WBStore.idbBackend(window.indexedDB) : null,
+        ls: wbLocal,
+        lsKey: LS_KEY,
+      });
+      let saveSeq = 0;
       let saveTimer = null;
       // Live Board hooks: set while broadcasting / following (see the Live Board
       // module below). liveFollowing gates the localStorage write so a student
@@ -3539,6 +3585,7 @@
           bg: b.bg,
           pages: b.pages,
           scroll: b.scroll || 0,
+          pid: b.pid,
         };
       }
       function notebookSnapshot() {
@@ -3558,6 +3605,7 @@
           bg: typeof d.bg === "string" ? d.bg : "blank",
           pages: clampPages(d.pages),
           scroll: Number(d.scroll) || 0,
+          pid: typeof d.pid === "string" ? d.pid : undefined,
         };
       }
       // Load a saved notebook; transparently upgrades the old single-page format.
@@ -3586,12 +3634,15 @@
         // not the student's own work — never persist it over their saved pages.
         if (liveFollowing) return false;
         const pill = $("#savePill");
-        try {
-          localStorage.setItem(LS_KEY, notebookSnapshot());
-          if (pill) pill.textContent = "Saved";
-          saveFailNotified = false;
-          return true;
-        } catch (e) {
+        notebook.boards[notebook.active].scroll = workspace.scrollTop;
+        const token = ++saveSeq;
+        store.save({ active: notebook.active, boards: notebook.boards }).then((r) => {
+          if (token !== saveSeq) return; // a newer save owns the pill
+          if (r.ok) {
+            if (pill) pill.textContent = "Saved";
+            saveFailNotified = false;
+            return;
+          }
           if (pill) pill.textContent = "Not saved";
           // Don't let a full or blocked storage fail silently — tell the
           // student once and offer a file backup so their work isn't lost.
@@ -3602,8 +3653,8 @@
               fn: () => downloadNotebook(),
             });
           }
-          return false;
-        }
+        });
+        return true;
       }
       function persist() {
         const pill = $("#savePill");
@@ -3621,6 +3672,9 @@
           clearTimeout(saveTimer);
           saveTimer = null;
           writeNow();
+          // IndexedDB may not finish while the page unloads: leave a small
+          // synchronous copy too (skipped for very large notebooks).
+          if (!liveFollowing) store.saveSync({ active: notebook.active, boards: notebook.boards });
         }
       }
       window.addEventListener("pagehide", flushSave);
@@ -3653,8 +3707,7 @@
           label: "Restore last session",
           fn: () => {
             loadNotebook(raw);
-            history.length = 0;
-            hpos = -1;
+            HX.reset();
             pushHistory();
             updateUndoButtons();
             updateEmpty();
@@ -3811,10 +3864,7 @@
         renderAll();
         applySheet();
         // Each page keeps its own undo history; start a fresh baseline.
-        history.length = 0;
-        hpos = -1;
-        history.push(snapshot());
-        hpos = 0;
+        HX.reset(state);
         updateUndoButtons();
         workspace.scrollTop = state.scroll || 0;
         renderTabs();
@@ -3845,6 +3895,7 @@
           o.id = nid();
         });
         const at = notebook.active + 1;
+        delete clone.pid; // the copy is a new page with its own saved record
         notebook.boards.splice(at, 0, clone);
         switchBoard(at);
         showToast("Page copied to page " + (at + 1));
@@ -3872,10 +3923,7 @@
         seedUidFromObjects(state.objects);
         renderAll();
         applySheet();
-        history.length = 0;
-        hpos = -1;
-        history.push(snapshot());
-        hpos = 0;
+        HX.reset(state);
         updateUndoButtons();
         workspace.scrollTop = state.scroll || 0;
         renderTabs();
@@ -3996,6 +4044,7 @@
           if (typeof p === "number" && p > 0 && p !== 0.5)
             q.p = Math.min(1, Math.round(p * 100) / 100);
         }
+        MWB.constrainPoint(q); // straightedge guide (wb-draw.js); no-op when off
         return q;
       }
       canvas.addEventListener("pointerdown", (e) => {
@@ -4219,11 +4268,16 @@
       function eraseAt(p) {
         const R = 16;
         let changed = false;
-        for (let i = state.strokes.length - 1; i >= 0; i--) {
-          const st = state.strokes[i];
-          if (st.pts.some((q) => Math.hypot(q.x - p.x, q.y - p.y) < R + st.size)) {
-            state.strokes.splice(i, 1);
-            changed = true;
+        if (MWB.eraserMode === "point") {
+          // Point eraser (wb-draw.js): rubs out just the touched part of a stroke.
+          changed = MWB.pointErase(p, R, state);
+        } else {
+          for (let i = state.strokes.length - 1; i >= 0; i--) {
+            const st = state.strokes[i];
+            if (st.pts.some((q) => Math.hypot(q.x - p.x, q.y - p.y) < R + st.size)) {
+              state.strokes.splice(i, 1);
+              changed = true;
+            }
           }
         }
         if (changed) {
@@ -4333,6 +4387,7 @@
         }
         renderCanvas();
         updateEmpty();
+        MWB.afterRender();
       }
 
       function applyBg() {
@@ -4762,6 +4817,7 @@
         mk("⤓", "Send to back", "", () => sendObjectToBack(o.id));
         mk("⧉", "Duplicate", "", () => duplicateObject(o.id));
         mk("✕", "Delete", "del", () => deleteObject(o.id));
+        MWB.extendMiniTools(o, mk, wrap);
         return wrap;
       }
 
@@ -4772,6 +4828,8 @@
         if (!o) return;
         const copy = JSON.parse(JSON.stringify(o));
         copy.id = nid();
+        delete copy.group; // a duplicate is its own item: not in the original's group,
+        delete copy.locked; // and not locked
         copy.x += 24;
         copy.y += 24;
         state.objects.push(copy);
@@ -4799,6 +4857,8 @@
       // A short spoken name for an object, so screen-reader users know what
       // they have focused and (via the global keydown) can move/delete it.
       function objAriaLabel(o) {
+        const custom = MWB.label(o);
+        if (custom) return custom;
         switch (o && o.type) {
           case "tile":
             return (o.kind === "op" ? "Symbol " : "Number ") + (o.value || "");
@@ -5129,6 +5189,16 @@
         } else if (o.type === "baseten") {
           inner.appendChild(buildBaseTen(o));
           toolOpts = { resize: true };
+        } else if (MWB.has(o.type)) {
+          // Tools registered by the wb-*.js extension files (see wb-core.js).
+          const built = MWB.build(o);
+          inner.appendChild(built.el);
+          toolOpts = built.toolOpts;
+        } else {
+          const missing = document.createElement("div");
+          missing.className = "wbx wbx-missing";
+          missing.textContent = "This tool needs a newer Workbench. Reload the page.";
+          inner.appendChild(missing);
         }
 
         el.appendChild(miniTools(o, toolOpts));
@@ -5147,6 +5217,7 @@
         }
         applyTransform(el, o);
         bindObjectDrag(el, o);
+        MWB.decorateEl(el, o);
         return el;
       }
 
@@ -7076,6 +7147,10 @@
       function deleteObject(id) {
         const i = state.objects.findIndex((o) => o.id === id);
         if (i < 0) return;
+        if (state.objects[i].locked) {
+          showToast("Unlock it first (Board tools → Lock)");
+          return;
+        }
         state.objects.splice(i, 1);
         if (selectedId === id) selectedId = null;
         renderAll();
@@ -7462,6 +7537,7 @@
             b.addEventListener("click", t.go);
             grid2.appendChild(b);
           });
+          MWB.renderPalette(flyout); // tools from the wb-*.js extension files
         }
         addFlyoutClose();
       }
@@ -7609,6 +7685,7 @@
           });
           zr.appendChild(b);
         });
+        MWB.afterPenFlyout($("#flyout"), t);
       }
 
       // Close the flyout palette when the student touches the board itself, so
@@ -7980,7 +8057,7 @@
             {
               name: "Divide fractions",
               eq: '<span class="ifr"><span>a</span><span>b</span></span> ÷ <span class="ifr"><span>c</span><span>d</span></span> = <span class="ifr"><span>a</span><span>b</span></span> × <span class="ifr"><span>d</span><span>c</span></span>',
-              note: "Keep · Change · Flip (multiply by the reciprocal).",
+              note: "Ask: how many c/d fit in a/b? Draw it, or rename both with a common denominator. Shortcut once you can explain why: multiply by the reciprocal (Keep · Change · Flip).",
             },
             {
               name: "Simplify a fraction",
@@ -7995,7 +8072,7 @@
             {
               name: "Compare fractions",
               eq: "same denom → bigger numerator wins",
-              note: "Or cross-multiply to compare.",
+              note: "Different denominators? Rename both with a common denominator, or compare each one to a benchmark like ½ or 1.",
             },
           ],
         },
@@ -8093,7 +8170,7 @@
             {
               name: "Proportion",
               eq: '<span class="ifr"><span>a</span><span>b</span></span> = <span class="ifr"><span>c</span><span>d</span></span>',
-              note: "Two equal ratios. Cross-multiply: a·d = b·c.",
+              note: "Two equal ratios. Find the scale factor between them (a ratio table shows it). Equal ratios also have a·d = b·c.",
             },
             {
               name: "Speed / distance / time",
@@ -8735,6 +8812,138 @@
             ],
           },
         },
+        {
+          id: "worked",
+          em: "🧩",
+          name: "Worked Examples",
+          kind: "worked",
+          items: [
+            {
+              name: "Equivalent ratios",
+              eq: "2 cups of flour for every 3 cups of sugar. How much flour goes with 12 cups of sugar?",
+              note: "Scale both parts by the same number.",
+              steps: [
+                "Set up a ratio table: flour 2 → ?, sugar 3 → 12.",
+                "Sugar went from 3 to 12, so it was multiplied by 4 (3 × 4 = 12).",
+                "Multiply the flour by 4 too: 2 × 4 = 8.",
+                "Check: 8 : 12 simplifies to 2 : 3. ✓ So 8 cups of flour.",
+              ],
+            },
+            {
+              name: "Unit rate",
+              eq: "3 pounds of apples cost $7.50. What is the cost of 1 pound?",
+              note: "Divide to find the amount for ONE.",
+              steps: [
+                "Put the cost over the pounds: $7.50 for 3 pounds.",
+                "Divide by 3 to get the amount for 1 pound: 7.50 ÷ 3 = 2.50.",
+                "Check: 3 × 2.50 = 7.50. ✓ The unit rate is $2.50 per pound.",
+              ],
+            },
+            {
+              name: "Percent of a number",
+              eq: "What is 30% of 90?",
+              note: "Use 10% as a building block.",
+              steps: [
+                "10% of 90 is 90 ÷ 10 = 9.",
+                "30% is three groups of 10%: 3 × 9 = 27.",
+                "Check: 0.30 × 90 = 27. ✓ So 30% of 90 is 27.",
+              ],
+            },
+            {
+              name: "Divide fractions",
+              eq: "How many 1/4-cup scoops fill 2/3 of a cup? (2/3 ÷ 1/4)",
+              note: "Rename with a common denominator, then divide the counts.",
+              steps: [
+                "Rename both fractions with a common denominator of 12: 2/3 = 8/12 and 1/4 = 3/12.",
+                "Now the question is: how many 3-twelfths fit in 8-twelfths? 8 ÷ 3.",
+                "8 ÷ 3 = 2 and 2/3. So 2 and 2/3 scoops.",
+                "Check: 2 2/3 × 1/4 = 8/3 × 1/4 = 8/12 = 2/3. ✓",
+              ],
+            },
+            {
+              name: "One-step equation",
+              eq: "x + 14 = 32",
+              note: "Do the same thing to both sides.",
+              steps: [
+                "To undo + 14, subtract 14 from both sides.",
+                "x + 14 − 14 = 32 − 14, so x = 18.",
+                "Check: 18 + 14 = 32. ✓",
+              ],
+            },
+            {
+              name: "Two-step equation",
+              eq: "2x + 3 = 11",
+              note: "Undo the add or subtract first, then the multiply or divide.",
+              steps: [
+                "Subtract 3 from both sides: 2x = 8.",
+                "Divide both sides by 2: x = 4.",
+                "Check: 2(4) + 3 = 11. ✓",
+              ],
+            },
+            {
+              name: "Area of a triangle",
+              eq: "A triangle has base 8 units and height 5 units. Find its area.",
+              note: "A triangle is half of a rectangle.",
+              steps: [
+                "The matching rectangle is 8 by 5, with area 8 × 5 = 40.",
+                "The triangle is half of that: 40 ÷ 2 = 20.",
+                "The area is 20 square units.",
+              ],
+            },
+            {
+              name: "Mean and median",
+              eq: "Scores: 4, 8, 6, 10, 8, 6, 8. Find the mean and the median.",
+              note: "Mean = fair share. Median = middle of the ordered list.",
+              steps: [
+                "Add the scores: 4 + 8 + 6 + 10 + 8 + 6 + 8 = 50.",
+                "Divide by how many scores (7): 50 ÷ 7 ≈ 7.1, the mean.",
+                "Put them in order: 4, 6, 6, 8, 8, 8, 10.",
+                "The middle (4th) score is 8, the median.",
+              ],
+            },
+            {
+              name: "Add integers",
+              eq: "−6 + 9",
+              note: "Think of a number line, or of zero pairs.",
+              steps: [
+                "Start at −6 on the number line.",
+                "Move 9 to the right (adding a positive).",
+                "You land on 3, so −6 + 9 = 3.",
+              ],
+            },
+            {
+              name: "Volume with fractional edges",
+              eq: "A prism is 1 1/2 units long, 2 wide and 3 tall. Find its volume.",
+              note: "Volume = length × width × height.",
+              steps: [
+                "Write the formula: V = l × w × h.",
+                "Substitute: V = 1 1/2 × 2 × 3 = 3/2 × 2 × 3.",
+                "3/2 × 2 = 3, and 3 × 3 = 9.",
+                "The volume is 9 cubic units.",
+              ],
+            },
+            {
+              name: "Distance on a coordinate plane",
+              eq: "Find the distance from (2, 3) to (2, −1).",
+              note: "Same x means a vertical move: subtract the y-values.",
+              steps: [
+                "The x-values match (2 and 2), so the points are in a vertical line.",
+                "Use absolute value for the gap: |3 − (−1)| = |4| = 4.",
+                "The distance is 4 units.",
+              ],
+            },
+            {
+              name: "Graph an inequality",
+              eq: "Graph x > 2 on a number line.",
+              note: "An open circle means the number itself is not included.",
+              steps: [
+                "Mark 2 with an open circle, because x > 2 does not include 2.",
+                "Shade to the right, toward the numbers greater than 2.",
+                "Test a number: 3 > 2 is true, and 3 is in the shaded part. ✓",
+              ],
+            },
+          ],
+        },
       ];
 
       // Build topic tabs + formula panel
@@ -8748,9 +8957,21 @@
       let currentLevel = "1";
       let referenceSearchQuery = "";
       try {
+        // One scaffold level for the whole Workbench: `mw_scaffold` (1–4) is shared with
+        // the Reasoning Studio; levels 1–2 read as the bank's "more support", 3–4 as
+        // "stretch". The older two-value key keeps working for devices that only have it.
+        const sc = Number(localStorage.getItem("mw_scaffold"));
         const lv = localStorage.getItem("neft.mathWorkbench.level");
-        if (lv === "1" || lv === "2") currentLevel = lv;
+        if (sc >= 1 && sc <= 4) currentLevel = sc <= 2 ? "1" : "2";
+        else if (lv === "1" || lv === "2") currentLevel = lv;
       } catch (e) {}
+      window.addEventListener("mwb:scaffold", (event) => {
+        const level = Number(event && event.detail && event.detail.level);
+        if (!(level >= 1 && level <= 4)) return;
+        currentLevel = level <= 2 ? "1" : "2";
+        document.body.dataset.level = currentLevel;
+        renderFormulas();
+      });
 
       function normalizeReferenceSearch(value) {
         return String(value || "")
@@ -8761,11 +8982,31 @@
           .replace(/[^\p{L}\p{N}]+/gu, " ")
           .trim();
       }
+      // Spanish text for a reference card or topic comes from wb-reference-es.js, keyed by
+      // the English name; a card with no entry simply stays English. Search matches both.
+      function refText(topic, item, field) {
+        const es = window.MWBRefES;
+        if (typeof mwLang !== "undefined" && mwLang === "es" && es) {
+          const v = es.item(topic.id, item.name, field);
+          if (v) return v;
+        }
+        return item[field];
+      }
+      function refTopicName(topic) {
+        const es = window.MWBRefES;
+        return typeof mwLang !== "undefined" && mwLang === "es" && es && es.topic(topic.id)
+          ? es.topic(topic.id)
+          : topic.name;
+      }
       function referenceItemMatches(topic, item, query) {
         const terms = normalizeReferenceSearch(query).split(/\s+/).filter(Boolean);
         if (!terms.length) return true;
+        const es = typeof window !== "undefined" && window.MWBRefES;
+        const extra = es
+          ? [es.topic(topic.id), es.item(topic.id, item.name, "name"), es.item(topic.id, item.name, "note")]
+          : [];
         const searchable = normalizeReferenceSearch(
-          [topic.name, item.name, item.eq, item.note].filter(Boolean).join(" "),
+          [topic.name, item.name, item.eq, item.note].concat(extra).filter(Boolean).join(" "),
         );
         return terms.every((term) => searchable.includes(term));
       }
@@ -8782,58 +9023,105 @@
       function buildFormulaCard(t, it) {
         const c = document.createElement("button");
         c.className = "formula-card" + (t.kind ? " fc-" + t.kind : "");
+        c.dataset.topic = t.id;
+        c.dataset.item = it.name;
         const visual = referenceVisualHTML(it.visual);
+        const itName = refText(t, it, "name");
+        const itEq = refText(t, it, "eq");
+        const itNote = refText(t, it, "note");
         const addLbl =
           t.kind === "stem"
             ? "＋ add a sentence to write in"
             : t.kind === "vocab"
               ? "＋ add this word card"
-              : "＋ add to board";
+              : t.kind === "worked"
+                ? "＋ add (steps stay hidden until you open them)"
+                : "＋ add to board";
         c.innerHTML =
           '<span class="fc-name">' +
-          it.name +
+          itName +
           '</span><span class="fc-eq">' +
-          it.eq +
+          itEq +
           "</span>" +
-          (it.note ? '<span class="fc-note">' + it.note + "</span>" : "") +
+          (itNote ? '<span class="fc-note">' + itNote + "</span>" : "") +
           visual +
           '<span class="fc-add">' +
           addLbl +
           "</span>";
         c.addEventListener("click", () => {
           if (t.kind === "stem") {
-            makeObject("text", { text: it.eq });
+            makeObject("text", { text: itEq });
           } else if (t.kind === "vocab") {
             makeObject("formula", {
               html:
                 "<b>" +
-                it.name +
+                itName +
                 "</b> &nbsp;<span style='color:#205fa6'>" +
-                it.eq +
+                itEq +
                 "</span><br><span style='font-size:.82em;color:#5b6b82'>" +
-                (it.note || "") +
+                (itNote || "") +
                 "</span>",
+            });
+          } else if (t.kind === "worked") {
+            const steps = refText(t, it, "steps") || it.steps || [];
+            makeObject("formula", {
+              html:
+                "<b>" +
+                itName +
+                "</b><br>" +
+                itEq +
+                "<details class='wbx-steps'><summary>" +
+                (typeof mwLang !== "undefined" && mwLang === "es"
+                  ? "Mostrar los pasos"
+                  : "Show the steps") +
+                "</summary><ol>" +
+                steps.map((x) => "<li>" + x + "</li>").join("") +
+                "</ol></details>",
             });
           } else {
             makeObject("formula", {
               html:
                 "<b>" +
-                it.name +
+                itName +
                 ":</b>&nbsp; " +
-                it.eq +
+                itEq +
                 visual +
-                (visual && it.note
-                  ? '<span class="ref-visual-caption">' + it.note + "</span>"
-                  : ""),
+                (visual && itNote ? '<span class="ref-visual-caption">' + itNote + "</span>" : ""),
             });
           }
+          window.dispatchEvent(
+            new CustomEvent("mwb:ref-used", { detail: { topic: t.id, item: it.name } }),
+          );
         });
+        // Pin: keep a card you reach for often in the "Pinned" row (wb-reference.js).
+        if (window.MWBRef) {
+          const pin = document.createElement("span");
+          pin.className = "fc-pin";
+          pin.setAttribute("role", "button");
+          pin.setAttribute("tabindex", "0");
+          const on = window.MWBRef.isPinned(t.id, it.name);
+          pin.setAttribute("aria-pressed", on ? "true" : "false");
+          pin.setAttribute("aria-label", (on ? "Unpin: " : "Pin: ") + it.name);
+          pin.textContent = on ? "★" : "☆";
+          const doPin = (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            window.MWBRef.togglePin(t.id, it.name);
+            renderFormulas();
+          };
+          pin.addEventListener("pointerdown", (e) => e.stopPropagation());
+          pin.addEventListener("click", doPin);
+          pin.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") doPin(e);
+          });
+          c.appendChild(pin);
+        }
         // Read-aloud helper: a small speaker in the card corner speaks the
         // words (name + plain-language note, or the sentence frame for stems)
         // without stamping the card. Symbols/equations are skipped — they read
         // poorly aloud. Only shown when the browser supports speech.
         if (canSpeak) {
-          const sayText = t.kind === "stem" ? it.eq : it.name + (it.note ? ". " + it.note : "");
+          const sayText = t.kind === "stem" ? itEq : itName + (itNote ? ". " + itNote : "");
           const say = document.createElement("span");
           say.className = "fc-say";
           say.setAttribute("role", "button");
@@ -8895,7 +9183,7 @@
               '<span class="cat-em" aria-hidden="true">' +
               t.em +
               '</span><span class="cat-name">' +
-              t.name +
+              refTopicName(t) +
               '</span><span class="cat-count">' +
               items.length +
               "</span>";
@@ -8924,7 +9212,7 @@
             '<span class="cat-em">' +
             t.em +
             '</span><span class="cat-name">' +
-            t.name +
+            refTopicName(t) +
             '</span><span class="cat-count">' +
             count +
             '</span><span class="cat-chev">▾</span>';
@@ -8950,6 +9238,13 @@
                   currentLevel = b.dataset.lv;
                   try {
                     localStorage.setItem("neft.mathWorkbench.level", currentLevel);
+                    // Keep the shared 1–4 scaffold level inside the band the student chose.
+                    const sc = Number(localStorage.getItem("mw_scaffold")) || 2;
+                    const next = currentLevel === "1" ? Math.min(sc, 2) : Math.max(sc, 3);
+                    localStorage.setItem("mw_scaffold", String(next));
+                    window.dispatchEvent(
+                      new CustomEvent("mwb:scaffold", { detail: { level: String(next) } }),
+                    );
                   } catch (e) {}
                   document.body.dataset.level = currentLevel;
                   renderFormulas();
@@ -9298,7 +9593,8 @@
       ];
       function guideOrigin() {
         const left = Math.max(22, Math.min(86, workspace.clientWidth * 0.07));
-        const currentViewTop = workspace.scrollTop + 42;
+        // Far enough below the top edge that a selected object's floating toolbar fits above it.
+        const currentViewTop = workspace.scrollTop + 76;
         const nextOpenLine =
           state.objects.length || state.strokes.length ? contentBottom() + 44 : currentViewTop;
         return { x: left, y: Math.max(currentViewTop, nextOpenLine) };
@@ -9310,7 +9606,9 @@
         if (bg) state.bg = bg;
         growToFit();
         renderAll();
-        if (made.length) selectObject(made[0].id);
+        // A multi-part template is not left selected: its floating toolbar would sit on the
+        // next part. A single card (a support card) is selected so it can be moved at once.
+        if (made.length === 1) selectObject(made[0].id);
         pushHistory();
         closeGuideDrawer();
         showToast(label + " added");
@@ -9417,7 +9715,11 @@
         if (!state.objects.length && !state.strokes.length) return;
         if (
           confirm(
-            "Clear everything on this page? You can put it back right away with Undo (Ctrl+Z).",
+            window.MWBI18n
+              ? window.MWBI18n.t(
+                  "Clear everything on this page? You can put it back right away with Undo (Ctrl+Z).",
+                )
+              : "Clear everything on this page? You can put it back right away with Undo (Ctrl+Z).",
           )
         ) {
           state.objects = [];
@@ -9477,8 +9779,12 @@
           if (
             hasWork &&
             !confirm(
-              "Open this file? It replaces the pages you have open now. " +
-                "Use Backup first if you want to keep them.",
+              window.MWBI18n
+                ? window.MWBI18n.t(
+                    "Open this file? It replaces the pages you have open now. Use Backup first if you want to keep them.",
+                  )
+                : "Open this file? It replaces the pages you have open now. " +
+                  "Use Backup first if you want to keep them.",
             )
           )
             return;
@@ -9486,10 +9792,7 @@
           reader.onload = () => {
             try {
               loadNotebook(String(reader.result || ""));
-              history.length = 0;
-              hpos = -1;
-              history.push(snapshot());
-              hpos = 0;
+              HX.reset(state);
               updateUndoButtons();
               persist();
               showToast("Opened your saved Workbench");
@@ -9571,6 +9874,7 @@
           (k === "arrowup" || k === "arrowdown" || k === "arrowleft" || k === "arrowright")
         ) {
           const o = objById(selectedId);
+          if (o && o.locked) return;
           if (o) {
             e.preventDefault();
             const step = e.shiftKey ? 16 : 4; // Shift = bigger jumps
@@ -9680,21 +9984,25 @@
         } catch (e) {}
         dock.classList.toggle("open", dockOpen);
         setDockToggle(dockOpen);
-        // Capture (but don't load) the last saved session, then open clean.
-        let lastSessionRaw = null;
-        try {
-          lastSessionRaw = localStorage.getItem(LS_KEY);
-        } catch (e) {}
+        // Read (but don't load) the last saved session, then open clean. Writes
+        // wait for that read so the clean board can never race it.
+        const lastSession = store.loadLatest();
+        store.holdUntil(lastSession);
         applySheet();
         renderAll();
         // seed history baseline (clean board)
-        history.length = 0;
-        hpos = -1;
+        HX.reset();
         pushHistory();
         updateUndoButtons();
         updateEmpty();
-        // Offer a one-tap recovery of the previous session's work.
-        offerRestore(lastSessionRaw);
+        // Offer a one-tap recovery of the previous session's work, and keep a
+        // copy of it as an autosave version so a clean start can never lose it.
+        lastSession
+          .then((raw) => {
+            offerRestore(raw);
+            return store.archiveSession(raw);
+          })
+          .catch(() => {});
         // Open help only when explicitly deep-linked, so the top tools remain
         // immediately usable for first-time students.
         try {
@@ -9719,9 +10027,9 @@
 
         const style = document.createElement("style");
         style.textContent =
-          ".live-panel{position:fixed;top:92px;right:24px;z-index:9999;width:328px;max-width:94vw;" +
+          ".live-panel{position:fixed;top:64px;right:24px;z-index:9999;width:328px;max-width:94vw;max-height:calc(100dvh - 76px);overflow-y:auto;" +
           "background:#fff;border:1px solid #cdd8e3;border-radius:14px;box-shadow:0 18px 50px rgba(18,53,91,.28);" +
-          'overflow:hidden;font-family:"Atkinson Hyperlegible","Nunito",sans-serif}' +
+          'font-family:"Atkinson Hyperlegible","Nunito",sans-serif}' +
           ".live-panel[hidden]{display:none}" +
           ".live-head{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;" +
           "background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff}" +
@@ -10034,8 +10342,24 @@
             '<div class="live-join"><button type="button" class="live-btn" id="liveFollowBtn">Follow</button>' +
             '<button type="button" class="live-btn primary" id="liveShareBtn">Share my work</button></div></div>' +
             '<p class="live-note" id="liveNote"></p>';
-          body.querySelector("#liveGoTeacher").onclick = startBroadcasting;
-          body.querySelector("#liveGoMonitor").onclick = startMonitoring;
+          // Teacher controls need Teacher Mode (the same sticky flag the lessons use);
+          // the explanation and unlock steps live in wb-teacher.js.
+          const teacherOnly = (reason, fn) => () =>
+            window.MWBTeacher ? window.MWBTeacher.require(reason, fn) : fn();
+          body.querySelector("#liveGoTeacher").onclick = teacherOnly(
+            "Broadcasting your board is for the teacher.",
+            startBroadcasting,
+          );
+          body.querySelector("#liveGoMonitor").onclick = teacherOnly(
+            "Monitoring class work is for the teacher.",
+            startMonitoring,
+          );
+          if (window.MWBTeacher && !window.MWBTeacher.isTeacher()) {
+            const lock = document.createElement("p");
+            lock.className = "live-note";
+            lock.textContent = "🔒 The teacher buttons need Teacher Mode.";
+            body.querySelector("#liveGoMonitor").after(lock);
+          }
           const codeIn = body.querySelector("#liveJoinCode");
           const nameIn = body.querySelector("#liveName");
           body.querySelector("#liveFollowBtn").onclick = () => startFollowing(codeIn.value);
@@ -10076,11 +10400,94 @@
             '<p class="live-note">Run a lesson’s practice questions on every student screen — one at a time, live tally here.</p>' +
             '<input id="playLesson" class="live-input" maxlength="8" placeholder="Lesson (e.g. 4-2)" autocomplete="off" />' +
             '<div class="live-join"><button type="button" class="live-btn primary" id="playStart">▶ Start</button></div>' +
+            '<div class="live-join"><button type="button" class="live-btn" id="playCustom">✍ Write my own question</button>' +
+            '<button type="button" class="live-btn" id="playCompare">⚖ Compare two explanations</button></div>' +
             '<div id="playHost"></div></div>';
           body.querySelector("#liveStop").onclick = () => stopAll();
           body.querySelector("#livePush").onclick = pushCurrentPage;
           body.querySelector("#playStart").onclick = () =>
             playStartFromLesson(body.querySelector("#playLesson").value);
+          body.querySelector("#playCustom").onclick = () => playCustomForm("custom");
+          body.querySelector("#playCompare").onclick = () => playCustomForm("compare");
+        }
+
+        // Teacher-written question (client-only: the room already relays any text-only
+        // prompt with 2–8 choices). "Compare two explanations" is the reasoning-first
+        // shape: two anonymous explanations, the class votes for the stronger one and
+        // the teacher leads the talk about why — no score, no correct answer.
+        function playCustomForm(kind) {
+          const host = body.querySelector("#playHost");
+          if (!host) return;
+          const compare = kind === "compare";
+          host.innerHTML =
+            '<label class="live-note" for="playQ">' +
+            (compare ? "Question for the class" : "Your question") +
+            "</label>" +
+            '<textarea id="playQ" class="live-input" maxlength="500" rows="2">' +
+            (compare ? "Which explanation is stronger? Be ready to say why." : "") +
+            "</textarea>" +
+            '<div id="playChoiceInputs"></div>' +
+            (compare
+              ? ""
+              : '<button type="button" class="live-btn" id="playAddChoice">＋ Add a choice</button>' +
+                '<label class="live-note" for="playRight">Correct choice (optional)</label>' +
+                '<select id="playRight" class="live-input"><option value="-1">No correct answer — discussion</option></select>') +
+            '<button type="button" class="live-btn primary" id="playGo">▶ Send to the class</button>' +
+            '<p class="live-note" id="playFormNote"></p>';
+          const inputs = host.querySelector("#playChoiceInputs");
+          const rightSel = host.querySelector("#playRight");
+          const addChoice = (placeholder) => {
+            const n = inputs.querySelectorAll("input").length;
+            if (n >= 6) return;
+            const inp = document.createElement("input");
+            inp.className = "live-input";
+            inp.maxLength = 200;
+            inp.placeholder = placeholder || "Choice " + String.fromCharCode(65 + n);
+            inp.setAttribute("aria-label", "Choice " + String.fromCharCode(65 + n));
+            inputs.appendChild(inp);
+            if (rightSel) {
+              const o = document.createElement("option");
+              o.value = String(n);
+              o.textContent = "Choice " + String.fromCharCode(65 + n);
+              rightSel.appendChild(o);
+            }
+          };
+          if (compare) {
+            addChoice("Explanation A — type or paste it");
+            addChoice("Explanation B — type or paste it");
+          } else {
+            addChoice();
+            addChoice();
+          }
+          const more = host.querySelector("#playAddChoice");
+          if (more) more.onclick = () => addChoice();
+          host.querySelector("#playGo").onclick = () => {
+            const prompt = host.querySelector("#playQ").value.trim();
+            const entries = [...inputs.querySelectorAll("input")]
+              .map((inp, idx) => ({ idx, val: inp.value.trim() }))
+              .filter((e) => e.val);
+            const choices = entries.map((e) => e.val);
+            const note = host.querySelector("#playFormNote");
+            if (!prompt || choices.length < 2) {
+              note.textContent = "Write a question and at least two choices.";
+              return;
+            }
+            const right = rightSel ? entries.findIndex((e) => e.idx === Number(rightSel.value)) : -1;
+            playState = {
+              list: [
+                {
+                  qid: "c-" + Date.now().toString(36),
+                  prompt: prompt.slice(0, 500),
+                  choices: choices.map((c) => c.slice(0, 200)),
+                  correctIndex: right,
+                },
+              ],
+              i: 0,
+              tally: {},
+              names: {},
+            };
+            playShow();
+          };
         }
 
         // ---------- Class Play (teacher-hosted quiz over the same room) ----------
@@ -10223,6 +10630,24 @@
           });
         }
 
+        // The room relays only `name` with an answer, and the host keeps one answer per
+        // name — so two students called "Ana" (or two who left it blank) would count as
+        // one. A short per-tab tag keeps each device distinct; the host only ever sees
+        // counts, so the tag never reaches a screen.
+        function playName() {
+          let tag = "";
+          try {
+            tag = sessionStorage.getItem("mw_play_tag") || "";
+            if (!tag) {
+              tag = Math.random().toString(36).slice(2, 6);
+              sessionStorage.setItem("mw_play_tag", tag);
+            }
+          } catch (e) {
+            tag = "x" + Math.random().toString(36).slice(2, 5);
+          }
+          return ((name || "Student").slice(0, 24) + " ·" + tag).slice(0, 32);
+        }
+
         // Student side: full-screen question overlay (big touch targets, no timer).
         var playOverlay = null;
         var playAnswered = null;
@@ -10276,7 +10701,7 @@
                 "Answer sent ✓ (you can change it)";
               try {
                 ws.send(
-                  JSON.stringify({ type: "play-answer", qid: q.qid, choice: i, name: name || "" }),
+                  JSON.stringify({ type: "play-answer", qid: q.qid, choice: i, name: playName() }),
                 );
               } catch (e) {}
             };
@@ -10722,11 +11147,13 @@
 
       /* ===================== Semantic reasoning bridge ===================== */
       // The Reasoning Studio reads a compact, non-identifying description of
-      // the active board. It never receives raw ink coordinates or a student
-      // name. Typed prompts are stamped through the existing text-object path;
-      // fixed manipulatives use the canonical Workbench object builders.
+      // the active board. It never receives a student name, and the digest
+      // carries structure and numbers only, not typed text. Raw ink points are
+      // available to the Studio's own "replay my work" preview and nowhere else.
+      // Representations are stamped through the canonical Workbench builders.
       const REASONING_MODELS = new Set([
         "shape2d",
+        "shape3d",
         "numline",
         "coordgrid",
         "placevalue",
@@ -10742,15 +11169,123 @@
         "ineqline",
         "algebra",
         "baseten",
+        "hundredgrid",
+        "balance",
       ]);
+      const REASONING_TEXT_TYPES = new Set(["text", "formula", "fraction", "division"]);
+      const REASONING_STAMP_HEIGHT = {
+        text: 90,
+        ratiotable: 170,
+        dblnumline: 200,
+        tape: 140,
+        fracbar: 130,
+      };
+      const REASONING_EQUATION_RE = /\d\s*[+\-−×x*÷/:=]\s*\d|\d\s*=|=\s*\d/i;
+      // Built-in model types plus the ones the board extensions register (wb-core.js).
+      const isReasoningModel = (type) =>
+        REASONING_MODELS.has(type) || Boolean(window.MWB_MODEL_TYPES && window.MWB_MODEL_TYPES.has(type));
       let reasoningSummaryEl = null;
+      function reasoningCells(list) {
+        return Array.isArray(list)
+          ? list.slice(0, 12).map((v) => String(v == null ? "" : v).slice(0, 12))
+          : [];
+      }
+      function reasoningNumber(value) {
+        const n = parseFloat(String(value == null ? "" : value).replace(/,/g, ""));
+        return Number.isFinite(n) ? n : null;
+      }
+      // One digest entry per board object: type, whether it has real content,
+      // and the few fields a consistency check needs (table cells, tape parts).
+      function reasoningItem(o, inkCount, textCount) {
+        const type = String(o.type || "object");
+        const item = { id: String(o.id || ""), type, filled: false };
+        if (type === "ratiotable" || type === "dblnumline") {
+          item.top = reasoningCells(o.top);
+          item.bottom = reasoningCells(o.bottom);
+          // A table or double number line needs at least two filled pairs to show a relationship.
+          const pairs = item.top.filter((v, i) => v && item.bottom[i]).length;
+          item.filled = pairs >= 2;
+        } else if (type === "tape") {
+          item.parts = Number(o.parts) || 0;
+          item.labels = reasoningCells(o.labels);
+          item.total = String(o.total || "").slice(0, 12);
+          item.filled = item.labels.some(Boolean) || Boolean(item.total);
+        } else if (type === "fracbar") {
+          item.parts = Number(o.parts) || 0;
+          item.shaded = Array.isArray(o.shaded) ? o.shaded.length : 0;
+          item.filled = item.shaded > 0;
+        } else if (type === "arraymodel") {
+          item.rows = Number(o.rows) || 0;
+          item.cols = Number(o.cols) || 0;
+          item.filled = !(item.rows === 3 && item.cols === 4) || inkCount > 0;
+        } else if (type === "dotplot") {
+          item.filled = Object.values(o.counts || {}).some((n) => Number(n) > 0);
+        } else if (type === "histogram") {
+          item.filled = (o.bins || []).some((b) => Number(b && b.freq) > 0);
+        } else if (type === "boxplot") {
+          item.filled = o.lo !== 2 || o.q1 !== 5 || o.med !== 8 || o.q3 !== 12 || o.hi !== 16;
+        } else if (type === "chips") {
+          item.filled = Array.isArray(o.chips) && o.chips.length > 0;
+        } else if (type === "algebra") {
+          item.filled = Array.isArray(o.tiles) && o.tiles.length > 0;
+        } else if (type === "baseten") {
+          item.filled = Object.values(o.b || {}).some((n) => Number(n) > 0);
+        } else if (type === "placevalue") {
+          item.filled = Array.isArray(o.cells) && o.cells.some((c) => String(c || "").trim());
+        } else if (type === "ineqline") {
+          item.filled = o.point !== 2 || o.dir !== "gt" || Boolean(o.closed) || inkCount > 0;
+        } else if (type === "hundredgrid") {
+          const marked = o.shaded || o.cells || o.filled;
+          // board-a stores the grid as a string of "0"/"1" cells.
+          if (typeof marked === "string") item.filled = marked.includes("1");
+          else item.filled = Array.isArray(marked) ? marked.length > 0 : inkCount > 0;
+        } else if (isReasoningModel(type)) {
+          // numline, coordgrid, shape2d, shape3d, balance: a tool alone is not
+          // work. It counts once the student has inked or written on the page.
+          item.filled = inkCount > 0 || textCount > 0;
+        }
+        return item;
+      }
+      function reasoningDigest() {
+        const inkCount = state.strokes.length;
+        const textCount = state.objects.filter((o) => REASONING_TEXT_TYPES.has(o.type)).length;
+        const items = [];
+        const numbers = [];
+        let hasEquationText = false;
+        for (const o of state.objects) {
+          if (isReasoningModel(o.type)) {
+            const item = reasoningItem(o, inkCount, textCount);
+            items.push(item);
+            for (const v of [...(item.top || []), ...(item.bottom || []), ...(item.labels || []), item.total]) {
+              const n = reasoningNumber(v);
+              if (n != null) numbers.push(n);
+            }
+          } else if (REASONING_TEXT_TYPES.has(o.type)) {
+            const text = String(o.text || o.html || "").replace(/<[^>]*>/g, " ");
+            if (REASONING_EQUATION_RE.test(text) || o.type === "fraction" || o.type === "division") {
+              hasEquationText = true;
+            }
+            for (const m of text.match(/\d+(?:\.\d+)?/g) || []) numbers.push(Number(m));
+          }
+        }
+        return {
+          page: notebook.active + 1,
+          pageCount: notebook.boards.length,
+          objectCount: state.objects.length,
+          strokeCount: inkCount,
+          background: state.bg,
+          items: items.slice(0, 40),
+          numbers: numbers.slice(0, 80),
+          hasEquationText,
+        };
+      }
       function reasoningSnapshot() {
         const types = {};
         let modelCount = 0;
         for (const object of state.objects) {
           const type = String(object.type || "object");
           types[type] = (types[type] || 0) + 1;
-          if (REASONING_MODELS.has(type)) modelCount++;
+          if (isReasoningModel(type)) modelCount++;
         }
         return {
           page: notebook.active + 1,
@@ -10758,6 +11293,7 @@
           objectCount: state.objects.length,
           strokeCount: state.strokes.length,
           modelCount,
+          filledModelCount: reasoningDigest().items.filter((i) => i.filled).length,
           types,
           background: state.bg,
         };
@@ -10790,65 +11326,126 @@
           ".";
         window.dispatchEvent(new CustomEvent("mwb:state", { detail: summary }));
       }
-      function clampReasoningNumber(value, fallback) {
-        const number = Math.round(Number(value));
-        return Number.isFinite(number) ? Math.max(1, Math.min(20, number)) : fallback;
+      // Typed text stays on the device: the Studio can offer the first long
+      // text object on the board as "the problem", but it is never in the digest.
+      function reasoningProblemText() {
+        const found = state.objects.find(
+          (o) => o.type === "text" && String(o.text || "").trim().length >= 12,
+        );
+        return found ? String(found.text).trim().slice(0, 600) : "";
       }
+      function reasoningSelection() {
+        const o = selectedId ? objById(selectedId) : null;
+        return o ? { id: o.id, type: String(o.type || "") } : null;
+      }
+      function reasoningSupports(type) {
+        if (isReasoningModel(type) || REASONING_TEXT_TYPES.has(type)) {
+          // The percent grid and balance scale come from the board extensions
+          // (wb-tools-grids.js), which register their types in MWB_MODEL_TYPES.
+          if (type === "hundredgrid" || type === "balance")
+            return Boolean(window.MWB_MODEL_TYPES && window.MWB_MODEL_TYPES.has(type));
+          return true;
+        }
+        return false;
+      }
+      // Stamp a few labelled lines next to a chosen object; the caller supplies the sentence.
+      function reasoningCallout(id, text) {
+        const o = objById(id);
+        const sentence = String(text || "").trim().slice(0, 240);
+        if (!o || !sentence) return false;
+        const above = (o.y || 0) > 70;
+        makeObject("text", {
+          text: "↳ " + sentence,
+          x: Math.max(8, Math.round(o.x || 0)),
+          y: above ? Math.round(o.y - 60) : Math.round((o.y || 0) + 150),
+        });
+        return true;
+      }
+      // Small JPEG of the current page for the Evidence screen and the portfolio.
+      function reasoningThumbnail(maxWidth) {
+        try {
+          const cssW = canvas.width / DPR;
+          const usedH = Math.max(240, Math.min(contentBottom() + 60, canvas.height / DPR));
+          const width = Math.max(120, Math.min(Number(maxWidth) || 260, 480));
+          const scale = width / cssW;
+          const c = document.createElement("canvas");
+          c.width = width;
+          c.height = Math.max(60, Math.round(usedH * scale));
+          const x = c.getContext("2d");
+          x.fillStyle = "#fff";
+          x.fillRect(0, 0, c.width, c.height);
+          x.drawImage(canvas, 0, 0, canvas.width, Math.round(usedH * DPR), 0, 0, c.width, c.height);
+          x.strokeStyle = "#94a3b8";
+          x.fillStyle = "rgba(148,163,184,.18)";
+          for (const o of state.objects) {
+            const el = overlay.querySelector('[data-id="' + o.id + '"]');
+            const w = (el ? el.offsetWidth : 90) * (o.scale || 1) * scale;
+            const h = (el ? el.offsetHeight : 40) * (o.scale || 1) * scale;
+            x.fillRect((o.x || 0) * scale, (o.y || 0) * scale, w, h);
+            x.strokeRect((o.x || 0) * scale, (o.y || 0) * scale, w, h);
+          }
+          return c.toDataURL("image/jpeg", 0.5);
+        } catch (e) {
+          return "";
+        }
+      }
+      // Ink with its per-stroke clock, thinned so a long page stays small.
+      function reasoningInk() {
+        const strokes = state.strokes
+          .filter((s) => s.tool !== "eraser" && Array.isArray(s.pts) && s.pts.length)
+          .slice(0, 400)
+          .map((s) => {
+            const step = Math.max(1, Math.ceil(s.pts.length / 80));
+            const pts = s.pts
+              .filter((_, i) => i % step === 0 || i === s.pts.length - 1)
+              .map((p) => ({ x: p.x, y: p.y, t: typeof p.t === "number" ? p.t : undefined }));
+            return { tool: s.tool, color: s.color, size: s.size, pts };
+          });
+        const objects = state.objects.slice(0, 60).map((o) => {
+          const el = overlay.querySelector('[data-id="' + o.id + '"]');
+          return {
+            type: String(o.type || ""),
+            x: o.x || 0,
+            y: o.y || 0,
+            w: el ? el.offsetWidth * (o.scale || 1) : 80,
+            h: el ? el.offsetHeight * (o.scale || 1) : 40,
+          };
+        });
+        return { strokes, objects };
+      }
+      function reasoningCleanProps(props) {
+        const out = {};
+        for (const [key, v] of Object.entries(props || {})) {
+          if (typeof v === "number" && Number.isFinite(v)) out[key] = Math.max(-1000, Math.min(1000, v));
+          else if (typeof v === "string") out[key] = v.slice(0, 600);
+          else if (typeof v === "boolean") out[key] = v;
+          else if (Array.isArray(v))
+            out[key] = v.slice(0, 12).map((n) => (typeof n === "number" ? n : String(n).slice(0, 40)));
+        }
+        return out;
+      }
+      // The Studio sends a list of {type, props}; unknown types are skipped.
       window.addEventListener("mwb:reasoning-stamp", function (event) {
-        const detail = (event && event.detail) || {};
-        const reps = Array.isArray(detail.representations)
-          ? [...new Set(detail.representations.map(String))]
-          : [];
-        const linked = detail.linked || {};
-        const a = clampReasoningNumber(linked.a, 2);
-        const b = clampReasoningNumber(linked.b, 3);
-        const factor = clampReasoningNumber(linked.factor, 4);
-        const top = [a, a * 2, a * 3, a * factor].map(String);
-        const bottom = [b, b * 2, b * 3, b * factor].map(String);
-        if (detail.prompt) makeObject("text", { text: String(detail.prompt).slice(0, 600) });
-        if (reps.some((rep) => /ratio table|table/i.test(rep))) {
-          makeObject("ratiotable", {
-            cols: 4,
-            top,
-            bottom,
-            topLabel: "first quantity",
-            botLabel: "second quantity",
-          });
-        }
-        if (reps.some((rep) => /double number line|number line/i.test(rep))) {
-          makeObject("dblnumline", {
-            intervals: 3,
-            top: top.slice(0, 4),
-            bottom: bottom.slice(0, 4),
-            topLabel: "first quantity",
-            bottomLabel: "second quantity",
-          });
-        }
-        if (reps.some((rep) => /hundred model|tape|fraction model/i.test(rep))) {
-          makeObject(detail.skill === "fraction" ? "fracbar" : "tape", {
-            parts: detail.skill === "percent" ? 10 : 4,
-          });
-        }
-        if (reps.some((rep) => /balance model/i.test(rep))) makeObject("algebra", {});
-        if (reps.some((rep) => /shape model|array/i.test(rep))) {
-          makeObject(detail.skill === "area" ? "arraymodel" : "shape2d", {
-            rows: a,
-            cols: b,
-            shape: "triangle",
-          });
-        }
-        if (reps.some((rep) => /data display/i.test(rep))) makeObject("dotplot", {});
-        if (reps.some((rep) => /equation|calculation/i.test(rep))) {
-          makeObject("text", { text: a + " : " + b + " = " + a * factor + " : " + b * factor });
-        }
-        if (detail.stem || reps.some((rep) => /words|claim/i.test(rep))) {
-          makeObject("text", { text: String(detail.stem || "My model shows ____ because ____.") });
+        const list = event && event.detail && Array.isArray(event.detail.objects) ? event.detail.objects : [];
+        let y = workspace.scrollTop + 80;
+        for (const spec of list.slice(0, 8)) {
+          const type = spec && String(spec.type || "");
+          if (!reasoningSupports(type)) continue;
+          makeObject(type, Object.assign({ x: 90, y }, reasoningCleanProps(spec.props)));
+          y += REASONING_STAMP_HEIGHT[type] || 200;
         }
         updateReasoningSummary();
       });
       window.MathWorkbenchAPI = Object.freeze({
         getSnapshot: () => reasoningSnapshot(),
         announceSnapshot: () => updateReasoningSummary(),
+        getBoardDigest: () => reasoningDigest(),
+        getProblemText: () => reasoningProblemText(),
+        getSelectedObject: () => reasoningSelection(),
+        supportsType: (type) => reasoningSupports(String(type || "")),
+        addCallout: (id, text) => reasoningCallout(id, text),
+        getThumbnail: (width) => reasoningThumbnail(width),
+        getInkReplay: () => reasoningInk(),
       });
       updateReasoningSummary();
 
@@ -10914,9 +11511,13 @@
           b.querySelector(".txt").textContent = mwLang === "es" ? "English" : "Español";
         }
         document.body.classList.toggle("lang-es", mwLang === "es");
+        // Switch the whole interface now (wb-i18n.js), then tell the Studio, the reference
+        // bank and the Access layer; the toast is translated by the same pass.
+        if (window.MWBI18n) window.MWBI18n.apply(mwLang);
+        window.dispatchEvent(new CustomEvent("mwb:lang", { detail: { lang: mwLang } }));
         showToast(
           mwLang === "es"
-            ? "🌎 Modo español: la lectura en voz alta habla español"
+            ? "🌎 Modo español: la interfaz y la lectura en voz alta hablan español"
             : "🌎 English mode on",
         );
       }
@@ -10965,6 +11566,30 @@
           hint: "No animations or moving effects",
           cls: "a11y-calm",
         },
+        {
+          key: "cbsafe",
+          label: "Colour-blind-safe colours",
+          hint: "Pen and highlighter colours that are easy to tell apart",
+          cls: "a11y-cbsafe",
+        },
+        {
+          key: "dyslexia",
+          label: "Dyslexia-friendly text",
+          hint: "Wider letters and words, taller lines, left-aligned",
+          cls: "a11y-dyslexia",
+        },
+        {
+          key: "bigptr",
+          label: "Larger pointer and handles",
+          hint: "A bigger cursor and bigger drag and resize handles",
+          cls: "a11y-bigptr",
+        },
+        {
+          key: "focus",
+          label: "Focus mode",
+          hint: "Hide the formula bank, paper tab and starter tips so only the board is left",
+          cls: "a11y-focus",
+        },
       ];
       let a11yPrefs = {};
       try {
@@ -10977,6 +11602,8 @@
         try {
           localStorage.setItem("mw_a11y", JSON.stringify(a11yPrefs));
         } catch (e) {}
+        // The Studio and the shell layer follow the same switches (wb-access.js listens).
+        window.dispatchEvent(new CustomEvent("mwb:a11y", { detail: Object.assign({}, a11yPrefs) }));
       }
       a11yApply();
       if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -11006,6 +11633,10 @@
             "</small></span></label>";
         }
         inner +=
+          '<label class="a11y-row a11y-name"><span><b>Name for printing</b><small>Optional. Stays on this device and only appears on your printed pages.</small>' +
+          '<input type="text" id="a11yName" class="a11y-text" maxlength="40" autocomplete="off" /></span></label>' +
+          '<label class="a11y-row a11y-teacher" id="a11yTeacherRow" hidden><input type="checkbox" id="a11yCalcOff"/><span><b>Turn the calculator off (teacher)</b><small>For no-calculator work. Applies on this device.</small></span></label>';
+        inner +=
           '<p class="a11y-note">Tip: every tool on the board can also be moved with the keyboard — tap a tile, then use the arrow keys. Press ? for Help.</p>';
         a11yPanel.innerHTML = inner;
         document.body.appendChild(a11yPanel);
@@ -11023,6 +11654,7 @@
         const want = show != null ? show : p.hidden;
         p.hidden = !want;
         $("#a11yBtn").setAttribute("aria-pressed", want ? "true" : "false");
+        if (want) window.dispatchEvent(new CustomEvent("mwb:a11y-open"));
       }
       $("#a11yBtn").addEventListener("click", () => toggleA11y());
 
@@ -11144,6 +11776,10 @@
       // /curriculum/math-workbench/?preset=ratio-tables (or ?bg=coord, or
       // ?problem=<encoded text>). Existing student work is never touched — a
       // preset lands on a fresh page when the current one has work on it.
+      // Every preset's tools are objects the Workbench can really build, and its wording
+      // names only those tools (tools/validate-math-workbench.mjs holds both). A preset
+      // may carry an `upgrade`: richer tools used only when the board really supports
+      // them (probed below), so the wording can never promise a tool that is missing.
       const PRESETS = {
         "ratio-tables": {
           title: "Ratio tables",
@@ -11162,7 +11798,7 @@
         "fraction-division": {
           title: "Dividing fractions",
           bg: "blank",
-          tools: [{ type: "fracbar", parts: 8 }],
+          tools: [{ type: "fracbar", parts: 12 }],
           problem: "How many 1/4-cup scoops fill 2/3 of a cup? Model it with the fraction bar.",
         },
         decimals: {
@@ -11175,7 +11811,14 @@
           title: "Percent",
           bg: "grid",
           tools: [{ type: "tape", parts: 10 }],
-          problem: "What is 30% of 90? Shade the tape diagram to show your thinking.",
+          problem:
+            "What is 30% of 90? Shade the tape diagram (each of the 10 parts is 10%) to show your thinking.",
+          upgrade: {
+            requires: ["hundredgrid"],
+            tools: [{ type: "hundredgrid" }, { type: "tape", parts: 10 }],
+            problem:
+              "What is 30% of 90? Shade the 10×10 grid and the tape diagram to show your thinking.",
+          },
         },
         integers: {
           title: "Integers",
@@ -11233,64 +11876,187 @@
         "unit1-decimals": {
           title: "Unit 1: Decimal Operations & Multi-Digit Division",
           bg: "grid",
-          tools: [{ type: "placevalue" }],
-          problem: "Solve 0.45 × 3.2 and 1,428 ÷ 14. Use the place-value mat and area model to show your work.",
+          tools: [{ type: "placevalue" }, { type: "arraymodel", rows: 3, cols: 4 }],
+          problem:
+            "Solve 0.45 × 3.2 and 1,428 ÷ 14. Use the place-value mat and the area model to show your work.",
         },
         "unit2-statistics": {
           title: "Unit 2: Statistics & Data Displays",
           bg: "grid",
-          tools: [{ type: "dotplot" }],
-          problem: "The class scores were 4, 8, 6, 10, 8, 6, 8. Build the dot plot, then find the mean, median, IQR, and MAD.",
+          tools: [{ type: "dotplot" }, { type: "boxplot" }],
+          problem:
+            "The class scores were 4, 8, 6, 10, 8, 6, 8. Build the dot plot and the box plot, then find the mean, median, IQR, and MAD.",
         },
         "unit3-ratios": {
           title: "Unit 3: Ratios & Rates",
           bg: "grid",
           tools: [{ type: "ratiotable", cols: 4 }, { type: "dblnumline", intervals: 4 }],
-          problem: "A recipe uses 2 cups of flour for every 3 batches. Fill in the ratio table and find the unit rate.",
+          problem:
+            "A recipe uses 2 cups of flour for every 3 batches. Fill in the ratio table and find the unit rate.",
         },
         "unit4-percents": {
           title: "Unit 4: Percents",
           bg: "grid",
           tools: [{ type: "tape", parts: 10 }],
-          problem: "What is 30% of 90? Shade the 10x10 percent grid and tape diagram to prove your answer.",
+          problem:
+            "What is 30% of 90? Shade the tape diagram (each of the 10 parts is 10%) to prove your answer.",
+          upgrade: {
+            requires: ["hundredgrid"],
+            tools: [{ type: "hundredgrid" }, { type: "tape", parts: 10 }],
+            problem:
+              "What is 30% of 90? Shade the 10×10 percent grid and the tape diagram to prove your answer.",
+          },
         },
         "unit5-geometry": {
           title: "Unit 5: Area, Surface Area & Volume",
           bg: "grid",
-          tools: [{ type: "shape2d", shape: "triangle" }],
-          problem: "Find the surface area and volume V = l·w·h of a rectangular prism with fractional dimensions.",
+          tools: [{ type: "shape3d", shape: "rectprism", label: "Rectangular prism" }],
+          problem:
+            "Find the surface area and the volume of a rectangular prism with fractional edge lengths. Label each edge, then use V = l × w × h.",
         },
         "unit6-expressions": {
           title: "Unit 6: Numerical & Algebraic Expressions",
           bg: "lined",
-          tools: [{ type: "fracbar", parts: 8 }],
-          problem: "Evaluate 3(2x + 4) when x = 5 and solve (2/3) ÷ (1/4) using visual fraction bars.",
+          tools: [{ type: "fracbar", parts: 12 }],
+          problem:
+            "Evaluate 3(2x + 4) when x = 5. Then show (2/3) ÷ (1/4) with the fraction bar.",
         },
         "unit7-integers": {
           title: "Unit 7: Integers & Coordinate Plane",
           bg: "coord",
           tools: [{ type: "coordgrid", min: -5, max: 5 }, { type: "numline" }],
-          problem: "Plot the points (2, 3), (-2, 3), (-2, -1), (2, -1) across all 4 quadrants. Find the distance between vertices.",
+          problem:
+            "Plot the points (2, 3), (-2, 3), (-2, -1), (2, -1) across all 4 quadrants. Find the distance between vertices.",
         },
         "unit8-equations": {
           title: "Unit 8: Equations & Inequalities",
           bg: "lined",
-          tools: [{ type: "tape", parts: 3 }, { type: "ineqline", min: -5, max: 5, point: 2, dir: "gt" }],
-          problem: "Solve 2x + 3 = 11 using the balance scale. Then graph x > 2 on the open number line.",
+          tools: [
+            { type: "tape", parts: 3 },
+            { type: "ineqline", min: -5, max: 5, point: 2, dir: "gt" },
+          ],
+          problem:
+            "Solve 2x + 3 = 11. Use the tape diagram to show why your answer works. Then graph x > 2 on the number line.",
+          upgrade: {
+            requires: ["balance"],
+            tools: [
+              { type: "balance" },
+              { type: "ineqline", min: -5, max: 5, point: 2, dir: "gt" },
+            ],
+            problem:
+              "Solve 2x + 3 = 11 using the balance. Then graph x > 2 on the number line.",
+          },
         },
         "unit9-variables": {
           title: "Unit 9: Two-Variable Relationships",
           bg: "coord",
-          tools: [{ type: "coordgrid", min: 0, max: 10 }],
-          problem: "Model y = 3x with an independent/dependent data table and continuous linear graph.",
-        },
-        "unit10-showcase": {
-          title: "Unit 10: Reflection & EOY Showcase",
-          bg: "grid",
-          tools: [],
-          problem: "Design a geometric tessellation pattern and curate your digital math growth portfolio.",
+          tools: [{ type: "ratiotable", cols: 4 }, { type: "coordgrid", min: 0, max: 10 }],
+          problem:
+            "Model y = 3x: fill in the table of x and y values, then graph the points on the coordinate plane and describe the line.",
         },
       };
+
+      // Does this board really know how to draw `type`? A detached probe build is cheap,
+      // never touches the page, and an unknown type leaves the object empty.
+      const mwbTypeProbe = {};
+      function mwbSupportsType(type) {
+        if (type in mwbTypeProbe) return mwbTypeProbe[type];
+        let ok = false;
+        try {
+          const el = buildObjEl({ id: "o0_probe", type, x: 0, y: 0, scale: 1, color: null });
+          const inner = el.querySelector(".obj-inner");
+          ok = !!inner && inner.childNodes.length > 0;
+        } catch (e) {
+          ok = false;
+        }
+        mwbTypeProbe[type] = ok;
+        return ok;
+      }
+      function resolvePreset(preset) {
+        const up = preset && preset.upgrade;
+        if (up && up.requires.every(mwbSupportsType)) {
+          return Object.assign({}, preset, { tools: up.tools, problem: up.problem });
+        }
+        return preset;
+      }
+      // Put a preset (or a lesson's own problem) on a fresh page; existing work is never
+      // touched. Returns true when something was placed.
+      function applyPreset(key, opts) {
+        const options = opts || {};
+        const preset = resolvePreset(PRESETS[String(key || "").toLowerCase()] || null);
+        const bgWant = options.bg || "";
+        const text = options.problem || (preset && preset.problem) || "";
+        if (!preset && !text && !bgWant) return false;
+        // Land on a fresh page so a launch never buries existing work.
+        if (state.strokes.length || state.objects.length) {
+          if (notebook.boards.length < MAX_TABS) addBoard();
+        }
+        const bg = (preset && preset.bg) || bgWant;
+        if (bg) {
+          state.bg = bg === "numline" ? "numberline" : bg;
+          applyBg();
+        }
+        const px = 90;
+        let py = workspace.scrollTop + 80;
+        if (text) {
+          makeObject("text", { text: text, x: px, y: py });
+          py += 130;
+        }
+        if (preset) {
+          for (const t of preset.tools) {
+            makeObject(t.type, Object.assign({ x: px, y: py }, t));
+            py += 210;
+          }
+          showToast("📦 " + preset.title + " workspace is set up — go!");
+        } else {
+          showToast("📦 Your workspace is set up — go!");
+        }
+        persist();
+        return true;
+      }
+      window.MWBPresets = Object.freeze({
+        keys: () => Object.keys(PRESETS),
+        get: (key) => PRESETS[String(key || "").toLowerCase()] || null,
+        resolve: resolvePreset,
+        apply: applyPreset,
+        supports: mwbSupportsType,
+      });
+      // The one doorway the shell layer (wb-*.js) uses into the board. Everything it
+      // needs is listed here, so a rename inside the board engine breaks one visible
+      // place that tools/validate-math-workbench.mjs checks, not five hidden ones.
+      window.MWBShell = Object.freeze({
+        objects: () => state.objects,
+        select: (id) => selectObject(id),
+        focusObject: (id) => {
+          selectObject(id);
+          const el = overlay.querySelector('[data-id="' + id + '"]');
+          if (el) {
+            el.scrollIntoView({ block: "center", inline: "center" });
+            el.focus({ preventScroll: true });
+          }
+        },
+        selectedId: () => selectedId,
+        setTool: (t) => setTool(t, $('.tool[data-tool="' + t + '"]')),
+        openFlyout: (kind, t) => openFlyout(kind, t || kind),
+        closeFlyout: () => closeFlyout(),
+        flyoutKind: () => flyout.dataset.kind || "",
+        makeObject: (type, props) => makeObject(type, props),
+        toast: (msg, action) => showToast(msg, action),
+        pageInfo: () => ({ page: notebook.active + 1, count: notebook.boards.length }),
+        setInkPalettes: (pen, hi) => {
+          PEN_COLORS.splice(0, PEN_COLORS.length, ...pen);
+          HI_COLORS.splice(0, HI_COLORS.length, ...hi);
+          if (!PEN_COLORS.includes(penColor)) penColor = PEN_COLORS[0];
+          if (!HI_COLORS.includes(hiColor)) hiColor = HI_COLORS[0];
+          if (flyout.dataset.kind === "pen") closeFlyout();
+        },
+        inkPalettes: () => ({ pen: PEN_COLORS.slice(), hi: HI_COLORS.slice() }),
+        topics: () => TOPICS,
+        buildCard: (topic, item) => buildFormulaCard(topic, item),
+        renderBank: () => renderFormulas(),
+      });
+      // Switching language re-renders the reference bank in the chosen language.
+      window.addEventListener("mwb:lang", () => renderFormulas());
       function applyPresetFromUrl() {
         let params;
         try {
@@ -11307,35 +12073,87 @@
           if (sessionStorage.getItem(guard)) return;
           sessionStorage.setItem(guard, "1");
         } catch (e) {}
-        const preset = PRESETS[key] || null;
-        // Land on a fresh page so a launch never buries existing work.
-        if (state.strokes.length || state.objects.length) {
-          if (notebook.boards.length < MAX_TABS) addBoard();
-        }
-        const bg = (preset && preset.bg) || bgWant;
-        if (bg) {
-          state.bg = bg === "numline" ? "numberline" : bg;
-          applyBg();
-        }
-        const px = 90;
-        let py = workspace.scrollTop + 80;
-        const text = problem || (preset && preset.problem) || "";
-        if (text) {
-          makeObject("text", { text: text, x: px, y: py });
-          py += 130;
-        }
-        if (preset) {
-          for (const t of preset.tools) {
-            makeObject(t.type, Object.assign({ x: px, y: py }, t));
-            py += 210;
-          }
-          showToast("📦 " + preset.title + " workspace is set up — go!");
-        } else if (text || bg) {
-          showToast("📦 Your workspace is set up — go!");
-        }
-        persist();
+        applyPreset(key, { problem, bg: bgWant });
       }
 
+      // Extension context: the engine surface the wb-*.js files may use (see
+      // wb-core.js). Set before init() so registered tools can render at once.
+      MWB.setContext({
+        get state() {
+          return state;
+        },
+        get notebook() {
+          return notebook;
+        },
+        get selectedId() {
+          return selectedId;
+        },
+        get tool() {
+          return tool;
+        },
+        get snapOn() {
+          return snapOn;
+        },
+        get dpr() {
+          return DPR;
+        },
+        workspace,
+        overlay,
+        canvas,
+        store,
+        MAX_TABS,
+        PEN_COLORS,
+        HI_COLORS,
+        objById,
+        makeObject,
+        newBoardObject,
+        updateObjEl,
+        applyTransform,
+        renderAll,
+        renderCanvas,
+        selectObject,
+        deselect,
+        deleteObject,
+        duplicateObject,
+        pushHistory,
+        persist,
+        showToast,
+        bindEditable,
+        speak,
+        growToFit,
+        setTool,
+        localPt,
+        contentBottom,
+        switchBoard,
+        addBoard,
+        nid,
+        updateEmpty,
+        notebookSnapshot,
+        setPenColor: (c) => {
+          penColor = c;
+        },
+        setHiColor: (c) => {
+          hiColor = c;
+        },
+        penColor: () => penColor,
+        hiColor: () => hiColor,
+        // Replace the open notebook with saved JSON (named save / version / import).
+        loadSaved(raw) {
+          loadNotebook(raw);
+          HX.reset(state);
+          updateUndoButtons();
+          persist();
+        },
+        // Append objects to the CURRENT page as fresh copies (cross-page paste).
+        addObjects(list) {
+          const made = list.map((o) => Object.assign(JSON.parse(JSON.stringify(o)), { id: nid() }));
+          state.objects.push(...made);
+          growToFit();
+          renderAll();
+          pushHistory();
+          return made;
+        },
+      });
       init();
       applyPresetFromUrl();
     </script>
@@ -11617,6 +12435,15 @@
         function inject() {
           if (ready || busy) return;
           busy = true;
+          // Offline (or a stalled load) shows the "needs the internet" message with a
+          // retry button instead of an endless "Loading calculator…".
+          if (navigator.onLine === false && !window.GGBApplet) {
+            fail();
+            return;
+          }
+          setTimeout(function () {
+            if (!ready && busy) fail();
+          }, 30000);
           var go = function () {
             try {
               var applet = new GGBApplet(
@@ -12603,7 +13430,29 @@
       }
     </style>
   <script src="/curriculum/math-workbench/reasoning-data.js"></script>
+  <script src="/curriculum/math-workbench/reasoning-tags.js"></script>
+  <script src="/curriculum/math-workbench/reasoning-exemplars.js"></script>
+  <script src="/curriculum/math-workbench/reasoning-i18n.js"></script>
+  <script src="/curriculum/math-workbench/reasoning-messages.js"></script>
+  <script src="/curriculum/math-workbench/reasoning-analyze.js"></script>
+  <script src="/curriculum/math-workbench/reasoning-store.js"></script>
+  <script src="/curriculum/math-workbench/reasoning-tools.js"></script>
+  <script src="/curriculum/math-workbench/reasoning-stamp.js"></script>
+  <script src="/curriculum/math-workbench/reasoning-state.js"></script>
+  <script src="/curriculum/math-workbench/reasoning-coach.js"></script>
+  <script src="/curriculum/math-workbench/reasoning-panels.js"></script>
+  <script src="/curriculum/math-workbench/reasoning-teacher.js"></script>
   <script src="/curriculum/math-workbench/reasoning-studio.js"></script>
+  <script src="/curriculum/math-workbench/wb-teacher.js"></script>
+  <script src="/curriculum/math-workbench/wb-i18n-es.js"></script>
+  <script src="/curriculum/math-workbench/wb-i18n-es-panels.js"></script>
+  <script src="/curriculum/math-workbench/wb-i18n.js"></script>
+  <script src="/curriculum/math-workbench/wb-reference-es.js"></script>
+  <script src="/curriculum/math-workbench/wb-reference.js"></script>
+  <script src="/curriculum/math-workbench/wb-access.js"></script>
+  <script src="/curriculum/math-workbench/wb-calc.js"></script>
+  <script src="/curriculum/math-workbench/wb-shell.js"></script>
+  <script src="/curriculum/math-workbench/wb-lesson.js"></script>
   <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
     <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>

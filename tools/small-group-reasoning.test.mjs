@@ -16,7 +16,8 @@ async function review(body, env = {}) {
   const request = new Request("https://example.test/api/reasoning/review", {
     method: "POST",
     body: JSON.stringify(body),
-    headers: { "content-type": "application/json" },
+    // The endpoint refuses callers that are not this site (a browser always sends Origin).
+    headers: { "content-type": "application/json", origin: "https://eduwonderlab.com" },
   });
   const response = await onRequest({ request, env, params: { path: ["review"] } });
   return { status: response.status, data: await response.json() };
@@ -127,7 +128,8 @@ const aiReturning = (text) => ({
   const fine = await review(
     {
       prompt: "Explain how you know.",
-      response: "I multiplied the whole numbers first and then placed the point.",
+      response:
+        "I multiplied the whole numbers first, got 88.84 at one point, and then placed the point.",
       answerShown: "8.84",
     },
     aiReturning(

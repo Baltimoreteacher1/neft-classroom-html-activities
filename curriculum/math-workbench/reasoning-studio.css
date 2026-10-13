@@ -81,6 +81,7 @@
 
 .mwr-dialog {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto auto minmax(0, 1fr) auto;
   width: min(1040px, 96vw);
   max-height: 94vh;
@@ -111,7 +112,12 @@
   border-top: 1px solid #dbe5ee;
 }
 
+.mwr-head {
+  flex-wrap: wrap;
+}
+
 .mwr-title {
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -156,20 +162,52 @@
 }
 
 .mwr-steps {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 6px;
-  padding: 10px 18px;
+  padding: 8px 18px;
   background: #eef2ff;
 }
 
+.mwr-steps.is-off {
+  height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.mwr-step-list {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  list-style: none;
+  scroll-snap-type: x proximity;
+}
+
+.mwr-step-list li {
+  flex: 1 0 auto;
+  scroll-snap-align: start;
+}
+
 .mwr-step {
-  min-height: 38px;
+  width: 100%;
+  min-height: 40px;
+  padding: 6px 12px;
   border: 0;
   border-radius: 10px;
   background: transparent;
-  color: #526174;
-  font-weight: 800;
+  color: #475569;
+  cursor: pointer;
+  font: 800 0.92rem "Atkinson Hyperlegible", "Nunito", system-ui, sans-serif;
+  white-space: nowrap;
+}
+
+.mwr-step:disabled {
+  color: #64748b;
+  cursor: default;
+}
+
+.mwr-step:focus-visible {
+  outline: 3px solid #fbbf24;
+  outline-offset: 2px;
 }
 
 .mwr-step.is-current {
@@ -241,7 +279,7 @@
   border-radius: 11px;
   background: #fff;
   color: #0f172a;
-  font: 700 1rem/1.45 inherit;
+  font: 700 1rem/1.45 "Atkinson Hyperlegible", "Nunito", system-ui, sans-serif;
 }
 
 .mwr-input,
@@ -436,6 +474,309 @@
   min-height: 1.2em;
 }
 
+.mwr-wrap {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.mwr-btn.small {
+  min-height: 36px;
+  padding: 6px 11px;
+  font-size: 0.85rem;
+}
+
+.mwr-btn[aria-pressed="true"] {
+  border-color: #0f766e;
+  background: #ecfdf5;
+  color: #115e59;
+}
+
+.mwr-btn:focus-visible,
+.mwr-frame:focus-visible,
+.mwr-icon-btn:focus-visible {
+  outline: 3px solid #fbbf24;
+  outline-offset: 2px;
+}
+
+.mwr-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #25364a;
+  font-weight: 800;
+}
+
+.mwr-select.compact {
+  width: auto;
+  min-height: 38px;
+}
+
+.mwr-textarea.short {
+  min-height: 84px;
+}
+
+.mwr-sub {
+  margin: 16px 0 6px;
+}
+
+.mwr-notice {
+  margin: 10px 0;
+  padding: 10px 14px;
+  border-left: 5px solid #0f766e;
+  border-radius: 10px;
+  background: #ecfdf5;
+  color: #134e4a;
+  font-weight: 700;
+}
+
+.mwr-tour {
+  margin-bottom: 14px;
+  border-color: #c4b5fd;
+  background: #f5f3ff;
+}
+
+.mwr-tour ol {
+  margin: 0 0 10px;
+  padding-left: 1.2rem;
+}
+
+.mwr-rep {
+  display: grid;
+  align-content: center;
+  gap: 4px;
+}
+
+.mwr-rep-state {
+  color: #526174;
+  font-weight: 700;
+}
+
+.mwr-rep[aria-pressed="true"] .mwr-rep-state {
+  color: #115e59;
+}
+
+.mwr-frames {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.mwr-frame {
+  min-height: 40px;
+  padding: 7px 12px;
+  border: 2px dashed #94a3b8;
+  border-radius: 999px;
+  background: #fff;
+  color: #1e3a8a;
+  cursor: pointer;
+  font: 800 0.9rem "Atkinson Hyperlegible", "Nunito", system-ui, sans-serif;
+}
+
+.mwr-stem-home {
+  background: #fefce8;
+  color: #713f12;
+}
+
+.mwr-exemplar {
+  margin: 12px 0;
+}
+
+.mwr-exemplar summary {
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.mwr-exemplar blockquote {
+  margin: 8px 0;
+  padding: 8px 12px;
+  border-left: 4px solid #94a3b8;
+  background: #f8fafc;
+}
+
+.mwr-dims,
+.mwr-checks,
+.mwr-badges,
+.mwr-anchors,
+.mwr-own,
+.mwr-rounds,
+.mwr-bars {
+  margin: 10px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mwr-dims {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mwr-dims li {
+  padding: 4px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: #fff;
+  color: #475569;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.mwr-dims li.is-on {
+  border-color: #0f766e;
+  background: #ecfdf5;
+  color: #115e59;
+}
+
+.mwr-checks li {
+  margin: 6px 0;
+  padding: 8px 12px;
+  border-left: 4px solid #94a3b8;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.mwr-checks li.is-on {
+  border-color: #0f766e;
+}
+
+.mwr-checks li.is-flag {
+  border-color: #b45309;
+  background: #fffbeb;
+}
+
+.mwr-mark {
+  padding: 0 3px;
+  border-radius: 4px;
+  color: inherit;
+}
+
+.mwr-mark-reason {
+  background: #fde68a;
+}
+
+.mwr-mark-concept {
+  background: #bfdbfe;
+}
+
+.mwr-mark-unit {
+  background: #bbf7d0;
+}
+
+.mwr-add {
+  padding: 0 3px;
+  border-radius: 4px;
+  background: #bbf7d0;
+  color: #14532d;
+}
+
+.mwr-del {
+  color: #9f1239;
+}
+
+.mwr-legend {
+  color: #526174;
+  font-size: 0.82rem;
+}
+
+.mwr-pill {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: #334155;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.mwr-rounds li {
+  margin: 8px 0;
+}
+
+.mwr-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mwr-bars li {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) 2fr auto;
+  gap: 10px;
+  align-items: center;
+  margin: 6px 0;
+}
+
+.mwr-bar {
+  display: block;
+  height: 12px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #e2e8f0;
+}
+
+.mwr-bar > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #5b21b6, #0f766e);
+}
+
+.mwr-gallery {
+  margin: 0;
+  padding: 12px 14px;
+  border-left: 5px solid #5b21b6;
+  border-radius: 10px;
+  background: #f5f3ff;
+}
+
+.mwr-thumb,
+.mwr-replay {
+  display: block;
+  max-width: 100%;
+  margin: 8px 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.mwr-anchors li,
+.mwr-own li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 6px 0;
+}
+
+.mwr-foot-note {
+  display: grid;
+  gap: 4px;
+}
+
+/* Docked: a side panel (bottom sheet on phones) that leaves the board usable. */
+.mwr-overlay.is-docked {
+  inset: 0 0 0 auto;
+  display: none;
+  width: min(460px, 100vw);
+  padding: 0;
+  background: transparent;
+  backdrop-filter: none;
+  pointer-events: none;
+}
+
+.mwr-overlay.is-docked.is-open {
+  display: block;
+}
+
+.mwr-overlay.is-docked .mwr-dialog {
+  width: 100%;
+  height: 100dvh;
+  max-height: none;
+  border-width: 0 0 0 2px;
+  border-radius: 18px 0 0 18px;
+  pointer-events: auto;
+}
+
 @media (max-width: 760px) {
   .mwr-overlay {
     padding: 0;
@@ -447,9 +788,18 @@
     border: 0;
     border-radius: 0;
   }
-  .mwr-steps {
-    overflow-x: auto;
-    grid-template-columns: repeat(5, minmax(105px, 1fr));
+  .mwr-overlay.is-docked {
+    inset: auto 0 0 0;
+    width: 100vw;
+  }
+  .mwr-overlay.is-docked .mwr-dialog {
+    height: 62dvh;
+    min-height: 0;
+    border-width: 2px 0 0;
+    border-radius: 18px 18px 0 0;
+  }
+  .mwr-head {
+    flex-wrap: wrap;
   }
   .mwr-grid,
   .mwr-evidence-grid {
@@ -465,6 +815,24 @@
   .mwr-foot {
     padding: 11px 14px;
   }
+  .mwr-foot {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .mwr-foot .mwr-btn {
+    flex: 1 1 auto;
+    white-space: nowrap;
+  }
+  .mwr-progress {
+    width: 100%;
+  }
+  .mwr-bars li {
+    grid-template-columns: 1fr auto;
+  }
+  .mwr-bar {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
   .mwb-more-menu {
     position: fixed;
     top: 72px;
@@ -478,9 +846,37 @@
   }
 }
 
+/* Printable portfolio */
+#mwrPortfolio {
+  display: none;
+}
+
 @media print {
   .mwr-overlay,
   .mwb-more-tools {
     display: none !important;
+  }
+
+  body.mwr-printing > *:not(#mwrPortfolio) {
+    display: none !important;
+  }
+
+  body.mwr-printing #mwrPortfolio {
+    display: block;
+    padding: 18px;
+    color: #0f172a;
+    font-family: "Atkinson Hyperlegible", "Nunito", system-ui, sans-serif;
+  }
+
+  .mwr-pf-cycle {
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #94a3b8;
+    break-inside: avoid;
+  }
+
+  #mwrPortfolio img {
+    max-width: 320px;
+    border: 1px solid #94a3b8;
   }
 }

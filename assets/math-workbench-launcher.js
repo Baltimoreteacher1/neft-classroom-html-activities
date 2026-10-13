@@ -68,6 +68,10 @@
     return "";
   }
 
+  // The Workbench page itself reuses this map for its opt-in "Start from a lesson"
+  // picker, so there is exactly one standard -> preset table.
+  window.NTWorkbenchLauncher = Object.freeze({ presetFor: presetFor });
+
   // Lessons open a CLEAN Workbench: do NOT auto-stage a preset problem, tools, or
   // background from the lesson (that surprised students by "inserting" a problem
   // for them). The plain Workbench URL is left in place. The preset deep-linking
@@ -221,6 +225,13 @@
       nav.classList.remove("mwb-typing");
     });
     lessonAwareHref(a);
+    // Still opt-in: the link only NAMES the lesson (?lesson=4-2). The Workbench opens
+    // clean and offers "Start from lesson 4-2?" — nothing is placed unless the student
+    // says yes. Group and catch-up variants (4-2-group1) point at their base lesson.
+    var lm = /^\/lessons\/(\d{1,2}-\d{1,2})(?:-[a-z0-9]+)?\//i.exec(location.pathname);
+    if (lm && a.href.indexOf("lesson=") < 0) {
+      a.href = WORKBENCH_URL + "?lesson=" + encodeURIComponent(lm[1]);
+    }
 
     // Geometry lessons (Unit 10 / 3D solids / nets) mount a twin NetFold 3D
     // floating launcher so students can open NetFold Pro from any 3D lesson.

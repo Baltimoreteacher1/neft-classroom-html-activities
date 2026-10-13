@@ -1,0 +1,551 @@
+/* Math Workbench shell layer — loaded AFTER the inline <style> so it wins at equal
+ * specificity. Owns: compact one-row top bar, first-viewport empty state, phone/tablet
+ * layout (bottom tool bar), recents + tool search, first-run tour, lesson starter,
+ * Access additions. Board/object styling stays in index.html. */
+
+/* ------------------------------------------------------------------ top bar */
+.topbar {
+  gap: 10px;
+  padding: 6px 12px;
+}
+.brand,
+.brand .titles {
+  flex: none;
+  min-width: auto;
+}
+.brand h1 {
+  font-size: 1.02rem;
+}
+.brand .logo {
+  width: 36px;
+  height: 36px;
+}
+.top-actions {
+  flex-wrap: nowrap;
+  gap: 6px;
+  min-width: 0;
+}
+/* Every top-bar button is icon-only by default; the four primaries earn a label
+ * only when the screen is wide enough to show them without wrapping. */
+.topbar .tbtn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  justify-content: center;
+}
+.topbar .tbtn .txt {
+  display: none;
+}
+@media (min-width: 1300px) {
+  .topbar #reasoningStudioBtn,
+  .topbar #guideBtn,
+  .topbar #liveBtn,
+  .topbar #multBtn {
+    width: auto;
+    padding: 0 12px;
+  }
+  .topbar #reasoningStudioBtn .txt,
+  .topbar #guideBtn .txt,
+  .topbar #liveBtn .txt,
+  .topbar #multBtn .txt {
+    display: inline;
+  }
+}
+@media (max-width: 1100px) {
+  .brand .eyebrow {
+    display: none;
+  }
+}
+.mwb-more-tools > summary {
+  min-height: 40px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+/* Inside the More menu every item keeps its label. */
+.mwb-more-menu .tbtn {
+  width: auto;
+  height: auto;
+  min-height: 42px;
+  padding: 0 12px;
+  justify-content: flex-start;
+}
+.mwb-more-menu .tbtn .txt {
+  display: inline;
+}
+.mwb-more-menu {
+  max-height: min(70vh, 520px);
+  overflow-y: auto;
+}
+
+/* --------------------------------------------------- first-viewport empty state */
+/* In-flow + sticky: it sits at the top of the visible board whatever the scroll
+ * position or sheet height, instead of centring in the three-screen-tall sheet. */
+.empty-hint {
+  position: sticky;
+  top: 12%;
+  left: auto;
+  transform: none;
+  margin: 0 auto;
+  width: min(440px, 100%);
+  max-width: none;
+  padding: 24px 20px 0;
+  box-sizing: border-box;
+}
+.empty-hint .big {
+  font-size: 2.2rem;
+  margin-bottom: 2px;
+}
+.empty-hint h2 {
+  color: #6b7c93;
+}
+
+/* ------------------------------------------------------------ phone / tablet */
+@media (max-width: 720px) {
+  .topbar {
+    padding: 5px 8px;
+    gap: 6px;
+  }
+  .brand .titles {
+    display: none;
+  }
+  .top-actions {
+    gap: 3px;
+    flex: 1;
+    justify-content: flex-end;
+  }
+  .topbar .tbtn {
+    width: 38px;
+    height: 38px;
+  }
+  .save-pill {
+    padding: 4px 7px;
+    font-size: 0.64rem;
+  }
+  .mwb-more-tools > summary {
+    padding: 0 9px;
+    min-height: 38px;
+  }
+  /* Bottom tool bar: the board gets the full width. */
+  .stage {
+    flex-direction: column;
+  }
+  .workspace {
+    order: 1;
+    flex: 1 1 0;
+    min-height: 0;
+  }
+  .rail {
+    order: 2;
+    width: 100%;
+    flex: none;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-right: 0;
+    border-top: 1px solid var(--line);
+    padding: 6px 8px;
+    gap: 6px;
+  }
+  .rail .tool {
+    flex: none;
+    width: 52px;
+    height: 52px;
+    max-height: none;
+    aspect-ratio: auto;
+  }
+  .rail .op-quick {
+    flex: none;
+    display: flex;
+    gap: 4px;
+    margin: 0;
+  }
+  .rail .opq,
+  .rail .opq.wide {
+    width: 36px;
+    height: 36px;
+    max-height: none;
+    aspect-ratio: auto;
+    grid-column: auto;
+  }
+  .rail-sep {
+    flex: none;
+    width: 1px;
+    height: 34px;
+    margin: 0 3px;
+  }
+  .flyout {
+    left: 8px;
+    right: 8px;
+    top: auto;
+    bottom: 72px;
+    width: auto;
+    max-height: 60%;
+  }
+  .guide-drawer {
+    left: 8px;
+    width: calc(100% - 16px);
+  }
+  .empty-hint {
+    top: 8%;
+    padding: 10px 62px 0 14px; /* clear of the page tabs on the right edge */
+    width: 100%;
+  }
+  .empty-hint h2 {
+    font-size: 1.1rem;
+  }
+}
+@media (max-width: 374px) {
+  .top-actions {
+    flex-wrap: wrap;
+  }
+}
+@media (min-width: 721px) and (max-width: 1100px) {
+  :root {
+    --rail-w: 70px;
+  }
+}
+
+/* ------------------------------------------------------------------ utilities */
+.wbx-sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+}
+.wbx-muted {
+  color: var(--muted, #5b6b82);
+  font-size: 0.86rem;
+}
+.wbx-input {
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 10px;
+  box-sizing: border-box;
+  border: 2px solid #b8c7d6;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink, #14223a);
+  font: inherit;
+  font-weight: 700;
+}
+.wbx-input:focus-visible,
+.wbx-link:focus-visible,
+.wbx-result:focus-visible,
+.wbx-chip:focus-visible,
+.wbx-tool:focus-visible,
+.wbx-recent-btn:focus-visible,
+.wbx-skip:focus-visible {
+  outline: 3px solid #fbbf24;
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------- dialogs (gate, outline, lesson) */
+.wbx-gate-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 31000;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.55);
+}
+.wbx-gate {
+  width: min(520px, 100%);
+  max-height: 88vh;
+  overflow: auto;
+  padding: 20px 22px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: var(--shadow-lg);
+}
+.wbx-gate h2 {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+}
+.wbx-gate-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.wbx-gate-row a.tbtn {
+  text-decoration: none;
+}
+.wbx-outline-list {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0;
+  padding: 0 0 0 22px;
+}
+.wbx-outline-list .tbtn {
+  width: 100%;
+  height: auto;
+  min-height: 40px;
+  padding: 6px 10px;
+  justify-content: flex-start;
+  text-align: left;
+  white-space: normal;
+}
+.wbx-skip {
+  position: absolute;
+  left: 8px;
+  top: -60px;
+  z-index: 32000;
+  padding: 8px 12px;
+  border: 2px solid var(--teal);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 800;
+}
+.wbx-skip:focus {
+  top: 8px;
+}
+.wbx-fieldset {
+  margin: 12px 0 0;
+  padding: 0;
+  border: 0;
+}
+.wbx-fieldset legend {
+  margin-bottom: 6px;
+  font-weight: 800;
+}
+.wbx-offer {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 6px 0;
+  padding: 10px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.92rem;
+}
+.wbx-offer input {
+  margin-top: 4px;
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+.wbx-banner {
+  position: fixed;
+  top: 62px;
+  left: 50%;
+  z-index: 29000;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  max-width: calc(100vw - 16px);
+  padding: 8px 12px;
+  transform: translateX(-50%);
+  border: 1.5px solid var(--teal);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: var(--shadow);
+  font-weight: 800;
+}
+
+/* ------------------------------------------------------- empty-state links */
+.wbx-hint-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  justify-content: center;
+  margin-top: 12px;
+  pointer-events: auto;
+}
+.wbx-link {
+  border: 0;
+  background: transparent;
+  color: var(--teal);
+  font-weight: 800;
+  font-size: 0.86rem;
+  text-decoration: underline;
+  cursor: pointer;
+  min-height: 36px;
+  padding: 0 4px;
+}
+
+/* ------------------------------------------------ tool search + recent tools */
+.wbx-tool {
+  position: relative;
+  flex: none;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-height: 60px;
+  border-radius: 13px;
+  border: 1.5px dashed #b8c6d8;
+  background: #fff;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+}
+.wbx-tool .glyph {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+.wbx-tool .lbl {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: var(--muted);
+}
+.wbx-tool:hover,
+.wbx-tool[aria-expanded="true"] {
+  border-color: var(--teal);
+  background: var(--teal-light);
+}
+.wbx-recent {
+  display: grid;
+  gap: 3px;
+}
+.wbx-recent[hidden] {
+  display: none;
+}
+.wbx-recent-btn {
+  min-height: 26px;
+  padding: 0 3px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--teal);
+  font-size: 0.55rem;
+  font-weight: 800;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wbx-pop {
+  position: fixed;
+  left: calc(var(--rail-w) + 8px);
+  top: 120px;
+  z-index: 27000;
+  width: min(320px, calc(100vw - 16px));
+  max-height: min(70vh, 520px);
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: var(--shadow-lg);
+}
+.wbx-pop-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 800;
+}
+.wbx-results {
+  display: grid;
+  gap: 4px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.wbx-results-head {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.wbx-result {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink);
+  font-weight: 800;
+  text-align: left;
+}
+.wbx-result:hover {
+  border-color: var(--teal);
+  background: var(--teal-light);
+}
+.wbx-result-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 36px;
+  flex: none;
+}
+.wbx-result-icon svg {
+  max-width: 44px;
+  max-height: 34px;
+}
+@media (max-width: 720px) {
+  .wbx-tool {
+    flex: none;
+    width: 52px;
+    height: 52px;
+    max-height: none;
+    aspect-ratio: auto;
+  }
+  .wbx-recent {
+    display: flex;
+    flex: none;
+    gap: 4px;
+  }
+  .wbx-recent-btn {
+    width: 64px;
+    min-height: 40px;
+  }
+  .wbx-pop {
+    left: 8px;
+    right: 8px;
+    top: auto;
+    bottom: 74px;
+    width: auto;
+  }
+}
+
+/* --------------------------------------------------------------------- tour */
+.wbx-tour-ring {
+  position: fixed;
+  z-index: 33000;
+  border: 3px solid #fbbf24;
+  border-radius: 14px;
+  box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.45);
+  pointer-events: none;
+}
+.wbx-tour {
+  position: fixed;
+  z-index: 33001;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: var(--shadow-lg);
+}
+.wbx-tour p {
+  margin: 0 0 8px;
+}
+.wbx-tour-text {
+  font-weight: 800;
+  line-height: 1.4;
+}
+.wbx-tour-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+.wbx-tour .tbtn {
+  width: auto;
+  padding: 0 12px;
+}

@@ -1,0 +1,675 @@
+/* Math Workbench — styles for the wb-*.js board extensions.
+ * Tokens (--ink, --line, --teal, ...) come from index.html. Controls are >=44px,
+ * focus rings are visible, and nothing animates in calm mode. */
+
+.wbx {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid var(--line, #d7e0ec);
+  border-radius: 12px;
+  font-family: "Atkinson Hyperlegible", "Nunito", system-ui, sans-serif;
+  color: var(--ink, #14223a);
+}
+
+.wbx-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.wbx-title {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted, #5b6b82);
+}
+
+.wbx-num,
+.wbx-txt {
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 4px 8px;
+  border: 1.5px solid var(--line, #d7e0ec);
+  border-radius: 8px;
+  font: 800 0.9rem/1.2 inherit;
+  color: var(--ink, #14223a);
+  background: #fff;
+}
+
+.wbx-num {
+  width: 64px;
+}
+
+.wbx-txt {
+  width: 92px;
+}
+
+.wbx-num:focus-visible,
+.wbx-txt:focus-visible,
+.wbx-btn:focus-visible,
+.wbx [tabindex]:focus-visible {
+  outline: 3px solid #fbbf24;
+  outline-offset: 2px;
+}
+
+.wbx-btn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 6px 12px;
+  border: 1.5px solid var(--line, #d7e0ec);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink, #14223a);
+  font: 800 0.82rem/1.1 inherit;
+  cursor: pointer;
+}
+
+.wbx-btn:hover {
+  background: var(--teal-light, rgba(32, 95, 166, 0.1));
+}
+
+.wbx-btn[aria-pressed="true"],
+.wbx-btn.on {
+  border-color: var(--teal, #205fa6);
+  background: var(--teal-light, rgba(32, 95, 166, 0.1));
+  color: var(--teal-d, #17487f);
+}
+
+.wbx-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.wbx-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.wbx-live {
+  margin: 0;
+  min-height: 1.1em;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted, #5b6b82);
+}
+
+.wbx-read {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+.wbx svg {
+  display: block;
+  max-width: none;
+}
+
+.wbx .cell {
+  cursor: pointer;
+}
+
+.wbx .cell:focus-visible {
+  outline: none;
+}
+
+.wbx-cursor {
+  fill: none;
+  stroke: #fbbf24;
+  stroke-width: 3;
+  pointer-events: none;
+}
+
+body.a11y-contrast .wbx {
+  border-color: #14223a;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wbx * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+body.a11y-calm .wbx * {
+  transition: none !important;
+  animation: none !important;
+}
+
+@media print {
+  .wbx-btn,
+  .wbx-num,
+  .wbx-txt {
+    border-color: #999;
+  }
+
+  /* controls and hints are for the screen; the model and the student's entries print */
+  .obj .wbx-btn,
+  .obj .wbx-range,
+  .obj .wbx-live,
+  .obj .wbx-ftn.split + .wbx-row {
+    display: none !important;
+  }
+}
+
+/* ---------- grids, area model, balance ---------- */
+.wbx-hundred svg {
+  touch-action: none;
+  cursor: pointer;
+}
+
+.wbx-dectable {
+  border-collapse: separate;
+  border-spacing: 4px;
+}
+
+.wbx-dectable th {
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: var(--teal-d, #17487f);
+  text-align: center;
+}
+
+.wbx-balstage {
+  display: grid;
+  place-items: center;
+}
+
+.wbx-baltwo {
+  display: grid;
+  gap: 6px;
+}
+
+.wbx-hundred {
+  max-width: 300px;
+}
+
+.wbx-balance {
+  width: 400px;
+}
+
+.wbx-hundred svg:not(:focus) .wbx-cursor {
+  display: none;
+}
+
+/* ---------- factor tree ---------- */
+.wbx-ft {
+  overflow: visible;
+}
+
+.wbx-ftcol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.wbx-ftrow {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding-top: 8px;
+  border-top: 2px solid var(--line, #d7e0ec);
+}
+
+.wbx-ftn {
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 999px;
+  border: 2px solid var(--teal, #205fa6);
+  background: #fff;
+  font: 900 1rem/1 inherit;
+  color: var(--ink, #14223a);
+  cursor: pointer;
+}
+
+.wbx-ftn.prime {
+  background: #d1fae5;
+  border-color: #2c7d6b;
+}
+
+.wbx-ftn.split {
+  border-style: dashed;
+}
+
+.wbx-ftn.done {
+  background: #eef3f9;
+}
+
+.wbx-ftn:focus-visible {
+  outline: 3px solid #fbbf24;
+  outline-offset: 2px;
+}
+
+/* ---------- ladder, fraction strip, conversions ---------- */
+.wbx-ladtable {
+  display: grid;
+  gap: 4px;
+}
+
+.wbx-ladrow {
+  display: grid;
+  grid-template-columns: 54px 70px 70px;
+  align-items: center;
+  gap: 6px;
+  font-size: 1.05rem;
+  text-align: center;
+}
+
+.wbx-ladrow b {
+  padding: 4px 0;
+  border-top: 2px solid var(--ink, #14223a);
+}
+
+.wbx-ladd {
+  text-align: right;
+  font-weight: 900;
+  color: var(--teal-d, #17487f);
+}
+
+.wbx-fdstage {
+  overflow-x: auto;
+}
+
+.wbx-convrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 0;
+  border-bottom: 1px solid var(--line-2, #e8eef6);
+  font-weight: 800;
+}
+
+/* ---------- nets, composite, prism volume ---------- */
+.wbx-range {
+  width: 150px;
+  min-height: 44px;
+  accent-color: var(--teal, #205fa6);
+}
+
+.wbx-netstage,
+.wbx-compstage,
+.wbx-pvstage {
+  overflow: visible;
+  display: grid;
+  place-items: center;
+}
+
+/* ---------- linked ratio set, plot and connect ---------- */
+.wbx-lktable {
+  border-collapse: separate;
+  border-spacing: 4px;
+}
+
+.wbx-lktable th {
+  padding-right: 6px;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-align: right;
+  color: var(--muted, #5b6b82);
+}
+
+.wbx-lktable .top {
+  color: #205fa6;
+}
+
+.wbx-lktable .bottom {
+  color: #2c7d6b;
+}
+
+.wbx-lkbody {
+  display: grid;
+  gap: 10px;
+}
+
+.wbx-plot svg {
+  touch-action: none;
+}
+
+.wbx-plot svg:not(:focus) .wbx-cursor {
+  display: none;
+}
+
+.wbx-pt {
+  cursor: grab;
+}
+
+.wbx-pt:focus-visible circle {
+  stroke: #fbbf24;
+  stroke-width: 4;
+}
+
+.wbx-plist {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+/* ---------- mean & spread panel, explain card ---------- */
+.wbx-stat {
+  margin-top: 8px;
+}
+
+.wbx-explain {
+  position: fixed;
+  z-index: 10050;
+  width: 360px;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 120px);
+  overflow: auto;
+  box-shadow: var(--shadow-lg, 0 18px 50px rgba(15, 23, 42, 0.18));
+}
+
+.wbx-explain-text {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.wbx-explain-challenge {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #fffaf0;
+  border: 1px solid var(--cream-line, #eadfc9);
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.wbx-chip {
+  min-height: 44px;
+}
+
+/* ---------- selection, locking, guides, Board tools panel ---------- */
+.obj.msel > .obj-inner,
+.obj.msel .obj-scale {
+  outline: 3px dashed #7c3aed;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.obj.locked .rs {
+  display: none !important;
+}
+
+.obj.locked .obj-tools button:not(.wbx-lockbtn) {
+  display: none;
+}
+
+.obj.is-trace {
+  opacity: 0.35;
+}
+
+.obj.is-trace svg [data-stroke] {
+  stroke-dasharray: 7 5;
+}
+
+body[data-draw="1"] .obj.is-trace {
+  pointer-events: none !important;
+}
+
+.wbx-lasso {
+  position: absolute;
+  z-index: 40;
+  border: 2px dashed #7c3aed;
+  background: rgba(124, 58, 237, 0.08);
+  pointer-events: none;
+}
+
+.wbx-guide {
+  position: absolute;
+  z-index: 39;
+  pointer-events: none;
+  background: #f43f5e;
+}
+
+.wbx-guide.v {
+  width: 1px;
+}
+
+.wbx-guide.h {
+  height: 1px;
+}
+
+.wbx-boardbtn {
+  position: fixed;
+  right: 92px;
+  bottom: 60px;
+  z-index: 9000;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 2px solid var(--teal, #205fa6);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--teal-d, #17487f);
+  font: 900 0.85rem/1 "Atkinson Hyperlegible", "Nunito", system-ui, sans-serif;
+  box-shadow: var(--shadow, 0 6px 20px rgba(15, 23, 42, 0.1));
+  cursor: pointer;
+}
+
+.wbx-boardbtn:focus-visible {
+  outline: 3px solid #fbbf24;
+  outline-offset: 2px;
+}
+
+.wbx-panel {
+  position: fixed;
+  right: 92px;
+  bottom: 112px;
+  z-index: 9001;
+  width: 360px;
+  max-width: calc(100vw - 100px);
+  max-height: calc(100vh - 190px);
+  overflow: auto;
+  box-shadow: var(--shadow-lg, 0 18px 50px rgba(15, 23, 42, 0.18));
+}
+
+.wbx-panel[hidden] {
+  display: none;
+}
+
+.wbx-sec > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.wbx-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 6px;
+}
+
+.wbx-stack {
+  display: grid;
+  gap: 8px;
+}
+
+@media (max-width: 760px) {
+  .wbx-boardbtn {
+    right: 70px;
+    bottom: 96px;
+  }
+
+  .wbx-panel {
+    left: 8px;
+    right: 8px;
+    width: auto;
+    max-width: none;
+    bottom: 148px;
+  }
+}
+
+@media print {
+  .wbx-boardbtn,
+  .wbx-panel,
+  .wbx-explain,
+  .wbx-lasso,
+  .wbx-guide {
+    display: none !important;
+  }
+}
+
+/* ---------- straightedge guide and pen palette extras ---------- */
+.wbx-ruler {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 45;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
+.wbx-ruler[hidden] {
+  display: none;
+}
+
+.wbx-ruler-body {
+  position: relative;
+  height: 22px;
+  margin-top: -11px;
+  border: 2px solid #b45309;
+  border-radius: 4px;
+  background: rgba(253, 230, 138, 0.55);
+}
+
+.wbx-ruler-ticks i {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  background: #92400e;
+}
+
+.wbx-ruler-end,
+.wbx-ruler-grip {
+  position: absolute;
+  top: 0;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  border: 2px solid #b45309;
+  border-radius: 50%;
+  background: #fff7e0;
+  color: #92400e;
+  font-weight: 900;
+  cursor: grab;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.wbx-ruler-end.a {
+  left: 0;
+}
+
+.wbx-ruler-end:focus-visible,
+.wbx-ruler-grip:focus-visible {
+  outline: 3px solid #fbbf24;
+  outline-offset: 2px;
+}
+
+.wbx-ruler-angle {
+  position: absolute;
+  top: -34px;
+  transform: translateX(-50%);
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid #b45309;
+  font: 900 0.75rem/1.2 "Atkinson Hyperlegible", "Nunito", system-ui, sans-serif;
+  color: #92400e;
+}
+
+.wbx-colorpick {
+  width: 56px;
+  height: 44px;
+  padding: 0;
+  border: 1.5px solid var(--line, #d7e0ec);
+  border-radius: 8px;
+  background: #fff;
+}
+
+@media print {
+  .wbx-ruler {
+    display: none !important;
+  }
+}
+
+/* ---------- math menu, pictures, saved pages ---------- */
+.wbx-mathmenu {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 6px);
+  display: grid;
+  grid-template-columns: repeat(4, 44px);
+  gap: 4px;
+  z-index: 8;
+}
+
+.wbx-mathmenu[hidden] {
+  display: none;
+}
+
+.wbx-image img {
+  display: block;
+  max-width: none;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  user-select: none;
+}
+
+.wbx-image {
+  padding: 4px;
+  background: transparent;
+  border: 1px dashed var(--line, #d7e0ec);
+}
+
+.wbx-alt {
+  width: 100%;
+}
+
+@media print {
+  .wbx-alt {
+    display: none;
+  }
+
+  .wbx-image {
+    border: 0;
+  }
+}
+
+.wbx-saverow {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 8px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line-2, #e8eef6);
+}
+
+.wbx-saverow .wbx-btn {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+.wbx-savemeta {
+  display: grid;
+}
+
+.wbx-thumb {
+  width: 80px;
+  height: auto;
+  max-height: 60px;
+  object-fit: cover;
+  border: 1px solid var(--line, #d7e0ec);
+  border-radius: 6px;
+}

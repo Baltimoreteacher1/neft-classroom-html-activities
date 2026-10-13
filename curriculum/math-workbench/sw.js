@@ -7,7 +7,7 @@
  * Never intercepts /api/ calls or non-GET requests, so the optional reasoning
  * coach and Live Board always use current network responses.
  */
-const CACHE = "mwb-v2";
+const CACHE = "mwb-v3";
 // GeoGebra's web app is large but fully static+versioned: cache-first means
 // the Graphing calculator keeps working offline after one online use.
 const GGB_CACHE = "mwb-ggb-v1";
@@ -15,10 +15,55 @@ const PRECACHE = [
   "./",
   "./index.html",
   "./reasoning-data.js",
+  "./reasoning-tags.js",
+  "./reasoning-exemplars.js",
+  "./reasoning-i18n.js",
+  "./reasoning-messages.js",
+  "./reasoning-analyze.js",
+  "./reasoning-store.js",
+  "./reasoning-tools.js",
+  "./reasoning-stamp.js",
+  "./reasoning-state.js",
+  "./reasoning-coach.js",
+  "./reasoning-panels.js",
+  "./reasoning-teacher.js",
   "./reasoning-studio.js",
   "./reasoning-studio.css",
+  // Board extensions (index.html loads these before its own script).
+  "./wb-core.js",
+  "./wb-math.js",
+  "./wb-history.js",
+  "./wb-storage.js",
+  "./wb-tools-grids.js",
+  "./wb-tools-number.js",
+  "./wb-tools-geo.js",
+  "./wb-tools-linked.js",
+  "./wb-stats.js",
+  "./wb-explain.js",
+  "./wb-edit.js",
+  "./wb-draw.js",
+  "./wb-mathtext.js",
+  "./wb-export.js",
+  "./wb-saves.js",
+  "./wb-tools.css",
+  "./wb-shell.css",
+  "./wb-extras.css",
+  "./wb-shell.js",
+  "./wb-teacher.js",
+  "./wb-i18n-es.js",
+  "./wb-i18n-es-panels.js",
+  "./wb-i18n.js",
+  "./wb-reference-es.js",
+  "./wb-reference.js",
+  "./wb-access.js",
+  "./wb-calc.js",
+  "./wb-lesson.js",
   "/assets/mobile-access.css",
   "/assets/favicon.svg",
+  // Loaded by the page itself: keep the offline first load looking right.
+  "/assets/fonts/hub-curriculum.css",
+  "/assets/math-workbench-launcher.js",
+  "/assets/formula-popup.js",
 ];
 
 self.addEventListener("install", (e) => {

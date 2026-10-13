@@ -1,145 +1,191 @@
+/* Reasoning Studio core: rendering, navigation and event handling.
+ * Panels, analysis, storage, tools, coach and the teacher view live in their
+ * own files (loaded before this one). This file owns the event handlers for
+ * the student flow. */
 (function (root) {
   "use strict";
 
-  const DATA = root.MWReasoningData;
-  const STORE = "neft.mathWorkbench.reasoning.v1";
-  const COACH = "neft.mathWorkbench.reasoningCoach";
-  const STEPS = ["Understand", "Model", "Explain", "Revise", "Evidence"];
-  if (!DATA) return;
+  const D = root.MWReasoningData;
+  const A = root.MWRAnalyzer;
+  const I = root.MWRI18n;
+  const S = root.MWRStore;
+  const T = root.MWRTools;
+  const P = root.MWRPanels;
+  const TP = root.MWRTeacher;
+  const M = root.MWRState;
+  const C = root.MWRCoach;
+  const STAMP = root.MWRStamp;
+  if (!(D && A && I && S && T && P && TP && M && C && STAMP)) return;
+
+  const LAST = M.LAST;
+  const PANELS = [P.setup, P.model, P.explain, P.revise, P.compare, P.evidence];
+  const MAX_ROUNDS = 5;
+  const CONNECTED = "connected-reasoning-visible";
 
   let overlay;
   let body;
   let foot;
+  let stepList;
   let returnFocus;
   let view = "student";
-  let sessions = loadSessions();
-  let state = freshState();
+  let ownIds = [];
+  let replay = null;
+  let dictation = null;
+  let draftTimer = 0;
+  let txToken = 0;
+  let lastKey = "";
 
-  function freshState() {
+  const worldLang = () => (root.__mwbLang === "es" ? "es" : "en");
+  const api = () => root.MathWorkbenchAPI || null;
+  let state = M.fresh(null, worldLang());
+
+  const t = (key, vars) => I.t(state.language, key, vars);
+  const esc = A.escapeHtml;
+  const track = (type, detail) => state.events.push({ type, detail: detail || "", at: Date.now() });
+  const skillOf = () => D.SKILLS[state.skill] || D.SKILLS.ratio;
+
+  function safeDigest() {
+    try {
+      const d = api() && api().getBoardDigest ? api().getBoardDigest() : null;
+      if (d) return d;
+    } catch (_) {}
+    return { items: [], numbers: [], strokeCount: 0, objectCount: 0, hasEquationText: false };
+  }
+
+  function runAnalysis(text) {
+    return D.analyze({
+      skill: state.skill,
+      response: text,
+      language: state.language,
+      level: state.level,
+      digest: safeDigest(),
+      representations: state.representations,
+      prompt: state.prompt,
+    });
+  }
+
+  /* ---------------- unfinished cycle ---------------- */
+  function scheduleDraft() {
+    clearTimeout(draftTimer);
+    draftTimer = setTimeout(() => {
+      if (!state.savedId && (state.prompt || state.firstDraft)) S.saveDraft(M.snapshot(state));
+    }, 500);
+  }
+
+  function restoreDraft() {
+    const draft = S.loadDraft();
+    if (draft && typeof draft === "object" && (draft.prompt || draft.firstDraft)) {
+      state = M.merge(M.fresh(null, worldLang()), draft);
+    }
+  }
+
+  /* ---------------- context for panels ---------------- */
+  function ctx() {
+    const sessions = S.loadSessions();
+    let boardProblem = false;
+    let selection = null;
+    try {
+      boardProblem =
+        Boolean(api() && api().getProblemText && api().getProblemText()) && !state.prompt.trim();
+      selection = api() && api().getSelectedObject ? api().getSelectedObject() : null;
+    } catch (_) {}
     return {
-      step: 0,
-      skill: "ratio",
-      wida: "2",
-      language: root.__mwbLang === "es" ? "es" : "en",
-      prompt: "",
-      representations: [],
-      firstDraft: "",
-      revised: "",
-      homeLanguage: "",
-      beforeConfidence: "2",
-      afterConfidence: "2",
-      analysis: null,
-      coach: null,
-      coachStatus: "",
-      linked: { a: 2, b: 3, factor: 4 },
-      events: [],
-      startedAt: new Date().toISOString(),
+      state,
+      lang: state.language,
+      t,
+      esc,
+      skill: skillOf(),
+      digest: safeDigest(),
+      store: S,
+      tools: T,
+      own: sessions.filter((s) => ownIds.includes(s.id)),
+      sessions,
+      storedCount: sessions.length,
+      retention: S.retentionDays(),
+      coachOn: S.coachEnabled(),
+      dictation: T.dictationSupported,
+      boardProblem,
+      selection,
+      fadeNotice: state.fadeNotice,
+      repFound: (rep) => (rep.kind === "words" ? null : A.repVerified(rep, safeDigest(), 0, "")),
+      teacherUnlocked: TP.unlocked(),
     };
   }
 
-  function esc(value) {
-    return String(value == null ? "" : value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
-  }
-
-  function snapshot() {
-    try {
-      return root.MathWorkbenchAPI ? root.MathWorkbenchAPI.getSnapshot() : {};
-    } catch (_) {
-      return {};
-    }
-  }
-
-  function loadSessions() {
-    try {
-      const parsed = JSON.parse(localStorage.getItem(STORE));
-      return Array.isArray(parsed) ? parsed.slice(0, 40) : [];
-    } catch (_) {
-      return [];
-    }
-  }
-
-  function saveSessions() {
-    try {
-      localStorage.setItem(STORE, JSON.stringify(sessions.slice(0, 40)));
-    } catch (_) {}
-  }
-
-  function track(type, detail) {
-    state.events.push({ type, detail: detail || "", at: Date.now() });
-  }
-
-  function buildToolbarMenu() {
-    const bar = document.querySelector(".top-actions");
-    if (!bar || document.getElementById("mwbMoreTools")) return;
-    const details = document.createElement("details");
-    details.id = "mwbMoreTools";
-    details.className = "mwb-more-tools";
-    details.innerHTML =
-      '<summary aria-label="Open more Workbench tools">••• More</summary><div class="mwb-more-menu"></div>';
-    const menu = details.querySelector(".mwb-more-menu");
-    // multBtn is deliberately NOT collected here. The Times Table is a
-    // reference a student reaches for mid-problem, so it stays in the top row
-    // where it can be tapped without opening a menu first; this builder used to
-    // pull it in and undo that placement at runtime.
-    ["bgTopBtn", "snapBtn", "calcBtn", "backupBtn", "openBtn", "helpBtn"].forEach((id) => {
-      const node = document.getElementById(id);
-      if (node) menu.appendChild(node);
-    });
-    bar.appendChild(details);
-    document.addEventListener("click", (event) => {
-      if (details.open && !details.contains(event.target)) details.open = false;
-    });
-  }
-
+  /* ---------------- mount ---------------- */
   function mount() {
-    buildToolbarMenu();
     overlay = document.createElement("div");
     overlay.className = "mwr-overlay";
     overlay.id = "reasoningStudio";
-    overlay.innerHTML =
-      '<section class="mwr-dialog" role="dialog" aria-modal="true" aria-labelledby="mwrTitle">' +
-      '<div class="mwr-head"><div class="mwr-title"><span class="mwr-title-mark" aria-hidden="true">↗</span>' +
-      '<div><h2 id="mwrTitle">Reasoning Studio</h2><p id="mwrSubtitle">Model · connect · explain · revise</p></div></div>' +
-      '<div class="mwr-btn-row"><button class="mwr-btn" data-action="teacher">Evidence view</button>' +
-      '<button class="mwr-icon-btn" data-action="close" aria-label="Close Reasoning Studio">✕</button></div></div>' +
-      '<nav class="mwr-steps" aria-label="Reasoning steps"></nav><div class="mwr-body"></div>' +
-      '<div class="mwr-foot"></div></section>';
+    overlay.innerHTML = P.shell();
     document.body.appendChild(overlay);
     body = overlay.querySelector(".mwr-body");
     foot = overlay.querySelector(".mwr-foot");
-    overlay.addEventListener("click", handleClick);
-    overlay.addEventListener("input", handleInput);
-    overlay.addEventListener("change", handleInput);
+    stepList = overlay.querySelector(".mwr-step-list");
+    overlay.addEventListener("click", onClick);
+    overlay.addEventListener("input", onInput);
+    overlay.addEventListener("change", onInput);
+    overlay.addEventListener("keydown", onKeys);
+    root.addEventListener("mwb:lang", onLang);
     document.getElementById("reasoningStudioBtn")?.addEventListener("click", open);
-    document.addEventListener("keydown", handleKeys);
+    restoreDraft();
     render();
+  }
+
+  /* ---------------- open / close / mode ---------------- */
+  function mode() {
+    const pref = S.getPref("mode", "");
+    if (pref === "dock" || pref === "modal") return pref;
+    return root.innerWidth >= 1100 ? "dock" : "modal";
+  }
+
+  function applyMode() {
+    const docked = mode() === "dock";
+    overlay.classList.toggle("is-docked", docked);
+    overlay.querySelector(".mwr-dialog").setAttribute("aria-modal", docked ? "false" : "true");
+    document.body.style.overflow = docked || !overlay.classList.contains("is-open") ? "" : "hidden";
   }
 
   function open() {
     returnFocus = document.activeElement;
+    view = "student";
+    if (!state.languageManual) state.language = worldLang();
     overlay.classList.add("is-open");
-    document.body.style.overflow = "hidden";
-    render();
-    overlay.querySelector("button, textarea, select, input")?.focus();
+    applyMode();
+    S.loadSessions();
+    ensureStemTx();
+    render({ focusFirst: true });
   }
 
   function close() {
+    T.stopSpeaking();
+    if (dictation) dictation.stop();
+    dictation = null;
+    state.dictating = "";
+    stopReplay();
     overlay.classList.remove("is-open");
     document.body.style.overflow = "";
+    scheduleDraft();
     if (returnFocus && typeof returnFocus.focus === "function") returnFocus.focus();
   }
 
-  function handleKeys(event) {
-    if (!overlay?.classList.contains("is-open")) return;
-    if (event.key === "Escape") close();
-    if (event.key !== "Tab") return;
-    const nodes = [...overlay.querySelectorAll("button:not(:disabled),input,select,textarea")].filter(
-      (node) => node.offsetParent !== null,
-    );
+  function onLang(event) {
+    state.language = event && event.detail && event.detail.lang === "es" ? "es" : "en";
+    state.languageManual = false;
+    ensureStemTx();
+    if (overlay.classList.contains("is-open")) render({ keepFocus: true });
+  }
+
+  function onKeys(event) {
+    // Keep the Workbench's global shortcuts (undo, delete, tool letters) out of the Studio.
+    event.stopPropagation();
+    if (event.key === "Escape") return close();
+    if (event.key !== "Tab" || mode() === "dock") return;
+    const nodes = [
+      ...overlay.querySelectorAll(
+        "button:not(:disabled),input:not([hidden]),select,textarea,summary",
+      ),
+    ].filter((n) => n.offsetParent !== null);
     if (!nodes.length) return;
     const first = nodes[0];
     const last = nodes[nodes.length - 1];
@@ -152,443 +198,547 @@
     }
   }
 
-  function handleInput(event) {
-    const key = event.target.dataset.field;
-    if (!key) return;
-    if (key.startsWith("linked.")) {
-      const sub = key.split(".")[1];
-      state.linked[sub] = Math.max(1, Math.min(20, Number(event.target.value) || 1));
-      updateLinkedPresentation();
-      return;
-    }
-    state[key] = event.target.value;
-    if (["skill", "wida", "language"].includes(key)) render();
+  /* ---------------- render ---------------- */
+  function live(message) {
+    const node = body.querySelector(".mwr-live");
+    if (node) node.textContent = message;
   }
 
-  function handleClick(event) {
-    const button = event.target.closest("[data-action]");
-    if (!button) return;
-    const action = button.dataset.action;
-    if (action === "close") return close();
-    if (action === "teacher") {
-      view = "teacher";
-      return render();
+  function paintStemHome() {
+    const node = body.querySelector("#mwrStemHome");
+    if (!node) return;
+    const info = I.HOME_LANGS[state.homeLang];
+    node.hidden = !state.stemTx;
+    node.textContent = state.stemTx;
+    node.dir = info && info.rtl ? "rtl" : "ltr";
+    const note = body.querySelector("#mwrStemNote");
+    if (note) note.hidden = Boolean(state.stemTx) || !state.stemTxFailed;
+  }
+
+  function renderHeader() {
+    overlay.querySelector("#mwrTitle").textContent = t("title");
+    overlay.querySelector("#mwrSubtitle").textContent = t("subtitle");
+    overlay.querySelector("#mwrDock").textContent = t(mode() === "dock" ? "hd.full" : "hd.dock");
+    const label =
+      view === "teacher"
+        ? t("hd.student")
+        : TP.unlocked()
+          ? t("hd.teacher")
+          : `🔒 ${t("hd.teacher")}`;
+    overlay.querySelector("#mwrViewBtn").textContent = label;
+    overlay.querySelector("#mwrClose").setAttribute("aria-label", t("hd.close"));
+    overlay.querySelector("#mwrSteps").setAttribute("aria-label", t("steps.label"));
+  }
+
+  function renderSteps() {
+    overlay.querySelector("#mwrSteps").classList.toggle("is-off", view === "teacher");
+    stepList.innerHTML = view === "teacher" ? "" : P.steps(ctx());
+  }
+
+  const renderFoot = () => {
+    foot.innerHTML = P.foot(ctx(), view);
+  };
+
+  function resumedNotice() {
+    if (!state.resumed || state.step >= LAST) return "";
+    return `<p class="mwr-notice" role="status">${esc(t("resume.note"))} <button type="button" class="mwr-btn small" data-action="new" data-keep="startover">${esc(t("resume.startOver"))}</button></p>`;
+  }
+
+  function render(opts) {
+    if (!overlay) return;
+    const o = opts || {};
+    const active = document.activeElement;
+    const inBody = active && body.contains(active);
+    const keep =
+      o.keepFocus === false || !inBody
+        ? ""
+        : active.getAttribute("data-keep") || active.getAttribute("data-field") || "";
+    const key = `${view}${state.step}`;
+    const scroll = key === lastKey ? body.scrollTop : 0;
+    stopReplay();
+    renderHeader();
+    renderSteps();
+    const c = ctx();
+    body.innerHTML =
+      view === "teacher"
+        ? TP.render(c)
+        : `<div class="mwr-wrap">${resumedNotice()}${PANELS[state.step](c)}</div>`;
+    renderFoot();
+    lastKey = key;
+    body.scrollTop = scroll;
+    const heading = body.querySelector("h3");
+    if (heading) heading.tabIndex = -1;
+    paintStemHome();
+    afterRender();
+    let target = null;
+    if (keep)
+      target =
+        body.querySelector(`[data-keep="${keep}"]`) || body.querySelector(`[data-field="${keep}"]`);
+    if (!target && o.focusFirst) target = body.querySelector("[data-autofocus]") || heading;
+    if (target) target.focus({ preventScroll: Boolean(keep) });
+  }
+
+  function afterRender() {
+    if (view !== "student" || state.step !== LAST) return;
+    const canvas = body.querySelector("#mwrReplay");
+    if (!canvas) return;
+    let data = null;
+    try {
+      data = api() && api().getInkReplay ? api().getInkReplay() : null;
+    } catch (_) {}
+    replay = data && data.strokes.length ? T.mountReplay(canvas, data) : null;
+    const note = body.querySelector("#mwrReplayNote");
+    if (!replay) {
+      canvas.hidden = true;
+      for (const n of body.querySelectorAll('[data-action^="replay"], [data-field="replaySpeed"]'))
+        n.disabled = true;
+      if (note) note.textContent = t("replay.none");
+      return;
     }
-    if (action === "student") {
-      view = "student";
-      return render();
+    replay.onState((playing) => {
+      const b = body.querySelector('[data-action="replay-play"]');
+      if (b) b.textContent = t(playing ? "replay.pause" : "replay.play");
+    });
+    replay.showAll();
+  }
+
+  function stopReplay() {
+    if (replay) replay.pause();
+    replay = null;
+  }
+
+  /* ---------------- navigation ---------------- */
+  function goTo(step, opts) {
+    state.step = Math.max(0, Math.min(LAST, step));
+    state.maxStep = Math.max(state.maxStep, state.step);
+    state.check = null;
+    track("step", `step.${state.step + 1}`);
+    scheduleDraft();
+    render(Object.assign({ focusFirst: true, keepFocus: false }, opts));
+  }
+
+  function commitFirstDraft() {
+    const text = state.firstDraft.trim();
+    if (state.firstSeen !== text) {
+      state.rounds = [];
+      state.revised = text;
+      state.firstSeen = text;
     }
-    if (action === "next") return next();
-    if (action === "back") {
-      state.step = Math.max(0, state.step - 1);
-      return render();
+    state.firstDraft = text;
+    state.firstAnalysis = runAnalysis(text);
+    state.analysis = state.firstAnalysis;
+  }
+
+  function commitRevision() {
+    const text = state.revised.trim() || state.firstDraft;
+    state.revised = text;
+    const last = state.rounds.length
+      ? state.rounds[state.rounds.length - 1].text
+      : state.firstDraft;
+    state.analysis = runAnalysis(text);
+    if (text !== last && state.rounds.length < MAX_ROUNDS) {
+      state.rounds.push({ text, at: new Date().toISOString(), status: state.analysis.status });
     }
-    if (action === "rep") return toggleRep(button.dataset.value);
-    if (action === "listen") return speak(state.prompt || DATA.STEMS[state.language][state.wida]);
-    if (action === "stamp") return stampRepresentations();
-    if (action === "analyze") return analyzeDraft();
-    if (action === "coach") return coachReasoning(button);
-    if (action === "finish") return finishSession();
-    if (action === "new") {
-      state = freshState();
-      view = "student";
-      return render();
-    }
-    if (action === "board-reflection") return addReflectionToBoard();
-    if (action === "export") return exportEvidence();
-    if (action === "clear-evidence") return clearEvidence();
-    if (action === "coach-setting") return toggleCoach();
   }
 
   function next() {
-    if (state.step === 0 && state.prompt.trim().length < 12) {
-      body.querySelector(".mwr-live").textContent = "Add the problem or learning question first.";
+    if (state.step === 0 && state.prompt.trim().length < 12) return live(t("msg.problem"));
+    if (state.step === 2) {
+      if (state.firstDraft.trim().length < 4) return live(t("msg.write"));
+      commitFirstDraft();
+    }
+    if (state.step === 3) commitRevision();
+    if (state.step === 4) return finish();
+    goTo(state.step + 1);
+  }
+
+  /* ---------------- save the cycle ---------------- */
+  function finish() {
+    if (!state.firstAnalysis) commitFirstDraft();
+    state.revised = (state.revised || state.firstDraft).trim();
+    state.analysis = runAnalysis(state.revised);
+    let board = {};
+    let thumb = "";
+    try {
+      board = api() && api().getSnapshot ? api().getSnapshot() : {};
+      thumb = api() && api().getThumbnail ? api().getThumbnail(240) : "";
+    } catch (_) {}
+    state.thumb = thumb;
+    track("finish", state.analysis.status);
+    const session = M.buildSession(state, {
+      compareInfo: A.analyzeCompare(state.compare),
+      thumb,
+      board,
+    });
+    const list = S.loadSessions().filter((s) => s.id !== session.id);
+    list.unshift(session);
+    S.saveSessions(list);
+    state.savedId = session.id;
+    if (!ownIds.includes(session.id)) ownIds.push(session.id);
+    const level = Number(state.level);
+    if (S.recordOutcome(level, state.analysis.status === CONNECTED)) {
+      S.setPref("pendingFade", level + 1);
+      S.resetFade(level + 1);
+    }
+    S.setPref("level", state.level);
+    S.clearDraft();
+    state.resumed = false;
+    goTo(LAST);
+  }
+
+  function newCycle() {
+    const carry = {
+      skill: state.skill,
+      level: state.level,
+      language: state.language,
+      homeLang: state.homeLang,
+    };
+    const keepManual = state.languageManual;
+    const imported = state.imported;
+    S.clearDraft();
+    state = M.fresh(carry, worldLang());
+    state.languageManual = keepManual;
+    state.imported = imported;
+    view = "student";
+    ensureStemTx();
+    render({ focusFirst: true, keepFocus: false });
+  }
+
+  /* ---------------- home-language stem ---------------- */
+  function ensureStemTx() {
+    const code = state.homeLang;
+    state.stemTx = "";
+    state.stemTxFailed = false;
+    const token = ++txToken;
+    if (code === "none" || (code === "es" && state.language === "es")) return;
+    if (code === "es") {
+      state.stemTx = D.STEMS.es[state.level] || "";
       return;
     }
-    if (state.step === 2 && !state.analysis) return analyzeDraft();
-    state.step = Math.min(4, state.step + 1);
-    track("step", STEPS[state.step]);
-    render();
+    T.translate(D.STEMS.en[state.level], code).then((out) => {
+      if (token !== txToken) return;
+      state.stemTx = out;
+      state.stemTxFailed = !out;
+      paintStemHome();
+    });
+  }
+
+  /* ---------------- speech ---------------- */
+  const say = (text, code) => T.speak(text, code || I.speechLang(state.language));
+
+  function toggleDictation(field) {
+    const was = state.dictating;
+    if (dictation) dictation.stop();
+    dictation = null;
+    state.dictating = "";
+    if (was === field) return render({ keepFocus: true });
+    const home = I.HOME_LANGS[state.homeLang];
+    const code = field === "homeLanguage" && home ? home.speech : I.speechLang(state.language);
+    dictation = T.createDictation(code);
+    if (!dictation) return;
+    state.dictating = field;
+    dictation.start(
+      (text) => appendText(field, text),
+      () => {
+        state.dictating = "";
+        dictation = null;
+        render({ keepFocus: true });
+      },
+      () => live(t("dictate.error")),
+    );
+    render({ keepFocus: true });
+  }
+
+  function appendText(field, text) {
+    if (!text) return;
+    state[field] = state[field] ? `${state[field]} ${text}` : text;
+    const node = body.querySelector(`[data-field="${field}"]`);
+    if (node) node.value = state[field];
+    if (field === "firstDraft" || field === "revised") clearCheck();
+    scheduleDraft();
+  }
+
+  /* ---------------- checks ---------------- */
+  function clearCheck() {
+    state.check = null;
+    const node = body.querySelector("#mwrSignal");
+    if (node) node.innerHTML = "";
+  }
+
+  function analyzeNow(field) {
+    const text = state[field].trim();
+    if (text.length < 4) return live(t("msg.write"));
+    state.check = runAnalysis(text);
+    track("signal", state.check.status);
+    const node = body.querySelector("#mwrSignal");
+    if (node) node.innerHTML = P.signal(ctx(), state.check, text);
+    live("");
+  }
+
+  async function askCoach(button) {
+    const text = (state.step === 3 ? state.revised : state.firstDraft).trim();
+    if (!text) return analyzeNow(state.step === 3 ? "revised" : "firstDraft");
+    if (state.coachTurn >= C.MAX_TURNS) return;
+    const turn = state.coach ? 2 : 1;
+    state.coachStatus = t("coach.looking");
+    if (button) button.disabled = true;
+    const lastTag =
+      (state.check && state.check.tags[0]) ||
+      (state.analysis && state.analysis.tags && state.analysis.tags[0]) ||
+      "";
+    try {
+      state.coach = await C.request({
+        standard: skillOf().standard,
+        skill: state.skill,
+        prompt: state.prompt,
+        response: text,
+        misconception: lastTag,
+        language: state.language,
+        level: state.level,
+        digest: safeDigest(),
+        turn,
+        followup: state.coachFollow,
+      });
+      state.coachTurn = turn;
+      state.coachFollow = "";
+      state.coachStatus = "";
+      track("coach", state.coach.source || "unknown");
+    } catch (_) {
+      state.coachStatus = t("coach.unavailable");
+    }
+    render({ keepFocus: true });
+  }
+
+  /* ---------------- events ---------------- */
+  const hostFor = () => ({ state, t, render, body: () => body, clearOwn: () => (ownIds = []) });
+  const mine = () => S.loadSessions().filter((s) => ownIds.includes(s.id));
+  const stamp = () => new Date().toISOString().slice(0, 10);
+
+  function insertFrame(text) {
+    const node = body.querySelector('[data-field="firstDraft"]');
+    if (!node) return;
+    const at = node.selectionStart == null ? node.value.length : node.selectionStart;
+    const end = node.selectionEnd == null ? at : node.selectionEnd;
+    const gap = at && !/\s$/.test(node.value.slice(0, at)) ? " " : "";
+    node.value = `${node.value.slice(0, at)}${gap}${text}${node.value.slice(end)}`;
+    state.firstDraft = node.value;
+    clearCheck();
+    scheduleDraft();
+    track("frame", "");
+    node.focus();
+  }
+
+  function addAnchor() {
+    const id = state.anchorId || (body.querySelector('[data-field="anchorId"]') || {}).value;
+    const sentence = state.anchorText.trim();
+    const ok = id && sentence && api() && api().addCallout ? api().addCallout(id, sentence) : false;
+    if (!ok) return live(t("anc.missing"));
+    const item = safeDigest().items.find((i) => i.id === id);
+    state.anchors.push({ id, type: item ? item.type : "object", sentence });
+    state.firstDraft = state.firstDraft ? `${state.firstDraft}\n${sentence}` : sentence;
+    state.anchorText = "";
+    clearCheck();
+    scheduleDraft();
+    render({ keepFocus: true });
   }
 
   function toggleRep(value) {
-    const index = state.representations.indexOf(value);
-    if (index >= 0) state.representations.splice(index, 1);
+    const i = state.representations.indexOf(value);
+    if (i >= 0) state.representations.splice(i, 1);
     else state.representations.push(value);
     track("representation", value);
-    render();
+    scheduleDraft();
+    render({ keepFocus: true });
   }
 
-  function speak(text) {
-    if (!("speechSynthesis" in root) || !text) return;
-    root.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = state.language === "es" ? "es-US" : "en-US";
-    root.speechSynthesis.speak(utterance);
-  }
-
-  function stampRepresentations() {
-    root.dispatchEvent(
-      new CustomEvent("mwb:reasoning-stamp", {
-        detail: {
-          skill: state.skill,
-          prompt: state.prompt,
-          representations: state.representations,
-          linked: state.linked,
-          stem: DATA.STEMS[state.language][state.wida],
-        },
-      }),
-    );
-    track("stamp", state.representations.join("|"));
-    const live = body.querySelector(".mwr-live");
-    if (live) live.textContent = "Selected representations were added to the board.";
-  }
-
-  function analyzeDraft() {
-    const response = state.revised || state.firstDraft;
-    if (String(response).trim().length < 4) {
-      body.querySelector(".mwr-live").textContent = "Write at least one reasoning sentence first.";
-      return;
+  function onClick(event) {
+    const el = event.target.closest("[data-action]");
+    if (!el) return;
+    const action = el.dataset.action;
+    if (TP.handleAction(action, el, hostFor())) return;
+    switch (action) {
+      case "close":
+        return close();
+      case "dock":
+        S.setPref("mode", mode() === "dock" ? "modal" : "dock");
+        applyMode();
+        return render({ keepFocus: false });
+      case "view-toggle":
+        view = view === "teacher" ? "student" : "teacher";
+        return render({ focusFirst: true, keepFocus: false });
+      case "teacher-recheck":
+        render({ keepFocus: false });
+        return live(TP.unlocked() ? "" : t("tv.stillLocked"));
+      case "tour-done":
+        S.setPref("tourSeen", true);
+        return render({ focusFirst: true, keepFocus: false });
+      case "fade-undo":
+        state.level = state.fadeFrom || state.level;
+        state.fadeNotice = false;
+        S.resetFade(Number(state.level));
+        ensureStemTx();
+        return render({ keepFocus: true });
+      case "goto":
+        return goTo(Number(el.dataset.step));
+      case "next":
+        return next();
+      case "back":
+        return goTo(state.step - 1);
+      case "rep":
+        return toggleRep(el.dataset.value);
+      case "listen":
+        return say(state.prompt || D.STEMS[state.language][state.level]);
+      case "listen-stem": {
+        const base = D.STEMS[state.language][state.level];
+        const home = I.HOME_LANGS[state.homeLang];
+        if (state.stemTx && home)
+          return T.speak(base, I.speechLang(state.language), () =>
+            T.speak(state.stemTx, home.speech),
+          );
+        return say(base);
+      }
+      case "use-board-problem": {
+        const text = api() && api().getProblemText ? api().getProblemText() : "";
+        if (text) state.prompt = text;
+        scheduleDraft();
+        return render({ keepFocus: false, focusFirst: true });
+      }
+      case "stamp": {
+        const objects = STAMP.build(state, api());
+        root.dispatchEvent(new CustomEvent("mwb:reasoning-stamp", { detail: { objects } }));
+        track("stamp", state.representations.join("|"));
+        return live(t(objects.length ? "s2.stamped" : "s2.stampNone"));
+      }
+      case "frame":
+        return insertFrame(el.dataset.text || "");
+      case "exemplar":
+        state.exemplarPick = el.dataset.value;
+        return render({ keepFocus: true });
+      case "dictate":
+        return toggleDictation(el.dataset.fieldTarget);
+      case "anchor":
+        return addAnchor();
+      case "analyze":
+        return analyzeNow("firstDraft");
+      case "analyze-revision":
+        if (state.revised.trim().length < 4) return live(t("msg.write"));
+        commitRevision();
+        state.check = state.analysis;
+        return render({ keepFocus: true });
+      case "coach":
+        return askCoach(el);
+      case "speak-signal": {
+        const a = state.check || state.analysis;
+        return a && say(`${a.signal} ${a.evidence} ${t("sig.next")} ${a.nextMove}`);
+      }
+      case "speak-coach": {
+        const r = state.coach;
+        return r && say([r.strengths, r.gap, r.question].filter(Boolean).join(" "));
+      }
+      case "replay-play":
+        if (replay) return replay.playing ? replay.pause() : replay.play();
+        return;
+      case "replay-restart":
+        if (!replay) return;
+        replay.reset();
+        return replay.play();
+      case "board-reflection": {
+        const move = (state.analysis && state.analysis.nextMove) || "";
+        const text = `${t("refl.title")}\n${t("refl.first")} ${state.firstDraft}\n${t("refl.revision")} ${state.revised}\n${t("refl.next")} ${move}`;
+        root.dispatchEvent(new CustomEvent("mwb:add-text", { detail: { text } }));
+        return live(t("s6.added"));
+      }
+      case "share":
+        T.download(
+          `math-workbench-reasoning-share-${stamp()}.json`,
+          JSON.stringify(S.shareExport(mine()), null, 2),
+          "application/json",
+        );
+        return live(t("s6.shared"));
+      case "print":
+        return T.printPortfolio(mine(), state.language);
+      case "delete-cycle":
+        S.deleteSession(el.dataset.id);
+        ownIds = ownIds.filter((id) => id !== el.dataset.id);
+        if (state.savedId === el.dataset.id) state.savedId = "";
+        return render({ keepFocus: false });
+      case "new":
+        return newCycle();
+      default:
     }
-    if (!state.firstDraft) state.firstDraft = response;
-    state.analysis = DATA.analyze({
-      skill: state.skill,
-      response,
-      snapshot: snapshot(),
-      representations: state.representations,
-      expectUnits: /\b(cost|mile|cup|feet|foot|meter|dollar|percent|%)\b/i.test(state.prompt),
-    });
-    track("signal", state.analysis.status);
-    render();
   }
 
-  async function coachReasoning(button) {
-    const response = state.revised || state.firstDraft;
-    if (!response.trim()) return analyzeDraft();
-    state.coachStatus = "Looking at the reasoning…";
-    state.coach = null;
-    button.disabled = true;
-    render();
-    try {
-      const skill = DATA.SKILLS[state.skill];
-      const request = await fetch("/api/reasoning/review", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          standard: skill.standard,
-          prompt: state.prompt,
-          response,
-          misconception: state.analysis?.signal || "",
-        }),
-      });
-      const result = await request.json().catch(() => null);
-      if (!request.ok || !result?.ok) throw new Error("unavailable");
-      state.coach = result;
-      state.coachStatus = "";
-      track("coach", result.source || "unknown");
-    } catch (_) {
-      state.coachStatus = "The optional coach is unavailable. Use the local next move below.";
+  function onInput(event) {
+    const el = event.target;
+    if (el.id === "mwrImport" && event.type === "change")
+      return TP.importFiles(el.files || [], hostFor());
+    const key = el.dataset && el.dataset.field;
+    if (!key) return;
+    if (TP.handleInput(key, el, hostFor())) return;
+    if (key.startsWith("linked.")) {
+      state.linked[key.split(".")[1]] = Math.max(
+        1,
+        Math.min(20, Math.round(Number(el.value)) || 1),
+      );
+      return updateLinked();
     }
-    render();
-  }
-
-  function finishSession() {
-    if (!state.revised.trim()) {
-      state.revised = state.firstDraft;
-      body.querySelector(".mwr-live").textContent = "Revise or confirm your explanation first.";
-      return;
+    if (key === "compare.second" || key === "compare.which") {
+      state.compare[key.split(".")[1]] = el.value;
+      return scheduleDraft();
     }
-    state.analysis = DATA.analyze({
-      skill: state.skill,
-      response: state.revised,
-      snapshot: snapshot(),
-      representations: state.representations,
-    });
-    track("finish", state.analysis.status);
-    const session = {
-      id: `mwr-${Date.now().toString(36)}`,
-      at: new Date().toISOString(),
-      skill: state.skill,
-      standard: DATA.SKILLS[state.skill].standard,
-      wida: state.wida,
-      language: state.language,
-      prompt: state.prompt,
-      firstDraft: state.firstDraft,
-      revised: state.revised,
-      homeLanguage: state.homeLanguage,
-      representations: state.representations.slice(),
-      beforeConfidence: state.beforeConfidence,
-      afterConfidence: state.afterConfidence,
-      analysis: state.analysis,
-      board: snapshot(),
-      events: state.events.slice(),
-    };
-    sessions.unshift(session);
-    saveSessions();
-    state.step = 4;
-    render();
+    switch (key) {
+      case "anchorId":
+      case "anchorText":
+        state[key] = el.value;
+        return;
+      case "replaySpeed":
+        if (replay) replay.setSpeed(el.value);
+        return;
+      case "speechRate":
+        return T.setRate(el.value);
+      case "coachFollow":
+        state.coachFollow = el.value.slice(0, 600);
+        return;
+      default:
+    }
+    state[key] = el.value;
+    if (key === "firstDraft" || key === "revised") clearCheck();
+    if (key === "skill") {
+      const valid = skillOf().reps.map((r) => r.id);
+      state.representations = state.representations.filter((id) => valid.includes(id));
+      state.exemplarPick = "";
+    }
+    if (key === "language") state.languageManual = true;
+    scheduleDraft();
+    if (["skill", "level", "language", "homeLang"].includes(key)) {
+      if (key !== "skill") ensureStemTx();
+      render({ keepFocus: true });
+    }
   }
 
-  function addReflectionToBoard() {
-    const text = `Reasoning reflection\nFirst draft: ${state.firstDraft}\nRevision: ${state.revised}\nNext move: ${state.analysis?.nextMove || "Compare another strategy."}`;
-    root.dispatchEvent(new CustomEvent("mwb:add-text", { detail: { text } }));
-    body.querySelector(".mwr-live").textContent = "Your reflection was added to the board.";
-  }
-
-  function linkedHTML() {
-    const a = state.linked.a;
-    const b = state.linked.b;
-    const k = state.linked.factor;
-    return (
-      '<div class="mwr-card"><h4>Linked representation lab</h4><p class="mwr-help">Change one value. The table, equation, and words update together.</p>' +
-      '<div class="mwr-grid"><label class="mwr-label">First quantity<input class="mwr-input" type="number" min="1" max="20" data-field="linked.a" value="' +
-      a +
-      '"></label><label class="mwr-label">Second quantity<input class="mwr-input" type="number" min="1" max="20" data-field="linked.b" value="' +
-      b +
-      '"></label><label class="mwr-label">Scale factor<input class="mwr-input" type="number" min="1" max="20" data-field="linked.factor" value="' +
-      k +
-      '"></label></div><table class="mwr-linked-table"><caption>Equivalent relationship table</caption><tbody>' +
-      `<tr><th scope="row">First</th><td data-linked="a">${a}</td><td data-linked="a2">${a * 2}</td><td data-linked="ak">${a * k}</td></tr>` +
-      `<tr><th scope="row">Second</th><td data-linked="b">${b}</td><td data-linked="b2">${b * 2}</td><td data-linked="bk">${b * k}</td></tr>` +
-      `</tbody></table><p class="mwr-stem" data-linked="equation">Equation: ${a}:${b} = ${a * k}:${b * k}</p>` +
-      `<p data-linked="words">Words: For every ${a}, there are ${b}. Scaling both quantities by ${k} keeps the relationship equivalent.</p></div>`
-    );
-  }
-
-  function updateLinkedPresentation() {
-    if (!body) return;
+  function updateLinked() {
     const { a, b, factor: k } = state.linked;
     const values = { a, a2: a * 2, ak: a * k, b, b2: b * 2, bk: b * k };
-    Object.entries(values).forEach(([key, value]) => {
+    for (const [key, value] of Object.entries(values)) {
       const node = body.querySelector(`[data-linked="${key}"]`);
       if (node) node.textContent = String(value);
-    });
-    const equation = body.querySelector('[data-linked="equation"]');
-    if (equation) equation.textContent = `Equation: ${a}:${b} = ${a * k}:${b * k}`;
+    }
+    const eq = body.querySelector('[data-linked="equation"]');
+    if (eq)
+      eq.textContent =
+        state.skill === "percent"
+          ? `${a}/${b} = ${a * k}/${b * k}`
+          : `${a}:${b} = ${a * k}:${b * k}`;
     const words = body.querySelector('[data-linked="words"]');
     if (words)
-      words.textContent = `Words: For every ${a}, there are ${b}. Scaling both quantities by ${k} keeps the relationship equivalent.`;
+      words.textContent = t(state.skill === "percent" ? "lab.wordsPercent" : "lab.wordsRatio", {
+        a,
+        b,
+        k,
+      });
   }
 
-  function renderSetup() {
-    const skillOptions = Object.entries(DATA.SKILLS)
-      .map(([id, item]) => `<option value="${id}"${id === state.skill ? " selected" : ""}>${esc(item.label)}</option>`)
-      .join("");
-    return (
-      '<section class="mwr-panel"><h3>1. Understand the task</h3><p class="mwr-muted">Set a math goal and a language support level. No name or account is needed.</p>' +
-      '<div class="mwr-grid"><label class="mwr-label">Math focus<select class="mwr-select" data-field="skill">' +
-      skillOptions +
-      '</select></label><label class="mwr-label">Language scaffold<select class="mwr-select" data-field="wida">' +
-      [1, 2, 3, 4].map((n) => `<option value="${n}"${String(n) === state.wida ? " selected" : ""}>Level ${n}</option>`).join("") +
-      '</select></label><label class="mwr-label">Studio language<select class="mwr-select" data-field="language"><option value="en">English</option><option value="es"' +
-      (state.language === "es" ? " selected" : "") +
-      '>Español</option></select></label><label class="mwr-label">Confidence before starting<select class="mwr-select" data-field="beforeConfidence">' +
-      confidenceOptions(state.beforeConfidence) +
-      '</select></label></div><label class="mwr-label">Problem or learning question<textarea class="mwr-textarea" data-field="prompt" dir="auto" placeholder="Paste or type the problem. No answer is stored in the page.">' +
-      esc(state.prompt) +
-      '</textarea></label><div class="mwr-btn-row"><button class="mwr-btn" data-action="listen">🔊 Read aloud</button></div><p class="mwr-live" role="status" aria-live="polite"></p></section>'
-    );
-  }
-
-  function renderModel() {
-    const skill = DATA.SKILLS[state.skill];
-    const board = snapshot();
-    const reps = skill.reps
-      .map(
-        (rep) =>
-          `<button class="mwr-rep" data-action="rep" data-value="${esc(rep)}" aria-pressed="${state.representations.includes(rep)}">${esc(rep)}</button>`,
-      )
-      .join("");
-    return (
-      '<section class="mwr-panel"><h3>2. Model and connect</h3><p>Choose at least two ways to show the same idea. The goal is to explain how they match.</p>' +
-      `<div class="mwr-reps">${reps}</div>` +
-      `<p class="mwr-muted">Board evidence now: ${Number(board.modelCount || 0)} model objects and ${Number(board.strokeCount || 0)} ink strokes.</p>` +
-      (["ratio", "percent"].includes(state.skill) ? linkedHTML() : "") +
-      '<div class="mwr-btn-row"><button class="mwr-btn success" data-action="stamp">Add selected supports to board</button></div><p class="mwr-live" role="status" aria-live="polite"></p></section>'
-    );
-  }
-
-  function renderExplain() {
-    const response = state.firstDraft;
-    const signal = state.analysis ? signalHTML(state.analysis) : "";
-    const coach = coachHTML();
-    return (
-      '<section class="mwr-panel"><h3>3. Explain the connection</h3><p class="mwr-stem">' +
-      esc(DATA.STEMS[state.language][state.wida]) +
-      '</p><label class="mwr-label">Your reasoning<textarea class="mwr-textarea" data-field="firstDraft" dir="auto" placeholder="Explain a decision, not only an answer.">' +
-      esc(response) +
-      '</textarea></label><label class="mwr-label">Optional home-language rehearsal<small>Use any language. Math understanding is not reduced to English fluency.</small><textarea class="mwr-textarea" data-field="homeLanguage" dir="auto">' +
-      esc(state.homeLanguage) +
-      '</textarea></label><div class="mwr-btn-row"><button class="mwr-btn primary" data-action="analyze">Check reasoning evidence</button>' +
-      (coachEnabled() ? '<button class="mwr-btn" data-action="coach">Ask the bounded reasoning coach</button>' : "") +
-      '</div><p class="mwr-live" role="status" aria-live="polite">' +
-      esc(state.coachStatus) +
-      "</p>" +
-      signal +
-      coach +
-      "</section>"
-    );
-  }
-
-  function renderRevise() {
-    return (
-      '<section class="mwr-panel"><h3>4. Revise with evidence</h3><div class="mwr-grid"><article class="mwr-card"><h4>First draft</h4><p class="mwr-compare">' +
-      esc(state.firstDraft) +
-      '</p></article><article class="mwr-card"><h4>One next move</h4><p>' +
-      esc(state.analysis?.nextMove || "Connect two representations with because.") +
-      '</p></article></div><label class="mwr-label">Revised explanation<textarea class="mwr-textarea" data-field="revised" dir="auto">' +
-      esc(state.revised || state.firstDraft) +
-      '</textarea></label><label class="mwr-label">Confidence after revising<select class="mwr-select" data-field="afterConfidence">' +
-      confidenceOptions(state.afterConfidence) +
-      '</select></label><p class="mwr-live" role="status" aria-live="polite"></p></section>'
-    );
-  }
-
-  function renderEvidence() {
-    const last = sessions[0];
-    const first = last?.firstDraft || state.firstDraft;
-    const revised = last?.revised || state.revised;
-    const analysis = last?.analysis || state.analysis;
-    return (
-      '<section class="mwr-panel"><h3>5. Evidence of growth</h3><p class="mwr-muted">The evidence describes the work. It does not label the learner.</p><div class="mwr-evidence-grid">' +
-      '<article class="mwr-card"><h4>What changed</h4><p class="mwr-compare"><b>Before:</b> ' +
-      esc(first) +
-      "</p><p class=\"mwr-compare\"><b>After:</b> " +
-      esc(revised) +
-      '</p></article><article class="mwr-card"><h4>Current signal</h4>' +
-      signalHTML(analysis) +
-      '</article></div><div class="mwr-btn-row"><button class="mwr-btn success" data-action="board-reflection">Add reflection to board</button><button class="mwr-btn" data-action="teacher">Open evidence view</button><button class="mwr-btn" data-action="new">Start a new cycle</button></div><p class="mwr-live" role="status" aria-live="polite"></p></section>'
-    );
-  }
-
-  function signalHTML(analysis) {
-    if (!analysis) return "";
-    return `<div class="mwr-signal" data-state="${esc(analysis.status)}"><strong>${esc(analysis.signal)}</strong><span>${esc(analysis.evidence)}</span><b>Next move: ${esc(analysis.nextMove)}</b><small>${Math.round(Number(analysis.confidence || 0) * 100)}% confidence · provisional, not a grade</small></div>`;
-  }
-
-  function coachHTML() {
-    if (!state.coach) return "";
-    return `<div class="mwr-card"><h4>Reasoning coach</h4>${state.coach.strengths ? `<p><b>Visible strength:</b> ${esc(state.coach.strengths)}</p>` : ""}${state.coach.gap ? `<p><b>One gap:</b> ${esc(state.coach.gap)}</p>` : ""}<p><b>One question:</b> ${esc(state.coach.question)}</p><small>No score and no answer was generated.</small></div>`;
-  }
-
-  function confidenceOptions(selected) {
-    return [
-      ["1", "Not sure yet"],
-      ["2", "Developing"],
-      ["3", "Mostly sure"],
-      ["4", "Ready to defend it"],
-    ]
-      .map(([value, label]) => `<option value="${value}"${value === selected ? " selected" : ""}>${label}</option>`)
-      .join("");
-  }
-
-  function renderTeacher() {
-    const counts = {};
-    sessions.forEach((session) => {
-      const key = session.analysis?.status || "not-yet-observed";
-      counts[key] = (counts[key] || 0) + 1;
-    });
-    const patterns = Object.entries(counts)
-      .map(([key, count]) => `<span class="mwr-badge">${esc(key)} · ${count}</span>`)
-      .join("");
-    const list = sessions
-      .map(
-        (session) =>
-          `<details class="mwr-session"><summary>${esc(DATA.SKILLS[session.skill]?.label || session.skill)} · ${new Date(session.at).toLocaleString()}</summary><p>${esc(session.analysis?.signal || "No signal")}</p><p><b>Representations:</b> ${esc(session.representations.join(", ") || "none recorded")}</p><p><b>Revision:</b> confidence ${esc(session.beforeConfidence)} → ${esc(session.afterConfidence)}</p></details>`,
-      )
-      .join("");
-    body.innerHTML =
-      '<section class="mwr-panel"><h3>De-identified evidence view</h3><p>Local reasoning cycles: <b>' +
-      sessions.length +
-      '</b>. No roster, name, or student ID is collected.</p><div class="mwr-card"><h4>Patterns to plan for</h4>' +
-      (patterns || '<p class="mwr-muted">Complete a reasoning cycle to see patterns.</p>') +
-      '</div><div class="mwr-card"><h4>Bounded AI setting</h4><p>The optional coach reviews one paragraph only when a learner presses its button. It returns one gap and one question, never a score or answer.</p><button class="mwr-btn" data-action="coach-setting">Coach on this device: ' +
-      (coachEnabled() ? "on" : "off") +
-      '</button></div><div class="mwr-btn-row"><button class="mwr-btn primary" data-action="export">Export de-identified research data</button><button class="mwr-btn" data-action="clear-evidence">Clear local evidence</button></div><div class="mwr-session-list">' +
-      list +
-      '</div></section>';
-    foot.innerHTML = '<button class="mwr-btn" data-action="student">← Student reasoning cycle</button><span class="mwr-muted">Stored only on this device</span>';
-  }
-
-  function coachEnabled() {
-    try {
-      const param = new URLSearchParams(location.search).get("coach");
-      if (param === "off") return false;
-      if (param === "on") return true;
-      return localStorage.getItem(COACH) === "1";
-    } catch (_) {
-      return false;
-    }
-  }
-
-  function toggleCoach() {
-    try {
-      localStorage.setItem(COACH, coachEnabled() ? "0" : "1");
-    } catch (_) {}
-    render();
-  }
-
-  function exportEvidence() {
-    const safe = sessions.map((session) => ({
-      at: session.at,
-      skill: session.skill,
-      standard: session.standard,
-      wida: session.wida,
-      language: session.language,
-      representations: session.representations,
-      signal: session.analysis?.status || "not-observed",
-      signalConfidence: session.analysis?.confidence || 0,
-      confidenceBefore: session.beforeConfidence,
-      confidenceAfter: session.afterConfidence,
-      boardModelCount: session.board?.modelCount || 0,
-      revisionWordDelta: Math.max(0, session.revised.split(/\s+/).length - session.firstDraft.split(/\s+/).length),
-      events: session.events.map(({ type, at }) => ({ type, at })),
-    }));
-    const blob = new Blob([JSON.stringify({ schema: 1, sessions: safe }, null, 2)], {
-      type: "application/json",
-    });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `math-workbench-evidence-${new Date().toISOString().slice(0, 10)}.json`;
-    link.click();
-    setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-  }
-
-  function clearEvidence() {
-    if (!root.confirm("Clear all Reasoning Studio evidence stored on this device?")) return;
-    sessions = [];
-    saveSessions();
-    render();
-  }
-
-  function render() {
-    if (!overlay) return;
-    const text = DATA.TEXT[state.language] || DATA.TEXT.en;
-    overlay.querySelector("#mwrTitle").textContent = text.title;
-    overlay.querySelector("#mwrSubtitle").textContent = text.subtitle;
-    overlay.querySelector("[data-action=teacher]").textContent = view === "teacher" ? "Student view" : "Evidence view";
-    overlay.querySelector("[data-action=teacher]").dataset.action = view === "teacher" ? "student" : "teacher";
-    if (view === "teacher") return renderTeacher();
-    const nav = overlay.querySelector(".mwr-steps");
-    nav.innerHTML = STEPS.map(
-      (label, index) => `<span class="mwr-step${index === state.step ? " is-current" : ""}${index < state.step ? " is-done" : ""}"${index === state.step ? ' aria-current="step"' : ""}>${index + 1}. ${label}</span>`,
-    ).join("");
-    const panels = [renderSetup, renderModel, renderExplain, renderRevise, renderEvidence];
-    body.innerHTML = panels[state.step]();
-    const pct = ((state.step + 1) / STEPS.length) * 100;
-    foot.innerHTML =
-      '<div class="mwr-btn-row">' +
-      (state.step > 0 ? '<button class="mwr-btn" data-action="back">← Back</button>' : "") +
-      (state.step < 3 ? '<button class="mwr-btn primary" data-action="next">Continue →</button>' : "") +
-      (state.step === 3 ? '<button class="mwr-btn success" data-action="finish">Save revision evidence</button>' : "") +
-      '</div><div><div class="mwr-progress" role="progressbar" aria-label="Reasoning cycle progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' +
-      Math.round(pct) +
-      '"><span style="width:' +
-      pct +
-      '%"></span></div><small class="mwr-muted">' +
-      esc(text.privacy) +
-      "</small></div>";
-  }
+  root.MWRStudio = Object.freeze({ open, close, getState: () => state, getView: () => view });
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount);
   else mount();

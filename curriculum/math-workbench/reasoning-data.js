@@ -1,163 +1,726 @@
+/* Reasoning Studio content: skills, representations, lexicons, stems.
+ * Standards use the 2025 Maryland MCCRS codes from data/ccss-standards.json
+ * (6.AT / 6.NOS / 6.GR / 6.DS). Lexicons are EN + ES; the analyzer folds
+ * accents, so entries here may be written either way. A trailing * marks a
+ * word prefix ("scale*" matches scale, scaled, scaling). No answer keys here. */
 (function (root) {
   "use strict";
 
-  const SKILLS = {
-    ratio: {
-      label: "Ratios & rates",
-      standard: "6.RP.A.1–3",
-      reps: ["ratio table", "double number line", "equation", "words"],
-      concepts: ["for every", "per", "each", "scale"],
-      signal: "The multiplicative relationship is not explicit yet.",
-      move: "Name what one quantity is for every one of the other quantity.",
+  const REP = {
+    ratioTable: {
+      id: "ratio table",
+      types: ["ratiotable"],
+      en: "ratio table",
+      es: "tabla de razones",
     },
-    percent: {
-      label: "Percents",
-      standard: "6.RP.A.3c",
-      reps: ["hundred model", "ratio table", "equation", "words"],
-      concepts: ["per hundred", "100", "whole", "part"],
-      signal: "The connection among the part, whole, and 100 is not explicit yet.",
-      move: "Explain what the whole represents and how the part compares with 100.",
+    dnl: {
+      id: "double number line",
+      types: ["dblnumline"],
+      en: "double number line",
+      es: "recta numérica doble",
     },
-    fraction: {
-      label: "Fraction division",
-      standard: "6.NS.A.1",
-      reps: ["fraction model", "number line", "equation", "words"],
-      concepts: ["groups", "fit", "size", "each"],
-      signal: "The meaning of division is not visible yet.",
-      move: "Say whether you are finding a number of groups or the size of each group.",
+    tape: { id: "tape diagram", types: ["tape"], en: "tape diagram", es: "diagrama de cinta" },
+    equation: { id: "equation", kind: "equation", en: "equation", es: "ecuación" },
+    words: { id: "words", kind: "words", en: "words", es: "palabras" },
+    hundred: { id: "hundred model", hundred: true, en: "hundred model", es: "modelo de cien" },
+    fractionModel: {
+      id: "fraction model",
+      types: ["fracbar", "tape", "arraymodel"],
+      en: "fraction model",
+      es: "modelo de fracciones",
     },
-    equation: {
-      label: "Equations",
-      standard: "6.EE.B.5–7",
-      reps: ["balance model", "tape diagram", "equation", "words"],
-      concepts: ["both sides", "equal", "inverse", "balance"],
-      signal: "The equality relationship is not justified yet.",
-      move: "Explain why the same move preserves equality on both sides.",
+    numberLine: {
+      id: "number line",
+      types: ["numline", "ineqline"],
+      en: "number line",
+      es: "recta numérica",
     },
-    area: {
-      label: "Area",
-      standard: "6.G.A.1",
-      reps: ["shape model", "array", "equation", "words"],
-      concepts: ["base", "height", "square units", "half"],
-      signal: "The measurements are not yet connected to the area model.",
-      move: "Connect each number in the equation to a labeled part of the shape.",
+    balance: {
+      id: "balance model",
+      types: ["balance", "algebra"],
+      en: "balance model",
+      es: "modelo de balanza",
     },
-    statistics: {
-      label: "Statistics",
-      standard: "6.SP.A–B",
-      reps: ["data display", "table", "calculation", "claim"],
-      concepts: ["data", "typical", "spread", "outlier"],
-      signal: "The statistical claim does not cite evidence from the data yet.",
-      move: "Name one feature of the distribution that supports your claim.",
+    shape: { id: "shape model", types: ["shape2d"], en: "shape model", es: "modelo de figura" },
+    array: { id: "array", types: ["arraymodel"], en: "array", es: "arreglo" },
+    dataDisplay: {
+      id: "data display",
+      types: ["dotplot", "boxplot", "histogram"],
+      en: "data display",
+      es: "representación de datos",
+    },
+    table: { id: "table", types: ["ratiotable"], en: "table", es: "tabla" },
+    calculation: { id: "calculation", kind: "equation", en: "calculation", es: "cálculo" },
+    claim: { id: "claim", kind: "words", en: "claim", es: "afirmación" },
+    chips: { id: "integer chips", types: ["chips"], en: "integer chips", es: "fichas de enteros" },
+    coordPlane: {
+      id: "coordinate plane",
+      types: ["coordgrid"],
+      en: "coordinate plane",
+      es: "plano de coordenadas",
+    },
+    placeValue: {
+      id: "place-value model",
+      types: ["placevalue", "baseten"],
+      en: "place-value model",
+      es: "modelo de valor posicional",
+    },
+    expanded: { id: "expanded form", kind: "equation", en: "expanded form", es: "forma expandida" },
+    solid: { id: "3-D model", types: ["shape3d", "arraymodel"], en: "3-D model", es: "modelo 3-D" },
+    graph: { id: "graph", types: ["coordgrid"], en: "graph", es: "gráfica" },
+    ineqLine: {
+      id: "inequality graph",
+      types: ["ineqline", "numline"],
+      en: "inequality graph",
+      es: "gráfica de la desigualdad",
     },
   };
 
+  const SKILLS = {
+    ratio: {
+      label: { en: "Ratios & rates", es: "Razones y tasas" },
+      standard: "6.AT.1–3",
+      smp: ["MP2", "MP4", "MP7"],
+      reps: [REP.ratioTable, REP.dnl, REP.equation, REP.words],
+      concepts: {
+        en: [
+          "for every",
+          "per",
+          "each",
+          "to every",
+          "scale*",
+          "multiplier",
+          "times as many",
+          "times",
+          "multipl*",
+          "same ratio",
+          "equivalent*",
+          "unit rate",
+          "ratio of",
+          "group*",
+        ],
+        es: [
+          "por cada",
+          "cada",
+          "escal*",
+          "multiplicador",
+          "veces mas",
+          "veces",
+          "multipl*",
+          "misma razon",
+          "equivalente*",
+          "tasa unitaria",
+          "razon",
+          "grupo*",
+        ],
+      },
+      signal: {
+        en: "The multiplicative relationship is not explicit yet.",
+        es: "La relación multiplicativa todavía no es explícita.",
+      },
+      move: {
+        en: "Name what one quantity is for every one of the other quantity.",
+        es: "Di cuánto es una cantidad por cada una de la otra.",
+      },
+    },
+    percent: {
+      label: { en: "Percents", es: "Porcentajes" },
+      standard: "6.AT.4",
+      smp: ["MP2", "MP4", "MP6"],
+      reps: [REP.hundred, REP.ratioTable, REP.equation, REP.words],
+      concepts: {
+        en: [
+          "per hundred",
+          "out of 100",
+          "of 100",
+          "100",
+          "whole",
+          "part",
+          "hundredths",
+          "percent of",
+        ],
+        es: ["por ciento", "de 100", "entre 100", "cien", "entero", "total", "parte", "centesimas"],
+      },
+      signal: {
+        en: "The connection among the part, whole, and 100 is not explicit yet.",
+        es: "La conexión entre la parte, el entero y 100 todavía no es explícita.",
+      },
+      move: {
+        en: "Explain what the whole represents and how the part compares with 100.",
+        es: "Explica qué representa el entero y cómo se compara la parte con 100.",
+      },
+    },
+    fraction: {
+      label: { en: "Fraction division", es: "División de fracciones" },
+      standard: "6.NOS.1",
+      smp: ["MP1", "MP2", "MP4"],
+      reps: [REP.fractionModel, REP.numberLine, REP.equation, REP.words],
+      concepts: {
+        en: [
+          "groups",
+          "how many",
+          "fit",
+          "fits",
+          "size of each",
+          "each group",
+          "equal groups",
+          "reciprocal*",
+          "in each",
+          "unit fraction*",
+        ],
+        es: [
+          "grupos",
+          "cuantos",
+          "caben",
+          "cabe",
+          "tamano de cada",
+          "cada grupo",
+          "reciproco*",
+          "en cada",
+          "fraccion unitaria",
+        ],
+      },
+      signal: {
+        en: "The meaning of division is not visible yet.",
+        es: "El significado de la división todavía no se ve.",
+      },
+      move: {
+        en: "Say whether you are finding a number of groups or the size of each group.",
+        es: "Di si estás hallando el número de grupos o el tamaño de cada grupo.",
+      },
+    },
+    decimals: {
+      label: {
+        en: "Decimals & multi-digit division",
+        es: "Decimales y división de varios dígitos",
+      },
+      standard: "6.NOS.2–3",
+      smp: ["MP6", "MP7", "MP8"],
+      reps: [REP.placeValue, REP.array, REP.equation, REP.words],
+      concepts: {
+        en: [
+          "place value",
+          "tenths",
+          "hundredths",
+          "line up",
+          "decimal point",
+          "regroup*",
+          "estimate*",
+          "partial products",
+          "digit*",
+          "magnitude",
+        ],
+        es: [
+          "valor posicional",
+          "decimas",
+          "centesimas",
+          "alinea*",
+          "punto decimal",
+          "reagrup*",
+          "estim*",
+          "productos parciales",
+          "digito*",
+          "magnitud",
+        ],
+      },
+      signal: {
+        en: "How place value guides the steps is not visible yet.",
+        es: "Todavía no se ve cómo el valor posicional guía los pasos.",
+      },
+      move: {
+        en: "Say what each digit is worth and why the decimal point lands where it does.",
+        es: "Di cuánto vale cada dígito y por qué el punto decimal queda donde queda.",
+      },
+    },
+    integers: {
+      label: { en: "Integers & the coordinate plane", es: "Enteros y plano de coordenadas" },
+      standard: "6.NOS.5–9",
+      smp: ["MP2", "MP4", "MP6"],
+      reps: [REP.numberLine, REP.chips, REP.coordPlane, REP.words],
+      concepts: {
+        en: [
+          "positive",
+          "negative",
+          "opposite*",
+          "zero",
+          "distance",
+          "absolute value",
+          "above",
+          "below",
+          "left",
+          "right",
+          "quadrant*",
+          "origin",
+          "coordinate*",
+        ],
+        es: [
+          "positivo",
+          "negativo",
+          "opuesto*",
+          "cero",
+          "distancia",
+          "valor absoluto",
+          "encima",
+          "debajo",
+          "izquierda",
+          "derecha",
+          "cuadrante*",
+          "origen",
+          "coordenada*",
+        ],
+      },
+      signal: {
+        en: "What the sign or position means is not explicit yet.",
+        es: "Lo que significan el signo o la posición todavía no es explícito.",
+      },
+      move: {
+        en: "Say what the sign or the position means in this situation, in words.",
+        es: "Di con palabras qué significan el signo o la posición en esta situación.",
+      },
+    },
+    exponents: {
+      label: { en: "Exponents", es: "Exponentes" },
+      standard: "6.AT.5",
+      smp: ["MP2", "MP7", "MP8"],
+      reps: [REP.array, REP.expanded, REP.equation, REP.words],
+      concepts: {
+        en: [
+          "base",
+          "exponent*",
+          "power*",
+          "repeated multiplication",
+          "times itself",
+          "squared",
+          "cubed",
+          "factors",
+          "expanded",
+        ],
+        es: [
+          "base",
+          "exponente*",
+          "potencia*",
+          "multiplicacion repetida",
+          "veces por si mismo",
+          "al cuadrado",
+          "al cubo",
+          "factores",
+          "expandid*",
+        ],
+      },
+      signal: {
+        en: "What the base and the exponent each tell you is not explicit yet.",
+        es: "Lo que dicen la base y el exponente todavía no es explícito.",
+      },
+      move: {
+        en: "Say how many times the base is used as a factor, and where that count comes from.",
+        es: "Di cuántas veces se usa la base como factor y de dónde sale ese número.",
+      },
+    },
+    equation: {
+      label: { en: "Equations & expressions", es: "Ecuaciones y expresiones" },
+      standard: "6.AT.6a, 6.AT.7, 6.AT.8",
+      smp: ["MP1", "MP3", "MP7"],
+      reps: [REP.balance, REP.tape, REP.equation, REP.words],
+      concepts: {
+        en: [
+          "both sides",
+          "equal*",
+          "inverse",
+          "balance*",
+          "undo",
+          "opposite operation",
+          "isolate*",
+          "substitut*",
+          "same thing",
+        ],
+        es: [
+          "ambos lados",
+          "igual*",
+          "inverso*",
+          "balanza",
+          "equilibr*",
+          "deshac*",
+          "operacion opuesta",
+          "aisla*",
+          "sustitu*",
+          "lo mismo",
+        ],
+      },
+      signal: {
+        en: "The equality relationship is not justified yet.",
+        es: "La relación de igualdad todavía no está justificada.",
+      },
+      move: {
+        en: "Explain why the same move preserves equality on both sides.",
+        es: "Explica por qué la misma operación mantiene la igualdad en ambos lados.",
+      },
+    },
+    inequality: {
+      label: { en: "Inequalities", es: "Desigualdades" },
+      standard: "6.AT.8–9",
+      smp: ["MP2", "MP4", "MP6"],
+      reps: [REP.ineqLine, REP.equation, REP.words, REP.numberLine],
+      concepts: {
+        en: [
+          "greater",
+          "less",
+          "at least",
+          "at most",
+          "more than",
+          "fewer than",
+          "solution*",
+          "boundary",
+          "open circle",
+          "closed circle",
+          "shade*",
+          "inequalit*",
+        ],
+        es: [
+          "mayor",
+          "menor",
+          "al menos",
+          "como maximo",
+          "mas que",
+          "menos que",
+          "solucion*",
+          "limite",
+          "circulo abierto",
+          "circulo cerrado",
+          "sombre*",
+          "desigualdad*",
+        ],
+      },
+      signal: {
+        en: "Which values make the inequality true is not explained yet.",
+        es: "Todavía no se explica qué valores hacen verdadera la desigualdad.",
+      },
+      move: {
+        en: "Say which side of the boundary is shaded and why those values work.",
+        es: "Di qué lado del límite está sombreado y por qué esos valores funcionan.",
+      },
+    },
+    twovar: {
+      label: { en: "Two-variable relationships", es: "Relaciones de dos variables" },
+      standard: "6.AT.11",
+      smp: ["MP2", "MP4", "MP8"],
+      reps: [REP.table, REP.graph, REP.equation, REP.words],
+      concepts: {
+        en: [
+          "independent",
+          "dependent",
+          "input",
+          "output",
+          "rule",
+          "depends on",
+          "for each",
+          "changes by",
+          "pattern*",
+          "relationship*",
+        ],
+        es: [
+          "independiente",
+          "dependiente",
+          "entrada",
+          "salida",
+          "regla",
+          "depende de",
+          "por cada",
+          "cambia en",
+          "patron*",
+          "relacion*",
+        ],
+      },
+      signal: {
+        en: "How one variable depends on the other is not explicit yet.",
+        es: "Cómo una variable depende de la otra todavía no es explícito.",
+      },
+      move: {
+        en: "Say how the output changes each time the input changes by one.",
+        es: "Di cómo cambia la salida cada vez que la entrada cambia en uno.",
+      },
+    },
+    area: {
+      label: { en: "Area", es: "Área" },
+      standard: "6.GR.1",
+      smp: ["MP4", "MP6", "MP7"],
+      reps: [REP.shape, REP.array, REP.equation, REP.words],
+      concepts: {
+        en: [
+          "base",
+          "height",
+          "square units",
+          "half",
+          "width",
+          "length",
+          "decompos*",
+          "unit squares",
+          "rectangle*",
+          "triangle*",
+        ],
+        es: [
+          "base",
+          "altura",
+          "unidades cuadradas",
+          "mitad",
+          "ancho",
+          "largo",
+          "descompon*",
+          "cuadritos",
+          "rectangulo*",
+          "triangulo*",
+        ],
+      },
+      signal: {
+        en: "The measurements are not yet connected to the area model.",
+        es: "Las medidas todavía no se conectan con el modelo de área.",
+      },
+      move: {
+        en: "Connect each number in the equation to a labeled part of the shape.",
+        es: "Conecta cada número de la ecuación con una parte rotulada de la figura.",
+      },
+    },
+    volume: {
+      label: { en: "Surface area & volume", es: "Área de superficie y volumen" },
+      standard: "6.GR.2, 6.GR.4",
+      smp: ["MP4", "MP6", "MP7"],
+      reps: [REP.solid, REP.shape, REP.equation, REP.words],
+      concepts: {
+        en: [
+          "volume",
+          "surface area",
+          "layer*",
+          "unit cubes",
+          "base area",
+          "height",
+          "faces",
+          "net",
+          "cubic units",
+          "square units",
+        ],
+        es: [
+          "volumen",
+          "area de superficie",
+          "capa*",
+          "cubos unitarios",
+          "area de la base",
+          "altura",
+          "caras",
+          "red",
+          "unidades cubicas",
+          "unidades cuadradas",
+        ],
+      },
+      signal: {
+        en: "What is being measured (layers, faces, or space inside) is not explicit yet.",
+        es: "Lo que se mide (capas, caras o espacio interior) todavía no es explícito.",
+      },
+      move: {
+        en: "Say whether you are measuring the faces or the space inside, and how your units show it.",
+        es: "Di si mides las caras o el espacio interior y cómo lo muestran tus unidades.",
+      },
+    },
+    statistics: {
+      label: { en: "Statistics", es: "Estadística" },
+      standard: "6.DS.3–5, 6.DS.6a",
+      smp: ["MP3", "MP4", "MP6"],
+      reps: [REP.dataDisplay, REP.table, REP.calculation, REP.claim],
+      concepts: {
+        en: [
+          "data",
+          "typical",
+          "spread",
+          "outlier*",
+          "center",
+          "median",
+          "mean",
+          "range",
+          "cluster*",
+          "distribution*",
+          "variab*",
+          "iqr",
+          "mad",
+        ],
+        es: [
+          "datos",
+          "tipico",
+          "dispersion",
+          "atipic*",
+          "centro",
+          "mediana",
+          "media",
+          "rango",
+          "agrupa*",
+          "distribucion*",
+          "variab*",
+          "iqr",
+          "mad",
+        ],
+      },
+      signal: {
+        en: "The statistical claim does not cite evidence from the data yet.",
+        es: "La afirmación estadística todavía no cita evidencia de los datos.",
+      },
+      move: {
+        en: "Name one feature of the distribution that supports your claim.",
+        es: "Nombra una característica de la distribución que apoye tu afirmación.",
+      },
+    },
+  };
+
+  /* Unit/quantity words used to decide whether an explanation should name what
+   * the numbers measure. Same prefix rule as the concept lists. */
+  const UNITS = {
+    en: [
+      "unit*",
+      "dollar*",
+      "cent",
+      "cents",
+      "mile*",
+      "cup*",
+      "feet",
+      "foot",
+      "meter*",
+      "inch*",
+      "gallon*",
+      "pound*",
+      "hour*",
+      "minute*",
+      "second*",
+      "%",
+      "percent",
+      "square",
+      "cubic",
+      "degree*",
+      "batch*",
+      "people",
+      "student*",
+      "page*",
+      "ounce*",
+      "liter*",
+      "gram*",
+      "pizza*",
+      "day*",
+      "week*",
+    ],
+    es: [
+      "unidad*",
+      "dolar*",
+      "dolares",
+      "centavo*",
+      "milla*",
+      "taza*",
+      "pie*",
+      "metro*",
+      "pulgada*",
+      "galon*",
+      "libra*",
+      "hora*",
+      "minuto*",
+      "segundo*",
+      "%",
+      "por ciento",
+      "cuadrad*",
+      "cubic*",
+      "grado*",
+      "tanda*",
+      "persona*",
+      "estudiante*",
+      "pagina*",
+      "onza*",
+      "litro*",
+      "gramo*",
+      "dia*",
+      "semana*",
+    ],
+  };
+
+  /* Language scaffold levels 1 (most support) to 5 (own words). */
   const STEMS = {
     en: {
       1: "My model shows ____. I used ____ because ____.",
       2: "First I ____. Then I ____ because ____.",
       3: "The ____ and ____ representations match because ____.",
       4: "My claim is ____. Evidence from ____ shows ____; therefore ____.",
+      5: "This always works because ____. It would not work if ____, since ____.",
     },
     es: {
       1: "Mi modelo muestra ____. Usé ____ porque ____.",
       2: "Primero ____. Después ____ porque ____.",
       3: "Las representaciones ____ y ____ coinciden porque ____.",
       4: "Mi afirmación es ____. La evidencia de ____ muestra ____; por lo tanto ____.",
+      5: "Esto siempre funciona porque ____. No funcionaría si ____, ya que ____.",
     },
   };
 
-  const TEXT = {
+  const LEVELS = {
     en: {
-      title: "Reasoning Studio",
-      subtitle: "Model · connect · explain · revise",
-      privacy: "Your words stay on this device unless you choose to export them.",
-      provisional: "This is a provisional learning signal, not a grade or a label.",
+      1: "Level 1 · Fill-in starters",
+      2: "Level 2 · First–then frames",
+      3: "Level 3 · Match and compare frames",
+      4: "Level 4 · Claim and evidence frames",
+      5: "Level 5 · Generalize and critique",
     },
     es: {
-      title: "Estudio de razonamiento",
-      subtitle: "Modela · conecta · explica · revisa",
-      privacy: "Tus palabras permanecen en este dispositivo a menos que decidas exportarlas.",
-      provisional: "Esta es una señal provisional de aprendizaje, no una nota ni una etiqueta.",
+      1: "Nivel 1 · Inicios para completar",
+      2: "Nivel 2 · Marcos primero–después",
+      3: "Nivel 3 · Marcos para comparar y conectar",
+      4: "Nivel 4 · Marcos de afirmación y evidencia",
+      5: "Nivel 5 · Generalizar y criticar",
     },
   };
 
-  function words(value) {
-    return String(value || "")
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean);
+  /* Short connector chips offered under the writing box. They fade with level:
+   * 1-2 show all, 3 shows connectors, 4 shows two, 5 shows none. */
+  const FRAME_CHIPS = {
+    en: [
+      "For every ____, there are ____.",
+      "I used ____ because ____.",
+      "That means ____.",
+      "This matches ____ because ____.",
+      "So my answer is ____ because ____.",
+    ],
+    es: [
+      "Por cada ____, hay ____.",
+      "Usé ____ porque ____.",
+      "Eso significa ____.",
+      "Esto coincide con ____ porque ____.",
+      "Entonces mi respuesta es ____ porque ____.",
+    ],
+  };
+
+  const SMP = {
+    MP1: {
+      en: "Make sense of problems and persevere",
+      es: "Dar sentido a los problemas y perseverar",
+    },
+    MP2: {
+      en: "Reason abstractly and quantitatively",
+      es: "Razonar de manera abstracta y cuantitativa",
+    },
+    MP3: {
+      en: "Construct arguments and critique reasoning",
+      es: "Construir argumentos y criticar el razonamiento",
+    },
+    MP4: { en: "Model with mathematics", es: "Modelar con matemáticas" },
+    MP6: { en: "Attend to precision", es: "Prestar atención a la precisión" },
+    MP7: { en: "Look for and make use of structure", es: "Buscar y usar estructura" },
+    MP8: {
+      en: "Look for regularity in repeated reasoning",
+      es: "Buscar regularidad en el razonamiento repetido",
+    },
+  };
+
+  for (const skill of Object.values(SKILLS)) {
+    for (const rep of skill.reps) Object.freeze(rep);
+    Object.freeze(skill.reps);
   }
 
-  function includesAny(value, terms) {
-    const normalized = String(value || "").toLowerCase();
-    return terms.some((term) => normalized.includes(term));
-  }
-
-  function analyze(input) {
-    const skill = SKILLS[input.skill] || SKILLS.ratio;
-    const response = String(input.response || "").trim();
-    const responseWords = words(response);
-    const snapshot = input.snapshot || {};
-    const selected = Array.isArray(input.representations) ? input.representations : [];
-    const modelEvidence = Number(snapshot.modelCount || 0) + selected.length;
-    const causal = includesAny(response, ["because", "so that", "therefore", "since", "porque"]);
-    const concept = includesAny(response, skill.concepts);
-    const units = includesAny(response, ["unit", "dollar", "mile", "cup", "%", "square", "unidad"]);
-
-    if (responseWords.length < 7) {
-      return {
-        status: "reasoning-not-yet-visible",
-        signal: "There is not enough written reasoning yet to follow the mathematical decision.",
-        evidence: `${responseWords.length} words are visible.`,
-        nextMove: "Write what you did first and why that move fits the problem.",
-        confidence: 0.92,
-      };
-    }
-    if (modelEvidence < 2) {
-      return {
-        status: "representation-connection-needed",
-        signal: "Only one representation is visible, so the connection between ideas cannot be checked yet.",
-        evidence: `${modelEvidence} representation signal is visible.`,
-        nextMove: "Add a second representation and write one sentence explaining how the two match.",
-        confidence: 0.84,
-      };
-    }
-    if (!concept) {
-      return {
-        status: "concept-link-needed",
-        signal: skill.signal,
-        evidence: `The response does not yet use a relationship phrase such as ${skill.concepts.slice(0, 2).join(" or ")}.`,
-        nextMove: skill.move,
-        confidence: 0.72,
-      };
-    }
-    if (!causal) {
-      return {
-        status: "justification-link-needed",
-        signal: "The steps are present, but the reason connecting them is not explicit yet.",
-        evidence: "No causal connector such as because, since, or therefore is visible.",
-        nextMove: "Join one step to its reason with because, since, or therefore.",
-        confidence: 0.78,
-      };
-    }
-    if (!units && input.expectUnits) {
-      return {
-        status: "unit-meaning-needed",
-        signal: "The quantities are present, but what they measure is not explicit yet.",
-        evidence: "No unit or quantity label is visible in the explanation.",
-        nextMove: "Add the unit and explain what the final quantity means in this situation.",
-        confidence: 0.7,
-      };
-    }
-    return {
-      status: "connected-reasoning-visible",
-      signal: "The available evidence shows a model, a relationship, and a stated reason.",
-      evidence: `${modelEvidence} representation signals and ${responseWords.length} words are visible.`,
-      nextMove: "Test the explanation with a new case or compare it with a different strategy.",
-      confidence: 0.68,
-    };
-  }
-
-  root.MWReasoningData = Object.freeze({ SKILLS, STEMS, TEXT, analyze });
+  root.MWReasoningData = {
+    SKILLS: Object.freeze(SKILLS),
+    UNITS: Object.freeze(UNITS),
+    STEMS: Object.freeze(STEMS),
+    LEVELS: Object.freeze(LEVELS),
+    FRAME_CHIPS: Object.freeze(FRAME_CHIPS),
+    SMP: Object.freeze(SMP),
+  };
 })(window);

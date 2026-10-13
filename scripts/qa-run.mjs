@@ -163,6 +163,7 @@ const EXCLUSIVE = new Set([
   "validate:fluency-workshops-browser",
   "validate:lesson-boot",
   "validate:learning-labs-browser",
+  "validate:math-workbench-browser",
   "smoke:injection",
   "validate:visibility",
   // `validate:flow-walk` joined them on 2026-08-28. It is the heaviest browser
@@ -541,6 +542,21 @@ const COVERAGE = [
   [
     /^(math\/fluency-lab\/|tools\/(validate-fluency-lab|package-fluency-desktop)\.mjs$)/,
     ["validate:fluency", "validate:static", "test"],
+  ],
+  // MATH WORKBENCH — the student whiteboard. The static gate proves its promises in text
+  // (preset wording, Spanish coverage, no second Teacher PIN, offline precache, worked
+  // arithmetic); the browser gate proves them where a student sees them (first-viewport
+  // empty state, one-row top bar, Spanish leftovers, teacher lock, calculator keyboard,
+  // axe in both languages). Must precede /^curriculum\// below.
+  [
+    /^(curriculum\/math-workbench\/|assets\/math-workbench-launcher\.js$|tools\/(validate-math-workbench(-browser)?|math-workbench-[^/]*)\.mjs$)/,
+    [
+      "validate:math-workbench",
+      "validate:math-workbench-browser",
+      "validate:js-syntax",
+      "test",
+      "check",
+    ],
   ],
   // Learning Labs (77 labs in Chromium, ~35s) — runs when learning lab pages,
   // data, generator, or verifier change. Must precede /^curriculum\// and /^data\//.
