@@ -5,1092 +5,77 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Percent &amp; Equivalent Ratios · Version 2: Challenging (Grade 6)</title>
   <meta name="description" content="Version 2: Challenging. Grade 6 percent practice with percents over 100% and under 1%, tough denominators, finding the part, whole, or percent, multi-step stories, error detective, and a mastery challenge.">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2317324D'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia,serif' font-weight='bold' font-size='32' fill='%23F7F4EC'%3E%25%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231E1B6E'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia,serif' font-weight='bold' font-size='32' fill='%23FFC933'%3E%25%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/assets/u4-studio.css">
+  <link rel="stylesheet" href="/assets/u4-studio-percent.css">
+  <script src="/assets/u4-studio.js"></script>
+  <script src="/assets/u4-studio-bonus.js"></script>
   <style>
-    /* ==========================================================================
-       CLEAN STUDENT-FRIENDLY DESIGN SYSTEM (GRADE 6 · REVEAL MATH UNIT 4)
-       Palette: Navy #17324D · Teal #0F766E / #1FA6A2 · Warm Paper #F7F4EC
-       ========================================================================== */
-    :root {
-      --bg-paper: #F7F4EC;
-      --bg-well: #EFECE3;
-      --surface: #FFFFFF;
-      --surface-soft: #FAF8F3;
-      --surface-teal: #F0FAF9;
-
-      --navy: #17324D;
-      --navy-dark: #0F2337;
-      --navy-tint: #E8F0F7;
-      --navy-line: #C4D5E5;
-
-      --teal: #0F766E;
-      --teal-bright: #1FA6A2;
-      --teal-tint: #E3F6F5;
-      --teal-line: #94DFDC;
-
-      --amber: #B45309;
-      --amber-bright: #D97706;
-      --amber-tint: #FEF3C7;
-      --amber-line: #FCD34D;
-
-      --green: #047857;
-      --green-tint: #ECFDF5;
-      --green-line: #A7F3D0;
-
-      --red: #B91C1C;
-      --red-tint: #FEF2F2;
-      --red-line: #FECACA;
-
-      --ink: #1E293B;
-      --ink-muted: #475569;
-      --ink-light: #64748B;
-
-      --border: #D8D3C6;
-      --border-strong: #B8B1A0;
-
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      --font-display: Georgia, 'Iowan Old Style', serif;
-      --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
-
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
-      --radius-pill: 999px;
-
-      --shadow-card: 0 2px 8px rgba(23, 50, 77, 0.06), 0 1px 2px rgba(23, 50, 77, 0.04);
-      --shadow-pop: 0 10px 24px rgba(23, 50, 77, 0.12);
+    .visual-wrap { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin: 12px 0 6px;
     }
-
-    *, *::before, *::after {
-      box-sizing: border-box;
+    .visual-svg { display: block; width: 100%; height: auto; margin: 0 auto;
     }
-
-    html {
-      font-size: 16px;
+    .field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px 18px; margin: 16px 0;
     }
-
-    body {
-      margin: 0;
-      background-color: var(--bg-paper);
-      color: var(--ink);
-      font-family: var(--font-sans);
-      line-height: 1.55;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      font-variant-numeric: tabular-nums;
+    .field-item label { display: block; font-weight: 700; color: var(--brand); font-size: 0.9rem; margin-bottom: 8px;
     }
-
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
+    .field-row { display: flex; align-items: center; gap: 8px;
     }
-
-    :focus-visible {
-      outline: 3px solid var(--amber-bright);
-      outline-offset: 2px;
+    .field-row strong { color: var(--brand);
     }
-
-    /* Spanish Support Toggle */
-    .es-text {
-      display: none;
-      color: var(--teal);
-      font-style: italic;
-      font-size: 0.94rem;
-      margin-top: 4px;
+    .solve-guide { background: var(--brand-tint); border: 1px solid var(--brand-line); border-radius: var(--radius-md); padding: 16px 18px; margin: 16px 0;
     }
-    body.show-es .es-text {
-      display: block;
+    .solve-guide h3 { color: var(--brand); font-size: 1.05rem; margin: 0 0 8px;
     }
-
-    /* ==========================================================================
-       HEADER & NAVIGATION
-       ========================================================================== */
-    .app-header {
-      background: var(--navy);
-      color: #FFFFFF;
-      padding: 12px 24px;
-      border-bottom: 3px solid var(--teal-bright);
+    .solve-guide ol { margin: 0; padding-left: 1.5rem;
     }
-
-    .header-wrap {
-      max-width: 1080px;
-      margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
+    .solve-guide li { padding: 3px 0;
     }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    .solve-guide strong { color: var(--brand);
     }
-
-    .brand-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      background: var(--teal-bright);
-      color: var(--navy-dark);
-      font-family: var(--font-display);
-      font-size: 1.4rem;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
+    .solve-guide.brief { padding: 10px 14px; margin: 12px 0;
     }
-
-    .brand-title {
-      margin: 0;
-      font-family: var(--font-display);
-      font-size: 1.25rem;
-      font-weight: 700;
+    .solve-guide.brief p { margin: 0;
     }
-
-    .brand-sub {
-      font-size: 0.8rem;
-      color: #CBD5E1;
-      margin-top: 1px;
+    .field-grid { grid-template-columns: 1fr;
     }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
+    .field-item { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; background: var(--surface-soft);
     }
-
-    .score-pill {
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      border-radius: var(--radius-pill);
-      padding: 5px 14px;
-      font-size: 0.86rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .field-item.step-ok { border-color: var(--ok); background: var(--ok-tint);
     }
-
-    .top-btn {
-      background: rgba(255, 255, 255, 0.14);
-      color: #FFFFFF;
-      border: 1px solid rgba(255, 255, 255, 0.28);
-      border-radius: var(--radius-sm);
-      padding: 6px 12px;
-      font-size: 0.84rem;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
+    .field-item label { font-size: 1rem;
     }
-    .top-btn:hover {
-      background: rgba(255, 255, 255, 0.24);
+    .field-row { flex-wrap: wrap;
     }
-    .top-btn[aria-pressed="true"] {
-      background: var(--teal-bright);
-      color: var(--navy-dark);
-      border-color: #FFFFFF;
-      font-weight: 700;
+    .step-check { margin-left: 8px; min-height: 48px;
     }
-
-    /* 5-Tab Bar */
-    .tab-bar {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 80;
-      box-shadow: 0 2px 4px rgba(23, 50, 77, 0.04);
+    .step-status { min-height: 1.5em; margin: 8px 0 0; font-size: 0.92rem; font-weight: 700; color: var(--ink-muted);
     }
-
-    .tab-list {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 0 16px;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 4px;
+    .step-status.ok { color: var(--ok);
     }
-
-    .tab-btn {
-      appearance: none;
-      background: transparent;
-      border: none;
-      border-bottom: 4px solid transparent;
-      padding: 12px 10px 10px;
-      cursor: pointer;
-      font-family: inherit;
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      color: var(--ink-muted);
-      text-align: left;
-      transition: background 0.15s ease, color 0.15s ease;
+    .step-status.err { color: var(--bad);
     }
-    .tab-btn:hover {
-      background: var(--surface-soft);
-      color: var(--navy);
-    }
-    .tab-btn[aria-selected="true"] {
-      color: var(--navy);
-      border-bottom-color: var(--teal);
-      background: var(--surface-teal);
-      font-weight: 700;
-    }
-
-    .tab-badge {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: var(--bg-well);
-      color: var(--navy);
-      font-size: 0.82rem;
-      font-weight: 800;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .tab-btn[aria-selected="true"] .tab-badge {
-      background: var(--navy);
-      color: #FFFFFF;
-    }
-    .tab-btn.tab-complete .tab-badge {
-      background: var(--green);
-      color: #FFFFFF;
-    }
-
-    .tab-text {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-    .tab-name {
-      font-size: 0.9rem;
-      font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .tab-desc {
-      font-size: 0.74rem;
-      color: var(--ink-light);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* ==========================================================================
-       MAIN CONTAINER & STEPPER ARCHITECTURE
-       ========================================================================== */
-    .main-container {
-      max-width: 1080px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 24px 20px 48px;
-      flex: 1;
-    }
-
-    .tab-panel {
-      display: none;
-    }
-    .tab-panel.active {
-      display: block;
-    }
-
-    /* Clean Topic Intro Strip */
-    .topic-strip {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-left: 6px solid var(--navy);
-      border-radius: var(--radius-md);
-      padding: 16px 20px;
-      margin-bottom: 20px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      box-shadow: var(--shadow-card);
-    }
-
-    .topic-strip h2 {
-      margin: 0 0 4px 0;
-      font-family: var(--font-display);
-      font-size: 1.35rem;
-      color: var(--navy);
-    }
-
-    .topic-strip p {
-      margin: 0;
-      font-size: 0.96rem;
-      color: var(--ink-muted);
-    }
-
-    .key-rule-pill {
-      background: var(--surface-teal);
-      border: 1px solid var(--teal-line);
-      color: var(--navy);
-      padding: 10px 14px;
-      border-radius: var(--radius-sm);
-      font-size: 0.88rem;
-      font-weight: 600;
-    }
-
-    /* Problem Stepper Bar (Used across Tabs 1, 2, 3, 4, 5) */
-    .stepper-bar {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 12px 16px;
-      margin-bottom: 18px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      box-shadow: var(--shadow-card);
-    }
-
-    .dots-row {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .step-dot {
-      min-width: 34px;
-      height: 34px;
-      padding: 0 8px;
-      border-radius: var(--radius-sm);
-      border: 1.5px solid var(--border-strong);
-      background: var(--surface-soft);
-      color: var(--navy);
-      font-weight: 700;
-      font-size: 0.86rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-family: inherit;
-      transition: all 0.15s ease;
-    }
-    .step-dot:hover {
-      border-color: var(--navy);
-      background: #FFFFFF;
-    }
-    .step-dot.active {
-      background: var(--navy);
-      color: #FFFFFF;
-      border-color: var(--navy);
-    }
-    .step-dot.solved {
-      background: var(--green-tint);
-      border-color: var(--green);
-      color: var(--green);
-    }
-    .step-dot.solved.active {
-      background: var(--green);
-      color: #FFFFFF;
-    }
-
-    /* Cards */
-    .stage-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      box-shadow: var(--shadow-card);
-    }
-
-    .two-col-stage {
-      display: grid;
-      grid-template-columns: 380px 1fr;
-      gap: 24px;
-      align-items: start;
-    }
-
-    /* Buttons */
-    .btn {
-      appearance: none;
-      border: 1.5px solid var(--border-strong);
-      background: var(--surface);
-      color: var(--navy);
-      font-family: inherit;
-      font-size: 0.94rem;
-      font-weight: 700;
-      padding: 10px 16px;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.15s ease;
-    }
-    .btn:hover {
-      background: var(--surface-soft);
-      border-color: var(--navy);
-    }
-    .btn-primary {
-      background: var(--navy);
-      color: #FFFFFF;
-      border-color: var(--navy);
-    }
-    .btn-primary:hover {
-      background: var(--navy-dark);
-      color: #FFFFFF;
-    }
-    .btn-teal {
-      background: var(--teal);
-      color: #FFFFFF;
-      border-color: var(--teal);
-    }
-    .btn-teal:hover {
-      background: #0B5E58;
-      color: #FFFFFF;
-    }
-    .btn-sm {
-      padding: 6px 12px;
-      font-size: 0.84rem;
-    }
-
-    .speak-btn {
-      background: var(--navy-tint);
-      color: var(--navy);
-      border: 1px solid var(--navy-line);
-      border-radius: var(--radius-pill);
-      padding: 5px 12px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-    .speak-btn:hover {
-      background: var(--navy);
-      color: #FFFFFF;
-    }
-
-    /* Inputs & Feedback */
-    .num-input {
-      font-family: var(--font-mono);
-      font-size: 1.1rem;
-      font-weight: 800;
-      width: 96px;
-      padding: 8px 10px;
-      border: 2px solid var(--border-strong);
-      border-radius: var(--radius-sm);
-      text-align: center;
-      color: var(--navy);
-      background: #FFFFFF;
-    }
-    .num-input:focus {
-      border-color: var(--navy);
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(23, 50, 77, 0.15);
-    }
-    .num-input.ok {
-      border-color: var(--green);
-      background: var(--green-tint);
-      color: var(--green);
-    }
-    .num-input.err {
-      border-color: var(--red);
-      background: var(--red-tint);
-      color: var(--red);
-    }
-
-    .feedback-box {
-      margin-top: 16px;
-      padding: 12px 16px;
-      border-radius: var(--radius-sm);
-      font-size: 0.95rem;
-      font-weight: 600;
-      display: none;
-    }
-    .feedback-box.show {
-      display: block;
-    }
-    .feedback-box.ok {
-      background: var(--green-tint);
-      border: 1.5px solid var(--green-line);
-      color: #065F46;
-    }
-    .feedback-box.warn {
-      background: var(--amber-tint);
-      border: 1.5px solid var(--amber-line);
-      color: #92400E;
-    }
-    .feedback-box.err {
-      background: var(--red-tint);
-      border: 1.5px solid var(--red-line);
-      color: #991B1B;
-    }
-
-    /* ==========================================================================
-       TAB 1: 100-GRID EXPLORER + GUIDED TASKS
-       ========================================================================== */
-    .grid-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      box-shadow: var(--shadow-card);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .hundredths-svg {
-      width: 260px;
-      height: 260px;
-      background: #FFFFFF;
-      border: 2.5px solid var(--navy);
-      border-radius: 4px;
-      cursor: pointer;
-      touch-action: none;
-      user-select: none;
-    }
-
-    .grid-cell {
-      fill: #FFFFFF;
-      stroke: #CBD5E1;
-      stroke-width: 1;
-    }
-    .grid-cell.shaded {
-      fill: var(--teal-bright);
-      stroke: var(--teal);
-    }
-    .grid-cell:hover {
-      stroke: var(--navy);
-      stroke-width: 2;
-    }
-    .tenths-line {
-      stroke: var(--navy);
-      stroke-width: 2.2;
-      pointer-events: none;
-    }
-
-    .grid-summary-strip {
-      width: 100%;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      text-align: center;
-    }
-
-    .summary-tile {
-      background: var(--surface-soft);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 8px 6px;
-    }
-    .summary-tile span {
-      display: block;
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: var(--ink-light);
-    }
-    .summary-tile strong {
-      font-family: var(--font-mono);
-      font-size: 1.05rem;
-      color: var(--navy);
-    }
-
-    /* ==========================================================================
-       TAB 2: CLEAN EQUIVALENT RATIO SCALING DIAGRAM
-       ========================================================================== */
-    .scaling-visual-card {
-      background: var(--surface-soft);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 22px;
-      margin: 18px 0;
-    }
-
-    .ratio-machine {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 18px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-
-    .big-fraction {
-      background: #FFFFFF;
-      border: 2px solid var(--navy);
-      border-radius: var(--radius-md);
-      padding: 12px 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-width: 110px;
-      box-shadow: var(--shadow-card);
-    }
-    .big-fraction .num,
-    .big-fraction .den {
-      font-family: var(--font-mono);
-      font-size: 1.65rem;
-      font-weight: 800;
-      color: var(--navy);
-      line-height: 1.2;
-    }
-    .big-fraction .f-bar {
-      width: 100%;
-      height: 3px;
-      background: var(--navy);
-      margin: 6px 0;
-      border-radius: 2px;
-    }
-    .big-fraction .role-tag {
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: var(--ink-light);
-    }
-
-    .arrow-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 22px;
-      align-items: center;
-    }
-
-    .scale-arrow-pill {
-      background: var(--amber-tint);
-      border: 2px solid var(--amber-bright);
-      color: var(--amber);
-      padding: 5px 14px;
-      border-radius: var(--radius-pill);
-      font-family: var(--font-mono);
-      font-weight: 800;
-      font-size: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .guided-steps-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-top: 16px;
-    }
-
-    .step-box {
-      background: var(--surface-soft);
-      border: 1.5px solid var(--border);
-      border-top: 4px solid var(--navy);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .step-box.step-2 {
-      border-top-color: var(--teal);
-    }
-    .step-box.step-3 {
-      border-top-color: var(--amber-bright);
-    }
-
-    .step-box-label {
-      font-size: 0.78rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--navy);
-    }
-
-    .step-box-desc {
-      font-size: 0.92rem;
-      color: var(--ink);
-      margin: 4px 0 0 0;
-    }
-
-    .step-box-Equation {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      font-family: var(--font-mono);
-      font-size: 1.05rem;
-      font-weight: 800;
-      color: var(--navy);
-    }
-
-    /* ==========================================================================
-       TAB 3: RATIO TABLES & PERCENT BARS (SPACIOUS, CLEAR, STEP-BY-STEP)
-       ========================================================================== */
-    .clean-ratio-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      border: 2px solid var(--navy);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      background: #FFFFFF;
-      margin: 16px 0;
-    }
-
-    .clean-ratio-table th,
-    .clean-ratio-table td {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      border-right: 1px solid var(--border);
-      text-align: center;
-      font-size: 1.02rem;
-    }
-    .clean-ratio-table tr:last-child td {
-      border-bottom: none;
-    }
-    .clean-ratio-table th:last-child,
-    .clean-ratio-table td:last-child {
-      border-right: none;
-    }
-
-    .clean-ratio-table th {
-      background: var(--navy);
-      color: #FFFFFF;
-      font-weight: 700;
-      font-size: 0.9rem;
-    }
-    .clean-ratio-table th.bridge-col {
-      background: var(--teal);
-    }
-    .clean-ratio-table th.target-col {
-      background: var(--amber);
-    }
-
-    .clean-ratio-table td.row-label {
-      background: var(--navy-tint);
-      color: var(--navy);
-      font-weight: 800;
-      text-align: left;
-      width: 180px;
-    }
-
-    .op-chip {
-      display: inline-block;
-      background: var(--amber-tint);
-      border: 1px solid var(--amber-bright);
-      color: var(--amber);
-      font-family: var(--font-mono);
-      font-weight: 800;
-      font-size: 0.82rem;
-      padding: 2px 8px;
-      border-radius: var(--radius-pill);
-      margin-left: 6px;
-    }
-
-    /* Multiple Choice Option Buttons */
-    .choice-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin: 14px 0;
-    }
-
-    .choice-btn {
-      appearance: none;
-      background: var(--surface-soft);
-      border: 2px solid var(--border-strong);
-      border-radius: var(--radius-md);
-      padding: 13px 16px;
-      text-align: left;
-      font-family: inherit;
-      font-size: 0.98rem;
-      color: var(--ink);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      transition: all 0.15s ease;
-    }
-    .choice-btn:hover {
-      background: #FFFFFF;
-      border-color: var(--navy);
-    }
-    .choice-btn.selected {
-      background: var(--navy-tint);
-      border-color: var(--navy);
-      font-weight: 700;
-    }
-    .choice-btn.correct {
-      background: var(--green-tint);
-      border-color: var(--green);
-      color: #065F46;
-      font-weight: 700;
-    }
-    .choice-btn.wrong {
-      background: var(--red-tint);
-      border-color: var(--red);
-      color: #991B1B;
-    }
-
-    .choice-letter {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: #FFFFFF;
-      border: 2px solid var(--navy);
-      color: var(--navy);
-      font-weight: 800;
-      font-size: 0.84rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    /* Footer */
-    .app-footer {
-      background: var(--navy);
-      color: #CBD5E1;
-      padding: 14px 24px;
-      font-size: 0.82rem;
-      margin-top: auto;
-    }
-    .footer-wrap {
-      max-width: 1080px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    /* Two-box and three-box answer rows (Tab 1) and wide tables (Tab 3) */
-    .dual-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin: 18px 0;
-    }
-    .triple-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin: 18px 0;
-    }
-    .dual-grid > div,
-    .triple-grid > div {
-      background: var(--surface-soft);
-      padding: 14px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-    }
-    .table-scroll {
-      position: relative; /* contains the absolutely-positioned .sr-only labels so they cannot widen the page */
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    .table-scroll .clean-ratio-table {
-      min-width: 560px;
-    }
-
-    /* Interactive Ratio Scratchpad (Tab 4) */
-    .scratchpad-details {
-      margin: 14px 0 16px;
-      background: var(--surface-soft);
-      border: 1.5px dashed var(--border-strong);
-      border-radius: var(--radius-md);
-      padding: 10px 14px;
-    }
-    .scratchpad-details summary {
-      font-size: 0.88rem;
-      font-weight: 800;
-      color: var(--teal);
-      cursor: pointer;
-      user-select: none;
-    }
-    .scratchpad-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 10px;
-    }
-    .scratchpad-cell {
-      background: #FFFFFF;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 8px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .scratchpad-cell span {
-      font-size: 0.74rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      color: var(--ink-light);
-    }
-    .scratchpad-cell input {
-      width: 100%;
-      font-size: 0.96rem;
-      padding: 6px 8px;
-    }
-
-    /* Print-only summary report */
-    .print-only {
-      display: none;
-    }
-
-    /* After a problem is solved: next-step button, all-done banner, quiz results */
-    .next-btn {
-      display: flex;
-      margin-top: 10px;
-    }
-    .complete-banner {
-      background: var(--green-tint);
-      border: 2px solid var(--green);
-      border-radius: var(--radius-md);
-      padding: 14px 18px;
-      margin-bottom: 20px;
-      color: #065F46;
-      font-weight: 700;
-    }
-    .complete-banner[hidden],
-    .results-card[hidden] {
-      display: none;
-    }
-    .results-card {
-      margin-top: 18px;
-      background: var(--surface);
-      border: 2px solid var(--navy);
-      border-radius: var(--radius-lg);
-      padding: 22px;
-      box-shadow: var(--shadow-card);
-    }
-    .results-card h3 {
-      margin: 0 0 6px 0;
-      font-family: var(--font-display);
-      font-size: 1.4rem;
-      color: var(--navy);
-    }
-    .results-card p {
-      margin: 0 0 12px 0;
-    }
-    .review-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 8px 0 14px;
-    }
-
-    @media (max-width: 860px) {
-      .two-col-stage,
-      .guided-steps-grid {
-        grid-template-columns: 1fr;
-      }
-      .tab-list {
-        grid-template-columns: repeat(5, minmax(135px, 1fr));
-        overflow-x: auto;
-      }
-      .triple-grid,
-      .scratchpad-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
     @media (max-width: 560px) {
-      .app-header {
-        padding: 10px 14px;
-      }
-      .main-container {
-        padding: 16px 12px 36px;
-      }
-      .stage-card {
-        padding: 16px;
-      }
-      .dual-grid,
-      .triple-grid,
-      .scratchpad-grid {
-        grid-template-columns: 1fr;
-      }
-      .clean-ratio-table td.row-label {
-        width: auto;
-      }
-      .guided-steps-grid[style] {
-        grid-template-columns: 1fr !important;
-      }
+    .step-check {margin-left: 0; width: 100%;}
     }
-
-    @media print {
-      .print-only {
-        display: block !important;
-      }
-      .next-btn, .results-card button, .stepper-bar, .scratchpad-details, #t2-random-btn, #t3-random-btn, #t5-reset-btn {
-        display: none !important;
-      }
-      .app-header, .tab-bar, .speak-btn, .no-print, #nsr-root {
-        display: none !important;
-      }
-      body {
-        background: #FFFFFF !important;
-      }
-      .main-container {
-        padding: 0 !important;
-      }
-      .tab-panel {
-        display: block !important;
-        margin-bottom: 20px;
-        break-inside: avoid;
-      }
+    .level-pill { display: inline-block; margin-left: 6px; padding: 1px 9px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.03em; text-transform: none; vertical-align: middle;
     }
-    /* ---- Version 2: Challenging additions ---- */
-    .v2-badge { display: inline-block; margin-left: 8px; padding: 2px 10px; border-radius: 999px; background: var(--amber, #B45309); color: #fff; font-size: 0.62em; font-weight: 800; letter-spacing: 0.02em; vertical-align: middle; }
-    .visual-wrap { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin: 12px 0 6px; }
-    .visual-svg { display: block; width: 100%; height: auto; margin: 0 auto; }
-    .field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px 18px; margin: 16px 0; }
-    .field-item label { display: block; font-weight: 700; color: var(--navy); font-size: 0.9rem; margin-bottom: 8px; }
-    .field-row { display: flex; align-items: center; gap: 8px; }
-    .field-row strong { color: var(--navy); }
-    .solve-guide { background: var(--surface-teal); border: 1px solid var(--teal-line); border-radius: var(--radius-md); padding: 16px 18px; margin: 16px 0; }
-    .solve-guide h3 { color: var(--navy); font-size: 1.05rem; margin: 0 0 8px; }
-    .solve-guide ol { margin: 0; padding-left: 1.5rem; }
-    .solve-guide li { padding: 3px 0; }
-    .solve-guide strong { color: var(--navy); }
-    .solve-guide.brief { padding: 10px 14px; margin: 12px 0; }
-    .solve-guide.brief p { margin: 0; }
-    .field-grid { grid-template-columns: 1fr; }
-    .field-item { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; background: var(--surface-soft); }
-    .field-item.step-ok { border-color: var(--green); background: var(--green-tint); }
-    .field-item label { font-size: 1rem; }
-    .field-row { flex-wrap: wrap; }
-    .step-check { margin-left: 8px; min-height: 48px; }
-    .step-status { min-height: 1.5em; margin: 8px 0 0; font-size: 0.92rem; font-weight: 700; color: var(--ink-muted); }
-    .step-status.ok { color: var(--green); }
-    .step-status.err { color: var(--red); }
-    @media (max-width: 560px) { .step-check { margin-left: 0; width: 100%; } }
-    .level-pill { display: inline-block; margin-left: 6px; padding: 1px 9px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.03em; text-transform: none; vertical-align: middle; }
-    .level-pill.lvl-Warm-Up { background: var(--teal-tint); color: var(--teal); }
-    .level-pill.lvl-Core { background: var(--navy-tint); color: var(--navy); }
-    .level-pill.lvl-Stretch { background: #FEF3C7; color: #92400E; }
-    .level-pill.lvl-Challenge { background: #B45309; color: #fff; }
-    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .level-pill.lvl-Warm-Up { background: var(--brand-tint); color: var(--brand);
+    }
+    .level-pill.lvl-Core { background: var(--brand-tint); color: var(--brand);
+    }
+    .level-pill.lvl-Stretch { background: var(--sun-tint); color: var(--warn);
+    }
+    .level-pill.lvl-Challenge { background: var(--warn); color: #fff;
+    }
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap;
+    }
   </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
 </head>
-<body>
+<body class="theme-challenge">
   <header class="app-header">
     <div class="header-wrap">
       <div class="brand">
@@ -1110,7 +95,7 @@
       <div class="header-actions">
         <div class="score-pill" aria-live="polite">
           <span
-            >⭐ Progress: <span id="header-progress-count">0 / 57</span></span
+            >Progress: <span id="header-progress-count">0 / 57</span></span
           >
         </div>
         <button
@@ -1227,7 +212,7 @@
       class="print-only"
       aria-label="Printable student progress summary"
       style="
-        border: 2px solid var(--navy);
+        border: 2px solid var(--brand);
         border-radius: 12px;
         padding: 16px 20px;
         margin-bottom: 20px;
@@ -1476,7 +461,7 @@
         >
         (Standards 6.RP.A.3.C · 6.AT.4)</span
       >
-      <span>Interactive Practice Studio · Progress Auto-Saved in Browser</span>
+      <span>Interactive Practice Studio · Progress saves on this device</span>
     </div>
   </footer>
 
@@ -1557,8 +542,8 @@ function scaleProblem(n, part, whole, title, stem, stemEs) {
     ],
     hint,
     hintEs,
-    explain: `✓ ${part}/${whole}${g > 1 ? ` = ${sp}/${sw}` : ""} = ${fmt(pct)}/100 = ${fmt(pct)}%.`,
-    explainEs: `✓ ${part}/${whole}${g > 1 ? ` = ${sp}/${sw}` : ""} = ${fmt(pct)}/100 = ${fmt(pct)}%.`,
+    explain: `${part}/${whole}${g > 1 ? ` = ${sp}/${sw}` : ""} = ${fmt(pct)}/100 = ${fmt(pct)}%.`,
+    explainEs: `${part}/${whole}${g > 1 ? ` = ${sp}/${sw}` : ""} = ${fmt(pct)}/100 = ${fmt(pct)}%.`,
   };
 }
 
@@ -1608,9 +593,9 @@ const BASE_SECTIONS = [
       hintEs:
         "Un cuadrado entero es 1%. La mitad de 1% es 0.5%. Como fracción: 0.5/100 = 1/200.",
       explain:
-        "✓ Half of one square is 0.5%, which is 0.5/100 = 5/1,000 = 1/200 of the grid.",
+        "Half of one square is 0.5%, which is 0.5/100 = 5/1,000 = 1/200 of the grid.",
       explainEs:
-        "✓ La mitad de un cuadrado es 0.5%, es decir 0.5/100 = 5/1,000 = 1/200 de la cuadrícula.",
+        "La mitad de un cuadrado es 0.5%, es decir 0.5/100 = 5/1,000 = 1/200 de la cuadrícula.",
     },
     {
       id: "s1_3",
@@ -1671,7 +656,7 @@ const BASE_SECTIONS = [
       ],
       correct: 0,
       feedback: [
-        "✓ As percents: 1/2 = 50%, 55%, 0.6 = 60%, 5/8 = 62.5%. That is least to greatest.",
+        "As percents: 1/2 = 50%, 55%, 0.6 = 60%, 5/8 = 62.5%. That is least to greatest.",
         "55% is bigger than 50%, so 1/2 must come first.",
         "0.6 is 60%, which is bigger than 55%, so 55% comes before 0.6.",
         "That list runs greatest to least. The question asks for least to greatest.",
@@ -2077,8 +1062,8 @@ const BASE_SECTIONS = [
       hint: "6% is six 1% blocks, so one block is $2.40 ÷ 6. A hundred blocks make the whole.",
       hintEs:
         "6% son seis bloques de 1%, así que un bloque es $2.40 ÷ 6. Cien bloques forman el entero.",
-      explain: "✓ $2.40 ÷ 6 = $0.40 for 1%, and $0.40 × 100 = $40.",
-      explainEs: "✓ $2.40 ÷ 6 = $0.40 por cada 1%, y $0.40 × 100 = $40.",
+      explain: "$2.40 ÷ 6 = $0.40 for 1%, and $0.40 × 100 = $40.",
+      explainEs: "$2.40 ÷ 6 = $0.40 por cada 1%, y $0.40 × 100 = $40.",
     },
   ],
 
@@ -2112,9 +1097,9 @@ const BASE_SECTIONS = [
       hintEs:
         "Equipo A: 18/24 = 3/4. Equipo B: 21/30 = 7/10. Escribe ambos sobre 100.",
       explain:
-        "✓ A: 18/24 = 75%. B: 21/30 = 70%. Team A shot better even though Team B made more baskets.",
+        "A: 18/24 = 75%. B: 21/30 = 70%. Team A shot better even though Team B made more baskets.",
       explainEs:
-        "✓ A: 18/24 = 75%. B: 21/30 = 70%. El equipo A tiró mejor aunque B encestó más.",
+        "A: 18/24 = 75%. B: 21/30 = 70%. El equipo A tiró mejor aunque B encestó más.",
     },
     {
       id: "s4_2",
@@ -2131,9 +1116,9 @@ const BASE_SECTIONS = [
       hintEs:
         "25% = 1/4 de 32. 37.5% = 3/8 de 32 (1/8 de 32 es 4). Resta ambos grupos de 32 para el autobús.",
       explain:
-        "✓ Walk: 32 ÷ 4 = 8. Bike: 3 × 4 = 12. Bus: 32 − 8 − 12 = 12 (which is also 37.5%).",
+        "Walk: 32 ÷ 4 = 8. Bike: 3 × 4 = 12. Bus: 32 − 8 − 12 = 12 (which is also 37.5%).",
       explainEs:
-        "✓ Caminan: 32 ÷ 4 = 8. Bicicleta: 3 × 4 = 12. Autobús: 32 − 8 − 12 = 12 (también 37.5%).",
+        "Caminan: 32 ÷ 4 = 8. Bicicleta: 3 × 4 = 12. Autobús: 32 − 8 − 12 = 12 (también 37.5%).",
     },
     {
       id: "s4_3",
@@ -2168,9 +1153,9 @@ const BASE_SECTIONS = [
       hintEs:
         "1% de $45 es $0.45. El impuesto son 8 de esos. La propina son 20 (o 2 décimos). Luego suma las tres cantidades.",
       explain:
-        "✓ Tax: 8 × $0.45 = $3.60. Tip: 20% of $45 = $9. Total: $45 + $3.60 + $9 = $57.60.",
+        "Tax: 8 × $0.45 = $3.60. Tip: 20% of $45 = $9. Total: $45 + $3.60 + $9 = $57.60.",
       explainEs:
-        "✓ Impuesto: 8 × $0.45 = $3.60. Propina: 20% de $45 = $9. Total: $45 + $3.60 + $9 = $57.60.",
+        "Impuesto: 8 × $0.45 = $3.60. Propina: 20% de $45 = $9. Total: $45 + $3.60 + $9 = $57.60.",
     },
     {
       id: "s4_5",
@@ -2231,7 +1216,7 @@ const BASE_SECTIONS = [
       correct: 1,
       feedback: [
         "12 is less than half of 40, so the answer cannot be 72%. Check with 12/40 = 3/10.",
-        "✓ Multiply both by 2.5: 12 × 2.5 = 30 and 40 × 2.5 = 100. So 12 out of 40 is 30%.",
+        "Multiply both by 2.5: 12 × 2.5 = 30 and 40 × 2.5 = 100. So 12 out of 40 is 30%.",
         "Subtracting is the same mistake. Ratios scale by multiplication, not by adding or subtracting.",
         "The whole can become 100. It just has to be multiplied by the right factor (2.5), and the part by the same factor.",
       ],
@@ -2257,7 +1242,7 @@ const BASE_SECTIONS = [
       correct: 1,
       feedback: [
         "Check with the numbers: 20% off $50 is $40. Another 20% off $40 is $32. That is $18 off, not $20 off.",
-        "✓ $50 → $40 → $32. The total discount is $18, and 18/50 = 36%, not 40%.",
+        "$50 → $40 → $32. The total discount is $18, and 18/50 = 36%, not 40%.",
         "Nothing in the problem says the second discount is 40%. Both discounts are 20%.",
         "The problem says it happened. Percent discounts can be applied one after another.",
       ],
@@ -2410,7 +1395,7 @@ const QUIZ_QUESTIONS = [
     ],
     correct: 0,
     feedback: [
-      "✓ Doubling means 2 × the number, which is 200/100 = 200% of it.",
+      "Doubling means 2 × the number, which is 200/100 = 200% of it.",
       "50% of 200 is 100, which is more than 50. It depends on the number.",
       "Percents over 100% are real: 150% of a goal means more than the whole goal.",
       "10% of 500 is 50, which is more than 10. It depends on the number.",
@@ -2623,6 +1608,7 @@ function loadState() {
     const d = JSON.parse(raw);
     if (!d || typeof d !== "object") return;
     state.showEs = !!d.showEs;
+    state.play = d.play && typeof d.play === "object" ? d.play : {};
     state.solved = state.solved.map((_, i) =>
       d.solved && d.solved[i] && typeof d.solved[i] === "object"
         ? { ...d.solved[i] }
@@ -2657,6 +1643,7 @@ function snapshot() {
     quizFirst: { ...state.quizFirst },
     idx: state.idx.slice(),
     activeTab: state.activeTab,
+    play: state.play,
   };
 }
 
@@ -2729,19 +1716,19 @@ function gridVisual(pct, opts = {}) {
       const amount = Math.max(0, Math.min(1, filled - k));
       const cx = x0 + (k % 10) * cell;
       const cy = Math.floor(k / 10) * cell;
-      s += `<rect x="${cx}" y="${cy}" width="${cell}" height="${cell}" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="0.5"/>`;
+      s += `<rect x="${cx}" y="${cy}" width="${cell}" height="${cell}" fill="var(--well)" stroke="var(--border)" stroke-width="0.5"/>`;
       if (amount > 0)
-        s += `<rect x="${cx}" y="${cy}" width="${cell * amount}" height="${cell}" fill="#1FA6A2"/>`;
+        s += `<rect x="${cx}" y="${cy}" width="${cell * amount}" height="${cell}" fill="var(--pct)"/>`;
     }
-    s += `<rect x="${x0}" y="0" width="${size}" height="${size}" fill="none" stroke="#17324D" stroke-width="1.5"/>`;
-    s += `<text x="${x0 + size / 2}" y="${size + 16}" text-anchor="middle" font-size="9" font-weight="700" fill="#4A607A">Grid ${g + 1}${grids > 1 ? "" : " = 100%"}</text>`;
+    s += `<rect x="${x0}" y="0" width="${size}" height="${size}" fill="none" stroke="var(--brand)" stroke-width="1.5"/>`;
+    s += `<text x="${x0 + size / 2}" y="${size + 16}" text-anchor="middle" font-size="9" font-weight="700" fill="var(--ink-muted)">Grid ${g + 1}${grids > 1 ? "" : " = 100%"}</text>`;
   }
   if (opts.zoom) {
     const zx = width - 100;
-    s += `<text x="${zx + 40}" y="10" text-anchor="middle" font-size="8.5" font-weight="700" fill="#17324D">Zoom on 1 square</text>`;
-    s += `<rect x="${zx}" y="16" width="80" height="60" fill="#F1F5F9" stroke="#17324D" stroke-width="1.5"/>`;
-    s += `<rect x="${zx}" y="16" width="40" height="60" fill="#1FA6A2"/>`;
-    s += `<text x="${zx + 40}" y="${size + 16}" text-anchor="middle" font-size="9" font-weight="700" fill="#4A607A">1 square = 1%</text>`;
+    s += `<text x="${zx + 40}" y="10" text-anchor="middle" font-size="8.5" font-weight="700" fill="var(--brand)">Zoom on 1 square</text>`;
+    s += `<rect x="${zx}" y="16" width="80" height="60" fill="var(--well)" stroke="var(--brand)" stroke-width="1.5"/>`;
+    s += `<rect x="${zx}" y="16" width="40" height="60" fill="var(--pct)"/>`;
+    s += `<text x="${zx + 40}" y="${size + 16}" text-anchor="middle" font-size="9" font-weight="700" fill="var(--ink-muted)">1 square = 1%</text>`;
   }
   return `<div class="visual-wrap">${s}</svg></div>`;
 }
@@ -2755,18 +1742,18 @@ function dnl(marks) {
   const px = (x) => L + (x / maxX) * (R - L);
   const label = (txt, x, y) => {
     const unk = txt === "?";
-    return `<text x="${x}" y="${y}" text-anchor="middle" font-size="${unk ? 17 : 12.5}" font-weight="800" fill="${unk ? "#B45309" : "#17324D"}">${esc(txt)}</text>`;
+    return `<text x="${x}" y="${y}" text-anchor="middle" font-size="${unk ? 17 : 12.5}" font-weight="800" fill="${unk ? "var(--warn)" : "var(--brand)"}">${esc(txt)}</text>`;
   };
   let s = `<svg viewBox="0 0 ${W} 120" class="visual-svg" role="img" aria-label="Double number line with amounts on top and percents below">`;
-  s += `<text x="4" y="50" font-size="10.5" font-weight="800" fill="#0F766E">AMOUNT</text>`;
-  s += `<text x="4" y="84" font-size="10.5" font-weight="800" fill="#0F766E">PERCENT</text>`;
-  s += `<line x1="${L}" y1="46" x2="${px(maxX)}" y2="46" stroke="#17324D" stroke-width="2.2"/>`;
-  s += `<line x1="${L}" y1="80" x2="${px(maxX)}" y2="80" stroke="#17324D" stroke-width="2.2"/>`;
+  s += `<text x="4" y="50" font-size="10.5" font-weight="800" fill="var(--brand)">AMOUNT</text>`;
+  s += `<text x="4" y="84" font-size="10.5" font-weight="800" fill="var(--brand)">PERCENT</text>`;
+  s += `<line x1="${L}" y1="46" x2="${px(maxX)}" y2="46" stroke="var(--brand)" stroke-width="2.2"/>`;
+  s += `<line x1="${L}" y1="80" x2="${px(maxX)}" y2="80" stroke="var(--brand)" stroke-width="2.2"/>`;
   marks.forEach((m) => {
     const x = px(m[0]);
-    s += `<line x1="${x}" y1="46" x2="${x}" y2="80" stroke="#94A3B8" stroke-width="1.2" stroke-dasharray="4 3"/>`;
-    s += `<line x1="${x}" y1="39" x2="${x}" y2="53" stroke="#17324D" stroke-width="2.2"/>`;
-    s += `<line x1="${x}" y1="73" x2="${x}" y2="87" stroke="#17324D" stroke-width="2.2"/>`;
+    s += `<line x1="${x}" y1="46" x2="${x}" y2="80" stroke="var(--border-strong)" stroke-width="1.2" stroke-dasharray="4 3"/>`;
+    s += `<line x1="${x}" y1="39" x2="${x}" y2="53" stroke="var(--brand)" stroke-width="2.2"/>`;
+    s += `<line x1="${x}" y1="73" x2="${x}" y2="87" stroke="var(--brand)" stroke-width="2.2"/>`;
     s += label(m[1], x, 32);
     s += label(m[2], x, 104);
   });
@@ -2795,16 +1782,16 @@ function updatePrintSummary(c, total) {
     "5. Mastery Challenge",
   ];
   sheet.innerHTML = `
-    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #17324D; padding-bottom:8px; margin-bottom:10px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--brand); padding-bottom:8px; margin-bottom:10px;">
       <div>
-        <strong style="font-size:1.1rem; color:#17324D;">Understand Percent · Version 2: Challenging · Progress Summary</strong>
-        <div style="font-size:0.82rem; color:#4A607A;">Grade 6 Math · Unit 4, Lesson 4-1 (Standards 6.RP.A.3.C · 6.AT.4) · Printed ${dateStr}</div>
-        <div style="font-size:0.88rem; color:#17324D; margin-top:6px;"><strong>Student:</strong> ______________________________</div>
+        <strong style="font-size:1.1rem; color:var(--brand);">Understand Percent · Version 2: Challenging · Progress Summary</strong>
+        <div style="font-size:0.82rem; color:var(--ink-muted);">Grade 6 Math · Unit 4, Lesson 4-1 (Standards 6.RP.A.3.C · 6.AT.4) · Printed ${dateStr}</div>
+        <div style="font-size:0.88rem; color:var(--brand); margin-top:6px;"><strong>Student:</strong> ______________________________</div>
       </div>
-      <div style="font-size:1.1rem; font-weight:800; color:#0F766E;">Total: ${total} / ${TOTAL} (${Math.round((total / TOTAL) * 100)}%)</div>
+      <div style="font-size:1.1rem; font-weight:800; color:var(--brand);">Total: ${total} / ${TOTAL} (${Math.round((total / TOTAL) * 100)}%)</div>
     </div>
     <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:8px; font-size:0.82rem;">
-      ${names.map((n, i) => `<div style="border:1px solid #CBD5E1; border-radius:6px; padding:6px 8px;"><strong>${esc(n)}</strong><div>${c[i]} / ${SECTION_SIZES[i]}${i === 4 ? ` (${firstTry}/10 1st try)` : ""}</div></div>`).join("")}
+      ${names.map((n, i) => `<div style="border:1px solid var(--border); border-radius:6px; padding:6px 8px;"><strong>${esc(n)}</strong><div>${c[i]} / ${SECTION_SIZES[i]}${i === 4 ? ` (${firstTry}/10 1st try)` : ""}</div></div>`).join("")}
     </div>`;
 }
 
@@ -2822,6 +1809,7 @@ function updateProgressHeader() {
   if (banner) banner.hidden = !checks.every(Boolean);
   updatePrintSummary(c, total);
   saveState();
+  U4Studio.sync();
 }
 
 function renderDots(containerId, items, activeIdx, solvedMap, onSelect) {
@@ -2899,7 +1887,7 @@ function appendNext(fb, tab, render) {
   const last = state.idx[k] === SECTION_SIZES[k] - 1;
   const b = document.createElement("button");
   b.type = "button";
-  b.className = "btn btn-teal btn-sm next-btn";
+  b.className = "btn btn-go btn-sm next-btn";
   if (!last) b.textContent = tab === 5 ? "Next question →" : "Next problem →";
   else
     b.textContent =
@@ -2928,10 +1916,10 @@ function bi(en, es) {
 function head(p, pos, len) {
   return `
     <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:8px;">
-      <span style="font-size:0.84rem; font-weight:800; text-transform:uppercase; color:var(--teal); letter-spacing:0.04em;">Problem ${pos} of ${len} · ${esc(p.title)} <span class="level-pill lvl-${esc(p.level)}">${esc(p.level)}</span></span>
+      <span style="font-size:0.84rem; font-weight:800; color:var(--brand); letter-spacing:0.04em;">Problem ${pos} of ${len} · ${esc(p.title)} <span class="level-pill lvl-${esc(p.level)}">${esc(p.level)}</span></span>
       <button type="button" class="speak-btn" data-speak="${esc(p.stem)}" data-speak-es="${esc(p.stemEs)}">🔊 Read</button>
     </div>
-    <p style="font-size:1.12rem; font-weight:700; color:var(--navy); margin:0 0 6px 0;">${esc(p.stem)}</p>
+    <p style="font-size:1.12rem; font-weight:700; color:var(--brand); margin:0 0 6px 0;">${esc(p.stem)}</p>
     <p class="es-text">${esc(p.stemEs)}</p>
     ${p.visual ? p.visual() : ""}`;
 }
@@ -3097,7 +2085,7 @@ function renderSection(n) {
           ${f.suf ? `<strong>${esc(f.suf)}</strong>` : ""}
           ${!done ? `<button type="button" class="btn btn-sm step-check" data-check-step="${i}">Check step ${i + 1}</button>` : ""}
         </div>
-        <p class="step-status ${done ? "ok" : ""}" id="s${n}-step-status-${i}" role="status">${done ? "✓ Correct" : ""}</p>
+        <p class="step-status ${done ? "ok" : ""}" id="s${n}-step-status-${i}" role="status">${done ? "Correct" : ""}</p>
       </div>`,
       )
       .join("")}</div>
@@ -3147,7 +2135,7 @@ function renderSection(n) {
   const inputs = Array.from(stage.querySelectorAll("input.num-input"));
   const showStepStatus = (i, ok) => {
     const status = $(`s${n}-step-status-${i}`);
-    status.textContent = ok ? "✓ Correct. Move to the next step." : "Try this step again. Use the hint if you need help.";
+    status.textContent = ok ? "Correct. Move to the next step." : "Try this step again. Use the hint if you need help.";
     status.className = `step-status ${ok ? "ok" : "err"}`;
     inputs[i].classList.toggle("ok", ok);
     inputs[i].classList.toggle("err", !ok);
@@ -3315,10 +2303,10 @@ function renderQuestion() {
     .join("");
   $("s5-stage").innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:8px;">
-      <span style="font-size:0.84rem; font-weight:800; text-transform:uppercase; color:var(--teal);">Question ${state.idx[4] + 1} of 10 · ${esc(q.skill)}</span>
+      <span style="font-size:0.84rem; font-weight:800; color:var(--brand);">Question ${state.idx[4] + 1} of 10 · ${esc(q.skill)}</span>
       <button type="button" class="speak-btn" data-speak="${esc(q.stem)}" data-speak-es="${esc(q.stemEs)}">🔊 Read</button>
     </div>
-    <p style="font-size:1.15rem; font-weight:700; color:var(--navy); margin:0 0 6px 0;">${esc(q.stem)}</p>
+    <p style="font-size:1.15rem; font-weight:700; color:var(--brand); margin:0 0 6px 0;">${esc(q.stem)}</p>
     <p class="es-text">${esc(q.stemEs)}</p>
     <div class="choice-list">${choices}</div>
     <div id="s5-fb" class="feedback-box ${hasChoice ? `show ${isOk ? "ok" : "err"}` : ""}" role="status">${hasChoice ? esc(q.feedback[chosen]) : ""}</div>`;
@@ -3368,6 +2356,7 @@ $("reset-all-btn").addEventListener("click", () => {
   state.quizChoice = {};
   state.quizFirst = {};
   state.idx = [0, 0, 0, 0, 0];
+  U4Studio.reset();
   Object.keys(misses).forEach((k) => {
     delete misses[k];
   });
@@ -3391,6 +2380,7 @@ function applyRestoredState(custom) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(custom));
     loadState();
+    U4Studio.rebase();
     document.body.classList.toggle("show-es", state.showEs);
     esBtn.setAttribute("aria-pressed", String(state.showEs));
     selectTab(state.activeTab);
@@ -3416,6 +2406,68 @@ function wireSaveResumeEngine(attempt = 0) {
    BOOT
    ---------------------------------------------------------------------- */
 loadState();
+U4Studio.init({
+  state,
+  save: saveState,
+  totals: {"1": 11, "2": 13, "3": 13, "4": 10, "5": 10},
+  need: {"1": 11, "2": 13, "3": 13, "4": 10, "5": 8},
+  goToTab: (n) => selectTab(n),
+  solvedMap: (n) => state.solved[n - 1],
+  glyphs: ["150%", "0.5%", "200%", "%", "125%"],
+  bonus: {
+  "gen": "pctMeaning",
+  "title": "Bonus Round: Match the Trios",
+  "titleEs": "Ronda extra: une los tríos",
+  "help": "Each trio shows one percent three ways: the percent, how many out of 100, and the decimal. Tap three tiles that belong together.",
+  "helpEs": "Cada trío muestra un porcentaje de tres formas: el porcentaje, cuántos de cada 100 y el decimal. Toca tres fichas que van juntas.",
+  "rounds": [
+    [
+      {
+        "p": 150
+      },
+      {
+        "p": 200
+      },
+      {
+        "p": 125
+      }
+    ],
+    [
+      {
+        "p": 0.5
+      },
+      {
+        "p": 0.25
+      },
+      {
+        "p": 0.1
+      }
+    ],
+    [
+      {
+        "p": 120
+      },
+      {
+        "p": 175
+      },
+      {
+        "p": 300
+      }
+    ],
+    [
+      {
+        "p": 0.8
+      },
+      {
+        "p": 2.5
+      },
+      {
+        "p": 110
+      }
+    ]
+  ]
+},
+});
 if (!state.hasSavedPosition) {
   [...SECTIONS, QUIZ_QUESTIONS].forEach((items, i) => {
     const first = items.findIndex((it) => !state.solved[i][it.id]);

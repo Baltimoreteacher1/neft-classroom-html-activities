@@ -5,264 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Find and Compare with Percentages · Version 2: Challenging (Grade 6)</title>
   <meta name="description" content="Challenging Grade 6 interactive practice finding and comparing percentages: percents over 100% and micro-percents, multi-item comparison matrices, stacked retail discounts, and battery drain dynamics.">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2317324D'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia,serif' font-weight='bold' font-size='26' fill='%23FCD34D'%3E%25%E2%98%85%3C/text%3E%3C/svg%3E">
-  <style>
-    /* ==========================================================================
-       CHALLENGE DESIGN SYSTEM (GRADE 6 · REVEAL MATH UNIT 4 · LESSON 4-4 CHALLENGING)
-       ========================================================================== */
-    :root {
-      --bg-paper: #F7F4EC;
-      --bg-well: #EFECE3;
-      --surface: #FFFFFF;
-      --surface-soft: #FAF8F3;
-      --surface-teal: #F0FAF9;
-
-      --navy: #17324D;
-      --navy-dark: #0F2337;
-      --navy-tint: #E8F0F7;
-      --navy-line: #C4D5E5;
-
-      --teal: #0F766E;
-      --teal-bright: #1FA6A2;
-      --teal-tint: #E3F6F5;
-      --teal-line: #94DFDC;
-
-      --amber: #B45309;
-      --amber-bright: #D97706;
-      --amber-tint: #FEF3C7;
-      --amber-line: #FCD34D;
-
-      --green: #047857;
-      --green-tint: #ECFDF5;
-      --green-line: #A7F3D0;
-
-      --red: #B91C1C;
-      --red-tint: #FEF2F2;
-      --red-line: #FECACA;
-
-      --ink: #1E293B;
-      --ink-muted: #475569;
-      --ink-light: #64748B;
-
-      --border: #D8D3C6;
-      --border-strong: #B8B1A0;
-
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      --font-display: Georgia, 'Iowan Old Style', serif;
-      --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
-
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
-      --radius-pill: 999px;
-
-      --shadow-card: 0 2px 8px rgba(23, 50, 77, 0.06), 0 1px 2px rgba(23, 50, 77, 0.04);
-      --shadow-pop: 0 10px 24px rgba(23, 50, 77, 0.12);
-    }
-
-    *, *::before, *::after { box-sizing: border-box; }
-    html { font-size: 16px; }
-    body {
-      margin: 0; background-color: var(--bg-paper); color: var(--ink);
-      font-family: var(--font-sans); line-height: 1.55; min-height: 100vh;
-      display: flex; flex-direction: column; font-variant-numeric: tabular-nums;
-    }
-
-    .sr-only {
-      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
-    }
-    :focus-visible { outline: 3px solid var(--amber-bright); outline-offset: 2px; }
-
-    .es-text { display: none; color: var(--teal); font-style: italic; font-size: 0.94rem; margin-top: 4px; }
-    body.show-es .es-text { display: block; }
-
-    .app-header {
-      background: var(--navy); color: #FFFFFF; padding: 12px 24px;
-      border-bottom: 3px solid var(--amber-bright);
-    }
-    .header-wrap {
-      max-width: 1080px; margin: 0 auto; display: flex; flex-wrap: wrap;
-      align-items: center; justify-content: space-between; gap: 14px;
-    }
-    .brand { display: flex; align-items: center; gap: 12px; }
-    .brand-icon {
-      width: 40px; height: 40px; border-radius: 10px; background: var(--amber-bright);
-      color: var(--navy-dark); font-family: var(--font-display); font-size: 1.4rem;
-      font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    .brand-title { margin: 0; font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; }
-    .brand-sub { font-size: 0.8rem; color: #CBD5E1; margin-top: 1px; }
-
-    .v2-badge {
-      display: inline-block; background: var(--amber-bright); color: var(--navy-dark);
-      font-size: 0.72rem; font-weight: 800; padding: 2px 8px; border-radius: var(--radius-pill);
-      text-transform: uppercase; letter-spacing: 0.04em; margin-left: 6px; vertical-align: middle;
-    }
-
-    .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .score-pill {
-      background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.25);
-      border-radius: var(--radius-pill); padding: 5px 14px; font-size: 0.86rem; font-weight: 700;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .top-btn {
-      background: rgba(255, 255, 255, 0.14); color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.28);
-      border-radius: var(--radius-sm); padding: 6px 12px; font-size: 0.84rem; font-weight: 600;
-      cursor: pointer; font-family: inherit;
-    }
-    .top-btn:hover { background: rgba(255, 255, 255, 0.24); }
-    .top-btn[aria-pressed="true"] { background: var(--amber-bright); color: var(--navy-dark); border-color: #FFFFFF; font-weight: 700; }
-
-    .tab-bar {
-      background: var(--surface); border-bottom: 1px solid var(--border);
-      position: sticky; top: 0; z-index: 80; box-shadow: 0 2px 4px rgba(23, 50, 77, 0.04);
-    }
-    .tab-list {
-      max-width: 1080px; margin: 0 auto; padding: 0 16px; display: grid;
-      grid-template-columns: repeat(5, 1fr); gap: 4px;
-    }
-    .tab-btn {
-      appearance: none; background: transparent; border: none; border-bottom: 4px solid transparent;
-      padding: 12px 10px 10px; cursor: pointer; font-family: inherit; display: flex;
-      align-items: center; gap: 9px; color: var(--ink-muted); text-align: left;
-      transition: background 0.15s ease, color 0.15s ease;
-    }
-    .tab-btn:hover { background: var(--surface-soft); color: var(--navy); }
-    .tab-btn[aria-selected="true"] {
-      color: var(--navy); border-bottom-color: var(--amber-bright);
-      background: var(--amber-tint); font-weight: 700;
-    }
-    .tab-badge {
-      width: 26px; height: 26px; border-radius: 50%; background: var(--bg-well);
-      color: var(--navy); font-size: 0.82rem; font-weight: 800; display: inline-flex;
-      align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    .tab-btn[aria-selected="true"] .tab-badge { background: var(--amber-bright); color: #FFFFFF; }
-    .tab-btn.tab-complete .tab-badge { background: var(--green); color: #FFFFFF; }
-    .tab-text { display: flex; flex-direction: column; min-width: 0; }
-    .tab-name { font-size: 0.9rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .tab-desc { font-size: 0.74rem; color: var(--ink-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-    .main-container { max-width: 1080px; width: 100%; margin: 0 auto; padding: 24px 20px 48px; flex: 1; }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-
-    .topic-strip {
-      background: var(--surface); border: 1px solid var(--border); border-left: 6px solid var(--amber-bright);
-      border-radius: var(--radius-md); padding: 16px 20px; margin-bottom: 20px; display: flex;
-      flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;
-      box-shadow: var(--shadow-card);
-    }
-    .topic-strip h2 { margin: 0 0 4px 0; font-family: var(--font-display); font-size: 1.35rem; color: var(--navy); }
-    .topic-strip p { margin: 0; font-size: 0.96rem; color: var(--ink-muted); }
-
-    .key-rule-pill {
-      background: var(--amber-tint); border: 1px solid var(--amber-line); color: var(--amber);
-      padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: 600;
-    }
-
-    .stepper-bar {
-      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
-      padding: 12px 16px; margin-bottom: 18px; display: flex; flex-wrap: wrap; align-items: center;
-      justify-content: space-between; gap: 12px; box-shadow: var(--shadow-card);
-    }
-    .dots-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-    .step-dot {
-      min-width: 34px; height: 34px; padding: 0 8px; border-radius: var(--radius-sm);
-      border: 1.5px solid var(--border-strong); background: var(--surface-soft); color: var(--navy);
-      font-weight: 700; font-size: 0.86rem; cursor: pointer; display: inline-flex; align-items: center;
-      justify-content: center; font-family: inherit; transition: all 0.15s ease;
-    }
-    .step-dot:hover { border-color: var(--navy); background: #FFFFFF; }
-    .step-dot.active { background: var(--amber-bright); color: #FFFFFF; border-color: var(--amber-bright); }
-    .step-dot.solved { background: var(--green-tint); border-color: var(--green); color: var(--green); }
-    .step-dot.solved.active { background: var(--green); color: #FFFFFF; }
-
-    .stage-card {
-      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
-      padding: 24px; box-shadow: var(--shadow-card);
-    }
-    .two-col-stage { display: grid; grid-template-columns: 380px 1fr; gap: 24px; align-items: start; }
-
-    .btn {
-      appearance: none; border: 1.5px solid var(--border-strong); background: var(--surface);
-      color: var(--navy); font-family: inherit; font-size: 0.94rem; font-weight: 700; padding: 10px 16px;
-      border-radius: var(--radius-sm); cursor: pointer; display: inline-flex; align-items: center;
-      justify-content: center; gap: 6px; transition: all 0.15s ease;
-    }
-    .btn:hover { background: var(--surface-soft); border-color: var(--navy); }
-    .btn-primary { background: var(--navy); color: #FFFFFF; border-color: var(--navy); }
-    .btn-primary:hover { background: var(--navy-dark); border-color: var(--navy-dark); }
-    .btn-amber { background: var(--amber-bright); color: #FFFFFF; border-color: var(--amber-bright); }
-    .btn-amber:hover { background: var(--amber); border-color: var(--amber); }
-    .btn-teal { background: var(--teal); color: #FFFFFF; border-color: var(--teal); }
-    .btn-teal:hover { background: var(--teal-bright); border-color: var(--teal-bright); }
-    .btn-sm { padding: 6px 12px; font-size: 0.84rem; }
-
-    .speak-btn {
-      background: var(--surface-soft); border: 1px solid var(--border); color: var(--navy);
-      border-radius: var(--radius-sm); padding: 4px 8px; font-size: 0.8rem; cursor: pointer;
-      display: inline-flex; align-items: center; gap: 4px; font-family: inherit;
-    }
-    .speak-btn:hover { background: var(--navy-tint); }
-
-    .num-input {
-      font-family: var(--font-mono); font-size: 1.25rem; font-weight: 700; text-align: center;
-      padding: 8px 12px; border: 2px solid var(--border-strong); border-radius: var(--radius-sm);
-      background: #FFFFFF; color: var(--navy); transition: all 0.15s ease;
-    }
-    .num-input:focus { border-color: var(--navy); outline: none; box-shadow: 0 0 0 3px rgba(23, 50, 77, 0.15); }
-    .num-input.ok { border-color: var(--green); background: var(--green-tint); color: var(--green); }
-    .num-input.err { border-color: var(--red); background: var(--red-tint); color: var(--red); }
-
-    .feedback-box { margin-top: 16px; padding: 12px 16px; border-radius: var(--radius-sm); font-size: 0.95rem; font-weight: 600; display: none; }
-    .feedback-box.show { display: block; }
-    .feedback-box.ok { background: var(--green-tint); border: 1.5px solid var(--green-line); color: #065F46; }
-    .feedback-box.warn { background: var(--amber-tint); border: 1.5px solid var(--amber-line); color: #92400E; }
-    .feedback-box.err { background: var(--red-tint); border: 1.5px solid var(--red-line); color: #991B1B; }
-
-    .choice-stack { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
-    .choice-btn {
-      appearance: none; background: var(--surface-soft); border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm); padding: 12px 16px; text-align: left; font-family: inherit;
-      font-size: 1rem; color: var(--ink); cursor: pointer; display: flex; align-items: center;
-      gap: 12px; transition: all 0.15s ease;
-    }
-    .choice-btn:hover { background: var(--navy-tint); border-color: var(--navy); }
-    .choice-btn.correct { background: var(--green-tint); border-color: var(--green); color: var(--green); font-weight: 700; }
-    .choice-btn.wrong { background: var(--red-tint); border-color: var(--red); color: var(--red); }
-
-    .matrix-table {
-      width: 100%; border-collapse: collapse; margin-bottom: 16px; background: #FFFFFF;
-      border-radius: var(--radius-sm); overflow: hidden; border: 1.5px solid var(--border);
-    }
-    .matrix-table th, .matrix-table td {
-      padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border);
-      font-size: 0.95rem;
-    }
-    .matrix-table th { background: var(--navy); color: #FFFFFF; font-weight: 700; }
-    .matrix-table tr:last-child td { border-bottom: none; }
-
-    .app-footer {
-      background: var(--navy); color: #FFFFFF; padding: 16px 24px; font-size: 0.84rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.15); margin-top: auto;
-    }
-    .footer-wrap { max-width: 1080px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; }
-
-    @media (max-width: 840px) {
-      .two-col-stage { grid-template-columns: 1fr; }
-      .tab-list { grid-template-columns: repeat(5, 1fr); padding: 0 8px; }
-      .tab-btn { padding: 8px 4px; flex-direction: column; align-items: center; text-align: center; gap: 4px; }
-      .tab-desc { display: none; }
-      .tab-name { font-size: 0.75rem; }
-    }
-  </style>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231E1B6E'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia,serif' font-weight='bold' font-size='26' fill='%23FCD34D'%3E%25%E2%98%85%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/assets/u4-studio.css">
+  <script src="/assets/u4-studio.js"></script>
+  <script src="/assets/u4-studio-bonus.js"></script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
 </head>
-<body>
+<body class="theme-challenge">
 
   <header class="app-header">
     <div class="header-wrap">
@@ -276,7 +27,7 @@
 
       <div class="header-actions">
         <div class="score-pill" aria-live="polite">
-          <span>&#11088; Progress: <span id="header-progress-count">0 / 40</span></span>
+          <span>Progress: <span id="header-progress-count">0 / 40</span></span>
         </div>
         <button type="button" class="top-btn" id="toggle-es-btn" aria-pressed="false">&#127760; Espa&ntilde;ol</button>
         <button type="button" class="top-btn" id="print-btn">&#128424; Print</button>
@@ -529,6 +280,7 @@
         if (Object.keys(state.solved3).length === 8) document.getElementById('tab-3').classList.add('tab-complete');
         if (Object.keys(state.solved4).length === 6) document.getElementById('tab-4').classList.add('tab-complete');
         if (Object.keys(state.solved5).length === 10) document.getElementById('tab-5').classList.add('tab-complete');
+        U4Studio.sync();
       }
 
       function selectTab(tabNum) {
@@ -579,7 +331,7 @@
         let b = fbEl.querySelector('.next-step-btn');
         if (!b) {
           b = document.createElement('button');
-          b.className = 'btn btn-sm btn-amber next-step-btn';
+          b.className = 'btn btn-sm btn-go next-step-btn';
           b.style.marginTop = '10px';
           b.textContent = 'Next Question →';
           fbEl.appendChild(b);
@@ -671,22 +423,22 @@
         const stage = document.getElementById('t1-stage-card');
         stage.innerHTML = `
           <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
-            <span style="font-size:0.84rem; font-weight:800; color:var(--amber-bright); text-transform:uppercase;">Challenge 1 of ${T1_PROBLEMS.length}</span>
+            <span style="font-size:0.84rem; font-weight:800; color: var(--warn);">Challenge 1 of ${T1_PROBLEMS.length}</span>
             <button type="button" class="speak-btn" id="t1-speak">🔊 Read Formula</button>
           </div>
 
-          <div style="background:var(--navy); color:#FFFFFF; border-radius:var(--radius-md); padding:18px 24px; margin-bottom:20px;">
-            <div style="font-size:0.82rem; text-transform:uppercase; color:#CBD5E1; font-weight:700;">Challenge Problem</div>
+          <div style="background:var(--brand); color:#FFFFFF; border-radius:var(--radius-md); padding:18px 24px; margin-bottom:20px;">
+            <div style="font-size:0.82rem; color:var(--border); font-weight:700;">Challenge Problem</div>
             <div style="font-size:1.5rem; font-family:var(--font-display); font-weight:700;">Find ${p.percent}% of ${p.whole}</div>
           </div>
 
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">
             <div style="background:var(--surface-soft); border:1.5px solid var(--border); border-radius:var(--radius-md); padding:16px;">
-              <label style="display:block; font-weight:700; color:var(--navy); margin-bottom:6px;">Step 1: Convert ${p.percent}% to decimal:</label>
+              <label style="display:block; font-weight:700; color:var(--brand); margin-bottom:6px;">Step 1: Convert ${p.percent}% to decimal:</label>
               <input type="number" step="any" id="t1-dec-in" class="num-input" style="width:100%;" placeholder="e.g. 1.75" value="${isSolved ? p.decimal : ''}" ${isSolved ? 'disabled' : ''}>
             </div>
             <div style="background:var(--surface-soft); border:1.5px solid var(--border); border-radius:var(--radius-md); padding:16px;">
-              <label style="display:block; font-weight:700; color:var(--navy); margin-bottom:6px;">Step 2: Multiply decimal &times; ${p.whole}:</label>
+              <label style="display:block; font-weight:700; color:var(--brand); margin-bottom:6px;">Step 2: Multiply decimal &times; ${p.whole}:</label>
               <input type="number" step="any" id="t1-ans-in" class="num-input" style="width:100%;" placeholder="Final part" value="${isSolved ? p.targetPart : ''}" ${isSolved ? 'disabled' : ''}>
             </div>
           </div>
@@ -694,7 +446,7 @@
           <button type="button" class="btn btn-primary" id="t1-check-btn" ${isSolved ? 'disabled' : ''}>Check Answer</button>
 
           <div id="t1-fb" class="feedback-box ${isSolved ? 'show ok' : ''}">
-            ${isSolved ? `✓ Solved! ${p.explain}` : ''}
+            ${isSolved ? `Solved! ${p.explain}` : ''}
           </div>
         `;
 
@@ -711,7 +463,7 @@
             playSound('correct');
             state.solved1[p.id] = true;
             fb.className = 'feedback-box show ok';
-            fb.innerHTML = `✓ Brilliant! ${p.explain}`;
+            fb.innerHTML = `Brilliant! ${p.explain}`;
             renderDots('t1-dots', T1_PROBLEMS, state.idx1, state.solved1, (ni) => { state.idx1 = ni; renderT1(); });
             updateProgressHeader();
             appendNext(fb, 1, T1_PROBLEMS.length, renderT1);
@@ -877,7 +629,7 @@
         const stage = document.getElementById('t2-stage-card');
         stage.innerHTML = `
           <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-            <span style="font-size:0.84rem; font-weight:800; color:var(--amber-bright); text-transform:uppercase;">Matrix ${state.idx2 + 1} of ${T2_MATRICES.length} · ${m.title}</span>
+            <span style="font-size:0.84rem; font-weight:800; color: var(--warn);">Matrix ${state.idx2 + 1} of ${T2_MATRICES.length} · ${m.title}</span>
             <button type="button" class="speak-btn" data-speak="${m.question}">🔊 Read Question</button>
           </div>
 
@@ -893,16 +645,16 @@
             <tbody>
               ${m.rows.map(r => `
                 <tr>
-                  <td style="font-weight:700; color:var(--navy);">${r.name}</td>
-                  <td style="font-family:var(--font-mono);">${r.rate}</td>
-                  <td style="font-family:var(--font-mono);">${r.base}</td>
-                  <td style="font-family:var(--font-mono); font-weight:800; color:var(--teal);">${r.rate} &times; ${r.base} = ${r.output}</td>
+                  <td style="font-weight:700; color:var(--brand);">${r.name}</td>
+                  <td style="font-family:var(--font-display);">${r.rate}</td>
+                  <td style="font-family:var(--font-display);">${r.base}</td>
+                  <td style="font-family:var(--font-display); font-weight:800; color:var(--brand);">${r.rate} &times; ${r.base} = ${r.output}</td>
                 </tr>
               `).join('')}
             </tbody>
           </table>
 
-          <p style="font-size:1.15rem; font-weight:700; color:var(--navy); margin:0 0 12px 0;">${m.question}</p>
+          <p style="font-size:1.15rem; font-weight:700; color:var(--brand); margin:0 0 12px 0;">${m.question}</p>
 
           <div class="choice-stack">
             ${m.choices.map((c, i) => {
@@ -921,7 +673,7 @@
           </div>
 
           <div id="t2-fb" class="feedback-box ${isSolved ? 'show ok' : ''}">
-            ${isSolved ? `✓ Correct! ${m.explain}` : ''}
+            ${isSolved ? `Correct! ${m.explain}` : ''}
           </div>
         `;
 
@@ -941,7 +693,7 @@
               playSound('correct');
               btn.classList.add('correct');
               fb.className = 'feedback-box show ok';
-              fb.innerHTML = `✓ Correct! ${m.explain}`;
+              fb.innerHTML = `Correct! ${m.explain}`;
               state.solved2[m.id] = true;
               renderDots('t2-dots', T2_MATRICES, state.idx2, state.solved2, (ni) => { state.idx2 = ni; renderT2(); });
               updateProgressHeader();
@@ -1097,11 +849,11 @@
         const stage = document.getElementById('t3-stage-card');
         stage.innerHTML = `
           <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-            <span style="font-size:0.84rem; font-weight:800; color:var(--amber-bright); text-transform:uppercase;">Retail Trap ${state.idx3 + 1} of ${T3_DISCOUNTS.length} · ${d.title}</span>
+            <span style="font-size:0.84rem; font-weight:800; color: var(--warn);">Retail Trap ${state.idx3 + 1} of ${T3_DISCOUNTS.length} · ${d.title}</span>
             <button type="button" class="speak-btn" data-speak="${d.question}">🔊 Read Question</button>
           </div>
 
-          <p style="font-size:1.15rem; font-weight:700; color:var(--navy); margin:0 0 12px 0;">${d.question}</p>
+          <p style="font-size:1.15rem; font-weight:700; color:var(--brand); margin:0 0 12px 0;">${d.question}</p>
 
           <div class="choice-stack">
             ${d.choices.map((c, i) => {
@@ -1120,7 +872,7 @@
           </div>
 
           <div id="t3-fb" class="feedback-box ${isSolved ? 'show ok' : ''}">
-            ${isSolved ? `✓ Correct! ${d.explain}` : ''}
+            ${isSolved ? `Correct! ${d.explain}` : ''}
           </div>
         `;
 
@@ -1140,7 +892,7 @@
               playSound('correct');
               btn.classList.add('correct');
               fb.className = 'feedback-box show ok';
-              fb.innerHTML = `✓ Correct! ${d.explain}`;
+              fb.innerHTML = `Correct! ${d.explain}`;
               state.solved3[d.id] = true;
               renderDots('t3-dots', T3_DISCOUNTS, state.idx3, state.solved3, (ni) => { state.idx3 = ni; renderT3(); });
               updateProgressHeader();
@@ -1228,22 +980,22 @@
         const stage = document.getElementById('t4-stage-card');
         stage.innerHTML = `
           <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-            <span style="font-size:0.84rem; font-weight:800; color:var(--amber-bright); text-transform:uppercase;">Challenge ${state.idx4 + 1} of ${T4_STORIES.length} · ${s.title}</span>
+            <span style="font-size:0.84rem; font-weight:800; color: var(--warn);">Challenge ${state.idx4 + 1} of ${T4_STORIES.length} · ${s.title}</span>
             <button type="button" class="speak-btn" id="t4-speak">🔊 Read Scenario</button>
           </div>
-          <div style="background:var(--surface-soft); border-left:4px solid var(--amber-bright); padding:14px 18px; border-radius:var(--radius-sm); margin-bottom:14px;">
-            <p style="font-size:1.1rem; color:var(--navy); font-weight:600; margin:0 0 4px 0;">${s.scenario}</p>
+          <div style="background:var(--surface-soft); border-left:4px solid var(--sun-deep); padding:14px 18px; border-radius:var(--radius-sm); margin-bottom:14px;">
+            <p style="font-size:1.1rem; color:var(--brand); font-weight:600; margin:0 0 4px 0;">${s.scenario}</p>
           </div>
-          <p style="font-size:1.15rem; font-family:var(--font-display); font-weight:700; color:var(--navy); margin:0 0 14px 0;">${s.task}</p>
+          <p style="font-size:1.15rem; font-family:var(--font-display); font-weight:700; color:var(--brand); margin:0 0 14px 0;">${s.task}</p>
 
           <div style="display:flex; align-items:center; gap:12px; margin-top:18px; flex-wrap:wrap;">
-            <label for="t4-in" style="font-weight:700; color:var(--navy);">Calculated Amount:</label>
+            <label for="t4-in" style="font-weight:700; color:var(--brand);">Calculated Amount:</label>
             <input type="number" step="any" id="t4-in" class="num-input" style="width:140px;" placeholder="?" value="${isSolved ? s.targetAns : ''}" ${isSolved ? 'disabled' : ''}>
             <button type="button" class="btn btn-primary" id="t4-check-btn" ${isSolved ? 'disabled' : ''}>Check Answer</button>
           </div>
 
           <div id="t4-fb" class="feedback-box ${isSolved ? 'show ok' : ''}">
-            ${isSolved ? `✓ Correct! ${s.explain}` : ''}
+            ${isSolved ? `Correct! ${s.explain}` : ''}
           </div>
         `;
 
@@ -1260,7 +1012,7 @@
             playSound('correct');
             state.solved4[s.id] = true;
             fb.className = 'feedback-box show ok';
-            fb.innerHTML = `✓ Outstanding! ${s.explain}`;
+            fb.innerHTML = `Outstanding! ${s.explain}`;
             stage.querySelector('#t4-in').classList.add('ok');
             renderDots('t4-dots', T4_STORIES, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4(); });
             updateProgressHeader();
@@ -1371,10 +1123,10 @@
         const stage = document.getElementById('t5-stage-card');
         stage.innerHTML = `
           <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-            <span style="font-size:0.84rem; font-weight:800; color:var(--amber-bright); text-transform:uppercase;">Gauntlet Question ${state.idx5 + 1} of 10</span>
+            <span style="font-size:0.84rem; font-weight:800; color: var(--warn);">Gauntlet Question ${state.idx5 + 1} of 10</span>
             <button type="button" class="speak-btn" data-speak="${q.q}">🔊 Read</button>
           </div>
-          <p style="font-size:1.15rem; font-weight:700; color:var(--navy); margin:0 0 6px 0;">${q.q}</p>
+          <p style="font-size:1.15rem; font-weight:700; color:var(--brand); margin:0 0 6px 0;">${q.q}</p>
 
           <div class="choice-stack">
             ${q.choices.map((c, i) => {
@@ -1385,7 +1137,6 @@
               }
               return `
                 <button type="button" class="choice-btn ${cls}" data-t5-mc="${i}">
-                  <span style="font-weight:700; width:24px;">${['A','B','C','D'][i]}.</span>
                   <span>${c}</span>
                 </button>
               `;
@@ -1393,7 +1144,7 @@
           </div>
 
           <div id="t5-fb" class="feedback-box ${isSolved ? 'show ok' : ''}">
-            ${isSolved ? `✓ Correct! ${q.explain}` : ''}
+            ${isSolved ? `Correct! ${q.explain}` : ''}
           </div>
         `;
 
@@ -1412,7 +1163,7 @@
               playSound('correct');
               btn.classList.add('correct');
               fb.className = 'feedback-box show ok';
-              fb.innerHTML = `✓ Correct! ${q.explain}`;
+              fb.innerHTML = `Correct! ${q.explain}`;
               state.solved5[q.id] = true;
               renderDots('t5-dots', T5_QUESTIONS, state.idx5, state.solved5, (ni) => { state.idx5 = ni; renderT5(); });
               updateProgressHeader();
@@ -1441,6 +1192,91 @@
       };
 
       loadState();
+      U4Studio.init({
+        state,
+        save: saveState,
+        totals: {"1": 8, "2": 8, "3": 8, "4": 6, "5": 10},
+        need: {"1": 8, "2": 8, "3": 8, "4": 6, "5": 10},
+        goToTab: (n) => selectTab(n, false),
+        glyphs: ["140%", "12.5%", "0.5%", "×", "250%"],
+        bonus: {
+          "gen": "partOf",
+          "title": "Bonus Round: Match the Trios",
+          "titleEs": "Ronda extra: une los tríos",
+          "help": "Each trio is one percent problem: the question, a way to solve it, and the answer. Tap three tiles that belong together.",
+          "helpEs": "Cada trío es un problema de porcentaje: la pregunta, una forma de resolverlo y la respuesta. Toca tres fichas que van juntas.",
+          "rounds": [
+            [
+              {
+                "p": 140,
+                "w": 25,
+                "how": "decimal"
+              },
+              {
+                "p": 250,
+                "w": 18,
+                "how": "decimal"
+              },
+              {
+                "p": 115,
+                "w": 40,
+                "how": "decimal"
+              }
+            ],
+            [
+              {
+                "p": 12.5,
+                "w": 80,
+                "how": "decimal"
+              },
+              {
+                "p": 37.5,
+                "w": 48,
+                "how": "decimal"
+              },
+              {
+                "p": 62.5,
+                "w": 64,
+                "how": "decimal"
+              }
+            ],
+            [
+              {
+                "p": 0.5,
+                "w": 360,
+                "how": "decimal"
+              },
+              {
+                "p": 2.5,
+                "w": 80,
+                "how": "decimal"
+              },
+              {
+                "p": 0.8,
+                "w": 350,
+                "how": "decimal"
+              }
+            ],
+            [
+              {
+                "p": 175,
+                "w": 36,
+                "how": "decimal"
+              },
+              {
+                "p": 220,
+                "w": 15,
+                "how": "decimal"
+              },
+              {
+                "p": 135,
+                "w": 60,
+                "how": "decimal"
+              }
+            ]
+          ]
+        },
+      });
       renderT1();
       renderT2();
       renderT3();

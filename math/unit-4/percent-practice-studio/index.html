@@ -5,1056 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Percent &amp; Equivalent Ratios · Interactive Practice Studio (Grade 6)</title>
   <meta name="description" content="Clean, student-friendly Grade 6 interactive percent practice covering 100-grids, scaling equivalent ratios to 100, ratio tables and percent bars, word problems, and mastery check.">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2317324D'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia,serif' font-weight='bold' font-size='32' fill='%23F7F4EC'%3E%25%3C/text%3E%3C/svg%3E">
-  <style>
-    /* ==========================================================================
-       CLEAN STUDENT-FRIENDLY DESIGN SYSTEM (GRADE 6 · REVEAL MATH UNIT 4)
-       Palette: Navy #17324D · Teal #0F766E / #1FA6A2 · Warm Paper #F7F4EC
-       ========================================================================== */
-    :root {
-      --bg-paper: #F7F4EC;
-      --bg-well: #EFECE3;
-      --surface: #FFFFFF;
-      --surface-soft: #FAF8F3;
-      --surface-teal: #F0FAF9;
-
-      --navy: #17324D;
-      --navy-dark: #0F2337;
-      --navy-tint: #E8F0F7;
-      --navy-line: #C4D5E5;
-
-      --teal: #0F766E;
-      --teal-bright: #1FA6A2;
-      --teal-tint: #E3F6F5;
-      --teal-line: #94DFDC;
-
-      --amber: #B45309;
-      --amber-bright: #D97706;
-      --amber-tint: #FEF3C7;
-      --amber-line: #FCD34D;
-
-      --green: #047857;
-      --green-tint: #ECFDF5;
-      --green-line: #A7F3D0;
-
-      --red: #B91C1C;
-      --red-tint: #FEF2F2;
-      --red-line: #FECACA;
-
-      --ink: #1E293B;
-      --ink-muted: #475569;
-      --ink-light: #64748B;
-
-      --border: #D8D3C6;
-      --border-strong: #B8B1A0;
-
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      --font-display: Georgia, 'Iowan Old Style', serif;
-      --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
-
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
-      --radius-pill: 999px;
-
-      --shadow-card: 0 2px 8px rgba(23, 50, 77, 0.06), 0 1px 2px rgba(23, 50, 77, 0.04);
-      --shadow-pop: 0 10px 24px rgba(23, 50, 77, 0.12);
-    }
-
-    *, *::before, *::after {
-      box-sizing: border-box;
-    }
-
-    html {
-      font-size: 16px;
-    }
-
-    body {
-      margin: 0;
-      background-color: var(--bg-paper);
-      color: var(--ink);
-      font-family: var(--font-sans);
-      line-height: 1.55;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-
-    :focus-visible {
-      outline: 3px solid var(--amber-bright);
-      outline-offset: 2px;
-    }
-
-    /* Spanish Support Toggle */
-    .es-text {
-      display: none;
-      color: var(--teal);
-      font-style: italic;
-      font-size: 0.94rem;
-      margin-top: 4px;
-    }
-    body.show-es .es-text {
-      display: block;
-    }
-
-    /* ==========================================================================
-       HEADER & NAVIGATION
-       ========================================================================== */
-    .app-header {
-      background: var(--navy);
-      color: #FFFFFF;
-      padding: 12px 24px;
-      border-bottom: 3px solid var(--teal-bright);
-    }
-
-    .header-wrap {
-      max-width: 1080px;
-      margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      background: var(--teal-bright);
-      color: var(--navy-dark);
-      font-family: var(--font-display);
-      font-size: 1.4rem;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .brand-title {
-      margin: 0;
-      font-family: var(--font-display);
-      font-size: 1.25rem;
-      font-weight: 700;
-    }
-
-    .brand-sub {
-      font-size: 0.8rem;
-      color: #CBD5E1;
-      margin-top: 1px;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .score-pill {
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      border-radius: var(--radius-pill);
-      padding: 5px 14px;
-      font-size: 0.86rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .top-btn {
-      background: rgba(255, 255, 255, 0.14);
-      color: #FFFFFF;
-      border: 1px solid rgba(255, 255, 255, 0.28);
-      border-radius: var(--radius-sm);
-      padding: 6px 12px;
-      font-size: 0.84rem;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
-    }
-    .top-btn:hover {
-      background: rgba(255, 255, 255, 0.24);
-    }
-    .top-btn[aria-pressed="true"] {
-      background: var(--teal-bright);
-      color: var(--navy-dark);
-      border-color: #FFFFFF;
-      font-weight: 700;
-    }
-
-    /* 5-Tab Bar */
-    .tab-bar {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 80;
-      box-shadow: 0 2px 4px rgba(23, 50, 77, 0.04);
-    }
-
-    .tab-list {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 0 16px;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 4px;
-    }
-
-    .tab-btn {
-      appearance: none;
-      background: transparent;
-      border: none;
-      border-bottom: 4px solid transparent;
-      padding: 12px 10px 10px;
-      cursor: pointer;
-      font-family: inherit;
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      color: var(--ink-muted);
-      text-align: left;
-      transition: background 0.15s ease, color 0.15s ease;
-    }
-    .tab-btn:hover {
-      background: var(--surface-soft);
-      color: var(--navy);
-    }
-    .tab-btn[aria-selected="true"] {
-      color: var(--navy);
-      border-bottom-color: var(--teal);
-      background: var(--surface-teal);
-      font-weight: 700;
-    }
-
-    .tab-badge {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: var(--bg-well);
-      color: var(--navy);
-      font-size: 0.82rem;
-      font-weight: 800;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .tab-btn[aria-selected="true"] .tab-badge {
-      background: var(--navy);
-      color: #FFFFFF;
-    }
-    .tab-btn.tab-complete .tab-badge {
-      background: var(--green);
-      color: #FFFFFF;
-    }
-
-    .tab-text {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-    .tab-name {
-      font-size: 0.9rem;
-      font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .tab-desc {
-      font-size: 0.74rem;
-      color: var(--ink-light);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* ==========================================================================
-       MAIN CONTAINER & STEPPER ARCHITECTURE
-       ========================================================================== */
-    .main-container {
-      max-width: 1080px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 24px 20px 48px;
-      flex: 1;
-    }
-
-    .tab-panel {
-      display: none;
-    }
-    .tab-panel.active {
-      display: block;
-    }
-
-    /* Clean Topic Intro Strip */
-    .topic-strip {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-left: 6px solid var(--navy);
-      border-radius: var(--radius-md);
-      padding: 16px 20px;
-      margin-bottom: 20px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      box-shadow: var(--shadow-card);
-    }
-
-    .topic-strip h2 {
-      margin: 0 0 4px 0;
-      font-family: var(--font-display);
-      font-size: 1.35rem;
-      color: var(--navy);
-    }
-
-    .topic-strip p {
-      margin: 0;
-      font-size: 0.96rem;
-      color: var(--ink-muted);
-    }
-
-    .key-rule-pill {
-      background: var(--surface-teal);
-      border: 1px solid var(--teal-line);
-      color: var(--navy);
-      padding: 10px 14px;
-      border-radius: var(--radius-sm);
-      font-size: 0.88rem;
-      font-weight: 600;
-    }
-
-    /* Problem Stepper Bar (Used across Tabs 1, 2, 3, 4, 5) */
-    .stepper-bar {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 12px 16px;
-      margin-bottom: 18px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      box-shadow: var(--shadow-card);
-    }
-
-    .dots-row {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .step-dot {
-      min-width: 34px;
-      height: 34px;
-      padding: 0 8px;
-      border-radius: var(--radius-sm);
-      border: 1.5px solid var(--border-strong);
-      background: var(--surface-soft);
-      color: var(--navy);
-      font-weight: 700;
-      font-size: 0.86rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-family: inherit;
-      transition: all 0.15s ease;
-    }
-    .step-dot:hover {
-      border-color: var(--navy);
-      background: #FFFFFF;
-    }
-    .step-dot.active {
-      background: var(--navy);
-      color: #FFFFFF;
-      border-color: var(--navy);
-    }
-    .step-dot.solved {
-      background: var(--green-tint);
-      border-color: var(--green);
-      color: var(--green);
-    }
-    .step-dot.solved.active {
-      background: var(--green);
-      color: #FFFFFF;
-    }
-
-    /* Cards */
-    .stage-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      box-shadow: var(--shadow-card);
-    }
-
-    .two-col-stage {
-      display: grid;
-      grid-template-columns: 380px 1fr;
-      gap: 24px;
-      align-items: start;
-    }
-
-    /* Buttons */
-    .btn {
-      appearance: none;
-      border: 1.5px solid var(--border-strong);
-      background: var(--surface);
-      color: var(--navy);
-      font-family: inherit;
-      font-size: 0.94rem;
-      font-weight: 700;
-      padding: 10px 16px;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.15s ease;
-    }
-    .btn:hover {
-      background: var(--surface-soft);
-      border-color: var(--navy);
-    }
-    .btn-primary {
-      background: var(--navy);
-      color: #FFFFFF;
-      border-color: var(--navy);
-    }
-    .btn-primary:hover {
-      background: var(--navy-dark);
-      color: #FFFFFF;
-    }
-    .btn-teal {
-      background: var(--teal);
-      color: #FFFFFF;
-      border-color: var(--teal);
-    }
-    .btn-teal:hover {
-      background: #0B5E58;
-      color: #FFFFFF;
-    }
-    .btn-sm {
-      padding: 6px 12px;
-      font-size: 0.84rem;
-    }
-
-    .speak-btn {
-      background: var(--navy-tint);
-      color: var(--navy);
-      border: 1px solid var(--navy-line);
-      border-radius: var(--radius-pill);
-      padding: 5px 12px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-    .speak-btn:hover {
-      background: var(--navy);
-      color: #FFFFFF;
-    }
-
-    /* Inputs & Feedback */
-    .num-input {
-      font-family: var(--font-mono);
-      font-size: 1.1rem;
-      font-weight: 800;
-      width: 96px;
-      padding: 8px 10px;
-      border: 2px solid var(--border-strong);
-      border-radius: var(--radius-sm);
-      text-align: center;
-      color: var(--navy);
-      background: #FFFFFF;
-    }
-    .num-input:focus {
-      border-color: var(--navy);
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(23, 50, 77, 0.15);
-    }
-    .num-input.ok {
-      border-color: var(--green);
-      background: var(--green-tint);
-      color: var(--green);
-    }
-    .num-input.err {
-      border-color: var(--red);
-      background: var(--red-tint);
-      color: var(--red);
-    }
-
-    .feedback-box {
-      margin-top: 16px;
-      padding: 12px 16px;
-      border-radius: var(--radius-sm);
-      font-size: 0.95rem;
-      font-weight: 600;
-      display: none;
-    }
-    .feedback-box.show {
-      display: block;
-    }
-    .feedback-box.ok {
-      background: var(--green-tint);
-      border: 1.5px solid var(--green-line);
-      color: #065F46;
-    }
-    .feedback-box.warn {
-      background: var(--amber-tint);
-      border: 1.5px solid var(--amber-line);
-      color: #92400E;
-    }
-    .feedback-box.err {
-      background: var(--red-tint);
-      border: 1.5px solid var(--red-line);
-      color: #991B1B;
-    }
-
-    /* ==========================================================================
-       TAB 1: 100-GRID EXPLORER + GUIDED TASKS
-       ========================================================================== */
-    .grid-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      box-shadow: var(--shadow-card);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .hundredths-svg {
-      width: 260px;
-      height: 260px;
-      background: #FFFFFF;
-      border: 2.5px solid var(--navy);
-      border-radius: 4px;
-      cursor: pointer;
-      touch-action: none;
-      user-select: none;
-    }
-
-    .grid-cell {
-      fill: #FFFFFF;
-      stroke: #CBD5E1;
-      stroke-width: 1;
-    }
-    .grid-cell.shaded {
-      fill: var(--teal-bright);
-      stroke: var(--teal);
-    }
-    .grid-cell:hover {
-      stroke: var(--navy);
-      stroke-width: 2;
-    }
-    .tenths-line {
-      stroke: var(--navy);
-      stroke-width: 2.2;
-      pointer-events: none;
-    }
-
-    .grid-summary-strip {
-      width: 100%;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      text-align: center;
-    }
-
-    .summary-tile {
-      background: var(--surface-soft);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 8px 6px;
-    }
-    .summary-tile span {
-      display: block;
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: var(--ink-light);
-    }
-    .summary-tile strong {
-      font-family: var(--font-mono);
-      font-size: 1.05rem;
-      color: var(--navy);
-    }
-
-    /* ==========================================================================
-       TAB 2: CLEAN EQUIVALENT RATIO SCALING DIAGRAM
-       ========================================================================== */
-    .scaling-visual-card {
-      background: var(--surface-soft);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 22px;
-      margin: 18px 0;
-    }
-
-    .ratio-machine {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 18px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-
-    .big-fraction {
-      background: #FFFFFF;
-      border: 2px solid var(--navy);
-      border-radius: var(--radius-md);
-      padding: 12px 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-width: 110px;
-      box-shadow: var(--shadow-card);
-    }
-    .big-fraction .num,
-    .big-fraction .den {
-      font-family: var(--font-mono);
-      font-size: 1.65rem;
-      font-weight: 800;
-      color: var(--navy);
-      line-height: 1.2;
-    }
-    .big-fraction .f-bar {
-      width: 100%;
-      height: 3px;
-      background: var(--navy);
-      margin: 6px 0;
-      border-radius: 2px;
-    }
-    .big-fraction .role-tag {
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: var(--ink-light);
-    }
-
-    .arrow-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 22px;
-      align-items: center;
-    }
-
-    .scale-arrow-pill {
-      background: var(--amber-tint);
-      border: 2px solid var(--amber-bright);
-      color: var(--amber);
-      padding: 5px 14px;
-      border-radius: var(--radius-pill);
-      font-family: var(--font-mono);
-      font-weight: 800;
-      font-size: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .guided-steps-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-top: 16px;
-    }
-
-    .step-box {
-      background: var(--surface-soft);
-      border: 1.5px solid var(--border);
-      border-top: 4px solid var(--navy);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .step-box.step-2 {
-      border-top-color: var(--teal);
-    }
-    .step-box.step-3 {
-      border-top-color: var(--amber-bright);
-    }
-
-    .step-box-label {
-      font-size: 0.78rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--navy);
-    }
-
-    .step-box-desc {
-      font-size: 0.92rem;
-      color: var(--ink);
-      margin: 4px 0 0 0;
-    }
-
-    .step-box-Equation {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      font-family: var(--font-mono);
-      font-size: 1.05rem;
-      font-weight: 800;
-      color: var(--navy);
-    }
-
-    /* ==========================================================================
-       TAB 3: RATIO TABLES & PERCENT BARS (SPACIOUS, CLEAR, STEP-BY-STEP)
-       ========================================================================== */
-    .clean-ratio-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      border: 2px solid var(--navy);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      background: #FFFFFF;
-      margin: 16px 0;
-    }
-
-    .clean-ratio-table th,
-    .clean-ratio-table td {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      border-right: 1px solid var(--border);
-      text-align: center;
-      font-size: 1.02rem;
-    }
-    .clean-ratio-table tr:last-child td {
-      border-bottom: none;
-    }
-    .clean-ratio-table th:last-child,
-    .clean-ratio-table td:last-child {
-      border-right: none;
-    }
-
-    .clean-ratio-table th {
-      background: var(--navy);
-      color: #FFFFFF;
-      font-weight: 700;
-      font-size: 0.9rem;
-    }
-    .clean-ratio-table th.bridge-col {
-      background: var(--teal);
-    }
-    .clean-ratio-table th.target-col {
-      background: var(--amber);
-    }
-
-    .clean-ratio-table td.row-label {
-      background: var(--navy-tint);
-      color: var(--navy);
-      font-weight: 800;
-      text-align: left;
-      width: 180px;
-    }
-
-    .op-chip {
-      display: inline-block;
-      background: var(--amber-tint);
-      border: 1px solid var(--amber-bright);
-      color: var(--amber);
-      font-family: var(--font-mono);
-      font-weight: 800;
-      font-size: 0.82rem;
-      padding: 2px 8px;
-      border-radius: var(--radius-pill);
-      margin-left: 6px;
-    }
-
-    /* Multiple Choice Option Buttons */
-    .choice-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin: 14px 0;
-    }
-
-    .choice-btn {
-      appearance: none;
-      background: var(--surface-soft);
-      border: 2px solid var(--border-strong);
-      border-radius: var(--radius-md);
-      padding: 13px 16px;
-      text-align: left;
-      font-family: inherit;
-      font-size: 0.98rem;
-      color: var(--ink);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      transition: all 0.15s ease;
-    }
-    .choice-btn:hover {
-      background: #FFFFFF;
-      border-color: var(--navy);
-    }
-    .choice-btn.selected {
-      background: var(--navy-tint);
-      border-color: var(--navy);
-      font-weight: 700;
-    }
-    .choice-btn.correct {
-      background: var(--green-tint);
-      border-color: var(--green);
-      color: #065F46;
-      font-weight: 700;
-    }
-    .choice-btn.wrong {
-      background: var(--red-tint);
-      border-color: var(--red);
-      color: #991B1B;
-    }
-
-    .choice-letter {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: #FFFFFF;
-      border: 2px solid var(--navy);
-      color: var(--navy);
-      font-weight: 800;
-      font-size: 0.84rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    /* Footer */
-    .app-footer {
-      background: var(--navy);
-      color: #CBD5E1;
-      padding: 14px 24px;
-      font-size: 0.82rem;
-      margin-top: auto;
-    }
-    .footer-wrap {
-      max-width: 1080px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    /* Two-box and three-box answer rows (Tab 1) and wide tables (Tab 3) */
-    .dual-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin: 18px 0;
-    }
-    .triple-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin: 18px 0;
-    }
-    .dual-grid > div,
-    .triple-grid > div {
-      background: var(--surface-soft);
-      padding: 14px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-    }
-    .table-scroll {
-      position: relative; /* contains the absolutely-positioned .sr-only labels so they cannot widen the page */
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    .table-scroll .clean-ratio-table {
-      min-width: 560px;
-    }
-
-    /* Interactive Ratio Scratchpad (Tab 4) */
-    .scratchpad-details {
-      margin: 14px 0 16px;
-      background: var(--surface-soft);
-      border: 1.5px dashed var(--border-strong);
-      border-radius: var(--radius-md);
-      padding: 10px 14px;
-    }
-    .scratchpad-details summary {
-      font-size: 0.88rem;
-      font-weight: 800;
-      color: var(--teal);
-      cursor: pointer;
-      user-select: none;
-    }
-    .scratchpad-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 10px;
-    }
-    .scratchpad-cell {
-      background: #FFFFFF;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 8px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .scratchpad-cell span {
-      font-size: 0.74rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      color: var(--ink-light);
-    }
-    .scratchpad-cell input {
-      width: 100%;
-      font-size: 0.96rem;
-      padding: 6px 8px;
-    }
-
-    /* Print-only summary report */
-    .print-only {
-      display: none;
-    }
-
-    /* After a problem is solved: next-step button, all-done banner, quiz results */
-    .next-btn {
-      display: flex;
-      margin-top: 10px;
-    }
-    .complete-banner {
-      background: var(--green-tint);
-      border: 2px solid var(--green);
-      border-radius: var(--radius-md);
-      padding: 14px 18px;
-      margin-bottom: 20px;
-      color: #065F46;
-      font-weight: 700;
-    }
-    .complete-banner[hidden],
-    .results-card[hidden] {
-      display: none;
-    }
-    .results-card {
-      margin-top: 18px;
-      background: var(--surface);
-      border: 2px solid var(--navy);
-      border-radius: var(--radius-lg);
-      padding: 22px;
-      box-shadow: var(--shadow-card);
-    }
-    .results-card h3 {
-      margin: 0 0 6px 0;
-      font-family: var(--font-display);
-      font-size: 1.4rem;
-      color: var(--navy);
-    }
-    .results-card p {
-      margin: 0 0 12px 0;
-    }
-    .review-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 8px 0 14px;
-    }
-
-    @media (max-width: 860px) {
-      .two-col-stage,
-      .guided-steps-grid {
-        grid-template-columns: 1fr;
-      }
-      .tab-list {
-        grid-template-columns: repeat(5, minmax(135px, 1fr));
-        overflow-x: auto;
-      }
-      .triple-grid,
-      .scratchpad-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 560px) {
-      .app-header {
-        padding: 10px 14px;
-      }
-      .main-container {
-        padding: 16px 12px 36px;
-      }
-      .stage-card {
-        padding: 16px;
-      }
-      .dual-grid,
-      .triple-grid,
-      .scratchpad-grid {
-        grid-template-columns: 1fr;
-      }
-      .clean-ratio-table td.row-label {
-        width: auto;
-      }
-      .guided-steps-grid[style] {
-        grid-template-columns: 1fr !important;
-      }
-    }
-
-    @media print {
-      .print-only {
-        display: block !important;
-      }
-      .next-btn, .results-card button, .stepper-bar, .scratchpad-details, #t2-random-btn, #t3-random-btn, #t5-reset-btn {
-        display: none !important;
-      }
-      .app-header, .tab-bar, .speak-btn, .no-print, #nsr-root {
-        display: none !important;
-      }
-      body {
-        background: #FFFFFF !important;
-      }
-      .main-container {
-        padding: 0 !important;
-      }
-      .tab-panel {
-        display: block !important;
-        margin-bottom: 20px;
-        break-inside: avoid;
-      }
-    }
-  </style>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231E1B6E'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia,serif' font-weight='bold' font-size='32' fill='%23FFC933'%3E%25%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/assets/u4-studio.css">
+  <link rel="stylesheet" href="/assets/u4-studio-percent.css">
+  <script src="/assets/u4-studio.js"></script>
+  <script src="/assets/u4-studio-bonus.js"></script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -1076,7 +31,7 @@
 
       <div class="header-actions">
         <div class="score-pill" aria-live="polite">
-          <span>⭐ Progress: <span id="header-progress-count">0 / 46</span></span>
+          <span>Progress: <span id="header-progress-count">0 / 46</span></span>
         </div>
         <button type="button" class="top-btn" id="toggle-es-btn" aria-pressed="false">🌐 Español</button>
         <button type="button" class="top-btn" id="print-btn">🖨️ Print</button>
@@ -1139,13 +94,13 @@
        ======================================================================== -->
   <main class="main-container">
 
-    <section id="print-summary-sheet" class="print-only" aria-label="Printable student progress summary" style="border: 2px solid var(--navy); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; background: #FFFFFF;">
+    <section id="print-summary-sheet" class="print-only" aria-label="Printable student progress summary" style="border: 2px solid var(--brand); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; background: #FFFFFF;">
       <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--border); padding-bottom: 10px; margin-bottom: 12px; gap: 16px; flex-wrap: wrap;">
         <div>
-          <h2 style="margin: 0; font-family: var(--font-display); font-size: 1.35rem; color: var(--navy);">Understand Percent &amp; Equivalent Ratios · Practice Summary</h2>
+          <h2 style="margin: 0; font-family: var(--font-display); font-size: 1.35rem; color: var(--brand);">Understand Percent &amp; Equivalent Ratios · Practice Summary</h2>
           <div style="font-size: 0.85rem; color: var(--ink-muted);">Grade 6 Math · Unit 4 Interactive Practice Studio (Standards 6.RP.A.3.C · 6.AT.4)</div>
         </div>
-        <div style="font-size: 0.88rem; color: var(--navy); text-align: right;">
+        <div style="font-size: 0.88rem; color: var(--brand); text-align: right;">
           <div><strong>Student:</strong> <span id="print-student-name">________________________</span></div>
           <div><strong>Total Completed:</strong> <span id="print-total-score">0 / 46 (0%)</span></div>
         </div>
@@ -1176,29 +131,29 @@
         <!-- Left: Clean Interactive 10x10 Grid -->
         <div class="grid-card">
           <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-            <strong style="color: var(--navy); font-size: 0.96rem;">Interactive 10 × 10 Grid</strong>
+            <strong style="color: var(--brand); font-size: 0.96rem;">Interactive 10 × 10 Grid</strong>
             <button type="button" class="btn btn-sm" id="t1-tenths-btn" aria-pressed="true">10 Columns: ON</button>
           </div>
 
           <svg id="t1-grid-svg" class="hundredths-svg" viewBox="0 0 200 200" style="background:white" width="260" height="260" role="img" aria-label="10 by 10 hundredths grid"></svg>
 
           <div style="width: 100%;">
-            <div style="display: flex; justify-content: space-between; font-size: 0.86rem; font-weight: 700; color: var(--navy); margin-bottom: 4px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.86rem; font-weight: 700; color: var(--brand); margin-bottom: 4px;">
               <label for="t1-slider">Shade Squares:</label>
               <span id="t1-slider-label">40 / 100 squares</span>
             </div>
-            <input type="range" id="t1-slider" data-nsr-ignore="true" min="0" max="100" value="40" style="width: 100%; accent-color: var(--teal); cursor: pointer;">
+            <input type="range" id="t1-slider" data-nsr-ignore="true" min="0" max="100" value="40" style="width: 100%; accent-color: var(--brand); cursor: pointer;">
           </div>
 
           <!-- 3 Crisp Summary Tiles (Square Counts — Scaffolds Without Giving Away Answers) -->
           <div class="grid-summary-strip">
             <div class="summary-tile">
               <span>Shaded</span>
-              <strong id="t1-stat-pct" style="color: var(--teal);">40 sq</strong>
+              <strong id="t1-stat-pct" style="color: var(--brand);">40 sq</strong>
             </div>
             <div class="summary-tile">
               <span>Not Shaded</span>
-              <strong id="t1-stat-unshaded" style="color: var(--amber);">60 sq</strong>
+              <strong id="t1-stat-unshaded" style="color: var(--warn);">60 sq</strong>
             </div>
             <div class="summary-tile">
               <span>Whole Grid</span>
@@ -1234,22 +189,22 @@
           </div>
 
           <details style="margin-top: 14px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 12px 16px;">
-            <summary style="font-weight: 800; color: var(--navy); cursor: pointer; font-size: 0.95rem;">📘 Quick Reference: Percent Essentials &amp; Benchmarks (Click to open)</summary>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 12px; font-size: 0.88rem; color: var(--ink-soft);">
+            <summary style="font-weight: 800; color: var(--brand); cursor: pointer; font-size: 0.95rem;">📘 Quick Reference: Percent Essentials &amp; Benchmarks (Click to open)</summary>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 12px; font-size: 0.88rem; color: var(--ink-muted);">
               <div style="background: var(--surface-soft); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
-                <strong style="color: var(--navy); display: block;">Percent (%)</strong>
+                <strong style="color: var(--brand); display: block;">Percent (%)</strong>
                 Means “per hundred” or “out of 100.” Example: <strong>40% = 40/100 = 0.40</strong>.
               </div>
               <div style="background: var(--surface-soft); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
-                <strong style="color: var(--navy); display: block;">100% = 1 Whole</strong>
+                <strong style="color: var(--brand); display: block;">100% = 1 Whole</strong>
                 Less than 100% is less than 1 whole. Greater than 100% (like 150%) is more than 1 whole!
               </div>
               <div style="background: var(--surface-soft); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
-                <strong style="color: var(--navy); display: block;">Shaded + Unshaded = 100%</strong>
+                <strong style="color: var(--brand); display: block;">Shaded + Unshaded = 100%</strong>
                 If 62 squares are shaded (62%), then <strong>100 − 62 = 38</strong> squares (38%) are NOT shaded.
               </div>
               <div style="background: var(--surface-soft); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
-                <strong style="color: var(--navy); display: block;">Less Than 1% (like 0.5%)</strong>
+                <strong style="color: var(--brand); display: block;">Less Than 1% (like 0.5%)</strong>
                 1 square = 1%. Splitting 1 square in half gives <strong>0.5% = 0.5/100 = 1/200</strong>!
               </div>
             </div>
@@ -1269,7 +224,7 @@
           <p class="es-text">Multiplica el entero (abajo) y la parte (arriba) por el mismo factor para que el denominador sea 100.</p>
         </div>
         <div style="display: flex; gap: 8px; align-items: center;">
-          <button type="button" class="btn btn-teal btn-sm" id="t2-random-btn">🎲 New Random Ratio</button>
+          <button type="button" class="btn btn-go btn-sm" id="t2-random-btn">🎲 New Random Ratio</button>
         </div>
       </div>
 
@@ -1300,7 +255,7 @@
           <div class="key-rule-pill">
             🧭 <strong>Two Easy Strategies:</strong> &nbsp;1) Find 1 Block on a Bar &nbsp;·&nbsp; 2) Divide to Simplify, Then Multiply to 100
           </div>
-          <button type="button" class="btn btn-teal btn-sm" id="t3-random-btn">🎲 New Random Model</button>
+          <button type="button" class="btn btn-go btn-sm" id="t3-random-btn">🎲 New Random Model</button>
         </div>
       </div>
 
@@ -1381,7 +336,7 @@
   <footer class="app-footer">
     <div class="footer-wrap">
       <span><strong>Grade 6 Mathematics · Unit 4: Understand Percent &amp; Equivalent Ratios</strong> (Standards 6.RP.A.3.C · 6.AT.4)</span>
-      <span>100% Offline Interactive Practice Studio · Progress Auto-Saved in Browser</span>
+      <span>Interactive Practice Studio · Progress saves on this device</span>
     </div>
   </footer>
 
@@ -1425,6 +380,7 @@
           if (d && typeof d === 'object') {
             state.showEs = !!d.showEs;
             SOLVED_KEYS.forEach((k) => { state[k] = (d[k] && typeof d[k] === 'object') ? { ...d[k] } : {}; });
+            state.play = (d.play && typeof d.play === 'object') ? d.play : {};
             ['solved2', 'solved3'].forEach((sk) => {
               Object.keys(state[sk]).forEach((k) => {
                 if (k.startsWith('rand')) delete state[sk][k];
@@ -1466,7 +422,8 @@
           idx2: state.idx2,
           idx3: state.idx3,
           idx4: state.idx4,
-          idx5: state.idx5
+          idx5: state.idx5,
+          play: state.play
         };
       }
 
@@ -1511,7 +468,7 @@
         const last = !onNext && state[idxKey] === len - 1;
         const b = document.createElement('button');
         b.type = 'button';
-        b.className = 'btn btn-teal btn-sm next-btn';
+        b.className = 'btn btn-go btn-sm next-btn';
         if (!last) b.textContent = tab === 5 ? 'Next question →' : 'Next problem →';
         else b.textContent = tab < 5 ? `Continue to Section ${tab + 1} →` : 'See my results →';
         b.addEventListener('click', () => {
@@ -1560,6 +517,7 @@
         resetAllBtn.addEventListener('click', () => {
           if (!window.confirm('Reset all 46 practice problems and quiz scores to start fresh?')) return;
           SOLVED_KEYS.forEach((k) => { state[k] = {}; });
+          U4Studio.reset();
           state.quizChoice = {};
           state.quizFirst = {};
           IDX_KEYS.forEach((k) => { state[k] = 0; });
@@ -1624,19 +582,19 @@
         const firstTry = Object.keys(state.quizFirst).filter((k) => state.quizFirst[k]).length;
         const dateStr = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
         sheet.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #17324D; padding-bottom:8px; margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--brand); padding-bottom:8px; margin-bottom:10px;">
             <div>
-              <strong style="font-size:1.1rem; color:#17324D;">Understand Percent — Student Progress Summary</strong>
-              <div style="font-size:0.82rem; color:#4A607A;">Grade 6 Math · Unit 4, Lesson 4-1 (Standards 6.RP.A.3.C · 6.AT.4) · Printed ${dateStr}</div>
+              <strong style="font-size:1.1rem; color:var(--brand);">Understand Percent — Student Progress Summary</strong>
+              <div style="font-size:0.82rem; color:var(--ink-muted);">Grade 6 Math · Unit 4, Lesson 4-1 (Standards 6.RP.A.3.C · 6.AT.4) · Printed ${dateStr}</div>
             </div>
-            <div style="font-size:1.1rem; font-weight:800; color:#0F766E;">Total: ${total} / 46 (${Math.round((total / 46) * 100)}%)</div>
+            <div style="font-size:1.1rem; font-weight:800; color:var(--brand);">Total: ${total} / 46 (${Math.round((total / 46) * 100)}%)</div>
           </div>
           <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:8px; font-size:0.82rem;">
-            <div style="border:1px solid #CBD5E1; border-radius:6px; padding:6px 8px;"><strong>1. 100-Grid</strong><div>${c1} / 8 tasks</div></div>
-            <div style="border:1px solid #CBD5E1; border-radius:6px; padding:6px 8px;"><strong>2. Scale to 100</strong><div>${c2} / 12 problems</div></div>
-            <div style="border:1px solid #CBD5E1; border-radius:6px; padding:6px 8px;"><strong>3. Tables &amp; Bars</strong><div>${c3} / 8 models</div></div>
-            <div style="border:1px solid #CBD5E1; border-radius:6px; padding:6px 8px;"><strong>4. Word Problems</strong><div>${c4} / 8 solved</div></div>
-            <div style="border:1px solid #CBD5E1; border-radius:6px; padding:6px 8px;"><strong>5. Mastery Quiz</strong><div>${c5} / 10 (${firstTry}/10 1st try)</div></div>
+            <div style="border:1px solid var(--border); border-radius:6px; padding:6px 8px;"><strong>1. 100-Grid</strong><div>${c1} / 8 tasks</div></div>
+            <div style="border:1px solid var(--border); border-radius:6px; padding:6px 8px;"><strong>2. Scale to 100</strong><div>${c2} / 12 problems</div></div>
+            <div style="border:1px solid var(--border); border-radius:6px; padding:6px 8px;"><strong>3. Tables &amp; Bars</strong><div>${c3} / 8 models</div></div>
+            <div style="border:1px solid var(--border); border-radius:6px; padding:6px 8px;"><strong>4. Word Problems</strong><div>${c4} / 8 solved</div></div>
+            <div style="border:1px solid var(--border); border-radius:6px; padding:6px 8px;"><strong>5. Mastery Quiz</strong><div>${c5} / 10 (${firstTry}/10 1st try)</div></div>
           </div>
         `;
       }
@@ -1665,6 +623,7 @@
 
         updatePrintSummary(c1, c2, c3, c4, c5, total);
         saveState();
+        U4Studio.sync();
       }
 
       function renderDots(containerId, items, activeIdx, solvedMap, onSelect) {
@@ -1791,8 +750,8 @@
           correct: 1,
           hint: 'Look at the total number of squares in the 10 × 10 grid on the left.',
           hintEs: 'Mira el número total de cuadrados en la cuadrícula de 10 × 10 a la izquierda.',
-          explain: '✓ Correct! Percent means “per hundred” or “out of 100.” One whole grid of 100 squares is 100%.',
-          explainEs: '✓ ¡Correcto! Porcentaje significa “por ciento” o “de cada 100”. Una cuadrícula entera de 100 cuadrados es 100%.'
+          explain: 'Correct! Percent means “per hundred” or “out of 100.” One whole grid of 100 squares is 100%.',
+          explainEs: '¡Correcto! Porcentaje significa “por ciento” o “de cada 100”. Una cuadrícula entera de 100 cuadrados es 100%.'
         },
         {
           id: 't1_2',
@@ -1805,8 +764,8 @@
           answer: '9',
           hint: 'Each square is 1 out of 100, which is 1%. Count the 9 shaded squares.',
           hintEs: 'Cada cuadrado es 1 de 100, que es 1%. Cuenta los 9 cuadrados sombreados.',
-          explain: '✓ Correct! Because the grid has 100 squares in all, 9 shaded squares is 9 out of 100 = 9%.',
-          explainEs: '✓ ¡Correcto! Como la cuadrícula tiene 100 cuadrados en total, 9 cuadrados sombreados es 9 de 100 = 9%.'
+          explain: 'Correct! Because the grid has 100 squares in all, 9 shaded squares is 9 out of 100 = 9%.',
+          explainEs: '¡Correcto! Como la cuadrícula tiene 100 cuadrados en total, 9 cuadrados sombreados es 9 de 100 = 9%.'
         },
         {
           id: 't1_3',
@@ -1819,8 +778,8 @@
           answer: '53/100',
           hint: 'Put the shaded part (53) in the numerator and the whole grid (100) in the denominator.',
           hintEs: 'Pon la parte sombreada (53) en el numerador y toda la cuadrícula (100) en el denominador.',
-          explain: '✓ Correct! 53 out of 100 is written as the fraction 53/100.',
-          explainEs: '✓ ¡Correcto! 53 de 100 se escribe como la fracción 53/100.'
+          explain: 'Correct! 53 out of 100 is written as the fraction 53/100.',
+          explainEs: '¡Correcto! 53 de 100 se escribe como la fracción 53/100.'
         },
         {
           id: 't1_4',
@@ -1834,8 +793,8 @@
           altAnswer: '.71',
           hint: '71 hundredths has 7 tenths and 1 hundredth: write 0. followed by 71.',
           hintEs: '71 centésimas tiene 7 décimas y 1 centésima: escribe 0. seguido de 71.',
-          explain: '✓ Correct! 71 out of 100 is 71 hundredths, written as 0.71 (which equals 71%).',
-          explainEs: '✓ ¡Correcto! 71 de 100 son 71 centésimas, escrito como 0.71 (que equivale a 71%).'
+          explain: 'Correct! 71 out of 100 is 71 hundredths, written as 0.71 (which equals 71%).',
+          explainEs: '¡Correcto! 71 de 100 son 71 centésimas, escrito como 0.71 (que equivale a 71%).'
         },
         {
           id: 't1_5',
@@ -1856,8 +815,8 @@
           ansC: '23',
           hint: '23 out of 100 means 23/100, which is 23 hundredths (0.23) and 23%.',
           hintEs: '23 de 100 significa 23/100, que son 23 centésimas (0.23) y 23%.',
-          explain: '✓ Correct! 23 out of 100 = 23/100 = 0.23 = 23%.',
-          explainEs: '✓ ¡Correcto! 23 de 100 = 23/100 = 0.23 = 23%.'
+          explain: 'Correct! 23 out of 100 = 23/100 = 0.23 = 23%.',
+          explainEs: '¡Correcto! 23 de 100 = 23/100 = 0.23 = 23%.'
         },
         {
           id: 't1_6',
@@ -1874,8 +833,8 @@
           ansB: '38',
           hint: 'Look at the summary tiles under the grid when 62 squares are shaded! 62% + 38% = 100%.',
           hintEs: '¡Mira los cuadros resumen debajo de la cuadrícula cuando hay 62 sombreados! 62% + 38% = 100%.',
-          explain: '✓ Spot on! 62% is shaded, and the remaining 100 − 62 = 38 squares (38%) are NOT shaded.',
-          explainEs: '✓ ¡Exacto! El 62% está sombreado y los 100 − 62 = 38 cuadrados restantes (38%) NO están sombreados.'
+          explain: 'Spot on! 62% is shaded, and the remaining 100 − 62 = 38 squares (38%) are NOT shaded.',
+          explainEs: '¡Exacto! El 62% está sombreado y los 100 − 62 = 38 cuadrados restantes (38%) NO están sombreados.'
         },
         {
           id: 't1_7',
@@ -1892,8 +851,8 @@
           ansB: '40',
           hint: '4 columns × 10 squares per column = 40 squares out of 100.',
           hintEs: '4 columnas × 10 cuadrados por columna = 40 cuadrados de 100.',
-          explain: '✓ Correct! 4 out of 10 columns equals 40 out of 100 squares, or 40%.',
-          explainEs: '✓ ¡Correcto! 4 de 10 columnas equivalen a 40 de 100 cuadrados, o 40%.'
+          explain: 'Correct! 4 out of 10 columns equals 40 out of 100 squares, or 40%.',
+          explainEs: '¡Correcto! 4 de 10 columnas equivalen a 40 de 100 cuadrados, o 40%.'
         },
         {
           id: 't1_8',
@@ -1903,25 +862,25 @@
           stemEs: 'Como 100% es 1 entero, ¿cuál afirmación es verdadera sobre 40%, 100% y 150%?',
           type: 'mc',
           visualSvg: `
-            <svg viewBox="0 0 580 112" width="580" height="112" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:12px auto 4px; border:1px solid #CBD5E1; border-radius:8px;" role="img" aria-label="Visual comparison of 40 percent, 100 percent, and 150 percent on 100-square grids">
+            <svg viewBox="0 0 580 112" width="580" height="112" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:12px auto 4px; border:1px solid var(--border); border-radius:8px;" role="img" aria-label="Visual comparison of 40 percent, 100 percent, and 150 percent on 100-square grids">
               <g transform="translate(18, 12)">
-                <text x="35" y="12" text-anchor="middle" font-size="11.5" font-weight="800" fill="#17324D">40% (&lt; 1 whole)</text>
-                <rect x="0" y="18" width="70" height="70" fill="#F1F5F9" stroke="#17324D" stroke-width="1.5"/>
-                <rect x="0" y="18" width="28" height="70" fill="#1FA6A2"/>
-                <text x="35" y="102" text-anchor="middle" font-size="10.5" font-weight="700" fill="#4A607A">40 / 100</text>
+                <text x="35" y="12" text-anchor="middle" font-size="11.5" font-weight="800" fill="var(--brand)">40% (&lt; 1 whole)</text>
+                <rect x="0" y="18" width="70" height="70" fill="var(--well)" stroke="var(--brand)" stroke-width="1.5"/>
+                <rect x="0" y="18" width="28" height="70" fill="var(--brand)"/>
+                <text x="35" y="102" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--ink-muted)">40 / 100</text>
               </g>
               <g transform="translate(160, 12)">
-                <text x="35" y="12" text-anchor="middle" font-size="11.5" font-weight="800" fill="#0F766E">100% (= 1 whole)</text>
-                <rect x="0" y="18" width="70" height="70" fill="#1FA6A2" stroke="#17324D" stroke-width="1.5"/>
-                <text x="35" y="102" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0F766E">100 / 100 = 1</text>
+                <text x="35" y="12" text-anchor="middle" font-size="11.5" font-weight="800" fill="var(--brand)">100% (= 1 whole)</text>
+                <rect x="0" y="18" width="70" height="70" fill="var(--pct)" stroke="var(--brand)" stroke-width="1.5"/>
+                <text x="35" y="102" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--brand)">100 / 100 = 1</text>
               </g>
               <g transform="translate(310, 12)">
-                <text x="76" y="12" text-anchor="middle" font-size="11.5" font-weight="800" fill="#B45309">150% (&gt; 1 whole: 1 whole + half)</text>
-                <rect x="0" y="18" width="70" height="70" fill="#1FA6A2" stroke="#17324D" stroke-width="1.5"/>
-                <text x="76" y="58" text-anchor="middle" font-size="14" font-weight="800" fill="#17324D">+</text>
-                <rect x="82" y="18" width="70" height="70" fill="#F1F5F9" stroke="#17324D" stroke-width="1.5"/>
-                <rect x="82" y="18" width="35" height="70" fill="#F59E0B"/>
-                <text x="76" y="102" text-anchor="middle" font-size="10.5" font-weight="700" fill="#B45309">100% + 50% = 150% (1.5 wholes)</text>
+                <text x="76" y="12" text-anchor="middle" font-size="11.5" font-weight="800" fill="var(--warn)">150% (&gt; 1 whole: 1 whole + half)</text>
+                <rect x="0" y="18" width="70" height="70" fill="var(--pct)" stroke="var(--brand)" stroke-width="1.5"/>
+                <text x="76" y="58" text-anchor="middle" font-size="14" font-weight="800" fill="var(--brand)">+</text>
+                <rect x="82" y="18" width="70" height="70" fill="var(--well)" stroke="var(--brand)" stroke-width="1.5"/>
+                <rect x="82" y="18" width="35" height="70" fill="var(--sun-deep)"/>
+                <text x="76" y="102" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--warn)">100% + 50% = 150% (1.5 wholes)</text>
               </g>
             </svg>
           `,
@@ -1938,8 +897,8 @@
           correct: 1,
           hint: 'Compare each number to 100%: under 100% is part of a whole; over 100% is more than one whole.',
           hintEs: 'Compara cada número con 100%: menos de 100% es parte de un entero; más de 100% es más de un entero.',
-          explain: '✓ You got it! 40% < 1 whole, 100% = 1 whole, and 150% > 1 whole (1 whole plus half of another).',
-          explainEs: '✓ ¡Lo lograste! 40% < 1 entero, 100% = 1 entero y 150% > 1 entero (1 entero más la mitad de otro).'
+          explain: 'You got it! 40% < 1 whole, 100% = 1 whole, and 150% > 1 whole (1 whole plus half of another).',
+          explainEs: '¡Lo lograste! 40% < 1 entero, 100% = 1 entero y 150% > 1 entero (1 entero más la mitad de otro).'
         }
       ];
 
@@ -1967,9 +926,9 @@
         } else if (task.type === 'single') {
           bodyHtml += `
             <div style="display: flex; align-items: center; gap: 10px; margin: 18px 0; flex-wrap: wrap;">
-              <label for="t1-inp-single" style="font-weight: 700; color: var(--navy);">Your Answer:</label>
+              <label for="t1-inp-single" style="font-weight: 700; color: var(--brand);">Your Answer:</label>
               <input type="text" id="t1-inp-single" class="num-input ${isDone ? 'ok' : ''}" value="${isDone ? task.answer : ''}" placeholder="?">
-              <strong style="color: var(--navy); font-size: 1.05rem;">${task.unit}</strong>
+              <strong style="color: var(--brand); font-size: 1.05rem;">${task.unit}</strong>
               <button type="button" class="btn btn-primary" id="t1-check-btn">Check Answer</button>
               <button type="button" class="btn" id="t1-hint-btn">💡 Hint</button>
             </div>
@@ -1978,17 +937,17 @@
           bodyHtml += `
             <div class="dual-grid">
               <div>
-                <label for="t1-inp-a" style="display: block; font-weight: 700; color: var(--navy); font-size: 0.9rem; margin-bottom: 8px;">${task.labelA}</label>
+                <label for="t1-inp-a" style="display: block; font-weight: 700; color: var(--brand); font-size: 0.9rem; margin-bottom: 8px;">${task.labelA}</label>
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <input type="text" id="t1-inp-a" class="num-input ${isDone ? 'ok' : ''}" value="${isDone ? task.ansA : ''}" placeholder="?">
-                  <strong style="color: var(--navy);">${task.suffixA}</strong>
+                  <strong style="color: var(--brand);">${task.suffixA}</strong>
                 </div>
               </div>
               <div>
-                <label for="t1-inp-b" style="display: block; font-weight: 700; color: var(--navy); font-size: 0.9rem; margin-bottom: 8px;">${task.labelB}</label>
+                <label for="t1-inp-b" style="display: block; font-weight: 700; color: var(--brand); font-size: 0.9rem; margin-bottom: 8px;">${task.labelB}</label>
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <input type="text" id="t1-inp-b" class="num-input ${isDone ? 'ok' : ''}" value="${isDone ? task.ansB : ''}" placeholder="?">
-                  <strong style="color: var(--navy);">${task.suffixB}</strong>
+                  <strong style="color: var(--brand);">${task.suffixB}</strong>
                 </div>
               </div>
             </div>
@@ -2001,24 +960,24 @@
           bodyHtml += `
             <div class="triple-grid">
               <div>
-                <label for="t1-inp-a" style="display: block; font-weight: 700; color: var(--navy); font-size: 0.88rem; margin-bottom: 8px;">${task.labelA}</label>
+                <label for="t1-inp-a" style="display: block; font-weight: 700; color: var(--brand); font-size: 0.88rem; margin-bottom: 8px;">${task.labelA}</label>
                 <div style="display: flex; align-items: center; gap: 6px;">
                   <input type="text" id="t1-inp-a" class="num-input ${isDone ? 'ok' : ''}" style="width: 78px;" value="${isDone ? task.ansA : ''}" placeholder="?">
-                  <strong style="color: var(--navy); font-size: 0.92rem;">${task.suffixA}</strong>
+                  <strong style="color: var(--brand); font-size: 0.92rem;">${task.suffixA}</strong>
                 </div>
               </div>
               <div>
-                <label for="t1-inp-b" style="display: block; font-weight: 700; color: var(--navy); font-size: 0.88rem; margin-bottom: 8px;">${task.labelB}</label>
+                <label for="t1-inp-b" style="display: block; font-weight: 700; color: var(--brand); font-size: 0.88rem; margin-bottom: 8px;">${task.labelB}</label>
                 <div style="display: flex; align-items: center; gap: 6px;">
                   <input type="text" id="t1-inp-b" class="num-input ${isDone ? 'ok' : ''}" style="width: 84px;" value="${isDone ? task.ansB : ''}" placeholder="0.__">
-                  <strong style="color: var(--slate); font-size: 0.84rem;">${task.suffixB}</strong>
+                  <strong style="color: var(--ink-muted); font-size: 0.84rem;">${task.suffixB}</strong>
                 </div>
               </div>
               <div>
-                <label for="t1-inp-c" style="display: block; font-weight: 700; color: var(--navy); font-size: 0.88rem; margin-bottom: 8px;">${task.labelC}</label>
+                <label for="t1-inp-c" style="display: block; font-weight: 700; color: var(--brand); font-size: 0.88rem; margin-bottom: 8px;">${task.labelC}</label>
                 <div style="display: flex; align-items: center; gap: 6px;">
                   <input type="text" id="t1-inp-c" class="num-input ${isDone ? 'ok' : ''}" style="width: 78px;" value="${isDone ? task.ansC : ''}" placeholder="?">
-                  <strong style="color: var(--navy); font-size: 0.98rem;">${task.suffixC}</strong>
+                  <strong style="color: var(--brand); font-size: 0.98rem;">${task.suffixC}</strong>
                 </div>
               </div>
             </div>
@@ -2033,10 +992,10 @@
 
         card.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px;">
-            <span style="font-size: 0.82rem; font-weight: 800; text-transform: uppercase; color: var(--teal); letter-spacing: 0.04em;">${task.title}</span>
+            <span style="font-size: 0.82rem; font-weight: 800; color: var(--brand); letter-spacing: 0.04em;">${task.title}</span>
             <button type="button" class="speak-btn" data-speak="${task.stem}" data-speak-es="${task.stemEs}">🔊 Read</button>
           </div>
-          <p style="font-size: 1.12rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${task.stem}</p>
+          <p style="font-size: 1.12rem; font-weight: 700; color: var(--brand); margin: 0 0 6px 0;">${task.stem}</p>
           <p class="es-text">${task.stemEs}</p>
           ${bodyHtml}
           <div id="t1-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">${isDone ? doneMsg : ''}</div>
@@ -2238,15 +1197,15 @@
         let rectsHtml = '';
         for (let i = 0; i < blocks; i++) {
           const isShaded = i < shadedBlocks;
-          rectsHtml += `<rect x="${40 + i * blockW}" y="28" width="${blockW}" height="34" fill="${isShaded ? '#1FA6A2' : '#F1F5F9'}" stroke="#17324D" stroke-width="1.5"/>`;
+          rectsHtml += `<rect x="${40 + i * blockW}" y="28" width="${blockW}" height="34" fill="${isShaded ? 'var(--pct)' : 'var(--well)'}" stroke="var(--brand)" stroke-width="1.5"/>`;
         }
 
         stage.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
-            <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal); letter-spacing: 0.04em;">${p.title}</span>
+            <span style="font-size: 0.84rem; font-weight: 800; color: var(--brand); letter-spacing: 0.04em;">${p.title}</span>
             <button type="button" class="speak-btn" data-speak="${p.stem}" data-speak-es="${p.stemEs}">🔊 Read</button>
           </div>
-          <p style="font-size: 1.15rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${p.stem}</p>
+          <p style="font-size: 1.15rem; font-weight: 700; color: var(--brand); margin: 0 0 6px 0;">${p.stem}</p>
           <p class="es-text">${p.stemEs}</p>
 
           <!-- Clean Visual Equivalence Diagram -->
@@ -2269,30 +1228,30 @@
                 </div>
               </div>
 
-              <div class="big-fraction" style="border-color: var(--teal);">
+              <div class="big-fraction" style="border-color: var(--brand);">
                 <span class="role-tag">Per 100</span>
-                <span class="num" id="t2-live-num" style="color: var(--teal);">${isDone ? targetPct : '?'}</span>
-                <span class="f-bar" style="background: var(--teal);"></span>
-                <span class="den" style="color: var(--teal);">100</span>
+                <span class="num" id="t2-live-num" style="color: var(--brand);">${isDone ? targetPct : '?'}</span>
+                <span class="f-bar" style="background: var(--brand);"></span>
+                <span class="den" style="color: var(--brand);">100</span>
                 <span class="role-tag">Whole = 100</span>
               </div>
 
-              <div style="font-size: 1.8rem; font-weight: 800; color: var(--navy);">=</div>
+              <div style="font-size: 1.8rem; font-weight: 800; color: var(--brand);">=</div>
 
-              <div class="big-fraction" style="background: var(--navy); border-color: var(--navy);">
-                <span class="role-tag" style="color: #CBD5E1;">Percent</span>
+              <div class="big-fraction" style="background: var(--brand); border-color: var(--brand);">
+                <span class="role-tag" style="color: var(--border);">Percent</span>
                 <span class="num" id="t2-live-pct" style="color: #FFFFFF; font-size: 1.9rem;">${isDone ? targetPct + '%' : '?%'}</span>
               </div>
             </div>
 
             <!-- Clean Single Partitioned Percent Bar -->
             <svg viewBox="0 0 600 92" width="600" height="92" style="background:white; width: 100%; max-width: 640px; height: auto; display: block; margin: 0 auto; border: 1px solid var(--border); border-radius: 8px;" role="img" aria-label="Visual fraction bar model">
-              <text x="40" y="20" font-size="12" font-weight="700" fill="#17324D">Shaded Part: ${p.part} out of ${p.whole}</text>
-              <text x="560" y="20" text-anchor="end" font-size="12" font-weight="700" fill="#0F766E">Whole Bar = ${p.whole} = 100%</text>
+              <text x="40" y="20" font-size="12" font-weight="700" fill="var(--brand)">Shaded Part: ${p.part} out of ${p.whole}</text>
+              <text x="560" y="20" text-anchor="end" font-size="12" font-weight="700" fill="var(--brand)">Whole Bar = ${p.whole} = 100%</text>
               ${rectsHtml}
-              <text x="40" y="80" font-size="11.5" font-weight="700" fill="#0F766E">0%</text>
-              <text id="t2-svg-bar-pct" x="${40 + (p.part / p.whole) * barW}" y="80" text-anchor="middle" font-size="12" font-weight="800" fill="#0F766E">${isDone ? targetPct + '%' : '?%'}</text>
-              <text x="560" y="80" text-anchor="end" font-size="11.5" font-weight="700" fill="#17324D">100%</text>
+              <text x="40" y="80" font-size="11.5" font-weight="700" fill="var(--brand)">0%</text>
+              <text id="t2-svg-bar-pct" x="${40 + (p.part / p.whole) * barW}" y="80" text-anchor="middle" font-size="12" font-weight="800" fill="var(--brand)">${isDone ? targetPct + '%' : '?%'}</text>
+              <text x="560" y="80" text-anchor="end" font-size="11.5" font-weight="700" fill="var(--brand)">100%</text>
             </svg>
           </div>
 
@@ -2303,7 +1262,7 @@
                 <div class="step-box-label">Step 1 · Scale the Whole</div>
                 <p class="step-box-desc">What number do you multiply <strong>${p.whole}</strong> by to make <strong>100</strong>?</p>
               </div>
-              <div class="step-box-Equation">
+              <div class="step-box-eq">
                 <span>${p.whole} ×</span>
                 <input type="text" id="t2-inp-factor" class="num-input ${isDone ? 'ok' : ''}" style="width: 78px;" inputmode="numeric" value="${isDone ? factor : ''}" aria-label="Scale factor" placeholder="?">
                 <span>= 100</span>
@@ -2312,21 +1271,21 @@
 
             <div class="step-box step-2">
               <div>
-                <div class="step-box-label" style="color: var(--teal);">Step 2 · Scale the Part</div>
+                <div class="step-box-label" style="color: var(--brand);">Step 2 · Scale the Part</div>
                 <p class="step-box-desc">Multiply the part (<strong>${p.part}</strong>) by that same scale factor:</p>
               </div>
-              <div class="step-box-Equation">
-                <span>${p.part} × <strong id="t2-live-step2-f" style="color: var(--teal);">${isDone ? factor : 'factor'}</strong> =</span>
+              <div class="step-box-eq">
+                <span>${p.part} × <strong id="t2-live-step2-f" style="color: var(--brand);">${isDone ? factor : 'factor'}</strong> =</span>
                 <input type="text" id="t2-inp-num" class="num-input ${isDone ? 'ok' : ''}" style="width: 78px;" inputmode="numeric" value="${isDone ? targetPct : ''}" aria-label="Amount out of 100" placeholder="?">
               </div>
             </div>
 
             <div class="step-box step-3">
               <div>
-                <div class="step-box-label" style="color: var(--amber);">Step 3 · Write the Percent</div>
+                <div class="step-box-label" style="color: var(--warn);">Step 3 · Write the Percent</div>
                 <p class="step-box-desc">Since the ratio is now out of 100, write the percent:</p>
               </div>
-              <div class="step-box-Equation">
+              <div class="step-box-eq">
                 <input type="text" id="t2-inp-pct" class="num-input ${isDone ? 'ok' : ''}" style="width: 86px;" inputmode="numeric" value="${isDone ? targetPct : ''}" aria-label="Percent" placeholder="?">
                 <span>%</span>
               </div>
@@ -2340,7 +1299,7 @@
           </div>
 
           <div id="t2-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">
-            ${isDone ? `✓ Great job! Multiplying both terms of ${p.part}/${p.whole} by ${factor} gives ${targetPct}/100 = ${targetPct}%.` : ''}
+            ${isDone ? `Great job! Multiplying both terms of ${p.part}/${p.whole} by ${factor} gives ${targetPct}/100 = ${targetPct}%.` : ''}
           </div>
         `;
 
@@ -2643,26 +1602,26 @@
             }
             const tickId = i === 0 ? 'id="t3-svg-tick-one"' : (i + 1 === p.shadedBlocks ? 'id="t3-svg-tick-fin"' : '');
             blocksSvg += `
-              <rect x="${x}" y="42" width="${bw}" height="42" fill="${shaded ? '#1FA6A2' : '#F1F5F9'}" stroke="#17324D" stroke-width="2"/>
-              <text x="${x + bw / 2}" y="68" text-anchor="middle" font-size="13" font-weight="800" fill="${shaded ? '#0F2337' : '#64748B'}">${p.oneBlockQty}</text>
-              ${tickLabel ? `<text ${tickId} x="${x + bw}" y="106" text-anchor="middle" font-size="12" font-weight="800" fill="${i + 1 === p.shadedBlocks ? '#D97706' : '#0F766E'}">${tickLabel}</text>` : ''}
+              <rect x="${x}" y="42" width="${bw}" height="42" fill="${shaded ? 'var(--pct)' : 'var(--well)'}" stroke="var(--brand)" stroke-width="2"/>
+              <text x="${x + bw / 2}" y="68" text-anchor="middle" font-size="13" font-weight="800" fill="${shaded ? '#FFFFFF' : 'var(--ink-muted)'}">${p.oneBlockQty}</text>
+              ${tickLabel ? `<text ${tickId} x="${x + bw}" y="106" text-anchor="middle" font-size="12" font-weight="800" fill="${i + 1 === p.shadedBlocks ? 'var(--sun-deep)' : 'var(--brand)'}">${tickLabel}</text>` : ''}
             `;
           }
 
           stage.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
-              <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal);">${p.title}</span>
+              <span style="font-size: 0.84rem; font-weight: 800; color: var(--brand);">${p.title}</span>
               <button type="button" class="speak-btn" data-speak="${p.stem}" data-speak-es="${p.stemEs}">🔊 Read</button>
             </div>
-            <p style="font-size: 1.12rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${p.stem}</p>
+            <p style="font-size: 1.12rem; font-weight: 700; color: var(--brand); margin: 0 0 6px 0;">${p.stem}</p>
             <p class="es-text">${p.stemEs}</p>
 
             <!-- Crystal-Clear Segmented Percent Bar -->
             <div class="scaling-visual-card" style="padding: 18px;">
               <svg viewBox="0 0 620 124" width="620" height="124" style="background:white; width: 100%; max-width: 680px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" role="img" aria-label="Segmented percent bar">
-                <text x="40" y="26" font-size="12.5" font-weight="800" fill="#17324D">Shaded: ${p.shadedBlocks} blocks = ${p.part}</text>
-                <text x="580" y="26" text-anchor="end" font-size="12.5" font-weight="800" fill="#17324D">Whole (${p.blocks} blocks) = ${p.whole}</text>
-                <text x="40" y="106" text-anchor="middle" font-size="12" font-weight="700" fill="#0F766E">0%</text>
+                <text x="40" y="26" font-size="12.5" font-weight="800" fill="var(--brand)">Shaded: ${p.shadedBlocks} blocks = ${p.part}</text>
+                <text x="580" y="26" text-anchor="end" font-size="12.5" font-weight="800" fill="var(--brand)">Whole (${p.blocks} blocks) = ${p.whole}</text>
+                <text x="40" y="106" text-anchor="middle" font-size="12" font-weight="700" fill="var(--brand)">0%</text>
                 ${blocksSvg}
               </svg>
             </div>
@@ -2673,7 +1632,7 @@
                   <div class="step-box-label">Step 1 · Find 1 Block (%)</div>
                   <p class="step-box-desc">The whole bar (<strong>100%</strong>) is split into <strong>${p.blocks} equal blocks</strong>. What percent is <strong>1 block</strong> (${p.oneBlockQty})?</p>
                 </div>
-                <div class="step-box-Equation">
+                <div class="step-box-eq">
                   <span>100% ÷ ${p.blocks} =</span>
                   <input type="text" id="t3-bar-one" class="num-input ${isDone ? 'ok' : ''}" style="width: 82px;" inputmode="numeric" value="${isDone ? p.oneBlockPct : ''}" aria-label="Percent for 1 block" placeholder="?">
                   <span>%</span>
@@ -2682,10 +1641,10 @@
 
               <div class="step-box step-2">
                 <div>
-                  <div class="step-box-label" style="color: var(--teal);">Step 2 · Multiply by Shaded Blocks</div>
+                  <div class="step-box-label" style="color: var(--brand);">Step 2 · Multiply by Shaded Blocks</div>
                   <p class="step-box-desc"><strong>${p.part}</strong> fills <strong>${p.shadedBlocks} blocks</strong>. Multiply ${p.shadedBlocks} blocks by the percent for 1 block:</p>
                 </div>
-                <div class="step-box-Equation">
+                <div class="step-box-eq">
                   <span>${p.shadedBlocks} × <strong id="t3-live-step1-val">${isDone ? p.oneBlockPct + '%' : '(Step 1)'}</strong> =</span>
                   <input type="text" id="t3-bar-final" class="num-input ${isDone ? 'ok' : ''}" style="width: 82px;" inputmode="numeric" value="${isDone ? p.finalPct : ''}" aria-label="Final percent" placeholder="?">
                   <span>%</span>
@@ -2699,7 +1658,7 @@
               ${isRand ? `<button type="button" class="btn btn-sm" id="t3-back-seq-btn">← Back to Problem #${state.idx3 + 1}</button>` : ''}
             </div>
             <div id="t3-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">
-              ${isDone ? `✓ Awesome! Each block is ${p.oneBlockPct}%, so ${p.shadedBlocks} blocks (${p.part} out of ${p.whole}) is ${p.finalPct}%.` : ''}
+              ${isDone ? `Awesome! Each block is ${p.oneBlockPct}%, so ${p.shadedBlocks} blocks (${p.part} out of ${p.whole}) is ${p.finalPct}%.` : ''}
             </div>
           `;
 
@@ -2771,28 +1730,28 @@
             const shaded = i < p.midPart;
             const x = 40 + i * bw;
             bridgeRects += `
-              <rect x="${x}" y="30" width="${bw}" height="32" fill="${shaded ? '#1FA6A2' : '#F1F5F9'}" stroke="#17324D" stroke-width="1.8"/>
-              <text x="${x + bw / 2}" y="51" text-anchor="middle" font-size="11.5" font-weight="800" fill="${shaded ? '#0F2337' : '#64748B'}">${p.divBy}</text>
+              <rect x="${x}" y="30" width="${bw}" height="32" fill="${shaded ? 'var(--pct)' : 'var(--well)'}" stroke="var(--brand)" stroke-width="1.8"/>
+              <text x="${x + bw / 2}" y="51" text-anchor="middle" font-size="11.5" font-weight="800" fill="${shaded ? '#FFFFFF' : 'var(--ink-muted)'}">${p.divBy}</text>
             `;
           }
 
           stage.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
-              <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal);">${p.title}</span>
+              <span style="font-size: 0.84rem; font-weight: 800; color: var(--brand);">${p.title}</span>
               <button type="button" class="speak-btn" data-speak="${p.stem}" data-speak-es="${p.stemEs}">🔊 Read</button>
             </div>
-            <p style="font-size: 1.12rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${p.stem}</p>
+            <p style="font-size: 1.12rem; font-weight: 700; color: var(--brand); margin: 0 0 6px 0;">${p.stem}</p>
             <p class="es-text">${p.stemEs}</p>
 
             <!-- Companion Percent Bar showing how dividing by ${p.divBy} creates ${p.midWhole} equal blocks -->
             <div class="scaling-visual-card" style="padding: 14px 18px; margin-bottom: 14px;">
               <svg viewBox="0 0 600 88" width="600" height="88" style="background:white; width: 100%; max-width: 640px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" role="img" aria-label="Simplified block bar">
-                <text id="t3-br-svg-mid" x="40" y="20" font-size="12" font-weight="800" fill="#17324D">Grouped by ${p.divBy}s: ${p.part} is ${isDone ? p.midPart : '?'} blocks out of ${p.midWhole} blocks</text>
-                <text x="560" y="20" text-anchor="end" font-size="12" font-weight="800" fill="#0F766E">Whole = ${p.whole} (${p.midWhole} blocks of ${p.divBy}) = 100%</text>
+                <text id="t3-br-svg-mid" x="40" y="20" font-size="12" font-weight="800" fill="var(--brand)">Grouped by ${p.divBy}s: ${p.part} is ${isDone ? p.midPart : '?'} blocks out of ${p.midWhole} blocks</text>
+                <text x="560" y="20" text-anchor="end" font-size="12" font-weight="800" fill="var(--brand)">Whole = ${p.whole} (${p.midWhole} blocks of ${p.divBy}) = 100%</text>
                 ${bridgeRects}
-                <text x="40" y="78" font-size="11.5" font-weight="700" fill="#0F766E">0%</text>
-                <text id="t3-br-svg-pct" x="${40 + p.midPart * bw}" y="78" text-anchor="middle" font-size="12" font-weight="800" fill="#D97706">${isDone ? p.finalPct + '%' : '?%'}</text>
-                <text x="560" y="78" text-anchor="end" font-size="11.5" font-weight="700" fill="#17324D">100%</text>
+                <text x="40" y="78" font-size="11.5" font-weight="700" fill="var(--brand)">0%</text>
+                <text id="t3-br-svg-pct" x="${40 + p.midPart * bw}" y="78" text-anchor="middle" font-size="12" font-weight="800" fill="var(--sun-deep)">${isDone ? p.finalPct + '%' : '?%'}</text>
+                <text x="560" y="78" text-anchor="end" font-size="11.5" font-weight="700" fill="var(--brand)">100%</text>
               </svg>
             </div>
 
@@ -2824,17 +1783,17 @@
                   <td class="row-label">Whole (Bottom)</td>
                   <td><strong>${p.whole}</strong> <span class="op-chip">÷ ${p.divBy} &rarr;</span></td>
                   <td><strong>${p.midWhole}</strong> <span class="op-chip">× ${p.multBy} &rarr;</span></td>
-                  <td><strong style="color: var(--teal); font-size: 1.2rem;">100</strong></td>
+                  <td><strong style="color: var(--brand); font-size: 1.2rem;">100</strong></td>
                 </tr>
               </tbody>
             </table></div>
 
             <div style="background: var(--surface-soft); border: 1.5px solid var(--border); border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-              <strong style="color: var(--navy); font-size: 1.02rem;">Final Answer: What percent is ${p.part} out of ${p.whole}?</strong>
+              <strong style="color: var(--brand); font-size: 1.02rem;">Final Answer: What percent is ${p.part} out of ${p.whole}?</strong>
               <div style="display: flex; align-items: center; gap: 8px;">
                 <label for="t3-br-pct" class="sr-only">Final percent</label>
                 <input type="text" id="t3-br-pct" class="num-input ${isDone ? 'ok' : ''}" style="width: 90px;" inputmode="numeric" value="${isDone ? p.finalPct : ''}" placeholder="?">
-                <strong style="font-size: 1.25rem; color: var(--navy);">%</strong>
+                <strong style="font-size: 1.25rem; color: var(--brand);">%</strong>
               </div>
             </div>
 
@@ -2844,7 +1803,7 @@
               ${isRand ? `<button type="button" class="btn btn-sm" id="t3-back-seq-btn">← Back to Problem #${state.idx3 + 1}</button>` : ''}
             </div>
             <div id="t3-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">
-              ${isDone ? `✓ Bridge Table Complete! ${p.part}/${p.whole} simplifies to ${p.midPart}/${p.midWhole}, which scales (×${p.multBy}) to ${p.finalPct}/100 = ${p.finalPct}%.` : ''}
+              ${isDone ? `Bridge Table Complete! ${p.part}/${p.whole} simplifies to ${p.midPart}/${p.midWhole}, which scales (×${p.multBy}) to ${p.finalPct}/100 = ${p.finalPct}%.` : ''}
             </div>
           `;
 
@@ -2921,10 +1880,10 @@
         } else if (p.kind === 'campTable') {
           stage.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
-              <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal);">${p.title}</span>
+              <span style="font-size: 0.84rem; font-weight: 800; color: var(--brand);">${p.title}</span>
               <button type="button" class="speak-btn" data-speak="${p.stem}" data-speak-es="${p.stemEs}">🔊 Read</button>
             </div>
-            <p style="font-size: 1.12rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${p.stem}</p>
+            <p style="font-size: 1.12rem; font-weight: 700; color: var(--brand); margin: 0 0 6px 0;">${p.stem}</p>
             <p class="es-text">${p.stemEs}</p>
 
             <div class="table-scroll"><table class="clean-ratio-table" aria-label="Camp Sign-Ups Ratio Table">
@@ -2955,7 +1914,7 @@
                   <td>4 × 4 = <input type="text" id="t3-camp-3a" class="num-input ${isDone ? 'ok' : ''}" style="width: 76px;" inputmode="numeric" value="${isDone ? '16' : ''}" aria-label="Crafts out of 100" placeholder="?"> out of 100</td>
                   <td><input type="text" id="t3-camp-3b" class="num-input ${isDone ? 'ok' : ''}" style="width: 84px;" inputmode="numeric" value="${isDone ? '16' : ''}" aria-label="Crafts percent" placeholder="?"> <strong>%</strong></td>
                 </tr>
-                <tr style="background: var(--surface-teal);">
+                <tr style="background: var(--brand-tint);">
                   <td class="row-label">Total Whole</td>
                   <td><strong>25</strong> Campers</td>
                   <td><strong>100</strong> Campers</td>
@@ -2969,7 +1928,7 @@
               <button type="button" class="btn" id="t3-hint-btn">💡 Hint</button>
             </div>
             <div id="t3-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">
-              ${isDone ? '✓ Camp Ratio Table Complete! 56% Canoeing + 28% Archery + 16% Crafts = 100% of the campers.' : ''}
+              ${isDone ? 'Camp Ratio Table Complete! 56% Canoeing + 28% Archery + 16% Crafts = 100% of the campers.' : ''}
             </div>
           `;
 
@@ -3108,14 +2067,14 @@
           ans: '45',
           unit: '%',
           visualSvg: `
-            <svg viewBox="0 0 580 76" width="580" height="76" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid #CBD5E1; border-radius:8px;" role="img" aria-label="Bar model showing 11 shoppers used a coupon and 9 shoppers did not out of 20 total shoppers">
-              <text x="20" y="18" font-size="11.5" font-weight="800" fill="#17324D">Whole = 20 Shoppers (100%)</text>
-              <rect x="20" y="25" width="297" height="28" fill="#1FA6A2" stroke="#17324D" stroke-width="1.5"/>
-              <text x="168" y="43" text-anchor="middle" font-size="11.5" font-weight="800" fill="#0F2337">Used Coupon: 11 / 20</text>
-              <rect x="317" y="25" width="243" height="28" fill="#FEF3C7" stroke="#17324D" stroke-width="1.5"/>
-              <text x="438" y="43" text-anchor="middle" font-size="11.5" font-weight="800" fill="#92400E">Did NOT Use: 9 / 20 = ?%</text>
-              <text x="20" y="68" font-size="10.5" font-weight="700" fill="#0F766E">0%</text>
-              <text x="560" y="68" text-anchor="end" font-size="10.5" font-weight="700" fill="#17324D">100% (×5 to scale 20 → 100)</text>
+            <svg viewBox="0 0 580 76" width="580" height="76" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid var(--border); border-radius:8px;" role="img" aria-label="Bar model showing 11 shoppers used a coupon and 9 shoppers did not out of 20 total shoppers">
+              <text x="20" y="18" font-size="11.5" font-weight="800" fill="var(--brand)">Whole = 20 Shoppers (100%)</text>
+              <rect x="20" y="25" width="297" height="28" fill="var(--pct)" stroke="var(--brand)" stroke-width="1.5"/>
+              <text x="168" y="43" text-anchor="middle" font-size="11.5" font-weight="800" fill="#FFFFFF">Used Coupon: 11 / 20</text>
+              <rect x="317" y="25" width="243" height="28" fill="var(--sun-tint)" stroke="var(--brand)" stroke-width="1.5"/>
+              <text x="438" y="43" text-anchor="middle" font-size="11.5" font-weight="800" fill="var(--warn)">Did NOT Use: 9 / 20 = ?%</text>
+              <text x="20" y="68" font-size="10.5" font-weight="700" fill="var(--brand)">0%</text>
+              <text x="560" y="68" text-anchor="end" font-size="10.5" font-weight="700" fill="var(--brand)">100% (×5 to scale 20 → 100)</text>
             </svg>
           `,
           traps: {
@@ -3125,8 +2084,8 @@
           firstNudge: 'First find how many shoppers out of 20 did NOT use a coupon (20 − 11), then scale that ratio to a denominator of 100.',
           hint: '11 out of 20 used a coupon (11 × 5 = 55%), so 9 out of 20 did not. Subtract 100% − 55% (or multiply 9 × 5).',
           hintEs: '11 de 20 usaron cupón (55%), así que 9 de 20 no. Resta 100% − 55% (o multiplica 9 × 5).',
-          explain: '✓ Correct! 11/20 = 55% used a coupon, so 100% − 55% = 45% (9 out of 20) did NOT use a coupon.',
-          explainEs: '✓ ¡Correcto! 11/20 = 55% usaron un cupón, así que 100% − 55% = 45% (9 de 20) NO usaron un cupón.'
+          explain: 'Correct! 11/20 = 55% used a coupon, so 100% − 55% = 45% (9 out of 20) did NOT use a coupon.',
+          explainEs: '¡Correcto! 11/20 = 55% usaron un cupón, así que 100% − 55% = 45% (9 de 20) NO usaron un cupón.'
         },
         {
           id: 't4_2',
@@ -3138,16 +2097,16 @@
           ans: '20',
           unit: '%',
           visualSvg: `
-            <svg viewBox="0 0 580 76" width="580" height="76" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid #CBD5E1; border-radius:8px;" role="img" aria-label="Bar model of 50 students: 16 hamster, 24 fish, and the rest turtle">
-              <text x="20" y="18" font-size="11.5" font-weight="800" fill="#17324D">Whole = 50 Students (Scale ×2 to make 100%)</text>
-              <rect x="20" y="25" width="173" height="28" fill="#E2E8F0" stroke="#17324D" stroke-width="1.5"/>
-              <text x="106" y="43" text-anchor="middle" font-size="11" font-weight="800" fill="#17324D">🐹 Hamster: 16</text>
-              <rect x="193" y="25" width="259" height="28" fill="#CCFBF1" stroke="#17324D" stroke-width="1.5"/>
-              <text x="322" y="43" text-anchor="middle" font-size="11" font-weight="800" fill="#0F766E">🐟 Fish: 24</text>
-              <rect x="452" y="25" width="108" height="28" fill="#FEF3C7" stroke="#17324D" stroke-width="1.5"/>
-              <text x="506" y="43" text-anchor="middle" font-size="11" font-weight="800" fill="#92400E">🐢 Turtle: ?</text>
-              <text x="20" y="68" font-size="10.5" font-weight="700" fill="#4A607A">16 + 24 + ? = 50 students total</text>
-              <text x="560" y="68" text-anchor="end" font-size="10.5" font-weight="700" fill="#0F766E">100%</text>
+            <svg viewBox="0 0 580 76" width="580" height="76" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid var(--border); border-radius:8px;" role="img" aria-label="Bar model of 50 students: 16 hamster, 24 fish, and the rest turtle">
+              <text x="20" y="18" font-size="11.5" font-weight="800" fill="var(--brand)">Whole = 50 Students (Scale ×2 to make 100%)</text>
+              <rect x="20" y="25" width="173" height="28" fill="var(--border)" stroke="var(--brand)" stroke-width="1.5"/>
+              <text x="106" y="43" text-anchor="middle" font-size="11" font-weight="800" fill="var(--brand)">🐹 Hamster: 16</text>
+              <rect x="193" y="25" width="259" height="28" fill="var(--brand-tint)" stroke="var(--brand)" stroke-width="1.5"/>
+              <text x="322" y="43" text-anchor="middle" font-size="11" font-weight="800" fill="var(--brand)">🐟 Fish: 24</text>
+              <rect x="452" y="25" width="108" height="28" fill="var(--sun-tint)" stroke="var(--brand)" stroke-width="1.5"/>
+              <text x="506" y="43" text-anchor="middle" font-size="11" font-weight="800" fill="var(--warn)">🐢 Turtle: ?</text>
+              <text x="20" y="68" font-size="10.5" font-weight="700" fill="var(--ink-muted)">16 + 24 + ? = 50 students total</text>
+              <text x="560" y="68" text-anchor="end" font-size="10.5" font-weight="700" fill="var(--brand)">100%</text>
             </svg>
           `,
           traps: {
@@ -3158,8 +2117,8 @@
           firstNudge: 'Start by subtracting 50 − 16 − 24 to find how many students chose a turtle, then scale that number out of 50 up to 100.',
           hint: 'First find how many students chose a turtle: 50 − 16 − 24 = 10 students. Then scale 10 out of 50 to 100 by multiplying by 2.',
           hintEs: 'Primero halla cuántos eligieron tortuga: 50 − 16 − 24 = 10 estudiantes. Luego escala 10 de 50 a 100 multiplicando por 2.',
-          explain: '✓ Correct! 50 − 16 − 24 = 10 turtle votes, and 10 out of 50 scales by ×2 to 20 out of 100 = 20%.',
-          explainEs: '✓ ¡Correcto! 50 − 16 − 24 = 10 votos por la tortuga, y 10 de 50 escala (×2) a 20 de 100 = 20%.'
+          explain: 'Correct! 50 − 16 − 24 = 10 turtle votes, and 10 out of 50 scales by ×2 to 20 out of 100 = 20%.',
+          explainEs: '¡Correcto! 50 − 16 − 24 = 10 votos por la tortuga, y 10 de 50 escala (×2) a 20 de 100 = 20%.'
         },
         {
           id: 't4_3',
@@ -3171,14 +2130,14 @@
           ans: '150',
           unit: '%',
           visualSvg: `
-            <svg viewBox="0 0 580 82" width="580" height="82" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid #CBD5E1; border-radius:8px;" role="img" aria-label="Comparison bar showing 500 dollar goal is 100 percent and 750 dollars raised is 500 plus 250">
-              <text x="20" y="18" font-size="11" font-weight="800" fill="#17324D">Goal ($500 = 100%) vs. Collected ($750 = ?%)</text>
-              <rect x="20" y="24" width="320" height="22" fill="#1FA6A2" stroke="#17324D" stroke-width="1.5"/>
-              <text x="180" y="39" text-anchor="middle" font-size="11" font-weight="800" fill="#0F2337">$500 Goal = 100%</text>
-              <rect x="20" y="50" width="320" height="22" fill="#1FA6A2" stroke="#17324D" stroke-width="1.5"/>
-              <text x="180" y="65" text-anchor="middle" font-size="11" font-weight="800" fill="#0F2337">$500 (100%)</text>
-              <rect x="340" y="50" width="160" height="22" fill="#FDE68A" stroke="#17324D" stroke-width="1.5"/>
-              <text x="420" y="65" text-anchor="middle" font-size="11" font-weight="800" fill="#92400E">+ $250 (+?%)</text>
+            <svg viewBox="0 0 580 82" width="580" height="82" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid var(--border); border-radius:8px;" role="img" aria-label="Comparison bar showing 500 dollar goal is 100 percent and 750 dollars raised is 500 plus 250">
+              <text x="20" y="18" font-size="11" font-weight="800" fill="var(--brand)">Goal ($500 = 100%) vs. Collected ($750 = ?%)</text>
+              <rect x="20" y="24" width="320" height="22" fill="var(--pct)" stroke="var(--brand)" stroke-width="1.5"/>
+              <text x="180" y="39" text-anchor="middle" font-size="11" font-weight="800" fill="#FFFFFF">$500 Goal = 100%</text>
+              <rect x="20" y="50" width="320" height="22" fill="var(--pct)" stroke="var(--brand)" stroke-width="1.5"/>
+              <text x="180" y="65" text-anchor="middle" font-size="11" font-weight="800" fill="#FFFFFF">$500 (100%)</text>
+              <rect x="340" y="50" width="160" height="22" fill="var(--sun-tint)" stroke="var(--brand)" stroke-width="1.5"/>
+              <text x="420" y="65" text-anchor="middle" font-size="11" font-weight="800" fill="var(--warn)">+ $250 (+?%)</text>
             </svg>
           `,
           traps: {
@@ -3188,8 +2147,8 @@
           firstNudge: 'Since $750 is more than the $500 goal, the percent is greater than 100%. Scale the ratio 750 out of 500 so the whole is 100.',
           hint: 'Write the ratio 750/500 and divide both terms by 5 so the denominator is 100.',
           hintEs: 'Escribe la razón 750/500 y divide ambos números entre 5 para que el denominador sea 100.',
-          explain: '✓ Correct! 750/500 ÷ 5/5 = 150/100 = 150% (1.5 times their goal).',
-          explainEs: '✓ ¡Correcto! 750/500 ÷ 5/5 = 150/100 = 150% (1.5 veces su meta).'
+          explain: 'Correct! 750/500 ÷ 5/5 = 150/100 = 150% (1.5 times their goal).',
+          explainEs: '¡Correcto! 750/500 ÷ 5/5 = 150/100 = 150% (1.5 veces su meta).'
         },
         {
           id: 't4_4',
@@ -3201,16 +2160,16 @@
           ans: '20',
           unit: 'percentage points',
           visualSvg: `
-            <svg viewBox="0 0 580 82" width="580" height="82" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid #CBD5E1; border-radius:8px;" role="img" aria-label="Comparison bars for Kira 36 out of 60 and Dev 32 out of 40">
-              <text x="20" y="18" font-size="11" font-weight="800" fill="#17324D">Scale both ratios to 100% to compare fairly:</text>
-              <text x="20" y="39" font-size="11" font-weight="800" fill="#17324D">Kira (36/60):</text>
-              <rect x="105" y="25" width="270" height="20" fill="#1FA6A2" stroke="#17324D" stroke-width="1.5"/>
-              <rect x="375" y="25" width="180" height="20" fill="#F1F5F9" stroke="#17324D" stroke-width="1.5"/>
-              <text x="240" y="39" text-anchor="middle" font-size="10.5" font-weight="800" fill="#0F2337">36 ÷ 6 = 6 out of 10 = ?%</text>
-              <text x="20" y="65" font-size="11" font-weight="800" fill="#17324D">Dev (32/40):</text>
-              <rect x="105" y="51" width="360" height="20" fill="#F59E0B" stroke="#17324D" stroke-width="1.5"/>
-              <rect x="465" y="51" width="90" height="20" fill="#F1F5F9" stroke="#17324D" stroke-width="1.5"/>
-              <text x="285" y="65" text-anchor="middle" font-size="10.5" font-weight="800" fill="#0F2337">32 ÷ 4 = 8 out of 10 = ?%</text>
+            <svg viewBox="0 0 580 82" width="580" height="82" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid var(--border); border-radius:8px;" role="img" aria-label="Comparison bars for Kira 36 out of 60 and Dev 32 out of 40">
+              <text x="20" y="18" font-size="11" font-weight="800" fill="var(--brand)">Scale both ratios to 100% to compare fairly:</text>
+              <text x="20" y="39" font-size="11" font-weight="800" fill="var(--brand)">Kira (36/60):</text>
+              <rect x="105" y="25" width="270" height="20" fill="var(--pct)" stroke="var(--brand)" stroke-width="1.5"/>
+              <rect x="375" y="25" width="180" height="20" fill="var(--well)" stroke="var(--brand)" stroke-width="1.5"/>
+              <text x="240" y="39" text-anchor="middle" font-size="10.5" font-weight="800" fill="#FFFFFF">36 ÷ 6 = 6 out of 10 = ?%</text>
+              <text x="20" y="65" font-size="11" font-weight="800" fill="var(--brand)">Dev (32/40):</text>
+              <rect x="105" y="51" width="360" height="20" fill="var(--sun-deep)" stroke="var(--brand)" stroke-width="1.5"/>
+              <rect x="465" y="51" width="90" height="20" fill="var(--well)" stroke="var(--brand)" stroke-width="1.5"/>
+              <text x="285" y="65" text-anchor="middle" font-size="10.5" font-weight="800" fill="#FFFFFF">32 ÷ 4 = 8 out of 10 = ?%</text>
             </svg>
           `,
           traps: {
@@ -3221,8 +2180,8 @@
           firstNudge: 'Find each player’s percent out of 100 first (Kira: 36/60, Dev: 32/40), then subtract their percents.',
           hint: 'Find each player’s percent first (Kira: 36/60 = 6/10 = 60%; Dev: 32/40 = 8/10 = 80%), then subtract.',
           hintEs: 'Halla el porcentaje de cada jugador primero (Kira: 36/60 = 60%; Dev: 32/40 = 80%) y luego resta.',
-          explain: '✓ Correct! Dev made 80% (32/40) and Kira made 60% (36/60), so Dev’s rate was 80% − 60% = 20 percentage points higher.',
-          explainEs: '✓ ¡Correcto! Dev encestó 80% (32/40) y Kira 60% (36/60), así que Dev estuvo 80% − 60% = 20 puntos porcentuales más alto.'
+          explain: 'Correct! Dev made 80% (32/40) and Kira made 60% (36/60), so Dev’s rate was 80% − 60% = 20 percentage points higher.',
+          explainEs: '¡Correcto! Dev encestó 80% (32/40) y Kira 60% (36/60), así que Dev estuvo 80% − 60% = 20 puntos porcentuales más alto.'
         },
         {
           id: 't4_5',
@@ -3234,12 +2193,12 @@
           ans: '48',
           unit: '%',
           visualSvg: `
-            <svg viewBox="0 0 580 74" width="580" height="74" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid #CBD5E1; border-radius:8px;" role="img" aria-label="Scaling diagram showing 12 out of 25 multiplied by 4 to reach 100">
-              <text x="20" y="20" font-size="11.5" font-weight="800" fill="#B91C1C">✗ Trey’s Trap: 12 / 25 ≠ 12 / 100</text>
-              <text x="300" y="20" font-size="11.5" font-weight="800" fill="#0F766E">✓ Fix: Multiply both part &amp; whole by 4 (25 × 4 = 100)</text>
-              <rect x="20" y="28" width="259" height="26" fill="#1FA6A2" stroke="#17324D" stroke-width="1.5"/>
-              <rect x="279" y="28" width="281" height="26" fill="#F1F5F9" stroke="#17324D" stroke-width="1.5"/>
-              <text x="150" y="45" text-anchor="middle" font-size="11.5" font-weight="800" fill="#0F2337">12 × 4 = ? out of 100</text>
+            <svg viewBox="0 0 580 74" width="580" height="74" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid var(--border); border-radius:8px;" role="img" aria-label="Scaling diagram showing 12 out of 25 multiplied by 4 to reach 100">
+              <text x="20" y="20" font-size="11.5" font-weight="800" fill="var(--bad)">✗ Trey’s Trap: 12 / 25 ≠ 12 / 100</text>
+              <text x="300" y="20" font-size="11.5" font-weight="800" fill="var(--brand)">Fix: Multiply both part &amp; whole by 4 (25 × 4 = 100)</text>
+              <rect x="20" y="28" width="259" height="26" fill="var(--pct)" stroke="var(--brand)" stroke-width="1.5"/>
+              <rect x="279" y="28" width="281" height="26" fill="var(--well)" stroke="var(--brand)" stroke-width="1.5"/>
+              <text x="150" y="45" text-anchor="middle" font-size="11.5" font-weight="800" fill="#FFFFFF">12 × 4 = ? out of 100</text>
             </svg>
           `,
           traps: {
@@ -3249,8 +2208,8 @@
           firstNudge: 'Ask: what do you multiply 25 by to get 100? Multiply 12 by that same factor.',
           hint: 'Since 25 × 4 = 100, multiply the numerator 12 by 4 as well.',
           hintEs: 'Como 25 × 4 = 100, multiplica el numerador 12 también por 4.',
-          explain: '✓ Case Solved! 12/25 × 4/4 = 48/100 = 48%, not 12%.',
-          explainEs: '✓ ¡Caso resuelto! 12/25 × 4/4 = 48/100 = 48%, no 12%.'
+          explain: 'Case Solved! 12/25 × 4/4 = 48/100 = 48%, not 12%.',
+          explainEs: '¡Caso resuelto! 12/25 × 4/4 = 48/100 = 48%, no 12%.'
         },
         {
           id: 't4_6',
@@ -3262,12 +2221,12 @@
           ans: '40',
           unit: '%',
           visualSvg: `
-            <svg viewBox="0 0 580 74" width="580" height="74" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid #CBD5E1; border-radius:8px;" role="img" aria-label="10-block bar showing 4 out of 10 blocks shaded">
-              <text x="20" y="20" font-size="11.5" font-weight="800" fill="#B91C1C">✗ Sam Added +90 (Wrong!)</text>
-              <text x="280" y="20" font-size="11.5" font-weight="800" fill="#0F766E">✓ Equivalent Ratios Scale by Multiplication: 10 × 10 = 100</text>
-              <rect x="20" y="28" width="216" height="26" fill="#1FA6A2" stroke="#17324D" stroke-width="1.5"/>
-              <rect x="236" y="28" width="324" height="26" fill="#F1F5F9" stroke="#17324D" stroke-width="1.5"/>
-              <text x="128" y="45" text-anchor="middle" font-size="11.5" font-weight="800" fill="#0F2337">4 out of 10 (×10 = ?%)</text>
+            <svg viewBox="0 0 580 74" width="580" height="74" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid var(--border); border-radius:8px;" role="img" aria-label="10-block bar showing 4 out of 10 blocks shaded">
+              <text x="20" y="20" font-size="11.5" font-weight="800" fill="var(--bad)">✗ Sam Added +90 (Wrong!)</text>
+              <text x="280" y="20" font-size="11.5" font-weight="800" fill="var(--brand)">Equivalent Ratios Scale by Multiplication: 10 × 10 = 100</text>
+              <rect x="20" y="28" width="216" height="26" fill="var(--pct)" stroke="var(--brand)" stroke-width="1.5"/>
+              <rect x="236" y="28" width="324" height="26" fill="var(--well)" stroke="var(--brand)" stroke-width="1.5"/>
+              <text x="128" y="45" text-anchor="middle" font-size="11.5" font-weight="800" fill="#FFFFFF">4 out of 10 (×10 = ?%)</text>
             </svg>
           `,
           traps: {
@@ -3277,8 +2236,8 @@
           firstNudge: 'Since 10 × 10 = 100, multiply the part (4) by 10 as well.',
           hint: 'Multiply both terms of 4/10 by 10 so the denominator becomes 100.',
           hintEs: 'Multiplica ambos términos de 4/10 por 10 para que el denominador sea 100.',
-          explain: '✓ Case Solved! Equivalent ratios scale by multiplication: 4/10 × 10/10 = 40/100 = 40%.',
-          explainEs: '✓ ¡Caso resuelto! Las razones equivalentes se escalan multiplicando: 4/10 × 10/10 = 40/100 = 40%.'
+          explain: 'Case Solved! Equivalent ratios scale by multiplication: 4/10 × 10/10 = 40/100 = 40%.',
+          explainEs: '¡Caso resuelto! Las razones equivalentes se escalan multiplicando: 4/10 × 10/10 = 40/100 = 40%.'
         },
         {
           id: 't4_7',
@@ -3290,12 +2249,12 @@
           ans: '65',
           unit: '%',
           visualSvg: `
-            <svg viewBox="0 0 580 74" width="580" height="74" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid #CBD5E1; border-radius:8px;" role="img" aria-label="Bar showing 35 shaded squares and 65 unshaded squares out of 100">
-              <text x="20" y="19" font-size="11.5" font-weight="800" fill="#17324D">Whole Grid = 100 Squares (100%)</text>
-              <rect x="20" y="26" width="189" height="28" fill="#1FA6A2" stroke="#17324D" stroke-width="1.5"/>
-              <text x="114" y="44" text-anchor="middle" font-size="11.5" font-weight="800" fill="#0F2337">Shaded: 35%</text>
-              <rect x="209" y="26" width="351" height="28" fill="#FEF3C7" stroke="#17324D" stroke-width="1.5"/>
-              <text x="384" y="44" text-anchor="middle" font-size="11.5" font-weight="800" fill="#92400E">NOT Shaded: 100 − 35 = ?%</text>
+            <svg viewBox="0 0 580 74" width="580" height="74" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid var(--border); border-radius:8px;" role="img" aria-label="Bar showing 35 shaded squares and 65 unshaded squares out of 100">
+              <text x="20" y="19" font-size="11.5" font-weight="800" fill="var(--brand)">Whole Grid = 100 Squares (100%)</text>
+              <rect x="20" y="26" width="189" height="28" fill="var(--pct)" stroke="var(--brand)" stroke-width="1.5"/>
+              <text x="114" y="44" text-anchor="middle" font-size="11.5" font-weight="800" fill="#FFFFFF">Shaded: 35%</text>
+              <rect x="209" y="26" width="351" height="28" fill="var(--sun-tint)" stroke="var(--brand)" stroke-width="1.5"/>
+              <text x="384" y="44" text-anchor="middle" font-size="11.5" font-weight="800" fill="var(--warn)">NOT Shaded: 100 − 35 = ?%</text>
             </svg>
           `,
           traps: {
@@ -3304,8 +2263,8 @@
           firstNudge: 'The shaded part and the unshaded part add up to 100 squares (100%).',
           hint: 'Subtract the 35 shaded squares from the 100 total squares.',
           hintEs: 'Resta los 35 cuadrados sombreados de los 100 cuadrados totales.',
-          explain: '✓ Case Solved! 35% is the shaded part; 100% − 35% = 65% is NOT shaded.',
-          explainEs: '✓ ¡Caso resuelto! 35% es la parte sombreada; 100% − 35% = 65% NO está sombreado.'
+          explain: 'Case Solved! 35% is the shaded part; 100% − 35% = 65% is NOT shaded.',
+          explainEs: '¡Caso resuelto! 35% es la parte sombreada; 100% − 35% = 65% NO está sombreado.'
         },
         {
           id: 't4_8',
@@ -3317,15 +2276,15 @@
           ans: '175',
           unit: '%',
           visualSvg: `
-            <svg viewBox="0 0 580 82" width="580" height="82" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid #CBD5E1; border-radius:8px;" role="img" aria-label="Block comparison showing 8 ounces is 4 blocks of 2 ounces (100 percent) and 14 ounces is 7 blocks of 2 ounces">
-              <text x="20" y="18" font-size="11" font-weight="800" fill="#17324D">Each block = 2 oz = 25% of the gray kitten:</text>
-              <text x="20" y="38" font-size="11" font-weight="800" fill="#0F766E">Gray (8 oz):</text>
-              <rect x="110" y="24" width="240" height="20" fill="#1FA6A2" stroke="#17324D" stroke-width="1.5"/>
-              <text x="230" y="38" text-anchor="middle" font-size="10.5" font-weight="800" fill="#0F2337">4 blocks of 2 oz = 100%</text>
-              <text x="20" y="64" font-size="11" font-weight="800" fill="#B45309">Brother (14 oz):</text>
-              <rect x="110" y="50" width="240" height="20" fill="#1FA6A2" stroke="#17324D" stroke-width="1.5"/>
-              <rect x="350" y="50" width="180" height="20" fill="#FDE68A" stroke="#17324D" stroke-width="1.5"/>
-              <text x="320" y="64" text-anchor="middle" font-size="10.5" font-weight="800" fill="#0F2337">7 blocks of 2 oz = 7 × 25% = ?%</text>
+            <svg viewBox="0 0 580 82" width="580" height="82" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid var(--border); border-radius:8px;" role="img" aria-label="Block comparison showing 8 ounces is 4 blocks of 2 ounces (100 percent) and 14 ounces is 7 blocks of 2 ounces">
+              <text x="20" y="18" font-size="11" font-weight="800" fill="var(--brand)">Each block = 2 oz = 25% of the gray kitten:</text>
+              <text x="20" y="38" font-size="11" font-weight="800" fill="var(--brand)">Gray (8 oz):</text>
+              <rect x="110" y="24" width="240" height="20" fill="var(--pct)" stroke="var(--brand)" stroke-width="1.5"/>
+              <text x="230" y="38" text-anchor="middle" font-size="10.5" font-weight="800" fill="#FFFFFF">4 blocks of 2 oz = 100%</text>
+              <text x="20" y="64" font-size="11" font-weight="800" fill="var(--warn)">Brother (14 oz):</text>
+              <rect x="110" y="50" width="240" height="20" fill="var(--pct)" stroke="var(--brand)" stroke-width="1.5"/>
+              <rect x="350" y="50" width="180" height="20" fill="var(--sun-tint)" stroke="var(--brand)" stroke-width="1.5"/>
+              <text x="320" y="64" text-anchor="middle" font-size="10.5" font-weight="800" fill="#FFFFFF">7 blocks of 2 oz = 7 × 25% = ?%</text>
             </svg>
           `,
           traps: {
@@ -3335,8 +2294,8 @@
           firstNudge: 'Use a Bridge Ratio: divide both 14 and 8 by 2 to get fourths (7/4), then multiply by 25 to reach a denominator of 100.',
           hint: 'Simplify 14/8 by dividing both terms by 2 to get 7/4, then multiply both terms by 25 to get a denominator of 100.',
           hintEs: 'Simplifica 14/8 dividiendo ambos entre 2 para obtener 7/4, y luego multiplica por 25 para llegar a un denominador de 100.',
-          explain: '✓ Case Solved! 14/8 simplifies to 7/4, and 7/4 × 25/25 = 175/100 = 175%.',
-          explainEs: '✓ ¡Caso resuelto! 14/8 se simplifica a 7/4, y 7/4 × 25/25 = 175/100 = 175%.'
+          explain: 'Case Solved! 14/8 simplifies to 7/4, and 7/4 × 25/25 = 175/100 = 175%.',
+          explainEs: '¡Caso resuelto! 14/8 se simplifica a 7/4, y 7/4 × 25/25 = 175/100 = 175%.'
         }
       ];
 
@@ -3354,24 +2313,24 @@
         const stage = document.getElementById('t4-stage-card');
         stage.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
-            <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--amber);">${p.badge}</span>
+            <span style="font-size: 0.84rem; font-weight: 800; color: var(--warn);">${p.badge}</span>
             <button type="button" class="speak-btn" data-speak="${p.story} ${p.question}" data-speak-es="${p.stemEs}">🔊 Read</button>
           </div>
-          <h3 style="font-family: var(--font-display); font-size: 1.35rem; color: var(--navy); margin: 0 0 12px 0;">${p.title}</h3>
+          <h3 style="font-family: var(--font-display); font-size: 1.35rem; color: var(--brand); margin: 0 0 12px 0;">${p.title}</h3>
 
-          <div style="background: var(--surface-soft); border-left: 5px solid var(--navy); padding: 16px 18px; border-radius: 8px; font-size: 1.04rem; margin-bottom: 14px;">
+          <div style="background: var(--surface-soft); border-left: 5px solid var(--brand); padding: 16px 18px; border-radius: 8px; font-size: 1.04rem; margin-bottom: 14px;">
             ${p.story}
             <p class="es-text">${p.stemEs}</p>
           </div>
 
           ${p.visualSvg || ''}
 
-          <p style="font-weight: 700; font-size: 1.05rem; color: var(--navy); margin-bottom: 12px;">${p.question}</p>
+          <p style="font-weight: 700; font-size: 1.05rem; color: var(--brand); margin-bottom: 12px;">${p.question}</p>
 
           <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
             <label for="t4-inp" class="sr-only">${p.question}</label>
             <input type="text" id="t4-inp" class="num-input ${isDone ? 'ok' : ''}" inputmode="numeric" value="${isDone ? p.ans : ''}" placeholder="?">
-            <strong style="font-size: 1.15rem; color: var(--navy);">${p.unit}</strong>
+            <strong style="font-size: 1.15rem; color: var(--brand);">${p.unit}</strong>
             <button type="button" class="btn btn-primary" id="t4-check-btn">Check Answer</button>
             <button type="button" class="btn" id="t4-hint-btn">💡 Hint</button>
           </div>
@@ -3383,17 +2342,17 @@
                 <label for="t4-sc-part">Start Part</label>
                 <input type="text" id="t4-sc-part" class="num-input" style="width:74px; min-height:36px; font-size:0.95rem;" inputmode="decimal" placeholder="part" data-nsr-ignore="true">
               </div>
-              <div style="font-weight:800; color:var(--slate);">out of</div>
+              <div style="font-weight:800; color:var(--ink-muted);">out of</div>
               <div class="scratchpad-cell">
                 <label for="t4-sc-whole">Start Whole</label>
                 <input type="text" id="t4-sc-whole" class="num-input" style="width:74px; min-height:36px; font-size:0.95rem;" inputmode="decimal" placeholder="whole" data-nsr-ignore="true">
               </div>
-              <div style="font-weight:800; color:var(--teal);">→</div>
+              <div style="font-weight:800; color:var(--brand);">→</div>
               <div class="scratchpad-cell">
                 <label for="t4-sc-p100">Part per 100</label>
                 <input type="text" id="t4-sc-p100" class="num-input" style="width:82px; min-height:36px; font-size:0.95rem;" inputmode="decimal" placeholder="? / 100" data-nsr-ignore="true">
               </div>
-              <div id="t4-sc-auto" style="font-size:0.86rem; font-weight:700; color:var(--teal); min-width:120px;">Type part &amp; whole to test!</div>
+              <div id="t4-sc-auto" style="font-size:0.86rem; font-weight:700; color:var(--brand); min-width:120px;">Type part &amp; whole to test!</div>
             </div>
           </details>
 
@@ -3501,13 +2460,13 @@
           feedback: [
             'Per ten describes tenths, not percent.',
             'Per thousand is ten times too large.',
-            '✓ Correct! Percent means “per hundred” (out of 100).',
+            'Correct! Percent means “per hundred” (out of 100).',
             'A percent specifically compares a number to 100.'
           ],
           feedbackEs: [
             'Por diez describe décimas, no porcentaje.',
             'Por mil es diez veces demasiado grande.',
-            '✓ ¡Correcto! Porcentaje significa “por ciento” (de cada 100).',
+            '¡Correcto! Porcentaje significa “por ciento” (de cada 100).',
             'Un porcentaje compara específicamente un número con 100.'
           ]
         },
@@ -3522,13 +2481,13 @@
             '3% means 3 out of 100. Multiply both terms of 3/10 by 10!',
             '10 is the whole, not the percent.',
             'Multiply both terms by 10 instead of adding 3 + 10.',
-            '✓ Correct! 3/10 × 10/10 = 30/100 = 30%.'
+            'Correct! 3/10 × 10/10 = 30/100 = 30%.'
           ],
           feedbackEs: [
             '3% significa 3 de 100. ¡Multiplica ambos términos de 3/10 por 10!',
             '10 es el entero, no el porcentaje.',
             'Multiplica ambos términos por 10 en lugar de sumar 3 + 10.',
-            '✓ ¡Correcto! 3/10 × 10/10 = 30/100 = 30%.'
+            '¡Correcto! 3/10 × 10/10 = 30/100 = 30%.'
           ]
         },
         {
@@ -3541,13 +2500,13 @@
           feedback: [
             '6.5% would be 6 and a half squares.',
             '35% is the unshaded part. The question asks for the shaded percent.',
-            '✓ Correct! 65 shaded squares out of 100 is 65%.',
+            'Correct! 65 shaded squares out of 100 is 65%.',
             '100% is the entire grid.'
           ],
           feedbackEs: [
             '6.5% serían 6 cuadrados y medio.',
             '35% es la parte no sombreada. La pregunta pide el porcentaje sombreado.',
-            '✓ ¡Correcto! 65 cuadrados sombreados de 100 es 65%.',
+            '¡Correcto! 65 cuadrados sombreados de 100 es 65%.',
             '100% es toda la cuadrícula.'
           ]
         },
@@ -3562,13 +2521,13 @@
             '0.8% is less than 1 square out of 100.',
             '80% is less than one whole (100%).',
             '100% is exactly one whole.',
-            '✓ Correct! Any percent greater than 100% (such as 120%) is more than one whole.'
+            'Correct! Any percent greater than 100% (such as 120%) is more than one whole.'
           ],
           feedbackEs: [
             '0.8% es menos de 1 cuadrado de 100.',
             '80% es menos de un entero (100%).',
             '100% es exactamente un entero.',
-            '✓ ¡Correcto! Cualquier porcentaje mayor que 100% (como 120%) es más de un entero.'
+            '¡Correcto! Cualquier porcentaje mayor que 100% (como 120%) es más de un entero.'
           ]
         },
         {
@@ -3582,13 +2541,13 @@
             'Since 1 whole = 100%, multiply 1.5 × 100%.',
             'Check place value: 1.5 × 100% = 150%, not 15%.',
             '50% is half of the weight; 1.5 times is 100% + 50%.',
-            '✓ Correct! 1.5 wholes × 100% = 150%.'
+            'Correct! 1.5 wholes × 100% = 150%.'
           ],
           feedbackEs: [
             'Como 1 entero = 100%, multiplica 1.5 × 100%.',
             'Revisa el valor posicional: 1.5 × 100% = 150%, no 15%.',
             '50% es la mitad del peso; 1.5 veces es 100% + 50%.',
-            '✓ ¡Correcto! 1.5 enteros × 100% = 150%.'
+            '¡Correcto! 1.5 enteros × 100% = 150%.'
           ]
         },
         {
@@ -3601,13 +2560,13 @@
           feedback: [
             '9 is out of 25, not out of 100. Multiply both terms by 4!',
             '25 is the original denominator, not the percent.',
-            '✓ Correct! 9/25 × 4/4 = 36/100 = 36%.',
+            'Correct! 9/25 × 4/4 = 36/100 = 36%.',
             '84 comes from adding 75 instead of multiplying by 4.'
           ],
           feedbackEs: [
             '9 es de 25, no de 100. ¡Multiplica ambos términos por 4!',
             '25 es el denominador original, no el porcentaje.',
-            '✓ ¡Correcto! 9/25 × 4/4 = 36/100 = 36%.',
+            '¡Correcto! 9/25 × 4/4 = 36/100 = 36%.',
             '84 viene de sumar 75 en lugar de multiplicar por 4.'
           ]
         },
@@ -3621,13 +2580,13 @@
           feedback: [
             'Scale 33/50 so the denominator is 100 by multiplying by 2.',
             '50 is the original whole.',
-            '✓ Correct! 33/50 × 2/2 = 66/100 = 66%.',
+            'Correct! 33/50 × 2/2 = 66/100 = 66%.',
             'Multiply by 2 instead of adding 33 + 50.'
           ],
           feedbackEs: [
             'Escala 33/50 para que el denominador sea 100 multiplicando por 2.',
             '50 es el entero original.',
-            '✓ ¡Correcto! 33/50 × 2/2 = 66/100 = 66%.',
+            '¡Correcto! 33/50 × 2/2 = 66/100 = 66%.',
             'Multiplica por 2 en lugar de sumar 33 + 50.'
           ]
         },
@@ -3641,13 +2600,13 @@
           feedback: [
             '9 is out of 12, not 100.',
             '12 is the total number of challenges.',
-            '✓ Correct! 9/12 simplifies (÷3) to 3/4, and 3/4 × 25/25 = 75/100 = 75%.',
+            'Correct! 9/12 simplifies (÷3) to 3/4, and 3/4 × 25/25 = 75/100 = 75%.',
             '90% would be 9 out of 10, not 9 out of 12.'
           ],
           feedbackEs: [
             '9 es de 12, no de 100.',
             '12 es el número total de retos.',
-            '✓ ¡Correcto! 9/12 se simplifica (÷3) a 3/4, y 3/4 × 25/25 = 75/100 = 75%.',
+            '¡Correcto! 9/12 se simplifica (÷3) a 3/4, y 3/4 × 25/25 = 75/100 = 75%.',
             '90% sería 9 de 10, no 9 de 12.'
           ]
         },
@@ -3660,13 +2619,13 @@
           correct: 1,
           feedback: [
             '9 out of 20 did not use a coupon, which scales (×5) to 45%, not 9%.',
-            '✓ Correct! 100% − 55% = 45% (or 9/20 × 5/5 = 45/100 = 45%).',
+            'Correct! 100% − 55% = 45% (or 9/20 × 5/5 = 45/100 = 45%).',
             '55% is the percent who USED a coupon.',
             'Subtract 55% from 100%, not 11 from 100.'
           ],
           feedbackEs: [
             '9 de 20 no usaron cupón, lo cual escala (×5) a 45%, no 9%.',
-            '✓ ¡Correcto! 100% − 55% = 45% (o 9/20 × 5/5 = 45/100 = 45%).',
+            '¡Correcto! 100% − 55% = 45% (o 9/20 × 5/5 = 45/100 = 45%).',
             '55% es el porcentaje que SÍ usó un cupón.',
             'Resta 55% de 100%, no 11 de 100.'
           ]
@@ -3692,13 +2651,13 @@
           feedback: [
             'Subtracting finds the extra dollars, not the ratio per 100.',
             'The whole goal is $500, and $750 is more than the whole.',
-            '✓ Correct! 750/500 scales down (÷5) to 150/100 = 150%.',
+            'Correct! 750/500 scales down (÷5) to 150/100 = 150%.',
             'Percents compare the part to the whole by scaling, not adding.'
           ],
           feedbackEs: [
             'Restar halla los dólares extra, no la razón por 100.',
             'La meta entera es $500, y $750 es más que el entero.',
-            '✓ ¡Correcto! 750/500 se reduce (÷5) a 150/100 = 150%.',
+            '¡Correcto! 750/500 se reduce (÷5) a 150/100 = 150%.',
             'Los porcentajes comparan la parte con el entero escalando, no sumando.'
           ]
         }
@@ -3783,10 +2742,10 @@
 
         stage.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
-            <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal);">Question ${state.idx5 + 1} of 10 · ${q.skill}</span>
+            <span style="font-size: 0.84rem; font-weight: 800; color: var(--brand);">Question ${state.idx5 + 1} of 10 · ${q.skill}</span>
             <button type="button" class="speak-btn" data-speak="${q.stem}" data-speak-es="${q.stemEs}">🔊 Read</button>
           </div>
-          <p style="font-size: 1.15rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${q.stem}</p>
+          <p style="font-size: 1.15rem; font-weight: 700; color: var(--brand); margin: 0 0 6px 0;">${q.stem}</p>
           <p class="es-text">${q.stemEs}</p>
 
           <div class="choice-list">${choicesHtml}</div>
@@ -3844,6 +2803,7 @@
           renderT3Problem();
           renderT4Problem();
           renderT5Question();
+          U4Studio.rebase();
           updateProgressHeader();
         } catch (e) {}
       }
@@ -3861,6 +2821,67 @@
          BOOT
          ---------------------------------------------------------------------- */
       loadState();
+      U4Studio.init({
+        state,
+        save: saveState,
+        totals: {"1": 8, "2": 12, "3": 8, "4": 8, "5": 10},
+        need: {"1": 8, "2": 10, "3": 8, "4": 8, "5": 8},
+        goToTab: (n) => selectTab(n, false),
+        glyphs: ["%", "100", "25%", "50%", "75%", "10%"],
+        bonus: {
+          "gen": "pctMeaning",
+          "title": "Bonus Round: Match the Trios",
+          "titleEs": "Ronda extra: une los tríos",
+          "help": "Each trio shows one percent three ways: the percent, how many out of 100, and the decimal. Tap three tiles that belong together.",
+          "helpEs": "Cada trío muestra un porcentaje de tres formas: el porcentaje, cuántos de cada 100 y el decimal. Toca tres fichas que van juntas.",
+          "rounds": [
+            [
+              {
+                "p": 25
+              },
+              {
+                "p": 60
+              },
+              {
+                "p": 8
+              }
+            ],
+            [
+              {
+                "p": 40
+              },
+              {
+                "p": 75
+              },
+              {
+                "p": 5
+              }
+            ],
+            [
+              {
+                "p": 35
+              },
+              {
+                "p": 90
+              },
+              {
+                "p": 12
+              }
+            ],
+            [
+              {
+                "p": 20
+              },
+              {
+                "p": 45
+              },
+              {
+                "p": 3
+              }
+            ]
+          ]
+        },
+      });
 
       // Resume where the student left off; progress saved before positions were stored opens on the first unsolved item.
       const firstUnsolved = (items, map) => {

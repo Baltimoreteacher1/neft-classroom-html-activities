@@ -1,0 +1,58 @@
+/* ==========================================================================
+   UNIT 4 PRACTICE STUDIO — percent models shared by the two lesson 4-1 pages
+   (100-grid, ratio machine, ratio table, scratchpad, results card).
+   Loaded after assets/u4-studio.css.
+   ========================================================================== */
+
+.grid-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow-card); display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.hundredths-svg { width: 260px; height: 260px; background: #FFFFFF; border: 2.5px solid var(--brand); border-radius: 4px; cursor: pointer; touch-action: none; user-select: none; }
+.grid-cell { fill: #FFFFFF; stroke: var(--border); stroke-width: 1; }
+.grid-cell.shaded { fill: var(--pct); stroke: var(--pct); }
+.grid-cell:hover { stroke: var(--pct); stroke-width: 2; }
+.tenths-line { stroke: var(--brand); stroke-width: 2.2; pointer-events: none; }
+.grid-summary-strip { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
+.summary-tile { background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 6px; }
+.summary-tile span { display: block; font-size: 0.72rem; font-weight: 700; color: var(--ink-light); }
+.summary-tile strong { font-family: var(--font-display); font-size: 1.05rem; color: var(--brand); }
+.scaling-visual-card { background: var(--surface-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 22px; margin: 18px 0; }
+.ratio-machine { display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap; margin-bottom: 20px; }
+.big-fraction { background: #FFFFFF; border: 2px solid var(--brand); border-radius: var(--radius-md); padding: 12px 20px; display: flex; flex-direction: column; align-items: center; min-width: 110px; box-shadow: var(--shadow-card); }
+.big-fraction .num, .big-fraction .den { font-family: var(--font-display); font-size: 1.65rem; font-weight: 800; color: var(--brand); line-height: 1.2; }
+.big-fraction .f-bar { width: 100%; height: 3px; background: var(--brand); margin: 6px 0; border-radius: 2px; }
+.big-fraction .role-tag { font-size: 0.72rem; font-weight: 700; color: var(--ink-light); }
+.arrow-stack { display: flex; flex-direction: column; gap: 22px; align-items: center; }
+.scale-arrow-pill { background: var(--sun-tint); border: 2px solid var(--sun-deep); color: var(--warn); padding: 5px 14px; border-radius: var(--radius-pill); font-family: var(--font-display); font-weight: 800; font-size: 1rem; display: flex; align-items: center; gap: 6px; }
+.clean-ratio-table { width: 100%; border-collapse: separate; border-spacing: 0; border: 2px solid var(--brand); border-radius: var(--radius-md); overflow: hidden; background: #FFFFFF; margin: 16px 0; }
+.clean-ratio-table th, .clean-ratio-table td { padding: 14px 16px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); text-align: center; font-size: 1.02rem; }
+.clean-ratio-table tr:last-child td { border-bottom: none; }
+.clean-ratio-table th:last-child, .clean-ratio-table td:last-child { border-right: none; }
+.clean-ratio-table th { background: var(--brand); color: #FFFFFF; font-weight: 700; font-size: 0.9rem; }
+.clean-ratio-table th.bridge-col { background: var(--brand); }
+.clean-ratio-table th.target-col { background: var(--pct); }
+.clean-ratio-table td.row-label { background: var(--brand-tint); color: var(--brand); font-weight: 800; text-align: left; width: 180px; }
+.op-chip { display: inline-block; background: var(--sun-tint); border: 1px solid var(--sun-deep); color: var(--warn); font-family: var(--font-display); font-weight: 800; font-size: 0.82rem; padding: 2px 8px; border-radius: var(--radius-pill); margin-left: 6px; }
+.choice-list { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+.choice-btn.selected { background: var(--brand-tint); border-color: var(--brand); font-weight: 700; }
+.dual-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 18px 0; }
+.triple-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 18px 0; }
+.dual-grid > div, .triple-grid > div { background: var(--surface-soft); padding: 14px; border-radius: 10px; border: 1px solid var(--border); }
+.table-scroll { position: relative; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table-scroll .clean-ratio-table { min-width: 560px; }
+.scratchpad-details { margin: 14px 0 16px; background: var(--surface-soft); border: 1.5px dashed var(--border-strong); border-radius: var(--radius-md); padding: 10px 14px; }
+.scratchpad-details summary { font-size: 0.88rem; font-weight: 800; color: var(--brand); cursor: pointer; user-select: none; }
+.scratchpad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+.scratchpad-cell { background: #FFFFFF; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 10px; display: flex; flex-direction: column; gap: 4px; }
+.scratchpad-cell span { font-size: 0.74rem; font-weight: 800; color: var(--ink-light); }
+.scratchpad-cell input { width: 100%; font-size: 0.96rem; padding: 6px 8px; }
+.next-btn { display: flex; margin-top: 10px; }
+@media (max-width: 860px) {
+  .triple-grid, .scratchpad-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .dual-grid, .triple-grid, .scratchpad-grid { grid-template-columns: 1fr; }
+  .clean-ratio-table td.row-label { width: auto; }
+}
+@media print {
+  .next-btn, .results-card button, .scratchpad-details, #t2-random-btn, #t3-random-btn, #t5-reset-btn { display: none !important; }
+  .no-print, #nsr-root { display: none !important; }
+}

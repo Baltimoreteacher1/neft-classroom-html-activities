@@ -5,746 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Relate Fractions, Decimals, &amp; Percents · Interactive Practice Studio (Grade 6)</title>
   <meta name="description" content="Clean, student-friendly Grade 6 interactive practice converting flexibly between fractions, decimals, and percents with visual models, equivalence tables, and real-world problems.">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2317324D'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia,serif' font-weight='bold' font-size='28' fill='%23F7F4EC'%3E%C2%BD%3C/text%3E%3C/svg%3E">
-  <style>
-    /* ==========================================================================
-       CLEAN STUDENT-FRIENDLY DESIGN SYSTEM (GRADE 6 · REVEAL MATH UNIT 4 · LESSON 4-2)
-       Palette: Navy #17324D · Teal #0F766E / #1FA6A2 · Warm Paper #F7F4EC
-       ========================================================================== */
-    :root {
-      --bg-paper: #F7F4EC;
-      --bg-well: #EFECE3;
-      --surface: #FFFFFF;
-      --surface-soft: #FAF8F3;
-      --surface-teal: #F0FAF9;
-
-      --navy: #17324D;
-      --navy-dark: #0F2337;
-      --navy-tint: #E8F0F7;
-      --navy-line: #C4D5E5;
-
-      --teal: #0F766E;
-      --teal-bright: #1FA6A2;
-      --teal-tint: #E3F6F5;
-      --teal-line: #94DFDC;
-
-      --amber: #B45309;
-      --amber-bright: #D97706;
-      --amber-tint: #FEF3C7;
-      --amber-line: #FCD34D;
-
-      --green: #047857;
-      --green-tint: #ECFDF5;
-      --green-line: #A7F3D0;
-
-      --red: #B91C1C;
-      --red-tint: #FEF2F2;
-      --red-line: #FECACA;
-
-      --ink: #1E293B;
-      --ink-muted: #475569;
-      --ink-light: #64748B;
-
-      --border: #D8D3C6;
-      --border-strong: #B8B1A0;
-
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      --font-display: Georgia, 'Iowan Old Style', serif;
-      --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
-
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
-      --radius-pill: 999px;
-
-      --shadow-card: 0 2px 8px rgba(23, 50, 77, 0.06), 0 1px 2px rgba(23, 50, 77, 0.04);
-      --shadow-pop: 0 10px 24px rgba(23, 50, 77, 0.12);
-    }
-
-    *, *::before, *::after {
-      box-sizing: border-box;
-    }
-
-    html {
-      font-size: 16px;
-    }
-
-    body {
-      margin: 0;
-      background-color: var(--bg-paper);
-      color: var(--ink);
-      font-family: var(--font-sans);
-      line-height: 1.55;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-
-    :focus-visible {
-      outline: 3px solid var(--amber-bright);
-      outline-offset: 2px;
-    }
-
-    /* Spanish Support Toggle */
-    .es-text {
-      display: none;
-      color: var(--teal);
-      font-style: italic;
-      font-size: 0.94rem;
-      margin-top: 4px;
-    }
-    body.show-es .es-text {
-      display: block;
-    }
-
-    /* ==========================================================================
-       HEADER & NAVIGATION
-       ========================================================================== */
-    .app-header {
-      background: var(--navy);
-      color: #FFFFFF;
-      padding: 12px 24px;
-      border-bottom: 3px solid var(--teal-bright);
-    }
-
-    .header-wrap {
-      max-width: 1080px;
-      margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      background: var(--teal-bright);
-      color: var(--navy-dark);
-      font-family: var(--font-display);
-      font-size: 1.4rem;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .brand-title {
-      margin: 0;
-      font-family: var(--font-display);
-      font-size: 1.25rem;
-      font-weight: 700;
-    }
-
-    .brand-sub {
-      font-size: 0.8rem;
-      color: #CBD5E1;
-      margin-top: 1px;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .score-pill {
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      border-radius: var(--radius-pill);
-      padding: 5px 14px;
-      font-size: 0.86rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .top-btn {
-      background: rgba(255, 255, 255, 0.14);
-      color: #FFFFFF;
-      border: 1px solid rgba(255, 255, 255, 0.28);
-      border-radius: var(--radius-sm);
-      padding: 6px 12px;
-      font-size: 0.84rem;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
-    }
-    .top-btn:hover {
-      background: rgba(255, 255, 255, 0.24);
-    }
-    .top-btn[aria-pressed="true"] {
-      background: var(--teal-bright);
-      color: var(--navy-dark);
-      border-color: #FFFFFF;
-      font-weight: 700;
-    }
-
-    /* 5-Tab Bar */
-    .tab-bar {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 80;
-      box-shadow: 0 2px 4px rgba(23, 50, 77, 0.04);
-    }
-
-    .tab-list {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 0 16px;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 4px;
-    }
-
-    .tab-btn {
-      appearance: none;
-      background: transparent;
-      border: none;
-      border-bottom: 4px solid transparent;
-      padding: 12px 10px 10px;
-      cursor: pointer;
-      font-family: inherit;
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      color: var(--ink-muted);
-      text-align: left;
-      transition: background 0.15s ease, color 0.15s ease;
-    }
-    .tab-btn:hover {
-      background: var(--surface-soft);
-      color: var(--navy);
-    }
-    .tab-btn[aria-selected="true"] {
-      color: var(--navy);
-      border-bottom-color: var(--teal);
-      background: var(--surface-teal);
-      font-weight: 700;
-    }
-
-    .tab-badge {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: var(--bg-well);
-      color: var(--navy);
-      font-size: 0.82rem;
-      font-weight: 800;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .tab-btn[aria-selected="true"] .tab-badge {
-      background: var(--navy);
-      color: #FFFFFF;
-    }
-    .tab-btn.tab-complete .tab-badge {
-      background: var(--green);
-      color: #FFFFFF;
-    }
-
-    .tab-text {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-    .tab-name {
-      font-size: 0.9rem;
-      font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .tab-desc {
-      font-size: 0.74rem;
-      color: var(--ink-light);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* Main Container */
-    .main-container {
-      max-width: 1080px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 24px 20px 48px;
-      flex: 1;
-    }
-
-    .tab-panel {
-      display: none;
-    }
-    .tab-panel.active {
-      display: block;
-    }
-
-    /* Topic Intro Strip */
-    .topic-strip {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-left: 6px solid var(--navy);
-      border-radius: var(--radius-md);
-      padding: 16px 20px;
-      margin-bottom: 20px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      box-shadow: var(--shadow-card);
-    }
-
-    .topic-strip h2 {
-      margin: 0 0 4px 0;
-      font-family: var(--font-display);
-      font-size: 1.35rem;
-      color: var(--navy);
-    }
-
-    .topic-strip p {
-      margin: 0;
-      font-size: 0.96rem;
-      color: var(--ink-muted);
-    }
-
-    .key-rule-pill {
-      background: var(--surface-teal);
-      border: 1px solid var(--teal-line);
-      color: var(--navy);
-      padding: 10px 14px;
-      border-radius: var(--radius-sm);
-      font-size: 0.88rem;
-      font-weight: 600;
-    }
-
-    /* Stepper */
-    .stepper-bar {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 12px 16px;
-      margin-bottom: 18px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      box-shadow: var(--shadow-card);
-    }
-
-    .dots-row {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .step-dot {
-      min-width: 34px;
-      height: 34px;
-      padding: 0 8px;
-      border-radius: var(--radius-sm);
-      border: 1.5px solid var(--border-strong);
-      background: var(--surface-soft);
-      color: var(--navy);
-      font-weight: 700;
-      font-size: 0.86rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-family: inherit;
-      transition: all 0.15s ease;
-    }
-    .step-dot:hover {
-      border-color: var(--navy);
-      background: #FFFFFF;
-    }
-    .step-dot.active {
-      background: var(--navy);
-      color: #FFFFFF;
-      border-color: var(--navy);
-    }
-    .step-dot.solved {
-      background: var(--green-tint);
-      border-color: var(--green);
-      color: var(--green);
-    }
-    .step-dot.solved.active {
-      background: var(--green);
-      color: #FFFFFF;
-    }
-
-    .stage-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      box-shadow: var(--shadow-card);
-    }
-
-    .two-col-stage {
-      display: grid;
-      grid-template-columns: 380px 1fr;
-      gap: 24px;
-      align-items: start;
-    }
-
-    /* Buttons */
-    .btn {
-      appearance: none;
-      border: 1.5px solid var(--border-strong);
-      background: var(--surface);
-      color: var(--navy);
-      font-family: inherit;
-      font-size: 0.94rem;
-      font-weight: 700;
-      padding: 10px 16px;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.15s ease;
-    }
-    .btn:hover {
-      background: var(--surface-soft);
-      border-color: var(--navy);
-    }
-    .btn-primary {
-      background: var(--navy);
-      color: #FFFFFF;
-      border-color: var(--navy);
-    }
-    .btn-primary:hover {
-      background: var(--navy-dark);
-      border-color: var(--navy-dark);
-    }
-    .btn-teal {
-      background: var(--teal);
-      color: #FFFFFF;
-      border-color: var(--teal);
-    }
-    .btn-teal:hover {
-      background: var(--teal-bright);
-      border-color: var(--teal-bright);
-    }
-    .btn-sm {
-      padding: 6px 12px;
-      font-size: 0.84rem;
-    }
-
-    .speak-btn {
-      background: var(--surface-soft);
-      border: 1px solid var(--border);
-      color: var(--navy);
-      border-radius: var(--radius-sm);
-      padding: 4px 8px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-family: inherit;
-    }
-    .speak-btn:hover {
-      background: var(--navy-tint);
-    }
-
-    /* Inputs & Feedback */
-    .num-input {
-      font-family: var(--font-mono);
-      font-size: 1.25rem;
-      font-weight: 700;
-      text-align: center;
-      padding: 8px 12px;
-      border: 2px solid var(--border-strong);
-      border-radius: var(--radius-sm);
-      background: #FFFFFF;
-      color: var(--navy);
-      transition: all 0.15s ease;
-    }
-    .num-input:focus {
-      border-color: var(--navy);
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(23, 50, 77, 0.15);
-    }
-    .num-input.ok {
-      border-color: var(--green);
-      background: var(--green-tint);
-      color: var(--green);
-    }
-    .num-input.err {
-      border-color: var(--red);
-      background: var(--red-tint);
-      color: var(--red);
-    }
-
-    .feedback-box {
-      margin-top: 16px;
-      padding: 12px 16px;
-      border-radius: var(--radius-sm);
-      font-size: 0.95rem;
-      font-weight: 600;
-      display: none;
-    }
-    .feedback-box.show {
-      display: block;
-    }
-    .feedback-box.ok {
-      background: var(--green-tint);
-      border: 1.5px solid var(--green-line);
-      color: #065F46;
-    }
-    .feedback-box.warn {
-      background: var(--amber-tint);
-      border: 1.5px solid var(--amber-line);
-      color: #92400E;
-    }
-    .feedback-box.err {
-      background: var(--red-tint);
-      border: 1.5px solid var(--red-line);
-      color: #991B1B;
-    }
-
-    /* Choice list */
-    .choice-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin: 16px 0;
-    }
-    .choice-btn {
-      appearance: none;
-      background: var(--surface-soft);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 12px 16px;
-      text-align: left;
-      font-family: inherit;
-      font-size: 1rem;
-      color: var(--ink);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      transition: all 0.15s ease;
-    }
-    .choice-btn:hover {
-      background: var(--navy-tint);
-      border-color: var(--navy);
-    }
-    .choice-btn.correct {
-      background: var(--green-tint);
-      border-color: var(--green);
-      color: var(--green);
-      font-weight: 700;
-    }
-    .choice-btn.wrong {
-      background: var(--red-tint);
-      border-color: var(--red);
-      color: var(--red);
-    }
-
-    /* Trio Display */
-    .trio-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin: 20px 0;
-      padding: 18px;
-      background: var(--surface-soft);
-      border-radius: var(--radius-md);
-      border: 1.5px solid var(--border);
-    }
-
-    .trio-pill {
-      background: #FFFFFF;
-      border: 2px solid var(--navy);
-      border-radius: var(--radius-md);
-      padding: 12px 20px;
-      text-align: center;
-      min-width: 120px;
-      box-shadow: var(--shadow-card);
-    }
-    .trio-label {
-      font-size: 0.72rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--ink-light);
-      display: block;
-      margin-bottom: 4px;
-    }
-    .trio-val {
-      font-family: var(--font-mono);
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: var(--navy);
-    }
-
-    .trio-arrow {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--teal);
-    }
-
-    /* Guided Steps Grid */
-    .guided-steps-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 14px;
-      margin: 18px 0;
-    }
-    .step-box {
-      background: var(--surface);
-      border: 1.5px solid var(--navy-line);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .step-box.step-2 { border-color: var(--teal-line); }
-    .step-box.step-3 { border-color: var(--amber-line); }
-    .step-box-label {
-      font-size: 0.8rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--navy);
-    }
-    .step-box-desc {
-      font-size: 0.88rem;
-      color: var(--ink-muted);
-      margin: 4px 0 0 0;
-    }
-    .step-box-eq {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-family: var(--font-mono);
-      font-weight: 700;
-      font-size: 1.15rem;
-    }
-
-    /* Print Summary & Banner */
-    .complete-banner {
-      background: var(--green);
-      color: #FFFFFF;
-      padding: 16px 20px;
-      border-radius: var(--radius-md);
-      font-size: 1.05rem;
-      font-weight: 700;
-      margin-bottom: 20px;
-      text-align: center;
-      box-shadow: var(--shadow-card);
-    }
-
-    .app-footer {
-      background: var(--navy);
-      color: #FFFFFF;
-      padding: 16px 24px;
-      font-size: 0.84rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.15);
-      margin-top: auto;
-    }
-    .footer-wrap {
-      max-width: 1080px;
-      margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .v2-badge {
-      display: inline-block;
-      background: #D97706;
-      color: #FFFFFF;
-      font-size: 0.72rem;
-      font-weight: 800;
-      padding: 2px 8px;
-      border-radius: 4px;
-      margin-left: 8px;
-      vertical-align: middle;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    @media (max-width: 840px) {
-      .two-col-stage {
-        grid-template-columns: 1fr;
-      }
-      .tab-list {
-        grid-template-columns: repeat(5, 1fr);
-        padding: 0 8px;
-      }
-      .tab-btn {
-        padding: 8px 4px;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        gap: 4px;
-      }
-      .tab-desc {
-        display: none;
-      }
-      .tab-name {
-        font-size: 0.75rem;
-      }
-    }
-
-    @media print {
-      .app-header, .tab-bar, .stepper-bar, .app-footer, .top-btn, .btn, .speak-btn {
-        display: none !important;
-      }
-      body {
-        background: #FFFFFF;
-      }
-      .main-container {
-        padding: 0;
-      }
-      .tab-panel {
-        display: block !important;
-        margin-bottom: 20px;
-        break-inside: avoid;
-      }
-    }
-  </style>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231E1B6E'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia,serif' font-weight='bold' font-size='28' fill='%23FFC933'%3E%C2%BD%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/assets/u4-studio.css">
+  <script src="/assets/u4-studio.js"></script>
+  <script src="/assets/u4-studio-bonus.js"></script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -764,7 +28,7 @@
 
       <div class="header-actions">
         <div class="score-pill" aria-live="polite">
-          <span>⭐ Progress: <span id="header-progress-count">0 / 46</span></span>
+          <span>Progress: <span id="header-progress-count">0 / 46</span></span>
         </div>
         <button type="button" class="top-btn" id="toggle-es-btn" aria-pressed="false">🌐 Español</button>
         <button type="button" class="top-btn" id="print-btn">🖨️ Print</button>
@@ -823,13 +87,13 @@
   <!-- MAIN WORKSPACE -->
   <main class="main-container">
 
-    <section id="print-summary-sheet" class="print-only" aria-label="Printable student progress summary" style="border: 2px solid var(--navy); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; background: #FFFFFF;">
+    <section id="print-summary-sheet" class="print-only" aria-label="Printable student progress summary" style="border: 2px solid var(--brand); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; background: #FFFFFF;">
       <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--border); padding-bottom: 10px; margin-bottom: 12px; gap: 16px; flex-wrap: wrap;">
         <div>
-          <h2 style="margin: 0; font-family: var(--font-display); font-size: 1.35rem; color: var(--navy);">Relate Fractions, Decimals, &amp; Percents · Practice Summary</h2>
+          <h2 style="margin: 0; font-family: var(--font-display); font-size: 1.35rem; color: var(--brand);">Relate Fractions, Decimals, &amp; Percents · Practice Summary</h2>
           <div style="font-size: 0.85rem; color: var(--ink-muted);">Grade 6 Math · Unit 4 Interactive Practice Studio (Standards 6.RP.A.3.C · 6.AT.4) · Lesson 4-2</div>
         </div>
-        <div style="font-size: 0.88rem; color: var(--navy); text-align: right;">
+        <div style="font-size: 0.88rem; color: var(--brand); text-align: right;">
           <div><strong>Student:</strong> <span id="print-student-name">________________________</span></div>
           <div><strong>Total Completed:</strong> <span id="print-total-score">0 / 46 (0%)</span></div>
         </div>
@@ -858,59 +122,59 @@
         <!-- Interactive Trio Model -->
         <div class="stage-card" style="padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 14px;">
           <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-            <strong style="color: var(--navy); font-size: 0.96rem;">Interactive Equivalence Meter</strong>
-            <span style="font-size: 0.82rem; color: var(--teal); font-weight: 700;">Drag Slider or Pick Fraction</span>
+            <strong style="color: var(--brand); font-size: 0.96rem;">Interactive Equivalence Meter</strong>
+            <span style="font-size: 0.82rem; color: var(--brand); font-weight: 700;">Drag Slider or Pick Fraction</span>
           </div>
 
           <svg id="t1-model-svg" viewBox="0 0 320 220" width="320" height="220" style="background:white; border: 1.5px solid var(--border); border-radius: 8px; width: 100%; height: auto;" role="img" aria-label="Visual Fraction Decimal Percent meter">
             <!-- Background Bars -->
-            <rect x="20" y="30" width="280" height="24" fill="#F1F5F9" stroke="#CBD5E1" rx="4"/>
-            <rect id="t1-bar-fill" x="20" y="30" width="140" height="24" fill="#1FA6A2" rx="4"/>
-            <text x="20" y="22" font-size="11" font-weight="700" fill="#17324D">Fraction Bar (Whole = 1)</text>
+            <rect x="20" y="30" width="280" height="24" fill="var(--well)" stroke="var(--border)" rx="4"/>
+            <rect id="t1-bar-fill" x="20" y="30" width="140" height="24" fill="var(--frac)" rx="4"/>
+            <text x="20" y="22" font-size="11" font-weight="700" fill="var(--brand)">Fraction Bar (Whole = 1)</text>
             <text id="t1-bar-txt" x="160" y="46" font-size="12" font-weight="800" fill="#FFFFFF" text-anchor="middle">50%</text>
 
             <!-- 10-Tenths Ticks -->
-            <line x1="20" y1="58" x2="300" y2="58" stroke="#17324D" stroke-width="1.5"/>
-            <line x1="20" y1="54" x2="20" y2="62" stroke="#17324D" stroke-width="1.5"/>
-            <line x1="90" y1="54" x2="90" y2="62" stroke="#17324D" stroke-width="1.5"/>
-            <line x1="160" y1="54" x2="160" y2="62" stroke="#17324D" stroke-width="1.5"/>
-            <line x1="230" y1="54" x2="230" y2="62" stroke="#17324D" stroke-width="1.5"/>
-            <line x1="300" y1="54" x2="300" y2="62" stroke="#17324D" stroke-width="1.5"/>
+            <line x1="20" y1="58" x2="300" y2="58" stroke="var(--brand)" stroke-width="1.5"/>
+            <line x1="20" y1="54" x2="20" y2="62" stroke="var(--brand)" stroke-width="1.5"/>
+            <line x1="90" y1="54" x2="90" y2="62" stroke="var(--brand)" stroke-width="1.5"/>
+            <line x1="160" y1="54" x2="160" y2="62" stroke="var(--brand)" stroke-width="1.5"/>
+            <line x1="230" y1="54" x2="230" y2="62" stroke="var(--brand)" stroke-width="1.5"/>
+            <line x1="300" y1="54" x2="300" y2="62" stroke="var(--brand)" stroke-width="1.5"/>
 
-            <text x="20" y="74" font-size="10" font-weight="700" fill="#475569">0</text>
-            <text x="90" y="74" font-size="10" font-weight="700" fill="#475569">0.25</text>
-            <text x="160" y="74" font-size="10" font-weight="700" fill="#475569">0.50</text>
-            <text x="230" y="74" font-size="10" font-weight="700" fill="#475569">0.75</text>
-            <text x="300" y="74" font-size="10" font-weight="700" fill="#475569" text-anchor="end">1.00</text>
+            <text x="20" y="74" font-size="10" font-weight="700" fill="var(--ink-muted)">0</text>
+            <text x="90" y="74" font-size="10" font-weight="700" fill="var(--ink-muted)">0.25</text>
+            <text x="160" y="74" font-size="10" font-weight="700" fill="var(--ink-muted)">0.50</text>
+            <text x="230" y="74" font-size="10" font-weight="700" fill="var(--ink-muted)">0.75</text>
+            <text x="300" y="74" font-size="10" font-weight="700" fill="var(--ink-muted)" text-anchor="end">1.00</text>
 
             <!-- 100-Grid Mini -->
             <g transform="translate(110, 95)">
-              <rect x="0" y="0" width="100" height="100" fill="#FFFFFF" stroke="#17324D" stroke-width="2"/>
+              <rect x="0" y="0" width="100" height="100" fill="#FFFFFF" stroke="var(--brand)" stroke-width="2"/>
               <g id="t1-mini-grid"></g>
             </g>
-            <text x="160" y="210" font-size="11" font-weight="700" fill="#17324D" text-anchor="middle">100-Grid Equivalent</text>
+            <text x="160" y="210" font-size="11" font-weight="700" fill="var(--brand)" text-anchor="middle">100-Grid Equivalent</text>
           </svg>
 
           <div style="width: 100%;">
-            <div style="display: flex; justify-content: space-between; font-size: 0.86rem; font-weight: 700; color: var(--navy); margin-bottom: 4px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.86rem; font-weight: 700; color: var(--brand); margin-bottom: 4px;">
               <label for="t1-slider">Value Slider:</label>
               <span id="t1-slider-label">50% = 0.50 = 1/2</span>
             </div>
-            <input type="range" id="t1-slider" data-nsr-ignore="true" min="0" max="100" value="50" style="width: 100%; accent-color: var(--teal); cursor: pointer;">
+            <input type="range" id="t1-slider" data-nsr-ignore="true" min="0" max="100" value="50" style="width: 100%; accent-color: var(--brand); cursor: pointer;">
           </div>
 
           <div class="grid-summary-strip" style="width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
             <div class="summary-tile">
               <span>Fraction</span>
-              <strong id="t1-stat-frac" style="color: var(--navy);">1/2</strong>
+              <strong id="t1-stat-frac" style="color: var(--frac);">1/2</strong>
             </div>
             <div class="summary-tile">
               <span>Decimal</span>
-              <strong id="t1-stat-dec" style="color: var(--teal);">0.50</strong>
+              <strong id="t1-stat-dec" style="color: var(--dec);">0.50</strong>
             </div>
             <div class="summary-tile">
               <span>Percent</span>
-              <strong id="t1-stat-pct" style="color: var(--amber);">50%</strong>
+              <strong id="t1-stat-pct" style="color: var(--pct);">50%</strong>
             </div>
           </div>
 
@@ -938,22 +202,22 @@
           <div class="stage-card" id="t1-task-card"></div>
 
           <details style="margin-top: 14px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 12px 16px;">
-            <summary style="font-weight: 800; color: var(--navy); cursor: pointer; font-size: 0.95rem;">📘 Reference: Common Benchmarks &amp; Conversion Rules (Click to expand)</summary>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 12px; font-size: 0.88rem; color: var(--ink-soft);">
+            <summary style="font-weight: 800; color: var(--brand); cursor: pointer; font-size: 0.95rem;">📘 Reference: Common Benchmarks &amp; Conversion Rules (Click to expand)</summary>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 12px; font-size: 0.88rem; color: var(--ink-muted);">
               <div style="background: var(--surface-soft); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
-                <strong style="color: var(--navy); display: block;">Fraction to Percent</strong>
+                <strong style="color: var(--brand); display: block;">Fraction to Percent</strong>
                 Scale denominator to 100 or divide numerator by denominator: <strong>&frac35; &times; 20/20 = 60/100 = 60%</strong>.
               </div>
               <div style="background: var(--surface-soft); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
-                <strong style="color: var(--navy); display: block;">Decimal to Percent</strong>
+                <strong style="color: var(--brand); display: block;">Decimal to Percent</strong>
                 Multiply by 100 (shift decimal point 2 places right): <strong>0.38 &rarr; 38%</strong>. <strong>0.07 &rarr; 7%</strong>.
               </div>
               <div style="background: var(--surface-soft); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
-                <strong style="color: var(--navy); display: block;">Percent to Fraction</strong>
+                <strong style="color: var(--brand); display: block;">Percent to Fraction</strong>
                 Put over 100 and simplify: <strong>45% = 45/100 = 9/20</strong>.
               </div>
               <div style="background: var(--surface-soft); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);">
-                <strong style="color: var(--navy); display: block;">Decimal to Fraction</strong>
+                <strong style="color: var(--brand); display: block;">Decimal to Fraction</strong>
                 Read the place value: <strong>0.6 = 6/10 = 3/5</strong>. <strong>0.08 = 8/100 = 2/25</strong>.
               </div>
             </div>
@@ -971,7 +235,7 @@
           <p class="es-text">Encuentra el factor de escala para llegar a 100 o divide el numerador entre el denominador.</p>
         </div>
         <div>
-          <button type="button" class="btn btn-teal btn-sm" id="t2-random-btn">🎲 New Random Problem</button>
+          <button type="button" class="btn btn-go btn-sm" id="t2-random-btn">🎲 New Random Problem</button>
         </div>
       </div>
 
@@ -995,7 +259,7 @@
           <p class="es-text">Dada una representación (fracción, decimal o porcentaje), completa las dos formas faltantes.</p>
         </div>
         <div>
-          <button type="button" class="btn btn-teal btn-sm" id="t3-random-btn">🎲 New Random Trio</button>
+          <button type="button" class="btn btn-go btn-sm" id="t3-random-btn">🎲 New Random Trio</button>
         </div>
       </div>
 
@@ -1065,7 +329,7 @@
   <footer class="app-footer">
     <div class="footer-wrap">
       <span><strong>Grade 6 Mathematics · Unit 4: Relate Fractions, Decimals, &amp; Percents</strong> (Standards 6.RP.A.3.C · 6.AT.4)</span>
-      <span>100% Offline Interactive Practice Studio · Progress Auto-Saved in Browser</span>
+      <span>Interactive Practice Studio · Progress saves on this device</span>
     </div>
   </footer>
 
@@ -1104,6 +368,7 @@
           if (d && typeof d === 'object') {
             state.showEs = !!d.showEs;
             SOLVED_KEYS.forEach(k => { state[k] = (d[k] && typeof d[k] === 'object') ? { ...d[k] } : {}; });
+            state.play = (d.play && typeof d.play === 'object') ? d.play : {};
             state.quizChoice = (d.quizChoice && typeof d.quizChoice === 'object') ? { ...d.quizChoice } : {};
             state.quizFirst = (d.quizFirst && typeof d.quizFirst === 'object') ? { ...d.quizFirst } : {};
             IDX_KEYS.forEach(k => {
@@ -1153,7 +418,7 @@
         const last = !onNext && state[idxKey] === len - 1;
         const b = document.createElement('button');
         b.type = 'button';
-        b.className = 'btn btn-teal btn-sm next-btn';
+        b.className = 'btn btn-go btn-sm next-btn';
         if (!last) b.textContent = tab === 5 ? 'Next question →' : 'Next problem →';
         else b.textContent = tab < 5 ? `Continue to Section ${tab + 1} →` : 'See my results →';
         b.addEventListener('click', () => {
@@ -1200,6 +465,7 @@
         resetAllBtn.addEventListener('click', () => {
           if (!window.confirm('Reset all 46 practice problems and quiz scores to start fresh?')) return;
           SOLVED_KEYS.forEach(k => { state[k] = {}; });
+          U4Studio.reset();
           state.quizChoice = {};
           state.quizFirst = {};
           IDX_KEYS.forEach(k => { state[k] = 0; });
@@ -1251,19 +517,19 @@
         const firstTry = Object.keys(state.quizFirst).filter(k => state.quizFirst[k]).length;
         const dateStr = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
         sheet.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #17324D; padding-bottom:8px; margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--brand); padding-bottom:8px; margin-bottom:10px;">
             <div>
-              <strong style="font-size:1.1rem; color:#17324D;">Relate Fractions, Decimals, &amp; Percents — Progress Summary</strong>
-              <div style="font-size:0.82rem; color:#4A607A;">Grade 6 Math · Unit 4, Lesson 4-2 (Standards 6.RP.A.3.C · 6.AT.4) · Printed ${dateStr}</div>
+              <strong style="font-size:1.1rem; color:var(--brand);">Relate Fractions, Decimals, &amp; Percents — Progress Summary</strong>
+              <div style="font-size:0.82rem; color:var(--ink-muted);">Grade 6 Math · Unit 4, Lesson 4-2 (Standards 6.RP.A.3.C · 6.AT.4) · Printed ${dateStr}</div>
             </div>
-            <div style="font-size:1.1rem; font-weight:800; color:#0F766E;">Total: ${total} / 46 (${Math.round((total / 46) * 100)}%)</div>
+            <div style="font-size:1.1rem; font-weight:800; color:var(--brand);">Total: ${total} / 46 (${Math.round((total / 46) * 100)}%)</div>
           </div>
           <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:8px; font-size:0.82rem;">
-            <div style="border:1px solid #CBD5E1; border-radius:6px; padding:6px 8px;"><strong>1. Three Forms</strong><div>${c1} / 8 tasks</div></div>
-            <div style="border:1px solid #CBD5E1; border-radius:6px; padding:6px 8px;"><strong>2. Convert to %</strong><div>${c2} / 12 problems</div></div>
-            <div style="border:1px solid #CBD5E1; border-radius:6px; padding:6px 8px;"><strong>3. Equivalence Trios</strong><div>${c3} / 8 trios</div></div>
-            <div style="border:1px solid #CBD5E1; border-radius:6px; padding:6px 8px;"><strong>4. Word Problems</strong><div>${c4} / 8 solved</div></div>
-            <div style="border:1px solid #CBD5E1; border-radius:6px; padding:6px 8px;"><strong>5. Mastery Quiz</strong><div>${c5} / 10 (${firstTry}/10 1st try)</div></div>
+            <div style="border:1px solid var(--border); border-radius:6px; padding:6px 8px;"><strong>1. Three Forms</strong><div>${c1} / 8 tasks</div></div>
+            <div style="border:1px solid var(--border); border-radius:6px; padding:6px 8px;"><strong>2. Convert to %</strong><div>${c2} / 12 problems</div></div>
+            <div style="border:1px solid var(--border); border-radius:6px; padding:6px 8px;"><strong>3. Equivalence Trios</strong><div>${c3} / 8 trios</div></div>
+            <div style="border:1px solid var(--border); border-radius:6px; padding:6px 8px;"><strong>4. Word Problems</strong><div>${c4} / 8 solved</div></div>
+            <div style="border:1px solid var(--border); border-radius:6px; padding:6px 8px;"><strong>5. Mastery Quiz</strong><div>${c5} / 10 (${firstTry}/10 1st try)</div></div>
           </div>
         `;
       }
@@ -1292,6 +558,7 @@
 
         updatePrintSummary(c1, c2, c3, c4, c5, total);
         saveState();
+        U4Studio.sync();
       }
 
       function renderDots(containerId, items, activeIdx, solvedMap, onSelect) {
@@ -1328,7 +595,7 @@
             rect.setAttribute('width', '10');
             rect.setAttribute('height', '10');
             rect.setAttribute('fill', '#FFFFFF');
-            rect.setAttribute('stroke', '#E2E8F0');
+            rect.setAttribute('stroke', 'var(--border)');
             rect.setAttribute('stroke-width', '0.5');
             rect.dataset.gridIndex = String(r * 10 + c + 1);
             t1MiniGrid.appendChild(rect);
@@ -1369,7 +636,7 @@
         if (t1MiniGrid) {
           t1MiniGrid.querySelectorAll('rect').forEach((r) => {
             const idx = Number(r.dataset.gridIndex);
-            r.setAttribute('fill', idx <= p ? '#1FA6A2' : '#FFFFFF');
+            r.setAttribute('fill', idx <= p ? 'var(--pct)' : '#FFFFFF');
           });
         }
       }
@@ -1404,8 +671,8 @@
           correct: 1,
           hint: 'Divide 1 by 2 or scale &frac12; to a denominator of 100 (50/100).',
           hintEs: 'Divide 1 entre 2 o escala &frac12; a denominador 100 (50/100).',
-          explain: '✓ Correct! &frac12; = 50/100 = 0.50 = 50%.',
-          explainEs: '✓ ¡Correcto! &frac12; = 50/100 = 0.50 = 50%.'
+          explain: 'Correct! &frac12; = 50/100 = 0.50 = 50%.',
+          explainEs: '¡Correcto! &frac12; = 50/100 = 0.50 = 50%.'
         },
         {
           id: 't1_2',
@@ -1420,8 +687,8 @@
           ansB: '25',
           hint: 'Think of 1 quarter of a dollar: 25 cents out of 100.',
           hintEs: 'Piensa en 25 centavos de un dólar: 25 de 100.',
-          explain: '✓ Perfect! &frac14; = 25/100 = 0.25 = 25%.',
-          explainEs: '✓ ¡Perfecto! &frac14; = 25/100 = 0.25 = 25%.'
+          explain: 'Perfect! &frac14; = 25/100 = 0.25 = 25%.',
+          explainEs: '¡Perfecto! &frac14; = 25/100 = 0.25 = 25%.'
         },
         {
           id: 't1_3',
@@ -1434,8 +701,8 @@
           suffix: '%',
           hint: '&frac14; is 25%, so 3 &times; 25% = ?',
           hintEs: '&frac14; es 25%, así que 3 &times; 25% = ?',
-          explain: '✓ Correct! &frac34; = 75/100 = 0.75 = 75%.',
-          explainEs: '✓ ¡Correcto! &frac34; = 75/100 = 0.75 = 75%.'
+          explain: 'Correct! &frac34; = 75/100 = 0.75 = 75%.',
+          explainEs: '¡Correcto! &frac34; = 75/100 = 0.75 = 75%.'
         },
         {
           id: 't1_4',
@@ -1459,8 +726,8 @@
           correct: 1,
           hint: 'Scale &frac15; by multiplying top and bottom by 20: 1 &times; 20 / 5 &times; 20 = 20/100.',
           hintEs: 'Multiplica numerador y denominador por 20: 20/100 = 0.20 = 20%.',
-          explain: '✓ Great! &frac15; = 20/100 = 0.20 = 20%.',
-          explainEs: '✓ ¡Bien hecho! &frac15; = 20/100 = 0.20 = 20%.'
+          explain: 'Great! &frac15; = 20/100 = 0.20 = 20%.',
+          explainEs: '¡Bien hecho! &frac15; = 20/100 = 0.20 = 20%.'
         },
         {
           id: 't1_5',
@@ -1472,8 +739,8 @@
           ans: '0.6',
           hint: '&frac35; = 3 &times; 0.20 = 0.60 (or 0.6).',
           hintEs: '&frac35; = 3 &times; 0.20 = 0.60 (o 0.6).',
-          explain: '✓ Exactly! &frac35; = 60/100 = 0.60 = 0.6.',
-          explainEs: '✓ ¡Exacto! &frac35; = 60/100 = 0.60 = 0.6.'
+          explain: 'Exactly! &frac35; = 60/100 = 0.60 = 0.6.',
+          explainEs: '¡Exacto! &frac35; = 60/100 = 0.60 = 0.6.'
         },
         {
           id: 't1_6',
@@ -1488,8 +755,8 @@
           ansB: '10',
           hint: '1 tenth = 0.1 = 10 hundredths = 10%.',
           hintEs: '1 décimo = 0.1 = 10 centésimos = 10%.',
-          explain: '✓ Correct! 1/10 = 0.1 = 10%.',
-          explainEs: '✓ ¡Correcto! 1/10 = 0.1 = 10%.'
+          explain: 'Correct! 1/10 = 0.1 = 10%.',
+          explainEs: '¡Correcto! 1/10 = 0.1 = 10%.'
         },
         {
           id: 't1_7',
@@ -1502,8 +769,8 @@
           suffix: '%',
           hint: '7/10 &times; 10/10 = 70/100.',
           hintEs: '7/10 &times; 10/10 = 70/100.',
-          explain: '✓ Great job! 7/10 = 70/100 = 70%.',
-          explainEs: '✓ ¡Buen trabajo! 7/10 = 70/100 = 70%.'
+          explain: 'Great job! 7/10 = 70/100 = 70%.',
+          explainEs: '¡Buen trabajo! 7/10 = 70/100 = 70%.'
         },
         {
           id: 't1_8',
@@ -1516,8 +783,8 @@
           suffix: '%',
           hint: '1 whole = 100 hundredths out of 100.',
           hintEs: '1 entero = 100 centésimos de 100.',
-          explain: '✓ Complete! 1 whole = 100/100 = 1.00 = 100%.',
-          explainEs: '✓ ¡Completado! 1 entero = 100/100 = 1.00 = 100%.'
+          explain: 'Complete! 1 whole = 100/100 = 1.00 = 100%.',
+          explainEs: '¡Completado! 1 entero = 100/100 = 1.00 = 100%.'
         }
       ];
 
@@ -1538,7 +805,6 @@
             <div class="choice-stack">
               ${task.choices.map((c, i) => `
                 <button type="button" class="choice-btn ${isDone && i === task.correct ? 'correct' : ''}" data-t1-mc="${i}">
-                  <span style="font-weight: 700; width: 24px;">${['A', 'B', 'C', 'D'][i]}.</span>
                   <span>${c}</span>
                 </button>
               `).join('')}
@@ -1546,9 +812,9 @@
           `;
         } else if (task.type === 'single') {
           bodyHtml = `
-            <div style="display: flex; align-items: center; gap: 10px; margin: 18px 0;">
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 18px 0;">
               <input type="text" id="t1-inp-single" class="num-input ${isDone ? 'ok' : ''}" style="width: 100px;" value="${isDone ? task.ans : ''}" placeholder="?">
-              <strong style="color: var(--navy); font-size: 1.1rem;">${task.suffix || ''}</strong>
+              <strong style="color: var(--brand); font-size: 1.1rem;">${task.suffix || ''}</strong>
               <button type="button" class="btn btn-primary" id="t1-check-btn">Check Answer</button>
               <button type="button" class="btn" id="t1-hint-btn">💡 Hint</button>
             </div>
@@ -1557,11 +823,11 @@
           bodyHtml = `
             <div style="display: flex; gap: 16px; margin: 18px 0; flex-wrap: wrap;">
               <div>
-                <label for="t1-inp-a" style="display: block; font-weight: 700; color: var(--navy); font-size: 0.85rem; margin-bottom: 4px;">${task.labelA}</label>
+                <label for="t1-inp-a" style="display: block; font-weight: 700; color: var(--brand); font-size: 0.85rem; margin-bottom: 4px;">${task.labelA}</label>
                 <input type="text" id="t1-inp-a" class="num-input ${isDone ? 'ok' : ''}" style="width: 100px;" value="${isDone ? task.ansA : ''}" placeholder="?">
               </div>
               <div>
-                <label for="t1-inp-b" style="display: block; font-weight: 700; color: var(--navy); font-size: 0.85rem; margin-bottom: 4px;">${task.labelB}</label>
+                <label for="t1-inp-b" style="display: block; font-weight: 700; color: var(--brand); font-size: 0.85rem; margin-bottom: 4px;">${task.labelB}</label>
                 <input type="text" id="t1-inp-b" class="num-input ${isDone ? 'ok' : ''}" style="width: 100px;" value="${isDone ? task.ansB : ''}" placeholder="?">
               </div>
             </div>
@@ -1576,10 +842,10 @@
 
         card.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
-            <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal); letter-spacing: 0.04em;">${task.title}</span>
+            <span style="font-size: 0.84rem; font-weight: 800; color: var(--brand); letter-spacing: 0.04em;">${task.title}</span>
             <button type="button" class="speak-btn" data-speak="${task.stem}" data-speak-es="${task.stemEs}">🔊 Read</button>
           </div>
-          <p style="font-size: 1.15rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${task.stem}</p>
+          <p style="font-size: 1.15rem; font-weight: 700; color: var(--brand); margin: 0 0 6px 0;">${task.stem}</p>
           <p class="es-text">${task.stemEs}</p>
           ${bodyHtml}
           <div id="t1-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">${isDone ? doneMsg : ''}</div>
@@ -1597,7 +863,7 @@
               if (idx === task.correct) {
                 btn.classList.add('correct');
                 fb.className = 'feedback-box show ok';
-                fb.textContent = state.showEs && task.explainEs ? `${task.explain} (${task.explainEs})` : task.explain;
+                fb.innerHTML = state.showEs && task.explainEs ? `${task.explain} (${task.explainEs})` : task.explain;
                 markSolved(state.solved1, task.id);
                 renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (ni) => { state.idx1 = ni; renderT1Task(); });
                 updateProgressHeader();
@@ -1606,7 +872,7 @@
                 btn.classList.add('wrong');
                 fb.className = 'feedback-box show err';
                 const hintTxt = state.showEs && task.hintEs ? `${task.hint} (${task.hintEs})` : task.hint;
-                fb.textContent = `Not quite. Hint: ${hintTxt}`;
+                fb.innerHTML = `Not quite. Hint: ${hintTxt}`;
               }
             });
           });
@@ -1627,14 +893,14 @@
               inp.classList.toggle('err', !ok);
               if (ok) {
                 fb.className = 'feedback-box show ok';
-                fb.textContent = explainTxt;
+                fb.innerHTML = explainTxt;
                 markSolved(state.solved1, task.id);
                 renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (ni) => { state.idx1 = ni; renderT1Task(); });
                 updateProgressHeader();
                 appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
               } else {
                 fb.className = 'feedback-box show err';
-                fb.textContent = `Check your number. Hint: ${hintTxt}`;
+                fb.innerHTML = `Check your number. Hint: ${hintTxt}`;
               }
             } else if (task.type === 'dual') {
               const inpA = document.getElementById('t1-inp-a');
@@ -1647,14 +913,14 @@
               inpB.classList.toggle('err', !okB);
               if (okA && okB) {
                 fb.className = 'feedback-box show ok';
-                fb.textContent = explainTxt;
+                fb.innerHTML = explainTxt;
                 markSolved(state.solved1, task.id);
                 renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (ni) => { state.idx1 = ni; renderT1Task(); });
                 updateProgressHeader();
                 appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
               } else {
                 fb.className = 'feedback-box show err';
-                fb.textContent = `Check both values. Hint: ${hintTxt}`;
+                fb.innerHTML = `Check both values. Hint: ${hintTxt}`;
               }
             }
           }
@@ -1663,7 +929,7 @@
           if (hintBtn) hintBtn.addEventListener('click', () => {
             fb.className = 'feedback-box show warn';
             const hintTxt = state.showEs && task.hintEs ? `${task.hint} (${task.hintEs})` : task.hint;
-            fb.textContent = `💡 Hint: ${hintTxt}`;
+            fb.innerHTML = `💡 Hint: ${hintTxt}`;
           });
         }
       }
@@ -1713,10 +979,10 @@
         const stage = document.getElementById('t2-stage-card');
         stage.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
-            <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal); letter-spacing: 0.04em;">${p.title}</span>
+            <span style="font-size: 0.84rem; font-weight: 800; color: var(--brand); letter-spacing: 0.04em;">${p.title}</span>
             <button type="button" class="speak-btn" data-speak="${p.stem}" data-speak-es="${p.stemEs}">🔊 Read</button>
           </div>
-          <p style="font-size: 1.15rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${p.stem}</p>
+          <p style="font-size: 1.15rem; font-weight: 700; color: var(--brand); margin: 0 0 6px 0;">${p.stem}</p>
           <p class="es-text">${p.stemEs}</p>
 
           <div class="trio-container">
@@ -1725,18 +991,18 @@
               <span class="trio-val">${p.num}/${p.den}</span>
             </div>
             <span class="trio-arrow">&rarr;</span>
-            <div class="trio-pill" style="border-color: var(--teal);">
+            <div class="trio-pill" style="border-color: var(--brand);">
               <span class="trio-label">Fraction out of 100</span>
-              <span class="trio-val" id="t2-live-f100" style="color: var(--teal);">${isDone ? targetPct + '/100' : '?/100'}</span>
+              <span class="trio-val" id="t2-live-f100" style="color: var(--brand);">${isDone ? targetPct + '/100' : '?/100'}</span>
             </div>
             <span class="trio-arrow">&rarr;</span>
-            <div class="trio-pill" style="border-color: var(--amber);">
+            <div class="trio-pill" style="border-color: var(--warn);">
               <span class="trio-label">Decimal</span>
-              <span class="trio-val" id="t2-live-dec" style="color: var(--amber);">${isDone ? decVal : '0.__'}</span>
+              <span class="trio-val" id="t2-live-dec" style="color: var(--warn);">${isDone ? decVal : '0.__'}</span>
             </div>
             <span class="trio-arrow">&rarr;</span>
-            <div class="trio-pill" style="background: var(--navy); border-color: var(--navy);">
-              <span class="trio-label" style="color: #CBD5E1;">Percent</span>
+            <div class="trio-pill" style="background: var(--brand); border-color: var(--brand);">
+              <span class="trio-label" style="color: var(--border);">Percent</span>
               <span class="trio-val" id="t2-live-pct" style="color: #FFFFFF;">${isDone ? targetPct + '%' : '?%'}</span>
             </div>
           </div>
@@ -1756,7 +1022,7 @@
 
             <div class="step-box step-2">
               <div>
-                <div class="step-box-label" style="color: var(--teal);">Step 2 · Scale the Numerator</div>
+                <div class="step-box-label" style="color: var(--brand);">Step 2 · Scale the Numerator</div>
                 <p class="step-box-desc">Multiply numerator <strong>${p.num}</strong> by that scale factor:</p>
               </div>
               <div class="step-box-eq">
@@ -1767,7 +1033,7 @@
 
             <div class="step-box step-3">
               <div>
-                <div class="step-box-label" style="color: var(--amber);">Step 3 · Write Decimal &amp; Percent</div>
+                <div class="step-box-label" style="color: var(--warn);">Step 3 · Write Decimal &amp; Percent</div>
                 <p class="step-box-desc">Write the decimal and the percent:</p>
               </div>
               <div class="step-box-eq" style="flex-direction: column; align-items: flex-start; gap: 6px;">
@@ -1790,7 +1056,7 @@
           </div>
 
           <div id="t2-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">
-            ${isDone ? `✓ Great work! ${p.num}/${p.den} &times; ${factor}/${factor} = ${targetPct}/100 = ${decVal} = ${targetPct}%.` : ''}
+            ${isDone ? `Great work! ${p.num}/${p.den} &times; ${factor}/${factor} = ${targetPct}/100 = ${decVal} = ${targetPct}%.` : ''}
           </div>
         `;
 
@@ -1822,7 +1088,7 @@
 
           if (okF && okN && okD && okP) {
             fb.className = 'feedback-box show ok';
-            fb.textContent = `✓ Correct! ${p.num}/${p.den} scaled by ${factor} is ${targetPct}/100 = ${decVal} = ${targetPct}%.`;
+            fb.innerHTML = `Correct! ${p.num}/${p.den} scaled by ${factor} is ${targetPct}/100 = ${decVal} = ${targetPct}%.`;
             markSolved(state.solved2, p.id);
             renderDots('t2-dots', T2_PROBLEMS, state.idx2, state.solved2, (ni) => { state.idx2 = ni; currentT2 = T2_PROBLEMS[ni]; renderT2Problem(); });
             updateProgressHeader();
@@ -1830,14 +1096,14 @@
           } else {
             const m = bumpMiss(p.id);
             fb.className = 'feedback-box show err';
-            fb.textContent = m < 2 ? 'One or more boxes are incorrect. Re-check your scale factor and multiplication.' : `Hint: 100 &divide; ${p.den} = ${factor}. Multiply ${p.num} &times; ${factor} = ${targetPct}.`;
+            fb.innerHTML = m < 2 ? 'One or more boxes are incorrect. Re-check your scale factor and multiplication.' : `Hint: 100 &divide; ${p.den} = ${factor}. Multiply ${p.num} &times; ${factor} = ${targetPct}.`;
           }
         }
 
         document.getElementById('t2-check-btn').addEventListener('click', checkT2);
         document.getElementById('t2-hint-btn').addEventListener('click', () => {
           fb.className = 'feedback-box show warn';
-          fb.textContent = `💡 Hint: 100 &divide; ${p.den} = ${factor}. Multiply ${p.num} &times; ${factor} = ${targetPct}.`;
+          fb.innerHTML = `💡 Hint: 100 &divide; ${p.den} = ${factor}. Multiply ${p.num} &times; ${factor} = ${targetPct}.`;
         });
       }
 
@@ -1895,16 +1161,16 @@
         const stage = document.getElementById('t3-stage-card');
         stage.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
-            <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal); letter-spacing: 0.04em;">Trio Problem #${p.id.replace('t3_', '')}</span>
+            <span style="font-size: 0.84rem; font-weight: 800; color: var(--brand); letter-spacing: 0.04em;">Trio Problem #${p.id.replace('t3_', '')}</span>
             <button type="button" class="speak-btn" data-speak="${p.stem}" data-speak-es="${p.stemEs}">🔊 Read</button>
           </div>
-          <p style="font-size: 1.15rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${p.stem}</p>
+          <p style="font-size: 1.15rem; font-weight: 700; color: var(--brand); margin: 0 0 6px 0;">${p.stem}</p>
           <p class="es-text">${p.stemEs}</p>
 
           <div class="trio-container">
             <div class="trio-pill">
               <span class="trio-label">Given Value</span>
-              <span class="trio-val" style="color: var(--teal);">${p.givenVal}</span>
+              <span class="trio-val" style="color: var(--brand);">${p.givenVal}</span>
             </div>
             <span class="trio-arrow">&harr;</span>
             <div class="trio-pill">
@@ -1936,7 +1202,7 @@
           </div>
 
           <div id="t3-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">
-            ${isDone ? '✓ All three forms are equivalent!' : ''}
+            ${isDone ? 'All three forms are equivalent!' : ''}
           </div>
         `;
 
@@ -1967,14 +1233,14 @@
           const fb = document.getElementById('t3-fb');
           if (okF && okD && okP) {
             fb.className = 'feedback-box show ok';
-            fb.textContent = `✓ Perfect! Simplified fraction is ${targetNum}/${targetDen}, decimal is ${targetDec}, and percent is ${targetPct}%.`;
+            fb.innerHTML = `Perfect! Simplified fraction is ${targetNum}/${targetDen}, decimal is ${targetDec}, and percent is ${targetPct}%.`;
             markSolved(state.solved3, p.id);
             renderDots('t3-dots', T3_PROBLEMS, state.idx3, state.solved3, (ni) => { state.idx3 = ni; currentT3 = T3_PROBLEMS[ni]; renderT3Problem(); });
             updateProgressHeader();
             appendNext(document.getElementById('t3-fb'), 3, T3_PROBLEMS.length, renderT3Problem);
           } else {
             fb.className = 'feedback-box show err';
-            fb.textContent = 'Check the red boxes. Make sure your fraction is simplified to lowest terms.';
+            fb.innerHTML = 'Check the red boxes. Make sure your fraction is simplified to lowest terms.';
           }
         }
 
@@ -1982,7 +1248,7 @@
         document.getElementById('t3-hint-btn').addEventListener('click', () => {
           const fb = document.getElementById('t3-fb');
           fb.className = 'feedback-box show warn';
-          fb.textContent = '💡 Hint: To find the decimal from a fraction, divide numerator &divide; denominator. To find percent, multiply decimal &times; 100.';
+          fb.innerHTML = '💡 Hint: To find the decimal from a fraction, divide numerator &divide; denominator. To find percent, multiply decimal &times; 100.';
         });
       }
 
@@ -2043,7 +1309,7 @@
           ],
           correct: 1,
           hint: '75/100 simplifies by dividing top and bottom by 25: 75 &divide; 25 = 3, 100 &divide; 25 = 4.',
-          explain: '✓ Correct! 75 out of 100 is 3/4 = 0.75 = 75%.'
+          explain: 'Correct! 75 out of 100 is 3/4 = 0.75 = 75%.'
         },
         {
           id: 't4_2',
@@ -2065,7 +1331,7 @@
           ],
           correct: 0,
           hint: 'Convert 2/5 to a decimal: 2 &divide; 5 = 0.40 = 40%. Compare 0.65 (65%) to 0.40 (40%).',
-          explain: '✓ Correct! Tiger sleeps 65% of the day, which is greater than Chimpanzee at 40%.'
+          explain: 'Correct! Tiger sleeps 65% of the day, which is greater than Chimpanzee at 40%.'
         },
         {
           id: 't4_3',
@@ -2087,7 +1353,7 @@
           ],
           correct: 1,
           hint: '8 hundredths is 0.08, not 0.8. 0.8 would be 8 tenths (80%).',
-          explain: '✓ Correct! 8/100 is 8% = 0.08.'
+          explain: 'Correct! 8/100 is 8% = 0.08.'
         },
         {
           id: 't4_4',
@@ -2109,7 +1375,7 @@
           ],
           correct: 2,
           hint: '0.06 has a 6 in the hundredths place. 6 hundredths is 6%, whereas 0.60 is 60%.',
-          explain: '✓ Spot on! 0.06 &times; 100 = 6%. 60% would be 0.60.'
+          explain: 'Spot on! 0.06 &times; 100 = 6%. 60% would be 0.60.'
         },
         {
           id: 't4_5',
@@ -2131,7 +1397,7 @@
           ],
           correct: 0,
           hint: 'A fraction is only directly the percent when the denominator is 100. 20 &times; 5 = 100, so 9 &times; 5 = 45%.',
-          explain: '✓ Exactly! 9/20 = (9 &times; 5)/(20 &times; 5) = 45/100 = 45%.'
+          explain: 'Exactly! 9/20 = (9 &times; 5)/(20 &times; 5) = 45/100 = 45%.'
         },
         {
           id: 't4_6',
@@ -2153,7 +1419,7 @@
           ],
           correct: 0,
           hint: 'Player A: 7/10 = 70/100 = 70%. Player B: 17/25 &times; 4/4 = 68/100 = 68%. 70% > 68%.',
-          explain: '✓ Excellent! 7/10 = 70% and 17/25 = 68%, so Player A was higher.'
+          explain: 'Excellent! 7/10 = 70% and 17/25 = 68%, so Player A was higher.'
         },
         {
           id: 't4_7',
@@ -2175,7 +1441,7 @@
           ],
           correct: 1,
           hint: 'Convert all to percents: 0.4 = 40%, 35% = 35%, 1/2 = 50%. 35% < 40% < 50%.',
-          explain: '✓ Correct! 35% (0.35) < 0.4 (40%) < 1/2 (50%).'
+          explain: 'Correct! 35% (0.35) < 0.4 (40%) < 1/2 (50%).'
         },
         {
           id: 't4_8',
@@ -2197,7 +1463,7 @@
           ],
           correct: 0,
           hint: '30% = 30/100. Divide top and bottom by 10 to simplify: 30 &divide; 10 = 3, 100 &divide; 10 = 10.',
-          explain: '✓ Correct! 30% = 30/100 = 3/10.'
+          explain: 'Correct! 30% = 30/100 = 3/10.'
         }
       ];
 
@@ -2213,16 +1479,15 @@
         const stage = document.getElementById('t4-stage-card');
         stage.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
-            <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal); letter-spacing: 0.04em;">${p.title}</span>
+            <span style="font-size: 0.84rem; font-weight: 800; color: var(--brand); letter-spacing: 0.04em;">${p.title}</span>
             <button type="button" class="speak-btn" data-speak="${p.stem}" data-speak-es="${p.stemEs}">🔊 Read</button>
           </div>
-          <p style="font-size: 1.15rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${p.stem}</p>
+          <p style="font-size: 1.15rem; font-weight: 700; color: var(--brand); margin: 0 0 6px 0;">${p.stem}</p>
           <p class="es-text">${p.stemEs}</p>
 
           <div class="choice-stack">
             ${p.choices.map((c, i) => `
               <button type="button" class="choice-btn ${isDone && i === p.correct ? 'correct' : ''}" data-t4-mc="${i}">
-                <span style="font-weight: 700; width: 24px;">${['A', 'B', 'C', 'D'][i]}.</span>
                 <span>${c}</span>
               </button>
             `).join('')}
@@ -2244,7 +1509,7 @@
             if (idx === p.correct) {
               btn.classList.add('correct');
               fb.className = 'feedback-box show ok';
-              fb.textContent = p.explain;
+              fb.innerHTML = p.explain;
               markSolved(state.solved4, p.id);
               renderDots('t4-dots', T4_PROBLEMS, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4Problem(); });
               updateProgressHeader();
@@ -2252,7 +1517,7 @@
             } else {
               btn.classList.add('wrong');
               fb.className = 'feedback-box show err';
-              fb.textContent = `Not quite. Hint: ${p.hint}`;
+              fb.innerHTML = `Not quite. Hint: ${p.hint}`;
             }
           });
         });
@@ -2371,10 +1636,10 @@
         const stage = document.getElementById('t5-stage-card');
         stage.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
-            <span style="font-size: 0.84rem; font-weight: 800; text-transform: uppercase; color: var(--teal); letter-spacing: 0.04em;">Question ${state.idx5 + 1} of 10</span>
+            <span style="font-size: 0.84rem; font-weight: 800; color: var(--brand); letter-spacing: 0.04em;">Question ${state.idx5 + 1} of 10</span>
             <button type="button" class="speak-btn" data-speak="${q.q}" data-speak-es="${q.qEs}">🔊 Read</button>
           </div>
-          <p style="font-size: 1.15rem; font-weight: 700; color: var(--navy); margin: 0 0 6px 0;">${q.q}</p>
+          <p style="font-size: 1.15rem; font-weight: 700; color: var(--brand); margin: 0 0 6px 0;">${q.q}</p>
           <p class="es-text">${q.qEs}</p>
 
           <div class="choice-stack">
@@ -2386,7 +1651,6 @@
               }
               return `
                 <button type="button" class="choice-btn ${cls}" data-t5-mc="${i}">
-                  <span style="font-weight: 700; width: 24px;">${['A', 'B', 'C', 'D'][i]}.</span>
                   <span>${c}</span>
                 </button>
               `;
@@ -2394,7 +1658,7 @@
           </div>
 
           <div id="t5-fb" class="feedback-box ${isSolved ? 'show ok' : ''}" role="status">
-            ${isSolved ? `✓ ${q.explain}` : ''}
+            ${isSolved ? `${q.explain}` : ''}
           </div>
         `;
 
@@ -2414,7 +1678,7 @@
             if (idx === q.correct) {
               btn.classList.add('correct');
               fb.className = 'feedback-box show ok';
-              fb.textContent = `✓ Correct! ${q.explain}`;
+              fb.innerHTML = `Correct! ${q.explain}`;
               state.solved5[q.id] = true;
               renderDots('t5-dots', T5_QUESTIONS, state.idx5, state.solved5, (ni) => { state.idx5 = ni; renderT5Question(); });
               updateProgressHeader();
@@ -2422,7 +1686,7 @@
             } else {
               btn.classList.add('wrong');
               fb.className = 'feedback-box show err';
-              fb.textContent = `Not quite. Hint: Review how to scale to a denominator of 100 or convert to decimal.`;
+              fb.innerHTML = `Not quite. Hint: Review how to scale to a denominator of 100 or convert to decimal.`;
             }
             saveState();
           });
@@ -2437,18 +1701,123 @@
         state.idx5 = (state.idx5 + 1) % T5_QUESTIONS.length;
         renderT5Question();
       });
-      document.getElementById('t5-reset-btn').addEventListener('click', () => {
-        if (!window.confirm('Reset quiz answers?')) return;
+      function resetQuiz() {
         state.solved5 = {};
         state.quizChoice = {};
         state.quizFirst = {};
         state.idx5 = 0;
+        document.getElementById('t5-results').hidden = true;
         renderT5Question();
         updateProgressHeader();
+      }
+
+      /* Results appear once every question has been answered at least once. */
+      function renderResults(scroll) {
+        const box = document.getElementById('t5-results');
+        const unanswered = T5_QUESTIONS.findIndex((q) => !(q.id in state.quizFirst));
+        if (unanswered !== -1) {
+          box.hidden = true;
+          if (scroll) {
+            state.idx5 = unanswered;
+            renderT5Question();
+          }
+          return;
+        }
+        const total = T5_QUESTIONS.length;
+        const firstTry = T5_QUESTIONS.filter((q) => state.quizFirst[q.id]).length;
+        let verdict = 'Keep practicing: work back through the sections, then retake the quiz.';
+        if (firstTry >= total - 1) verdict = 'Mastery! You are ready to move on.';
+        else if (firstTry >= total - 3) verdict = 'Almost there. Review the sections, then try again.';
+        box.innerHTML = `
+          <h3>Your results: ${firstTry} of ${total} right on the first try</h3>
+          <p>${verdict}</p>
+          <button type="button" class="btn btn-sm" id="t5-retake-btn">Retake the quiz</button>
+        `;
+        box.hidden = false;
+        document.getElementById('t5-retake-btn').addEventListener('click', resetQuiz);
+        if (scroll) box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      document.getElementById('t5-reset-btn').addEventListener('click', () => {
+        if (!window.confirm('Reset quiz answers?')) return;
+        resetQuiz();
       });
 
       // Initialization
       loadState();
+      U4Studio.init({
+        state,
+        save: saveState,
+        totals: {"1": 8, "2": 12, "3": 8, "4": 8, "5": 10},
+        need: {"1": 8, "2": 12, "3": 8, "4": 8, "5": 8},
+        goToTab: (n) => selectTab(n, false),
+        glyphs: ["½", "0.5", "50%", "¼", "0.25", "25%", "¾", "0.75", "75%"],
+        bonus: {
+          "gen": "fdp",
+          "title": "Bonus Round: Match the Trios",
+          "titleEs": "Ronda extra: une los tríos",
+          "help": "Each trio shows one amount as a fraction, a decimal, and a percent. Tap three tiles that belong together.",
+          "helpEs": "Cada trío muestra una cantidad como fracción, decimal y porcentaje. Toca tres fichas que van juntas.",
+          "rounds": [
+            [
+              {
+                "n": 1,
+                "d": 2
+              },
+              {
+                "n": 3,
+                "d": 4
+              },
+              {
+                "n": 1,
+                "d": 5
+              }
+            ],
+            [
+              {
+                "n": 2,
+                "d": 5
+              },
+              {
+                "n": 7,
+                "d": 10
+              },
+              {
+                "n": 1,
+                "d": 4
+              }
+            ],
+            [
+              {
+                "n": 3,
+                "d": 5
+              },
+              {
+                "n": 9,
+                "d": 20
+              },
+              {
+                "n": 3,
+                "d": 8
+              }
+            ],
+            [
+              {
+                "n": 1,
+                "d": 8
+              },
+              {
+                "n": 17,
+                "d": 20
+              },
+              {
+                "n": 18,
+                "d": 25
+              }
+            ]
+          ]
+        },
+      });
       initMiniGrid();
       setT1Value(state.sliderVal || 50);
       renderT1Task();

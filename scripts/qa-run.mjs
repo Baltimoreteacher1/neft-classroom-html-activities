@@ -212,6 +212,23 @@ const COVERAGE = [
     ["validate:access-lab", "test", "validate:js-syntax", "check"],
   ],
 
+  // UNIT 4 PRACTICE STUDIO — ten hand-authored pages share one stylesheet and
+  // one engagement layer (stars, trail, Bonus Round). The test re-derives every
+  // Bonus Round trio from its own text and holds each page to the shared layer
+  // (init called, sync inside updateProgressHeader, no retired token, no call to
+  // an undefined quiz-results function).
+  [
+    /^(assets\/u4-studio[^/]*\.(js|css)|math\/unit-4\/[^/]*practice-studio[^/]*\/index\.html|tools\/unit4-studio\.test\.mjs)$/,
+    [
+      "test",
+      "validate:save-resume",
+      "validate:js-syntax",
+      "validate:css-integrity",
+      "typecheck",
+      "check",
+    ],
+  ],
+
   // PRODUCT DECISIONS — the registry of choices a human made that a gate now
   // enforces, and the provenance test that keeps an agent's own default out of
   // it. Editing either is editing what the gates are ALLOWED to insist on.

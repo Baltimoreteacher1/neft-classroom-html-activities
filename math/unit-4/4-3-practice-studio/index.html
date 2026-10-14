@@ -5,254 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Estimate Percent of a Number · Interactive Practice Studio (Grade 6)</title>
   <meta name="description" content="Clean, student-friendly Grade 6 interactive practice estimating percents of numbers using benchmark percents (10%, 1%, 5%, 25%, 50%) and compatible numbers.">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2317324D'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia,serif' font-weight='bold' font-size='26' fill='%23F7F4EC'%3E%E2%89%88%3C/text%3E%3C/svg%3E">
-  <style>
-    /* ==========================================================================
-       CLEAN DESIGN SYSTEM (GRADE 6 · REVEAL MATH UNIT 4 · LESSON 4-3)
-       ========================================================================== */
-    :root {
-      --bg-paper: #F7F4EC;
-      --bg-well: #EFECE3;
-      --surface: #FFFFFF;
-      --surface-soft: #FAF8F3;
-      --surface-teal: #F0FAF9;
-
-      --navy: #17324D;
-      --navy-dark: #0F2337;
-      --navy-tint: #E8F0F7;
-      --navy-line: #C4D5E5;
-
-      --teal: #0F766E;
-      --teal-bright: #1FA6A2;
-      --teal-tint: #E3F6F5;
-      --teal-line: #94DFDC;
-
-      --amber: #B45309;
-      --amber-bright: #D97706;
-      --amber-tint: #FEF3C7;
-      --amber-line: #FCD34D;
-
-      --green: #047857;
-      --green-tint: #ECFDF5;
-      --green-line: #A7F3D0;
-
-      --red: #B91C1C;
-      --red-tint: #FEF2F2;
-      --red-line: #FECACA;
-
-      --ink: #1E293B;
-      --ink-muted: #475569;
-      --ink-light: #64748B;
-
-      --border: #D8D3C6;
-      --border-strong: #B8B1A0;
-
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      --font-display: Georgia, 'Iowan Old Style', serif;
-      --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
-
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
-      --radius-pill: 999px;
-
-      --shadow-card: 0 2px 8px rgba(23, 50, 77, 0.06), 0 1px 2px rgba(23, 50, 77, 0.04);
-      --shadow-pop: 0 10px 24px rgba(23, 50, 77, 0.12);
-    }
-
-    *, *::before, *::after { box-sizing: border-box; }
-    html { font-size: 16px; }
-    body {
-      margin: 0; background-color: var(--bg-paper); color: var(--ink);
-      font-family: var(--font-sans); line-height: 1.55; min-height: 100vh;
-      display: flex; flex-direction: column; font-variant-numeric: tabular-nums;
-    }
-
-    .sr-only {
-      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
-    }
-    :focus-visible { outline: 3px solid var(--amber-bright); outline-offset: 2px; }
-
-    .es-text { display: none; color: var(--teal); font-style: italic; font-size: 0.94rem; margin-top: 4px; }
-    body.show-es .es-text { display: block; }
-
-    .app-header {
-      background: var(--navy); color: #FFFFFF; padding: 12px 24px;
-      border-bottom: 3px solid var(--teal-bright);
-    }
-    .header-wrap {
-      max-width: 1080px; margin: 0 auto; display: flex; flex-wrap: wrap;
-      align-items: center; justify-content: space-between; gap: 14px;
-    }
-    .brand { display: flex; align-items: center; gap: 12px; }
-    .brand-icon {
-      width: 40px; height: 40px; border-radius: 10px; background: var(--teal-bright);
-      color: var(--navy-dark); font-family: var(--font-display); font-size: 1.4rem;
-      font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    .brand-title { margin: 0; font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; }
-    .brand-sub { font-size: 0.8rem; color: #CBD5E1; margin-top: 1px; }
-
-    .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .score-pill {
-      background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.25);
-      border-radius: var(--radius-pill); padding: 5px 14px; font-size: 0.86rem; font-weight: 700;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .top-btn {
-      background: rgba(255, 255, 255, 0.14); color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.28);
-      border-radius: var(--radius-sm); padding: 6px 12px; font-size: 0.84rem; font-weight: 600;
-      cursor: pointer; font-family: inherit;
-    }
-    .top-btn:hover { background: rgba(255, 255, 255, 0.24); }
-    .top-btn[aria-pressed="true"] { background: var(--teal-bright); color: var(--navy-dark); border-color: #FFFFFF; font-weight: 700; }
-
-    .tab-bar {
-      background: var(--surface); border-bottom: 1px solid var(--border);
-      position: sticky; top: 0; z-index: 80; box-shadow: 0 2px 4px rgba(23, 50, 77, 0.04);
-    }
-    .tab-list {
-      max-width: 1080px; margin: 0 auto; padding: 0 16px; display: grid;
-      grid-template-columns: repeat(5, 1fr); gap: 4px;
-    }
-    .tab-btn {
-      appearance: none; background: transparent; border: none; border-bottom: 4px solid transparent;
-      padding: 12px 10px 10px; cursor: pointer; font-family: inherit; display: flex;
-      align-items: center; gap: 9px; color: var(--ink-muted); text-align: left;
-      transition: background 0.15s ease, color 0.15s ease;
-    }
-    .tab-btn:hover { background: var(--surface-soft); color: var(--navy); }
-    .tab-btn[aria-selected="true"] {
-      color: var(--navy); border-bottom-color: var(--teal);
-      background: var(--surface-teal); font-weight: 700;
-    }
-    .tab-badge {
-      width: 26px; height: 26px; border-radius: 50%; background: var(--bg-well);
-      color: var(--navy); font-size: 0.82rem; font-weight: 800; display: inline-flex;
-      align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    .tab-btn[aria-selected="true"] .tab-badge { background: var(--navy); color: #FFFFFF; }
-    .tab-btn.tab-complete .tab-badge { background: var(--green); color: #FFFFFF; }
-    .tab-text { display: flex; flex-direction: column; min-width: 0; }
-    .tab-name { font-size: 0.9rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .tab-desc { font-size: 0.74rem; color: var(--ink-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-    .main-container { max-width: 1080px; width: 100%; margin: 0 auto; padding: 24px 20px 48px; flex: 1; }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-
-    .topic-strip {
-      background: var(--surface); border: 1px solid var(--border); border-left: 6px solid var(--navy);
-      border-radius: var(--radius-md); padding: 16px 20px; margin-bottom: 20px; display: flex;
-      flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;
-      box-shadow: var(--shadow-card);
-    }
-    .topic-strip h2 { margin: 0 0 4px 0; font-family: var(--font-display); font-size: 1.35rem; color: var(--navy); }
-    .topic-strip p { margin: 0; font-size: 0.96rem; color: var(--ink-muted); }
-
-    .key-rule-pill {
-      background: var(--surface-teal); border: 1px solid var(--teal-line); color: var(--navy);
-      padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: 600;
-    }
-
-    .stepper-bar {
-      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
-      padding: 12px 16px; margin-bottom: 18px; display: flex; flex-wrap: wrap; align-items: center;
-      justify-content: space-between; gap: 12px; box-shadow: var(--shadow-card);
-    }
-    .dots-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-    .step-dot {
-      min-width: 34px; height: 34px; padding: 0 8px; border-radius: var(--radius-sm);
-      border: 1.5px solid var(--border-strong); background: var(--surface-soft); color: var(--navy);
-      font-weight: 700; font-size: 0.86rem; cursor: pointer; display: inline-flex; align-items: center;
-      justify-content: center; font-family: inherit; transition: all 0.15s ease;
-    }
-    .step-dot:hover { border-color: var(--navy); background: #FFFFFF; }
-    .step-dot.active { background: var(--navy); color: #FFFFFF; border-color: var(--navy); }
-    .step-dot.solved { background: var(--green-tint); border-color: var(--green); color: var(--green); }
-    .step-dot.solved.active { background: var(--green); color: #FFFFFF; }
-
-    .stage-card {
-      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
-      padding: 24px; box-shadow: var(--shadow-card);
-    }
-    .two-col-stage { display: grid; grid-template-columns: 380px 1fr; gap: 24px; align-items: start; }
-
-    .btn {
-      appearance: none; border: 1.5px solid var(--border-strong); background: var(--surface);
-      color: var(--navy); font-family: inherit; font-size: 0.94rem; font-weight: 700; padding: 10px 16px;
-      border-radius: var(--radius-sm); cursor: pointer; display: inline-flex; align-items: center;
-      justify-content: center; gap: 6px; transition: all 0.15s ease;
-    }
-    .btn:hover { background: var(--surface-soft); border-color: var(--navy); }
-    .btn-primary { background: var(--navy); color: #FFFFFF; border-color: var(--navy); }
-    .btn-primary:hover { background: var(--navy-dark); border-color: var(--navy-dark); }
-    .btn-teal { background: var(--teal); color: #FFFFFF; border-color: var(--teal); }
-    .btn-teal:hover { background: var(--teal-bright); border-color: var(--teal-bright); }
-    .btn-sm { padding: 6px 12px; font-size: 0.84rem; }
-
-    .speak-btn {
-      background: var(--surface-soft); border: 1px solid var(--border); color: var(--navy);
-      border-radius: var(--radius-sm); padding: 4px 8px; font-size: 0.8rem; cursor: pointer;
-      display: inline-flex; align-items: center; gap: 4px; font-family: inherit;
-    }
-    .speak-btn:hover { background: var(--navy-tint); }
-
-    .num-input {
-      font-family: var(--font-mono); font-size: 1.25rem; font-weight: 700; text-align: center;
-      padding: 8px 12px; border: 2px solid var(--border-strong); border-radius: var(--radius-sm);
-      background: #FFFFFF; color: var(--navy); transition: all 0.15s ease;
-    }
-    .num-input:focus { border-color: var(--navy); outline: none; box-shadow: 0 0 0 3px rgba(23, 50, 77, 0.15); }
-    .num-input.ok { border-color: var(--green); background: var(--green-tint); color: var(--green); }
-    .num-input.err { border-color: var(--red); background: var(--red-tint); color: var(--red); }
-
-    .feedback-box { margin-top: 16px; padding: 12px 16px; border-radius: var(--radius-sm); font-size: 0.95rem; font-weight: 600; display: none; }
-    .feedback-box.show { display: block; }
-    .feedback-box.ok { background: var(--green-tint); border: 1.5px solid var(--green-line); color: #065F46; }
-    .feedback-box.warn { background: var(--amber-tint); border: 1.5px solid var(--amber-line); color: #92400E; }
-    .feedback-box.err { background: var(--red-tint); border: 1.5px solid var(--red-line); color: #991B1B; }
-
-    .choice-stack { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
-    .choice-btn {
-      appearance: none; background: var(--surface-soft); border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm); padding: 12px 16px; text-align: left; font-family: inherit;
-      font-size: 1rem; color: var(--ink); cursor: pointer; display: flex; align-items: center;
-      gap: 12px; transition: all 0.15s ease;
-    }
-    .choice-btn:hover { background: var(--navy-tint); border-color: var(--navy); }
-    .choice-btn.correct { background: var(--green-tint); border-color: var(--green); color: var(--green); font-weight: 700; }
-    .choice-btn.wrong { background: var(--red-tint); border-color: var(--red); color: var(--red); }
-
-    .benchmark-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; margin-top: 12px;
-    }
-    .bm-tile {
-      background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-sm);
-      padding: 8px; text-align: center;
-    }
-    .bm-tile span { display: block; font-size: 0.72rem; font-weight: 800; color: var(--ink-light); text-transform: uppercase; }
-    .bm-tile strong { font-family: var(--font-mono); font-size: 1.15rem; color: var(--navy); }
-
-    .complete-banner {
-      background: var(--green); color: #FFFFFF; padding: 16px 20px; border-radius: var(--radius-md);
-      font-size: 1.05rem; font-weight: 700; margin-bottom: 20px; text-align: center; box-shadow: var(--shadow-card);
-    }
-    .app-footer {
-      background: var(--navy); color: #FFFFFF; padding: 16px 24px; font-size: 0.84rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.15); margin-top: auto;
-    }
-    .footer-wrap { max-width: 1080px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; }
-
-    @media (max-width: 840px) {
-      .two-col-stage { grid-template-columns: 1fr; }
-      .tab-list { grid-template-columns: repeat(5, 1fr); padding: 0 8px; }
-      .tab-btn { padding: 8px 4px; flex-direction: column; align-items: center; text-align: center; gap: 4px; }
-      .tab-desc { display: none; }
-      .tab-name { font-size: 0.75rem; }
-    }
-  </style>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231E1B6E'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia,serif' font-weight='bold' font-size='26' fill='%23FFC933'%3E%E2%89%88%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/assets/u4-studio.css">
+  <script src="/assets/u4-studio.js"></script>
+  <script src="/assets/u4-studio-bonus.js"></script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -271,7 +27,7 @@
 
       <div class="header-actions">
         <div class="score-pill" aria-live="polite">
-          <span>⭐ Progress: <span id="header-progress-count">0 / 46</span></span>
+          <span>Progress: <span id="header-progress-count">0 / 46</span></span>
         </div>
         <button type="button" class="top-btn" id="toggle-es-btn" aria-pressed="false">🌐 Español</button>
         <button type="button" class="top-btn" id="print-btn">🖨️ Print</button>
@@ -328,7 +84,7 @@
 
   <main class="main-container">
 
-    <section id="print-summary-sheet" class="print-only" aria-label="Printable summary" style="border: 2px solid var(--navy); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; background: #FFFFFF;"></section>
+    <section id="print-summary-sheet" class="print-only" aria-label="Printable summary" style="border: 2px solid var(--brand); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; background: #FFFFFF;"></section>
 
     <div id="complete-banner" class="complete-banner" role="status" hidden>
       🎉 Amazing! You completed all 5 sections of Estimate the Percent of a Number!
@@ -351,27 +107,27 @@
         <!-- Interactive Benchmark Bar -->
         <div class="stage-card" style="padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 14px;">
           <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-            <strong style="color: var(--navy); font-size: 0.96rem;">Benchmark Bar Meter</strong>
-            <span style="font-size: 0.82rem; color: var(--teal); font-weight: 700;">Select Whole Below</span>
+            <strong style="color: var(--brand); font-size: 0.96rem;">Benchmark Bar Meter</strong>
+            <span style="font-size: 0.82rem; color: var(--brand); font-weight: 700;">Select Whole Below</span>
           </div>
 
           <svg viewBox="0 0 320 180" width="320" height="180" style="background:white; border: 1.5px solid var(--border); border-radius: 8px; width: 100%; height: auto;" role="img" aria-label="Benchmark percent bar">
             <!-- Whole bar -->
-            <rect x="20" y="30" width="280" height="28" fill="#F1F5F9" stroke="#CBD5E1" rx="4"/>
+            <rect x="20" y="30" width="280" height="28" fill="var(--well)" stroke="var(--border)" rx="4"/>
             <!-- 10% segment -->
-            <rect id="t1-svg-10" x="20" y="30" width="28" height="28" fill="#1FA6A2" rx="4"/>
+            <rect id="t1-svg-10" x="20" y="30" width="28" height="28" fill="var(--pct)" rx="4"/>
             <!-- 50% marker -->
-            <line x1="160" y1="26" x2="160" y2="62" stroke="#17324D" stroke-width="2"/>
-            <text x="160" y="20" font-size="10" font-weight="800" fill="#17324D" text-anchor="middle">50%</text>
+            <line x1="160" y1="26" x2="160" y2="62" stroke="var(--brand)" stroke-width="2"/>
+            <text x="160" y="20" font-size="10" font-weight="800" fill="var(--brand)" text-anchor="middle">50%</text>
 
             <!-- 10% marker -->
-            <line x1="48" y1="26" x2="48" y2="62" stroke="#0F766E" stroke-width="1.5"/>
-            <text x="48" y="20" font-size="9" font-weight="800" fill="#0F766E" text-anchor="middle">10%</text>
+            <line x1="48" y1="26" x2="48" y2="62" stroke="var(--brand)" stroke-width="1.5"/>
+            <text x="48" y="20" font-size="9" font-weight="800" fill="var(--brand)" text-anchor="middle">10%</text>
 
             <!-- Axis labels -->
-            <text x="20" y="74" font-size="10" font-weight="700" fill="#475569">0% (0)</text>
-            <text id="t1-svg-50-val" x="160" y="74" font-size="10" font-weight="800" fill="#17324D" text-anchor="middle">50% = 40</text>
-            <text id="t1-svg-100-val" x="300" y="74" font-size="10" font-weight="700" fill="#475569" text-anchor="end">100% = 80</text>
+            <text x="20" y="74" font-size="10" font-weight="700" fill="var(--ink-muted)">0% (0)</text>
+            <text id="t1-svg-50-val" x="160" y="74" font-size="10" font-weight="800" fill="var(--brand)" text-anchor="middle">50% = 40</text>
+            <text id="t1-svg-100-val" x="300" y="74" font-size="10" font-weight="700" fill="var(--ink-muted)" text-anchor="end">100% = 80</text>
           </svg>
 
           <div class="benchmark-grid">
@@ -417,7 +173,7 @@
           <p class="es-text">Construye porcentajes combinando 10% y 5%: 15% = 10% + 5%, 20% = 2 &times; 10%.</p>
         </div>
         <div>
-          <button type="button" class="btn btn-teal btn-sm" id="t2-random-btn">🎲 New Random Combo</button>
+          <button type="button" class="btn btn-go btn-sm" id="t2-random-btn">🎲 New Random Combo</button>
         </div>
       </div>
 
@@ -441,7 +197,7 @@
           <p class="es-text">Redondea porcentajes y cantidades a números compatibles cercanos.</p>
         </div>
         <div>
-          <button type="button" class="btn btn-teal btn-sm" id="t3-random-btn">🎲 New Compatible Problem</button>
+          <button type="button" class="btn btn-go btn-sm" id="t3-random-btn">🎲 New Compatible Problem</button>
         </div>
       </div>
 
@@ -508,7 +264,7 @@
   <footer class="app-footer">
     <div class="footer-wrap">
       <span><strong>Grade 6 Mathematics · Unit 4: Estimate the Percent of a Number</strong> (Standards 6.RP.A.3.C · 6.AT.4)</span>
-      <span>100% Offline Interactive Practice Studio · Progress Auto-Saved in Browser</span>
+      <span>Interactive Practice Studio · Progress saves on this device</span>
     </div>
   </footer>
 
@@ -538,6 +294,7 @@
           if (d && typeof d === 'object') {
             state.showEs = !!d.showEs;
             SOLVED_KEYS.forEach(k => { state[k] = (d[k] && typeof d[k] === 'object') ? { ...d[k] } : {}; });
+            state.play = (d.play && typeof d.play === 'object') ? d.play : {};
             state.quizChoice = (d.quizChoice && typeof d.quizChoice === 'object') ? { ...d.quizChoice } : {};
             state.quizFirst = (d.quizFirst && typeof d.quizFirst === 'object') ? { ...d.quizFirst } : {};
             IDX_KEYS.forEach(k => { if (Number.isInteger(d[k]) && d[k] >= 0) state[k] = d[k]; });
@@ -575,7 +332,7 @@
         const last = !onNext && state[idxKey] === len - 1;
         const b = document.createElement('button');
         b.type = 'button';
-        b.className = 'btn btn-teal btn-sm next-btn';
+        b.className = 'btn btn-go btn-sm next-btn';
         if (!last) b.textContent = tab === 5 ? 'Next question →' : 'Next problem →';
         else b.textContent = tab < 5 ? `Continue to Section ${tab + 1} →` : 'See my results →';
         b.addEventListener('click', () => {
@@ -618,6 +375,7 @@
         resetAllBtn.addEventListener('click', () => {
           if (!window.confirm('Reset all estimation practice to start fresh?')) return;
           SOLVED_KEYS.forEach(k => { state[k] = {}; });
+          U4Studio.reset();
           state.quizChoice = {};
           state.quizFirst = {};
           IDX_KEYS.forEach(k => { state[k] = 0; });
@@ -675,6 +433,7 @@
         const banner = document.getElementById('complete-banner');
         if (banner) banner.hidden = !checks.every(Boolean);
         saveState();
+        U4Studio.sync();
       }
 
       function renderDots(containerId, items, activeIdx, solvedMap, onSelect) {
@@ -726,7 +485,7 @@
           type: 'single',
           ans: '8',
           hint: 'To find 10%, divide by 10 (or move the decimal point one place left): 80 &divide; 10 = 8.',
-          explain: '✓ Correct! 10% of 80 is 8.'
+          explain: 'Correct! 10% of 80 is 8.'
         },
         {
           id: 't1_2',
@@ -737,7 +496,7 @@
           type: 'single',
           ans: '0.8',
           hint: 'To find 1%, divide by 100 (move the decimal point two places left): 80 &divide; 100 = 0.8.',
-          explain: '✓ Correct! 1% of 80 is 0.8.'
+          explain: 'Correct! 1% of 80 is 0.8.'
         },
         {
           id: 't1_3',
@@ -748,7 +507,7 @@
           type: 'single',
           ans: '4',
           hint: '5% is exactly half of 10%. Half of 8 is 4.',
-          explain: '✓ Excellent! 5% is half of 10%, so 8 &divide; 2 = 4.'
+          explain: 'Excellent! 5% is half of 10%, so 8 &divide; 2 = 4.'
         },
         {
           id: 't1_4',
@@ -759,7 +518,7 @@
           type: 'single',
           ans: '30',
           hint: '25% = 1/4. Divide 120 by 4: 120 &divide; 4 = 30.',
-          explain: '✓ Correct! 25% of 120 is 120 &divide; 4 = 30.'
+          explain: 'Correct! 25% of 120 is 120 &divide; 4 = 30.'
         },
         {
           id: 't1_5',
@@ -770,7 +529,7 @@
           type: 'single',
           ans: '60',
           hint: '50% is half of the whole: 120 &divide; 2 = 60.',
-          explain: '✓ Correct! 50% of 120 is 60.'
+          explain: 'Correct! 50% of 120 is 60.'
         },
         {
           id: 't1_6',
@@ -781,7 +540,7 @@
           type: 'single',
           ans: '90',
           hint: '75% = 50% + 25% = 60 + 30 = 90.',
-          explain: '✓ Spot on! 75% = 50% + 25% = 60 + 30 = 90.'
+          explain: 'Spot on! 75% = 50% + 25% = 60 + 30 = 90.'
         },
         {
           id: 't1_7',
@@ -792,7 +551,7 @@
           type: 'single',
           ans: '24',
           hint: '240 &divide; 10 = 24.',
-          explain: '✓ Correct! 10% of 240 is 24.'
+          explain: 'Correct! 10% of 240 is 24.'
         },
         {
           id: 't1_8',
@@ -803,7 +562,7 @@
           type: 'single',
           ans: '35',
           hint: '10% is 10 times larger than 1%: 3.5 &times; 10 = 35.',
-          explain: '✓ Brilliant! 10% is 10 &times; (1%), so 3.5 &times; 10 = 35.'
+          explain: 'Brilliant! 10% is 10 &times; (1%), so 3.5 &times; 10 = 35.'
         }
       ];
 
@@ -819,13 +578,13 @@
         const card = document.getElementById('t1-task-card');
         card.innerHTML = `
           <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-            <span style="font-size:0.84rem; font-weight:800; color:var(--teal); text-transform:uppercase;">${t.title}</span>
+            <span style="font-size:0.84rem; font-weight:800; color:var(--brand);">${t.title}</span>
             <button type="button" class="speak-btn" data-speak="${t.stem}">🔊 Read</button>
           </div>
-          <p style="font-size:1.15rem; font-weight:700; color:var(--navy); margin:0 0 6px 0;">${t.stem}</p>
+          <p style="font-size:1.15rem; font-weight:700; color:var(--brand); margin:0 0 6px 0;">${t.stem}</p>
           <p class="es-text">${t.stemEs}</p>
 
-          <div style="display:flex; align-items:center; gap:10px; margin:18px 0;">
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin:18px 0;">
             <input type="text" id="t1-inp" class="num-input ${isDone ? 'ok' : ''}" style="width:100px;" value="${isDone ? t.ans : ''}" placeholder="?">
             <button type="button" class="btn btn-primary" id="t1-check-btn">Check Answer</button>
             <button type="button" class="btn" id="t1-hint-btn">💡 Hint</button>
@@ -896,10 +655,10 @@
         const stage = document.getElementById('t2-stage-card');
         stage.innerHTML = `
           <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-            <span style="font-size:0.84rem; font-weight:800; color:var(--teal); text-transform:uppercase;">Strategy: ${p.strategy}</span>
+            <span style="font-size:0.84rem; font-weight:800; color:var(--brand);">Strategy: ${p.strategy}</span>
             <button type="button" class="speak-btn" data-speak="${p.stem}">🔊 Read</button>
           </div>
-          <p style="font-size:1.15rem; font-weight:700; color:var(--navy); margin:0 0 6px 0;">${p.stem}</p>
+          <p style="font-size:1.15rem; font-weight:700; color:var(--brand); margin:0 0 6px 0;">${p.stem}</p>
 
           <div class="guided-steps-grid">
             <div class="step-box">
@@ -907,16 +666,16 @@
               <p class="step-box-desc">What is 10% of <strong>${p.whole}</strong>?</p>
               <div class="step-box-eq">
                 <span>10% =</span>
-                <input type="text" id="t2-inp-10" class="num-input ${isDone ? 'ok' : ''}" style="width:78px;" value="${isDone ? p.ans10 : ''}">
+                <input type="text" id="t2-inp-10" aria-label="10% of the whole" class="num-input ${isDone ? 'ok' : ''}" style="width:78px;" value="${isDone ? p.ans10 : ''}">
               </div>
             </div>
 
             <div class="step-box step-2">
-              <div class="step-box-label" style="color:var(--teal);">Step 2 · Apply Combo</div>
+              <div class="step-box-label" style="color:var(--brand);">Step 2 · Apply Combo</div>
               <p class="step-box-desc">${p.strategy}</p>
               <div class="step-box-eq">
                 <span>Final Estimate =</span>
-                <input type="text" id="t2-inp-final" class="num-input ${isDone ? 'ok' : ''}" style="width:86px;" value="${isDone ? p.ansFinal : ''}">
+                <input type="text" id="t2-inp-final" aria-label="Final answer" class="num-input ${isDone ? 'ok' : ''}" style="width:86px;" value="${isDone ? p.ansFinal : ''}">
               </div>
             </div>
           </div>
@@ -927,7 +686,7 @@
           </div>
 
           <div id="t2-fb" class="feedback-box ${isDone ? 'show ok' : ''}">
-            ${isDone ? `✓ Great job! 10% is ${p.ans10}, so ${p.pct}% of ${p.whole} is ${p.ansFinal}.` : ''}
+            ${isDone ? `Great job! 10% is ${p.ans10}, so ${p.pct}% of ${p.whole} is ${p.ansFinal}.` : ''}
           </div>
         `;
 
@@ -945,7 +704,7 @@
           const fb = document.getElementById('t2-fb');
           if (ok10 && okf) {
             fb.className = 'feedback-box show ok';
-            fb.textContent = `✓ Spot on! 10% is ${p.ans10}, giving an estimate of ${p.ansFinal}.`;
+            fb.textContent = `Spot on! 10% is ${p.ans10}, giving an estimate of ${p.ansFinal}.`;
             markSolved(state.solved2, p.id);
             renderDots('t2-dots', T2_PROBLEMS, state.idx2, state.solved2, (ni) => { state.idx2 = ni; currentT2 = T2_PROBLEMS[ni]; renderT2Problem(); });
             updateProgressHeader();
@@ -1014,24 +773,24 @@
         const stage = document.getElementById('t3-stage-card');
         stage.innerHTML = `
           <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-            <span style="font-size:0.84rem; font-weight:800; color:var(--teal); text-transform:uppercase;">Compatible Numbers #${state.idx3 + 1}</span>
+            <span style="font-size:0.84rem; font-weight:800; color:var(--brand);">Compatible Numbers #${state.idx3 + 1}</span>
             <button type="button" class="speak-btn" data-speak="${p.stem}">🔊 Read</button>
           </div>
-          <p style="font-size:1.15rem; font-weight:700; color:var(--navy); margin:0 0 6px 0;">${p.stem}</p>
+          <p style="font-size:1.15rem; font-weight:700; color:var(--brand); margin:0 0 6px 0;">${p.stem}</p>
 
           <div class="trio-container">
             <div class="trio-pill">
               <span class="trio-label">Original Problem</span>
-              <span class="trio-val" style="color:var(--amber);">${p.orig}</span>
+              <span class="trio-val" style="color:var(--warn);">${p.orig}</span>
             </div>
             <span class="trio-arrow">&approx;</span>
-            <div class="trio-pill" style="border-color:var(--teal);">
+            <div class="trio-pill" style="border-color:var(--brand);">
               <span class="trio-label">Compatible Rounded Form</span>
-              <span class="trio-val" style="color:var(--teal);">${p.rPct}% of ${p.rWhole}</span>
+              <span class="trio-val" style="color:var(--brand);">${p.rPct}% of ${p.rWhole}</span>
             </div>
             <span class="trio-arrow">=</span>
-            <div class="trio-pill" style="background:var(--navy); border-color:var(--navy);">
-              <span class="trio-label" style="color:#CBD5E1;">Estimated Answer</span>
+            <div class="trio-pill" style="background:var(--brand); border-color:var(--brand);">
+              <span class="trio-label" style="color:var(--border);">Estimated Answer</span>
               <input type="text" id="t3-inp" class="num-input ${isDone ? 'ok' : ''}" style="width:90px; padding:4px;" value="${isDone ? p.ans : ''}" placeholder="?">
             </div>
           </div>
@@ -1042,7 +801,7 @@
           </div>
 
           <div id="t3-fb" class="feedback-box ${isDone ? 'show ok' : ''}">
-            ${isDone ? `✓ Correct! ${p.orig} &approx; ${p.rPct}% of ${p.rWhole} = ${p.ans}.` : ''}
+            ${isDone ? `Correct! ${p.orig} &approx; ${p.rPct}% of ${p.rWhole} = ${p.ans}.` : ''}
           </div>
         `;
 
@@ -1053,7 +812,7 @@
           const fb = document.getElementById('t3-fb');
           if (ok) {
             fb.className = 'feedback-box show ok';
-            fb.textContent = `✓ Great estimate! ${p.rPct}% of ${p.rWhole} is ${p.ans}.`;
+            fb.textContent = `Great estimate! ${p.rPct}% of ${p.rWhole} is ${p.ans}.`;
             markSolved(state.solved3, p.id);
             renderDots('t3-dots', T3_PROBLEMS, state.idx3, state.solved3, (ni) => { state.idx3 = ni; currentT3 = T3_PROBLEMS[ni]; renderT3Problem(); });
             updateProgressHeader();
@@ -1103,7 +862,7 @@
           ans: '9',
           suffix: 'dollars',
           hint: '10% of $60 is $6. 5% is $3. $6 + $3 = $9.',
-          explain: '✓ Correct! 15% of $60 is $9.'
+          explain: 'Correct! 15% of $60 is $9.'
         },
         {
           id: 't4_2',
@@ -1113,7 +872,7 @@
           ans: '8',
           suffix: 'dollars',
           hint: '10% of $40 is $4. 20% is 2 &times; $4 = $8.',
-          explain: '✓ Correct! 20% of $40 is $8.'
+          explain: 'Correct! 20% of $40 is $8.'
         },
         {
           id: 't4_3',
@@ -1123,7 +882,7 @@
           ans: '4.2',
           suffix: 'GB',
           hint: '10% of 6 is 0.6. 70% is 7 &times; 0.6 = 4.2 GB.',
-          explain: '✓ Spot on! 70% of 6 GB is about 4.2 GB.'
+          explain: 'Spot on! 70% of 6 GB is about 4.2 GB.'
         },
         {
           id: 't4_4',
@@ -1138,7 +897,7 @@
           ],
           correct: 0,
           hint: 'Rounding both numbers up always makes the estimate much higher than the real answer (real answer is ~14.56).',
-          explain: '✓ Excellent! When both factors are rounded up, the result is an inflated overestimate.'
+          explain: 'Excellent! When both factors are rounded up, the result is an inflated overestimate.'
         },
         {
           id: 't4_5',
@@ -1148,7 +907,7 @@
           ans: '20',
           suffix: 'dollars',
           hint: 'Round $79.99 to $80. 25% of $80 = 80 &divide; 4 = $20.',
-          explain: '✓ Correct! 25% of $80 is $20.'
+          explain: 'Correct! 25% of $80 is $20.'
         },
         {
           id: 't4_6',
@@ -1158,7 +917,7 @@
           ans: '5',
           suffix: 'dollars',
           hint: '10% of $50 is $5.',
-          explain: '✓ Correct! 10% of $50 is $5 (giving a safe quick estimate).'
+          explain: 'Correct! 10% of $50 is $5 (giving a safe quick estimate).'
         },
         {
           id: 't4_7',
@@ -1173,7 +932,7 @@
           ],
           correct: 0,
           hint: '10% of 350 is 35. 1% is 3.50.',
-          explain: '✓ Exactly! She divided by 100 instead of 10.'
+          explain: 'Exactly! She divided by 100 instead of 10.'
         },
         {
           id: 't4_8',
@@ -1188,7 +947,7 @@
           ],
           correct: 0,
           hint: '20% of $30 is $6. $30 - $6 = $24, which fits inside her $25 budget.',
-          explain: '✓ Perfect reasoning! $24 is under her $25 budget.'
+          explain: 'Perfect reasoning! $24 is under her $25 budget.'
         }
       ];
 
@@ -1208,7 +967,6 @@
             <div class="choice-stack">
               ${p.choices.map((c, i) => `
                 <button type="button" class="choice-btn ${isDone && i === p.correct ? 'correct' : ''}" data-t4-mc="${i}">
-                  <span style="font-weight:700; width:24px;">${['A','B','C','D'][i]}.</span>
                   <span>${c}</span>
                 </button>
               `).join('')}
@@ -1216,9 +974,9 @@
           `;
         } else if (p.type === 'single') {
           body = `
-            <div style="display:flex; align-items:center; gap:10px; margin:18px 0;">
+            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin:18px 0;">
               <input type="text" id="t4-inp" class="num-input ${isDone ? 'ok' : ''}" style="width:120px;" value="${isDone ? p.ans : ''}" placeholder="?">
-              <strong style="color:var(--navy); font-size:1.1rem;">${p.suffix || ''}</strong>
+              <strong style="color:var(--brand); font-size:1.1rem;">${p.suffix || ''}</strong>
               <button type="button" class="btn btn-primary" id="t4-check-btn">Check Estimate</button>
               <button type="button" class="btn" id="t4-hint-btn">💡 Hint</button>
             </div>
@@ -1227,10 +985,10 @@
 
         stage.innerHTML = `
           <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-            <span style="font-size:0.84rem; font-weight:800; color:var(--teal); text-transform:uppercase;">${p.title}</span>
+            <span style="font-size:0.84rem; font-weight:800; color:var(--brand);">${p.title}</span>
             <button type="button" class="speak-btn" data-speak="${p.stem}">🔊 Read</button>
           </div>
-          <p style="font-size:1.15rem; font-weight:700; color:var(--navy); margin:0 0 6px 0;">${p.stem}</p>
+          <p style="font-size:1.15rem; font-weight:700; color:var(--brand); margin:0 0 6px 0;">${p.stem}</p>
           ${body}
           <div id="t4-fb" class="feedback-box ${isDone ? 'show ok' : ''}">${isDone ? p.explain : ''}</div>
         `;
@@ -1375,10 +1133,10 @@
         const stage = document.getElementById('t5-stage-card');
         stage.innerHTML = `
           <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-            <span style="font-size:0.84rem; font-weight:800; color:var(--teal); text-transform:uppercase;">Question ${state.idx5 + 1} of 10</span>
+            <span style="font-size:0.84rem; font-weight:800; color:var(--brand);">Question ${state.idx5 + 1} of 10</span>
             <button type="button" class="speak-btn" data-speak="${q.q}">🔊 Read</button>
           </div>
-          <p style="font-size:1.15rem; font-weight:700; color:var(--navy); margin:0 0 6px 0;">${q.q}</p>
+          <p style="font-size:1.15rem; font-weight:700; color:var(--brand); margin:0 0 6px 0;">${q.q}</p>
 
           <div class="choice-stack">
             ${q.choices.map((c, i) => {
@@ -1389,7 +1147,6 @@
               }
               return `
                 <button type="button" class="choice-btn ${cls}" data-t5-mc="${i}">
-                  <span style="font-weight:700; width:24px;">${['A','B','C','D'][i]}.</span>
                   <span>${c}</span>
                 </button>
               `;
@@ -1397,7 +1154,7 @@
           </div>
 
           <div id="t5-fb" class="feedback-box ${isSolved ? 'show ok' : ''}">
-            ${isSolved ? `✓ ${q.explain}` : ''}
+            ${isSolved ? `${q.explain}` : ''}
           </div>
         `;
 
@@ -1416,7 +1173,7 @@
             if (idx === q.correct) {
               btn.classList.add('correct');
               fb.className = 'feedback-box show ok';
-              fb.textContent = `✓ Correct! ${q.explain}`;
+              fb.textContent = `Correct! ${q.explain}`;
               state.solved5[q.id] = true;
               renderDots('t5-dots', T5_QUESTIONS, state.idx5, state.solved5, (ni) => { state.idx5 = ni; renderT5Question(); });
               updateProgressHeader();
@@ -1437,13 +1194,134 @@
       document.getElementById('t5-next-btn').addEventListener('click', () => {
         state.idx5 = (state.idx5 + 1) % T5_QUESTIONS.length; renderT5Question();
       });
+      function resetQuiz() {
+        state.solved5 = {};
+        state.quizChoice = {};
+        state.quizFirst = {};
+        state.idx5 = 0;
+        document.getElementById('t5-results').hidden = true;
+        renderT5Question();
+        updateProgressHeader();
+      }
+
+      /* Results appear once every question has been answered at least once. */
+      function renderResults(scroll) {
+        const box = document.getElementById('t5-results');
+        const unanswered = T5_QUESTIONS.findIndex((q) => !(q.id in state.quizFirst));
+        if (unanswered !== -1) {
+          box.hidden = true;
+          if (scroll) {
+            state.idx5 = unanswered;
+            renderT5Question();
+          }
+          return;
+        }
+        const total = T5_QUESTIONS.length;
+        const firstTry = T5_QUESTIONS.filter((q) => state.quizFirst[q.id]).length;
+        let verdict = 'Keep practicing: work back through the sections, then retake the quiz.';
+        if (firstTry >= total - 1) verdict = 'Mastery! You are ready to move on.';
+        else if (firstTry >= total - 3) verdict = 'Almost there. Review the sections, then try again.';
+        box.innerHTML = `
+          <h3>Your results: ${firstTry} of ${total} right on the first try</h3>
+          <p>${verdict}</p>
+          <button type="button" class="btn btn-sm" id="t5-retake-btn">Retake the quiz</button>
+        `;
+        box.hidden = false;
+        document.getElementById('t5-retake-btn').addEventListener('click', resetQuiz);
+        if (scroll) box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
       document.getElementById('t5-reset-btn').addEventListener('click', () => {
         if (!window.confirm('Reset quiz answers?')) return;
-        state.solved5 = {}; state.quizChoice = {}; state.quizFirst = {}; state.idx5 = 0;
-        renderT5Question(); updateProgressHeader();
+        resetQuiz();
       });
 
       loadState();
+      U4Studio.init({
+        state,
+        save: saveState,
+        totals: {"1": 8, "2": 12, "3": 8, "4": 8, "5": 10},
+        need: {"1": 8, "2": 12, "3": 8, "4": 8, "5": 8},
+        goToTab: (n) => selectTab(n, false),
+        glyphs: ["10%", "≈", "5%", "25%", "1%"],
+        bonus: {
+          "gen": "partOf",
+          "title": "Bonus Round: Match the Trios",
+          "titleEs": "Ronda extra: une los tríos",
+          "help": "Each trio is one percent problem: the question, a way to solve it, and the answer. Tap three tiles that belong together.",
+          "helpEs": "Cada trío es un problema de porcentaje: la pregunta, una forma de resolverlo y la respuesta. Toca tres fichas que van juntas.",
+          "rounds": [
+            [
+              {
+                "p": 10,
+                "w": 80,
+                "how": "divide"
+              },
+              {
+                "p": 50,
+                "w": 60,
+                "how": "divide"
+              },
+              {
+                "p": 25,
+                "w": 40,
+                "how": "divide"
+              }
+            ],
+            [
+              {
+                "p": 10,
+                "w": 350,
+                "how": "divide"
+              },
+              {
+                "p": 25,
+                "w": 120,
+                "how": "divide"
+              },
+              {
+                "p": 50,
+                "w": 84,
+                "how": "divide"
+              }
+            ],
+            [
+              {
+                "p": 20,
+                "w": 150,
+                "how": "divide"
+              },
+              {
+                "p": 5,
+                "w": 200,
+                "how": "divide"
+              },
+              {
+                "p": 1,
+                "w": 900,
+                "how": "divide"
+              }
+            ],
+            [
+              {
+                "p": 10,
+                "w": 62,
+                "how": "divide"
+              },
+              {
+                "p": 25,
+                "w": 48,
+                "how": "divide"
+              },
+              {
+                "p": 20,
+                "w": 45,
+                "how": "divide"
+              }
+            ]
+          ]
+        },
+      });
       setT1Whole(state.wholeVal || 80);
       renderT1Task();
       renderT2Problem();
