@@ -9,6 +9,7 @@ import {
   loadDataJson,
   REPO_ROOT,
 } from "../tools/lib/curriculum-source.mjs";
+import { renderCognateStrip } from "./lib/extra-help-cognates.mjs";
 import { writeGenerated } from "./lib/preserve-injected.mjs";
 
 const CONFIG = {
@@ -98,12 +99,13 @@ export function renderExtraHelp(
 </head><body class="extra-help">
 <main id="extra-help-content" class="eh-wrap" tabindex="-1">
 <header class="eh-header"><a class="eh-back" href="/curriculum/">Back to curriculum</a>
-<h1>Extra Help</h1><p class="eh-lede">Find your Reveal Math unit and lesson. Start with step-by-step help, review the notes, then try the practice.</p>
+<h1>Strategy Boosters &amp; Concept Unlocks <span class="eh-h1-es" lang="es">/ Impulsores de Estrategia</span></h1><p class="eh-lede">Find your Reveal Math unit and lesson. Pick a strategy booster: step-by-step help, notes, or practice that unlocks the big idea.</p>
 <p class="eh-source">All 10 units, in Reveal Math book order. Book lesson names appear first; additional EduWonderLab practice is labeled.</p></header>
 <form class="eh-filters" role="search" hidden>
 <div><label for="help-search">Search lessons</label><input id="help-search" type="search" placeholder="Try ratios, 3.2, or fractions" aria-describedby="help-search-hint"><p id="help-search-hint">Search by lesson number, topic, or standard.</p></div>
 <div><label for="help-unit">Unit</label><select id="help-unit"><option value="">All units</option>${toc.units.map((unit) => `<option value="${unit.unit}">Unit ${unit.unit}: ${esc(unit.title)}</option>`).join("")}</select></div>
 <button type="reset">Clear filters</button></form>
+${renderCognateStrip()}
 <nav class="eh-jumps" aria-label="Jump to a unit">${toc.units.map((unit) => `<a href="#unit-${unit.unit}">Unit ${unit.unit}</a>`).join("")}</nav>
 <p id="help-count" role="status">${total} lessons across 10 units.</p>
 <p id="help-empty" hidden>No lessons match. Try a topic such as ratios, choose another unit, or clear the filters.</p>

@@ -53,6 +53,41 @@ assert.ok(
   "No inert search controls without JS",
 );
 assert.ok(html.includes("<noscript>"), "No-JS browsing available");
+// Cognate strip: English and Spanish only, each card paired and pictured.
+{
+  const doc = new JSDOM(html).window.document;
+  assert.match(doc.querySelector("h1").textContent, /Strategy Boosters & Concept Unlocks/);
+  assert.match(doc.querySelector("h1").textContent, /Impulsores de Estrategia/);
+  assert.ok(
+    !/remediation|struggl|deficit/i.test(doc.querySelector("main").textContent),
+    "No deficit wording",
+  );
+  const cards = [...doc.querySelectorAll(".eh-cog")];
+  assert.ok(cards.length >= 8, "Cognate strip has 8+ cards");
+  for (const card of cards) {
+    assert.ok(card.querySelector('svg[aria-hidden="true"]'), "Each cognate has a picture");
+    assert.ok(card.querySelector('[lang="en"]')?.textContent.trim(), "English word");
+    assert.ok(card.querySelector('[lang="es"]')?.textContent.trim(), "Spanish word");
+    const buttons = [...card.querySelectorAll(".eh-say")];
+    assert.deepEqual(buttons.map((b) => b.dataset.lang).sort(), ["en-US", "es-ES"]);
+    assert.ok(
+      buttons.every((b) => b.hidden),
+      "Speak buttons start hidden",
+    );
+  }
+  const langsUsed = [
+    ...new Set([...doc.querySelectorAll("[lang]")].map((n) => n.getAttribute("lang"))),
+  ];
+  assert.ok(
+    langsUsed.every((l) => l === "en" || l === "es"),
+    `Only en/es on the page: ${langsUsed}`,
+  );
+  for (const word of ["Ratio", "Coordinate", "Inequality", "Surface area"])
+    assert.ok(
+      cards.some((c) => c.querySelector('[lang="en"]').textContent === word),
+      `Cognate: ${word}`,
+    );
+}
 const hub = readFileSync(join(REPO_ROOT, "curriculum/index.html"), "utf8");
 const hubDocument = new JSDOM(hub).window.document;
 const helpLink = hubDocument.querySelector('.ewl-course-nav a[href="/curriculum/extra-help/"]');
@@ -104,6 +139,41 @@ document.querySelector(".eh-filters").reset();
 await new Promise((resolve) => setTimeout(resolve, 20));
 assert.equal(visible().length, manifest.total, "Clear filters restores every lesson");
 dom.window.close();
+// Speech: works when available (English and Spanish voices), invisible when not.
+{
+  const script = readFileSync(join(REPO_ROOT, "assets/curriculum-extra-help.js"), "utf8");
+  const open = () =>
+    new JSDOM(html, {
+      runScripts: "outside-only",
+      url: "https://eduwonderlab.com/curriculum/extra-help/",
+    });
+  const spoken = [];
+  const withSpeech = open();
+  withSpeech.window.SpeechSynthesisUtterance = function (text) {
+    this.text = text;
+  };
+  withSpeech.window.speechSynthesis = { cancel() {}, speak: (u) => spoken.push([u.text, u.lang]) };
+  withSpeech.window.eval(script);
+  const buttons = [...withSpeech.window.document.querySelectorAll(".eh-say")];
+  assert.ok(
+    buttons.every((b) => !b.hidden),
+    "Speak buttons appear when speech exists",
+  );
+  buttons.find((b) => b.dataset.say === "Razón").click();
+  buttons.find((b) => b.dataset.say === "Ratio").click();
+  assert.deepEqual(spoken, [
+    ["Razón", "es-ES"],
+    ["Ratio", "en-US"],
+  ]);
+  withSpeech.window.close();
+  const quiet = open();
+  quiet.window.eval(script);
+  assert.ok(
+    [...quiet.window.document.querySelectorAll(".eh-say")].every((b) => b.hidden),
+    "No speech, no dead buttons",
+  );
+  quiet.window.close();
+}
 console.log(
   `Extra Help PASS: ${manifest.total} lessons, ${toc.units.length} units, ${localLinks.length} existing local links, source fidelity and failure recovery.`,
 );

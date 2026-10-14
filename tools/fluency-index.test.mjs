@@ -95,6 +95,19 @@ for (const card of lessonCards) {
   const lessonPageLink = card.querySelector(`a[href="/lessons/${id}/"]`);
   assert.ok(lessonPageLink, `Lesson ${id}: Lesson page link exists`);
 
+  // "Why this unlocks" is derived from the lesson's own data; it may never name another lesson's skill.
+  const why = card.querySelector(".why-unlocks");
+  assert.ok(why, `Lesson ${id}: Why-this-unlocks line exists`);
+  assert.ok(
+    why.textContent.includes(`Lesson ${id.replace("-", ".")}`),
+    `Lesson ${id}: banner names its own lesson`,
+  );
+  const firstSkill = card.querySelector(".skill-text-content").textContent.replace(/\.$/, "");
+  assert.ok(
+    why.textContent.includes(firstSkill),
+    `Lesson ${id}: banner quotes its first prerequisite`,
+  );
+
   const drawer = card.querySelector(`#practice-drawer-${id}`);
   assert.ok(drawer, `Lesson ${id}: Practice drawer exists`);
   const practiceCards = drawer.querySelectorAll(".practice-mini-card");

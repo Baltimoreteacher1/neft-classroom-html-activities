@@ -265,6 +265,22 @@ writeFileSync(join(target, "teacher/index.html"), html);
 const kb = (Buffer.byteLength(html) / 1024).toFixed(0);
 console.log(`\n✓ index.html written — ${kb} KB, self-contained`);
 
+/**
+ * "Why this unlocks the lesson" line. Built only from the lesson's own authored data: its
+ * four prerequisite skills and its core-skill links (spine_links, which build.mjs already
+ * proves are listed from both sides). A lesson with no core-skill link gets no core clause.
+ */
+function whyUnlocks(l) {
+  const clean = (text) => text.replace(/\.$/, "");
+  const core = (l.spine_links || []).map((s) => clean(s.skill));
+  const coreClause = core.length ? ` The core skill behind it: ${core.join("; ")}.` : "";
+  return (
+    `This lesson builds on ${l.skills.length} skills from earlier math. ` +
+    `Start with “${clean(l.skills[0].text)}”, then the rest, so lesson time goes to the new idea.` +
+    coreClause
+  );
+}
+
 function renderLessonsIndex(units) {
   return units
     .map((u) => {
@@ -321,6 +337,7 @@ function renderLessonsIndex(units) {
                   <span class="standard-badge" title="${escapeHTML(l.standard?.text || "")}">${escapeHTML(l.standard?.code || "")}</span>
                 </div>
               </header>
+              <p class="why-unlocks"><strong>Why this unlocks Lesson ${l.id.replace("-", ".")}:</strong> ${escapeHTML(whyUnlocks(l))}</p>
               <div class="fluency-lesson-body">
                 <div class="lesson-col-skills">
                   <div class="col-heading">

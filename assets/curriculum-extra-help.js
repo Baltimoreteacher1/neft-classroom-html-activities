@@ -1,5 +1,23 @@
 /** Filter the already-rendered index; every resource works without JavaScript. */
 (() => {
+  // Speak buttons stay hidden unless this browser can really speak; the words read fine without them.
+  const synth = window.speechSynthesis;
+  if (synth && typeof window.SpeechSynthesisUtterance === "function") {
+    for (const button of document.querySelectorAll(".eh-say")) {
+      button.hidden = false;
+      button.addEventListener("click", () => {
+        try {
+          synth.cancel();
+          const utterance = new window.SpeechSynthesisUtterance(button.dataset.say);
+          utterance.lang = button.dataset.lang;
+          utterance.rate = 0.85;
+          synth.speak(utterance);
+        } catch {
+          /* speech is a bonus; never block the page */
+        }
+      });
+    }
+  }
   const form = document.querySelector(".eh-filters");
   if (!form) return;
   const search = document.getElementById("help-search");
