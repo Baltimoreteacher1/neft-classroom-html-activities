@@ -372,10 +372,89 @@
     d.showModal();
   }
 
+  /* ---- Examine: a step that asks what the answer MEANS instead of for a number to copy ---- */
+  /** @type {Record<string, number>} */
+  const picks = {};
+  const fmt = (/** @type {number} */ n) => String(Math.round(n * 1e6) / 1e6);
+
+  /**
+   * "What does your percent say?" for percent `n` found from a part of `whole`.
+   * Built from the problem's own numbers, so the right sentence is right by construction and
+   * the wrong ones are the real misreadings (out of the old whole, flipped, or "more than").
+   */
+  function meaningCheck(/** @type {number} */ n, /** @type {number} */ whole) {
+    const p = fmt(n);
+    const right = {
+      en: `${p}% means ${p} out of every 100.`,
+      es: `${p}% significa ${p} de cada 100.`,
+    };
+    const wrong = [];
+    if (whole && whole !== 100) {
+      wrong.push({
+        en: `${p}% means ${p} out of every ${fmt(whole)}.`,
+        es: `${p}% significa ${p} de cada ${fmt(whole)}.`,
+      });
+    }
+    wrong.push(
+      { en: `${p}% means 100 out of every ${p}.`, es: `${p}% significa 100 de cada ${p}.` },
+      { en: `${p}% means ${p} more than 100.`, es: `${p}% significa ${p} más que 100.` },
+      { en: `${p}% means ${p} out of every 10.`, es: `${p}% significa ${p} de cada 10.` },
+    );
+    const choices = wrong.filter((c) => c.en !== right.en).slice(0, 2);
+    const at = Math.round(n * 7) % 3;
+    choices.splice(at, 0, right);
+    return {
+      prompt: "Look at your percent. Which sentence says what it means?",
+      promptEs: "Mira tu porcentaje. ¿Qué oración dice lo que significa?",
+      choices,
+      correct: at,
+    };
+  }
+
+  /** Markup for an examine step; clicks are handled once, at the document. */
+  function examineHtml(/** @type {string} */ group, /** @type {any} */ ex) {
+    delete picks[group];
+    const rows = ex.choices
+      .map(
+        (/** @type {{en: string, es: string}} */ c, /** @type {number} */ i) =>
+          `<button type="button" class="choice-btn" role="radio" aria-checked="false" data-examine-pick="${i}">${bilingual(c.en, c.es)}</button>`,
+      )
+      .join("");
+    return `<div class="examine" data-examine="${group}" role="radiogroup" aria-label="${ex.prompt}"><div class="choice-stack">${rows}</div></div>`;
+  }
+
+  const examinePicked = (/** @type {string} */ group) => (group in picks ? picks[group] : -1);
+
+  /** Colour the picked sentence once the page has judged it. */
+  function examineMark(/** @type {string} */ group, /** @type {boolean} */ ok) {
+    const box = $(`[data-examine="${group}"]`);
+    if (!box) return;
+    for (const b of box.querySelectorAll(".choice-btn")) {
+      const on = b.getAttribute("aria-checked") === "true";
+      b.classList.toggle("correct", on && ok);
+      b.classList.toggle("wrong", on && !ok);
+    }
+  }
+
+  function onExamineClick(/** @type {Event} */ e) {
+    const btn = /** @type {HTMLElement | null} */ (
+      /** @type {HTMLElement} */ (e.target).closest("[data-examine-pick]")
+    );
+    const box = btn?.closest("[data-examine]");
+    if (!btn || !box) return;
+    picks[/** @type {HTMLElement} */ (box).dataset.examine || ""] = Number(btn.dataset.examinePick);
+    for (const b of box.querySelectorAll(".choice-btn")) {
+      b.setAttribute("aria-checked", String(b === btn));
+      b.classList.remove("correct", "wrong");
+      b.classList.toggle("selected", b === btn);
+    }
+  }
+
   /* ---- Public API ---------------------------------------------------------- */
   function init(/** @type {any} */ cfg) {
     S.cfg = cfg;
     S.announce = false;
+    document.addEventListener("click", onExamineClick);
     play();
     setFx(readFx());
     injectLayers();
@@ -409,6 +488,10 @@
     sync,
     rebase,
     reset,
+    meaningCheck,
+    examineHtml,
+    examinePicked,
+    examineMark,
     dialog,
     totalStars,
     refresh,

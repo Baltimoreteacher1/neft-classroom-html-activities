@@ -17,6 +17,7 @@
   ],
   "exempt": {
     "scripts/audit-a11y.mjs": "ALREADY AUTOMATED against production: production-observability.yml runs `audit:a11y -- --base https://eduwonderlab.com`. Deliberately not a push gate — it needs a browser, took 47s and could not load 2 pages in a local run, and a11y findings need judgement rather than a threshold.",
+    "scripts/audit-unit4-copyable-steps.mjs": "Needs a real browser (it opens ~170 problems across the ten Unit 4 studios), so on a machine without one it exits 3 (SKIP) and verifies nothing; the static half of the same contract — each page wired to U4Studio, meaning checks generated from the problem's own numbers — runs on every push in tools/unit4-studio.test.mjs. Run `npm run audit:copyable-steps` after editing a studio page's step markup.",
     "scripts/audit-dead-code.mjs": "Reports candidates for human review and deletes nothing ('Nothing deleted — review the report and remove by hand'). Dead code is not a push-blocking defect and its heuristics have been wrong before — see the shape-3d.js near-miss.",
     "scripts/audit-duplicate-assets.mjs": "Lists byte-identical assets for a human to merge; duplication is a tidiness question, not a correctness one, and 17s of gate time buys no regression protection.",
     "scripts/audit-misconception-coverage.mjs": "Writes reports/misconception-coverage.md and judges nothing — coverage is a content-authoring backlog metric, deliberately not a pass/fail condition.",

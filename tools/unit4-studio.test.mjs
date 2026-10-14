@@ -36,6 +36,38 @@ assert.equal(U.bonus.starsFor(0), 3);
 assert.equal(U.bonus.starsFor(2), 2);
 assert.equal(U.bonus.starsFor(3), 1);
 
+/* ---- the "what does your percent mean?" step is right by construction ----------------------------
+ * It replaces a box whose answer was the previous box's number, so a wrong sentence marked right (or
+ * two right sentences) would teach the misreading in the lesson's own voice. */
+assert.equal(typeof U.meaningCheck, "function", "U4Studio.meaningCheck is exposed");
+let meaningCases = 0;
+for (const n of [0.1, 0.5, 5, 8, 12.5, 23, 28, 37.5, 40, 56, 75, 100, 125, 150, 300]) {
+  for (const whole of [4, 8, 10, 12, 20, 25, 32, 50, 100]) {
+    const ex = U.meaningCheck(n, whole);
+    const says = (c) => c.en.startsWith(`${n}% means ${n} out of every 100.`);
+    assert.equal(ex.choices.length, 3, `${n}% of ${whole}: three sentences`);
+    assert.equal(
+      new Set(ex.choices.map((c) => c.en)).size,
+      3,
+      `${n}% of ${whole}: sentences repeat`,
+    );
+    assert.equal(
+      ex.choices.filter(says).length,
+      1,
+      `${n}% of ${whole}: exactly one sentence is right`,
+    );
+    assert.ok(
+      says(ex.choices[ex.correct]),
+      `${n}% of ${whole}: correct index points at the right sentence`,
+    );
+    assert.ok(
+      ex.choices.every((c) => c.es && c.es !== c.en),
+      `${n}% of ${whole}: every sentence has Spanish`,
+    );
+    meaningCases++;
+  }
+}
+
 /* ---- independent verification of every generated trio ------------------------------------------ */
 const num = (s) => Number(String(s).replace(/%/g, "").trim());
 const gcd = (a, b) => (b ? gcd(b, a % b) : a);
@@ -199,5 +231,5 @@ for (const name of pages) {
 }
 
 console.log(
-  `unit4-studio: ${pages.length} pages wired, ${trios} Bonus Round trios re-verified from their own text`,
+  `unit4-studio: ${pages.length} pages wired, ${trios} Bonus Round trios re-verified from their own text, ${meaningCases} meaning checks have exactly one right sentence`,
 );

@@ -849,6 +849,7 @@
           labelB: 'Percent:',
           suffixB: '%',
           ansB: '40',
+          examineB: 10,
           hint: '4 columns × 10 squares per column = 40 squares out of 100.',
           hintEs: '4 columnas × 10 cuadrados por columna = 40 cuadrados de 100.',
           explain: 'Correct! 4 out of 10 columns equals 40 out of 100 squares, or 40%.',
@@ -904,6 +905,9 @@
 
       function renderT1Task() {
         const task = T1_TASKS[state.idx1];
+        // A task may ask what its percent MEANS (examineB = the whole it was counted out of) so the
+        // second box is not just the first box's number typed again.
+        const exB = task.examineB ? U4Studio.meaningCheck(Number(task.ansB), task.examineB) : null;
         setT1Grid(task.gridPreset);
 
         renderDots('t1-dots', T1_TASKS, state.idx1, state.solved1, (newIdx) => {
@@ -944,11 +948,11 @@
                 </div>
               </div>
               <div>
-                <label for="t1-inp-b" style="display: block; font-weight: 700; color: var(--brand); font-size: 0.9rem; margin-bottom: 8px;">${task.labelB}</label>
+                ${exB ? `<p style="font-weight: 700; color: var(--brand); font-size: 0.9rem; margin: 0 0 4px;">${exB.prompt}</p><p class="es-text">${exB.promptEs}</p>${U4Studio.examineHtml('t1b', exB)}` : `<label for="t1-inp-b" style="display: block; font-weight: 700; color: var(--brand); font-size: 0.9rem; margin-bottom: 8px;">${task.labelB}</label>
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <input type="text" id="t1-inp-b" class="num-input ${isDone ? 'ok' : ''}" value="${isDone ? task.ansB : ''}" placeholder="?">
                   <strong style="color: var(--brand);">${task.suffixB}</strong>
-                </div>
+                </div>`}
               </div>
             </div>
             <div style="display: flex; gap: 10px;">
@@ -1028,6 +1032,10 @@
             });
           });
         } else {
+          if (exB && isDone) {
+            document.querySelector(`[data-examine="t1b"] [data-examine-pick="${exB.correct}"]`)?.click();
+            U4Studio.examineMark('t1b', true);
+          }
           const checkBtn = document.getElementById('t1-check-btn');
           const hintBtn = document.getElementById('t1-hint-btn');
           const fb = document.getElementById('t1-fb');
@@ -1064,17 +1072,21 @@
             } else if (task.type === 'dual') {
               const inpA = document.getElementById('t1-inp-a');
               const inpB = document.getElementById('t1-inp-b');
-              if (!inpA.value.trim() && !inpB.value.trim()) {
+              if (!inpA.value.trim() && !(inpB ? inpB.value.trim() : U4Studio.examinePicked('t1b') >= 0)) {
                 fb.className = 'feedback-box show warn';
-                fb.textContent = 'Type a number in both boxes, then press Check Answer.';
+                fb.textContent = exB ? 'Type the number, choose a sentence, then press Check Answer.' : 'Type a number in both boxes, then press Check Answer.';
                 return;
               }
               const okA = parseNum(inpA.value) === Number(task.ansA);
-              const okB = parseNum(inpB.value) === Number(task.ansB);
+              const okB = exB ? U4Studio.examinePicked('t1b') === exB.correct : parseNum(inpB.value) === Number(task.ansB);
               inpA.classList.toggle('ok', okA);
               inpA.classList.toggle('err', !okA);
-              inpB.classList.toggle('ok', okB);
-              inpB.classList.toggle('err', !okB);
+              if (inpB) {
+                inpB.classList.toggle('ok', okB);
+                inpB.classList.toggle('err', !okB);
+              } else if (U4Studio.examinePicked('t1b') >= 0) {
+                U4Studio.examineMark('t1b', okB);
+              }
               if (okA && okB) {
                 fb.className = 'feedback-box show ok';
                 fb.textContent = explainTxt;
@@ -1085,7 +1097,9 @@
               } else {
                 const n = bumpMiss(task.id);
                 fb.className = 'feedback-box show err';
-                fb.textContent = n < 2
+                fb.textContent = exB && okA && !okB
+                  ? 'Read each sentence slowly. A percent always means “out of every 100.”'
+                  : n < 2
                   ? 'One or more boxes need another look. Check the red box(es) against the 100-grid.'
                   : `Check both boxes. Hint: ${hintTxt}`;
               }
@@ -1180,6 +1194,30 @@
         const targetPct = p.part * factor;
         const isDone = !!state.solved2[p.id];
         const isRand = p.id.startsWith('rand');
+        // After the first worked problem, Step 3 asks what the percent MEANS instead of asking
+        // for the number again, so there is nothing to copy from Step 2.
+        const examine = isRand || p.id !== T2_PROBLEMS[0].id;
+        const ex = U4Studio.meaningCheck(targetPct, p.whole);
+        const step3Html = examine ? `
+            <div class="step-box step-3 examine-step">
+              <div>
+                <div class="step-box-label">Step 3 · Examine Your Percent</div>
+                <p class="step-box-desc">${ex.prompt}</p>
+                <p class="es-text">${ex.promptEs}</p>
+              </div>
+              ${U4Studio.examineHtml('t2', ex)}
+            </div>` : `
+            <div class="step-box step-3">
+              <div>
+                <div class="step-box-label" style="color: var(--warn);">Step 3 · Write the Percent</div>
+                <p class="step-box-desc">Since the ratio is now out of 100, write the percent:</p>
+              </div>
+              <div class="step-box-eq">
+                <input type="text" id="t2-inp-pct" class="num-input ${isDone ? 'ok' : ''}" style="width: 86px;" inputmode="numeric" value="${isDone ? targetPct : ''}" aria-label="Percent" placeholder="?">
+                <span>%</span>
+              </div>
+            </div>
+`;
 
         renderDots('t2-dots', T2_PROBLEMS, isRand ? -1 : state.idx2, state.solved2, (ni) => {
           state.idx2 = ni;
@@ -1280,16 +1318,7 @@
               </div>
             </div>
 
-            <div class="step-box step-3">
-              <div>
-                <div class="step-box-label" style="color: var(--warn);">Step 3 · Write the Percent</div>
-                <p class="step-box-desc">Since the ratio is now out of 100, write the percent:</p>
-              </div>
-              <div class="step-box-eq">
-                <input type="text" id="t2-inp-pct" class="num-input ${isDone ? 'ok' : ''}" style="width: 86px;" inputmode="numeric" value="${isDone ? targetPct : ''}" aria-label="Percent" placeholder="?">
-                <span>%</span>
-              </div>
-            </div>
+${step3Html}
           </div>
 
           <div style="display: flex; gap: 10px; margin-top: 18px; align-items: center; flex-wrap: wrap;">
@@ -1328,9 +1357,10 @@
           const v = nInp.value.trim();
           document.getElementById('t2-live-num').textContent = v || '?';
           const barTxt = document.getElementById('t2-svg-bar-pct');
-          if (barTxt && !pInp.value.trim()) barTxt.textContent = v ? `${v}%` : '?%';
+          if (barTxt && !pInp?.value.trim()) barTxt.textContent = v ? `${v}%` : '?%';
+          if (!pInp) document.getElementById('t2-live-pct').textContent = v ? `${v}%` : '?%';
         });
-        pInp.addEventListener('input', () => {
+        pInp?.addEventListener('input', () => {
           const v = pInp.value.replace(/%/g, '').trim();
           document.getElementById('t2-live-pct').textContent = v ? `${v}%` : '?%';
           const barTxt = document.getElementById('t2-svg-bar-pct');
@@ -1340,7 +1370,7 @@
         function checkT2() {
           const fVal = parseNum(fInp.value);
           const nVal = parseNum(nInp.value);
-          const pVal = parseNum(pInp.value);
+          const pVal = pInp ? parseNum(pInp.value) : NaN;
 
           if (Number.isNaN(fVal) && Number.isNaN(nVal) && Number.isNaN(pVal)) {
             fb.className = 'feedback-box show warn';
@@ -1350,14 +1380,18 @@
 
           const okF = fVal === factor;
           const okN = nVal === targetPct;
-          const okP = pVal === targetPct;
+          const okP = examine ? U4Studio.examinePicked('t2') === ex.correct : pVal === targetPct;
 
           fInp.classList.toggle('ok', okF);
           fInp.classList.toggle('err', !okF);
           nInp.classList.toggle('ok', okN);
           nInp.classList.toggle('err', !okN);
-          pInp.classList.toggle('ok', okP);
-          pInp.classList.toggle('err', !okP);
+          if (pInp) {
+            pInp.classList.toggle('ok', okP);
+            pInp.classList.toggle('err', !okP);
+          } else if (U4Studio.examinePicked('t2') >= 0) {
+            U4Studio.examineMark('t2', okP);
+          }
 
           if (okF && okN && okP) {
             markSolved(state.solved2, p.id);
@@ -1383,7 +1417,9 @@
               ? `Good scale factor! Now multiply the part (${p.part}) by the same factor.`
               : `Step 2: ${p.part} × ${factor} = ${targetPct}.`;
           } else {
-            fb.textContent = 'Once the whole is 100, the part is the percent. Copy your Step 2 answer into Step 3.';
+            fb.textContent = examine
+              ? 'Step 3: read each sentence slowly. A percent always means “out of every 100.”'
+              : 'Once the whole is 100, the part is the percent. Copy your Step 2 answer into Step 3.';
           }
         }
 
@@ -1394,13 +1430,17 @@
           const esH = `Pregunta “¿Cuántos ${p.whole} caben en 100?” (${p.whole} × ${factor} = 100). Luego multiplica ${p.part} × ${factor}.`;
           fb.textContent = `💡 Hint: ${state.showEs ? `${enH} (${esH})` : enH}`;
         });
+        if (examine && isDone) {
+          document.querySelector(`[data-examine="t2"] [data-examine-pick="${ex.correct}"]`)?.click();
+          U4Studio.examineMark('t2', true);
+        }
         if (isDone) {
           appendNext(fb, 2, T2_PROBLEMS.length, () => {
             currentT2 = T2_PROBLEMS[state.idx2];
             renderT2Problem();
           }, isRand ? newRandomT2 : undefined);
         }
-        [fInp, nInp, pInp].forEach((inp) => {
+        [fInp, nInp, pInp].filter(Boolean).forEach((inp) => {
           inp.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.isComposing) {
               e.preventDefault();
@@ -1723,6 +1763,10 @@
             });
           });
         } else if (p.kind === 'bridge') {
+          // The first bridge problem is the worked model; after it, the Final Answer asks what the
+          // percent MEANS instead of asking for Column 3's number again.
+          const examine = T3_PROBLEMS.find((q) => q.kind === 'bridge').id !== p.id;
+          const ex = U4Studio.meaningCheck(p.finalPct, p.whole);
           const barW = 520;
           const bw = barW / p.midWhole;
           let bridgeRects = '';
@@ -1790,11 +1834,11 @@
 
             <div style="background: var(--surface-soft); border: 1.5px solid var(--border); border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
               <strong style="color: var(--brand); font-size: 1.02rem;">Final Answer: What percent is ${p.part} out of ${p.whole}?</strong>
-              <div style="display: flex; align-items: center; gap: 8px;">
+              ${examine ? `<div style="flex: 1 1 100%;"><p class="step-box-desc" style="margin: 0 0 6px;">${ex.prompt}</p><p class="es-text">${ex.promptEs}</p>${U4Studio.examineHtml('t3b', ex)}</div>` : `<div style="display: flex; align-items: center; gap: 8px;">
                 <label for="t3-br-pct" class="sr-only">Final percent</label>
                 <input type="text" id="t3-br-pct" class="num-input ${isDone ? 'ok' : ''}" style="width: 90px;" inputmode="numeric" value="${isDone ? p.finalPct : ''}" placeholder="?">
                 <strong style="font-size: 1.25rem; color: var(--brand);">%</strong>
-              </div>
+              </div>`}
             </div>
 
             <div style="display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap;">
@@ -1820,9 +1864,9 @@
           inpFin.addEventListener('input', () => {
             const v = inpFin.value.replace(/%/g, '').trim();
             const el = document.getElementById('t3-br-svg-pct');
-            if (el && !inpPct.value.trim()) el.textContent = v ? `${v}%` : '?%';
+            if (el && !inpPct?.value.trim()) el.textContent = v ? `${v}%` : '?%';
           });
-          inpPct.addEventListener('input', () => {
+          inpPct?.addEventListener('input', () => {
             const v = inpPct.value.replace(/%/g, '').trim();
             const el = document.getElementById('t3-br-svg-pct');
             if (el) el.textContent = v ? `${v}%` : '?%';
@@ -1831,13 +1875,17 @@
           function checkBridge() {
             const okM = parseNum(inpMid.value) === p.midPart;
             const okF = parseNum(inpFin.value) === p.finalPct;
-            const okP = parseNum(inpPct.value) === p.finalPct;
+            const okP = examine ? U4Studio.examinePicked('t3b') === ex.correct : parseNum(inpPct.value) === p.finalPct;
             inpMid.classList.toggle('ok', okM);
             inpMid.classList.toggle('err', !okM);
             inpFin.classList.toggle('ok', okF);
             inpFin.classList.toggle('err', !okF);
-            inpPct.classList.toggle('ok', okP);
-            inpPct.classList.toggle('err', !okP);
+            if (inpPct) {
+              inpPct.classList.toggle('ok', okP);
+              inpPct.classList.toggle('err', !okP);
+            } else if (U4Studio.examinePicked('t3b') >= 0) {
+              U4Studio.examineMark('t3b', okP);
+            }
 
             if (okM && okF && okP) {
               markSolved(state.solved3, p.id);
@@ -1845,7 +1893,7 @@
               renderT3Problem();
               announce(`Correct! ${p.part} out of ${p.whole} simplifies to ${p.midPart} out of ${p.midWhole}, which is ${p.finalPct} percent.`);
             } else {
-              const empty = !inpMid.value.trim() && !inpFin.value.trim() && !inpPct.value.trim();
+              const empty = !inpMid.value.trim() && !inpFin.value.trim() && !(inpPct ? inpPct.value.trim() : examine && U4Studio.examinePicked('t3b') >= 0);
               const n = empty ? 0 : bumpMiss(p.id);
               fb.className = 'feedback-box show err';
               if (empty) {
@@ -1859,17 +1907,23 @@
                   ? `Column 3: multiply your Column 2 part by ${p.multBy}.`
                   : `${p.midPart} × ${p.multBy} = ${p.finalPct} in Column 3.`;
               } else {
-                fb.textContent = 'Out of 100, the part is the percent. Copy your Column 3 answer into the Final Answer box.';
+                fb.textContent = examine
+                  ? 'Final Answer: read each sentence slowly. A percent always means “out of every 100.”'
+                  : 'Out of 100, the part is the percent. Copy your Column 3 answer into the Final Answer box.';
               }
             }
           }
 
+          if (examine && isDone) {
+            document.querySelector(`[data-examine="t3b"] [data-examine-pick="${ex.correct}"]`)?.click();
+            U4Studio.examineMark('t3b', true);
+          }
           document.getElementById('t3-check-btn').addEventListener('click', checkBridge);
           document.getElementById('t3-hint-btn').addEventListener('click', () => {
             fb.className = 'feedback-box show warn';
             fb.textContent = `💡 Hint: ${hintTxt}`;
           });
-          [inpMid, inpFin, inpPct].forEach((inp) => {
+          [inpMid, inpFin, inpPct].filter(Boolean).forEach((inp) => {
             inp.addEventListener('keydown', (e) => {
               if (e.key === 'Enter' && !e.isComposing) {
                 e.preventDefault();
@@ -1878,6 +1932,8 @@
             });
           });
         } else if (p.kind === 'campTable') {
+          const exA = U4Studio.meaningCheck(28, 25);
+          const exC = U4Studio.meaningCheck(16, 25);
           stage.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
               <span style="font-size: 0.84rem; font-weight: 800; color: var(--brand);">${p.title}</span>
@@ -1906,13 +1962,13 @@
                   <td class="row-label">🎯 Archery</td>
                   <td><strong>7</strong> out of 25</td>
                   <td>7 × 4 = <input type="text" id="t3-camp-2a" class="num-input ${isDone ? 'ok' : ''}" style="width: 76px;" inputmode="numeric" value="${isDone ? '28' : ''}" aria-label="Archery out of 100" placeholder="?"> out of 100</td>
-                  <td><input type="text" id="t3-camp-2b" class="num-input ${isDone ? 'ok' : ''}" style="width: 84px;" inputmode="numeric" value="${isDone ? '28' : ''}" aria-label="Archery percent" placeholder="?"> <strong>%</strong></td>
+                  <td><strong>${isDone ? '28%' : '?%'}</strong></td>
                 </tr>
                 <tr>
                   <td class="row-label">🎨 Crafts</td>
                   <td><strong>4</strong> out of 25</td>
                   <td>4 × 4 = <input type="text" id="t3-camp-3a" class="num-input ${isDone ? 'ok' : ''}" style="width: 76px;" inputmode="numeric" value="${isDone ? '16' : ''}" aria-label="Crafts out of 100" placeholder="?"> out of 100</td>
-                  <td><input type="text" id="t3-camp-3b" class="num-input ${isDone ? 'ok' : ''}" style="width: 84px;" inputmode="numeric" value="${isDone ? '16' : ''}" aria-label="Crafts percent" placeholder="?"> <strong>%</strong></td>
+                  <td><strong>${isDone ? '16%' : '?%'}</strong></td>
                 </tr>
                 <tr style="background: var(--brand-tint);">
                   <td class="row-label">Total Whole</td>
@@ -1922,6 +1978,25 @@
                 </tr>
               </tbody>
             </table></div>
+
+            <div class="guided-steps-grid">
+              <div class="step-box examine-step">
+                <div>
+                  <div class="step-box-label">Examine · Archery</div>
+                  <p class="step-box-desc">7 of the 25 campers chose Archery. ${exA.prompt}</p>
+                  <p class="es-text">${exA.promptEs}</p>
+                </div>
+                ${U4Studio.examineHtml('t3a', exA)}
+              </div>
+              <div class="step-box examine-step">
+                <div>
+                  <div class="step-box-label">Examine · Crafts</div>
+                  <p class="step-box-desc">4 of the 25 campers chose Crafts. ${exC.prompt}</p>
+                  <p class="es-text">${exC.promptEs}</p>
+                </div>
+                ${U4Studio.examineHtml('t3c', exC)}
+              </div>
+            </div>
 
             <div style="display: flex; gap: 10px; margin-top: 18px;">
               <button type="button" class="btn btn-primary" id="t3-check-btn">Check Camp Table</button>
@@ -1933,9 +2008,16 @@
           `;
 
           const fb = document.getElementById('t3-fb');
+          if (isDone) {
+            for (const [g, e] of [['t3a', exA], ['t3c', exC]]) {
+              document.querySelector(`[data-examine="${g}"] [data-examine-pick="${e.correct}"]`)?.click();
+              U4Studio.examineMark(g, true);
+            }
+          }
           function checkCamp() {
-            const camp = [['t3-camp-1', 56], ['t3-camp-2a', 28], ['t3-camp-2b', 28], ['t3-camp-3a', 16], ['t3-camp-3b', 16]];
+            const camp = [['t3-camp-1', 56], ['t3-camp-2a', 28], ['t3-camp-3a', 16]];
             let allOk = true;
+            let allNumbersOk = true;
             let anyTyped = false;
             camp.forEach(([id, want]) => {
               const el = document.getElementById(id);
@@ -1943,9 +2025,17 @@
               if (el.value.trim()) anyTyped = true;
               el.classList.toggle('ok', ok);
               el.classList.toggle('err', !ok);
-              if (!ok) allOk = false;
+              if (!ok) {
+                allOk = false;
+                allNumbersOk = false;
+              }
             });
 
+            const okA = U4Studio.examinePicked('t3a') === exA.correct;
+            const okC = U4Studio.examinePicked('t3c') === exC.correct;
+            if (U4Studio.examinePicked('t3a') >= 0) U4Studio.examineMark('t3a', okA);
+            if (U4Studio.examinePicked('t3c') >= 0) U4Studio.examineMark('t3c', okC);
+            if (!okA || !okC) allOk = false;
             if (allOk) {
               markSolved(state.solved3, p.id);
               updateProgressHeader();
@@ -1954,7 +2044,8 @@
             } else {
               const n = anyTyped ? bumpMiss(p.id) : 0;
               fb.className = 'feedback-box show err';
-              if (!anyTyped) fb.textContent = 'Type a number in each box, then check.';
+              if (!anyTyped && U4Studio.examinePicked('t3a') < 0) fb.textContent = 'Type a number in each box and choose a sentence for Archery and Crafts, then check.';
+              else if (allNumbersOk && (!okA || !okC)) fb.textContent = 'Examine Archery and Crafts: read each sentence slowly. A percent always means “out of every 100.”';
               else if (n < 2) fb.textContent = 'Multiply each camper count by 4. Fix the red boxes and try again.';
               else fb.textContent = 'Canoeing: 14 × 4 = 56. Archery: 7 × 4 = 28. Crafts: 4 × 4 = 16.';
             }

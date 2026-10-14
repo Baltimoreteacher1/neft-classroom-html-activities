@@ -969,6 +969,46 @@
         const targetPct = p.num * factor;
         const decVal = (targetPct / 100).toFixed(2);
         const isDone = !!state.solved2[p.id];
+        // After the first worked problem, the last step asks what the percent MEANS instead of
+        // asking for the number again, so there is nothing to copy from Step 2.
+        const examine = p.id !== T2_PROBLEMS[0].id;
+        const ex = U4Studio.meaningCheck(targetPct, p.den);
+        const step3Html = examine ? `
+            <div class="step-box step-3">
+              <div>
+                <div class="step-box-label">Step 3 · Write the Decimal</div>
+                <p class="step-box-desc">Write the fraction out of 100 as a decimal:</p>
+              </div>
+              <div class="step-box-eq">
+                <input type="text" id="t2-inp-dec" class="num-input ${isDone ? 'ok' : ''}" style="width: 96px;" value="${isDone ? decVal : ''}" aria-label="Decimal" placeholder="0.__">
+              </div>
+            </div>
+            <div class="step-box examine-step">
+              <div>
+                <div class="step-box-label">Step 4 · Examine Your Percent</div>
+                <p class="step-box-desc">${ex.prompt}</p>
+                <p class="es-text">${ex.promptEs}</p>
+              </div>
+              ${U4Studio.examineHtml('t2', ex)}
+            </div>` : `
+            <div class="step-box step-3">
+              <div>
+                <div class="step-box-label" style="color: var(--warn);">Step 3 · Write Decimal &amp; Percent</div>
+                <p class="step-box-desc">Write the decimal and the percent:</p>
+              </div>
+              <div class="step-box-eq" style="flex-direction: column; align-items: flex-start; gap: 6px;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span style="font-size: 0.85rem;">Dec:</span>
+                  <input type="text" id="t2-inp-dec" class="num-input ${isDone ? 'ok' : ''}" style="width: 86px;" value="${isDone ? decVal : ''}" placeholder="0.__">
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span style="font-size: 0.85rem;">Pct:</span>
+                  <input type="text" id="t2-inp-pct" class="num-input ${isDone ? 'ok' : ''}" style="width: 86px;" value="${isDone ? targetPct : ''}" placeholder="?">
+                  <span>%</span>
+                </div>
+              </div>
+            </div>
+`;
 
         renderDots('t2-dots', T2_PROBLEMS, p.id.startsWith('rand') ? -1 : state.idx2, state.solved2, (ni) => {
           state.idx2 = ni;
@@ -1031,23 +1071,7 @@
               </div>
             </div>
 
-            <div class="step-box step-3">
-              <div>
-                <div class="step-box-label" style="color: var(--warn);">Step 3 · Write Decimal &amp; Percent</div>
-                <p class="step-box-desc">Write the decimal and the percent:</p>
-              </div>
-              <div class="step-box-eq" style="flex-direction: column; align-items: flex-start; gap: 6px;">
-                <div style="display: flex; align-items: center; gap: 6px;">
-                  <span style="font-size: 0.85rem;">Dec:</span>
-                  <input type="text" id="t2-inp-dec" class="num-input ${isDone ? 'ok' : ''}" style="width: 86px;" value="${isDone ? decVal : ''}" placeholder="0.__">
-                </div>
-                <div style="display: flex; align-items: center; gap: 6px;">
-                  <span style="font-size: 0.85rem;">Pct:</span>
-                  <input type="text" id="t2-inp-pct" class="num-input ${isDone ? 'ok' : ''}" style="width: 86px;" value="${isDone ? targetPct : ''}" placeholder="?">
-                  <span>%</span>
-                </div>
-              </div>
-            </div>
+${step3Html}
           </div>
 
           <div style="display: flex; gap: 10px; margin-top: 18px; align-items: center; flex-wrap: wrap;">
@@ -1070,12 +1094,12 @@
           const fVal = parseNum(fInp.value);
           const nVal = parseNum(nInp.value);
           const dVal = parseNum(dInp.value);
-          const pVal = parseNum(pInp.value);
+          const pVal = pInp ? parseNum(pInp.value) : NaN;
 
           const okF = fVal === factor;
           const okN = nVal === targetPct;
           const okD = Math.abs(dVal - Number(decVal)) < 0.001;
-          const okP = pVal === targetPct;
+          const okP = examine ? U4Studio.examinePicked('t2') === ex.correct : pVal === targetPct;
 
           fInp.classList.toggle('ok', okF);
           fInp.classList.toggle('err', !okF);
@@ -1083,8 +1107,12 @@
           nInp.classList.toggle('err', !okN);
           dInp.classList.toggle('ok', okD);
           dInp.classList.toggle('err', !okD);
-          pInp.classList.toggle('ok', okP);
-          pInp.classList.toggle('err', !okP);
+          if (pInp) {
+            pInp.classList.toggle('ok', okP);
+            pInp.classList.toggle('err', !okP);
+          } else if (U4Studio.examinePicked('t2') >= 0) {
+            U4Studio.examineMark('t2', okP);
+          }
 
           if (okF && okN && okD && okP) {
             fb.className = 'feedback-box show ok';
@@ -1096,10 +1124,14 @@
           } else {
             const m = bumpMiss(p.id);
             fb.className = 'feedback-box show err';
-            fb.innerHTML = m < 2 ? 'One or more boxes are incorrect. Re-check your scale factor and multiplication.' : `Hint: 100 &divide; ${p.den} = ${factor}. Multiply ${p.num} &times; ${factor} = ${targetPct}.`;
+            fb.innerHTML = (!okP && examine ? 'Step 4: read each sentence slowly. A percent always means “out of every 100.”' : m < 2 ? 'One or more boxes are incorrect. Re-check your scale factor and multiplication.' : `Hint: 100 &divide; ${p.den} = ${factor}. Multiply ${p.num} &times; ${factor} = ${targetPct}.`);
           }
         }
 
+        if (examine && isDone) {
+          document.querySelector(`[data-examine="t2"] [data-examine-pick="${ex.correct}"]`)?.click();
+          U4Studio.examineMark('t2', true);
+        }
         document.getElementById('t2-check-btn').addEventListener('click', checkT2);
         document.getElementById('t2-hint-btn').addEventListener('click', () => {
           fb.className = 'feedback-box show warn';
