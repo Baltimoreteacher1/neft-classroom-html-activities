@@ -1186,6 +1186,50 @@ function generateHtml(lessonId, config) {
   const unitNum = parseInt(config.unit || String(lessonId).split("-")[0] || 1, 10);
   const theme = getUnitTheme(unitNum);
   const themeCss = renderUnitThemeCss(theme);
+  const familyStyle = ["arcade", "case-file", "unlock"].includes(
+    config.familyNotes?.experience?.style,
+  )
+    ? config.familyNotes.experience.style
+    : "standard";
+  const familyStyleCss =
+    familyStyle === "standard"
+      ? ""
+      : `
+.hw-experience-banner { display:flex; align-items:center; gap:12px; margin:14px 0 0; padding:12px 14px; color:#fff; background:rgba(255,255,255,.11); border:1px solid rgba(255,255,255,.45); border-radius:14px; }
+.hw-experience-icon { flex:0 0 auto; font-size:26px; line-height:1; }
+.hw-experience-copy { min-width:0; }
+.hw-experience-title { margin:0; font-weight:800; letter-spacing:.02em; }
+.hw-experience-description { margin:2px 0 0; color:#f2f6fb; font-size:14px; line-height:1.4; }
+.hw-experience-banner .lang-es { color:inherit; }
+@media (max-width:550px) { .hw-experience-banner { align-items:flex-start; padding:10px 12px; } .hw-experience-description { font-size:13px; } }
+` +
+        ({
+          arcade: `
+body[data-family-style="arcade"] { --navy:#3b3078; --navy-light:#5b21b6; --teal:#7c3aed; --teal-ink:#5b21b6; --teal-light:#ede9fe; --amber:#f59e0b; --amber-light:#fff7e6; }
+body[data-family-style="arcade"] .hw-hero { background:linear-gradient(135deg,#312e81 0%,#5b21b6 58%,#0f766e 100%) !important; border:2px solid #a78bfa; }
+body[data-family-style="arcade"] .hw-hero-glow { background:radial-gradient(circle,rgba(196,181,253,.28) 0%,transparent 70%); }
+body[data-family-style="arcade"] .card, body[data-family-style="arcade"] .practice-tier { border-color:#ddd6fe; border-radius:20px; }
+body[data-family-style="arcade"] .homework-tab-btn.is-active { box-shadow:inset 0 -3px #7c3aed; }
+body[data-family-style="arcade"] .hw-experience-banner { border-style:dashed; border-width:2px; }
+`,
+          "case-file": `
+body[data-family-style="case-file"] { --navy:#174338; --navy-light:#245b4e; --teal:#26866f; --teal-ink:#16634f; --teal-light:#e4f3eb; --amber:#a16207; --amber-light:#fff8dc; }
+body[data-family-style="case-file"] .hw-hero { background:linear-gradient(135deg,#173c3a 0%,#245b4e 60%,#765b24 100%) !important; border:2px solid #d6b85a; }
+body[data-family-style="case-file"] .hw-hero-glow { background:radial-gradient(circle,rgba(245,217,125,.24) 0%,transparent 70%); }
+body[data-family-style="case-file"] .family-guide, body[data-family-style="case-file"] .try-at-home { border-left:5px solid #6c8c58; }
+body[data-family-style="case-file"] .problem-section { border-left:4px solid #d6b85a; }
+body[data-family-style="case-file"] .homework-tab-btn.is-active { box-shadow:inset 0 -3px #d6b85a; }
+body[data-family-style="case-file"] .hw-experience-banner { border-left:5px solid #e5c75a; }
+`,
+          unlock: `
+body[data-family-style="unlock"] { --navy:#3b315f; --navy-light:#4c3d7e; --teal:#7653b7; --teal-ink:#58408d; --teal-light:#f0eafd; --amber:#d39a29; --amber-light:#fff7df; }
+body[data-family-style="unlock"] .hw-hero { background:linear-gradient(135deg,#29335e 0%,#4c3d7e 56%,#876522 100%) !important; border:2px solid #e0b44f; }
+body[data-family-style="unlock"] .hw-hero-glow { background:radial-gradient(circle,rgba(245,211,112,.25) 0%,transparent 70%); }
+body[data-family-style="unlock"] .card, body[data-family-style="unlock"] .practice-tier { border-top:3px solid #d39a29; border-radius:16px; }
+body[data-family-style="unlock"] .homework-tab-btn.is-active { box-shadow:inset 0 -3px #e0b44f; }
+body[data-family-style="unlock"] .hw-experience-banner { border:2px solid #e0b44f; background:rgba(255,255,255,.14); }
+`,
+        }[familyStyle] || "");
 
   const welcomeHtml = renderWelcomeBanner(config, lessonId);
   const quickCheckIntroHtml = renderQuickCheckIntro(coreSelected.length, moreSelected.length > 0);
@@ -3927,6 +3971,7 @@ body {
   line-height: 1.6 !important;
 }
 ${STUDIO_SKIN_CSS}
+${familyStyleCss}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -3949,7 +3994,7 @@ ${STUDIO_SKIN_CSS}
   <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
   <!-- enthead-injected:end -->
 </head>
-<body>
+<body${familyStyle === "standard" ? "" : ` data-family-style="${familyStyle}"`}>
 
 <script>
 /* Language mode, BEFORE first paint. restoreParentSignoff sets the same class

@@ -2809,6 +2809,7 @@ export function renderWelcomeBanner(config, lessonId) {
   const themeEmoji = config.themeEmoji || theme.emoji || "🏠";
   const title = config.familyNotes?.sessionTitle || config.title || "Tonight's Lesson";
   const standard = config.standard || "";
+  const experience = config.familyNotes?.experience;
 
   return `
     <header class="hw-hero" aria-label="Family Math Night welcome">
@@ -2870,7 +2871,18 @@ export function renderWelcomeBanner(config, lessonId) {
         <p class="hw-hero-lead">
           <span class="lang-en">Optional, ungraded practice. Work with someone or on your own; no adult signature is needed.</span>
           <span class="lang-es" lang="es">Práctica opcional, sin calificación. Trabaja con alguien o a solas; no necesitas la firma de un adulto.</span>
-        </p>
+        </p>${
+          experience?.titleEn
+            ? `
+        <section class="hw-experience-banner" aria-label="${esc(experience.titleEn)}">
+          <span class="hw-experience-icon" aria-hidden="true">${esc(experience.icon || "✨")}</span>
+          <div class="hw-experience-copy">
+            <p class="hw-experience-title"><span class="lang-en">${esc(experience.titleEn)}</span><span class="lang-es" lang="es">${esc(experience.titleEs || experience.titleEn)}</span></p>
+            <p class="hw-experience-description"><span class="lang-en">${esc(experience.descriptionEn || "")}</span><span class="lang-es" lang="es">${esc(experience.descriptionEs || experience.descriptionEn || "")}</span></p>
+          </div>
+        </section>`
+            : ""
+        }
 
         <ul class="hw-hero-stats" aria-label="What tonight looks like">
           <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en"><span id="hw_hero_stop_count">${HOMEWORK_STOP_COUNT}</span> stops</span><span class="lang-es" lang="es"><span id="hw_hero_stop_count_es">${HOMEWORK_STOP_COUNT}</span> paradas</span></li>

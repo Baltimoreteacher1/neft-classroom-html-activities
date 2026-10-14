@@ -422,6 +422,29 @@ test("welcome has one bilingual H1 and tools are initially collapsed", () => {
   dom.window.close();
 });
 
+test("Unit 4 family pages keep the tab route while rotating their visual experience", () => {
+  const expected = [
+    ["4-1", "arcade", /Percent Arcade · Fill the Percent Meter/],
+    ["4-2", "arcade", /Percent Arcade · Triple Match/],
+    ["4-3", "case-file", /Percent Detective · Quick Estimate Case/],
+    ["4-4", "case-file", /Percent Detective · Which Deal Wins\?/],
+    ["4-5", "unlock", /Unlock the Whole · Work Backward/],
+  ];
+  let tabIds;
+  for (const [id, style, title] of expected) {
+    const dom = new JSDOM(readFileSync(lessonPath(id, "homework.html"), "utf8"));
+    const d = dom.window.document;
+    assert.equal(d.body.dataset.familyStyle, style, id);
+    assert.match(d.querySelector(".hw-experience-banner")?.textContent || "", title, id);
+    const currentTabIds = [...d.querySelectorAll('[role="tab"]')].map((tab) => tab.id);
+    if (!tabIds) tabIds = currentTabIds;
+    else assert.deepEqual(currentTabIds, tabIds, `${id} changed the tab navigation`);
+    assert.ok(d.querySelector('[data-tab-panel="check"]'), `${id} lost core practice`);
+    assert.ok(d.querySelector('[data-tab-panel="learn"]'), `${id} lost the family learning panel`);
+    dom.window.close();
+  }
+});
+
 test("exact skills replace broad standard matches, keep one visible mission, and preserve later sessions", () => {
   for (const [id, expected] of [
     ["1-2", /6\/5 × 20 = 24/],

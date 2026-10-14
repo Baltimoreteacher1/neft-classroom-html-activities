@@ -113,6 +113,34 @@ function roundsFor(config) {
   );
 }
 
+// Unit 4 has five distinct family experiences; each Play quiz must practice
+// the exact percent skill assigned to that lesson, not the old generic ratio set.
+{
+  const expected = {
+    "4-1": [/out of 10/, /150%/, /0\.5%/],
+    "4-2": [/3\/4/, /0\.4/, /25%/],
+    "4-3": [/About 49%/, /About 24%/, /About 9%/],
+    "4-4": [/25% of 60/, /40% of 80/, /15% of 200/],
+    "4-5": [/15 is 25%/, /42 is 60%/, /18 is 30%/],
+  };
+  for (const [id, questions] of Object.entries(expected)) {
+    const config = configOf(id);
+    const rounds = roundsFor(config);
+    assert.ok(rounds?.length, `${id} has no percent quiz`);
+    assert.match(buildHomeworkGame(config).html, /hw_game_percent-4-/);
+    for (const pattern of questions) {
+      assert.ok(
+        rounds.some((round) => pattern.test(round.q)),
+        `${id} is missing ${pattern}`,
+      );
+    }
+    assert.ok(
+      rounds.every((round) => round.choices.filter((choice) => choice.isCorrect).length === 1),
+      `${id} has a round without exactly one correct answer`,
+    );
+  }
+}
+
 // ── 2c. Unit 7 plays its own numbers, not integers only. ──────────────────
 {
   // 7-2 and 7-3 say "rational numbers, including fractions and decimals";

@@ -52,7 +52,11 @@ function gameMeta(config) {
 /** @returns {{ type: string, html: string, initScript: string }} */
 export function buildHomeworkGame(config) {
   const { topic, vocab, title } = gameMeta(config);
-  if (String(config.lessonId || config.id) === "1-2") {
+  const lessonId = String(config.lessonId || config.id || "");
+  if (/^4-[1-5](?:-part2)?$/.test(lessonId) || config.standard === "6.AT.4") {
+    return buildPercentGame(config, lessonId);
+  }
+  if (lessonId === "1-2") {
     return mcSpeedGame(
       "fraction-multiply",
       title,
@@ -114,6 +118,196 @@ export function buildHomeworkGame(config) {
   };
   const fn = builders[topic] || buildVocabMatchGame;
   return fn(config, { topic, vocab, title });
+}
+
+function buildPercentGame(config, lessonId) {
+  const coreId = lessonId.replace(/-part2$/, "");
+  const sets = {
+    "4-1": {
+      nameEn: "Fill the Percent Meter",
+      nameEs: "Llena el medidor de porcentaje",
+      coach: {
+        en: "Read each percent as a comparison to 100. A percent can be more than 100% or less than 1%.",
+        es: "Lee cada porcentaje como una comparación con 100. Un porcentaje puede ser mayor que 100% o menor que 1%.",
+      },
+      rounds: [
+        {
+          q: "7 out of 10 is what percent?",
+          choices: ["70%", "7%", "17%", "0.7%"],
+          correct: 0,
+          hint: "Scale 7 out of 10 to an equivalent ratio out of 100.",
+        },
+        {
+          q: "150% written as a decimal is…",
+          choices: ["1.5", "0.15", "15", "0.015"],
+          correct: 0,
+          hint: "Divide the percent by 100.",
+        },
+        {
+          q: "0.5% written as a decimal is…",
+          choices: ["0.005", "0.05", "0.5", "5"],
+          correct: 0,
+          hint: "A percent means divide by 100, even when the percent is less than 1.",
+        },
+        {
+          q: "A score of 125% of a goal is…",
+          choices: [
+            "more than the whole goal",
+            "one quarter of the goal",
+            "exactly the whole goal",
+            "less than 1% of the goal",
+          ],
+          correct: 0,
+          hint: "100% is the whole goal.",
+        },
+      ],
+    },
+    "4-2": {
+      nameEn: "Triple Match",
+      nameEs: "Terna equivalente",
+      coach: {
+        en: "Match equivalent forms. The fraction, decimal, and percent name the same value.",
+        es: "Relaciona formas equivalentes. La fracción, el decimal y el porcentaje representan el mismo valor.",
+      },
+      rounds: [
+        {
+          q: "3/4 = ? = ?%",
+          choices: ["0.75 and 75%", "0.34 and 34%", "0.25 and 25%", "0.8 and 80%"],
+          correct: 0,
+          hint: "Divide 3 by 4, then multiply the decimal by 100.",
+        },
+        {
+          q: "0.4 as a fraction and percent is…",
+          choices: ["2/5 and 40%", "4/100 and 4%", "4/5 and 80%", "1/4 and 25%"],
+          correct: 0,
+          hint: "0.4 is four tenths. Simplify the fraction.",
+        },
+        {
+          q: "25% as a decimal and simplest fraction is…",
+          choices: ["0.25 and 1/4", "2.5 and 1/4", "0.025 and 1/25", "0.25 and 1/25"],
+          correct: 0,
+          hint: "Write 25% over 100, then simplify.",
+        },
+        {
+          q: "1/5 = ? = ?%",
+          choices: ["0.2 and 20%", "0.5 and 5%", "0.15 and 15%", "0.02 and 2%"],
+          correct: 0,
+          hint: "Divide 1 by 5.",
+        },
+      ],
+    },
+    "4-3": {
+      nameEn: "Quick Estimate Case",
+      nameEs: "Caso de estimación rápida",
+      coach: {
+        en: "Choose a nearby benchmark percent and a friendly number. Keep your answer labeled as an estimate.",
+        es: "Elige un porcentaje de referencia cercano y un número fácil. Indica que tu respuesta es una estimación.",
+      },
+      rounds: [
+        {
+          q: "About 49% of 62 is…",
+          choices: ["30", "3", "60", "300"],
+          correct: 0,
+          hint: "Use 50% of 60 as a nearby benchmark.",
+        },
+        {
+          q: "About 24% of 80 is…",
+          choices: ["20", "2", "40", "80"],
+          correct: 0,
+          hint: "24% is close to 25%, or one fourth.",
+        },
+        {
+          q: "About 9% of 71 is…",
+          choices: ["7", "1", "35", "70"],
+          correct: 0,
+          hint: "Use 10% of 70 as a benchmark.",
+        },
+        {
+          q: "About 76% of 39 is…",
+          choices: ["30", "3", "20", "39"],
+          correct: 0,
+          hint: "Use 75% of 40 as a nearby benchmark.",
+        },
+      ],
+    },
+    "4-4": {
+      nameEn: "Which Deal Wins?",
+      nameEs: "¿Qué oferta conviene?",
+      coach: {
+        en: "Find the percent amount, then compare the evidence. Explain why the answer is a reasonable size.",
+        es: "Halla la cantidad porcentual y compara la evidencia. Explica por qué el resultado tiene un tamaño razonable.",
+      },
+      rounds: [
+        {
+          q: "25% of 60 tickets is…",
+          choices: ["15", "25", "35", "150"],
+          correct: 0,
+          hint: "25% is one fourth of the whole.",
+        },
+        {
+          q: "40% of 80 points is…",
+          choices: ["32", "8", "40", "320"],
+          correct: 0,
+          hint: "Write 40% as 0.40, then multiply by 80.",
+        },
+        {
+          q: "15% of 200 is…",
+          choices: ["30", "15", "20", "300"],
+          correct: 0,
+          hint: "10% is 20 and 5% is 10.",
+        },
+        {
+          q: "35% of 100 is…",
+          choices: ["35", "3.5", "65", "350"],
+          correct: 0,
+          hint: "35% means 35 out of every 100.",
+        },
+      ],
+    },
+    "4-5": {
+      nameEn: "Unlock the Whole",
+      nameEs: "Desbloquea el total",
+      coach: {
+        en: "The part is known and the whole is hidden. Use part ÷ percent-as-a-decimal to find 100%.",
+        es: "Conoces la parte y falta el total. Usa parte ÷ porcentaje escrito como decimal para hallar el 100%.",
+      },
+      rounds: [
+        {
+          q: "15 is 25% of what whole?",
+          choices: ["60", "30", "25", "3.75"],
+          correct: 0,
+          hint: "25% = 0.25. Divide 15 by 0.25.",
+        },
+        {
+          q: "42 is 60% of what whole?",
+          choices: ["70", "25.2", "60", "2.52"],
+          correct: 0,
+          hint: "Write 0.6 × w = 42, then divide.",
+        },
+        {
+          q: "18 is 30% of what whole?",
+          choices: ["60", "5.4", "30", "48"],
+          correct: 0,
+          hint: "Divide the part by 0.30.",
+        },
+        {
+          q: "36 is 120% of what whole?",
+          choices: ["30", "43.2", "120", "3"],
+          correct: 0,
+          hint: "120% = 1.2, which is more than the whole.",
+        },
+      ],
+    },
+  };
+  const item = sets[coreId] || sets["4-1"];
+  return mcSpeedGame(
+    `percent-${coreId}`,
+    config.title || "Percent Practice",
+    item.nameEn,
+    item.nameEs,
+    item.rounds,
+    item.coach,
+  );
 }
 
 function buildExponentGame(_config, { title }) {
