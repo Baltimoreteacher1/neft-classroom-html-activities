@@ -564,7 +564,13 @@ test("exact skills replace broad standard matches, keep one visible mission, and
       /A student solved a problem and made a common slip|Choose a side with your student/,
     );
     dom.window.close();
-    assert.ok(renderConceptExplainer(c).includes("family-specific-model"));
+    const explainer = renderConceptExplainer(c);
+    if (c.familyBigIdeaFormat === "simple-visual") {
+      assert.ok(explainer.includes("family-big-idea-piece"));
+      assert.ok(explainer.includes("family-big-idea-visual"));
+    } else {
+      assert.ok(explainer.includes("family-specific-model"));
+    }
     if (id === "1-2") assert.match(getTopicPowerUp("fractions", c).qEn, /6\/5 × 20/);
     if (id === "5-2") assert.match(getTopicPowerUp("area", c).qEn, /triangle/);
     if (id === "5-8") assert.match(getTopicPowerUp("surface-area", c).qEn, /pyramid/);
@@ -611,7 +617,7 @@ test("plotting lessons get a plotting home task, distance lessons a distance tas
   assert.match(familyGuidance({ lessonId: "7-6" }).mission.en, /distance cannot be negative/);
 });
 
-test("Unit 4 conceptSteps cues, family-specific SVG models, and no vague start/show/solve labels", () => {
+test("Unit 4 family Big Ideas use a simple visual with no multi-step explanation", () => {
   for (const id of [
     "4-1",
     "4-1-part2",
@@ -628,14 +634,22 @@ test("Unit 4 conceptSteps cues, family-specific SVG models, and no vague start/s
     const c = { ...config(id.replace("-part2", "")), lessonId: id, familyNotes: notes };
     const explainer = renderConceptExplainer(c);
     assert.ok(
-      explainer.includes("family-specific-model"),
-      `${id} must have a family-specific visual model`,
+      explainer.includes("family-big-idea-piece"),
+      `${id} must have one simple family Big Idea panel`,
+    );
+    assert.ok(
+      explainer.includes("family-big-idea-visual"),
+      `${id} must have a clear family visual model`,
     );
     assert.doesNotMatch(
       explainer,
       /Start \/ Comienza|Show it \/ Muéstralo/,
       `${id} must not use vague start/show labels`,
     );
-    assert.ok(explainer.includes("step-cue-label"), `${id} must render step-cue-label`);
+    assert.doesNotMatch(
+      explainer,
+      /guided-steps|step-cue-label/,
+      `${id} should keep the explanation in one piece`,
+    );
   }
 });

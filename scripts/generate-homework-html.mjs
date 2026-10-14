@@ -1195,7 +1195,43 @@ body[data-family-style] .frame-stars { border-color:#8091a2 !important; }
 body[data-family-style] .frame-stars .pb-frame-header { background:#8091a2 !important; }
 `
       : "";
-  const themeCss = `${renderUnitThemeCss(theme)}\n${unit4NoPurpleCss}`;
+  const familyBigIdeaCss =
+    config.familyBigIdeaFormat === "simple-visual"
+      ? `
+.big-idea .family-big-idea-piece { padding:clamp(16px,3vw,24px); border:2px solid #8fcfc8; border-radius:var(--radius-md); background:#f1fbf9; }
+.big-idea .family-big-idea-copy { display:flex; align-items:flex-start; gap:12px; }
+.big-idea .family-big-idea-copy p { margin:0; font-size:20px; line-height:1.45; font-weight:700; }
+.big-idea .family-big-idea-copy p.lang-es { margin-left:auto; padding-left:12px; border-left:2px solid #8fcfc8; }
+.big-idea .family-big-idea-visual { margin:16px auto 0; max-width:620px; padding:14px; border:1px solid #c7e5df; border-radius:14px; background:#fff; text-align:center; }
+.big-idea .family-big-idea-visual p { margin:10px 0 0; font-size:16px; line-height:1.4; }
+.big-idea .family-visual-equation,.big-idea .family-estimate-values,.big-idea .family-discount-equation,.big-idea .family-whole-labels { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:12px; font-size:clamp(20px,4vw,30px); }
+.big-idea .family-visual-equation > strong,.big-idea .family-estimate-values > span,.big-idea .family-estimate-values > strong,.big-idea .family-discount-equation > span,.big-idea .family-discount-equation > strong,.big-idea .family-whole-labels > strong { padding:6px 10px; border-radius:10px; background:#eef7f5; }
+.big-idea .family-estimate-values > strong,.big-idea .family-whole-labels > strong:last-child { background:#d8f1ea; }
+.big-idea .family-percent-grid { display:grid; grid-template-columns:repeat(10,1fr); gap:3px; width:min(100%,220px); margin:12px auto 0; }
+.big-idea .family-percent-grid span { aspect-ratio:1; border:1px solid #b8c8c5; border-radius:2px; background:#fff; }
+.big-idea .family-percent-grid span.is-filled,.big-idea .family-whole-bar span.is-filled { background:#31a889; border-color:#247b65; }
+.big-idea .family-equivalent-forms { display:flex; align-items:center; justify-content:center; gap:10px; }
+.big-idea .family-form-card { min-width:110px; padding:10px; border-radius:12px; background:#eef7f5; }
+.big-idea .family-form-card span { display:block; font-size:14px; }
+.big-idea .family-form-card strong { display:block; margin-top:4px; font-size:clamp(22px,4vw,30px); }
+.big-idea .family-visual-equals { font-size:26px; font-weight:800; }
+.big-idea .family-discount-equation small { display:block; font-size:13px; font-weight:600; }
+.big-idea .family-discount-bar,.big-idea .family-whole-bar { display:grid; gap:4px; margin:14px auto 0; }
+.big-idea .family-discount-bar { grid-template-columns:repeat(4,1fr); max-width:460px; }
+.big-idea .family-discount-bar span,.big-idea .family-whole-bar span { height:26px; border:1px solid #9bbab3; border-radius:4px; background:#e6f3f0; }
+.big-idea .family-discount-bar span:first-child { background:#f6d78b; border-color:#d9ad4b; }
+.big-idea .family-discount-labels { display:flex; justify-content:space-between; gap:12px; max-width:460px; margin:8px auto 0; font-size:14px; font-weight:700; }
+.big-idea .family-whole-labels { justify-content:space-between; font-size:18px; }
+.big-idea .family-whole-bar { grid-template-columns:repeat(10,1fr); max-width:460px; }
+@media (max-width:620px) { .big-idea .family-big-idea-copy { display:block; } .big-idea .family-big-idea-copy p { font-size:18px; } .big-idea .family-big-idea-copy p.lang-es { margin:8px 0 0; padding:8px 0 0; border-left:0; border-top:1px solid #8fcfc8; } .big-idea .family-big-idea-copy .btn-read-aloud { margin-top:10px; } .big-idea .family-form-card { min-width:0; flex:1 1 70px; } .big-idea .family-equivalent-forms { gap:5px; } .big-idea .family-whole-labels { font-size:15px; } }
+body[data-family-style] [id^="hw_panel_"] p { font-size:19px!important; line-height:1.5!important; }
+body[data-family-style] [id^="hw_panel_"] li,body[data-family-style] [id^="hw_panel_"] label,body[data-family-style] .problem-stem,body[data-family-style] .choice-text { font-size:19px!important; line-height:1.45!important; }
+body[data-family-style] .visual-lab-heading>p,body[data-family-style] .visual-lab-lang-note,body[data-family-style] .visual-representation-card p,body[data-family-style] .visual-coach-q { font-size:19px!important; line-height:1.5!important; }
+body[data-family-style] .hw-hero-lead,body[data-family-style] .hw-experience-description,body[data-family-style] .hw-route-note,body[data-family-style] .hw-route-chooser>p,body[data-family-style] .hw-route-option { font-size:18px!important; line-height:1.45!important; }
+body[data-family-style] .homework-tab-btn { font-size:18px!important; }
+`
+      : "";
+  const themeCss = `${renderUnitThemeCss(theme)}\n${unit4NoPurpleCss}\n${familyBigIdeaCss}`;
   const familyStyle = ["arcade", "case-file", "unlock"].includes(
     config.familyNotes?.experience?.style,
   )

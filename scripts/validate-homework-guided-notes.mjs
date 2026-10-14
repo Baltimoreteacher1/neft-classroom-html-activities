@@ -335,12 +335,21 @@ for (const id of lessonIds) {
     'class="visual-representation-grid"',
   ]);
   for (const marker of REQUIRED_MARKERS) {
+    if (config.familyBigIdeaFormat === "simple-visual" && marker === 'class="step-lead lang-en"')
+      continue;
     if ((ratioComparison || paperModel || questionModel) && sharedModelMarkers.has(marker))
       continue;
     if (paperModel && ["TOUCH &amp; TRY", "TOCA Y PRUEBA"].includes(marker)) continue;
     if (!html.includes(marker)) {
       issues.push({ id, level: "CRITICAL", msg: `Missing marker: ${marker}` });
     }
+  }
+  if (
+    config.familyBigIdeaFormat === "simple-visual" &&
+    (!html.includes('class="family-big-idea-piece"') ||
+      !html.includes('class="family-big-idea-visual'))
+  ) {
+    issues.push({ id, level: "CRITICAL", msg: "Missing unified family big idea" });
   }
   if (ratioComparison) {
     for (const marker of [

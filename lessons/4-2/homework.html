@@ -320,6 +320,39 @@ body[data-family-style] .powerup-choice-btn:hover:not(:disabled) { border-color:
 body[data-family-style] .tile-6 { background:#64748b !important; }
 body[data-family-style] .frame-stars { border-color:#8091a2 !important; }
 body[data-family-style] .frame-stars .pb-frame-header { background:#8091a2 !important; }
+
+
+.big-idea .family-big-idea-piece { padding:clamp(16px,3vw,24px); border:2px solid #8fcfc8; border-radius:var(--radius-md); background:#f1fbf9; }
+.big-idea .family-big-idea-copy { display:flex; align-items:flex-start; gap:12px; }
+.big-idea .family-big-idea-copy p { margin:0; font-size:20px; line-height:1.45; font-weight:700; }
+.big-idea .family-big-idea-copy p.lang-es { margin-left:auto; padding-left:12px; border-left:2px solid #8fcfc8; }
+.big-idea .family-big-idea-visual { margin:16px auto 0; max-width:620px; padding:14px; border:1px solid #c7e5df; border-radius:14px; background:#fff; text-align:center; }
+.big-idea .family-big-idea-visual p { margin:10px 0 0; font-size:16px; line-height:1.4; }
+.big-idea .family-visual-equation,.big-idea .family-estimate-values,.big-idea .family-discount-equation,.big-idea .family-whole-labels { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:12px; font-size:clamp(20px,4vw,30px); }
+.big-idea .family-visual-equation > strong,.big-idea .family-estimate-values > span,.big-idea .family-estimate-values > strong,.big-idea .family-discount-equation > span,.big-idea .family-discount-equation > strong,.big-idea .family-whole-labels > strong { padding:6px 10px; border-radius:10px; background:#eef7f5; }
+.big-idea .family-estimate-values > strong,.big-idea .family-whole-labels > strong:last-child { background:#d8f1ea; }
+.big-idea .family-percent-grid { display:grid; grid-template-columns:repeat(10,1fr); gap:3px; width:min(100%,220px); margin:12px auto 0; }
+.big-idea .family-percent-grid span { aspect-ratio:1; border:1px solid #b8c8c5; border-radius:2px; background:#fff; }
+.big-idea .family-percent-grid span.is-filled,.big-idea .family-whole-bar span.is-filled { background:#31a889; border-color:#247b65; }
+.big-idea .family-equivalent-forms { display:flex; align-items:center; justify-content:center; gap:10px; }
+.big-idea .family-form-card { min-width:110px; padding:10px; border-radius:12px; background:#eef7f5; }
+.big-idea .family-form-card span { display:block; font-size:14px; }
+.big-idea .family-form-card strong { display:block; margin-top:4px; font-size:clamp(22px,4vw,30px); }
+.big-idea .family-visual-equals { font-size:26px; font-weight:800; }
+.big-idea .family-discount-equation small { display:block; font-size:13px; font-weight:600; }
+.big-idea .family-discount-bar,.big-idea .family-whole-bar { display:grid; gap:4px; margin:14px auto 0; }
+.big-idea .family-discount-bar { grid-template-columns:repeat(4,1fr); max-width:460px; }
+.big-idea .family-discount-bar span,.big-idea .family-whole-bar span { height:26px; border:1px solid #9bbab3; border-radius:4px; background:#e6f3f0; }
+.big-idea .family-discount-bar span:first-child { background:#f6d78b; border-color:#d9ad4b; }
+.big-idea .family-discount-labels { display:flex; justify-content:space-between; gap:12px; max-width:460px; margin:8px auto 0; font-size:14px; font-weight:700; }
+.big-idea .family-whole-labels { justify-content:space-between; font-size:18px; }
+.big-idea .family-whole-bar { grid-template-columns:repeat(10,1fr); max-width:460px; }
+@media (max-width:620px) { .big-idea .family-big-idea-copy { display:block; } .big-idea .family-big-idea-copy p { font-size:18px; } .big-idea .family-big-idea-copy p.lang-es { margin:8px 0 0; padding:8px 0 0; border-left:0; border-top:1px solid #8fcfc8; } .big-idea .family-big-idea-copy .btn-read-aloud { margin-top:10px; } .big-idea .family-form-card { min-width:0; flex:1 1 70px; } .big-idea .family-equivalent-forms { gap:5px; } .big-idea .family-whole-labels { font-size:15px; } }
+body[data-family-style] [id^="hw_panel_"] p { font-size:19px!important; line-height:1.5!important; }
+body[data-family-style] [id^="hw_panel_"] li,body[data-family-style] [id^="hw_panel_"] label,body[data-family-style] .problem-stem,body[data-family-style] .choice-text { font-size:19px!important; line-height:1.45!important; }
+body[data-family-style] .visual-lab-heading>p,body[data-family-style] .visual-lab-lang-note,body[data-family-style] .visual-representation-card p,body[data-family-style] .visual-coach-q { font-size:19px!important; line-height:1.5!important; }
+body[data-family-style] .hw-hero-lead,body[data-family-style] .hw-experience-description,body[data-family-style] .hw-route-note,body[data-family-style] .hw-route-chooser>p,body[data-family-style] .hw-route-option { font-size:18px!important; line-height:1.45!important; }
+body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 </style>
 <link rel="stylesheet" href="/assets/homework/homework-layer-6c3c5e2d91.css">
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -650,138 +683,16 @@ body[data-family-style] .frame-stars .pb-frame-header { background:#8091a2 !impo
     </div>
       <div class="learn-big-idea-block" id="hw_learn_idea">
 
-      <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span> <button type="button" class="btn-listen-concept" onclick="speakBigIdea(&quot;Fraction, decimal, and percent name the exact same part of one whole.&quot;, &quot;La fracción, el decimal y el porcentaje nombran exactamente la misma parte de un entero.&quot;)" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button></h2>
-      <!-- renderLearnTab() strips the  wrapper, so the oversized
-           "big idea" type scale hangs off this inner div, not off
-           .section-visual (which never reaches the page). -->
+      <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span></h2>
       <div class="big-idea">
-      <div class="key-idea-banner">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
-          <div>
-            <p class="lang-en"><strong>In one sentence:</strong> Fraction, decimal, and percent name the exact same part of one whole.</p>
-            <p class="lang-es" lang="es"><strong>En una frase:</strong> La fracción, el decimal y el porcentaje nombran exactamente la misma parte de un entero.</p>
+        <div class="family-big-idea-piece">
+          <div class="family-big-idea-copy">
+            <p class="lang-en">One amount can be written as a fraction, decimal, or percent. One quarter is 1/4, 0.25, and 25%.</p>
+            <p class="lang-es" lang="es">Una misma cantidad se puede escribir como fracción, decimal o porcentaje. Un cuarto es 1/4, 0.25 y 25%.</p>
+            <button type="button" class="btn-read-aloud" onclick="speakHomeworkText(&quot;One amount can be written as a fraction, decimal, or percent. One quarter is 1/4, 0.25, and 25%.&quot;, &quot;Una misma cantidad se puede escribir como fracción, decimal o porcentaje. Un cuarto es 1/4, 0.25 y 25%.&quot;)" title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
           </div>
-          <button type="button" class="btn-read-aloud" onclick="speakHomeworkText(&quot;Fraction, decimal, and percent name the exact same part of one whole.&quot;, &quot;La fracción, el decimal y el porcentaje nombran exactamente la misma parte de un entero.&quot;)" title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+          <div class="family-big-idea-visual family-equivalent-forms"><div class="family-form-card"><span><span class="lang-en">Fraction</span><span class="lang-es" lang="es">Fracción</span></span><strong>1/4</strong></div><span class="family-visual-equals" aria-hidden="true">=</span><div class="family-form-card"><span><span class="lang-en">Decimal</span><span class="lang-es" lang="es">Decimal</span></span><strong>0.25</strong></div><span class="family-visual-equals" aria-hidden="true">=</span><div class="family-form-card"><span><span class="lang-en">Percent</span><span class="lang-es" lang="es">Porcentaje</span></span><strong>25%</strong></div></div>
         </div>
-      </div>
-      <figure class="concept-visual-wrap"><div class="family-specific-model">
-      <svg viewBox="0 0 640 420" class="concept-svg" role="img" aria-label="Three forms of one amount: 1/4 equals 25/100 equals 0.25 equals 25%" preserveAspectRatio="xMidYMid meet">
-        <rect x="3" y="3" width="634" height="414" rx="22" fill="#e9f7f4" stroke="#1fa6a2" stroke-width="3"/>
-        <text class="concept-title-en" x="320" y="48" text-anchor="middle" font-size="27" font-weight="800" fill="#12355b">Three Forms of One Amount</text><text class="concept-title-es" lang="es" x="320" y="48" text-anchor="middle" font-size="27" font-weight="800" fill="#12355b">Tres formas de una misma cantidad</text>
-
-        <!-- 4 Equivalence Cards -->
-        <!-- Fraction Card -->
-        <rect x="34" y="68" width="134" height="212" rx="14" fill="#ffffff" stroke="#cddbe8" stroke-width="2" />
-        <rect x="46" y="80" width="110" height="24" rx="6" fill="#0f766e"/>
-        <text x="101" y="97" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">FRACTION</text>
-        <text x="101" y="146" text-anchor="middle" font-size="34" font-weight="800" fill="#12355b">1/4</text>
-        <g transform="translate(61, 168)">
-          <rect x="0" y="0" width="80" height="20" rx="3" fill="#f8fafc" stroke="#0f766e" stroke-width="1.5"/>
-          <rect x="0" y="0" width="20" height="20" rx="3" fill="#0f766e"/>
-        </g>
-        <text x="101" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">1 part of 4</text>
-        <text x="101" y="260" text-anchor="middle" font-size="12" font-weight="800" fill="#0f766e">1 ÷ 4 = 0.25</text>
-
-        <!-- Hundredths Card -->
-        <rect x="180" y="68" width="134" height="212" rx="14" fill="#ffffff" stroke="#cddbe8" stroke-width="2" />
-        <rect x="192" y="80" width="110" height="24" rx="6" fill="#0f766e"/>
-        <text x="247" y="97" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">OUT OF 100</text>
-        <text x="247" y="146" text-anchor="middle" font-size="28" font-weight="800" fill="#12355b">25/100</text>
-        <text x="247" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#0f766e">scale × 25</text>
-        <text x="247" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">25 hundredths</text>
-        <text x="247" y="260" text-anchor="middle" font-size="12" font-weight="800" fill="#0f766e">scale denominator</text>
-
-        <!-- Decimal Card -->
-        <rect x="326" y="68" width="134" height="212" rx="14" fill="#ffffff" stroke="#cddbe8" stroke-width="2" />
-        <rect x="338" y="80" width="110" height="24" rx="6" fill="#0f766e"/>
-        <text x="393" y="97" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">DECIMAL</text>
-        <text x="393" y="146" text-anchor="middle" font-size="34" font-weight="800" fill="#12355b">0.25</text>
-        <text x="393" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#0f766e">2 tenths</text>
-        <text x="393" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">5 hundredths</text>
-        <text x="393" y="260" text-anchor="middle" font-size="12" font-weight="800" fill="#0f766e">0.25 × 100 = 25%</text>
-
-        <!-- Percent Card -->
-        <rect x="472" y="68" width="134" height="212" rx="14" fill="#ffffff" stroke="#cddbe8" stroke-width="2" />
-        <rect x="484" y="80" width="110" height="24" rx="6" fill="#0f766e"/>
-        <text x="539" y="97" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">PERCENT</text>
-        <text x="539" y="146" text-anchor="middle" font-size="34" font-weight="800" fill="#12355b">25%</text>
-        <text x="539" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#0f766e">per hundred</text>
-        <text x="539" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">25 for each 100</text>
-        <text x="539" y="260" text-anchor="middle" font-size="12" font-weight="800" fill="#0f766e">same amount!</text>
-
-        <!-- Conversion Pathways Callout -->
-        <rect x="34" y="294" width="572" height="108" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
-        <text x="54" y="318" font-size="15" font-weight="800" fill="#0f766e">✔ HOW TO CONVERT BETWEEN FORMS:</text>
-        <text x="54" y="342" font-size="14" font-weight="700" fill="#12355b">1. Fraction to Decimal: Divide top ÷ bottom (1 ÷ 4 = 0.25, or 3 ÷ 4 = 0.75).</text>
-        <text x="54" y="364" font-size="14" font-weight="700" fill="#12355b">2. Decimal to Percent: Multiply by 100 (0.25 × 100 = 25%, or 0.75 × 100 = 75%).</text>
-        <text x="54" y="386" font-size="13.5" font-weight="700" fill="#0f766e">Equivalent ratio &amp; value: 1/4 = 25/100 = 0.25 = 25%</text>
-      </svg></div><figcaption class="concept-visual-caption"><span class="lang-en">Fraction, decimal, and percent can all name the same part of one whole.</span><span class="lang-es" lang="es">La fracción, el decimal y el porcentaje pueden nombrar la misma parte de un entero.</span></figcaption><button type="button" class="concept-zoom-btn" onclick="openConceptZoom(this)"><span class="lang-en">🔍 Tap to enlarge the picture</span><span class="lang-es" lang="es">🔍 Toca para ampliar la imagen</span></button></figure>
-      <ol class="guided-steps">
-
-          <li class="guided-step step-color-1">
-            <div class="guided-step-head">
-              <span class="guided-step-num step-color-1" aria-hidden="true">1</span>
-              <div><span class="step-cue-label"><span class="guided-step-icon" aria-hidden="true">🧩</span><span class="lang-en">Start with fraction</span><span class="lang-es" lang="es">Empieza con la fracción</span></span><span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span></div>
-            </div>
-            <p class="step-lead lang-en">Identify the fraction of points or amount: 3/4.</p>
-            <p class="step-lead lang-es" lang="es">Identifica la fracción de puntos o cantidad: 3/4.</p>
-
-          </li>
-          <li class="guided-step step-color-2">
-            <div class="guided-step-head">
-              <span class="guided-step-num step-color-2" aria-hidden="true">2</span>
-              <div><span class="step-cue-label"><span class="guided-step-icon" aria-hidden="true">➗</span><span class="lang-en">Divide for decimal</span><span class="lang-es" lang="es">Divide para el decimal</span></span><span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span></div>
-            </div>
-            <p class="step-lead lang-en">Divide numerator by denominator: 3 ÷ 4 = 0.75.</p>
-            <p class="step-lead lang-es" lang="es">Divide el numerador entre el denominador: 3 ÷ 4 = 0.75.</p>
-            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">That is the decimal form.</p><p class="lang-es" lang="es">Esa es la forma decimal.</p></details>
-          </li>
-          <li class="guided-step step-color-3">
-            <div class="guided-step-head">
-              <span class="guided-step-num step-color-3" aria-hidden="true">3</span>
-              <div><span class="step-cue-label"><span class="guided-step-icon" aria-hidden="true">✖️</span><span class="lang-en">Multiply by 100</span><span class="lang-es" lang="es">Multiplica por 100</span></span><span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span></div>
-            </div>
-            <p class="step-lead lang-en">Multiply decimal by 100 to get percent: 0.75 × 100 = 75%.</p>
-            <p class="step-lead lang-es" lang="es">Multiplica el decimal por 100 para obtener el porcentaje: 0.75 × 100 = 75%.</p>
-
-          </li>
-          <li class="guided-step step-color-4">
-            <div class="guided-step-head">
-              <span class="guided-step-num step-color-4" aria-hidden="true">4</span>
-              <div><span class="step-cue-label"><span class="guided-step-icon" aria-hidden="true">🎯</span><span class="lang-en">State equivalence</span><span class="lang-es" lang="es">Afirma la equivalencia</span></span><span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span></div>
-            </div>
-            <p class="step-lead lang-en">Confirm equivalence: 3/4 = 0.75 = 75% — all three name the exact same score.</p>
-            <p class="step-lead lang-es" lang="es">Confirma la equivalencia: 3/4 = 0.75 = 75% — los tres nombran exactamente el mismo puntaje.</p>
-
-          </li>
-      </ol>
-      <details class="watch-for-drawer">
-      <summary class="watch-for-summary"><span class="lang-en">Watch for these (3)</span><span class="lang-es" lang="es">Ten en cuenta (3)</span></summary>
-      <ul class="watch-for-list">
-
-          <li>
-            <span class="watch-icon">👀</span>
-            <div>
-              <p class="lang-en">Listen for &quot;porcentaje&quot; (percent) — it means a number compared to 100, with the % sign.</p>
-              <p class="lang-es" lang="es">Escucha &quot;porcentaje&quot; — significa un número comparado con 100, con el signo %.</p>
-            </div>
-          </li>
-          <li>
-            <span class="watch-icon">🔢</span>
-            <div>
-              <p class="lang-en">Listen for &quot;equivalente&quot; (equivalent) — it means the same value, just written a different way.</p>
-              <p class="lang-es" lang="es">Escucha &quot;equivalente&quot; — significa el mismo valor, solo escrito de otra forma.</p>
-            </div>
-          </li>
-          <li>
-            <span class="watch-icon">✋</span>
-            <div>
-              <p class="lang-en">Let your student divide first. Ask &quot;What is the top number divided by the bottom?&quot; before helping.</p>
-              <p class="lang-es" lang="es">Deja que tu estudiante divida primero. Pregunta &quot;¿Cuánto es el número de arriba entre el de abajo?&quot; antes de ayudar.</p>
-            </div>
-          </li>
-      </ul>
-      </details>
       </div>
     </div>
       <div class="learn-extended-block" id="hw_learn_try"><section class="family-visual-lab" data-visual-lab="ratios" data-lesson-model="percent-grid" aria-labelledby="visual_lab_title">
@@ -898,7 +809,7 @@ body[data-family-style] .frame-stars .pb-frame-header { background:#8091a2 !impo
         <div class="powerup-feedback-content" id="powerup_feedback_content"></div>
       </div>
     </section></div>
-      <p class="tab-help-row learn-extended-block"><button type="button" class="help-pop-btn" data-help='{"titleEn":"The big idea","titleEs":"La idea principal","en":"Fraction, decimal, and percent name the exact same part of one whole.","es":"La fracción, el decimal y el porcentaje nombran exactamente la misma parte de un entero."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Need more help?</span><span class="lang-es" lang="es">¿Más ayuda?</span></button></p>
+      <p class="tab-help-row learn-extended-block"><button type="button" class="help-pop-btn" data-help='{"titleEn":"The big idea","titleEs":"La idea principal","en":"One amount can be written as a fraction, decimal, or percent. One quarter is 1/4, 0.25, and 25%.","es":"Una misma cantidad se puede escribir como fracción, decimal o porcentaje. Un cuarto es 1/4, 0.25 y 25%."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Need more help?</span><span class="lang-es" lang="es">¿Más ayuda?</span></button></p>
       <div class="tab-flow-nav">
         <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('learn')">
           <span class="lang-en">Continue ➔</span>
@@ -3949,8 +3860,8 @@ body[data-family-style] .frame-stars .pb-frame-header { background:#8091a2 !impo
         <div class="rf-col-left">
           <div class="rf-card rf-card-bigidea">
             <h3>🎯 <span class="lang-en">The Big Idea</span><span class="lang-es" lang="es">La idea principal</span></h3>
-            <p class="rf-key-en"><strong><span class="lang-en">In one sentence:</span><span class="lang-es" lang="es">En una frase:</span></strong> Fraction, decimal, and percent name the exact same part of one whole.</p>
-            <p class="rf-key-es" lang="es"><strong>En una frase:</strong> La fracción, el decimal y el porcentaje nombran exactamente la misma parte de un entero.</p>
+            <p class="rf-key-en"><strong><span class="lang-en">In one sentence:</span><span class="lang-es" lang="es">En una frase:</span></strong> One amount can be written as a fraction, decimal, or percent. One quarter is 1/4, 0.25, and 25%.</p>
+            <p class="rf-key-es" lang="es"><strong>En una frase:</strong> Una misma cantidad se puede escribir como fracción, decimal o porcentaje. Un cuarto es 1/4, 0.25 y 25%.</p>
           </div>
 
           <div class="rf-card rf-card-dinner">

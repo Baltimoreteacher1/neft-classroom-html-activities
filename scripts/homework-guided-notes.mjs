@@ -114,6 +114,9 @@ function conceptIntro(config) {
 }
 
 function keyIdea(config) {
+  if (config.familyBigIdeaFormat === "simple-visual" && config.familyKeyIdea) {
+    return config.familyKeyIdea;
+  }
   const exact = exactFamilySupport(config || {});
   if (exact) return exact.capEn;
   if (config.familyNotes?.bigIdea?.en) return config.familyNotes.bigIdea.en;
@@ -125,6 +128,9 @@ function keyIdea(config) {
 }
 
 function keyIdeaEs(config) {
+  if (config.familyBigIdeaFormat === "simple-visual" && config.familyKeyIdeaEs) {
+    return config.familyKeyIdeaEs;
+  }
   const exact = exactFamilySupport(config || {});
   if (exact) return exact.capEs;
   if (config.familyNotes?.bigIdea?.es) return config.familyNotes.bigIdea.es;
@@ -3039,6 +3045,60 @@ function renderParentQuickCard(config) {
       </div>`;
 }
 
+function renderUnit4FamilyBigIdeaVisual(config) {
+  const model = config.familyBigIdeaVisual;
+  if (!model) return "";
+  const bilingual = (en, es) =>
+    `<span class="lang-en">${esc(en)}</span><span class="lang-es" lang="es">${esc(es)}</span>`;
+
+  if (model.type === "percent-grid") {
+    const cells = Array.from(
+      { length: 100 },
+      (_, i) =>
+        `<span class="${i < model.filledSquares ? "is-filled" : ""}" aria-hidden="true"></span>`,
+    ).join("");
+    return `<div class="family-big-idea-visual">
+      <div class="family-visual-equation"><strong>${esc(model.ratio)}</strong><span aria-hidden="true">→</span><strong>${esc(model.percent)}</strong></div>
+      <div class="family-percent-grid" aria-hidden="true">${cells}</div>
+      <p>${bilingual("Each shaded square is 1 out of 100, or 1%.", "Cada cuadro sombreado representa 1 de 100, o 1%.")}</p>
+    </div>`;
+  }
+
+  if (model.type === "equivalent-forms") {
+    return `<div class="family-big-idea-visual family-equivalent-forms">${model.forms
+      .map(
+        (form, i) =>
+          `${i ? '<span class="family-visual-equals" aria-hidden="true">=</span>' : ""}<div class="family-form-card"><span>${bilingual(form.labelEn, form.labelEs)}</span><strong>${esc(form.value)}</strong></div>`,
+      )
+      .join("")}</div>`;
+  }
+
+  if (model.type === "estimate") {
+    return `<div class="family-big-idea-visual family-estimate-visual">
+      <div class="family-estimate-values"><span>${esc(model.given)}</span><span aria-hidden="true">≈</span><span>${esc(model.friendly)}</span><span aria-hidden="true">≈</span><strong>${esc(model.estimate)}</strong></div>
+      <p>${bilingual(model.explanationEn, model.explanationEs)}</p>
+    </div>`;
+  }
+
+  if (model.type === "discount") {
+    return `<div class="family-big-idea-visual family-discount-visual">
+      <div class="family-discount-equation"><strong>${esc(model.original)}</strong><span aria-hidden="true">−</span><span>${esc(model.savings)} <small>${bilingual("saved", "de ahorro")}</small></span><span aria-hidden="true">=</span><strong>${esc(model.salePrice)}</strong></div>
+      <div class="family-discount-bar" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <div class="family-discount-labels"><span>${bilingual(`${model.percent} off = ${model.savings}`, `${model.percent} de descuento = ${model.savings}`)}</span><span>${bilingual("price to pay", "precio a pagar")}</span></div>
+    </div>`;
+  }
+
+  if (model.type === "find-whole") {
+    return `<div class="family-big-idea-visual family-whole-visual">
+      <div class="family-whole-labels"><strong>${esc(model.part)} = ${esc(model.percent)}</strong><strong>100% = ${esc(model.whole)}</strong></div>
+      <div class="family-whole-bar" aria-hidden="true">${Array.from({ length: 10 }, (_, i) => `<span class="${i < model.tenths ? "is-filled" : ""}"></span>`).join("")}</div>
+      <p>${bilingual("The full bar is the whole amount.", "La barra completa representa el entero.")}</p>
+    </div>`;
+  }
+
+  return "";
+}
+
 export function renderConceptExplainer(config) {
   const steps = buildConceptSteps(config);
   const keyEn = keyIdea(config);
@@ -3051,6 +3111,23 @@ export function renderConceptExplainer(config) {
     visual.capEn || visual.capEs
       ? `<figcaption class="concept-visual-caption">${visual.capEn ? `<span class="lang-en">${esc(visual.capEn)}</span>` : ""}${visual.capEs ? `<span class="lang-es" lang="es">${esc(visual.capEs)}</span>` : ""}</figcaption>`
       : "";
+
+  if (config.familyBigIdeaFormat === "simple-visual") {
+    return `
+    <section class="guided-section card section-visual" aria-label="Visual concept explainer">
+      <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span></h2>
+      <div class="big-idea">
+        <div class="family-big-idea-piece">
+          <div class="family-big-idea-copy">
+            <p class="lang-en">${esc(completeSentence(keyEn))}</p>
+            <p class="lang-es" lang="es">${esc(completeSentence(keyEs))}</p>
+            <button type="button" class="btn-read-aloud" onclick="speakHomeworkText(${escAttr(JSON.stringify(keyEn))}, ${escAttr(JSON.stringify(keyEs))})" title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+          </div>
+          ${renderUnit4FamilyBigIdeaVisual(config)}
+        </div>
+      </div>
+    </section>`;
+  }
 
   return `
     <section class="guided-section card section-visual" aria-label="Visual concept explainer">
@@ -8112,10 +8189,11 @@ export function renderLearnTab(config, visualLabHtml = "", workbenchHtml = "") {
   // Inside the heading, not after it: as a sibling it landed in a band of dead
   // space under the title, and the Learn tab strips the <section> wrapper, so
   // there is no container left to position it against.
-  concept = concept.replace(
-    /(<h2[^>]*class="section-title"[^>]*>[\s\S]*?)(<\/h2>)/i,
-    (_match, heading, close) => heading + listenBtn + close,
-  );
+  if (config.familyBigIdeaFormat !== "simple-visual")
+    concept = concept.replace(
+      /(<h2[^>]*class="section-title"[^>]*>[\s\S]*?)(<\/h2>)/i,
+      (_match, heading, close) => heading + listenBtn + close,
+    );
 
   const spotlightHtml = `
     <div class="real-world-spotlight card-ish">

@@ -398,6 +398,24 @@ function copyStandaloneHtml() {
   };
 }
 
+// Generated family homework is a standalone HTML page and points at the fixed
+// production bundle URL. During `vite dev`, serve that URL through Vite's module
+// transform so the source entry and its imports work in the live preview too.
+function homeworkInteractiveDevEntry() {
+  return {
+    name: "homework-interactive-dev-entry",
+    apply: "serve",
+    configureServer(server) {
+      server.middlewares.use((req, _res, next) => {
+        if (req.url === "/assets/homework-lesson-models.js") {
+          req.url = "/engine/homework-lesson-models.js";
+        }
+        next();
+      });
+    },
+  };
+}
+
 export default defineConfig({
   root: ".",
   build: {
@@ -452,5 +470,5 @@ export default defineConfig({
       "@lessons": resolve(__dirname, "lessons"),
     },
   },
-  plugins: [copyStandaloneHtml()],
+  plugins: [homeworkInteractiveDevEntry(), copyStandaloneHtml()],
 });

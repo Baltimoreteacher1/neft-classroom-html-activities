@@ -320,6 +320,39 @@ body[data-family-style] .powerup-choice-btn:hover:not(:disabled) { border-color:
 body[data-family-style] .tile-6 { background:#64748b !important; }
 body[data-family-style] .frame-stars { border-color:#8091a2 !important; }
 body[data-family-style] .frame-stars .pb-frame-header { background:#8091a2 !important; }
+
+
+.big-idea .family-big-idea-piece { padding:clamp(16px,3vw,24px); border:2px solid #8fcfc8; border-radius:var(--radius-md); background:#f1fbf9; }
+.big-idea .family-big-idea-copy { display:flex; align-items:flex-start; gap:12px; }
+.big-idea .family-big-idea-copy p { margin:0; font-size:20px; line-height:1.45; font-weight:700; }
+.big-idea .family-big-idea-copy p.lang-es { margin-left:auto; padding-left:12px; border-left:2px solid #8fcfc8; }
+.big-idea .family-big-idea-visual { margin:16px auto 0; max-width:620px; padding:14px; border:1px solid #c7e5df; border-radius:14px; background:#fff; text-align:center; }
+.big-idea .family-big-idea-visual p { margin:10px 0 0; font-size:16px; line-height:1.4; }
+.big-idea .family-visual-equation,.big-idea .family-estimate-values,.big-idea .family-discount-equation,.big-idea .family-whole-labels { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:12px; font-size:clamp(20px,4vw,30px); }
+.big-idea .family-visual-equation > strong,.big-idea .family-estimate-values > span,.big-idea .family-estimate-values > strong,.big-idea .family-discount-equation > span,.big-idea .family-discount-equation > strong,.big-idea .family-whole-labels > strong { padding:6px 10px; border-radius:10px; background:#eef7f5; }
+.big-idea .family-estimate-values > strong,.big-idea .family-whole-labels > strong:last-child { background:#d8f1ea; }
+.big-idea .family-percent-grid { display:grid; grid-template-columns:repeat(10,1fr); gap:3px; width:min(100%,220px); margin:12px auto 0; }
+.big-idea .family-percent-grid span { aspect-ratio:1; border:1px solid #b8c8c5; border-radius:2px; background:#fff; }
+.big-idea .family-percent-grid span.is-filled,.big-idea .family-whole-bar span.is-filled { background:#31a889; border-color:#247b65; }
+.big-idea .family-equivalent-forms { display:flex; align-items:center; justify-content:center; gap:10px; }
+.big-idea .family-form-card { min-width:110px; padding:10px; border-radius:12px; background:#eef7f5; }
+.big-idea .family-form-card span { display:block; font-size:14px; }
+.big-idea .family-form-card strong { display:block; margin-top:4px; font-size:clamp(22px,4vw,30px); }
+.big-idea .family-visual-equals { font-size:26px; font-weight:800; }
+.big-idea .family-discount-equation small { display:block; font-size:13px; font-weight:600; }
+.big-idea .family-discount-bar,.big-idea .family-whole-bar { display:grid; gap:4px; margin:14px auto 0; }
+.big-idea .family-discount-bar { grid-template-columns:repeat(4,1fr); max-width:460px; }
+.big-idea .family-discount-bar span,.big-idea .family-whole-bar span { height:26px; border:1px solid #9bbab3; border-radius:4px; background:#e6f3f0; }
+.big-idea .family-discount-bar span:first-child { background:#f6d78b; border-color:#d9ad4b; }
+.big-idea .family-discount-labels { display:flex; justify-content:space-between; gap:12px; max-width:460px; margin:8px auto 0; font-size:14px; font-weight:700; }
+.big-idea .family-whole-labels { justify-content:space-between; font-size:18px; }
+.big-idea .family-whole-bar { grid-template-columns:repeat(10,1fr); max-width:460px; }
+@media (max-width:620px) { .big-idea .family-big-idea-copy { display:block; } .big-idea .family-big-idea-copy p { font-size:18px; } .big-idea .family-big-idea-copy p.lang-es { margin:8px 0 0; padding:8px 0 0; border-left:0; border-top:1px solid #8fcfc8; } .big-idea .family-big-idea-copy .btn-read-aloud { margin-top:10px; } .big-idea .family-form-card { min-width:0; flex:1 1 70px; } .big-idea .family-equivalent-forms { gap:5px; } .big-idea .family-whole-labels { font-size:15px; } }
+body[data-family-style] [id^="hw_panel_"] p { font-size:19px!important; line-height:1.5!important; }
+body[data-family-style] [id^="hw_panel_"] li,body[data-family-style] [id^="hw_panel_"] label,body[data-family-style] .problem-stem,body[data-family-style] .choice-text { font-size:19px!important; line-height:1.45!important; }
+body[data-family-style] .visual-lab-heading>p,body[data-family-style] .visual-lab-lang-note,body[data-family-style] .visual-representation-card p,body[data-family-style] .visual-coach-q { font-size:19px!important; line-height:1.5!important; }
+body[data-family-style] .hw-hero-lead,body[data-family-style] .hw-experience-description,body[data-family-style] .hw-route-note,body[data-family-style] .hw-route-chooser>p,body[data-family-style] .hw-route-option { font-size:18px!important; line-height:1.45!important; }
+body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 </style>
 <link rel="stylesheet" href="/assets/homework/homework-layer-6c3c5e2d91.css">
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -650,152 +683,20 @@ body[data-family-style] .frame-stars .pb-frame-header { background:#8091a2 !impo
     </div>
       <div class="learn-big-idea-block" id="hw_learn_idea">
 
-      <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span> <button type="button" class="btn-listen-concept" onclick="speakBigIdea(&quot;Percent means per hundred; scale the ratio so the denominator is 100.&quot;, &quot;Porcentaje significa por cada cien; escala la razón para que el denominador sea 100.&quot;)" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button></h2>
-      <!-- renderLearnTab() strips the  wrapper, so the oversized
-           "big idea" type scale hangs off this inner div, not off
-           .section-visual (which never reaches the page). -->
+      <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span></h2>
       <div class="big-idea">
-      <div class="key-idea-banner">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
-          <div>
-            <p class="lang-en"><strong>In one sentence:</strong> Percent means per hundred; scale the ratio so the denominator is 100.</p>
-            <p class="lang-es" lang="es"><strong>En una frase:</strong> Porcentaje significa por cada cien; escala la razón para que el denominador sea 100.</p>
+        <div class="family-big-idea-piece">
+          <div class="family-big-idea-copy">
+            <p class="lang-en">A percent tells how many out of 100. For example, 4 out of 10 is 40 out of 100, or 40%.</p>
+            <p class="lang-es" lang="es">Un porcentaje indica cuántos hay de cada 100. Por ejemplo, 4 de cada 10 son 40 de cada 100, o 40%.</p>
+            <button type="button" class="btn-read-aloud" onclick="speakHomeworkText(&quot;A percent tells how many out of 100. For example, 4 out of 10 is 40 out of 100, or 40%.&quot;, &quot;Un porcentaje indica cuántos hay de cada 100. Por ejemplo, 4 de cada 10 son 40 de cada 100, o 40%.&quot;)" title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
           </div>
-          <button type="button" class="btn-read-aloud" onclick="speakHomeworkText(&quot;Percent means per hundred; scale the ratio so the denominator is 100.&quot;, &quot;Porcentaje significa por cada cien; escala la razón para que el denominador sea 100.&quot;)" title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+          <div class="family-big-idea-visual">
+      <div class="family-visual-equation"><strong>4/10 = 40/100</strong><span aria-hidden="true">→</span><strong>40%</strong></div>
+      <div class="family-percent-grid" aria-hidden="true"><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="is-filled" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span><span class="" aria-hidden="true"></span></div>
+      <p><span class="lang-en">Each shaded square is 1 out of 100, or 1%.</span><span class="lang-es" lang="es">Cada cuadro sombreado representa 1 de 100, o 1%.</span></p>
+    </div>
         </div>
-      </div>
-      <figure class="concept-visual-wrap"><div class="family-specific-model">
-      <svg viewBox="0 0 640 592" class="concept-svg" role="img" aria-label="Understand Percent: scaling ratio 4 out of 10 to 40 out of 100, 100-square grid, and tape diagram percent bar showing 3 of 4 parts as 75%" preserveAspectRatio="xMidYMid meet">
-        <rect x="3" y="3" width="634" height="586" rx="22" fill="#e9f7f4" stroke="#1fa6a2" stroke-width="3"/>
-        <text class="concept-title-en" x="320" y="48" text-anchor="middle" font-size="27" font-weight="800" fill="#12355b">Understand Percent</text><text class="concept-title-es" lang="es" x="320" y="48" text-anchor="middle" font-size="27" font-weight="800" fill="#12355b">¿Qué es un porcentaje?</text>
-
-        <!-- Scaling Ratio Card -->
-        <rect x="34" y="68" width="276" height="206" rx="14" fill="#ffffff" stroke="#cddbe8" stroke-width="2" />
-        <rect x="52" y="80" width="168" height="24" rx="6" fill="#0f766e"/>
-        <text x="136" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">SCALE RATIO TO 100</text>
-        <text x="172" y="122" text-anchor="middle" font-size="15" font-weight="700" fill="#12355b">4 out of 10 students</text>
-        <g transform="translate(102, 130)">
-          <text x="70" y="20" text-anchor="middle" font-size="16" font-weight="800" fill="#0f766e">4 × 10</text>
-          <line x1="20" y1="28" x2="120" y2="28" stroke="#0f766e" stroke-width="2.5"/>
-          <text x="70" y="48" text-anchor="middle" font-size="16" font-weight="800" fill="#0f766e">10 × 10</text>
-        </g>
-        <text x="172" y="202" text-anchor="middle" font-size="20" font-weight="800" fill="#12355b">= 40 / 100</text>
-        <rect x="72" y="220" width="200" height="38" rx="8" fill="#0f766e"/>
-        <text x="172" y="245" text-anchor="middle" font-size="18" font-weight="800" fill="#ffffff">= 40% (per hundred)</text>
-
-        <!-- 100-Square Grid Card -->
-        <rect x="330" y="68" width="276" height="206" rx="14" fill="#ffffff" stroke="#cddbe8" stroke-width="2" />
-        <rect x="348" y="80" width="160" height="24" rx="6" fill="#0f766e"/>
-        <text x="428" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">100-SQUARE GRID</text>
-        <g><rect x="393" y="108" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="408" y="108" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="423" y="108" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="438" y="108" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="453" y="108" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="468" y="108" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="483" y="108" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="498" y="108" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="513" y="108" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="528" y="108" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="393" y="118" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="408" y="118" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="423" y="118" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="438" y="118" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="453" y="118" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="468" y="118" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="483" y="118" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="498" y="118" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="513" y="118" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="528" y="118" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="393" y="128" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="408" y="128" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="423" y="128" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="438" y="128" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="453" y="128" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="468" y="128" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="483" y="128" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="498" y="128" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="513" y="128" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="528" y="128" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="393" y="138" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="408" y="138" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="423" y="138" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="438" y="138" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="453" y="138" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="468" y="138" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="483" y="138" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="498" y="138" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="513" y="138" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="528" y="138" width="14" height="9" rx="1" fill="#0f766e" stroke="#0d5f58" stroke-width="1"/><rect x="393" y="148" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="408" y="148" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="423" y="148" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="438" y="148" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="453" y="148" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="468" y="148" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="483" y="148" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="498" y="148" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="513" y="148" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="528" y="148" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="393" y="158" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="408" y="158" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="423" y="158" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="438" y="158" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="453" y="158" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="468" y="158" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="483" y="158" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="498" y="158" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="513" y="158" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="528" y="158" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="393" y="168" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="408" y="168" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="423" y="168" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="438" y="168" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="453" y="168" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="468" y="168" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="483" y="168" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="498" y="168" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="513" y="168" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="528" y="168" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="393" y="178" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="408" y="178" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="423" y="178" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="438" y="178" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="453" y="178" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="468" y="178" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="483" y="178" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="498" y="178" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="513" y="178" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="528" y="178" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="393" y="188" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="408" y="188" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="423" y="188" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="438" y="188" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="453" y="188" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="468" y="188" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="483" y="188" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="498" y="188" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="513" y="188" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="528" y="188" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="393" y="198" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="408" y="198" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="423" y="198" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="438" y="198" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="453" y="198" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="468" y="198" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="483" y="198" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="498" y="198" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="513" y="198" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/><rect x="528" y="198" width="14" height="9" rx="1" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/></g>
-        <text x="468" y="220" text-anchor="middle" font-size="13" font-weight="800" fill="#0f766e">40 shaded squares = 40%</text>
-        <text x="468" y="238" text-anchor="middle" font-size="12" font-weight="700" fill="#64748b">60 unshaded squares = 60%</text>
-        <text x="468" y="256" text-anchor="middle" font-size="12" font-weight="700" fill="#12355b">Total: 100 squares = 100%</text>
-
-        <!-- Percent Bar (Tape Diagram) Card -->
-        <rect x="34" y="286" width="572" height="142" rx="14" fill="#ffffff" stroke="#cddbe8" stroke-width="2" />
-        <rect x="52" y="298" width="220" height="24" rx="6" fill="#0f766e"/>
-        <text x="162" y="315" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">PERCENT BAR (TAPE DIAGRAM)</text>
-        <text x="288" y="315" font-size="12" font-weight="700" fill="#12355b">4 equal parts: each is 25% (100% ÷ 4 = 25%)</text>
-        <g transform="translate(52, 332)">
-          <rect x="0" y="0" width="134" height="36" rx="2" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-          <text x="67" y="23" text-anchor="middle" font-family="Outfit, sans-serif" font-size="13" font-weight="800" fill="#ffffff">25%</text>
-          <rect x="134" y="0" width="134" height="36" rx="2" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-          <text x="201" y="23" text-anchor="middle" font-family="Outfit, sans-serif" font-size="13" font-weight="800" fill="#ffffff">25%</text>
-          <rect x="268" y="0" width="134" height="36" rx="2" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-          <text x="335" y="23" text-anchor="middle" font-family="Outfit, sans-serif" font-size="13" font-weight="800" fill="#ffffff">25%</text>
-          <rect x="402" y="0" width="134" height="36" rx="2" fill="#f8fafc" stroke="#12355b" stroke-width="2"/>
-          <text x="469" y="23" text-anchor="middle" font-family="Outfit, sans-serif" font-size="13" font-weight="800" fill="#64748b">25%</text>
-          <rect x="0" y="0" width="536" height="36" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-          <line x1="0" y1="36" x2="0" y2="44" stroke="#12355b" stroke-width="2"/>
-          <text x="0" y="58" text-anchor="middle" font-size="11.5" font-weight="800" fill="#12355b">0%</text>
-          <line x1="134" y1="36" x2="134" y2="42" stroke="#0f766e" stroke-width="1.5"/>
-          <text x="134" y="55" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">25%</text>
-          <line x1="268" y1="36" x2="268" y2="42" stroke="#0f766e" stroke-width="1.5"/>
-          <text x="268" y="55" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">50%</text>
-          <line x1="402" y1="36" x2="402" y2="46" stroke="#0f766e" stroke-width="2.5"/>
-          <rect x="382" y="44" width="40" height="18" rx="4" fill="#0f766e"/>
-          <text x="402" y="57" text-anchor="middle" font-size="11" font-weight="900" fill="#ffffff">75%</text>
-          <line x1="536" y1="36" x2="536" y2="44" stroke="#12355b" stroke-width="2"/>
-          <text x="536" y="58" text-anchor="middle" font-size="11.5" font-weight="800" fill="#12355b">100%</text>
-          <text x="201" y="80" text-anchor="middle" font-size="12" font-weight="800" fill="#0f766e">3 shaded parts = 3 × 25% = 75% of the whole</text>
-          <text x="469" y="80" text-anchor="middle" font-size="11" font-weight="700" fill="#64748b">1 unshaded = 25%</text>
-        </g>
-
-        <!-- Key Rule Callout -->
-        <rect x="34" y="440" width="572" height="136" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
-        <text x="54" y="464" font-size="15" font-weight="800" fill="#0f766e">✔ KEY PERCENT RULE:</text>
-        <text x="54" y="487" font-size="14" font-weight="700" fill="#12355b">Percent literally means "per hundred". Scale any ratio until the bottom number is 100.</text>
-        <text x="54" y="507" font-size="14" font-weight="700" fill="#12355b">Use a 100-square grid, scaling factors, or a percent bar to model parts of a whole.</text>
-        <text x="54" y="527" font-size="14" font-weight="700" fill="#12355b">100% stands for 1 whole. Percents can also exceed 100% (e.g. 150% = 1.5 wholes).</text>
-        <text x="54" y="548" font-size="13" font-weight="700" fill="#0f766e">Equivalent models: 4/10 = 40/100 = 40%  ·  3/4 on a percent bar = 75/100 = 75%</text>
-      </svg></div><figcaption class="concept-visual-caption"><span class="lang-en">Percent means per hundred. Use a 100-square grid, ratio scaling, or a percent bar to represent parts of 100%.</span><span class="lang-es" lang="es">Porcentaje significa por cada cien. Usen una cuadrícula de 100, razones o una barra de porcentaje para representar partes de 100%.</span></figcaption><button type="button" class="concept-zoom-btn" onclick="openConceptZoom(this)"><span class="lang-en">🔍 Tap to enlarge the picture</span><span class="lang-es" lang="es">🔍 Toca para ampliar la imagen</span></button></figure>
-      <ol class="guided-steps">
-
-          <li class="guided-step step-color-1">
-            <div class="guided-step-head">
-              <span class="guided-step-num step-color-1" aria-hidden="true">1</span>
-              <div><span class="step-cue-label"><span class="guided-step-icon" aria-hidden="true">🔍</span><span class="lang-en">Find the ratio</span><span class="lang-es" lang="es">Halla la razón</span></span><span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span></div>
-            </div>
-            <p class="step-lead lang-en">Identify the comparison: 4 out of 10 students chose the tiger mascot.</p>
-            <p class="step-lead lang-es" lang="es">Identifica la comparación: 4 de cada 10 estudiantes eligieron al tigre.</p>
-
-          </li>
-          <li class="guided-step step-color-2">
-            <div class="guided-step-head">
-              <span class="guided-step-num step-color-2" aria-hidden="true">2</span>
-              <div><span class="step-cue-label"><span class="guided-step-icon" aria-hidden="true">✖️</span><span class="lang-en">Scale to 100</span><span class="lang-es" lang="es">Escala a 100</span></span><span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span></div>
-            </div>
-            <p class="step-lead lang-en">Scale to 100 by multiplying both numbers by 10: 4 × 10 = 40 and 10 × 10 = 100.</p>
-            <p class="step-lead lang-es" lang="es">Escala a 100 multiplicando ambos números por 10: 4 × 10 = 40 y 10 × 10 = 100.</p>
-
-          </li>
-          <li class="guided-step step-color-3">
-            <div class="guided-step-head">
-              <span class="guided-step-num step-color-3" aria-hidden="true">3</span>
-              <div><span class="step-cue-label"><span class="guided-step-icon" aria-hidden="true">🏷️</span><span class="lang-en">Write percent</span><span class="lang-es" lang="es">Escribe el porcentaje</span></span><span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span></div>
-            </div>
-            <p class="step-lead lang-en">Write as a percent: 40 out of 100 is 40%.</p>
-            <p class="step-lead lang-es" lang="es">Escribe como porcentaje: 40 de cada 100 es 40%.</p>
-
-          </li>
-          <li class="guided-step step-color-4">
-            <div class="guided-step-head">
-              <span class="guided-step-num step-color-4" aria-hidden="true">4</span>
-              <div><span class="step-cue-label"><span class="guided-step-icon" aria-hidden="true">📊</span><span class="lang-en">See on grid</span><span class="lang-es" lang="es">Mira en la cuadrícula</span></span><span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span></div>
-            </div>
-            <p class="step-lead lang-en">On a 100-grid, 40 shaded squares out of 100 equals 40%.</p>
-            <p class="step-lead lang-es" lang="es">En una cuadrícula de 100, 40 cuadros sombreados de 100 equivalen al 40%.</p>
-
-          </li>
-      </ol>
-      <details class="watch-for-drawer">
-      <summary class="watch-for-summary"><span class="lang-en">Watch for these (3)</span><span class="lang-es" lang="es">Ten en cuenta (3)</span></summary>
-      <ul class="watch-for-list">
-
-          <li>
-            <span class="watch-icon">👀</span>
-            <div>
-              <p class="lang-en">Listen for &quot;percent&quot; (por ciento) — the word literally means per hundred.</p>
-              <p class="lang-es" lang="es">Escucha &quot;por ciento&quot;: la palabra significa literalmente por cada cien.</p>
-            </div>
-          </li>
-          <li>
-            <span class="watch-icon">🔢</span>
-            <div>
-              <p class="lang-en">Both numbers of the ratio get multiplied by the same amount. Scaling only one changes the comparison.</p>
-              <p class="lang-es" lang="es">Los dos números de la razón se multiplican por la misma cantidad. Escalar solo uno cambia la comparación.</p>
-            </div>
-          </li>
-          <li>
-            <span class="watch-icon">✋</span>
-            <div>
-              <p class="lang-en">A percent CAN be more than 100. 150% just means one and a half times the whole.</p>
-              <p class="lang-es" lang="es">Un porcentaje SÍ puede ser mayor que 100. 150 % significa una vez y media el total.</p>
-            </div>
-          </li>
-      </ul>
-      </details>
       </div>
     </div>
       <div class="learn-extended-block" id="hw_learn_try"><section class="family-visual-lab" data-visual-lab="ratios" data-lesson-model="percent-grid" aria-labelledby="visual_lab_title">
@@ -912,7 +813,7 @@ body[data-family-style] .frame-stars .pb-frame-header { background:#8091a2 !impo
         <div class="powerup-feedback-content" id="powerup_feedback_content"></div>
       </div>
     </section></div>
-      <p class="tab-help-row learn-extended-block"><button type="button" class="help-pop-btn" data-help='{"titleEn":"The big idea","titleEs":"La idea principal","en":"Percent means per hundred; scale the ratio so the denominator is 100.","es":"Porcentaje significa por cada cien; escala la razón para que el denominador sea 100."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Need more help?</span><span class="lang-es" lang="es">¿Más ayuda?</span></button></p>
+      <p class="tab-help-row learn-extended-block"><button type="button" class="help-pop-btn" data-help='{"titleEn":"The big idea","titleEs":"La idea principal","en":"A percent tells how many out of 100. For example, 4 out of 10 is 40 out of 100, or 40%.","es":"Un porcentaje indica cuántos hay de cada 100. Por ejemplo, 4 de cada 10 son 40 de cada 100, o 40%."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Need more help?</span><span class="lang-es" lang="es">¿Más ayuda?</span></button></p>
       <div class="tab-flow-nav">
         <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('learn')">
           <span class="lang-en">Continue ➔</span>
@@ -4003,8 +3904,8 @@ body[data-family-style] .frame-stars .pb-frame-header { background:#8091a2 !impo
         <div class="rf-col-left">
           <div class="rf-card rf-card-bigidea">
             <h3>🎯 <span class="lang-en">The Big Idea</span><span class="lang-es" lang="es">La idea principal</span></h3>
-            <p class="rf-key-en"><strong><span class="lang-en">In one sentence:</span><span class="lang-es" lang="es">En una frase:</span></strong> Percent means per hundred; scale the ratio so the denominator is 100.</p>
-            <p class="rf-key-es" lang="es"><strong>En una frase:</strong> Porcentaje significa por cada cien; escala la razón para que el denominador sea 100.</p>
+            <p class="rf-key-en"><strong><span class="lang-en">In one sentence:</span><span class="lang-es" lang="es">En una frase:</span></strong> A percent tells how many out of 100. For example, 4 out of 10 is 40 out of 100, or 40%.</p>
+            <p class="rf-key-es" lang="es"><strong>En una frase:</strong> Un porcentaje indica cuántos hay de cada 100. Por ejemplo, 4 de cada 10 son 40 de cada 100, o 40%.</p>
           </div>
 
           <div class="rf-card rf-card-dinner">

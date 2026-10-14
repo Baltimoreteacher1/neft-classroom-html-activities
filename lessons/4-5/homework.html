@@ -320,6 +320,39 @@ body[data-family-style] .powerup-choice-btn:hover:not(:disabled) { border-color:
 body[data-family-style] .tile-6 { background:#64748b !important; }
 body[data-family-style] .frame-stars { border-color:#8091a2 !important; }
 body[data-family-style] .frame-stars .pb-frame-header { background:#8091a2 !important; }
+
+
+.big-idea .family-big-idea-piece { padding:clamp(16px,3vw,24px); border:2px solid #8fcfc8; border-radius:var(--radius-md); background:#f1fbf9; }
+.big-idea .family-big-idea-copy { display:flex; align-items:flex-start; gap:12px; }
+.big-idea .family-big-idea-copy p { margin:0; font-size:20px; line-height:1.45; font-weight:700; }
+.big-idea .family-big-idea-copy p.lang-es { margin-left:auto; padding-left:12px; border-left:2px solid #8fcfc8; }
+.big-idea .family-big-idea-visual { margin:16px auto 0; max-width:620px; padding:14px; border:1px solid #c7e5df; border-radius:14px; background:#fff; text-align:center; }
+.big-idea .family-big-idea-visual p { margin:10px 0 0; font-size:16px; line-height:1.4; }
+.big-idea .family-visual-equation,.big-idea .family-estimate-values,.big-idea .family-discount-equation,.big-idea .family-whole-labels { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:12px; font-size:clamp(20px,4vw,30px); }
+.big-idea .family-visual-equation > strong,.big-idea .family-estimate-values > span,.big-idea .family-estimate-values > strong,.big-idea .family-discount-equation > span,.big-idea .family-discount-equation > strong,.big-idea .family-whole-labels > strong { padding:6px 10px; border-radius:10px; background:#eef7f5; }
+.big-idea .family-estimate-values > strong,.big-idea .family-whole-labels > strong:last-child { background:#d8f1ea; }
+.big-idea .family-percent-grid { display:grid; grid-template-columns:repeat(10,1fr); gap:3px; width:min(100%,220px); margin:12px auto 0; }
+.big-idea .family-percent-grid span { aspect-ratio:1; border:1px solid #b8c8c5; border-radius:2px; background:#fff; }
+.big-idea .family-percent-grid span.is-filled,.big-idea .family-whole-bar span.is-filled { background:#31a889; border-color:#247b65; }
+.big-idea .family-equivalent-forms { display:flex; align-items:center; justify-content:center; gap:10px; }
+.big-idea .family-form-card { min-width:110px; padding:10px; border-radius:12px; background:#eef7f5; }
+.big-idea .family-form-card span { display:block; font-size:14px; }
+.big-idea .family-form-card strong { display:block; margin-top:4px; font-size:clamp(22px,4vw,30px); }
+.big-idea .family-visual-equals { font-size:26px; font-weight:800; }
+.big-idea .family-discount-equation small { display:block; font-size:13px; font-weight:600; }
+.big-idea .family-discount-bar,.big-idea .family-whole-bar { display:grid; gap:4px; margin:14px auto 0; }
+.big-idea .family-discount-bar { grid-template-columns:repeat(4,1fr); max-width:460px; }
+.big-idea .family-discount-bar span,.big-idea .family-whole-bar span { height:26px; border:1px solid #9bbab3; border-radius:4px; background:#e6f3f0; }
+.big-idea .family-discount-bar span:first-child { background:#f6d78b; border-color:#d9ad4b; }
+.big-idea .family-discount-labels { display:flex; justify-content:space-between; gap:12px; max-width:460px; margin:8px auto 0; font-size:14px; font-weight:700; }
+.big-idea .family-whole-labels { justify-content:space-between; font-size:18px; }
+.big-idea .family-whole-bar { grid-template-columns:repeat(10,1fr); max-width:460px; }
+@media (max-width:620px) { .big-idea .family-big-idea-copy { display:block; } .big-idea .family-big-idea-copy p { font-size:18px; } .big-idea .family-big-idea-copy p.lang-es { margin:8px 0 0; padding:8px 0 0; border-left:0; border-top:1px solid #8fcfc8; } .big-idea .family-big-idea-copy .btn-read-aloud { margin-top:10px; } .big-idea .family-form-card { min-width:0; flex:1 1 70px; } .big-idea .family-equivalent-forms { gap:5px; } .big-idea .family-whole-labels { font-size:15px; } }
+body[data-family-style] [id^="hw_panel_"] p { font-size:19px!important; line-height:1.5!important; }
+body[data-family-style] [id^="hw_panel_"] li,body[data-family-style] [id^="hw_panel_"] label,body[data-family-style] .problem-stem,body[data-family-style] .choice-text { font-size:19px!important; line-height:1.45!important; }
+body[data-family-style] .visual-lab-heading>p,body[data-family-style] .visual-lab-lang-note,body[data-family-style] .visual-representation-card p,body[data-family-style] .visual-coach-q { font-size:19px!important; line-height:1.5!important; }
+body[data-family-style] .hw-hero-lead,body[data-family-style] .hw-experience-description,body[data-family-style] .hw-route-note,body[data-family-style] .hw-route-chooser>p,body[data-family-style] .hw-route-option { font-size:18px!important; line-height:1.45!important; }
+body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 </style>
 <link rel="stylesheet" href="/assets/homework/homework-layer-075a8b9bee.css">
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -650,123 +683,20 @@ body[data-family-style] .frame-stars .pb-frame-header { background:#8091a2 !impo
     </div>
       <div class="learn-big-idea-block" id="hw_learn_idea">
 
-      <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span> <button type="button" class="btn-listen-concept" onclick="speakBigIdea(&quot;When you know the part and percent, divide the part by the decimal percent to find the whole.&quot;, &quot;Cuando conoces la parte y el porcentaje, divide la parte entre el porcentaje escrito como decimal.&quot;)" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button></h2>
-      <!-- renderLearnTab() strips the  wrapper, so the oversized
-           "big idea" type scale hangs off this inner div, not off
-           .section-visual (which never reaches the page). -->
+      <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span></h2>
       <div class="big-idea">
-      <div class="key-idea-banner">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
-          <div>
-            <p class="lang-en"><strong>In one sentence:</strong> When you know the part and percent, divide the part by the decimal percent to find the whole.</p>
-            <p class="lang-es" lang="es"><strong>En una frase:</strong> Cuando conoces la parte y el porcentaje, divide la parte entre el porcentaje escrito como decimal.</p>
+        <div class="family-big-idea-piece">
+          <div class="family-big-idea-copy">
+            <p class="lang-en">If $42 is 60% of a price, the full price is $70. The full amount represents 100%.</p>
+            <p class="lang-es" lang="es">Si $42 representa el 60% de un precio, el precio total es $70. La cantidad total representa el 100%.</p>
+            <button type="button" class="btn-read-aloud" onclick="speakHomeworkText(&quot;If $42 is 60% of a price, the full price is $70. The full amount represents 100%.&quot;, &quot;Si $42 representa el 60% de un precio, el precio total es $70. La cantidad total representa el 100%.&quot;)" title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
           </div>
-          <button type="button" class="btn-read-aloud" onclick="speakHomeworkText(&quot;When you know the part and percent, divide the part by the decimal percent to find the whole.&quot;, &quot;Cuando conoces la parte y el porcentaje, divide la parte entre el porcentaje escrito como decimal.&quot;)" title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+          <div class="family-big-idea-visual family-whole-visual">
+      <div class="family-whole-labels"><strong>$42 = 60%</strong><strong>100% = $70</strong></div>
+      <div class="family-whole-bar" aria-hidden="true"><span class="is-filled"></span><span class="is-filled"></span><span class="is-filled"></span><span class="is-filled"></span><span class="is-filled"></span><span class="is-filled"></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></div>
+      <p><span class="lang-en">The full bar is the whole amount.</span><span class="lang-es" lang="es">La barra completa representa el entero.</span></p>
+    </div>
         </div>
-      </div>
-      <figure class="concept-visual-wrap"><div class="family-specific-model">
-      <svg viewBox="0 0 640 420" class="concept-svg" role="img" aria-label="Find the Missing Whole: 6 beads is 25% of a bag, so the whole bag is 6 divided by 0.25 equals 24 beads" preserveAspectRatio="xMidYMid meet">
-        <rect x="3" y="3" width="634" height="414" rx="22" fill="#e9f7f4" stroke="#1fa6a2" stroke-width="3"/>
-        <text class="concept-title-en" x="320" y="48" text-anchor="middle" font-size="27" font-weight="800" fill="#12355b">Find the Missing Whole</text><text class="concept-title-es" lang="es" x="320" y="48" text-anchor="middle" font-size="27" font-weight="800" fill="#12355b">Halla el entero que falta</text>
-
-        <!-- Tape Diagram Card -->
-        <rect x="34" y="68" width="572" height="142" rx="14" fill="#ffffff" stroke="#cddbe8" stroke-width="2" />
-        <rect x="52" y="80" width="220" height="24" rx="6" fill="#0f766e"/>
-        <text x="162" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">TAPE DIAGRAM: 4 EQUAL 25% BLOCKS</text>
-
-        <!-- 4 Blocks of 6 beads -->
-        <g transform="translate(52, 116)">
-          <rect x="0" y="0" width="130" height="42" rx="6" fill="#0f766e"/>
-          <text x="65" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">PART: 6 (25%)</text>
-
-          <rect x="138" y="0" width="125" height="42" rx="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
-          <text x="200" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#0369a1">6 (25%)</text>
-
-          <rect x="271" y="0" width="125" height="42" rx="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
-          <text x="333" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#0369a1">6 (25%)</text>
-
-          <rect x="404" y="0" width="125" height="42" rx="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
-          <text x="466" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#0369a1">6 (25%)</text>
-        </g>
-        <text x="320" y="184" text-anchor="middle" font-size="14" font-weight="800" fill="#0f766e">WHOLE BAG = 4 blocks × 6 beads = 24 beads (100%)</text>
-
-        <!-- Division Formula Card -->
-        <rect x="34" y="222" width="572" height="182" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
-        <text x="54" y="246" font-size="15" font-weight="800" fill="#0f766e">✔ DIVISION FINDS THE WHOLE:</text>
-        <g transform="translate(54, 262)">
-          <text x="0" y="18" font-size="15" font-weight="700" fill="#12355b">Formula: Whole = Part ÷ Percent (as decimal)</text>
-          <text x="0" y="44" font-size="17" font-weight="800" fill="#0f766e">Whole = 6 ÷ 0.25 = 24 beads</text>
-          <text x="0" y="72" font-size="14" font-weight="700" fill="#12355b">Check: 25% of 24 = 0.25 × 24 = 6 beads ✓</text>
-          <text x="0" y="98" font-size="13.5" font-weight="700" fill="#0f766e">whole / entero = 6 ÷ 0.25 = 24</text>
-          <text x="0" y="120" font-size="13" font-weight="700" fill="#5f6f80">Dividing by a decimal smaller than 1 makes the answer LARGER than the part.</text>
-        </g>
-      </svg></div><figcaption class="concept-visual-caption"><span class="lang-en">When the part and percent are known, divide the part by the percent written as a decimal.</span><span class="lang-es" lang="es">Cuando conoces la parte y el porcentaje, divide la parte entre el porcentaje escrito como decimal.</span></figcaption><button type="button" class="concept-zoom-btn" onclick="openConceptZoom(this)"><span class="lang-en">🔍 Tap to enlarge the picture</span><span class="lang-es" lang="es">🔍 Toca para ampliar la imagen</span></button></figure>
-      <ol class="guided-steps">
-
-          <li class="guided-step step-color-1">
-            <div class="guided-step-head">
-              <span class="guided-step-num step-color-1" aria-hidden="true">1</span>
-              <div><span class="step-cue-label"><span class="guided-step-icon" aria-hidden="true">🏷️</span><span class="lang-en">Identify the part</span><span class="lang-es" lang="es">Identifica la parte</span></span><span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span></div>
-            </div>
-            <p class="step-lead lang-en">A sweater costs $42 on sale.</p>
-            <p class="step-lead lang-es" lang="es">Un suéter cuesta $42 en oferta.</p>
-            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">That sale price is 60% of the original price. We want the full, original price.</p><p class="lang-es" lang="es">Ese precio es el 60 % del precio original. Queremos hallar el precio original completo.</p></details>
-          </li>
-          <li class="guided-step step-color-2">
-            <div class="guided-step-head">
-              <span class="guided-step-num step-color-2" aria-hidden="true">2</span>
-              <div><span class="step-cue-label"><span class="guided-step-icon" aria-hidden="true">🎯</span><span class="lang-en">Name the missing whole</span><span class="lang-es" lang="es">Nombra el total desconocido</span></span><span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span></div>
-            </div>
-            <p class="step-lead lang-en">60% is six groups of 10%.</p>
-            <p class="step-lead lang-es" lang="es">El 60 % son seis grupos de 10 %.</p>
-            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">Divide 60 by 6 to find one 10% group: 60% ÷ 6 = 10%. Divide $42 by 6 too: $42 ÷ 6 = $7.</p><p class="lang-es" lang="es">Divide 60 entre 6 para hallar un grupo de 10 %: 60 % ÷ 6 = 10 %. Divide también $42 entre 6: $42 ÷ 6 = $7.</p></details>
-          </li>
-          <li class="guided-step step-color-3">
-            <div class="guided-step-head">
-              <span class="guided-step-num step-color-3" aria-hidden="true">3</span>
-              <div><span class="step-cue-label"><span class="guided-step-icon" aria-hidden="true">📝</span><span class="lang-en">Set up equation</span><span class="lang-es" lang="es">Plantea la ecuación</span></span><span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span></div>
-            </div>
-            <p class="step-lead lang-en">The 10% group is $7.</p>
-            <p class="step-lead lang-es" lang="es">El grupo de 10 % vale $7.</p>
-            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">The full 100% has ten 10% groups, so multiply $7 by 10: $7 × 10 = $70.</p><p class="lang-es" lang="es">El 100 % completo tiene diez grupos de 10 %, así que multiplica $7 por 10: $7 × 10 = $70.</p></details>
-          </li>
-          <li class="guided-step step-color-4">
-            <div class="guided-step-head">
-              <span class="guided-step-num step-color-4" aria-hidden="true">4</span>
-              <div><span class="step-cue-label"><span class="guided-step-icon" aria-hidden="true">➗</span><span class="lang-en">Divide to find whole</span><span class="lang-es" lang="es">Divide para hallar total</span></span><span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span></div>
-            </div>
-            <p class="step-lead lang-en">The original price was $70.</p>
-            <p class="step-lead lang-es" lang="es">El precio original era $70.</p>
-            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">Check: 60% is six 10% groups, and 6 × $7 = $42.</p><p class="lang-es" lang="es">Comprueba: el 60 % son seis grupos de 10 %, y 6 × $7 = $42.</p></details>
-          </li>
-      </ol>
-      <details class="watch-for-drawer">
-      <summary class="watch-for-summary"><span class="lang-en">Watch for these (3)</span><span class="lang-es" lang="es">Ten en cuenta (3)</span></summary>
-      <ul class="watch-for-list">
-
-          <li>
-            <span class="watch-icon">👀</span>
-            <div>
-              <p class="lang-en">Listen for &quot;the whole&quot; (el total) — it is always the 100% amount, and it is what is missing tonight.</p>
-              <p class="lang-es" lang="es">Escucha &quot;el total&quot;: siempre es la cantidad del 100 %, y es lo que falta esta noche.</p>
-            </div>
-          </li>
-          <li>
-            <span class="watch-icon">🔢</span>
-            <div>
-              <p class="lang-en">Divide, do not multiply. Multiplying by 0.6 makes the answer smaller than the part, which is impossible.</p>
-              <p class="lang-es" lang="es">Divide, no multipliques. Multiplicar por 0.6 hace la respuesta menor que la parte, lo cual es imposible.</p>
-            </div>
-          </li>
-          <li>
-            <span class="watch-icon">✋</span>
-            <div>
-              <p class="lang-en">Check the size: if the percent is under 100%, the whole must be bigger than the part.</p>
-              <p class="lang-es" lang="es">Comprueben el tamaño: si el porcentaje es menor que 100 %, el total debe ser mayor que la parte.</p>
-            </div>
-          </li>
-      </ul>
-      </details>
       </div>
     </div>
       <div class="learn-extended-block" id="hw_learn_try"><section class="family-visual-lab card-ish" data-family-paper-model="missing-whole"><h3><span class="lang-en">Build the missing whole</span><span class="lang-es" lang="es">Construye el total que falta</span></h3><p><span class="lang-en">Six beads are 25% of the bag. Draw a bar with four equal boxes. Label one box 25% and 6 beads. What belongs in each other box? Label the whole bar 100% and find the total. Check by finding one fourth of it.</span><span class="lang-es" lang="es">Seis cuentas son el 25% de la bolsa. Dibuja una barra con cuatro cajas iguales. Indica 25% y 6 cuentas en una caja. ¿Qué va en las otras? Indica 100% en toda la barra y halla el total. Comprueba hallando su cuarta parte.</span></p></section></div>
@@ -862,7 +792,7 @@ body[data-family-style] .frame-stars .pb-frame-header { background:#8091a2 !impo
         <div class="powerup-feedback-content" id="powerup_feedback_content"></div>
       </div>
     </section></div>
-      <p class="tab-help-row learn-extended-block"><button type="button" class="help-pop-btn" data-help='{"titleEn":"The big idea","titleEs":"La idea principal","en":"When you know the part and percent, divide the part by the decimal percent to find the whole.","es":"Cuando conoces la parte y el porcentaje, divide la parte entre el porcentaje escrito como decimal."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Need more help?</span><span class="lang-es" lang="es">¿Más ayuda?</span></button></p>
+      <p class="tab-help-row learn-extended-block"><button type="button" class="help-pop-btn" data-help='{"titleEn":"The big idea","titleEs":"La idea principal","en":"If $42 is 60% of a price, the full price is $70. The full amount represents 100%.","es":"Si $42 representa el 60% de un precio, el precio total es $70. La cantidad total representa el 100%."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Need more help?</span><span class="lang-es" lang="es">¿Más ayuda?</span></button></p>
       <div class="tab-flow-nav">
         <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('learn')">
           <span class="lang-en">Continue ➔</span>
@@ -3994,8 +3924,8 @@ body[data-family-style] .frame-stars .pb-frame-header { background:#8091a2 !impo
         <div class="rf-col-left">
           <div class="rf-card rf-card-bigidea">
             <h3>🎯 <span class="lang-en">The Big Idea</span><span class="lang-es" lang="es">La idea principal</span></h3>
-            <p class="rf-key-en"><strong><span class="lang-en">In one sentence:</span><span class="lang-es" lang="es">En una frase:</span></strong> When you know the part and percent, divide the part by the decimal percent to find the whole.</p>
-            <p class="rf-key-es" lang="es"><strong>En una frase:</strong> Cuando conoces la parte y el porcentaje, divide la parte entre el porcentaje escrito como decimal.</p>
+            <p class="rf-key-en"><strong><span class="lang-en">In one sentence:</span><span class="lang-es" lang="es">En una frase:</span></strong> If $42 is 60% of a price, the full price is $70. The full amount represents 100%.</p>
+            <p class="rf-key-es" lang="es"><strong>En una frase:</strong> Si $42 representa el 60% de un precio, el precio total es $70. La cantidad total representa el 100%.</p>
           </div>
 
           <div class="rf-card rf-card-dinner">

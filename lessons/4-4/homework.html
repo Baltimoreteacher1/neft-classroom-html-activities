@@ -320,6 +320,39 @@ body[data-family-style] .powerup-choice-btn:hover:not(:disabled) { border-color:
 body[data-family-style] .tile-6 { background:#64748b !important; }
 body[data-family-style] .frame-stars { border-color:#8091a2 !important; }
 body[data-family-style] .frame-stars .pb-frame-header { background:#8091a2 !important; }
+
+
+.big-idea .family-big-idea-piece { padding:clamp(16px,3vw,24px); border:2px solid #8fcfc8; border-radius:var(--radius-md); background:#f1fbf9; }
+.big-idea .family-big-idea-copy { display:flex; align-items:flex-start; gap:12px; }
+.big-idea .family-big-idea-copy p { margin:0; font-size:20px; line-height:1.45; font-weight:700; }
+.big-idea .family-big-idea-copy p.lang-es { margin-left:auto; padding-left:12px; border-left:2px solid #8fcfc8; }
+.big-idea .family-big-idea-visual { margin:16px auto 0; max-width:620px; padding:14px; border:1px solid #c7e5df; border-radius:14px; background:#fff; text-align:center; }
+.big-idea .family-big-idea-visual p { margin:10px 0 0; font-size:16px; line-height:1.4; }
+.big-idea .family-visual-equation,.big-idea .family-estimate-values,.big-idea .family-discount-equation,.big-idea .family-whole-labels { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:12px; font-size:clamp(20px,4vw,30px); }
+.big-idea .family-visual-equation > strong,.big-idea .family-estimate-values > span,.big-idea .family-estimate-values > strong,.big-idea .family-discount-equation > span,.big-idea .family-discount-equation > strong,.big-idea .family-whole-labels > strong { padding:6px 10px; border-radius:10px; background:#eef7f5; }
+.big-idea .family-estimate-values > strong,.big-idea .family-whole-labels > strong:last-child { background:#d8f1ea; }
+.big-idea .family-percent-grid { display:grid; grid-template-columns:repeat(10,1fr); gap:3px; width:min(100%,220px); margin:12px auto 0; }
+.big-idea .family-percent-grid span { aspect-ratio:1; border:1px solid #b8c8c5; border-radius:2px; background:#fff; }
+.big-idea .family-percent-grid span.is-filled,.big-idea .family-whole-bar span.is-filled { background:#31a889; border-color:#247b65; }
+.big-idea .family-equivalent-forms { display:flex; align-items:center; justify-content:center; gap:10px; }
+.big-idea .family-form-card { min-width:110px; padding:10px; border-radius:12px; background:#eef7f5; }
+.big-idea .family-form-card span { display:block; font-size:14px; }
+.big-idea .family-form-card strong { display:block; margin-top:4px; font-size:clamp(22px,4vw,30px); }
+.big-idea .family-visual-equals { font-size:26px; font-weight:800; }
+.big-idea .family-discount-equation small { display:block; font-size:13px; font-weight:600; }
+.big-idea .family-discount-bar,.big-idea .family-whole-bar { display:grid; gap:4px; margin:14px auto 0; }
+.big-idea .family-discount-bar { grid-template-columns:repeat(4,1fr); max-width:460px; }
+.big-idea .family-discount-bar span,.big-idea .family-whole-bar span { height:26px; border:1px solid #9bbab3; border-radius:4px; background:#e6f3f0; }
+.big-idea .family-discount-bar span:first-child { background:#f6d78b; border-color:#d9ad4b; }
+.big-idea .family-discount-labels { display:flex; justify-content:space-between; gap:12px; max-width:460px; margin:8px auto 0; font-size:14px; font-weight:700; }
+.big-idea .family-whole-labels { justify-content:space-between; font-size:18px; }
+.big-idea .family-whole-bar { grid-template-columns:repeat(10,1fr); max-width:460px; }
+@media (max-width:620px) { .big-idea .family-big-idea-copy { display:block; } .big-idea .family-big-idea-copy p { font-size:18px; } .big-idea .family-big-idea-copy p.lang-es { margin:8px 0 0; padding:8px 0 0; border-left:0; border-top:1px solid #8fcfc8; } .big-idea .family-big-idea-copy .btn-read-aloud { margin-top:10px; } .big-idea .family-form-card { min-width:0; flex:1 1 70px; } .big-idea .family-equivalent-forms { gap:5px; } .big-idea .family-whole-labels { font-size:15px; } }
+body[data-family-style] [id^="hw_panel_"] p { font-size:19px!important; line-height:1.5!important; }
+body[data-family-style] [id^="hw_panel_"] li,body[data-family-style] [id^="hw_panel_"] label,body[data-family-style] .problem-stem,body[data-family-style] .choice-text { font-size:19px!important; line-height:1.45!important; }
+body[data-family-style] .visual-lab-heading>p,body[data-family-style] .visual-lab-lang-note,body[data-family-style] .visual-representation-card p,body[data-family-style] .visual-coach-q { font-size:19px!important; line-height:1.5!important; }
+body[data-family-style] .hw-hero-lead,body[data-family-style] .hw-experience-description,body[data-family-style] .hw-route-note,body[data-family-style] .hw-route-chooser>p,body[data-family-style] .hw-route-option { font-size:18px!important; line-height:1.45!important; }
+body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 </style>
 <link rel="stylesheet" href="/assets/homework/homework-layer-f22fcbda10.css">
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -650,124 +683,20 @@ body[data-family-style] .frame-stars .pb-frame-header { background:#8091a2 !impo
     </div>
       <div class="learn-big-idea-block" id="hw_learn_idea">
 
-      <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span> <button type="button" class="btn-listen-concept" onclick="speakBigIdea(&quot;Convert the percent to a decimal, multiply by the whole to find the part, then subtract for discounts.&quot;, &quot;Convierte el porcentaje a decimal, multiplica por el total para hallar la parte, y luego resta para descuentos.&quot;)" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button></h2>
-      <!-- renderLearnTab() strips the  wrapper, so the oversized
-           "big idea" type scale hangs off this inner div, not off
-           .section-visual (which never reaches the page). -->
+      <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span></h2>
       <div class="big-idea">
-      <div class="key-idea-banner">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
-          <div>
-            <p class="lang-en"><strong>In one sentence:</strong> Convert the percent to a decimal, multiply by the whole to find the part, then subtract for discounts.</p>
-            <p class="lang-es" lang="es"><strong>En una frase:</strong> Convierte el porcentaje a decimal, multiplica por el total para hallar la parte, y luego resta para descuentos.</p>
+        <div class="family-big-idea-piece">
+          <div class="family-big-idea-copy">
+            <p class="lang-en">A 25% discount means you save one quarter of the price. On an $80 item, that is $20 off, so you pay $60.</p>
+            <p class="lang-es" lang="es">Un descuento de 25% significa ahorrar un cuarto del precio. En un artículo de $80, el ahorro es $20 y pagas $60.</p>
+            <button type="button" class="btn-read-aloud" onclick="speakHomeworkText(&quot;A 25% discount means you save one quarter of the price. On an $80 item, that is $20 off, so you pay $60.&quot;, &quot;Un descuento de 25% significa ahorrar un cuarto del precio. En un artículo de $80, el ahorro es $20 y pagas $60.&quot;)" title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
           </div>
-          <button type="button" class="btn-read-aloud" onclick="speakHomeworkText(&quot;Convert the percent to a decimal, multiply by the whole to find the part, then subtract for discounts.&quot;, &quot;Convierte el porcentaje a decimal, multiplica por el total para hallar la parte, y luego resta para descuentos.&quot;)" title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+          <div class="family-big-idea-visual family-discount-visual">
+      <div class="family-discount-equation"><strong>$80</strong><span aria-hidden="true">−</span><span>$20 <small><span class="lang-en">saved</span><span class="lang-es" lang="es">de ahorro</span></small></span><span aria-hidden="true">=</span><strong>$60</strong></div>
+      <div class="family-discount-bar" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <div class="family-discount-labels"><span><span class="lang-en">25% off = $20</span><span class="lang-es" lang="es">25% de descuento = $20</span></span><span><span class="lang-en">price to pay</span><span class="lang-es" lang="es">precio a pagar</span></span></div>
+    </div>
         </div>
-      </div>
-      <figure class="concept-visual-wrap"><div class="family-specific-model">
-      <svg viewBox="0 0 640 420" class="concept-svg" role="img" aria-label="Find Percent of a Number: $40 backpack with 25% discount gives $10 discount and $30 sale price" preserveAspectRatio="xMidYMid meet">
-        <rect x="3" y="3" width="634" height="414" rx="22" fill="#e9f7f4" stroke="#1fa6a2" stroke-width="3"/>
-        <text class="concept-title-en" x="320" y="48" text-anchor="middle" font-size="27" font-weight="800" fill="#12355b">Find Percent of a Number</text><text class="concept-title-es" lang="es" x="320" y="48" text-anchor="middle" font-size="27" font-weight="800" fill="#12355b">Halla el porcentaje de un número</text>
-
-        <!-- Tape Diagram Card -->
-        <rect x="34" y="68" width="572" height="136" rx="14" fill="#ffffff" stroke="#cddbe8" stroke-width="2" />
-        <rect x="52" y="80" width="220" height="24" rx="6" fill="#0f766e"/>
-        <text x="162" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">TAPE DIAGRAM: $40 BACKPACK</text>
-
-        <!-- 4 Blocks of $10 each -->
-        <g transform="translate(52, 116)">
-          <!-- Block 1: Discount -->
-          <rect x="0" y="0" width="130" height="42" rx="6" fill="#fee2e2" stroke="#ef4444" stroke-width="2"/>
-          <text x="65" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#b91c1c">25% OFF = $10</text>
-
-          <!-- Blocks 2, 3, 4: Sale Price -->
-          <rect x="138" y="0" width="125" height="42" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
-          <text x="200" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#15803d">$10 (25%)</text>
-          <rect x="271" y="0" width="125" height="42" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
-          <text x="333" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#15803d">$10 (25%)</text>
-          <rect x="404" y="0" width="125" height="42" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
-          <text x="466" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#15803d">$10 (25%)</text>
-        </g>
-        <text x="117" y="180" text-anchor="middle" font-size="12" font-weight="800" fill="#b91c1c">Discount Part</text>
-        <text x="390" y="180" text-anchor="middle" font-size="12" font-weight="800" fill="#15803d">Sale Price Part = $30 (75%)</text>
-
-        <!-- Calculation Card -->
-        <rect x="34" y="216" width="572" height="188" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
-        <text x="54" y="242" font-size="15" font-weight="800" fill="#0f766e">✔ TWO-STEP DISCOUNT FORMULA:</text>
-        <g transform="translate(54, 258)">
-          <text x="0" y="18" font-size="14" font-weight="700" fill="#12355b">Step 1: Find the discount (Part = Percent × Whole)</text>
-          <text x="0" y="40" font-size="15" font-weight="800" fill="#0f766e">25% of $40 = 0.25 × 40 = $10 discount</text>
-          <text x="0" y="68" font-size="14" font-weight="700" fill="#12355b">Step 2: Subtract discount from original price</text>
-          <text x="0" y="90" font-size="15" font-weight="800" fill="#0f766e">Sale Price = $40 − $10 = $30</text>
-          <text x="0" y="118" font-size="13" font-weight="700" fill="#5f6f80">The word "of" means multiply: 25% OF $40 → 0.25 × 40 = $10</text>
-        </g>
-      </svg></div><figcaption class="concept-visual-caption"><span class="lang-en">Part = Percent × Whole. Multiply decimal percent by the whole to find discount, then subtract for sale price.</span><span class="lang-es" lang="es">Parte = Porcentaje × Total. Multipliquen el porcentaje decimal por el total para hallar el descuento y resten.</span></figcaption><button type="button" class="concept-zoom-btn" onclick="openConceptZoom(this)"><span class="lang-en">🔍 Tap to enlarge the picture</span><span class="lang-es" lang="es">🔍 Toca para ampliar la imagen</span></button></figure>
-      <ol class="guided-steps">
-
-          <li class="guided-step step-color-1">
-            <div class="guided-step-head">
-              <span class="guided-step-num step-color-1" aria-hidden="true">1</span>
-              <div><span class="step-cue-label"><span class="guided-step-icon" aria-hidden="true">🏷️</span><span class="lang-en">Name base & part</span><span class="lang-es" lang="es">Nombra base y parte</span></span><span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span></div>
-            </div>
-            <p class="step-lead lang-en">A claw-machine game costs 60 tickets.</p>
-            <p class="step-lead lang-es" lang="es">Un juego de máquina de garra cuesta 60 boletos y tiene 25 % de descuento.</p>
-            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">It is 25% off. We want to find the tickets saved (the part).</p><p class="lang-es" lang="es">Queremos hallar los boletos que se ahorran (la parte).</p></details>
-          </li>
-          <li class="guided-step step-color-2">
-            <div class="guided-step-head">
-              <span class="guided-step-num step-color-2" aria-hidden="true">2</span>
-              <div><span class="step-cue-label"><span class="guided-step-icon" aria-hidden="true">🎯</span><span class="lang-en">Find the whole</span><span class="lang-es" lang="es">Halla el total</span></span><span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span></div>
-            </div>
-            <p class="step-lead lang-en">The full price is 60 tickets.</p>
-            <p class="step-lead lang-es" lang="es">El precio completo es 60 boletos.</p>
-            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">That is the whole amount. The discount is 25% of that whole.</p><p class="lang-es" lang="es">Esa es la cantidad total. El descuento es el 25 % de ese total.</p></details>
-          </li>
-          <li class="guided-step step-color-3">
-            <div class="guided-step-head">
-              <span class="guided-step-num step-color-3" aria-hidden="true">3</span>
-              <div><span class="step-cue-label"><span class="guided-step-icon" aria-hidden="true">🔢</span><span class="lang-en">Convert % to decimal</span><span class="lang-es" lang="es">Convierte % a decimal</span></span><span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span></div>
-            </div>
-            <p class="step-lead lang-en">25% is the same as one fourth: 25 out of 100 is one of four equal groups.</p>
-            <p class="step-lead lang-es" lang="es">25 % equivale a un cuarto: 25 de cada 100 es uno de cuatro grupos iguales.</p>
-            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">Divide 60 by 4: 60 ÷ 4 = 15.</p><p class="lang-es" lang="es">Divide 60 entre 4: 60 ÷ 4 = 15.</p></details>
-          </li>
-          <li class="guided-step step-color-4">
-            <div class="guided-step-head">
-              <span class="guided-step-num step-color-4" aria-hidden="true">4</span>
-              <div><span class="step-cue-label"><span class="guided-step-icon" aria-hidden="true">✖️</span><span class="lang-en">Multiply for part</span><span class="lang-es" lang="es">Multiplica para la parte</span></span><span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span></div>
-            </div>
-            <p class="step-lead lang-en">The discount is 15 tickets.</p>
-            <p class="step-lead lang-es" lang="es">El descuento es de 15 boletos.</p>
-            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">If the question asks for the sale price too, subtract: 60 − 15 = 45 tickets.</p><p class="lang-es" lang="es">Si también preguntan el precio de oferta, resta: 60 − 15 = 45 boletos.</p></details>
-          </li>
-      </ol>
-      <details class="watch-for-drawer">
-      <summary class="watch-for-summary"><span class="lang-en">Watch for these (3)</span><span class="lang-es" lang="es">Ten en cuenta (3)</span></summary>
-      <ul class="watch-for-list">
-
-          <li>
-            <span class="watch-icon">👀</span>
-            <div>
-              <p class="lang-en">Listen for &quot;base&quot; (the whole) — it is the number that comes right after the word &quot;of.&quot;</p>
-              <p class="lang-es" lang="es">Escucha &quot;base&quot; (el todo) — es el número que viene justo después de la palabra &quot;de&quot;.</p>
-            </div>
-          </li>
-          <li>
-            <span class="watch-icon">🔢</span>
-            <div>
-              <p class="lang-en">Listen for &quot;parte&quot; (part) — it is the piece you get after you multiply.</p>
-              <p class="lang-es" lang="es">Escucha &quot;parte&quot; — es el pedazo que obtienes después de multiplicar.</p>
-            </div>
-          </li>
-          <li>
-            <span class="watch-icon">✋</span>
-            <div>
-              <p class="lang-en">Let your student change the percent first. Ask &quot;What is this percent as a decimal?&quot; before helping.</p>
-              <p class="lang-es" lang="es">Deja que tu estudiante cambie el porcentaje primero. Pregunta &quot;¿Cuál es este porcentaje como decimal?&quot; antes de ayudar.</p>
-            </div>
-          </li>
-      </ul>
-      </details>
       </div>
     </div>
       <div class="learn-extended-block" id="hw_learn_try"><section class="family-visual-lab" data-visual-lab="ratios" data-lesson-model="percent-builder" aria-labelledby="visual_lab_title">
@@ -884,7 +813,7 @@ body[data-family-style] .frame-stars .pb-frame-header { background:#8091a2 !impo
         <div class="powerup-feedback-content" id="powerup_feedback_content"></div>
       </div>
     </section></div>
-      <p class="tab-help-row learn-extended-block"><button type="button" class="help-pop-btn" data-help='{"titleEn":"The big idea","titleEs":"La idea principal","en":"Convert the percent to a decimal, multiply by the whole to find the part, then subtract for discounts.","es":"Convierte el porcentaje a decimal, multiplica por el total para hallar la parte, y luego resta para descuentos."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Need more help?</span><span class="lang-es" lang="es">¿Más ayuda?</span></button></p>
+      <p class="tab-help-row learn-extended-block"><button type="button" class="help-pop-btn" data-help='{"titleEn":"The big idea","titleEs":"La idea principal","en":"A 25% discount means you save one quarter of the price. On an $80 item, that is $20 off, so you pay $60.","es":"Un descuento de 25% significa ahorrar un cuarto del precio. En un artículo de $80, el ahorro es $20 y pagas $60."}' onclick="openHelpModalFromBtn(this)">💡 <span class="lang-en">Need more help?</span><span class="lang-es" lang="es">¿Más ayuda?</span></button></p>
       <div class="tab-flow-nav">
         <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('learn')">
           <span class="lang-en">Continue ➔</span>
@@ -4078,8 +4007,8 @@ body[data-family-style] .frame-stars .pb-frame-header { background:#8091a2 !impo
         <div class="rf-col-left">
           <div class="rf-card rf-card-bigidea">
             <h3>🎯 <span class="lang-en">The Big Idea</span><span class="lang-es" lang="es">La idea principal</span></h3>
-            <p class="rf-key-en"><strong><span class="lang-en">In one sentence:</span><span class="lang-es" lang="es">En una frase:</span></strong> Convert the percent to a decimal, multiply by the whole to find the part, then subtract for discounts.</p>
-            <p class="rf-key-es" lang="es"><strong>En una frase:</strong> Convierte el porcentaje a decimal, multiplica por el total para hallar la parte, y luego resta para descuentos.</p>
+            <p class="rf-key-en"><strong><span class="lang-en">In one sentence:</span><span class="lang-es" lang="es">En una frase:</span></strong> A 25% discount means you save one quarter of the price. On an $80 item, that is $20 off, so you pay $60.</p>
+            <p class="rf-key-es" lang="es"><strong>En una frase:</strong> Un descuento de 25% significa ahorrar un cuarto del precio. En un artículo de $80, el ahorro es $20 y pagas $60.</p>
           </div>
 
           <div class="rf-card rf-card-dinner">
